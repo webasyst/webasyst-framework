@@ -85,9 +85,9 @@ REPORT;
     protected function createClass($file)
     {
         $pattern = sprintf('@\b%s@', $this->plugin_id);
-        $file = preg_replace($pattern, $this->template_id, $file);
-        if (file_exists($file)) {
-            $file = file_get_contents($this->template_path.$file);
+        $name = $this->template_path.preg_replace($pattern, $this->template_id, $file);
+        if (file_exists($name)) {
+            $file = file_get_contents($name);
         } else {
             $file = '<?php';
             switch ($this->type) {

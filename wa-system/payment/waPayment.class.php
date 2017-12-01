@@ -221,7 +221,7 @@ abstract class waPayment extends waSystemPlugin
      * @param string $id
      * @param array $options
      * @param null $type will be ignored
-     * @return string[string]
+     * @return mixed[string]
      * @return string['name']
      * @return string['description']
      * @return string['version']
@@ -296,6 +296,7 @@ abstract class waPayment extends waSystemPlugin
             $log = array(
                 'method'    => __METHOD__,
                 'exception' => $ex->getMessage(),
+                'code'      => $ex->getCode(),
             );
             self::log($module ? $module->getId() : 'general', $log);
             if ($module) {
@@ -369,7 +370,7 @@ abstract class waPayment extends waSystemPlugin
      */
     protected function callbackHandler($request)
     {
-        ;
+        return array();
     }
 
     /**
@@ -385,10 +386,16 @@ abstract class waPayment extends waSystemPlugin
     protected function execAppCallback($method, $transaction_data)
     {
         try {
-            $result = $this->getAdapter()->execCallbackHandler($method, $transaction_data + array('payment_plugin_instance' => &$this));
+            $params = $transaction_data;
+            $params['payment_plugin_instance'] = &$this;
+            $result = $this->getAdapter()->execCallbackHandler($method, $params);
         } catch (Exception $e) {
-            $result = array('error' => $e->getMessage());
+            $result = array(
+                'error' => $e->getMessage(),
+                'code'  => $e->getCode(),
+            );
         }
+
         $log = array(
             'method'           => __METHOD__,
             'app_id'           => $this->app_id,
@@ -573,7 +580,7 @@ abstract class waPayment extends waSystemPlugin
         if (!empty($wa_transaction_data['parent_id']) && !empty($wa_transaction_data['parent_state'])) {
             $data = array(
                 'state'           => $wa_transaction_data['parent_state'],
-                'update_datetime' => date('Y-m-d H:i:s')
+                'update_datetime' => date('Y-m-d H:i:s'),
             );
             $transaction_model->updateById($wa_transaction_data['parent_id'], $data);
         }
@@ -669,7 +676,7 @@ abstract class waPayment extends waSystemPlugin
             'merchant_id'     => $this->merchant_id,
             'date_time'       => date('Y-m-d H:i:s'),
             'update_datetime' => date('Y-m-d H:i:s'),
-            'result'          => true
+            'result'          => true,
         );
         return $transaction_data;
     }
@@ -839,6 +846,7 @@ abstract class waPayment extends waSystemPlugin
         $params['class'][] = 'long';
 
         $replace = array(
+            '%URL%'             => wa()->getRootUrl(true, true),
             '%RELAY_URL%'       => $this->getRelayUrl(),
             '%HTTP_RELAY_URL%'  => $this->getRelayUrl(false),
             '%HTTPS_RELAY_URL%' => $this->getRelayUrl(true),
@@ -1001,4 +1009,14 @@ interface waIPaymentRefund
      * @param array [string]mixed $transaction_raw_data['refund_amount']
      */
     public function refund($transaction_raw_data);
+}
+
+interface waIPaymentCheck
+{
+    /**
+     * @draft
+     * @param waOrder $order_data
+     * @return mixed
+     */
+    public function check($order_data);
 }

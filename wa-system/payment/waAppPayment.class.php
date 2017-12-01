@@ -53,10 +53,11 @@ abstract class waAppPayment implements waiPluginApp
      *
      * Callback method handler for plugin
      * @param string $method one of Confirmation, Payment
+     * @param mixed $_ [optional] params, passed to apps
      * @throws waException
      * @return mixed
      */
-    final public function execCallbackHandler($method)
+    final public function execCallbackHandler($method, $_ = null)
     {
         $args = func_get_args();
         array_shift($args);

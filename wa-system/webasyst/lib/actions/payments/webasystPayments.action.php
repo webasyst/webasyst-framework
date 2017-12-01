@@ -23,13 +23,20 @@ class webasystPaymentsAction extends waViewAction
         } elseif (isset($result['template'])) {
             exit;
         }
+
         wa()->setActive('webasyst');
 
+        $response = $this->getResponse();
+        if (!empty($result['code'])) {
+            $response->setStatus($result['code']);
+        }
         if (!empty($result['header'])) {
-            foreach ((array) $result['header'] as $name => $value) {
-                $this->getResponse()->addHeader($name, $value);
+            foreach ((array)$result['header'] as $name => $value) {
+                $response->addHeader($name, $value);
             }
         }
+
+        $response->sendHeaders();
         $this->view->assign('params', $params);
         $this->view->assign('result', $result);
     }

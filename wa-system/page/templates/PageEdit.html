@@ -25,7 +25,7 @@
             <div class="wa-page-urls small">
                 {if $page}
                     {if !empty($url)}
-                        <a href="{$url}{$page.url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">{$url|escape}{$page.url}</a>
+                        <a href="{$url}{$page.url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">{$url_decoded|escape}{$page.url}</a>
                         <a href="{$url}{$page.url}?preview={$preview_hash}" target="_blank"><i class="icon10 new-window"></i></a>
                     {elseif $page.domain and $page.route !== null}
                         {$page_route=waRouting::clearUrl($page.route)}
@@ -66,7 +66,7 @@
                     <div class="field wa-page-url">
                         <div class="name bold">[s`Page URL`]</div>
                         <div class="value wa-page-app-url no-shift">
-                            {if !empty($url)}{$url|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
+                            {if !empty($url)}{$url_decoded|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
                         </div>
                         {if empty($url)}
                         <div class="value small wa-page-app-url no-shift">
@@ -421,9 +421,9 @@
                         $(".wa-page-editor h2.wa-page-name").html(p.name);
                     }
                     {if !empty($url)}
-                    var page_url = '{$url|escape}' + p.url;
+                    var page_url = {waIdna::dec($url)|json_encode} + p.url;
                     {elseif isset($page_route)}
-                    var page_url = 'http://{$page.domain}/{$page_route}' + p.full_url;
+                    var page_url = 'http://{waIdna::dec($page.domain)}/{$page_route}' + p.full_url;
                     {/if}
 
                     if ($(".wa-page-urls a").length) {

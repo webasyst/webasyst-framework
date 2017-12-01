@@ -50,6 +50,13 @@ class waPageActions extends waActions
             }
         }
 
+        //convert punycode
+        $idna = new waIdna();
+        foreach ($routes as $key=> &$route) {
+            $route['url_decoded'] = $idna->decode($key);
+        }
+        unset($route);
+
         $data['routes'] = $routes;
 
         /**
@@ -139,8 +146,16 @@ class waPageActions extends waActions
             $url = null;
         }
 
+        if ($url) {
+            $idna = new waIdna();
+            $url_decoded = $idna->decode($url);
+        } else {
+            $url_decoded = null;
+        }
+
         $data = array(
             'url' => $url,
+            'url_decoded' => $url_decoded,
             'page' => $page,
             'page_url' => $this->url,
             'options' => $this->options,

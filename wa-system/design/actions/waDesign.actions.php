@@ -57,6 +57,7 @@ class waDesignActions extends waActions
         if ($route) {
             $current_url .= '&domain='.urlencode($route['_domain']).'&route='.$route['_id'];
         }
+
         $this->display(array(
             'current_url'   => $current_url,
             'template_path' => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
@@ -154,38 +155,45 @@ class waDesignActions extends waActions
             );
         }
 
-
         $routes = $this->getRoutes(true);
         $theme_usages = array();
+        $theme_usages_decoded = null;
+        $idna = new waIdna();
+
         foreach ($routes as $r) {
             if (empty($r['theme'])) {
                 $r['theme'] = 'default';
             }
             if ($r['theme'] == $theme_id && $r['_domain'] != waRequest::get('domain') && $r['_id'] != waRequest::get('route')) {
                 $theme_usages[] = htmlspecialchars($r['_domain'].'/'.$r['url']);
+                $theme_usages_decoded[] = $idna->decode(htmlspecialchars($r['_domain'].'/'.$r['url']));
             }
         }
 
         $route_url = false;
+        $route_url_decoded = null;
         if ($_d = waRequest::get('domain')) {
             $domain_routes = wa()->getRouting()->getByApp(wa()->getApp(), $_d);
             if (isset($domain_routes[waRequest::get('route')])) {
                 $route_url = htmlspecialchars($_d.'/'.$domain_routes[waRequest::get('route')]['url']);
+                $route_url_decoded = $idna->decode($route_url);
             }
         }
 
         $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/DesignEdit.html';
         $data = array(
-            'options'      => $this->options,
-            'app_id'       => $app_id,
-            'design_url'   => $this->design_url,
-            'app'          => $app,
-            'file'         => $file,
-            'theme_id'     => $theme_id,
-            'theme'        => $theme,
-            'theme_usages' => $theme_usages,
-            'route_url'    => $route_url,
-            'theme_files'  => $theme_files
+            'options'             => $this->options,
+            'app_id'              => $app_id,
+            'design_url'          => $this->design_url,
+            'app'                 => $app,
+            'file'                => $file,
+            'theme_id'            => $theme_id,
+            'theme'               => $theme,
+            'theme_usages'        => $theme_usages,
+            'theme_usages_decoded' => $theme_usages_decoded,
+            'route_url'           => $route_url,
+            'route_url_decoded'    => $route_url_decoded,
+            'theme_files'         => $theme_files
         );
         if ($theme->parent_theme_id) {
             $data['parent_theme'] = $theme->parent_theme;
@@ -266,12 +274,14 @@ class waDesignActions extends waActions
         $routes = wa()->getRouting()->getByApp($this->getAppId());
 
         $result = array();
+        $idna = new waIdna();
         foreach ($routes as $d => $domain_routes) {
             foreach (array_reverse($domain_routes, true) as $route_id => $route) {
                 $route['_id'] = $route_id;
                 $route['_domain'] = $d;
                 $route['_url'] = waRouting::getUrlByRoute($route, $d);
                 $route['_url_title'] = $d.'/'.waRouting::clearUrl($route['url']);
+                $route['_domain_decoded'] = $idna->decode($d);
                 $result[] = $route;
             }
         }
@@ -558,6 +568,7 @@ HTACCESS;
             'theme'  => $theme_id
         ));
     }
+
 
     public function themeAction()
     {

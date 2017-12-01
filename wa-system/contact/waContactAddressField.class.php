@@ -265,7 +265,7 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
         }
         $city = isset($result['parts']['city']) ? $result['parts']['city'] : null;
         $region = isset($result['parts']['region']) ? $result['parts']['region'] : null;
-        if (ifset($data['data']['country']) != 'usa' && $city == $region) {
+        if (ifset($data, 'data', 'country', null) != 'usa' && $city == $region) {
             unset($result['parts']['region']);
         }
 

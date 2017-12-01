@@ -1068,10 +1068,23 @@ class waContact implements ArrayAccess
      */
     public function delSettings($app_id, $name)
     {
+        // Use cache in current user's waContact if possible, even if it's a different waContact instance
+        if ($this->id && $this->id == wa()->getUser()->getId() && $this !== wa()->getUser()) {
+            return wa()->getUser()->delSettings($app_id, $name);
+        }
+
+        // Update cache
+        if (isset($this->settings[$app_id])) {
+            if (is_array($name)) {
+                unset($this->settings[$app_id]);
+            } else {
+                unset($this->settings[$app_id][$name]);
+            }
+        }
+
         $setting_model = new waContactSettingsModel();
         $setting_model->delete($this->id, $app_id, $name);
     }
-
 
     /**
      * Returns information about a contact's access rights configuration.

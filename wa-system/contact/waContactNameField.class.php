@@ -104,6 +104,10 @@ class waContactNameField extends waContactStringField
             return $value;
         }
 
+        if ($contact['name'] == $value) {
+            return $contact['name'];
+        }
+
         $contact['firstname'] = '';
         $contact['middlename'] = '';
         $contact['lastname'] = '';

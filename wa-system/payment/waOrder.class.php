@@ -31,6 +31,7 @@
  * @property string $shipping_rate_id
  * @property string $shipping_plugin Plugin string id usps,dhl
  * @property float $shipping_tax_rate
+ * @property float $shipping_tax_included
  *
  *
  * @property array $shipping_address
@@ -77,6 +78,9 @@
  * @property array[][string]double  $items[]['discount']
  * @property array[][string]double  $items[]['total_discount']
  * @property array[][string]double  $items[]['total']
+ * @property array[][string]double  $items[]['tax_rate'] Tax rate in percent
+ * @property array[][string]boolean  $items[]['tax_included'] Tax is included into price
+ *
  *
  * @property int $total_quantity
  *
@@ -374,7 +378,10 @@ class waOrder implements ArrayAccess
             }
             $address['address'] = implode(', ', $chunks);
 
-            if (preg_match('/^(.{1,119}),\s+(.*)$/', $address['address'], $matches)) {
+            $address_length = 119;
+            $pattern = sprintf('/^(.{1,%d}),\s+(.*?)$/u', $address_length);
+
+            if ((mb_strlen($address['address']) > $address_length) && preg_match($pattern, $address['address'], $matches)) {
                 $address['address_1'] = $matches[1];
                 $address['address_2'] = $matches[2];
             } else {

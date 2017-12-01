@@ -189,7 +189,12 @@ class waContactForm
                 $c = $field_id;
                 $arr = array();
                 foreach ($this->fields as $fid => $f) {
-                    $arr[$fid] = $c->get($fid);
+                    if ($fid == 'name' && $c['is_user']) {
+                        // Contact name parser always accepts name parts as set up for Contacts, not Users
+                        $arr[$fid] = waContactNameField::formatName($c, true);
+                    } else {
+                        $arr[$fid] = $c->get($fid);
+                    }
                 }
             } elseif (is_array($field_id)) {
                 $arr = $field_id;
@@ -364,29 +369,35 @@ class waContactForm
         $class_name = $this->opt('css_class_name', wa()->getEnv() == 'frontend' ? 'wa-name' : 'name');
         $result = '';
         foreach ($this->fields() as $fid => $f) {
-            /**
-             * @var waContactField $f
-             */
+            /** @var waContactField $f */
+
+            // Fake password confirmation field
             if ($fid === 'password_confirm') {
                 continue;
             }
 
-            if ($fid === 'photo') {
-                $fake_user = new waContact();
-                $result .= '<div class="' . $class_field . ' ' . ($class_field.'-'.$f->getId()) . '"><div class="' . $class_name . '">' .
-                    _ws('Photo') . '</div><div class="' . $class_value . '">';
-                if (wa()->getUser()->get($fid)) {
-                    $result .= "\n" . '<img src="' . wa()->getUser()->getPhoto() . '">';
-                }
-                $result .= "\n" . '<img src="' . $fake_user->getPhoto() . '">';
-                $result .= "\n" . '<p><input type="file" name="' . $fid . '_file"></p>';
+            // Hidden field
+            if ($f->isHidden()) {
                 $result .= $this->html($fid, true);
-                $result .= "\n</div></div>";
                 continue;
             }
 
-            if ($f->isHidden()) {
+            // Upload contact photo
+            if ($fid === 'photo') {
+                $result .= '<div class="' . $class_field . ' ' . ($class_field.'-'.$f->getId()) . '"><div class="' . $class_name . '">' .
+                    _ws('Photo') . '</div><div class="' . $class_value . '">';
+
+                // Current photo of a person
+                if (wa()->getUser()->get($fid)) {
+                    $result .= "\n" . '<img src="' . wa()->getUser()->getPhoto() . '">';
+                }
+
+                // Empty photo
+                $result .= "\n" . '<img src="' . waContact::getPhotoUrl(null, null, null, null, 'person') . '">';
+
+                $result .= "\n" . '<p><input type="file" name="' . $fid . '_file"></p>';
                 $result .= $this->html($fid, true);
+                $result .= "\n</div></div>";
                 continue;
             }
 

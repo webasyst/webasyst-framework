@@ -57,6 +57,24 @@ class waMailMessage extends Swift_Message
         }
     }
 
+    /**
+     * Add a Cc: address to this message.
+     *
+     * If $name is passed this name will be associated with the address.
+     *
+     * @param string $address
+     * @param string $name    optional
+     *
+     * @return Swift_Mime_SimpleMessage
+     */
+    public function addCc($address, $name = null)
+    {
+        $current = $this->getCc();
+        $current[$address] = $name;
+
+        return $this->setCc($current);
+    }
+
 
     public function encodeEmail($email)
     {

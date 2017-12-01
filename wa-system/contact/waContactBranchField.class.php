@@ -63,7 +63,7 @@ class waContactBranchField extends waContactSelectField
     var previous_selection = 'hide_by_default';
 
     radios_parent.on('change', ':radio[name="{$radios_name}"]', function() {
-
+    
         var option_id = $(this).val();
 
         // Show previously hidden
@@ -86,9 +86,6 @@ class waContactBranchField extends waContactSelectField
         if (hide_data[option_id]) {
             for (var field_id in hide_data[option_id]) {
                 if (!hide_data[option_id].hasOwnProperty(field_id)) {
-                    continue;
-                }
-                if (hide_data[previous_selection] && hide_data[previous_selection][field_id]) {
                     continue;
                 }
                 if (!field_names[field_id]) {

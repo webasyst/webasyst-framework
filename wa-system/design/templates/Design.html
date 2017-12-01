@@ -25,7 +25,7 @@
                             {$_url = "{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}"}
                             <li class="no-icon 2{if $current_url == $_url} selected{/if}" data-routing="{$r._routing_url}">
                                 <a class="bold" href="{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}">
-                                    <span data-url="{$r._preview_url|escape}" class="url">{$_r_label = $r._domain|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
+                                    <span data-url="{$r._preview_url|escape}" class="url">{$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
                                     <span class="hint">{$_t.name}</span>
                                 </a>
                             </li>

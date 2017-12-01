@@ -292,7 +292,7 @@
                             {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
                                 {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
                             {/if}
-                            <a target="_blank" href="{$_r._url}" class="no-underline  bold">{$_r._domain}/{$_r.url} <i class="icon10 new-window"></i></a>
+                            <a target="_blank" href="{$_r._url}" class="no-underline  bold">{$_r._domain_decoded}/{$_r.url} <i class="icon10 new-window"></i></a>
                         </div>
                     {/foreach}
 

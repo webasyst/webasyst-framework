@@ -100,11 +100,40 @@ function wa_lambda($args, $body)
  * Return value of $var or $def when $var is unset.
  * Use of this function does not produce a notice for undefined vars and array indexes,
  * but has a side-effect of creating var or index with NULL value.
+ *
+ * To avoid side-effect if creating keys in array, use alternative syntax:
+ *   ifset($arr, $key1, $key2, ..., $def)
+ * is the same as:
+ *   ifset($arr[$key1][$key2]..., $def)
+ * but does not create a NULL value in array.
+ * Also, it will not trigger warnings if $arr is an ArrayAccess object.
+ *
+ * Note that alternative syntax makes the $def parameter required.
  */
 function ifset(&$var, $def=null)
 {
-    if (isset($var)) {
-        return $var;
+    if (func_num_args() > 2) {
+        $keys = func_get_args();
+        $def = array_pop($keys);
+        $arr = array_shift($keys);
+    } else {
+        $keys = array();
+        $arr = $var;
+    }
+
+    while($keys) {
+        $key = array_shift($keys);
+        if (is_object($arr) && !$arr instanceof ArrayAccess) {
+            return $def;
+        } else if (!isset($arr[$key])) {
+            return $def;
+        } else {
+            $arr = $arr[$key];
+        }
+    }
+
+    if (isset($arr)) {
+        return $arr;
     }
     return $def;
 }
@@ -113,13 +142,42 @@ function ifset(&$var, $def=null)
  * Return value of $var or $def when $var is empty.
  * Use of this function does not produce a notice for undefined vars and array indexes,
  * but has a side-effect of creating var or index with NULL value.
+ *
+ * To avoid side-effect if creating keys in array, use alternative syntax:
+ *   ifempty($arr, $key1, $key2, ..., $def)
+ * is the same as
+ *   ifempty($arr[$key1][$key2]..., $def)
+ * but does not create a NULL value in array.
+ * Also, it will not trigger warnings if $arr is an ArrayAccess object.
+ *
+ * Note that alternative syntax makes the $def parameter required.
  */
 function ifempty(&$var, $def=null)
 {
-    if (empty($var)) {
-        return $def;
+    if (func_num_args() > 2) {
+        $keys = func_get_args();
+        $def = array_pop($keys);
+        $arr = array_shift($keys);
+    } else {
+        $keys = array();
+        $arr = $var;
     }
-    return $var;
+
+    while($keys) {
+        $key = array_shift($keys);
+        if (is_object($arr) && !$arr instanceof ArrayAccess) {
+            return $def;
+        } else if (empty($arr[$key])) {
+            return $def;
+        } else {
+            $arr = $arr[$key];
+        }
+    }
+
+    if (!empty($arr)) {
+        return $arr;
+    }
+    return $def;
 }
 
 /**
