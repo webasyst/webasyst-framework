@@ -211,6 +211,6 @@ class liqpayPayment extends waPayment
 
     private function getEndpointUrl()
     {
-        return 'https://www.liqpay.com/api/3/checkout';
+        return 'https://www.liqpay.ua/api/3/checkout';
     }
 }
