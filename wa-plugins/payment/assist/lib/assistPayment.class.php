@@ -15,7 +15,7 @@ class assistPayment extends waPayment
     private $url = array(
         'old'  => 'https://secure.assist.ru/shops/cardpayment.cfm',
         'new'  => 'https://payments%s.paysecure.ru/pay/order.cfm',
-        'test' => 'https://test.paysecure.ru/pay/order.cfm',
+        'test' => 'https://payments.demo.paysecure.ru/pay/order.cfm',
         'belarus_test'   => 'https://test.paysec.by/pay/order.cfm',
         'belarus'   => 'https://payments%s.paysec.by/pay/order.cfm',
     );
