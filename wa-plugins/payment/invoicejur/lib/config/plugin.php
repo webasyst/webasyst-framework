@@ -4,7 +4,7 @@ return array(
     'description' => 'Оплата безналичным расчетом для юридических лиц (РФ)',
     'icon'        => 'img/invoicejur16.png',
     'logo'        => 'img/invoicejur.png',
-    'version'     => '1.0.3',
+    'version'     => '1.0.4',
     'vendor'      => 'webasyst',
     'locale'      => array('ru_RU',),
     'type'        => waPayment::TYPE_MANUAL,
