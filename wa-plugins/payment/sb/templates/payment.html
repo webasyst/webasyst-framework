@@ -1,0 +1,17 @@
+<form id="payment-form" action="{$form_url}" method="get" target="_top">
+    {if $auto_submit}
+        <i class="icon16 loading"></i>
+        <em>Перенаправление на сайт «Сбербанка» для оплаты...</em>
+        <br /><br />
+        <script type="text/javascript">
+            setTimeout(function () {
+                document.getElementById('payment-form').submit();
+            }, 5000);
+        </script>
+    {/if}
+
+    {foreach $url_params_array as $name => $value}
+        <input type="hidden" name="{$name}" value="{$value}">
+    {/foreach}
+    <input type="submit" value="Оплатить заказ на сайте «Сбербанка»" />
+</form>
