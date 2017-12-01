@@ -6,6 +6,9 @@
  * @name WebMoney
  * @description Плагин оплаты через WebMoney.
  *
+ * @link https://paymaster.ru/Partners/ru/docs/protocol
+ * @link https://paymaster.ru/partners/ru/docs/online-accounting
+ *
  * Поля, доступные в виде параметров настроек плагина, указаны в файле lib/config/settings.php.
  * @property-read string $LMI_MERCHANT_ID
  * @property-read string $LMI_PAYEE_PURSE
@@ -14,6 +17,9 @@
  * @property-read string $TESTMODE
  * @property-read string $protocol
  * @property-read string $hash_method
+ *
+ * @property-read bool $receipt
+ * @property-read string $taxes
  */
 class webmoneyPayment extends waPayment implements waIPayment
 {
@@ -116,15 +122,16 @@ class webmoneyPayment extends waPayment implements waIPayment
             $hidden_fields['LMI_PAYER_EMAIL'] = $order_data['customer_info']['email'];
         }
 
-        $transaction_data = $this->formalizeData($hidden_fields);
-
         // добавляем служебные URL:
 
         // URL возврата покупателя после успешного завершения оплаты
-        $hidden_fields['LMI_SUCCESS_URL'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
+        $hidden_fields['LMI_SUCCESS_URL'] = $hidden_fields['LMI_RESULT_URL'].'?result=success';
 
         // URL возврата покупателя после неудачной оплаты
-        $hidden_fields['LMI_FAILURE_URL'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
+        $hidden_fields['LMI_FAILURE_URL'] = $hidden_fields['LMI_RESULT_URL'].'?result=fail';
+        if ($this->receipt) {
+            $hidden_fields += $this->getReceiptData($order);
+        }
 
         switch ($this->protocol) {
             case self::PROTOCOL_PAYMASTER:
@@ -169,7 +176,6 @@ class webmoneyPayment extends waPayment implements waIPayment
             $this->app_id = $request['wa_app'];
             $this->merchant_id = $request['wa_merchant_contact_id'];
         } else {
-            self::log($this->id, array('error' => 'empty required field(s)'));
             throw new waPaymentException('Empty required field(s)');
         }
         return parent::callbackInit($request);
@@ -201,11 +207,18 @@ class webmoneyPayment extends waPayment implements waIPayment
         // приводим данные о транзакции к универсальному виду
         $transaction_data = $this->formalizeData($request);
 
+        if (!empty($request['result'])) {
+            $url = $request['result'] == 'success' ? waAppPayment::URL_SUCCESS : waAppPayment::URL_FAIL;
+            return array(
+                'redirect' => $this->getAdapter()->getBackUrl($url, $transaction_data),
+            );
+        }
+
         // проверяем поддержку типа указанный транзакции данным плагином
         if (!in_array($transaction_data['type'], $this->supportedOperations())) {
-            self::log($this->id, array('error' => 'unsupported payment operation'));
             throw new waPaymentException('Unsupported payment operation');
         }
+
         if (!$this->LMI_MERCHANT_ID) {
             throw new waPaymentException('Empty merchant data');
         }
@@ -219,11 +232,7 @@ class webmoneyPayment extends waPayment implements waIPayment
 
             case self::OPERATION_AUTH_CAPTURE:
             default:
-                if (!$this->verifySign($request)) {
-                    self::log($this->id, array('error' => 'invalid hash'));
-                    throw new waPaymentException('Invalid hash', 403);
-                }
-                //TODO log payer WM ID
+                $this->verifySign($request);
                 $app_payment_method = self::CALLBACK_PAYMENT;
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 break;
@@ -239,16 +248,13 @@ class webmoneyPayment extends waPayment implements waIPayment
 
         // в зависимости от успешности или неудачи обработки транзакции приложением отображаем сообщение либо отправляем соответствующий HTTP-заголовок
         // информацию о результате обработки дополнительно пишем в лог плагина
-        if (!empty($result['result'])) {
-            self::log($this->id, array('result' => 'success'));
-            $message = 'YES';
-        } else {
+        if (empty($result['result'])) {
             $message = !empty($result['error']) ? $result['error'] : 'wa transaction error';
-            self::log($this->id, array('error' => $message));
-            header("HTTP/1.0 403 Forbidden");
+            throw new waPaymentException($message, ifempty($result['code'], 403));
         }
-        echo $message;
-        exit;
+        return array(
+            'message' => 'YES',
+        );
     }
 
     /**
@@ -333,11 +339,11 @@ class webmoneyPayment extends waPayment implements waIPayment
                 $hash_string .= $this->secret_key;
                 if ($this->hash_method == 'md5') {
                     $transaction_hash = base64_encode(md5($hash_string, true));
-                } else if ($this->hash_method == 'sha') {
+                } elseif ($this->hash_method == 'sha') {
                     $transaction_hash = base64_encode(sha1($hash_string, true));
                 } else {
                     if (function_exists('hash') && function_exists('hash_algos') && in_array('sha256', hash_algos())) {
-                        $transaction_hash = base64_encode(hash('sha256', $hash_string, true)); 
+                        $transaction_hash = base64_encode(hash('sha256', $hash_string, true));
                     } else {
                         throw new waException('sha256 not supported');
                     }
@@ -402,6 +408,10 @@ class webmoneyPayment extends waPayment implements waIPayment
 
         if (!empty($data['LMI_PREREQUEST']) || ($transaction_sign == $transaction_hash)) {
             $result = true;
+        }
+        if (!$result) {
+            self::log($this->id, compact('transaction_hash', 'transaction_sign'));
+            throw new waPaymentException('Invalid hash', 403);
         }
         return $result;
     }
@@ -471,8 +481,18 @@ class webmoneyPayment extends waPayment implements waIPayment
             }
         }
 
+        $view_data = array();
+
+        if (!empty($request['LMI_PAYER_IDENTIFIER'])) {
+            $view_data[] = htmlentities($request['LMI_PAYER_IDENTIFIER'], ENT_NOQUOTES, 'utf-8');
+        }
+
         if ((int)ifset($request['LMI_MODE'])) {
-            $transaction_data['view_data'] = ' ТЕСТОВЫЙ ЗАПРОС';
+            $view_data[] = 'ТЕСТОВЫЙ ЗАПРОС';
+        }
+
+        if ($view_data) {
+            $transaction_data['view_data'] = implode('; ', $view_data);
         }
 
         return $transaction_data;
@@ -492,7 +512,100 @@ class webmoneyPayment extends waPayment implements waIPayment
         );
     }
 
-    public static function _getProtocols()
+    private function getReceiptData(waOrder $order)
+    {
+        $fields = array();
+        foreach ($order->items as $item) {
+            $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
+            $fields += $this->formatItem($item);
+        }
+
+        if ($order->shipping > 0) {
+            $item = array(
+                'name'     => $order->shipping_name,
+                'quantity' => 1,
+                'amount'   => $order->shipping,
+                'tax_rate' => $order->shipping_tax_rate,
+            );
+            if ($order->shipping_tax_included !== null) {
+                $item['tax_included'] = $order->shipping_tax_included;
+            }
+
+            $fields += $this->formatItem($item);
+        }
+        return $fields;
+    }
+
+    private function formatItem($item)
+    {
+        static $key;
+        $namespace = sprintf('LMI_SHOPPINGCART.ITEM[%d].', $key);
+        $fields = array(
+            "{$namespace}NAME"  => $item['name'],
+            "{$namespace}QTY"   => $item['quantity'],
+            "{$namespace}PRICE" => number_format($item['amount'], 2, '.', ''),
+            "{$namespace}TAX"   => $this->getTaxId($item),
+        );
+        ++$key;
+        return $fields;
+    }
+
+
+    private function getTaxId($item)
+    {
+        $id = 'no_vat';
+        switch ($this->taxes) {
+            case 'no':
+                $id = 'no_vat';
+                break;
+            case 'map':
+                $rate = ifset($item['tax_rate']);
+                if (in_array($rate, array(null, false, ''), true)) {
+                    $rate = -1;
+                }
+
+                $tax_included = (!isset($item['tax_included']) || !empty($item['tax_included']));
+
+                if (!$tax_included && $rate > 0) {
+                    throw new waPaymentException('Фискализация товаров с налогом не включенном в стоимость не поддерживается. Обратитесь к администратору магазина');
+                }
+
+                switch ($rate) {
+                    case 18: # НДС чека по ставке 18%;
+                        $id = $tax_included ? 'vat18' : 'vat118';
+                        break;
+                    case 10: # НДС чека по ставке 10%;
+                        $id = $tax_included ? 'vat10' : 'var110';
+                        break;
+                    case 0: # НДС по ставке 0%;
+                        $id = 'vat0';
+                        break;
+                    default: # без НДС;
+                        $id = 'no_vat';
+                        break;
+                }
+                break;
+        }
+        return $id;
+    }
+
+    public function taxesOptions()
+    {
+        $disabled = !$this->getAdapter()->getAppProperties('taxes');
+        return array(
+            array(
+                'value' => 'no',
+                'title' => 'НДС не облагается',
+            ),
+            array(
+                'value'    => 'map',
+                'title'    => 'Передавать ставки НДС по каждой позиции',
+                'disabled' => $disabled,
+            ),
+        );
+    }
+
+    public function settingsProtocolOptions()
     {
         $protocols = array();
         $protocols[] = array(
