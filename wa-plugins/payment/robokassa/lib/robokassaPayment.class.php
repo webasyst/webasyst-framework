@@ -13,7 +13,10 @@
  * @property-read string $merchant_currency
  * @property-read int $lifetime
  * @property-read boolean $commission
+ * @property-read boolean $receipt
+ * @property-read string $sno
  * @link http://docs.robokassa.ru/ru/
+ * @link http://docs.robokassa.ru/#6865
  *
  */
 class robokassaPayment extends waPayment implements waIPayment
@@ -25,12 +28,18 @@ class robokassaPayment extends waPayment implements waIPayment
 
     public function allowedCurrency()
     {
-        return $this->merchant_currency ? $this->merchant_currency : 'RUB';
+        $currency = $this->merchant_currency ? $this->merchant_currency : 'RUB';
+        $currency = preg_split('@\W@', $currency);
+        return array_intersect($currency, array('RUB', 'KZT', 'USD', 'EUR'));
     }
 
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order = waOrder::factory($order_data);
+        $allowed_currency = $this->allowedCurrency();
+        if (!in_array($order->currency, $allowed_currency)) {
+            throw new waException(sprintf('Unsupported currency %s', $order->currency));
+        }
         $description = preg_replace('/[^\.\?,\[]\(\):;"@\\%\s\w\d]+/', ' ', $order->description);
         $description = preg_replace('/[\s]{2,}/', ' ', $description);
 
@@ -40,12 +49,25 @@ class robokassaPayment extends waPayment implements waIPayment
         }
 
         $form_fields = array(
-            'MrchLogin' => $this->merchant_login,
-            'OutSum'    => number_format($sum, 2, '.', ''),
-            'InvId'     => $order->id,
+            'MrchLogin'      => $this->merchant_login,
+            'OutSum'         => number_format($sum, 2, '.', ''),
+            'InvId'          => $order->id,
+            'OutSumCurrency' => $order->currency,
+            'Receipt'        => $this->getReceiptData($order),
         );
 
+        if ($form_fields['OutSumCurrency'] === 'RUB') {
+            unset($form_fields['OutSumCurrency']);
+        }
+
+        if ($form_fields['Receipt'] === null) {
+            unset($form_fields['Receipt']);
+        }
+
         $form_fields['SignatureValue'] = $this->getPaymentHash($form_fields);
+        if ($this->receipt && ($email = $order->getContactField('email'))) {
+            $form_fields['Email'] = $email;
+        }
         $form_fields['IsTest'] = sprintf('%d', !!$this->testmode);
         $form_fields['Desc'] = mb_substr($description, 0, 100, "UTF-8");
         $form_fields['IncCurrLabel'] = $this->gateway_currency;
@@ -54,7 +76,6 @@ class robokassaPayment extends waPayment implements waIPayment
         if (!empty($this->lifetime)) {
             $form_fields['ExpirationDate'] = date('c', strtotime(sprintf('+%d hour', max(1, $this->lifetime))));
         }
-
 
         $form_fields['shp_wa_app_id'] = $this->app_id;
         $form_fields['shp_wa_merchant_id'] = $this->merchant_id;
@@ -182,7 +203,14 @@ class robokassaPayment extends waPayment implements waIPayment
         $transaction_data['order_id'] = $this->order_id;
         $transaction_data['amount'] = ifempty($transaction_raw_data['OutSum'], '');
 
-        $transaction_data['currency_id'] = $this->merchant_currency;
+        $currency = $this->allowedCurrency();
+        if (in_array('RUB', $currency)) {
+            $currency_id = 'RUB';
+        } else {
+            $currency_id = reset($currency);
+        }
+
+        $transaction_data['currency_id'] = $currency_id;
         return $transaction_data;
     }
 
@@ -378,7 +406,24 @@ HTML;
             }
             $hash_string .= sprintf(':shp_wa_testmode=%d', $this->testmode);
 
-            $sign = strtolower(md5($hash_string));
+            switch ($this->hash) {
+                case 'sha256':
+                    if (function_exists('hash') && function_exists('hash_algos') && in_array('sha256', hash_algos())) {
+                        $sign = hash($this->hash, $hash_string);
+                    } else {
+                        throw new waException('sha256 not supported');
+                    }
+                    break;
+                case 'sha1':
+                    $sign = sha1($hash_string);
+                    break;
+                case 'md5':
+                default:
+                    $sign = md5($hash_string);
+                    break;
+            }
+
+            $sign = strtolower($sign);
             $server_sign = strtolower(ifempty($request['SignatureValue'], ''));
             if (empty($server_sign) || ($server_sign != $sign)) {
                 throw new waPaymentException('Invalid sign');
@@ -386,5 +431,96 @@ HTML;
         } else {
             throw new waPaymentException('Empty payment password');
         }
+    }
+
+    /**
+     * @param waOrder $order
+     * @return string|null
+     * @link http://docs.robokassa.ru/#6865
+     */
+    private function getReceiptData(waOrder $order)
+    {
+        $receipt = null;
+        if ($this->receipt) {
+            $receipt = array(
+                'items' => array(),
+            );
+            if ($this->sno) {
+                $receipt['sno'] = $this->sno;
+            }
+
+            foreach ($order->items as $item) {
+                $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
+                $receipt['items'][] = $this->formatReceiptItem($item);
+            }
+
+            #shipping
+            if (strlen($order->shipping_name) || $order->shipping) {
+                $item = array(
+                    'name'     => $order->shipping_name,
+                    'quantity' => 1,
+                    'amount'   => $order->shipping,
+                    'tax_rate' => $order->shipping_tax_rate,
+                );
+                if ($order->shipping_tax_included !== null) {
+                    $item['tax_included'] = $order->shipping_tax_included;
+                }
+                $receipt['items'][] = $this->formatReceiptItem($item);
+            }
+
+            $receipt = json_encode($receipt);
+        }
+        return $receipt;
+    }
+
+    private function formatReceiptItem($item)
+    {
+        return array(
+            'name'     => mb_substr($item['name'], 0, 128),
+            'sum'      => number_format($item['amount'], 2, '.', ''),
+            'quantity' => $item['quantity'],
+            'tax'      => $this->getTaxId($item),
+        );
+    }
+
+    private function getTaxId($item)
+    {
+        if (!isset($item['tax_rate'])) {
+            $tax = 'none'; //без НДС;
+        } else {
+            $tax_included = (!isset($item['tax_included']) || !empty($item['tax_included']));
+            $rate = ifset($item['tax_rate']);
+            if (in_array($rate, array(null, false, ''), true)) {
+                $rate = -1;
+            }
+
+            if (!$tax_included && $rate > 0) {
+                throw new waPaymentException('Фискализация товаров с налогом не включенном в стоимость не поддерживается. Обратитесь к администратору магазина');
+            }
+
+            switch ($rate) {
+                case 0:
+                    $tax = 'vat0';//НДС по ставке 0%;
+                    break;
+                case 10:
+                    if ($tax_included) {
+                        $tax = 'vat10';//НДС чека по ставке 10%;
+                    } else {
+                        $tax = 'vat110';// НДС чека по расчетной ставке 10/110;
+                    }
+                    break;
+                case 18:
+                    if ($tax_included) {
+                        $tax = 'vat18';//НДС чека по ставке 18%;
+                    } else {
+                        $tax = 'vat118';// НДС чека по расчетной ставке 18/118.
+                    }
+                    break;
+                default:
+                    $tax = 'none';//без НДС;
+                    break;
+            }
+        }
+        return $tax;
     }
 }
