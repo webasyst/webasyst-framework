@@ -33,17 +33,16 @@ return array(
     'testmode' => array(
         'value'        => '',
         'title'        => 'Тестовый режим',
-        'description'  => /*_wp*/('Только для тестирования через платежный шлюз https://rest-api-test.tinkoff.ru/rest/ (при использовании <strong>старой</strong> схемы подключения).<br>
-            При использовании <strong>новой</strong> схемы подключения для тестирования платежей используйте отдельную пару логин/пароль.'),
+        'description'  => /*_wp*/('Только для тестирования по старой схеме через платежный шлюз <em>https://rest-api-test.tinkoff.ru/rest/</em>'),
         'control_type' => waHtmlControl::CHECKBOX,
     ),
     'atolonline_on' => array(
         'value'        => '',
-        'title'        => /*_wp*/('Интеграция с Атол-Онлайн'),
+        'title'        => /*_wp*/('Интеграция с «АТОЛ Онлайн»'),
         'control_type' => waHtmlControl::CHECKBOX,
     ),
     'atolonline_sno' => array(
-        'title' => /*_wp*/('СНО'),
+        'title' => /*_wp*/('Система налогообложения'),
         'control_type' => waHtmlControl::CUSTOM .' '.'tinkoffPayment::getAtolonlineSnoBlockHtml'
     ),
 );

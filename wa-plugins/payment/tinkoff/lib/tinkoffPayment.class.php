@@ -80,6 +80,10 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
         $c = new waContact($order_data['customer_contact_id']);
 
+        if (!($email = $c->get('email', 'default'))) {
+            $email = $this->getDefaultEmail();
+        }
+
         $args = array(
             'TerminalKey' => $this->terminal_key,
             'Amount'      => round($order_data['amount'] * 100),
@@ -87,7 +91,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'CustomerKey' => $c->getId(),
             'Description' => $order_data['summary'],
-            'DATA'        => array('Email' => $c->get('email', 'default')),
+            'DATA'        => array('Email' => $email),
         );
         if ($phone = $c->get('phone', 'default')) {
             $args['DATA']['Phone'] = $phone;
@@ -230,7 +234,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         //$proxy = 'http://192.168.5.22:8080';
         //$proxyAuth = '';
         if (is_array($args)) {
-            $args = json_encode($args, JSON_UNESCAPED_UNICODE);
+            $args = json_encode($args);
         }
         //Debug::trace($args);
         if ($curl = curl_init()) {
@@ -704,22 +708,20 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     private function getReceiptData(waOrder $order)
     {
         if (!$this->receipt) {
-            $contact = $order->getContactField('email');
-            if (empty($contact)) {
-                if ($contact = $order->getContactField('phone')) {
-                    $contact = sprintf('+%s', preg_replace('@^8@', '7', $contact));
-                }
-            }
-            if (!$contact) {
-                $mail = new waMail();
-                $contact = $mail->getDefaultFrom();
-                $contact = key($contact);
+            //if (!($email = $order->getContactField('email')) && ($phone = $order->getContactField('phone'))) {
+            //    $email = sprintf('+%s', preg_replace('@^8@', '7', $phone));
+            //}
+            if (!($email = $order->getContactField('email'))) {
+                $email = $this->getDefaultEmail();
             }
             $this->receipt = array(
                 'Items'    => array(),
-                'Email'    => $contact,
                 'Taxation' => $this->getSettings('atolonline_sno'),
+                'Email'    => $email,
             );
+            if ($phone = $order->getContactField('phone')) {
+                $this->receipt['Phone'] = sprintf('+%s', preg_replace('/^8/', '7', $phone));
+            }
             foreach ($order->items as $item) {
                 $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
                 $this->receipt['Items'][] = array(
@@ -781,5 +783,12 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             }
         }
         return $request;
+    }
+
+    protected function getDefaultEmail()
+    {
+        $mail = new waMail();
+        $from = $mail->getDefaultFrom();
+        return key($from);
     }
 }
