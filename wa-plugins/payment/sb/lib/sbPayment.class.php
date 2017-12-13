@@ -17,16 +17,6 @@
 class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 {
     /**
-     * Connection coordinates
-     * @see https://goo.gl/yBzLJy
-     */
-    const URL_ORDER_REGISTER = 'https://3dsec.sberbank.ru/payment/rest/register.do';
-    const URL_ORDER_STATUS = 'https://3dsec.sberbank.ru/payment/rest/getOrderStatusExtended.do';
-    const URL_ORDER_PRE_REGISTER = 'https://3dsec.sberbank.ru/payment/rest/registerPreAuth.do';
-    const URL_PAYMENT_COMPLETE = 'https://3dsec.sberbank.ru/payment/rest/deposit.do';
-    const URL_PAYMENT_CANCEL = 'https://3dsec.sberbank.ru/payment/rest/reverse.do';
-
-    /**
      * The parent transaction in the order
      * @array
      */
@@ -234,7 +224,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'language' => substr(wa()->getLocale(), 0, 2),
         );
 
-        $response = $net->query(sbPayment::URL_PAYMENT_CANCEL, $request_cancel, waNet::METHOD_POST);
+        $response = $net->query($this->getURL('URL_PAYMENT_CANCEL'), $request_cancel, waNet::METHOD_POST);
 
         if ($response['errorCode'] != '0') {
             self::log($this->id, $response['errorCode'].': '.$response['errorMessage']);
@@ -284,7 +274,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'amount'   => round($data['transaction']['amount'] * 100), //convert to cent
         );
 
-        $response = $net->query(sbPayment::URL_PAYMENT_COMPLETE, $request_completion, waNet::METHOD_POST);
+        $response = $net->query($this->getURL('URL_PAYMENT_COMPLETE'), $request_completion, waNet::METHOD_POST);
 
         if ($response['errorCode']) {
             self::log($this->id, $response['errorCode'].': '.$response['errorMessage']);
@@ -347,7 +337,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
      */
     protected function registerOrder($order_data)
     {
-        $url = sbPayment::URL_ORDER_REGISTER;
+        $url = $this->getURL('URL_ORDER_REGISTER');
 
         $net = new waNet(array(
             'request_format' => 'default',
@@ -376,7 +366,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         );
 
         if ($this->two_step) {
-            $url = sbPayment::URL_ORDER_PRE_REGISTER;
+            $url = $this->getURL('URL_ORDER_PRE_REGISTER');
 
         }
         if ($this->fiscalization) {
@@ -580,7 +570,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             );
 
             try {
-                $response = $net->query(sbPayment::URL_ORDER_STATUS, $status_fields, waNet::METHOD_POST);
+                $response = $net->query($this->getURL('URL_ORDER_STATUS'), $status_fields, waNet::METHOD_POST);
             } catch (Exception $e) {
                 $message = sprintf('%s: %s', $e->getMessage(), var_export(array(
                     'response' => $net->getResponse(true),
@@ -768,5 +758,31 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         );
 
         return $transaction_data;
+    }
+
+    /**
+     * Connection coordinates
+     * @see https://goo.gl/yBzLJy
+     * @param $url
+     * @return string
+     */
+    protected function getURL($url)
+    {
+        $domain = 'https://securepayments.sberbank.ru';
+        
+        $urls = array(
+            'URL_ORDER_REGISTER'     => '/payment/rest/register.do',
+            'URL_ORDER_STATUS'       => '/payment/rest/getOrderStatusExtended.do',
+            'URL_ORDER_PRE_REGISTER' => '/payment/rest/registerPreAuth.do',
+            'URL_PAYMENT_COMPLETE'   => '/payment/rest/deposit.do',
+            'URL_PAYMENT_CANCEL'     => '/payment/rest/reverse.do',
+        );
+
+        // If the test mode is enabled, replace the URL
+        if ($this->TESTMODE) {
+            $domain = 'https://3dsec.sberbank.ru';
+        }
+
+        return $domain.$urls[$url];
     }
 }
