@@ -725,7 +725,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             foreach ($order->items as $item) {
                 $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
                 $this->receipt['Items'][] = array(
-                    'Name'     => mb_substr($item['name'], 0, 128),
+                    'Name'     => mb_substr($item['name'], 0, 64),
                     'Price'    => round($item['price'] * 100),
                     'Quantity' => floatval($item['quantity']),
                     'Amount'   => round($item['price'] * $item['quantity'] * 100),
