@@ -522,7 +522,7 @@ class webmoneyPayment extends waPayment implements waIPayment
 
         if ($order->shipping > 0) {
             $item = array(
-                'name'     => $order->shipping_name,
+                'name'     => mb_substr($order->shipping_name,0, 64),
                 'quantity' => 1,
                 'amount'   => $order->shipping,
                 'tax_rate' => $order->shipping_tax_rate,
@@ -541,7 +541,7 @@ class webmoneyPayment extends waPayment implements waIPayment
         static $key;
         $namespace = sprintf('LMI_SHOPPINGCART.ITEM[%d].', $key);
         $fields = array(
-            "{$namespace}NAME"  => $item['name'],
+            "{$namespace}NAME"  => mb_substr($item['name'],0, 64),
             "{$namespace}QTY"   => $item['quantity'],
             "{$namespace}PRICE" => number_format($item['amount'], 2, '.', ''),
             "{$namespace}TAX"   => $this->getTaxId($item),
