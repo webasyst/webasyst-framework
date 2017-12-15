@@ -457,7 +457,7 @@ HTML;
             #shipping
             if (strlen($order->shipping_name) || $order->shipping) {
                 $item = array(
-                    'name'     => $order->shipping_name,
+                    'name'     => mb_substr($order->shipping_name,0 ,64),
                     'quantity' => 1,
                     'amount'   => $order->shipping,
                     'tax_rate' => $order->shipping_tax_rate,
@@ -476,7 +476,7 @@ HTML;
     private function formatReceiptItem($item)
     {
         return array(
-            'name'     => mb_substr($item['name'], 0, 128),
+            'name'     => mb_substr($item['name'], 0, 64),
             'sum'      => number_format($item['amount'], 2, '.', ''),
             'quantity' => $item['quantity'],
             'tax'      => $this->getTaxId($item),
