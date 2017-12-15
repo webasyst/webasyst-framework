@@ -531,7 +531,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $tax_sum = $this->getTaxSum($data['price'], $data['tax_rate']);
         $item_data = array(
             'positionId'   => $number,
-            'name'         => $data['name'],
+            'name'         => mb_substr($data['name'], 0, 100),
             'quantity'     => array(
                 'value'   => $data['quantity'],
                 'measure' => 'шт.',
