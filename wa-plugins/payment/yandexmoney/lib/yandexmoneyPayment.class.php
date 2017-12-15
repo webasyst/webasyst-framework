@@ -218,7 +218,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 if (($order->shipping) || strlen($order->shipping_name)) {
                     $item = array(
                         'quantity'     => 1,
-                        'name'         => $order->shipping_name,
+                        'name'         => mb_substr($order->shipping_name, 0, 128),
                         'amount'       => round($order->shipping, 2),
                         'tax_rate'     => $order->shipping_tax_rate,
                         'tax_included' => ($order->shipping_tax_included !== null) ? $order->shipping_tax_included : true,
