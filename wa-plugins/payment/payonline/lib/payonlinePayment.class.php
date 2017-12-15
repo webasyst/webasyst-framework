@@ -488,7 +488,7 @@ class payonlinePayment extends waPayment implements waIPayment
             #shipping
             if ($order->shipping || strlen($order->shipping_name)) {
                 $item = array(
-                    'name'     => $order->shipping_name,
+                    'name'     => mb_substr($order->shipping_name, 0, 128),
                     'quantity' => 1,
                     'price'    => $order->shipping,
                     'tax_rate' => $order->shipping_tax_rate,
@@ -496,6 +496,7 @@ class payonlinePayment extends waPayment implements waIPayment
                 $data['goods'][] = $this->formatFiscalItem($item);
             }
         }
+
         return $data;
     }
 
