@@ -149,36 +149,36 @@ class waContactRegionField extends waContactField
         $empty_option = '<'._ws('select region').'>';
         $js = <<<EOJS
 <script>if($){ $(function() {
-    // List of countries we have regions for
+    /* List of countries we have regions for*/
     var region_countries = {$region_countries};
 
-    // Country selector regions depend on
+    /* Country selector regions depend on*/
     var country_select = $('[name="{$name_country}"]');
     if (country_select.length <= 0) {
         return;
     }
 
-    // <select> and <input> fields that are parts of this region controller
+    /* <select> and <input> fields that are parts of this region controller*/
     var select = $('#{$select_id}');
     var input = $('#{$input_id}');
     if (input.length <= 0 || select.length <= 0) {
         return;
     }
 
-    // URL to fetch list of regions from
+    /* URL to fetch list of regions from*/
     var xhr_url = "{$xhr_url}";
 
-    // Helper to hide <select> and show <input>
+    /* Helper to hide <select> and show <input>*/
     var showInput = function(val) {
         if (!input[0].hasAttribute('name')) {
-            input.attr('name', select.attr('name'))
+            input.attr('name', select.attr('name')); /* Bag or Ficha? ) */
             select[0].removeAttribute('name');
         }
         input.show().val(val || '');
         select.hide();
     };
 
-    // Helper to hide <input> and show <select>
+    /* Helper to hide <input> and show <select>*/
     var showSelect = function() {
         if (input[0].hasAttribute('name')) {
             select.attr('name', input.attr('name'));
@@ -188,7 +188,7 @@ class waContactRegionField extends waContactField
         input.hide();
     };
 
-    // Returns currently selected value of <select> or value of <input>
+    /* Returns currently selected value of <select> or value of <input>*/
     var getVal = function() {
         if (input.is(':visible')) {
             return input.val();
@@ -197,14 +197,14 @@ class waContactRegionField extends waContactField
         }
     };
 
-    // When user changes country, update region selector.
+    /* When user changes country, update region selector.*/
     var change_handler;
     country_select.change(change_handler = function() {
         var old_val = getVal(); // previous user-selected option in <select> or value of <input>
         var country = country_select.val();
         input.prev('.loading').remove();
 
-        // When <select> already has regions for this country loaded, just show it without XHR.
+        /* When <select> already has regions for this country loaded, just show it without XHR.*/
         var previously_selected = select.data('country');
         if (previously_selected && country == previously_selected) {
             showSelect();
@@ -212,7 +212,7 @@ class waContactRegionField extends waContactField
         }
 
         if (region_countries && region_countries[country]) {
-            // Selected country has regions. Load them into <select> via XHR.
+            /* Selected country has regions. Load them into <select> via XHR.*/
             showInput('');
             input.before('<i class="icon16 loading"></i>');
             $.ajax(xhr_url, {
@@ -242,7 +242,7 @@ class waContactRegionField extends waContactField
                 }
             });
         } else {
-            // Selected country has no regions. Show <input>.
+            /* Selected country has no regions. Show <input>.*/
             if (!input.is(':visible')) {
                 showInput('');
             }
