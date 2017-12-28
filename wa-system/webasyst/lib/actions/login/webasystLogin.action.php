@@ -16,7 +16,7 @@ class webasystLoginAction extends waLoginAction
             } else {
                 $this->template = 'Login.html';
             }
-            $template_file = wa()->getDataPath('templates/'.$this->template, false, 'webasyst');
+            $template_file = wa()->getConfig()->getConfigPath('templates/'.$this->template, true, 'webasyst');
             if (file_exists($template_file)) {
                 $this->template = 'file:'.$template_file;
             } else {
