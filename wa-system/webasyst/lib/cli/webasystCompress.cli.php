@@ -420,7 +420,7 @@ HELP;
         );
         foreach ($this->files as $file) {
             if (in_array(pathinfo($file, PATHINFO_EXTENSION), $ext)) {
-                if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendors?/@', $file)) {
+                if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendor(?:s)?/@', $file)) {
                     continue;
                 }
                 if (preg_match('@(js|css)/compiled/.+\.(js|css)$@', $file)) {
@@ -827,7 +827,7 @@ HELP;
                 foreach ($this->files as $file) {
                     if (pathinfo($file, PATHINFO_EXTENSION) == 'php') {
                         $strict = true;
-                        if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendors?/@', $file)) {
+                        if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendor(?:s)?/@', $file)) {
                             $strict = false;
                         }
                         $command = sprintf('%s -l -f "%s/%s"', $php_bin, $this->path, $file);
