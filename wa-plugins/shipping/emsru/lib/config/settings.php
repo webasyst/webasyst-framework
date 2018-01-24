@@ -28,6 +28,21 @@ return array(
         'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки за каждый полный или неполный килограмм массы.',
         'control_type' => waHtmlControl::INPUT,
     ),
+    'delivery_date_min' => array(
+        'value'        => 3,
+        'title'        => 'Приблизительный минимальный срок доставки',
+        'description'  => 'Укажите количество дней',
+        'control_type' => waHtmlControl::INPUT,
+        'placeholder'  => 3,
+    ),
+
+    'delivery_date_max' => array(
+        'value'        => 7,
+        'title'        => 'Приблизительный максимальный срок доставки',
+        'description'  => 'Укажите количество дней<br/><br/><br/><br/>',
+        'control_type' => waHtmlControl::INPUT,
+        'placeholder'  => 7,
+    ),
     'fixed_surcharge' => array(
         'value'        => 1,
         'title'        => 'Надбавка фиксированная (руб.)',
