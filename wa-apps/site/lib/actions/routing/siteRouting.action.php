@@ -18,7 +18,7 @@ class siteRoutingAction extends waViewAction
         $this->view->assign(array(
             'routes' => $routes,
             'apps' => $apps,
-            'url' => $this->getDomainUrl($domain),
+            'url' => waIdna::dec($this->getDomainUrl($domain)),
             'domain_id' => siteHelper::getDomainId()
         ));
     }

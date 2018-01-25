@@ -34,17 +34,21 @@ class siteFrontendAction extends waPageAction
             if ($this->params instanceof Exception) {
                 $e = $this->params;
                 $code = $e->getCode();
-                $this->getResponse()->setStatus($code ? $code : 500);
                 $this->view->assign('error_message', $e->getMessage());
             } else {
                 $code = 404;
+            }
+
+            if ($code < 600 && $code >= 400) {
                 $this->getResponse()->setStatus($code);
+                if ($code == 404) {
+                    $this->getResponse()->setTitle('404. '._ws("Page not found"));
+                    $this->view->assign('error_message', _ws("Page not found"));
+                }
+            } else {
+                $this->getResponse()->setStatus(500);
             }
-            // 404 error
-            if ($code == 404) {
-                $this->getResponse()->setTitle('404. '._ws("Page not found"));
-                $this->view->assign('error_message', _ws("Page not found"));
-            }
+
             $this->view->assign('error_code', $code);
             $this->setThemeTemplate('error.html');
             $this->view->assign('page', array());

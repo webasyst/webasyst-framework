@@ -26,7 +26,7 @@
                     <input id="s-auth-app-{$app.id}" type="radio" name="app_id" value="{$app.id}" {if $app.id == $auth_config['app']}checked="checked"{/if}>
                     <label for="s-auth-app-{$app.id}">
                         <img class="s-app16x16icon-menu-v" src="{$wa_url}{$app.icon.16}"></i> {$app.name|escape}
-                        <span class="hint">{$app.login_url}</span>
+                        <span class="hint">{waIdna::dec($app.login_url)}</span>
                     </label>
                 </li>
                 {/foreach}

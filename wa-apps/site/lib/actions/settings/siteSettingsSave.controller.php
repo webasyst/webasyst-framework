@@ -14,6 +14,8 @@ class siteSettingsSaveController extends waJsonController
         $is_alias = wa()->getRouting()->isAlias($domain);
 
         $url = siteHelper::validateDomainUrl(waRequest::post('url', '', 'string'));
+        $url = trim(waIdna::enc($url));
+
         if (!$url) {
             $this->errors = sprintf(_w("Incorrect domain URL: %s"), waRequest::post('url', '', 'string'));
             return;
@@ -32,10 +34,9 @@ class siteSettingsSaveController extends waJsonController
             }
             $event_params['renamed_from_domain'] = $domain;
             $domain_model->updateById(siteHelper::getDomainId(), array('name' => $url));
-            $routes[$url] = $routes[$domain];
-            unset($routes[$domain]);
 
             if (!$is_alias) {
+                $routes[$url] = $routes[$domain];
                 // move configs
                 $old = $this->getConfig()->getConfigPath('domains/' . $domain . '.php');
                 if (file_exists($old)) {
@@ -50,7 +51,11 @@ class siteSettingsSaveController extends waJsonController
                     } catch (waException $e) {
                     }
                 }
+            } else {
+                $routes[$url] = $is_alias; // $is_alias - this not boolean value, this alias domain name ¯\_(ツ)_/¯
             }
+
+            unset($routes[$domain]);
             $domain = $url;
             siteHelper::setDomain(siteHelper::getDomainId(), $domain);
         }
@@ -85,8 +90,6 @@ class siteSettingsSaveController extends waJsonController
                     $save_config = true;
                 }
             }
-
-            waUtils::varExportToFile($routes, $path);
 
             if (waRequest::post('wa_apps_type')) {
                 $apps = waRequest::post('apps');
@@ -125,6 +128,15 @@ class siteSettingsSaveController extends waJsonController
                 }
             }
 
+            $ssl_all = waRequest::post('ssl_all', null, waRequest::TYPE_STRING);
+
+            if (isset($ssl_all)) {
+                $domain_config['ssl_all'] = true;
+            } else {
+                $domain_config['ssl_all'] = false;
+            };
+
+
             if ($save_config && !waUtils::varExportToFile($domain_config, $domain_config_path)) {
                 $this->errors = sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
             } else {
@@ -136,6 +148,8 @@ class siteSettingsSaveController extends waJsonController
             $this->saveTouchicon();
             $this->saveRobots();
         }
+
+        waUtils::varExportToFile($routes, $path);
 
         $this->logAction('site_edit', $domain);
 

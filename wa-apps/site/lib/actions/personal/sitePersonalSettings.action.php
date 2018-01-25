@@ -132,7 +132,7 @@ class sitePersonalSettingsAction extends waViewAction
         }
         $enable_fields = array_merge_recursive($enable_fields, $available_fields);
 
-        $this->view->assign('domain', $domain);
+        $this->view->assign('domain', waIdna::dec($domain));
         $this->view->assign('enable_fields', $enable_fields);
         $this->view->assign('available_fields', $available_fields);
         $this->view->assign('fields', $fields);

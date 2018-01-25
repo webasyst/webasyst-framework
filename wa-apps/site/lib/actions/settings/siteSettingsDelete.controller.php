@@ -32,6 +32,7 @@ class siteSettingsDeleteController extends waJsonController
                 }
                 if (!$route) {
                     // delete site files (favicon, etc.)
+                    waFiles::delete(wa()->getDataPath('data/'.$domain['name'], true) , true);
                     waFiles::delete(wa()->getDataPath('data/'.$domain['name']), true);
                     // delete site from db
                     $domain_model->deleteById($domain_id);

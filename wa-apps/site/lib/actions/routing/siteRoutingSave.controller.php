@@ -24,6 +24,9 @@ class siteRoutingSaveController extends waJsonController
         // new route
         if (!strlen($route_id)) {
             $route = $this->getRoute();
+            if (!empty($route['url'])) {
+                $route['url'] = urldecode($route['url']);
+            }
             if (!empty($route['app'])) {
                 if (!$route['url']) {
                     $route['url'] = '*';
@@ -78,14 +81,14 @@ class siteRoutingSaveController extends waJsonController
                             <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">'.$domain.'/</span><span class="s-editable-url" style="color:#000">'.htmlspecialchars($route['url']).'</span>
                         </td>
                         <td class="s-app'.(!empty($route['private']) ? ' gray' : '').'">';
-                            $root_url = wa()->getRootUrl();
-                            if (!empty($route['app'])) {
-                                $app = wa()->getAppInfo($route['app']);
-                                $html .= '<img src="'.$root_url.$app['icon'][24].'" class="s-app24x24icon-menu-v" alt="">'.$app['name'];
-                            } else {
-                                $html .= '<img src="'.$root_url.'wa-apps/site/img/arrow.png" class="s-app24x24icon-menu-v" alt="">
+            $root_url = wa()->getRootUrl();
+            if (!empty($route['app'])) {
+                $app = wa()->getAppInfo($route['app']);
+                $html .= '<img src="'.$root_url.$app['icon'][24].'" class="s-app24x24icon-menu-v" alt="">'.$app['name'];
+            } else {
+                $html .= '<img src="'.$root_url.'wa-apps/site/img/arrow.png" class="s-app24x24icon-menu-v" alt="">
                                 <span class="redirect">'.htmlspecialchars($route['redirect']).'</span>';
-                            }
+            }
             $html .= '</td>
                         <td class="s-actions align-right">
                             <a href="#" class="s-route-action s-route-settings" title="'._w('Settings').'"><i class="icon16 settings"></i></a>
@@ -98,7 +101,9 @@ class siteRoutingSaveController extends waJsonController
             }
             $old = $routes[$domain][$route_id];
             $new = $this->getRoute($old);
-
+            if (!empty($new['url'])) {
+                $new['url'] = urldecode($new['url']);
+            }
             if (waRequest::post('correct_url') && strpos($new['url'], '*') === false) {
                 if (!$new['url']) {
                     $new['url'] = '*';
@@ -131,7 +136,8 @@ class siteRoutingSaveController extends waJsonController
                         $old_app = ifset($old_app['name']);
                         $new_app = $new['app'] ? wa()->getAppInfo($new['app']) : array();
                         $new_app = ifset($new_app['name']);
-                        $this->response['confirm'] = sprintf(_w('The URL %s is already used by %s app. If you proceed, this will replace %s app with %s app on this URL.'), $new['url'], $old_app, $old_app, $new_app);
+                        $this->response['confirm'] = sprintf(_w('The URL %s is already used by %s app. If you proceed, this will replace %s app with %s app on this URL.'),
+                            $new['url'], $old_app, $old_app, $new_app);
                         $this->response['replace'] = $r_id;
                         return;
                     }

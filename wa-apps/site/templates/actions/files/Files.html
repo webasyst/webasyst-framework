@@ -42,9 +42,10 @@
 						<li><a id="s-folder-rename" href="#"><i class="icon16 edit"></i>[`Rename`]</a></li>
 						<li><a id="s-folder-move" href="#"><i class="icon16 move"></i>[`Move to folder`]</a></li>
 						<li><a id="s-folder-delete" href="#"><i class="icon16 delete"></i>[`Delete`]</a></li>
-					</ul>				
+					</ul>
 				</li>
 			</ul>
+            <span class="hint">[`Files uploaded here are accessible to all website visitors without authorization. Do not upload private files.`]</span>
 		</div>
 		<table id="s-files-grid" class="zebra s-filelist">
 		<tr>
@@ -161,7 +162,7 @@
 </div>
 
 <script type="text/javascript">
-	$("#s-files-tree").append($.wa.site.getTreeHTML({json_encode($dirs)}, "s-folderlist"));
+	$("#s-files-tree").append($.wa.site.getTreeHTML({json_encode($dirs)}, "s-folderlist", '', {json_encode($sub_dirs_decoded)}));
 
     $('#s-input-file').fileupload({
         dataType: 'json',

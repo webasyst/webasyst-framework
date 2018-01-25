@@ -73,6 +73,12 @@ class siteRoutingEditAction extends waViewAction
         } else {
             $app = array();
         }
+
+        $idna = new waIdna();
+        $domain_decoded = $idna->decode(siteHelper::getDomain());
+
+        $this->view->assign('site_url', wa()->getAppUrl('site'));
+        $this->view->assign('domain_decoded', $domain_decoded);
         $this->view->assign('route_id', $route_id);
         $this->view->assign('route', $route);
         $this->view->assign('app_id', $app_id);

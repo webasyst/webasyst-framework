@@ -2,11 +2,14 @@
 
 class siteFilesAction extends waViewAction
 {
+    protected $sub_dirs_decoded = null;
+
     public function execute()
     {
         $path = wa()->getDataPath(null, true);
         $dirs = $this->getDirs($path);
         $this->view->assign('dirs', $dirs);
+        $this->view->assign('sub_dirs_decoded', $this->sub_dirs_decoded);
         $this->view->assign('domain', siteHelper::getDomain());
     }
 
@@ -30,6 +33,10 @@ class siteFilesAction extends waViewAction
                 }
 
                 if ($sub_dirs = $this->getDirs($path.'/'.$f)) {
+                    foreach ($sub_dirs as $s_dir) {
+                        if(is_string($s_dir) && (strpos($s_dir, 'xn--') === 0))
+                        $this->sub_dirs_decoded[$s_dir] = waIdna::dec($s_dir);
+                    }
                     $result[] = array(
                         'id' => $f_encoded,
                         'childs' => $sub_dirs

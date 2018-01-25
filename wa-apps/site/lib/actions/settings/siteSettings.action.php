@@ -88,6 +88,7 @@ class siteSettingsAction extends waViewAction
         $this->view->assign('google_analytics', $domain_config['google_analytics']);
         $this->getStaticFiles($domain);
         $this->view->assign('url', $this->getDomainUrl($domain));
+        $this->view->assign('ssl_all', ifset($domain_config['ssl_all']));
 
         /**
          * Backend settings page

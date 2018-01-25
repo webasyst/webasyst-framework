@@ -3,7 +3,7 @@
         {foreach $domains as $d_id => $d}
         <li{if $d_id == $domain_id} class="selected"{/if}>
             <a href="?domain_id={$d_id}">
-                <i class="icon16 favicon" style="background-image:url(http{if waRequest::isHttps()}s{/if}://{$d.name|escape}/favicon.ico)"></i>{str_replace('www.','',$d.title)|escape}
+                <i class="icon16 favicon" style="background-image:url(http{if waRequest::isHttps()}s{/if}://{$d.name|escape}/favicon.ico)"></i>{waIdna::dec(str_replace('www.','',$d.title))|escape}
             </a>
         </li>
         {/foreach}
@@ -62,7 +62,7 @@
 <div class="s-site-mgmt-tab">
 	<div class="block">
     	<h5 class="heading">
-			<div class="s-site-mgmt-current-url">{str_replace('www.','',$domains[$domain_id].title)|escape}</div>
+			<div class="s-site-mgmt-current-url">{waIdna::dec(str_replace('www.','',$domains[$domain_id].title)|escape)}</div>
         </h5>
     </div>
     <ul class="menu-v s-links with-icons">
