@@ -95,7 +95,9 @@ $.Redactor.opts.langs['ru'] = {
 "fontsize-remove": "По умолчанию",
 
 "video": "Видео",
-"video-html-code": "Код для вставки или ссылка Youtube или Vimeo:"
+"video-html-code": "Код для вставки или ссылка Youtube или Vimeo:",
+"code-to-insert": "Код для вставки:",
+"blockquote-to-insert": "Цитата для вставки:"
 
 };
 

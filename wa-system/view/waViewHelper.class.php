@@ -682,7 +682,7 @@ HTML;
 
     public function csrf()
     {
-        return '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
+        return '<input type="hidden" name="_csrf" value="'.htmlspecialchars(waRequest::cookie('_csrf', '')).'" />';
     }
 
     public function captcha($options = array(), $error = null, $absolute = null, $refresh = null)

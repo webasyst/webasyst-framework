@@ -371,17 +371,6 @@ class waContactForm
         foreach ($this->fields() as $fid => $f) {
             /** @var waContactField $f */
 
-            // Fake password confirmation field
-            if ($fid === 'password_confirm') {
-                continue;
-            }
-
-            // Hidden field
-            if ($f->isHidden()) {
-                $result .= $this->html($fid, true);
-                continue;
-            }
-
             // Upload contact photo
             if ($fid === 'photo') {
                 $result .= '<div class="' . $class_field . ' ' . ($class_field.'-'.$f->getId()) . '"><div class="' . $class_name . '">' .
@@ -398,6 +387,17 @@ class waContactForm
                 $result .= "\n" . '<p><input type="file" name="' . $fid . '_file"></p>';
                 $result .= $this->html($fid, true);
                 $result .= "\n</div></div>";
+                continue;
+            }
+
+            // Fake password confirmation field
+            if ($fid === 'password_confirm') {
+                continue;
+            }
+
+            // Hidden field
+            if ($f->isHidden()) {
+                $result .= $this->html($fid, true);
                 continue;
             }
 

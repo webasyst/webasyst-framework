@@ -528,6 +528,7 @@ class waPageActions extends waActions
         } else {
             $errors = array();
             $f = waRequest::file('file');
+            $f->transliterateFilename();
             $name = $f->name;
             if ($this->processFile($f, $path, $name, $errors)) {
                 $response = wa()->getDataUrl('img/'.$name, true, null, !!waRequest::get('absolute'));

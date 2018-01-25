@@ -66,6 +66,7 @@ function waEditorAceInit(options)
         $('<div id="' +  options.ace_editor_container + '"></div>').insertAfter($('#' + options.id));
     }
     wa_editor = ace.edit(options.ace_editor_container);
+    wa_editor.commands.removeCommand('find');
 
     ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 

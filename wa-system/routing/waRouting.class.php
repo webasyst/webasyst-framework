@@ -554,4 +554,35 @@ class waRouting
             return $result;
         }
     }
+
+    public static function getDomainConfig($name=null, $domain=null)
+    {
+        static $domain_configs = array();
+
+        if ($domain === null) {
+            $domain = wa()->getRouting()->getDomain(null, true);
+        }
+        if (!$domain || false !== strpos($domain, '..')) {
+            return $name === null ? array() : null;
+        }
+
+        if (!isset($domain_configs[$domain])) {
+            $domain = waIdna::enc($domain);
+        }
+        if (!isset($domain_configs[$domain])) {
+            $domain_configs[$domain] = array();
+            $domain_config_path = wa()->getConfig()->getConfigPath('domains/' . $domain . '.php', true, 'site');
+            if (file_exists($domain_config_path)) {
+                $domain_configs[$domain] = include($domain_config_path);
+            }
+        }
+
+        if ($name === null) {
+            return $domain_configs[$domain];
+        } else if (isset($domain_configs[$domain][$name])) {
+            return $domain_configs[$domain][$name];
+        } else {
+            return null;
+        }
+    }
 }

@@ -247,11 +247,23 @@ class waPlugin
 
     protected function addJs($url, $is_plugin = true)
     {
+        if (false === strpos($url, '?')) {
+            $url .= '?'.$this->getVersion();
+            if (waSystemConfig::isDebug()) {
+                $url .= '.'.time();
+            }
+        }
         waSystem::getInstance()->getResponse()->addJs($this->getUrl($url, $is_plugin), $this->app_id);
     }
 
     protected function addCss($url, $is_plugin = true)
     {
+        if (false === strpos($url, '?')) {
+            $url .= '?'.$this->getVersion();
+            if (waSystemConfig::isDebug()) {
+                $url .= '.'.time();
+            }
+        }
         waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin), $this->app_id);
     }
 

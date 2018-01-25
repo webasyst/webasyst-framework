@@ -87,8 +87,11 @@ class waPageAction extends waViewAction
     public function renderPage($page)
     {
         try {
-            return '<style>.text-center{text-align:center;}.text-right{text-align:right}.text-justify{text-align:justify;}</style>'
-                            .$this->view->fetch('string:'.$page['content']);
+            $result = $this->view->fetch('string:'.$page['content']);
+            if ($result && false !== strpos($result, 'text-')) {
+                $result = '<style>.text-center{text-align:center;}.text-right{text-align:right}.text-justify{text-align:justify;}</style>'.$result;
+            }
+            return $result;
         } catch (SmartyCompilerException $e) {
             $message = preg_replace('/"[a-z0-9]{32,}"/'," of content Site page with id {$page['id']}", $e->getMessage());
             throw new SmartyCompilerException($message, $e->getCode());

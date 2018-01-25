@@ -47,7 +47,7 @@ class waPageModel extends waModel
             $old_url .= '/';
         }
         $sql = "UPDATE ".$this->table."
-        SET full_url = CONCAT(s:url, SUBSTR(full_url, ".(strlen($old_url) + 1) ."))
+        SET full_url = CONCAT(s:url, SUBSTR(full_url, ".(mb_strlen($old_url) + 1) ."))
         WHERE id IN (i:ids)";
         return $this->exec($sql, array('ids' => $ids, 'url' => $new_url));
     }

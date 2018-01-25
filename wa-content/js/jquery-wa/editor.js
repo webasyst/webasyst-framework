@@ -121,7 +121,7 @@ jQuery.fn.waEditor = function (options) {
         editor.setOption("minLines", 2);
         editor.setOption("maxLines", 10000);
         editor.setAutoScrollEditorIntoView(true);
-        
+
         if (options['editorOnLoadFocus'])
         {
           editor.focus();

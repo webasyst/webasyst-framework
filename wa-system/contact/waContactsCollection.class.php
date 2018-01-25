@@ -425,6 +425,8 @@ class waContactsCollection
         }
         if ($ids) {
             $this->where[] = "c.id IN (".implode(",", $ids).")";
+        } else {
+            $this->where[] = "0=1";
         }
     }
 

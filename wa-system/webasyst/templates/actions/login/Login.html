@@ -42,6 +42,7 @@
             <a href="?forgotpassword" class="wa-forgotpassword underline">[s`Forgot password?`]</a>
         </div>
     </div>
+    {$wa->csrf()}
 </div>
 </form>
 <script type="text/javascript">
@@ -62,5 +63,20 @@ $(function() {
         form.submit();
         return false;
     });
+
+    // Update csrf token right before submit
+    // in case it changed via another browser tab
+    var $csrf_hidden_field = $('[name="_csrf"]');
+    $csrf_hidden_field.closest('form').submit(function() {
+        $csrf_hidden_field.val(getCsrfToken());
+    });
+
+    function getCsrfToken() {
+        var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));
+        if (!matches || !matches[1]) {
+            return '';
+        }
+        return decodeURIComponent(matches[1]);
+    }
 });
 </script>

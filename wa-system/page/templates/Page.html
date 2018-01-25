@@ -50,6 +50,10 @@
             load_locale = lang !== 'en';
         }
 
+        if(!$.fileupload) {
+            to_load.push(wa_url+"wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js?v"+framework_version);
+        }
+
         return $.wa.loadFiles(to_load).then(function() {
             if (load_locale) {
                 // Load Redactor II locale when its ready
@@ -134,28 +138,60 @@
 {/if}
     <div class="sidebar left250px" style="min-height: 300px;">
         {foreach $routes as $r => $route}
-        <div class="block block-pages">
-        <h4 class="heading">
-            <span class="count"><span style="display: none;"></span><i {if !$r}style="display:none" {/if}class="icon16 add wa-page-add no-parent"></i></span>
-            <i class="icon16 darr"></i> {if $r}{str_replace('www.','',$route['url_decoded'])|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}
-            {if !$r && count($routes) > 1}
-            <a id="wa-page-settle" style="margin-left: 10px;" href="#"><i class="icon16 exclamation"></i></a>
+            {if (count($routes) > 1) && !$r && is_array($route.pages) && $route.pages}
+                {$unsettled_pages_count = count($route.pages)}
+            {else}
+                {$unsettled_pages_count = 0}
+            {/if}
+            <div class="block block-pages">
+                <h4 class="heading">
+                    <span class="count"><span style="display: none;"></span><i {if !$r}style="display:none" {/if}class="icon16 add wa-page-add no-parent"></i></span>
+                    <i class="icon16 darr"></i> {if $r}{str_replace('www.','',$route['url_decoded'])|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}
+                    {if $unsettled_pages_count}
+                        <a id="wa-page-settle" style="margin-left: 10px;" href="#"><i class="icon16 exclamation"></i></a>
+                    {/if}
+                </h4>
+                <ul class="menu-v collapsible with-icons" data-domain="{if !$r && isset($domain)}{$domain}{else}{$route.domain}{/if}" data-route="{$route.route}">
+                    <li class="drag-newposition"></li>
+                    {if !empty($route.pages)}
+                        {foreach $route.pages as $p}
+                            <li class="dr" id="page-{$p.id}">
+                                {if !empty($p.childs)}<i class="icon16 darr expander overhanging"></i>{/if}
+                                <i class="icon16 notebook"></i>
+                                <a class="wa-page-link" href="{$page_url}{$p.id}">
+                                    <span class="count"><i class="icon10 add wa-page-add"></i></span>
+                                    {$p.name|escape}
+                                    <span class="hint">/{$p.full_url|escape}</span>
+                                    {if !$p.status} <span class="wa-page-draft">[s`draft`]</span>{/if}
+                                </a>
+                                {if !empty($p.childs)}
+                                    {waPageActions::printPagesTree($p, $p.childs, $page_url)}
+                                {/if}
+                            </li>
+                            <li class="drag-newposition"></li>
+                        {/foreach}
+                    {/if}
+                </ul>
+            </div>
+        {/foreach}
+
+        {if $unsettled_pages_count}
             <div id="wa-page-settle-dialog" style="display: none;">
                 <form method="post" action="?module=pages&action=settle">
-                <div class="dialog-content">
-                    <p>[s`There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages which are not connected to any of the site’s routing rules. These pages are not displayed on your site. To publish these pages now, select the new route for them:`]</p>
-                    <select>
-                        <option value=""></option>
-                        {foreach $routes as $r => $route}
-                            {if $r}
-                            <option data-domain="{$route.domain}" data-route="{$route.route}" value="{$r}">{$r}</option>
-                            {/if}
-                        {/foreach}
-                    </select>
-                </div>
-                <div class="dialog-buttons">
-                    <input class="button green" type="submit" value="[s`Save`]"> [s`or`] <a class="cancel" href="#">[s`cancel`]</a>
-                </div>
+                    <div class="dialog-content">
+                        <p>[`These pages are not connected to any of the site’s structure rules and are therefore not displayed on your site. To publish these pages now, select a site structure rule for them:`]</p>
+                        <select>
+                            <option value=""></option>
+                            {foreach $routes as $r => $route}
+                                {if $r}
+                                    <option data-domain="{$route.domain}" data-route="{$route.route}" value="{$r}">{$r}</option>
+                                {/if}
+                            {/foreach}
+                        </select>
+                    </div>
+                    <div class="dialog-buttons">
+                        <input class="button green" type="submit" value="[s`Save`]"> [s`or`] <a class="cancel" href="#">[s`cancel`]</a>
+                    </div>
                 </form>
             </div>
             <script type="text/javascript">
@@ -182,32 +218,7 @@
                 return false;
             });
             </script>
-            {/if}
-        </h4>
-
-        <ul class="menu-v collapsible with-icons" data-domain="{if !$r && isset($domain)}{$domain}{else}{$route.domain}{/if}" data-route="{$route.route}">
-            <li class="drag-newposition"></li>
-            {if !empty($route.pages)}
-            {foreach $route.pages as $p}
-                <li class="dr" id="page-{$p.id}">
-                    {if !empty($p.childs)}<i class="icon16 darr expander overhanging"></i>{/if}
-                    <i class="icon16 notebook"></i>
-                    <a class="wa-page-link" href="{$page_url}{$p.id}">
-                        <span class="count"><i class="icon10 add wa-page-add"></i></span>
-                        {$p.name|escape}
-                        <span class="hint">/{$p.full_url|escape}</span>
-                        {if !$p.status} <span class="wa-page-draft">[s`draft`]</span>{/if}
-                    </a>
-                    {if !empty($p.childs)}
-                    {waPageActions::printPagesTree($p, $p.childs, $page_url)}
-                    {/if}
-                </li>
-                <li class="drag-newposition"></li>
-            {/foreach}
-            {/if}
-        </ul>
-        </div>
-        {/foreach}
+        {/if}
 
         <!-- plugin hook: 'backend_pages_sidebar' -->
         {* @event backend_pages_sidebar.%plugin_id% *}
@@ -343,10 +354,15 @@
             if (p.attr('id')) {
                 var id = $(this).parent().attr('id').replace(/page-/, '');
                 {if $options.is_ajax}
-                $.wa.setHash("{$page_url}" + id);
-                return false;
+                    var new_hash = {$page_url|json_encode} + id;
+                    if (new_hash == location.hash) {
+                        $.wa.site.dispatch();
+                    } else {
+                        $.wa.setHash(new_hash);
+                    }
+                    return false;
                 {else}
-                waLoadPage(id);
+                    waLoadPage(id);
                 {/if}
             } else {
                 var ul = p.closest('ul');

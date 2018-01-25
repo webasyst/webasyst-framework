@@ -159,9 +159,8 @@ class waContact implements ArrayAccess
             $retina = (wa()->getEnv() == 'backend');
         }
 
-        $dir = self::getPhotoDir($id, false);
-
         if ($ts) {
+            $dir = self::getPhotoDir($id, false);
             if ($size != 'original' && $retina) {
                 $size .= '@2x';
             }

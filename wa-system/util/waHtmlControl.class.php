@@ -541,8 +541,14 @@ class waHtmlControl
 </style>
 <script type="text/javascript">
     if(typeof(CodeMirror) == 'function') {
+        var textarea = document.getElementById('{$params['id']}'), 
+            onchange = {
+                'onChange':function(cm) {
+                    textarea.value = cm.getValue();
+                }
+            };
         setTimeout(function(){
-            CodeMirror.fromTextArea(document.getElementById('{$params['id']}'), {$options});
+            CodeMirror.fromTextArea(textarea, $.extend($options, onchange));
         }, 500);
     }
 </script>

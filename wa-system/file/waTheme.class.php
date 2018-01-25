@@ -36,7 +36,7 @@
  * @property-read string $type
  * @property-read string $url Theme directory URL
  * @property-read string $source_theme_id Source theme ID for duplicated one
- * @property-read waTheme $parent_theme Parent theme instance or false
+ * @property waTheme $parent_theme Parent theme instance or false
  * @property-read waTheme[] $related_themes
  * @property-read array $used theme settlement URLs
  * @property-read bool $system
@@ -1755,7 +1755,27 @@ HTACCESS;
     }
 
     /**
-     *
+     * If the user deleted the theme of the design (Bad, Bad boy!)
+     * @param $id
+     * @return waTheme
+     */
+    private function setParentTheme($id)
+    {
+        if (false === strpos($id, ':')) {
+            $app = $this->app_id;
+            if (!empty($this->info['parent_theme_id'])) {
+                $app = explode(':', $this->info['parent_theme_id'], 2);
+                $app = $app[0];
+            }
+            $id = $app.':'.$id;
+        }
+
+        $this->parent_theme = null;
+        $this->info['parent_theme_id'] = $id;
+        $this->changed['parent_theme_id'] = true;
+    }
+
+    /**
      * @return waTheme
      */
     private function getParentTheme()
@@ -1902,7 +1922,7 @@ HTACCESS;
         } while ($exists);
 
         if ($exists) {
-            throw new waException(_w("Duplicate theme failed"));
+            throw new waException(_ws('Cannot create a theme copy with specified ID. A theme with this ID already exists.'));
         }
         return $numerator;
     }
@@ -1941,7 +1961,7 @@ HTACCESS;
 
                 }
                 if ($exists) {
-                    throw new waException(_w("Duplicate theme failed"));
+                    throw new waException(_ws('Cannot create a theme copy with specified ID. A theme with this ID already exists.'));
                 }
             }
 

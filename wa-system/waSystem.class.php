@@ -83,7 +83,9 @@ class waSystem
                  */
                 $system = self::$instances[self::$current];
                 $locale = $set_current ? $system->getLocale() : null;
-                $config = SystemConfig::getAppConfig($name, $system->getEnv(), $system->config->getRootPath(), $locale);
+                if (self::$apps === null || !empty(self::$apps[$name])) {
+                    $config = SystemConfig::getAppConfig($name, $system->getEnv(), $system->config->getRootPath(), $locale);
+                }
             }
             if ($config) {
                 self::$instances[$name] = new self($config);
@@ -504,6 +506,14 @@ class waSystem
 
     private function dispatchBackend($request_url)
     {
+        // Redirect to HTTPS if set up in domain params
+        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
+            $domain = $this->getRouting()->getDomain(null, true);
+            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
+            $this->getResponse()->redirect($url, 301);
+            return;
+        }
+
         // Publicly available dashboard?
         $url = explode("/", $request_url);
         if (ifset($url[1]) == 'dashboard') {
@@ -571,6 +581,25 @@ class waSystem
             throw new waException("Page not found", 404);
         }
 
+        // Payment callback?
+        if (!strncmp($request_url, 'payments.php/', 13)) {
+            $url = substr($request_url, 13);
+            if (preg_match('~^([a-z0-9_]+)~i', $url, $m) && !empty($m[1])) {
+                $module_id = $m[1];
+                waRequest::setParam('module_id', $module_id);
+                wa('webasyst', 1)->getFrontController()->execute(null, 'payments');
+            }
+            return;
+        }
+
+        // Redirect to HTTPS if set up in domain params
+        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
+            $domain = $this->getRouting()->getDomain(null, true);
+            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
+            $this->getResponse()->redirect($url, 301);
+            return;
+        }
+
         // Captcha?
         if (preg_match('/^([a-z0-9_]+)?\/?captcha\.php$/i', $request_url, $m)) {
             $app_id = isset($m[1]) ? $m[1] : 'webasyst';
@@ -600,14 +629,6 @@ class waSystem
             return;
         }
 
-        // Payment callback?
-        if (!strncmp($request_url, 'payments.php/', 13)) {
-            $url = substr($request_url, 13);
-            waRequest::setParam('module_id', strtok($url, '/?'));
-            wa('webasyst', 1)->getFrontController()->execute(null, 'payments');
-            return;
-        }
-
         // One-time auth app token?
         if (!strncmp($request_url, 'link.php/', 9)) {
             $token = strtok(substr($request_url, 9), '/?');
@@ -632,6 +653,14 @@ class waSystem
         $route_found = $this->getRouting()->dispatch();
         if (!$route_found) {
             $this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
+            return;
+        }
+
+        // Redirect to HTTPS if set up in routing params
+        if (!waRequest::isHttps() && waRequest::param('ssl_all')) {
+            $domain = $this->getRouting()->getDomain(null, true);
+            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
+            $this->getResponse()->redirect($url, 301);
             return;
         }
 
@@ -723,7 +752,7 @@ class waSystem
         // Load system
         waSystem::getInstance('webasyst');
 
-        if (!wa()->appExists($app)) {
+        if (!$this->appExists($app)) {
             throw new waException("App ".$app." not found", 404);
         }
         // Load app

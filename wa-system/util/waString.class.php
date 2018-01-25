@@ -6,8 +6,8 @@
  * http://www.webasyst.com/framework/license/
  *
  * @link http://www.webasyst.com/
- * @author Serge Rodovnichenko <sergerod@gmail.com>
- * @copyright 2014 Serge Rodovnichenko
+ * @author Webasyst LLC
+ * @copyright 2017 Webasyst LLC
  * @package wa-system
  * @subpackage util
  */
@@ -15,8 +15,38 @@
 class waString
 {
     /**
+     * Wrapper to simplify htmlspecialchars() usage with proper encoding
+     *
+     * @param string $str
+     * @param int $flags defaults to ENT_COMPAT | ENT_HTML401
+     * @return string
+     */
+    public static function escape($str, $flags = null)
+    {
+        if ($flags === null) {
+            $flags = ENT_COMPAT | ENT_HTML401;
+        }
+        return htmlspecialchars($str, $flags, 'UTF-8');
+    }
+
+    /**
+     * Wrapper to simplify htmlentities() usage with proper encoding
+     *
+     * @param string $str
+     * @param int $flags defaults to ENT_COMPAT | ENT_HTML401
+     * @return string
+     */
+    public static function escapeAll($str, $flags = null)
+    {
+        if ($flags === null) {
+            $flags = ENT_COMPAT | ENT_HTML401;
+        }
+        return htmlentities($str, $flags, 'UTF-8');
+    }
+
+    /**
      * Generate a random UUID (v4)
-     * 
+     *
      * @see http://www.ietf.org/rfc/rfc4122.txt
      * @return string
      */

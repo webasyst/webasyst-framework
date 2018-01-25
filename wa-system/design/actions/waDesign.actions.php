@@ -182,18 +182,18 @@ class waDesignActions extends waActions
 
         $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/DesignEdit.html';
         $data = array(
-            'options'             => $this->options,
-            'app_id'              => $app_id,
-            'design_url'          => $this->design_url,
-            'app'                 => $app,
-            'file'                => $file,
-            'theme_id'            => $theme_id,
-            'theme'               => $theme,
-            'theme_usages'        => $theme_usages,
+            'options'              => $this->options,
+            'app_id'               => $app_id,
+            'design_url'           => $this->design_url,
+            'app'                  => $app,
+            'file'                 => $file,
+            'theme_id'             => $theme_id,
+            'theme'                => $theme,
+            'theme_usages'         => $theme_usages,
             'theme_usages_decoded' => $theme_usages_decoded,
-            'route_url'           => $route_url,
+            'route_url'            => $route_url,
             'route_url_decoded'    => $route_url_decoded,
-            'theme_files'         => $theme_files
+            'theme_files'          => $theme_files
         );
         if ($theme->parent_theme_id) {
             $data['parent_theme'] = $theme->parent_theme;
@@ -621,6 +621,14 @@ HTACCESS;
             }
 
             $settings = $current_theme->getSettings(false, $current_locale);
+            try {
+                // Make sure parent theme is accessible
+                $current_theme->parent_theme;
+            } catch (waException $e) {
+                $current_theme->parent_theme = 'default';
+                $current_theme->save();
+            }
+
             if ($current_theme->parent_theme) {
                 $parent_settings = $current_theme->parent_theme->getSettings(false, $current_locale);
                 foreach ($parent_settings as &$s) {

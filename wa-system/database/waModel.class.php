@@ -818,15 +818,27 @@ class waModel
 
     /**
      * Returns data from table records containing specified values of specified fields.
-     * Method accepts 2 modes of passing parameters: for one value and for multiple values.
+     * Supports 2 modes of passing parameters: to search records by one or by multiple fields.
      *
-     * @param string|array $field (one field) Field name
-     *     (multiple fields) or associative array with field names as keys
-     * @param mixed|array|bool $value (one field) Field value or array of values
-     *     (multiple fields) or Boolean flag requiring to return data from all found records. By default (false),
-     *     only first found record is returned.
-     * @param bool $all (one field) Boolean flag requiring to return data of all found records.
-     * @param int|bool $limit (one field) Number of records to be returned. By default (false) this limitation is disabled.
+     * One field mode:
+     *
+     * @param string Field name.
+     * @param mixed|array Field value or zero-based array of values.
+     * @param bool|string Boolean flag requiring to return data of all found records
+     *     or name of field whose values in all found entries must be used as keys of result array.
+     *     If false is provided, method returns values only from the first found table record.
+     * @param int|bool Maximum number of records to be returned if all records are requested.
+     *     By default (false) no limitation is applied.
+     *
+     * Multiple fields mode:
+     *
+     * @param array Associative array of field values with field names as keys.
+     * @param bool Boolean flag requiring to return data of all found records
+     *     or name of field whose values in all found entries must be used as keys of result array.
+     *     If false is provided, method returns values only from the first found table record.
+     * @param int|bool Maximum number of records to be returned if all records are requested.
+     *     By default (false) no limitation is applied.
+     *
      * @return array|null
      */
     public function getByField($field, $value = null, $all = false, $limit = false)

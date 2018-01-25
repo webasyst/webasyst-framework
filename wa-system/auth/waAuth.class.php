@@ -80,7 +80,7 @@ class waAuth implements waiAuth
                 waSystem::getInstance()->getStorage()->write('auth_user', $info);
             }
         }
-        // check options
+
         if ($info && $info['id'] && (!$this->getOption('is_user') || ifempty($info['is_user']) > 0)) {
             return $info;
         }
@@ -261,7 +261,8 @@ HTML;
             'id' => $user_info['id'],
             'login' => $user_info['login'],
             'is_user' => $user_info['is_user'],
-            'token' => $this->getToken($user_info)
+            'token' => $this->getToken($user_info),
+            'storage_set' => time(), // used in waAuthUser->init()
         );
     }
 

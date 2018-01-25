@@ -25,12 +25,12 @@
             <div class="wa-page-urls small">
                 {if $page}
                     {if !empty($url)}
-                        <a href="{$url}{$page.url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">{$url_decoded|escape}{$page.url}</a>
-                        <a href="{$url}{$page.url}?preview={$preview_hash}" target="_blank"><i class="icon10 new-window"></i></a>
+                        <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" target="_blank">{$url_decoded|escape}{$page.url}</a>
+                        <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" target="_blank"><i class="icon10 new-window"></i></a>
                     {elseif $page.domain and $page.route !== null}
                         {$page_route=waRouting::clearUrl($page.route)}
-                        <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
-                        <a href="http://{$page.domain}/{$page_route}{$page.full_url}?preview={$preview_hash}"><i class="icon10 new-window"></i></a>
+                        <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
+                        <a href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}"><i class="icon10 new-window"></i></a>
                     {else}
                     [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
                     {/if}
@@ -170,6 +170,9 @@
             <li><a class="html" href="#">HTML</a></li>
         </ul>
         <div style="clear:both">
+            <div class="wa-editor-upload-img hidden" title="[`Upload image`]">
+                <i class="icon16 image"></i>
+            </div>
             <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
             {$wa->csrf()}
         </div>
@@ -195,6 +198,33 @@
 {$wa->csrf()}
 </form>
 <div class="clear"></div>
+</div>
+
+<div class="dialog" id="s-upload-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window" style="height: 225px; min-height: 225px; width: 450px; min-width: 450px">
+        <form id="s-upload-form" method="post" action="?module=pages&action=uploadimage&r=2" enctype="multipart/form-data">
+            {$wa->csrf()}
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h2>[`Upload image`]</h2>
+                    <div id="redactor-droparea" style="text-align: center;">
+                        <input id="s-input-file" type="file" name="file" multiple>
+                        <input type="hidden" name="path" id="s-upload-path" value="" />
+                        <div class="loading" style="display:none; margin-top: 10px">
+                            <i class="icon16 loading"></i> [`Uploading...`]
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[`Upload`]">
+                    [`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script type="text/javascript">$(function () { "use strict";
@@ -281,10 +311,16 @@
     // Initialize editor when JS is loaded
     $.wa_editor_ready.then(function(method) {
         $('#wa-page-content')[method]({
-            lang: "{$lang}",
+            lang: $.Redactor.opts.langs["{$lang}"] ? "{$lang}" : 'en',
+            smarty_wysiwyg_msg: {_ws('WYSIWYG editor is disabled because page source contains Smarty code tags.')|json_encode},
+            modification_wysiwyg_msg: {_ws('WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?')|json_encode},
             saveButton: '#wa-page-button',
+            upload_img_dialog: '#s-upload-dialog',
             uploadFields: {
                 '_csrf': "{waRequest::cookie('_csrf', '')}"
+            },
+            locales: {
+                'close': "[`Close`]"
             }
         });
     });
@@ -426,8 +462,14 @@
                     var page_url = 'http://{waIdna::dec($page.domain)}/{$page_route}' + p.full_url;
                     {/if}
 
+                    if ($('#wa-page-v').is(':checked')) {
+                        var page_attr_url = page_url;
+                    } else {
+                        var page_attr_url = page_url + '?preview={$preview_hash}';
+                    }
+
                     if ($(".wa-page-urls a").length) {
-                        $(".wa-page-urls a").attr('href', page_url + '?preview={$preview_hash}');
+                        $(".wa-page-urls a").attr('href', page_attr_url);
                         $(".wa-page-urls a:first").html(page_url);
                     }
                 } else if (response.status == 'fail') {

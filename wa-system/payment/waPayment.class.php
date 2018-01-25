@@ -282,19 +282,29 @@ abstract class waPayment extends waSystemPlugin
     final public static function callback($module_id, $request = array())
     {
         $log = array(
-            'method'  => __METHOD__,
-            'request' => $request,
-            'ip'      => waRequest::getIp(),
-            'agent'   => waRequest::getUserAgent(),
+            'method'         => __METHOD__,
+            'request_method' => waRequest::method(),
+            'request'        => $request,
+            'ip'             => waRequest::getIp(),
+            'agent'          => waRequest::getUserAgent(),
         );
-        self::log($module_id, $log);
+
+        if (!waRequest::isHttps()) {
+            $log = array('~~~ SSL WARNING ~~~' => '~~~ Payment callbacks should not run over insecure HTTP protocol ~~~') + $log;
+        }
+
         $module = null;
         try {
             $module = self::factory($module_id);
+            self::log($module_id, $log);
             return $module->callbackInit($request)->init()->callbackHandler($request);
         } catch (Exception $ex) {
-            $log = array(
-                'method'    => __METHOD__,
+            if (!$module) {
+                $log += array(
+                    'plugin_id' => $module_id,
+                );
+            }
+            $log += array(
                 'exception' => $ex->getMessage(),
                 'code'      => $ex->getCode(),
             );

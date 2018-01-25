@@ -45,11 +45,26 @@ class waAuthUser extends waUser
         if ($info && isset($info['id']) && $info['id']) {
             $this->auth = true;
             $this->id = $info['id'];
-            // update last_datetime for contact
+
+            // Update last user activity time.
             if (!waRequest::request('background_process')) {
                 $this->updateLastTime();
             }
-            // check CSRF cookie
+
+            // Make sure user is not banned.
+            // We do this once in a while, or in case user data is already loaded anyway.
+            $is_data_loaded = !!$this->getCache();
+            $last_check = time() - ifset($info['storage_set'], 0);
+            if ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_BAN_CHECK')) {
+                if ($this['is_user'] < 0) {
+                    $auth->clearAuth();
+                    $this->id = 0;
+                } else {
+                    $auth->updateAuth($this->getCache());
+                }
+            }
+
+            // Set CSRF protection cookie
             if (!waRequest::cookie('_csrf')) {
                 waSystem::getInstance()->getResponse()->setCookie('_csrf', uniqid('', true));
             }
