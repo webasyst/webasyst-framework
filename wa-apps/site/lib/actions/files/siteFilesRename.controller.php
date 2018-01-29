@@ -19,7 +19,7 @@ class siteFilesRenameController extends waJsonController
                         $name_ext = 'php';
                     }
                 }
-                if (in_array($name_ext, array('php', 'phtml'))) {
+                if (in_array($name_ext, array('php', 'phtml', 'htaccess'))) {
                     $this->errors = sprintf(_w("Files with extension .%s are not allowed to security considerations."), $name_ext);
                     return;
                 }
@@ -30,7 +30,7 @@ class siteFilesRenameController extends waJsonController
                 $this->errors = sprintf(_w("Folder or file could not bet renamed due to the insufficient file write permissions for the %s folder."), $p);
             } elseif (@rename($path, dirname($path).'/'.$name)) {
                 if ($file) {
-                    $this->response = $name;    
+                    $this->response = $name;
                 } else {
                     $this->response = array(
                         'name' => $name,
@@ -42,7 +42,7 @@ class siteFilesRenameController extends waJsonController
             }
         } else {
             if (!strlen($name)) {
-                $this->errors = _w("Enter the new name");    
+                $this->errors = _w("Enter the new name");
             } else {
                 $this->errors = _w("Selected folder (file) does not exist anymore");
             }
