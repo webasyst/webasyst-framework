@@ -120,7 +120,7 @@ class Smarty_Security {
         '~^stream~i',
         '~^ini_~i',
         '~^xmlrpc_~i',
-        '~^mb_ereg_~i',
+        '~^mb_ereg~i',
     );
     /**
      * This is an array of trusted PHP modifiers.

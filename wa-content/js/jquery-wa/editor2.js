@@ -91,7 +91,7 @@ jQuery.fn.waEditor2 = function () {
             }
 
             // Warn user if code is going to be modified by WYSIWYG layout logic
-            if (options.modification_wysiwyg_msg) {
+            if ($.trim(source_val) && options.modification_wysiwyg_msg) {
                 var source_wysiwyg_cleaned = $textarea.redactor('clean.onSync',
                     $textarea.redactor('clean.onSet', source_val)
                 );

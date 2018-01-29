@@ -305,6 +305,16 @@ class waContact implements ArrayAccess
             return $this->getId();
         }
 
+        // Do not allow to read password hash from Smarty templates.
+        // But we still allow to check _existance_ of password.
+        if (waConfig::get('is_template') && $field_id == 'password') {
+            $result = waContactFields::getStorage()->get($this, 'password');
+            if ($result) {
+                return self::getPasswordHash(mt_rand().uniqid('fakehash', true).mt_rand());
+            }
+            return '';
+        }
+
         // Try to use field object
         $field = waContactFields::get($field_id, 'enabled');
         if ($field) {
@@ -467,15 +477,6 @@ class waContact implements ArrayAccess
             return isset($value[0]) ? $value[0] : ($field instanceof waContactCompositeField ? array() : '');
         }
         return $value;
-    }
-
-    /**
-     * Returns code for the user
-     * @return string
-     */
-    public function getCode()
-    {
-        return substr($this['password'], 0, 6).$this->id.substr($this['password'], -6);
     }
 
     /**
