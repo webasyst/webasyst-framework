@@ -1,9 +1,10 @@
 <?php
 
 /**
- * Плагин расчета доставки Почтой России.
+ * Плагин расчета доставки «Почтой России».
  *
  * @see http://www.russianpost.ru/rp/servise/ru/home/postuslug/bookpostandparcel/parcelltariff
+ * @link https://tracking.pochta.ru/specification API отслеживания
  *
  * @property-read $api_login
  * @property-read $api_password
@@ -12,11 +13,16 @@
  * @property-read $halfkilocost
  * @property-read $currency
  * @property-read $overhalfkilocost
+ * @property-read $difficult_charge
  * @property-read $caution
+ * @property-read $caution_percent
  * @property-read $max_weight
  * @property-read $complex_calculation_weight
+ * @property-read $complex_calculation_percent
  * @property-read $commission
  * @property-read $extra_charge
+ * @property-read $cash_on_delivery
+ * @property-read $cod
  *
  * @property-read bool $parcel Отправлять посылки
  *
@@ -29,7 +35,6 @@
  * @property-read string $bookpost_weight_ordered_cost Стоимость отправки каждых 0,02 кг
  * @property-read string $bookpost_weight_declared_cost Стоимость отправки каждых 0.5 килограмм бандероли с объявленной ценностью
  * @property-read string $bookpost_declared_commission Плата за сумму объявленной ценности бандероли (%)
- * @property-read float $bookpost_air Надбавка за отправление «Авиа» для бандероли(руб.)
  *
  * @property-read $delivery_date_show
  * @property-read $delivery_date_min
@@ -48,6 +53,7 @@
  * @property string $address1
  * @property string $address2
  * @property string $zip
+ * @property string $zip_distribution_center
  * @property string $phone
  * @property string $inn
  * @property string $bank_kor_number
@@ -70,7 +76,8 @@ class russianpostShipping extends waShipping
     {
         $this
             ->registerControl('WeightCosts')
-            ->registerControl('RegionRatesControl');
+            ->registerControl('RegionRatesControl')
+            ->registerControl('CashDelivery');
         parent::initControls();
     }
 
@@ -113,6 +120,54 @@ class russianpostShipping extends waShipping
     }
 
     /**
+     * @param $name
+     * @param array $params
+     * @return string
+     * @throws Exception
+     */
+    public static function settingCashDelivery($name, $params = array())
+    {
+        foreach ($params as $field => $param) {
+            if (strpos($field, 'wrapper')) {
+                unset($params[$field]);
+            }
+        }
+        $control = '';
+        if (!isset($params['value']) || !is_array($params['value'])) {
+            $params['value'] = array();
+        }
+        waHtmlControl::addNamespace($params, $name);
+        $value = $params['value'];
+        $ns = $params['namespace'][0];
+        $title = array(
+            0 => array('range' => '0ー1000'),
+            1 => array('range' => '1000ー5000'),
+            2 => array('range' => '5000ー20000'),
+            3 => array('range' => '20000ー500000'),
+        );
+        $control .= '<table class="zebra">';
+        $control .= '<tr><th>Сумма заказа</th><th></th><th>Фиксированная часть</th><th></th><th>Процент от суммы заказа</th></tr>';
+        $currency = waCurrency::getInfo('RUB');
+        $params['title_wrapper'] = '%s';
+        $params['size'] = 6;
+        for ($cod = 0; $cod <= 3; $cod++) {
+            $params['control_wrapper'] = '<tr title="%3$s"><td>%1$s</td><td>&rarr;</td><td>%2$s '.$currency['sign'].'</td><td>+</td>';
+            $params['title'] = $title[$cod]['range'];
+            $params['value'] = $value[$cod]['rate'];
+            $params['namespace'][0] = $ns."[$cod]";
+            $control .= waHtmlControl::getControl(waHtmlControl::INPUT, 'rate', $params);
+            $params['control_wrapper'] = '<td>%2$s %%</td></tr>';
+            $params['value'] = $value[$cod]['percent'];
+            $control .= waHtmlControl::getControl(waHtmlControl::INPUT, 'percent', $params);
+
+        }
+        $control .= "</tbody>";
+        $control .= "</table>";
+
+        return $control;
+    }
+
+    /**
      * Формирует HTML-код пользовательского элемента управления с идентификатором 'RegionRatesControl'.
      *
      * @see waHtmlControl::getControl()
@@ -140,12 +195,10 @@ class russianpostShipping extends waShipping
 
             $control .= "<table class=\"zebra\"><thead>";
             $control .= "<tr class=\"gridsheader\"><th colspan=\"3\">";
-            $control .= htmlentities('Распределите регионы по тарифным поясам Почты России', ENT_QUOTES, 'utf-8');
-            $control .= "</th>";
-            $control .= "<th>Ограничения доставки</th>";
+            $control .= htmlentities('Распределите регионы по тарифным поясам «Почты России»', ENT_QUOTES, 'utf-8');
             $control .= "</th></tr></thead><tbody>";
 
-            $params['control_wrapper'] = '<tr><td>%s</td><td>&rarr;</td><td>%s</td><td>%s</td></tr>';
+            $params['control_wrapper'] = '<tr><td>%s</td><td>&rarr;</td><td>%s</td></tr>';
             $params['title_wrapper'] = '%s';
             $params['description_wrapper'] = '%s';
             $params['options'] = array();
@@ -160,28 +213,10 @@ class russianpostShipping extends waShipping
                 if (empty($params['value'][$id])) {
                     $params['value'][$id] = array();
                 }
-                $params['value'][$id] = array_merge(array($name => 0, 'avia_only' => false), $params['value'][$id]);
+                $params['value'][$id] = array_merge(array($name => 0), $params['value'][$id]);
                 $region_params = $params;
 
                 waHtmlControl::addNamespace($region_params, $id);
-
-                //backward compatibility
-                $default = empty($params['value'][$id]['avia_only']) ? 'all' : 'avia';
-
-                $method_params = array(
-                    'namespace'           => $region_params['namespace'],
-                    'control_wrapper'     => '%2$s',
-                    'description_wrapper' => false,
-                    'title_wrapper'       => false,
-                    'value'               => ifempty($params['value'][$id]['method'], $default),
-                    'options'             => array(
-                        'all'    => 'без ограничения',
-                        'avia'   => 'только Авиа',
-                        'ground' => 'Только наземный транспорт',
-                    )
-                );
-
-                $region_params['description'] = waHtmlControl::getControl(waHtmlControl::SELECT, 'method', $method_params);
 
                 $region_params['value'] = max(0, min(5, $params['value'][$id][$name]));
                 $region_params['title'] = $region['name'];
@@ -273,26 +308,42 @@ class russianpostShipping extends waShipping
 
         $extra_weight = round(max(0.5, $weight) - 0.5, 3);
 
-        $rate['ground'] = $halfkilocost[$zone] + $overhalfkilocost[$zone] * ceil($extra_weight / 0.5);
-        $rate['avia'] = $rate['ground'] + $this->getSettings('air');
+        $rate_parcel = $halfkilocost[$zone] + $overhalfkilocost[$zone] * ceil($extra_weight / 0.5);
+        $rate['parcel'] = $rate_parcel;
+        $rate['bookpost'] = 0;
 
         if ($weight <= min($this->bookpost_max_weight, 2)) {
-            $base_cost = $this->bookpost_weight_declared_cost;
-            $rate['bookpost_ground'] = $base_cost[$zone] * (1 + ceil($extra_weight / 0.5));
-            $rate['bookpost_ground'] += $price * ($this->bookpost_declared_commission / 100) + $this->extra_charge;
-            $rate['bookpost_air'] = $rate['bookpost_ground'] + $this->bookpost_air;
+            $rate['bookpost'] = $this->getBookpostRate($weight, $zone);
         }
 
-
-        if ($this->getSettings('caution') || ($weight > $this->complex_calculation_weight)) {
-
-            $rate['ground'] *= 1.4;
-            $rate['avia'] *= 1.4;
+        if ($this->complex_calculation_weight > 0 && $weight > $this->complex_calculation_weight) {
+            $ccp = $this->complex_calculation_percent;
+            $percent = ifset($ccp, 0) / 100;
+            $rate['parcel'] += $rate_parcel * $percent;
         }
 
+        if ($this->caution) {
+            $cp = $this->caution_percent;
+            $percent = ifset($cp, 0) / 100;
+            $rate['parcel'] += $rate_parcel * $percent;
+        }
 
-        $rate['ground'] += $price * ($this->commission / 100) + $this->extra_charge;
-        $rate['avia'] += $price * ($this->commission / 100) + $this->extra_charge;
+        //recalculate rate if delivery in region is difficult
+        if ($this->isDifficult()) {
+            $dc = $this->difficult_charge;
+            $rate['parcel'] += $rate_parcel * (ifset($dc, 0) / 100);
+            $rate['bookpost'] += ($rate['bookpost'] * (ifset($dc, 0) / 100)) * 2;
+
+        }
+
+        $rate['parcel'] += $price * ($this->commission / 100) + $this->extra_charge;
+
+        if ($this->bookpost == 'declared') {
+            $rate['bookpost'] += $price * ($this->bookpost_declared_commission / 100);
+        }
+
+        $rate['bookpost'] += $this->extra_charge;
+
         return $rate;
     }
 
@@ -373,66 +424,37 @@ class russianpostShipping extends waShipping
                     }
 
                     $rate = $this->getZoneRates($weight, $this->getTotalPrice(), $this->region[$region_id]['zone']);
-                    $region = $this->region[$region_id];
-                    $method = ifset($region['method'], empty($region['avia_only']) ? 'all' : 'avia');
-
-                    $avia = in_array($method, array('all', 'avia'), true);
-                    $ground = in_array($method, array('all', 'ground'), true);
 
                     if (($weight <= $this->bookpost_max_weight) && ($this->getTotalPrice() < $this->bookpost_max_price)) {
-                        $extra_weight = round(max(0.1, $weight) - 0.1, 3);
                         switch ($this->bookpost) {
                             case 'simple':
-                                $simple_rate = $this->bookpost_simple_cost;
-                                $simple_rate += ceil($extra_weight / 0.02) * $this->bookpost_weight_simple_cost;
-
                                 $services['bookpost_simple'] = array(
                                     'name'         => 'Бандероль простая',
                                     'id'           => 'bookpost_simple',
                                     'est_delivery' => $delivery_date,
-                                    'rate'         => $simple_rate,
+                                    'rate'         => $rate['bookpost'],
                                     'currency'     => 'RUB',
                                 );
                                 break;
                             case 'ordered':
-                                $ordered_rate = $this->bookpost_ordered_cost;
-                                $ordered_rate += ceil($extra_weight / 0.02) * $this->bookpost_weight_ordered_cost;
-
                                 $services['bookpost_ordered'] = array(
                                     'name'         => 'Бандероль заказная',
                                     'id'           => 'bookpost_ordered',
                                     'est_delivery' => $delivery_date,
-                                    'rate'         => $ordered_rate,
+                                    'rate'         => $rate['bookpost'],
                                     'currency'     => 'RUB',
                                 );
 
                                 break;
                             case 'declared':
-                                if (!empty($rate['bookpost_ground'])) {
-                                    if ($avia) {
-                                        $services['bookpost_declared_avia'] = array(
-                                            'name'         => 'Бандероль с объявленной ценностью, Авиа',
-                                            'id'           => 'bookpost_declared_avia',
-                                            'est_delivery' => $delivery_date,
-                                            'rate'         => $rate['bookpost_air'],
-                                            'currency'     => 'RUB',
-                                        );
-                                    }
-
-                                    if ($ground) {
-                                        if (!empty($rate['bookpost_ground'])) {
-                                            $services['bookpost_declared_ground'] = array(
-                                                'name'         => 'Бандероль с объявленной ценностью',
-                                                'id'           => 'bookpost_declared_ground',
-                                                'est_delivery' => $delivery_date,
-                                                'rate'         => $rate['bookpost_ground'],
-                                                'currency'     => 'RUB',
-                                            );
-                                        }
-                                    }
-                                }
+                                $services['bookpost_declared'] = array(
+                                    'name'         => 'Бандероль с объявленной ценностью',
+                                    'id'           => 'bookpost_declared',
+                                    'est_delivery' => $delivery_date,
+                                    'rate'         => $rate['bookpost'],
+                                    'currency'     => 'RUB',
+                                );
                                 break;
-
                         }
                     }
 
@@ -443,30 +465,19 @@ class russianpostShipping extends waShipping
                         case false:
                             break;
                         case 'otherwise':
-                            if (isset($services['bookpost_declared_avia']) || isset($services['bookpost_declared_ground'])) {
+                            if (isset($services['bookpost_declared'])) {
                                 break;
                             }
                         /* no break */
                         case true:
                         case 'always':
-                            if ($ground) {
-                                $services['ground'] = array(
-                                    'name'         => 'Посылка, наземный транспорт',
-                                    'id'           => 'ground',
-                                    'est_delivery' => $delivery_date,
-                                    'rate'         => $rate['ground'],
-                                    'currency'     => 'RUB',
-                                );
-                            }
-                            if ($avia) {
-                                $services['avia'] = array(
-                                    'name'         => 'Посылка, Авиа',
-                                    'id'           => 'avia',
-                                    'est_delivery' => $delivery_date,
-                                    'rate'         => $rate['avia'],
-                                    'currency'     => 'RUB',
-                                );
-                            }
+                            $services['parcel'] = array(
+                                'name'         => 'Посылка',
+                                'id'           => 'parcel',
+                                'est_delivery' => $delivery_date,
+                                'rate'         => $rate['parcel'],
+                                'currency'     => 'RUB',
+                            );
                             break;
                     }
 
@@ -483,7 +494,233 @@ class russianpostShipping extends waShipping
                 );
             }
         }
+
+        //Cash on delivery
+        if ($this->cod) {
+            wa()->getStorage()->set($this->getCacheKey(), $services);
+            wa()->getStorage()->set($this->getCacheKey('price'), $this->getTotalPrice());
+        }
+
         return $services;
+    }
+
+    /**
+     * Получение стоимости доставки бандеролей
+     * @param $weight
+     * @param $zone
+     * @return float|int
+     */
+    private function getBookpostRate($weight, $zone)
+    {
+        $extra_weight = round(max(0.1, $weight) - 0.1, 3);
+        $rate = 0;
+        switch ($this->bookpost) {
+            case 'simple':
+                $rate = $this->bookpost_simple_cost;
+                $rate += ceil($extra_weight / 0.02) * $this->bookpost_weight_simple_cost;
+                break;
+            case 'ordered':
+                $rate = $this->bookpost_ordered_cost;
+                $rate += ceil($extra_weight / 0.02) * $this->bookpost_weight_ordered_cost;
+                break;
+            case 'declared':
+                $extra_weight = round(max(0.5, $weight) - 0.5, 3);
+                $base_cost = $this->bookpost_weight_declared_cost;
+                $rate = $base_cost[$zone] * (1 + ceil($extra_weight / 0.5));
+                break;
+        }
+        return $rate;
+    }
+
+    /**
+     * @param waOrder $order
+     * @return array
+     */
+    public function customFields(waOrder $order)
+    {
+        $fields = parent::customFields($order);
+
+        if ($this->cod) {
+            $this->registerControl('RussianPostCOD', array($this, 'settingCOD'));
+
+            $fields['cod'] = array(
+                'value'        => null,
+                'title'        => 'Комиссия «Почты России» за почтовый перевод',
+                'control_type' => 'RussianPostCOD',
+            );
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Рассчет коммиссии для наложенного платежа
+     * @return array
+     */
+    protected function calculateCODRates()
+    {
+        $key = $this->getCacheKey();
+        $storage = wa()->getStorage();
+        $services = $storage->get($key);
+        $price = $this->getCacheKey('price');
+        $price = $storage->get($price);
+
+        //Cash on delivery
+        $key = null;
+        switch ($price) {
+            case $price <= 1000:
+                $key = 0;
+                break;
+            case $price <= 5000:
+                $key = 1;
+                break;
+            case $price <= 20000:
+                $key = 2;
+                break;
+            case $price <= 500000:
+                $key = 3;
+                break;
+        }
+        $cash_on_delivery = $this->cash_on_delivery;
+        $cod_data = ifset($cash_on_delivery, $key, null);
+
+        $rate = array();
+
+        if ($cod_data) {
+            foreach ($services as $key => $service) {
+                $rate[$key] = ($price + $service['rate']) * ($cod_data['percent'] / 100);
+                $rate[$key] += $cod_data['rate'];
+            }
+        }
+
+        return $rate;
+    }
+
+    /**
+     * Вернуть в фронт массив с комиссиями наложенного платежа
+     */
+    public function rateCODAction()
+    {
+        $response = array(
+            'status' => 'ok',
+            'data'   => $this->calculateCODRates(),
+        );
+        $this->sendJsonResponse($response);
+    }
+
+    /**
+     * @param $response
+     */
+    private function sendJsonResponse($response)
+    {
+        if (waRequest::isXMLHttpRequest()) {
+            wa()->getResponse()->addHeader('Content-Type', 'application/json')->sendHeaders();
+        }
+        $options = 0;
+        $option_names = array(
+            'JSON_PRETTY_PRINT',
+            'JSON_UNESCAPED_UNICODE',
+        );
+        foreach ($option_names as $option_name) {
+            if (defined($option_name)) {
+                $options = $options | constant($option_name);
+            }
+        }
+        echo json_encode($response, $options);
+        exit;
+    }
+
+    /**
+     * Получить ключ, для извлечения информации из кэша.
+     * @param null $key
+     * @return string
+     */
+    private function getCacheKey($key = null)
+    {
+        return sprintf('wa-plugins/shipping/russainpost/%s/%s/%s', $this->app_id, $this->key, $key ? $key : $this->cache_key);
+    }
+
+    /**
+     * Формирования HTML Для вывода информации об наложенном платеже.
+     * @param $name
+     * @param array $params
+     * @return string
+     */
+    public function settingCOD($name, $params = array())
+    {
+        //URL для перерасчета коммисии
+        $url_params = array(
+            'action_id' => 'rateCOD',
+            'plugin_id' => $this->key,
+        );
+        $url = wa()->getRouteUrl(sprintf('%s/frontend/shippingPlugin', $this->app_id), $url_params, true);
+
+        $rates = $this->calculateCODRates();
+        $count_rates = count($rates);
+        $delivery = key($rates);
+        $rates = json_encode($rates);
+        $locale = wa()->getUser()->getLocale();
+
+        $currency = waCurrency::getInfo('RUB');
+        $override = array(
+            'title'           => '',
+            'title_wrapper'   => false,
+            'description'     => '',
+            'control_wrapper' => "%s%3\$s\n%2\$s\n",
+            'readonly'        => true,
+            'style'           => 'border: 0px',
+        );
+
+        $params = array_merge($params, $override);
+
+        $html = waHtmlControl::getControl(waHtmlControl::INPUT, $name, $params);
+
+        waHtmlControl::makeId($params, $name);
+
+        $html .= <<<HTML
+<script type="text/javascript">
+var shipping = $('.shipping-{$this->key}'),
+    rates = shipping.find('.shipping-rates'),
+    form = shipping.find('.wa-form'),
+    currency_sign = '{$currency['sign']}',
+    delivery = '{$delivery}',
+    count_rates = {$count_rates},
+    value = null,
+    locale = '{$locale}';
+
+if (rates.length > 0) {
+    form = rates;
+}
+
+form.live('change', function() {
+            $.ajax({
+                "type": 'POST',
+                "url": '{$url}',
+                "success": function (response) {
+                setCODRates(response.data)
+                }});
+});
+function setCODRates(data) {
+   if (count_rates > 1) {
+    delivery = shipping.find('.shipping-rates :selected').val();
+   }
+
+    value = data[delivery];
+    if (value === undefined){
+        value = 0;
+    }
+    value = value.toFixed(2);
+    
+    if (locale == 'ru_RU') {
+        value = value.replace(".",",");
+    }
+    
+    $('#{$params['id']}').val(value + ' ' + currency_sign);
+}
+setCODRates({$rates});
+</script>
+HTML;
+        return $html;
     }
 
     /**
@@ -710,7 +947,7 @@ class russianpostShipping extends waShipping
                     $this->printOnImagePersign($image, waRequest::get('sender_zip', $this->zip), 1650, 1810, 103, 80);
 
                     #Получатель
-                    $name = waRequest::get('shipping_name', $order->shipping_address['zip']);
+                    $name = waRequest::get('shipping_name', $order->contact_name);
                     $size = 60;
                     $names = $this->adjustSizes($name, array(42), $size);
                     $this->printOnImage($image, $names[0], 2450, 1680 + (35 - $size), $size);
@@ -768,9 +1005,11 @@ class russianpostShipping extends waShipping
                 if (!$strict && !$order) {
                     $this->view()->assign('action', 'preview');
                 }
+
                 $request = waRequest::request();
                 $this->view()->assign('src', http_build_query(array_merge($request, array('side' => 'front'))));
                 $this->view()->assign('order', $order);
+                $this->view()->assign('shipping_name', $order->contact_lastname.' '.$order->contact_firstname.' '.$order->contact_middlename);
                 $this->view()->assign('shipping_address', $this->buildAddress($order->shipping_address));
                 $this->view()->assign('editable', waRequest::post() || waRequest::get('mass_print') ? false : true);
                 $this->view()->assign('settings', $this->getSettings());
@@ -805,13 +1044,19 @@ class russianpostShipping extends waShipping
                         $this->printOnImage($image, 'X', 90, 750, 80);
                     }
 
+                    if ($this->zip_distribution_center) {
+                        $zip = $this->zip_distribution_center;
+                    } else {
+                        $zip = $this->zip;
+                    }
+
                     $this->printOnImage($image, sprintf('%d', $order['rub']), 110, 680);
                     $this->printOnImage($image, sprintf('%02d', $order['cop']), 430, 680);
                     $this->printOnImage($image, waRequest::request('order_amount', waCurrency::format($format, $order->total, $order->currency)), 650, 620, 30);
                     $this->printOnImage($image, $this->company_name, 210, 875);
                     $this->printOnImage($image, $this->address1, 210, 957);
                     $this->printOnImage($image, $this->address2, 70, 1040);
-                    $this->printOnImagePersign($image, $this->zip, 1965, 1020, 58.3, 50);
+                    $this->printOnImagePersign($image, $zip, 1965, 1020, 58.3, 50);
 
                     $this->printOnImagePersign($image, $this->inn, 227, 1330, 55.5, 45);
 
@@ -1208,7 +1453,7 @@ class russianpostShipping extends waShipping
                         'error'       => $ex->getMessage(),
                     );
                     waLog::log(var_export($message, true), 'wa-plugins/shipping/russianpost/soap.error.log');
-                    $template .= "Произаошла ошибка при обращении к API Почты России";
+                    $template .= "Произошла ошибка при обращении к API «Почты России»";
                 } catch (Exception $ex) {
                     $template .= $ex->getMessage();
                 }
@@ -1256,6 +1501,14 @@ class russianpostShipping extends waShipping
         if (!in_array($protocol, $wrappers, true)) {
             $this->wsdl = preg_replace('@^https://@', 'http://', $this->wsdl);
             $protocol = parse_url($this->wsdl, PHP_URL_SCHEME);
+        } else {
+            $options['context'] = stream_context_create(array(
+                'ssl' => array(
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                    'allow_self_signed' => true,
+                ),
+            ));
         }
 
         if (!in_array($protocol, $wrappers, true)) {
@@ -1295,6 +1548,10 @@ class russianpostShipping extends waShipping
                     };
                 }
             }
+        }
+
+        if (!empty($error)) {
+            waLog::log($error, 'wa-plugins/shipping/russianpost/track.error.log');
         }
 
         return compact('rows', 'error', 'timestamp');
@@ -1381,7 +1638,7 @@ class russianpostShipping extends waShipping
 
         } else {
             if ($error) {
-                $error = sprintf('<br/>Ошибка обмена данными с сервисом Почты России для автоматического отслеживания отправления: <span class="errormsg">%s</span>', $error);
+                $error = sprintf('<br/>Ошибка обмена данными с сервисом «Почты России» для автоматического отслеживания отправления: <span class="errormsg">%s</span>', $error);
             }
         }
         return compact('message', 'error');
@@ -1465,10 +1722,13 @@ HTML;
         switch (wa()->getEnv()) {
             case 'backend':
                 $html = <<<HTML
-{$status} <a href="#" class="inline-link" id="{$id}_show" style="float: right">Подробнее...</a>
+{$status} <a href="#" class="inline-link" id="{$id}_show" style="float: right; display: none">Подробнее...</a>
 
 <script type="text/javascript">
 (function () {
+    $('#{$id}_dialog').hide();
+    $('#{$id}_show').show();
+    $('#{$id}_cancel').show();
     $('#{$id}_show').bind('click', function() {
         var dialog =  $('#{$id}_dialog');
         if (typeof dialog.waDialog == 'function') {
@@ -1493,7 +1753,7 @@ HTML;
 })();
 </script>
 
-<div class="dialog" id="{$id}_dialog" style="display: none;">
+<div class="dialog" id="{$id}_dialog">
     <div class="dialog-background">
     </div>
     <div class="dialog-window">
@@ -1521,13 +1781,13 @@ HTML;
 
                 {$table}
                 <br/>
-                <span class="hint">Дата запроса к сервису Почты России для отслеживания отправления: {$updated}</span>
+                <span class="hint">Дата запроса к сервису «Почты России» для отслеживания отправления: {$updated}</span>
                 {$error}
             </div>
         </div>
         <div class="dialog-buttons">
             <div class="dialog-buttons-gradient">
-                <a class="cancel button" href="#">Закрыть</a>
+                <a class="cancel button" id="{$id}_cancel" style="display: none" href="#">Закрыть</a>
             </div>
         </div>
     </div>
@@ -1543,7 +1803,7 @@ HTML;
 Наложенный платеж: {$generic['payment']}<br>
 Вес (кг): {$generic['weight']}<br>
 {$table_frontend}
-<span class="hint">Дата запроса к сервису Почты России для отслеживания отправления: {$updated}</span>
+<span class="hint">Дата запроса к сервису «Почты России» для отслеживания отправления: {$updated}</span>
 </div>
 
 
@@ -1789,6 +2049,21 @@ HTML;
                     $this->printOnImage($image, $y / 10, $x, $y, 15);
                 }
             }
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    private function isDifficult()
+    {
+        $difficult = include($this->path.'/lib/config/data/difficult.php');
+        if (in_array($this->getAddress('zip'), $difficult)) {
+            return true;
+        } elseif (in_array(trim($this->getAddress('zip')), $difficult)) {
+            return true;
+        } else {
+            return false;
         }
     }
 }
