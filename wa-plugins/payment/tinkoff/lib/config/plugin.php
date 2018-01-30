@@ -5,6 +5,6 @@ return array(
     'icon'        => 'img/tinkoff16.png',
     'logo'        => 'img/tinkoff.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.0.4',
+    'version'     => '1.0.5',
     'type'        => waPayment::TYPE_ONLINE,
 );

@@ -724,18 +724,21 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             }
             foreach ($order->items as $item) {
                 $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
-                $this->receipt['Items'][] = array(
-                    'Name'     => mb_substr($item['name'], 0, 64),
-                    'Price'    => round($item['price'] * 100),
-                    'Quantity' => floatval($item['quantity']),
-                    'Amount'   => round($item['price'] * $item['quantity'] * 100),
-                    'Tax'      => $this->getTaxId($item),
-                );
+                if ($item['price'] > 0) {
+                    $this->receipt['Items'][] = array(
+                        'Name'     => mb_substr($item['name'], 0, 64),
+                        'Price'    => round($item['price'] * 100),
+                        'Quantity' => floatval($item['quantity']),
+                        'Amount'   => round($item['price'] * $item['quantity'] * 100),
+                        'Tax'      => $this->getTaxId($item),
+                    );
+                }
+
                 if ($item['tax_rate'] && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18)))) {
                     return null;
                 }
             }
-            if ($order->shipping || strlen($order->shipping_name)) {
+            if ($order->shipping && $order->shipping > 0) {
                 $item = array(
                     'tax_rate'     => $order->shipping_tax_rate,
                     'tax_included' => $order->shipping_tax_included,
