@@ -1237,6 +1237,9 @@ HTML;
 
     public function __get($app)
     {
+        if ($app == 'app') {
+          $app = $this->app_id;
+        }
         if (!isset(self::$helpers[$app])) {
             $wa = wa($this->app_id);
             if ($wa->getConfig()->getApplication() !== $app) {
