@@ -1363,3 +1363,6 @@ msgstr "Чтобы включить перенаправление на HTTPS д
 
 msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection."
 msgstr "Перенаправлять посетителей сайта с обычного HTTP- на безопасное HTTPS-подключение."
+
+msgid "To activate this option, <a>log in via HTTPS</a>."
+msgstr "Чтобы активировать эту настройку, <a>войдите через HTTPS</a>."

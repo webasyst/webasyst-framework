@@ -7,7 +7,7 @@
     {if $wa->get('reload_on_change')}<input type="hidden" name="correct_url" value="1">{/if}
 	<div class="float-left s-route">
 		<div class="block s-route-core">
-   				
+
    	        <a href="#" class="cancel back s-route-block">&larr; [`Back`]</a>
 
             {if strlen($route_id)}
@@ -23,7 +23,7 @@
                         {/if}
                     </div>
                 {/if}
-                
+
                 <div class="s-route-block" id="s-route-where">
         		    <span class="gray">
         		        {$domain_decoded}/
@@ -37,7 +37,7 @@
                     </ul>
                 </div>
                 {/if}
-          
+
             {else}
 
                 <!-- new route -->
@@ -46,7 +46,7 @@
         		        {$domain}/
         		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
                 </div>
-                
+
                 {if empty($route.redirect)}
            	        <div class="s-route-block" id="s-route-what">
             		    <span class="gray">&rarr;</span>
@@ -63,7 +63,7 @@
 
             {/if}
 
-            
+
             <div class="s-route-block" style="{if empty($route.redirect)}display: none;{/if}" id="s-route-to">
                 &rarr;
     		    <input type="text" name="params[redirect]" {if !isset($route.redirect)}disabled{/if} value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="bold large" placeholder="http://" />
@@ -121,7 +121,8 @@
                         <div class="name">[`Security`]</div>
                         <div class="value">
                             <label>
-                                <input type="checkbox" value="1" name="params[ssl_all]"{if !empty($route.ssl_all)} checked{/if}> [`Redirect to HTTPS`]<br>
+                                <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if}> [`Redirect to HTTPS`]<br>
+                                <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS.</a>`]<br></span>
                                 <span class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement.`]
                                 <br>
                                 [`This option will work only if an SSL certificate is installed for your domain name.`]
@@ -142,7 +143,7 @@
                         <h5 class="heading clear-both"><br>{$p}<br><br></h5>
                     {/if}
 					{/foreach}
-				{/if}				
+				{/if}
 				<div class="field">
 					<div class="name">[`Custom parameters`]</div>
 					<div class="value">
@@ -154,7 +155,7 @@
 					</div>
 				</div>
                 {/if}
-                
+
                 {if !empty($route.redirect) || $app}
 				<div class="field">
 					<div class="{if !$wa->get('reload_on_change')}value{else}wa-design-save-panel block bordered-top{/if}">
@@ -165,7 +166,7 @@
                 			</ul>
                 		</div>
                         {/if}
-					
+
 						<input type="submit" name="save" class="button green" value="[`Save`]" />
 						<span id="s-settings-form-status"></span>
 					</div>
@@ -181,6 +182,14 @@
 
 <script type="text/javascript">
 $(function () {
+
+    //Disabled ssl checkbox
+    if (window.location.protocol.replace(':', '') != 'https') {
+        $('#ssl_all').attr('disabled', true);
+        $('.ssl_all_hide').show();
+        $('.ssl_all_hide a').attr('href', window.location.href.replace('http', 'https'));
+    }
+
     $("select.s-select-app").on('change', function () {
         if ($(this).val()) {
             $('.s-route-details').html('<i class="icon16 loading"></i>').load('?module=routing&action=edit', 'domain_id={$domain_id}&app=' + $(this).val() + '&details=1', function () {

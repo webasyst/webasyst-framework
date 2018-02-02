@@ -57,7 +57,8 @@
                     <div class="name bold">[`Security`]</div>
                     <div class="value no-shift">
                         <label>
-                            <input type="checkbox" name="ssl_all" {if ifset($ssl_all)} checked='checked'{/if} /> [`Redirect to HTTPS`]<br>
+                            <input type="checkbox" name="ssl_all" id="ssl_all" {if ifset($ssl_all)} checked='checked'{/if} /> [`Redirect to HTTPS`]<br>
+                            <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
                             <span class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection.`]
                             <br>
                             [`This option will work only if an SSL certificate is installed for your domain name.`]</span>
@@ -238,6 +239,14 @@
 </div>
 </div>
 <script type="text/javascript">
+
+    //Disabled ssl checkbox
+    if (window.location.protocol.replace(':', '') != 'https') {
+        $('#ssl_all').attr('disabled', true);
+        $('.ssl_all_hide').show();
+        $('.ssl_all_hide a').attr('href', window.location.href.replace('http', 'https'));
+    }
+
 
     $("input.adapter").click(function () {
         var el = $(this).parent().find('div.adapter-controls');
