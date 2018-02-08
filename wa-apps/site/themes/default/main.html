@@ -1,3 +1,6 @@
+<!-- plugin hook: 'frontend_header' -->
+{* @event frontend_header.%plugin_id% *}
+{foreach $frontend_header as $_}{$_}{/foreach}
 {if $wa->currentUrl() == $wa_app_url && (empty($page.id) && empty($page.content))}
 
     <div class="welcome">
