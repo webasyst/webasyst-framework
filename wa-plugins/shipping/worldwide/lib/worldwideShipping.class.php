@@ -141,8 +141,8 @@ class worldwideShipping extends waShipping
     public function requestedAddressFields()
     {
         return array(
-            'zip'     => false,
-            'country' => true,
+            'zip'     => array(),
+            'country' => array('cost' => false),
         );
     }
 
@@ -155,10 +155,10 @@ class worldwideShipping extends waShipping
                     $countries = array();
                     break 2;
                 case '%EU':
-                    $countries += $this->getEuropeanCountries();
+                    $countries = array_merge($countries, $this->getEuropeanCountries());
                     break;
                 case '%RW':
-                    $countries += $this->getNotEuropeanCountries();
+                    $countries = array_merge($countries, $this->getNotEuropeanCountries());
                     break;
                 default:
                     $countries[] = $item['country'];
@@ -436,7 +436,7 @@ class worldwideShipping extends waShipping
     {
         foreach ($weights as &$weight) {
             $weight = str_replace("'", "", str_replace("\"", "", $weight));
-            $weight = str_replace(',', '.', (float)$weight);
+            $weight = str_replace(',', '.', $weight);
         }
         unset($weight);
     }
