@@ -1,0 +1,505 @@
+<style>
+    #worldwide-delivery-table { margin-top: -10px; }
+    #{$plid}-delivery-table tr.{$plid}-disabled td { text-decoration: line-through; color: #aaa; }
+    .{$plid}-disable-region-link i.delete { opacity: 0; }
+    .{$plid}-disable-region-link:hover i.delete { opacity: 1; }
+</style>
+<div class="field-group" id="{$plid}-deliverty-settings">
+    <div class="field">
+        <div class="name">{$p->_w('Currency')}</div>
+        <div class="value">
+            <select name="{$namespace|escape}[currency]" id="{$plid}-currency-input">
+                {foreach $currencies as $currency}
+                    <option value="{$currency.code|escape}"
+                            {if $values.currency == $currency.code} selected="selected"{/if}>
+                        {"`$currency.title` (`$currency.code`)"|escape}
+                    </option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">
+            {$p->_w('Weight dimension unit')}
+        </div>
+        <div class="value">
+            <select name="{$namespace|escape}[weight_dimension]" id="{$plid}-weight-unit-input">
+                <option value="kg" data-value="{$p->_w('kg')}"
+                        {if $values.weight_dimension == 'kg'} selected="selected"{/if}>
+                    {$p->_w('kg')}
+                </option>
+                <option value="lbs" data-value="{$p->_w('lbs')}"
+                        {if $values.weight_dimension == 'lbs'} selected="selected"{/if}>
+                    {$p->_w('lbs')}
+                </option>
+            </select>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">
+            {$p->_w('Delivery rates')}
+        </div>
+        <div class="value no-shift">
+
+            <table id="{$plid}-delivery-table" class="zebra">
+                <thead  id="{$plid}-delivery-table-head">
+                    <tr class="white">
+                        <th colspan="2" class="nowrap {$plid}-country-column">{$p->_w('Destination')} <i class="icon10 uarr"></i></th>
+                        <th id="{$plid}-calculation-type-th">
+                            <select id="{$plid}-calculation-type">
+                                <option value="all">{$p->_w('Same rate for any package weight')}</option>
+                                <option value="individually">{$p->_w('Define rates by package weight...')}</option>
+                            </select>
+                        </th>
+                        <th>{$p->_w('Transit time')}</th>
+                        <th class="min-width"></th>
+                    </tr>
+                </thead>
+                <tbody id="{$plid}-delivery-table-items">
+                </tbody>
+                <tbody>
+
+                    <tr class="empty-row{if $delivery_countries} hidden{/if}">
+                        <td colspan="5">
+                            <em class="grey">{$p->_w('No international shipping rates defined yet.')}</em>
+                        </td>
+                    </tr>
+
+                    <tr class="white">
+                        <td colspan="5"></td>
+                    </tr>
+
+                    <tr class="white">
+                        <td colspan="5">
+                            <select id="{$plid}-add-new-country">
+                                <option selected value="">{$p->_w('Add country')}</option>
+                                <option disabled>--</option>
+                                <optgroup label="">
+                                <option value="%AL"{if !empty($delivery_countries)} disabled{/if}>{$p->_w('All countries')}</option>
+                                <option value="%EU"{if !empty($delivery_countries["%EU"])} disabled{/if}>{$p->_w('All European countries')}</option>
+                                <option value="%RW"{if !empty($delivery_countries["%RW"])} disabled{/if}>{$p->_w('Rest of world')}</option>
+                                <option disabled>--</option>
+                                {foreach $countries as $c}
+                                    <option value="{$c.iso3letter}"{if !empty($delivery_countries[$c.iso3letter]) || !$c.iso3letter} disabled{/if}>{$c.name}</option>
+                                {/foreach}
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <input type="hidden" name="{$namespace|escape}[delivery_table]" id="{$plid}-delivery-table-hidden-input">
+            <input type="hidden" name="{$namespace|escape}[weights]" id="{$plid}-weights-hidden-input">
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>(function() {
+
+    var countries = {json_encode($country_names)};
+    countries['%AL'] = '{$p->_w('All countries')}';
+    countries['%EU'] = '{$p->_w('All European countries')}';
+    countries['%RW'] = '{$p->_w('Rest of world')}';
+    var regions = {json_encode($regions)};
+
+    var items = {json_encode($values.delivery_table)};
+    var weights = {json_encode($values.weights)};
+    var transits = {json_encode($transits)};
+
+    var findByCountryAndRegion = function(items, country, region) {
+        for (var i = 0; i < items.length; i ++) {
+            if (items[i].country === country) {
+                if (!region) {
+                    return items[i];
+                } else if (items[i].items) {
+                    for (var j = 0; j < items[i].items.length; j ++) {
+                        if (items[i].items[j].region == region) {
+                            return items[i].items[j];
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        return null;
+    };
+
+    var deleteByCountry = function(items, country) {
+        for (var i = 0; i < items.length; i += 1) {
+            if (items[i].country === country) {
+                items = items.slice(0, i).concat(items.slice(i + 1));
+                return items;
+            }
+        }
+        return items;
+    };
+
+        var toFloat = function(val) {
+            var str = ('' + (val || '0')).replace(',', '.').replace(/["']*/, '');
+            return parseFloat(str) || 0.0;
+        };
+
+        var toRate = function(val) {
+            return ('' + (val || '')).replace(',', '.').replace(/[^\d\.\-+%]+/, '');
+        };
+
+    var formatValues = function() {
+        for (var i = 0; i < weights.length; i += 1) {
+            if (weights[i]) {
+                weights[i] = toFloat(weights[i]);
+            }
+        }
+        var toFloatItemsRates = function (items) {
+            for (var i = 0; i < items.length; i += 1) {
+                var item = items[i];
+                for (var j = 0; j < item.rate.length; j += 1) {
+                    item.rate[j] = toRate(item.rate[j] || '');
+                }
+                if (!$.isEmptyObject(item.items)) {
+                    toFloatItemsRates(item.items);
+                }
+            }
+        };
+        toFloatItemsRates(items);
+    };
+
+    var upHiddenInputs = function() {
+        $('#{$plid}-delivery-table-hidden-input').val(JSON.stringify(items));
+        $('#{$plid}-weights-hidden-input').val(JSON.stringify(weights));
+    };
+
+    var renderDeliveryTableHead = function(weights) {
+        var weight_unit = $('#{$plid}-weight-unit-input').val();
+        var th = '';
+        th += '<th colspan="2" class="nowrap {$plid}-country-column">{$p->_w('Destination')} <i class="icon10 uarr"></i></th>';
+        if (!$.isArray(weights)||weights.length==0) {
+            th += '<th>' + renderCalculationTypeSelector() + '</th>';
+        } else {
+            for (var i = 0; i < weights.length; i += 1) {
+                th += '<th class="{$plid}-weight-td" data-index="' + i + '"><span style="margin-left: -0.85em;">≥</span>&nbsp;<input type="text" class="short bold numerical {$plid}-weight-input" placeholder="0" value="' + weights[i] + '">&nbsp;<span class="{$plid}-weight-unit">'+weight_unit+'</span>&nbsp;';
+                th += '<a href="javascript:void(0);" class="inline"><i class="icon10 delete {$plid}-delete-weight-link" style="margin-top: 6px;"></i></a></th>';
+            }
+            th += '<th><a href="javascript:void(0)" class="inline {$plid}-add-column-link inline-link small"><i class="icon10 add"></i><b><i>{$p->_w('Add weight')}</i></b></a></th>';
+        }
+        th += '<th>{$p->_w("Transit time")}</th>';
+        th += '<th></th>';
+        return '<tr class="white">' + th + '</th>';
+    };
+
+    var renderDeliveryTableBodyRows = function(items, weights, currency) {
+        if(!currency){
+            currency = $('#{$plid}-currency-input').val();
+        }
+        var res = '';
+        for (var it = 0; it < items.length; it += 1) {
+            var item = items[it];
+            var country = item.country || '';
+            var region = item.region || '';
+            var name = '';
+            if (region && regions[country]) {
+                name = regions[country].options[region];
+            } else if (!region) {
+                name = countries[country];
+            }
+            var icon = '';
+            if (country && country.slice(0, 1) !== '%' && !region) {
+                icon = '<i class="icon16 country" style="background:url({$wa_url}wa-content/img/country/' + country + '.gif) no-repeat"></i>';
+            }
+
+            var name_html = '';
+            if (region) {
+                name_html = '<td class="small"><span>' + name + '</span>' + ' <span class="hint">' + region + '</span>' + '</td>';
+            } else {
+                name_html = '<td><span>' + name + '</span></td>';
+            }
+
+            var td = ['<td class="min-width">' + icon + '</td>', name_html];
+
+            if ($.isArray(weights) && weights.length) {
+                for (var i = 0; i < weights.length; i += 1) {
+                    var rate = item.rate[i] || '';
+                    td.push('<td data-index="' + i + '"><input type="text" class="short numerical {$plid}-rate-input" value="' + rate + '" placeholder="0">&nbsp;<span class="{$plid}-currency">'+currency+'</span></td>');
+                }
+                td.push('<td></td>');
+            } else {
+                if($.isArray(item.rate)){
+                    item.rate=toRate(item.rate.shift());
+                }
+                td.push('<td data-index="all"><input type="text" class="short numerical {$plid}-rate-input" value="' + (item.rate||'') + '" placeholder="0">&nbsp;<span class="{$plid}-currency">'+currency+'</span></td>');
+            }
+            td.push('<td>' + renderTranslitTimeSelector(item.transit_time) + '</td>');
+
+            if (!region) {
+                td.push('<td><a href="javascript:void(0);" class="{$plid}-delete-country-link"><i class="icon16 delete"></i></a></td>');
+            } else {
+                td.push('<td><a href="javascript:void(0);" class="{$plid}-disable-region-toggle"><i class="icon10 ' + (!item.disabled ? 'no' : 'no-bw') + '"></i></a></td>');            }
+
+            var cls = '';
+            var title='';
+            if (region && item.disabled) {
+                cls = '{$plid}-disabled';
+                title = '{$p->_w("Shipping to this region will not be offered.")|escape:"js"}';
+            }
+
+            res += '<tr data-country="' + country + '" data-region="' + region + '" class="' + cls + '" title="'+title+'">' + td.join('') + '</tr>';
+
+            if ($.isArray(item.items) && item.items.length) {
+                res += renderDeliveryTableBodyRows(item.items, weights, currency);
+            }
+
+        }
+        return res;
+    };
+
+    var renderTranslitTimeSelector = function(val) {
+        val = typeof val === 'undefined' ? '+1 week' : val;
+        var html = '<select class="{$plid}-transit-selector">';
+        var selected = false;
+        for (var i = 0; i < transits.length; i++) {
+            selected = (!val && transits[i].default ) || (val === transits[i].value);
+            html += '<option value="' + transits[i].value + '" ' + (selected ? 'selected="selected"' : '') + '>' + transits[i].title + '</option>';
+        }
+        html +='</select>';
+        return html;
+    };
+
+    var renderCalculationTypeSelector = function() {
+        return '<select class="{$plid}-calculation-type" name="{$namespace}[calculation_type]">' +
+                        '<option value="all">{$p->_w('Same rate for any package weight')}</option>' +
+                        '<option value="individually">{$p->_w('Define rates by package weight...')}</option>' +
+                '</select>';
+    };
+
+    var renderTable = function(items, weights) {
+        formatValues();
+        upHiddenInputs();
+        $('#{$plid}-delivery-table-head').html(renderDeliveryTableHead(weights));
+        $('#{$plid}-delivery-table-items').html(renderDeliveryTableBodyRows(items, weights));
+    };
+
+    renderTable(items, weights);
+
+
+    var block = $('#{$plid}-deliverty-settings');
+
+        $('#{$plid}-weight-unit-input').change(function(){
+            var unit = $(this).val();
+            $('.{$plid}-weight-unit').text(unit);
+        }).change();
+
+        $('#{$plid}-currency-input').change(function(){
+            var currency = $(this).val();
+            $('.{$plid}-currency').text(currency);
+        }).change();
+
+    //$('tr.{$plid}-disabled :input').attr('disabled',true);
+
+    $('#{$plid}-add-new-country').change(function() {
+        var select = $(this);
+        var val = select.val();
+        if (val) {
+
+            select.find('option[value="' + val  + '"]').attr('disabled', true);
+            select.find('option[value="%AL"]').attr('disabled', true);
+
+            block.find('.empty-row').hide();
+            var item = {
+                country: val,
+                rate: '',
+                transit_time: '+1 week'
+            };
+            if ($.isArray(weights)) {
+                item.rate = [];
+                for (var i = 0; i < weights.length; i += 1) {
+                    item.rate[i] = '';
+                }
+            }
+
+            var mixinRegionItems = function(item, regions_data) {
+                var region_items = [];
+                var r_ord = regions_data.oOrder || [];
+                var r_code;
+                var r_codes = {
+                };
+                for (var r = 0; r < r_ord.length; r++) {
+                    r_code = r_ord[r];
+                    if ((r_code != '') && !r_codes[r_code]) {
+                        r_codes[r_code] = r_code;
+                        region_items.push({
+                            country: val,
+                            region: r_code,
+                            rate: '',
+                            transit_time: '+1 week'
+                        });
+                    }
+                }
+                item.items = region_items;
+                return item;
+            };
+
+            var loadRegions = function(after) {
+                if (regions[val] === undefined) {
+                    var loading = $('<i class="icon16 loading"></i>').insertAfter(select);
+                    $.post('{$xhr_url}', { country: val }, function(r) {
+                        loading.remove();
+                        regions[val] = r.data;
+                        after(regions[val]);
+                    }, 'json');
+                } else {
+                    after(regions[val]);
+                }
+            };
+
+            loadRegions(function(regions_data) {
+                item = mixinRegionItems(item, regions_data);
+                items.push(item);
+                $('#{$plid}-delivery-table-items').append(renderDeliveryTableBodyRows([item], weights));
+                upHiddenInputs();
+            });
+
+        }
+        select.val('');
+    });
+
+    block.on('click', '.{$plid}-calculation-type', function() {
+        var el = $(this);
+        if (el.val() === 'individually') {
+            for (var i = 0; i < items.length; i += 1) {
+                var item = items[i];
+                item.rate = [item.rate['all'] || ''];
+            }
+            weights = [''];
+            renderTable(items, weights);
+        }
+    });
+
+    block.on('click', '.{$plid}-add-column-link', function() {
+        weights.push('');
+        var last = weights.length - 1;
+        for (var i = 0; i < items.length; i += 1) {
+            var item = items[i];
+            item.rate[last] = '';
+        }
+        renderTable(items, weights);
+        upHiddenInputs();
+    });
+
+    block.on('click',  '.{$plid}-delete-weight-link', function() {
+        var link = $(this);
+        var td = link.closest('.{$plid}-weight-td');
+        var index = td.data('index');
+        var ar_delete = function(ar, i) {
+            return ar.slice(0, i).concat(ar.slice(i + 1));
+        };
+        for (var i = 0; i < items.length; i += 1) {
+            var item = items[i];
+            item.rate = ar_delete(item.rate, index);
+        }
+
+        weights = ar_delete(weights, index);
+        renderTable(items, weights);
+    });
+
+    $('#{$plid}-delivery-table-items')
+        .on('change', 'input.{$plid}-rate-input', function() {
+            var input = $(this);
+            var td = input.closest('td');
+            var index = td.data('index');
+            if (index !== 'all') {
+                index = parseInt(index, 10);
+                if (isNaN(index)) {
+                    return;
+                }
+            }
+            var tr = input.closest('tr');
+            var country = tr.data('country');
+            var region = tr.data('region');
+            var item = findByCountryAndRegion(items, country, region);
+            if (!item) {
+                return;
+            }
+            var val = toRate(input.val() || '');
+            if (index === 'all') {
+                item.rate = val;
+            } else {
+                if(!$.isArray(item.rate)){
+                    item.rate=[];
+                }
+                item.rate[index] = val;
+            }
+            input.val(val);
+
+            upHiddenInputs();
+
+        })
+        .on('change', 'select.{$plid}-transit-selector', function() {
+            var selector = $(this);
+            var tr = selector.closest('tr');
+            var country = tr.data('country');
+            var region = tr.data('region');
+            var item = findByCountryAndRegion(items, country, region);
+            if (!item) {
+                return;
+            }
+            item.transit_time = selector.val();
+
+            upHiddenInputs();
+
+        })
+        .on('click', '.{$plid}-delete-country-link', function() {
+            var tr = $(this).closest('tr');
+            var country = tr.data('country');
+            $('#{$plid}-delivery-table-items tr[data-country="' + country + '"]').remove();
+            items = deleteByCountry(items, country);
+            $('#{$plid}-add-new-country').find('option[value="' + country + '"]').attr('disabled', false);
+            if ($.isEmptyObject(items)) {
+                $('#{$plid}-add-new-country').find('option[value="%AL"]').attr('disabled', false);
+            }
+            upHiddenInputs();
+
+        })
+        .on('click', '.{$plid}-disable-region-toggle', function() {
+            var link = $(this);
+            var icon = link.find('i');
+            var tr = link.closest('tr');
+            var country = tr.data('country');
+            var region = tr.data('region');
+
+            var item = findByCountryAndRegion(items, country, region);
+
+            var delete_link = icon.hasClass('no');
+            if (delete_link) {
+                icon.removeClass('no').addClass('no-bw');
+                tr.addClass('{$plid}-disabled');
+                tr.attr('title','{$p->_w("Shipping to this region will not be offered.")|escape:"js"}')
+                //tr.find(':input').attr('disabled',true);
+                item.disabled = true;
+            } else {
+                icon.removeClass('no-bw').addClass('no');
+                tr.removeClass('{$plid}-disabled');
+                //tr.find(':input').attr('disabled',null);
+                tr.attr('title','');
+                delete item.disabled;
+            }
+
+            upHiddenInputs();
+        })
+        .on('click');
+
+    $('#{$plid}-delivery-table-head')
+        .on('change', 'input.{$plid}-weight-input', function() {
+            var input = $(this);
+            var th = input.closest('th');
+            var index = parseInt(th.data('index'), 10);
+            if (isNaN(index) && index < weights.length) {
+                return;
+            }
+            weights[index] = input.val();
+            upHiddenInputs();
+        });
+
+})();</script>
+

@@ -1,0 +1,146 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-plugins/shipping/worldwide\n"
+"POT-Creation-Date: 2015-05-14 15:01+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wa-plugins/shipping/worldwide\n"
+"Language-Team: wa-plugins/shipping/worldwide\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.7.6\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-plugins/shipping/worldwide/lib/config/plugin.php:3
+msgid "Worldwide"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/config/plugin.php:4
+msgid "Reliable international delivery tailored to local conditions."
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:63
+msgid "Same day"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:67
+msgid "Next day"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:71
+msgid "2-3 days"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:76
+msgid "1 week"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:80
+msgid "2 weeks"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:84
+msgid "2-3 weeks"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:88
+msgid "2-4 weeks"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:92
+msgid "4-6 weeks"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:96
+msgid "4-8 weeks"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:100
+msgid "2-3 months"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:104
+msgid "Undefined"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/lib/worldwideShipping.class.php:293
+msgid "Package weight exceeds maximum allowed weight"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:189
+#: /wa-plugins/shipping/worldwide/templates/settings.html:54
+msgid "Transit time"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:243
+#: /wa-plugins/shipping/worldwide/templates/settings.html:470
+msgid "Shipping to this region will not be offered."
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:9
+msgid "Currency"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:23
+msgid "Weight dimension unit"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:27
+#: /wa-plugins/shipping/worldwide/templates/settings.html:29
+msgid "kg"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:31
+#: /wa-plugins/shipping/worldwide/templates/settings.html:33
+msgid "lbs"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:40
+msgid "Delivery rates"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:47
+#: /wa-plugins/shipping/worldwide/templates/settings.html:179
+msgid "Destination"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:50
+#: /wa-plugins/shipping/worldwide/templates/settings.html:270
+msgid "Same rate for any package weight"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:51
+#: /wa-plugins/shipping/worldwide/templates/settings.html:271
+msgid "Define rates by package weight..."
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:64
+msgid "No international shipping rates defined yet."
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:75
+msgid "Add country"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:78
+#: /wa-plugins/shipping/worldwide/templates/settings.html:103
+msgid "All countries"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:79
+#: /wa-plugins/shipping/worldwide/templates/settings.html:104
+msgid "All European countries"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:80
+#: /wa-plugins/shipping/worldwide/templates/settings.html:105
+msgid "Rest of world"
+msgstr ""
+
+#: /wa-plugins/shipping/worldwide/templates/settings.html:187
+msgid "Add weight"
+msgstr ""
