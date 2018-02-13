@@ -38,6 +38,7 @@ return array(
         'options' => array(
             '+3 hour' => /*_wp*/('Same day'),
             '+1 day'  => /*_wp*/('Next day'),
+            '+1 day, +2 day'  => /*_wp*/('1-2 days'),
             '+2 day, +3 day' => /*_wp*/('2-3 days'),
             '+1 week' => /*_wp*/('1 week'),
             ''        => /*_wp*/('Undefined')

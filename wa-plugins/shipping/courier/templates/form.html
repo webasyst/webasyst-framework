@@ -4,102 +4,109 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{$order.id_str|escape}</title>
     {$wa->css()}
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript">
-        function textAreaAdjust(o) {
-            o.style.height = "1px";
-            o.style.height = (10 + o.scrollHeight) + "px";
-        }
-    </script>
-    <style type="text/css">{literal}
-        .sidebar.right{float:right;width:230pt;padding-top:15pt;text-align:center}
-        .content.right{margin-right:230pt}
-        .print-button{margin-bottom:15pt}
-        .address img.overhanging{display:none}
-        h1{font-size:2.8em;margin-bottom:0}
-        h2{font-size:2.2em}
-        h3{font-size:1.4em}
-        h4{font-size:1.2em;font-weight:400}
-        .map{width:100%;max-width:502pt;height:350pt;margin:0 auto}
-        .paid{display:inline-block;margin-bottom:10pt;font-size:1.3em;font-weight:700;color:#fff;background:green;padding:5pt 7pt}
-        ul.order-content{padding-left:12pt}
-        ul.order-content li{padding-bottom:5pt}
-        ul.contact-info{padding-bottom:15pt}
-        textarea{padding:5pt;min-height:100pt;margin-top:5pt;overflow:hidden}
-        @media print{
-            .noprint,input{display:none}
-            textarea{border:1pt dashed #aaa;background:#eee;padding:10pt;font-weight:700}
-            .printable{display:block}
-            .block.double-padded{padding:0}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="{$wa_url}wa-plugins/shipping/courier/css/form.css">
+    <script>
+        function textAreaAdjust(textarea) {
+            var $textarea = $(textarea);
+            $textarea.css("min-height", 0);
+            var scroll_h = $textarea[0].scrollHeight;
+            $textarea.css("min-height", (scroll_h + 10) + "px");
+
+            var value = nl2br( escape($textarea.val()) );
+
+            if (value.length) {
+                $("#js-textarea-div").removeClass("hidden").html(value);
+            } else {
+                $("#js-textarea-div").addClass("hidden").html("");
+            }
         }
 
-        {/literal}
-    </style>
+        function nl2br(string) {
+            return string.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        }
+
+        function escape(string) {
+            return $("<div />").text(string).html();
+        }
+    </script>
 </head>
 
 <body onLoad="textAreaAdjust(document.getElementById('comment'))">
 
 <div class="block double-padded">
 
-    <div class="sidebar right">
+    <div class="c-layout fixed">
+        <div class="content c-column">
 
-        <input type="button" class="print-button" onclick="window.print();return false;" value="{$p->_w('Print')}">
+            <!-- order id -->
+            <h1>{$order.id_str}</h1>
 
-        <h2>{$order.total|wa_format_amount:$order.currency:'%{s}'}</h2>
-        {if $order.paid_datetime}
-            <div class="paid">{$p->_w('Paid')}</div>
-        {/if}
+            <div class="clear-left"></div>
 
-        <p>
-            {$p->_w('Payment')}: <strong class="inline_edit">{$order.payment_name|escape}</strong><br/>
-            {*
-            {$p->_w('Shipping cost')}: <strong class="inline_edit">{$order.shipping|wa_format_amount:$order.currency:'%{s}'}</strong>
-             *}
-        </p>
-
-        <!-- comment -->
-        <span class="noprint gray">{$p->_w('Comment')}:</span><br>
-        <textarea class="large" onkeyup="textAreaAdjust(this)" id="comment" title="{$p->_w('Comment')}">{$order.comment|escape}</textarea>
-
-    </div>
-
-    <div class="content right">
-
-        <!-- order id -->
-        <h1>{$order.id_str}</h1>
-
-        <div class="clear-left"></div>
-
-        <!-- order content -->
-        <ul class="order-content">
-            {foreach $order.items as $item}
-                <li>{$item.name|escape} <span class="gray">{$item.sku|escape}</span> <span class="gray">&times;</span> {$item.quantity}</li>
-            {/foreach}
-        </ul>
-
-        <!-- shipping info -->
-        <h3>
-            {$order.contact.name|escape}
-        </h3>
-        {if $main_contact_info}
-            <ul class="menu-v with-icons compact contact-info">
-                {foreach $main_contact_info as $top_field}
-                    <li><i class="icon16 {$top_field.id}"></i>{$top_field.value}</li>
+            <!-- order content -->
+            <ul class="menu-v order-content">
+                {foreach $order.items as $item}
+                    <li>
+                        {$item.name|escape}
+                        <span class="gray">{$item.sku|escape}</span>
+                        <span class="gray">&times;</span>
+                        <span class="large bold">{$item.quantity}</span>
+                    </li>
                 {/foreach}
             </ul>
-        {/if}
 
-        <!-- address -->
-        <h4 class="gray">{$p->_w('Shipping address')}</h4>
+            <section class="c-payment-section">
 
-        <p class="large bold address">
-            {$shipping_address}
-        </p>
+                <h2>{$order.total|wa_format_amount:$order.currency:'%{s}'}</h2>
 
+                {if $order.paid_datetime}
+                    <div class="paid">{$p->_w('Paid')}</div>
+                {/if}
+
+                <p>
+                    {$p->_w('Payment')}: <strong class="inline_edit">{$order.payment_name|escape}</strong>
+                    {*
+                    {$p->_w('Shipping cost')}: <strong class="inline_edit">{$order.shipping|wa_format_amount:$order.currency:'%{s}'}</strong>
+                     *}
+                </p>
+            </section>
+
+        </div>
+        <div class="c-column c-sidebar-column">
+
+            <div class="c-print-button">
+                <input type="button" class="print-button" onclick="window.print();return false;" value="{$p->_w('Print')}">
+            </div>
+
+            <!-- shipping info -->
+            <h3>{$order.contact.name|escape}</h3>
+
+            {if $main_contact_info}
+                <ul class="menu-v with-icons compact contact-info">
+                    {foreach $main_contact_info as $top_field}
+                        <li><i class="icon16 {$top_field.id}"></i>{$top_field.value}</li>
+                    {/foreach}
+                </ul>
+            {/if}
+
+            <!-- address -->
+            <section class="c-address-section">
+                <h4 class="gray">{$p->_w('Shipping address')}</h4>
+                <p class="large bold address">{$shipping_address}</p>
+            </section>
+        </div>
     </div>
 
-    <div class="clear-both"></div>
-    {$map}
+    <section class="c-comment-section">
+        <h4 class="c-label noprint gray">{$p->_w('Comment')}:</h4>
+        <textarea class="large" onkeyup="textAreaAdjust(this)" id="comment" title="{$p->_w('Comment')}">{$order.comment|escape}</textarea>
+        <div class="textarea {if empty($order.comment)}hidden{/if}" id="js-textarea-div">{$order.comment|escape}</div>
+    </section>
+
+    <section class="c-map-section">
+        <div class="c-map-wrapper">{$map}</div>
+    </section>
 
 </div>
 

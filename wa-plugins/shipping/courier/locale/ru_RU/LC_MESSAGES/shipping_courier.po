@@ -44,6 +44,10 @@ msgstr "Следующий день"
 msgid "2-3 days"
 msgstr "2–3 дня"
 
+#: //wa-plugins/shipping/courier/lib/config/settings.php:26
+msgid "1-2 days"
+msgstr "1–2 дня"
+
 #: //wa-plugins/shipping/courier/lib/config/settings.php:27
 msgid "1 week"
 msgstr "1 неделя"

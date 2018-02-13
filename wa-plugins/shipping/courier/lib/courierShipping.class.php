@@ -225,19 +225,19 @@ class courierShipping extends waShipping
             }
         } else {
             $fields = array(
-                'zip' => false,
+                'zip'     => false,
+                'country' => array('cost' => true, 'required' => true,),
+                'region'  => array('cost' => true, 'required' => true,),
             );
-
-            foreach ($address as $field => $value) {
-                if (!is_array($value)) {
-                    $fields[$field] = false;
-                }
-            }
 
             $contact_fields = $this->contact_fields;
             foreach (array('country', 'region', 'city', 'street') as $field) {
-                if (empty($contact_fields[$field])) {
-                    $fields += array($field => false);
+                if (in_array($field, $contact_fields)) {
+                    $fields += array(
+                        $field => array(
+                            'required' => true
+                        )
+                    );
                 }
             }
         }
@@ -271,7 +271,7 @@ class courierShipping extends waShipping
             } else {
                 $from = strtotime(preg_replace('@,.+$@', '', $this->delivery_time));
             }
-            $offset = max(0, ceil(($from - time()) / (24 * 3600)));
+            $offset = max(0, round(($from - time()) / (24 * 3600)));
             $shipping_params = $order->shipping_params;
             $value = array();
 
