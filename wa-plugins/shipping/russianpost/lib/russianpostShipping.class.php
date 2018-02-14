@@ -637,7 +637,7 @@ class russianpostShipping extends waShipping
      */
     private function getCacheKey($key = null)
     {
-        return sprintf('wa-plugins/shipping/russainpost/%s/%s/%s', $this->app_id, $this->key, $key ? $key : $this->cache_key);
+        return sprintf('wa-plugins/shipping/russianpost/%s/%s/%s', $this->app_id, $this->key, $key ? $key : $this->cache_key);
     }
 
     /**
