@@ -243,7 +243,9 @@ class waRequestFile
         } elseif ($this->skip_uploaded_check && !file_exists($this->data['tmp_name'])) {
             throw new waException('Temporary file does not exist anymore.');
         }
-
+        
+        waFiles::create($dir, true);
+        
         if ($name === null) {
             return $dir;
         } else {
