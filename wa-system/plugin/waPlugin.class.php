@@ -31,16 +31,36 @@ class waPlugin
     {
         $this->info = $info;
         $this->id = $this->info['id'];
+        
         if (isset($this->info['app_id'])) {
             $this->app_id = $this->info['app_id'];
         } else {
             $this->app_id = waSystem::getInstance()->getApp();
         }
-        $this->path = wa()->getAppPath('plugins/'.$this->id, $this->app_id);
+        
+        $this->path = waSystem::getInstance($this->app_id)->getPluginPath($plugin_id);
 
         $this->checkUpdates();
     }
 
+    /**
+     * Get plugin ID.
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+    
+    /**
+     * Get path to plugin.
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+    
     public function getName()
     {
         return $this->info['name'];
@@ -54,16 +74,25 @@ class waPlugin
         }
         return $version;
     }
-
+    
+    /**
+     * Write message in plugin log.
+     * @param string $message
+     * @return void
+     */
+    public function addToLog($message)
+    {
+        waLog::log((string)$message, $this->app_id . '/plugins/' . $this->id . '.log');
+    }
+    
     protected function checkUpdates()
     {
-        $app_settings_model = new waAppSettingsModel();
-        $time = $app_settings_model->get(array($this->app_id, $this->id), 'update_time');
+        $time = self::getSettingsModel()->get($this->getSettingsKey(), 'update_time');
         if (!$time) {
             try {
                 $this->install();
             } catch (Exception $e) {
-                waLog::log($e->getMessage());
+                $this->addToLog($e);
                 throw $e;
             }
             $ignore_all = true;
@@ -80,7 +109,7 @@ class waPlugin
             }
         }
         $path = $this->path.'/lib/updates';
-        $cache_database_dir = wa()->getConfig()->getPath('cache').'/db';
+        $cache_database_dir = waSystem::getInstance()->getConfig()->getPath('cache').'/db';
         if (file_exists($path)) {
             $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
             $files = array();
@@ -110,14 +139,14 @@ class waPlugin
                     if (!$ignore_all) {
                         $this->includeUpdate($file);
                         waFiles::delete($cache_database_dir);
-                        $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+                        self::getSettingsModel()->set($this->getSettingsKey(), 'update_time', $t);
                     }
                 } catch (Exception $e) {
                     if ($is_debug) {
                         echo $e;
                     }
                     // log errors
-                    waLog::log($e->__toString());
+                    $this->addToLog($e);
                     break;
                 }
             }
@@ -129,7 +158,7 @@ class waPlugin
             if (!isset($t) || !$t) {
                 $t = 1;
             }
-            $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+            self::getSettingsModel()->set($this->getSettingsKey(), 'update_time', $t);
         }
     }
 
@@ -163,8 +192,8 @@ class waPlugin
                 // remove files
                 $path = waConfig::get('wa_path_cache').'/db/';
                 waFiles::delete($path, true);
-            } catch (waException $e) {
-                waLog::log($e->__toString());
+            } catch (Exception $e) {
+                $this->addToLog($e);
             }
             // clear runtime cache
             waRuntimeCache::clearAll();
@@ -178,12 +207,11 @@ class waPlugin
         if (file_exists($file)) {
             try {
                 include($file);
-
-            } catch (Exception $ex) {
+            } catch (Exception $e) {
                 if ($force) {
-                    waLog::log(sprintf("Error while uninstall %s at %s: %s", $this->id, $this->app_id, $ex->getMessage(), 'installer.log'));
+                    $this->addToLog('Error while uninstall:' . $e);
                 } else {
-                    throw $ex;
+                    throw $e;
                 }
             }
         }
@@ -198,8 +226,7 @@ class waPlugin
             }
         }
         // Remove plugin settings
-        $app_settings_model = new waAppSettingsModel();
-        $app_settings_model->del($this->app_id.".".$this->id);
+        self::getSettingsModel()->del($this->getSettingsKey());
 
         if (!empty($this->info['rights'])) {
             // Remove rights to plugin
@@ -213,13 +240,13 @@ class waPlugin
         }
 
         // Remove cache of the application
-        waFiles::delete(wa()->getAppCachePath('', $this->app_id));
+        waFiles::delete(waSystem::getInstance()->getAppCachePath('', $this->app_id));
     }
 
 
     public function getPluginStaticUrl($absolute = false)
     {
-        return wa()->getAppStaticUrl($this->app_id, $absolute).'plugins/'.$this->id.'/';
+        return waSystem::getInstance()->getAppStaticUrl($this->app_id, $absolute).'plugins/'.$this->id.'/';
     }
 
     public function getRights($name = '', $assoc = true)
@@ -228,7 +255,7 @@ class waPlugin
         if ($name) {
             $right .= '.'.$name;
         }
-        return wa()->getUser()->getRights(wa()->getConfig()->getApplication(), $right, $assoc);
+        return waSystem::getInstance()->getUser()->getRights($this->app_id, $right, $assoc);
     }
 
     public function rightsConfig(waRightConfig $rights_config)
