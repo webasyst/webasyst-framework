@@ -67,7 +67,7 @@ class Smarty_Security {
         'waSystem',
         'waContactFields',
         'waConfig',
-        'waUtils',
+        'waUtils::varExportToFile',
         'waHtmlControl',
         'waLog',
         'waRequest::file',
