@@ -46,7 +46,7 @@ class waUtils
      * @param string|int|null $index_key Key use as the index for the returned array
      * @return array[]string array of unique values
      */
-    public static function getFieldValues(array $array, $field, $index_key = null)
+    public static function getFieldValues($array, $field, $index_key = null)
     {
         $values = array();
         foreach ($array as $elem) {
@@ -63,6 +63,6 @@ class waUtils
                 }
             }
         }
-        return $index_key !== null ? array_unique($values) : $values;
+        return $index_key !== null ? $values : array_unique($values);
     }
 }
