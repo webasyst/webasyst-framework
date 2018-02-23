@@ -9,6 +9,10 @@ class waAppViewHelper
     protected $wa;
     protected $app_id = null;
     protected $cdn = '';
+    /**
+     * @var array Plugin helpers, waAppPluginViewHelper objects
+     */
+    protected $helpers = array();
 
     public function __construct($system)
     {
@@ -153,5 +157,37 @@ class waAppViewHelper
     protected function wa()
     {
         return wa($this->app_id);
+    }
+    
+    /**
+     * Get view helper for application plugin.
+     * @param string $plugin_id
+     * @return waAppPluginViewHelper|null
+     */
+    public function __get($plugin_id)
+    {
+        if (!array_key_exists($plugin_id, $this->helpers)) {
+            $wa = $this->wa();
+            // List of enabled plugins.
+            $plugins = $wa->getConfig()->getPlugins();
+            if (in_array($plugin_id, array_keys($plugins))) {
+                try {
+                    $plugin = $wa->getPlugin($plugin_id);
+                } catch (waException $e) {
+                    $this->helpers[$plugin_id] = null;
+                    return null;
+                }
+            } else {
+                $this->helpers[$plugin_id] = null;
+                return null;
+            }
+            $class = $this->app_id . ucfirst($plugin_id) . 'ViewHelper';
+            if (class_exists($class)) {
+                $this->helpers[$plugin_id] = new $class($plugin, $plugins[$plugin_id]);
+            } else {
+                $this->helpers[$plugin_id] = null;
+            }
+        }
+        return $this->helpers[$plugin_id];
     }
 }
