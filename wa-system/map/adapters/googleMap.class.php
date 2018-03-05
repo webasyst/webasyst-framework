@@ -84,7 +84,9 @@ HTML;
 
     protected function getByLatLng($lat, $lng, $options = array())
     {
-
+        $lat_str = str_replace(',', '.',(string)$lat);
+        $lng_str = str_replace(',', '.',(string)$lng);
+        return $this->getByAddress(join(',', array($lat_str, $lng_str)), $options);
     }
 
     protected function initControls()

@@ -46,22 +46,27 @@ class waAuthUser extends waUser
             $this->auth = true;
             $this->id = $info['id'];
 
-            // Update last user activity time.
-            if (!waRequest::request('background_process')) {
-                $this->updateLastTime();
-            }
-
-            // Make sure user is not banned.
-            // We do this once in a while, or in case user data is already loaded anyway.
-            $is_data_loaded = !!$this->getCache();
-            $last_check = time() - ifset($info['storage_set'], 0);
-            if ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_BAN_CHECK')) {
-                if ($this['is_user'] < 0) {
-                    $auth->clearAuth();
-                    $this->id = 0;
-                } else {
-                    $auth->updateAuth($this->getCache());
+            try {
+                // Update last user activity time.
+                if (!waRequest::request('background_process')) {
+                    $this->updateLastTime();
                 }
+
+                // Make sure user is not banned.
+                // We do this once in a while, or in case user data is already loaded anyway.
+                $is_data_loaded = !!$this->getCache();
+                $last_check = time() - ifset($info['storage_set'], 0);
+                if ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_BAN_CHECK')) {
+                    if ($this['is_user'] < 0) {
+                        throw new waException('Contact is banned');
+                    } else {
+                        $auth->updateAuth($this->getCache());
+                    }
+                }
+            } catch (waException $e) {
+                // Contact is banned or deleted
+                $auth->clearAuth();
+                $this->id = 0;
             }
 
             // Set CSRF protection cookie

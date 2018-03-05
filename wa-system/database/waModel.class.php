@@ -85,14 +85,14 @@ class waModel
     public function getMetadata()
     {
         if ($this->table && !$this->fields) {
-            $runtime_cache = new waRuntimeCache('db/'.$this->table);
+            $runtime_cache = new waRuntimeCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
             if ($this->fields = $runtime_cache->get()) {
                 return $this->fields;
             }
             if (SystemConfig::isDebug()) {
                 $this->fields = $this->getFields();
             } else {
-                $cache = new waSystemCache('db/'.$this->table);
+                $cache = new waSystemCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
                 if (!($this->fields = $cache->get())) {
                     $this->fields = $this->getFields();
                     $cache->set($this->fields);

@@ -41,6 +41,12 @@ class waPlugin
         $this->checkUpdates();
     }
 
+    /** @since 1.8.2 */
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getName()
     {
         return $this->info['name'];

@@ -693,7 +693,8 @@ HTML;
             $error = $options;
             $options = array();
         }
-        return wa($this->app_id)->getCaptcha($options)->getHtml($error, $absolute, $refresh);
+        // $options['app_id'] is supported since 1.8.2
+        return wa(ifset($options, 'app_id', $this->app_id))->getCaptcha($options)->getHtml($error, $absolute, $refresh);
     }
 
     public function captchaUrl($add_random = true)
@@ -1187,7 +1188,7 @@ HTML;
     public function getContactTabs($id)
     {
         $id = (int) $id;
-        if (!$id) {
+        if (!$id || wa()->getEnv() !== 'backend') {
             return array();
         }
 

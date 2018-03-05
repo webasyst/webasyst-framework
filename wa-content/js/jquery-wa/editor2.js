@@ -41,12 +41,14 @@ jQuery.fn.waEditor2 = function () {
             initAceImageUploader($(options.upload_img_dialog), $wrapper, ace_editor);
         }
 
+        // Tab header: switch to HTML (Ace)
         $wrapper.find('.html').click(function () {
             if ($(this).parent().hasClass('selected')) {
                 return false;
             }
-            if ($.storage) {
-                $.storage.set(wa_app + '/editor', 'html');
+
+            if (window.wa_app) {
+                localStorage.setItem(wa_app + '/editor', 'html');
             }
 
             $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
@@ -82,7 +84,6 @@ jQuery.fn.waEditor2 = function () {
             if ($(this).parent().hasClass('selected')) {
                 return false
             }
-
             // Make sure code does not contain Smarty tags
             var source_val = ace_editor.getValue();
             if (options.smarty_wysiwyg_msg && !isWysiwygAllowed(source_val)) {
@@ -95,16 +96,34 @@ jQuery.fn.waEditor2 = function () {
                 var source_wysiwyg_cleaned = $textarea.redactor('clean.onSync',
                     $textarea.redactor('clean.onSet', source_val)
                 );
+
                 if (source_wysiwyg_cleaned !== source_val) {
-                    if (!confirm(options.modification_wysiwyg_msg)) {
+                    if ('string' === typeof options.modification_wysiwyg_msg) {
+                        if (!confirm(options.modification_wysiwyg_msg)) {
+                            return false;
+                        } else {
+                            // Only show this dialog once per page
+                            options.modification_wysiwyg_msg = null;
+                        }
+                    } else {
+                        // Dialog
+                        options.modification_wysiwyg_msg.waDialog({
+                            onSubmit: function (d) {
+                                // Only show this dialog once per page
+                                options.modification_wysiwyg_msg = null;
+                                d.trigger('close');
+                                $wrapper.find('.wysiwyg').trigger('click');
+                                return false;
+                            }
+                        });
                         return false;
                     }
                 }
             }
 
             // Remember WYSIWIG tab as default when editor is started
-            if ($.storage) {
-                $.storage.set(wa_app + '/editor', 'wysiwyg');
+            if (window.wa_app) {
+                localStorage.setItem(wa_app + '/editor', 'wysiwyg');
             }
 
             // Load code into WYSIWYG
@@ -130,7 +149,7 @@ jQuery.fn.waEditor2 = function () {
             return false;
         });
 
-        if (!isWysiwygAllowed($textarea.val()) || ($.storage && $.storage.get(wa_app + '/editor') == 'html')) {
+        if (window.wa_app && (options.smarty_wysiwyg_msg && !isWysiwygAllowed($textarea.val())) || (localStorage.getItem(wa_app + '/editor') && localStorage.getItem(wa_app + '/editor') == 'html')) {
             $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
             $wrapper.find('.html').parent().addClass('selected');
             $textarea.redactor('core.box').hide();
@@ -183,11 +202,17 @@ jQuery.fn.waEditor2 = function () {
                 case 'sync':
                     if ($wrapper.find('.wysiwyg').parent().hasClass('selected')) {
                         $textarea.redactor('code.sync');
+                        var new_code = $textarea.redactor('code.get');
+                        if (new_code !== $textarea.data('last_wysiwyg_code')) {
+                            new_code = $textarea.redactor('clean.onSync',
+                                $textarea.redactor('clean.onSet', new_code)
+                            );
+                            $textarea.val(new_code);
+                        }
                     } else {
                         $textarea.val($textarea.data('ace').getValue());
                     }
                     return;
-
                 case 'insert':
                     if ($wrapper.find('.wysiwyg').parent().hasClass('selected')) {
                         $textarea.redactor('insert.html', args[1]);
@@ -274,6 +299,12 @@ jQuery.fn.waEditor2 = function () {
                     html = options.callbacks.syncBefore(html);
                 }
                 this.$textarea.val(html);
+            },
+            syncClean: function (html) {
+                // Unescape '->' in smarty tags
+                return html.replace(/\{[a-z\$'"_\(!+\-][^\}]*\}/gi, function (match) {
+                    return match.replace(/-&gt;/g, '->');
+                });
             }
         }, (options.callbacks || {}));
 
@@ -302,6 +333,7 @@ jQuery.fn.waEditor2 = function () {
         session.setMode("ace/mode/css");
         session.setMode("ace/mode/javascript");
         session.setMode("ace/mode/smarty");
+        editor.$blockScrolling = Infinity;
         session.setUseWrapMode(true);
         editor.renderer.setShowGutter(false);
         editor.setShowPrintMargin(false);
@@ -370,8 +402,8 @@ jQuery.fn.waEditor2 = function () {
 
     function isWysiwygAllowed(source) {
         // WYSIWYG Redactor is not available if code contains Smarty tags,
-        // other than a simple {$var|escape} declarations
-        source = source.replace(/\{\$[a-z_][a-z0-9_]*(\|[^}\|]+)*\}/ig, '');
+        // other than a simple {$var->method()|escape} declarations
+        source = source.replace(/\{\$[a-z_][^\}]*\}/gi, '');
         return !source.match(/\{[a-z\$'"_\(!+\-]/i);
     }
 

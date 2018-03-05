@@ -993,7 +993,7 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Returns the properties of a cointact relating to specified app.
+     * Returns the properties of a contact relating to specified app.
      *
      * @param string|null $app_id App id
      * @param string|null $name Id of the contact property associated with the specified app which must be returned. If

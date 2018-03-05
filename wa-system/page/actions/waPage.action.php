@@ -89,6 +89,7 @@ class waPageAction extends waViewAction
         try {
             $result = $this->view->fetch('string:'.$page['content']);
             if ($result && false !== strpos($result, 'text-')) {
+                // @deprecated
                 $result = '<style>.text-center{text-align:center;}.text-right{text-align:right}.text-justify{text-align:justify;}</style>'.$result;
             }
             return $result;

@@ -67,7 +67,7 @@ class Smarty_Security {
         'waSystem',
         'waContactFields',
         'waConfig',
-        'waUtils',
+        'waUtils::varExportToFile',
         'waHtmlControl',
         'waLog',
         'waRequest::file',
@@ -258,21 +258,37 @@ class Smarty_Security {
      */
     public function isTrustedStaticClass($class_name, $compiler, $method = false)
     {
+        $allowed = true;
+        $orig_method = $method;
         $orig_class_name = $class_name;
         $class_name = strtolower($class_name);
         $method = substr(strtolower($method), 0, strpos($method, '('));
-        if (in_array($class_name, $this->static_classes) || in_array($class_name.'::'.$method, $this->static_classes)
-            || substr($class_name, 0, 7) == 'smarty_') {
-            $compiler->trigger_template_error("access to static class '{$orig_class_name}' not allowed by security setting");
-            return false;
+
+        // Prohibited static classes
+        if (in_array($class_name, $this->static_classes) || in_array($class_name.'::'.$method, $this->static_classes)) {
+            $allowed = false;
+        }
+        // Smarty internals
+        if ($allowed && substr($class_name, 0, 7) == 'smarty_') {
+            $allowed = false;
         }
 
-        if ($method == 'getactive' || $method == 'getappconfig' || $method == 'setdebug' || $method == 'systemoption') {
-            $compiler->trigger_template_error("access to static class '{$orig_class_name}' not allowed by security setting");
-            return false;
+        // Prohibited methods
+        if ($allowed && ($method == 'getactive' || $method == 'getappconfig' || $method == 'setdebug' || $method == 'systemoption' || $method == '__set_state')) {
+            $allowed = false;
+        }
+        if ($allowed && $method == 'getinstance' && $class_name != 'shopdimension') {
+            $allowed = false;
+        }
+        // Prohibited method masks
+        if ($allowed && (false !== strpos($method, 'model') || false !== strpos($method, 'factory') || false !== strpos($method, 'getplugin'))) {
+            $allowed = false;
         }
 
-        return true;
+        if (!$allowed) {
+            $compiler->trigger_template_error("access to static method '{$orig_class_name}::{$orig_method}' not allowed by security setting");
+        }
+        return $allowed;
     }
 
 

@@ -45,7 +45,7 @@ class vkontakteAuth extends waOAuth2Adapter
 
     public function getUserData($token)
     {
-        $url = self::API_URL."users.get?uid={$token['user_id']}&fields=contacts,sex,bdate,timezone,photo_medium&access_token={$token['access_token']}";
+        $url = self::API_URL."users.get?fields=contacts,sex,bdate,photo_medium&access_token={$token['access_token']}&v=".self::API_VERSION;
         $response = $this->get($url, $status);
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
@@ -56,8 +56,8 @@ class vkontakteAuth extends waOAuth2Adapter
             if ($response) {
                 $data = array(
                     'source' => 'vkontakte',
-                    'source_id' => $response['uid'],
-                    'url' => "http://vk.com/id".$response['uid'],
+                    'source_id' => $response['id'],
+                    'url' => "http://vk.com/id".$response['id'],
                     'name' => trim(ifset($response['first_name'], '')." ".ifset($response['last_name'], '')),
                     'firstname' => ifset($response['first_name'], ''),
                     'lastname' => ifset($response['last_name'], ''),

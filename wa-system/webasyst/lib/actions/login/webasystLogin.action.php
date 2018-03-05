@@ -23,7 +23,11 @@ class webasystLoginAction extends waLoginAction
                 $this->template = wa()->getAppPath('templates/actions/login/', 'webasyst') . $this->template;
             }
         }
-        $this->view->assign('login', waRequest::post('login', $this->getStorage()->read('auth_login')));
+        $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
+        $this->view->assign(array(
+            'login'     => waRequest::post('login', $this->getStorage()->read('auth_login')),
+            'auth_type' => ($request_url === 'api.php/auth') ? 'oauth' : 'login',
+        ));
         parent::execute();
         if ($this->layout) {
             $this->layout->assign('error', $this->view->getVars('error'));

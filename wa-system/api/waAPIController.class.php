@@ -40,7 +40,8 @@ class waAPIController
     {
         // Make sure API is enabled
         if (wa('webasyst')->getConfig()->getOption('disable_api')) {
-            throw new waAPIException('disabled', 'API is disabled', 404);
+            $msg = wa('webasyst')->getConfig()->getOption('disable_api_message');
+            throw new waAPIException('disabled', ifempty($msg, 'API is disabled'), 404);
         }
 
         // Redirect to HTTPS if set up in domain params

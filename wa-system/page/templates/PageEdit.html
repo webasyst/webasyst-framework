@@ -227,6 +227,25 @@
     </div>
 </div>
 
+<div class="dialog" id="s-switch-editor">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window" style="height: 140px; min-height: 140px; width: 530px; min-width: 530px">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    [`<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?`]
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[`Switch`]" />
+                    [`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script type="text/javascript">$(function () { "use strict";
 
     var wa_url = window.wa_url = {$wa_url|json_encode};
@@ -253,7 +272,7 @@
                         location.href = prev.addClass('selected').find('a').attr('href');
                         li.remove();
                     } else {
-                        next = li.nextAll('.dr:first');
+                        var next = li.nextAll('.dr:first');
                         if (next.length > 0) {
                             location.href = next.addClass('selected').find('a').attr('href');
                             li.remove();
@@ -313,7 +332,7 @@
         $('#wa-page-content')[method]({
             lang: $.Redactor.opts.langs["{$lang}"] ? "{$lang}" : 'en',
             smarty_wysiwyg_msg: {_ws('WYSIWYG editor is disabled because page source contains Smarty code tags.')|json_encode},
-            modification_wysiwyg_msg: {_ws('WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?')|json_encode},
+            modification_wysiwyg_msg: $('#s-switch-editor'),
             saveButton: '#wa-page-button',
             upload_img_dialog: '#s-upload-dialog',
             uploadFields: {

@@ -39,23 +39,46 @@ class waUtils
     }
 
     /**
-     * Extract values of specific field(key) from array of array
-     * Work kinda like array_column (php version < 7.0)
-     * @param array $array array of associative arrays
-     * @param string|int $field Key for extract value
-     * @param string|int|null $index_key Key use as the index for the returned array
-     * @return array[]string array of unique values
+     * Extract values from array of arrays (or objects) using a single key.
+     * Works kinda like array_column (which unfortunately requires php 7).
+     *
+     * When used with objects, requires having magic methods __isset() and __get().
+     *
+     * Will return array containing elements $array[$i][$field], indexed by one of several things.
+     * When $index_key is null, it means gather everything and return array_unique() of that.
+     * When $index_key is true, it means to use index $i of original $array.
+     * Otherwise, index by value taken from $array[$i][$index_key]. If not present, value is skipped.
+     *
+     * @param array      $array      Array of arrays or objects
+     * @param string|int $field      Key for extract value
+     * @param mixed      $index_key  How to index the result, see above.
+     * @return array
      */
     public static function getFieldValues(array $array, $field, $index_key = null)
     {
         $values = array();
-        foreach ($array as $elem) {
-            $elem = (array) $elem;
+        foreach ($array as $k => $elem) {
+
+            // Index in the resulting array
             $index_value = null;
-            if ($index_key !== null && array_key_exists($index_key, $elem)) {
-                $index_value = $elem[$index_key];
+            if ($index_key !== null) {
+                if ($index_key === true) {
+                    $index_value = $k;
+                } else if (isset($elem[$index_key])) {
+                    $index_value = $elem[$index_key];
+                } else {
+                    // Skip if we can't find value to index by
+                    continue;
+                }
             }
-            if (array_key_exists($field, $elem)) {
+
+            // For objects we use isset(). For arrays we use array_key_exists().
+            $key_exists = isset($elem[$field]);
+            if (!$key_exists && is_array($elem)) {
+                $key_exists = array_key_exists($field, $elem);
+            }
+
+            if ($key_exists) {
                 if ($index_value === null) {
                     $values[] = $elem[$field];
                 } else {
@@ -63,6 +86,10 @@ class waUtils
                 }
             }
         }
-        return $index_key !== null ? array_unique($values) : $values;
+
+        if ($index_key === null) {
+            $values = array_unique($values);
+        }
+        return $values;
     }
 }

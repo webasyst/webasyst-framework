@@ -73,7 +73,7 @@ function wa_print_r()
  * Helper to chain constructor calls.
  * When argument is an object, return it. Otherwise, throw waException.
  */
-function wao($o)
+function &wao($o)
 {
     if (!$o || !is_object($o)) {
         throw new waException('Argument is not an object.');
@@ -110,7 +110,7 @@ function wa_lambda($args, $body)
  *
  * Note that alternative syntax makes the $def parameter required.
  */
-function ifset(&$var, $def=null)
+function &ifset(&$var, $def=null)
 {
     if (func_num_args() > 2) {
         $keys = func_get_args();
@@ -152,7 +152,7 @@ function ifset(&$var, $def=null)
  *
  * Note that alternative syntax makes the $def parameter required.
  */
-function ifempty(&$var, $def=null)
+function &ifempty(&$var, $def=null)
 {
     if (func_num_args() > 2) {
         $keys = func_get_args();
@@ -178,6 +178,18 @@ function ifempty(&$var, $def=null)
         return $arr;
     }
     return $def;
+}
+
+/**
+ * Returns its argument by reference.
+ * Useful to pass function return into ifset() or ifempty()
+ * which otherwise would trigger a notice:
+ * Strict standards: Only variables should be passed by reference
+ * @since 1.8.2
+ */
+function &ref($var)
+{
+    return $var;
 }
 
 /**
