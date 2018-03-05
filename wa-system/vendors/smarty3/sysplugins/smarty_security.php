@@ -281,7 +281,10 @@ class Smarty_Security {
             $allowed = false;
         }
         // Prohibited method masks
-        if ($allowed && (false !== strpos($method, 'model') || false !== strpos($method, 'factory') || false !== strpos($method, 'getplugin'))) {
+        if ($allowed && (false !== strpos($method, 'model') || false !== strpos($method, 'factory'))) {
+            $allowed = false;
+        }
+        if ($allowed && false !== strpos($method, 'getplugin') && $method != 'getplugininfo') {
             $allowed = false;
         }
 
