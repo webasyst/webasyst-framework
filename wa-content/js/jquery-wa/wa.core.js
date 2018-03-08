@@ -116,6 +116,7 @@ $.wa = $.extend(true, $.wa, {
         p = $.extend({
                 content: '<h1>Loading... <i class="icon16 loading"></i></h1>',
                 buttons: null,
+                classes: null,
                 url: null,
                 post: null,
                 small: false,
@@ -158,6 +159,7 @@ $.wa = $.extend(true, $.wa, {
 
         dialog.find('.dialog-buttons-gradient').empty().append(p.buttons);
         dialog.find('.dialog-content-indent').empty().append(p.content);
+        dialog.addClass(classes);
         dialog.show();
 
         if (p.small) {
