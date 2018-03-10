@@ -181,6 +181,25 @@ class waDateTime
                 wa()->setLocale($old_locale);
             }
         }
+        
+        // hack to insert localized weekday name
+        if (strpos($format, 'l') !== false) {
+            $weekday = $date_time->format('l');
+
+            $old_locale = waLocale::getLocale();
+            if ($locale && $locale != $old_locale) {
+                wa()->setLocale($locale);
+            }
+            $local = _ws($weekday, $weekday, 2);
+            $result = str_replace(
+                array("@$weekday@", $weekday),
+                array(mb_strtolower($local), $local),
+                $result
+            );
+            if ($locale && $locale != $old_locale) {
+                wa()->setLocale($old_locale);
+            }
+        }
         return $result;
     }
 
