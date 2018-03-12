@@ -24,6 +24,9 @@ class emsruShipping extends waShipping
 
     protected function calculate()
     {
+        //Plugin does not work
+        return false;
+
         $params = array();
         $params['weight'] = max(0.1, $this->getTotalWeight());
 
@@ -67,7 +70,7 @@ class emsruShipping extends waShipping
             if (!empty($params['from']) || !empty($params['type'])) {
                 if ($result = $this->request('ems.calculate', $params)) {
 
-                    if(!$delivery_date_min = $this->delivery_date_min){
+                    if (!$delivery_date_min = $this->delivery_date_min) {
                         $delivery_date_min = 3;
                     }
                     if (!$delivery_date_max = $this->delivery_date_max) {
@@ -116,10 +119,12 @@ class emsruShipping extends waShipping
 
     public function saveSettings($settings = array())
     {
-        $address = array_merge(array('country' => 'rus'), $settings);
-        if (!$this->findTo($address)) {
-            throw new waException('Указанный адрес пункта отправления не найден в списке поддерживаемых API службы «EMS Почта России».');
-        }
+//        Plugin does not work
+//        $address = array_merge(array('country' => 'rus'), $settings);
+//        if (!$this->findTo($address)) {
+//            throw new waException('Указанный адрес пункта отправления не найден в списке поддерживаемых API службы «EMS Почта России».');
+//        }
+
         if (isset($settings['surcharge'])) {
             if (strpos($settings['surcharge'], ',')) {
                 $settings['surcharge'] = str_replace(',', '.', $settings['surcharge']);
@@ -220,6 +225,9 @@ class emsruShipping extends waShipping
 
     public function allowedAddress()
     {
+        //Plugin does not work
+        return array();
+
         $cache = new waSerializeCache(__CLASS__.__FUNCTION__, 86400, 'webasyst');
         if (!($addresses = $cache->get())) {
             $addresses = array();
