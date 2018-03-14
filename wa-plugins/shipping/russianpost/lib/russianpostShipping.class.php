@@ -637,7 +637,7 @@ class russianpostShipping extends waShipping
      */
     private function getCacheKey($key = null)
     {
-        return sprintf('wa-plugins/shipping/russainpost/%s/%s/%s', $this->app_id, $this->key, $key ? $key : $this->cache_key);
+        return sprintf('wa-plugins/shipping/russianpost/%s/%s/%s', $this->app_id, $this->key, $key ? $key : $this->cache_key);
     }
 
     /**
@@ -1528,9 +1528,16 @@ HTML;
             } else {
                 $timestamp = time();
                 if (!empty($result->OperationHistoryData->historyRecord)) {
-                    $rows = array();
 
-                    foreach ($result->OperationHistoryData->historyRecord as $record) {
+                    //If there is only one step in the array
+                    if (isset($result->OperationParameters->historyRecord->OperationParameters)) {
+                        $history[0] = $result->OperationHistoryData->historyRecord;
+                    } else {
+                        $history = $result->OperationHistoryData->historyRecord;
+                    }
+
+                    $rows = array();
+                    foreach ($history as $record) {
                         $row = array(
                             'operation' => (string)ifempty($record->OperationParameters->OperType->Name),
                             'date'      => (string)ifempty($record->OperationParameters->OperDate),
@@ -1564,7 +1571,6 @@ HTML;
 
         $message = '';
         $error = '';
-
         $cache = new waSerializeCache('tracking.'.urlencode($tracking_id), $keep_interval * 3600, 'wa-plugins/shipping/russianpost');
         try {
             if (!($data = $cache->get())) {
