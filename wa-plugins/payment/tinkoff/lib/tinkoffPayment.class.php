@@ -85,7 +85,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         }
 
         $args = array(
-            'TerminalKey' => $this->terminal_key,
+            'TerminalKey' => trim($this->terminal_key),
             'Amount'      => round($order_data['amount'] * 100),
             'Currency'    => ifset(self::$currencies[$this->currency_id]),
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
@@ -181,7 +181,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     private function genToken($args)
     {
         $token = '';
-        $args['Password'] = $this->terminal_password;
+        $args['Password'] = trim($this->terminal_password);
         ksort($args);
         foreach ($args as $k => $arg) {
             if (!is_array($arg)) {
@@ -439,9 +439,15 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
     public function recurrent($order_data)
     {
+        $order_data = waOrder::factory($order_data);
+
         $amount = round($order_data['amount'] * 100);
 
         $c = new waContact($order_data['customer_contact_id']);
+
+        if (!($email = $c->get('email', 'default'))) {
+            $email = $this->getDefaultEmail();
+        }
 
         $args = array(
             'TerminalKey' => $this->terminal_key,
@@ -450,16 +456,30 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'CustomerKey' => $c->getId(),
             'Description' => $order_data['summary'],
-            'DATA'        => 'Email='.$c->get('email', 'default'),
+            'DATA'        => array('Email' => $email),
         );
-        if (!empty($order_data['recurrent'])) {
-            $args['Recurrent'] .= 'Y';
+        if ($phone = $c->get('phone', 'default')) {
+            $args['DATA']['Phone'] = $phone;
         }
 
-        $this->buildQuery('Init', $args);
+        $res = $this->buildQuery('Init', $args);
 
         if (!$this->payment_id) {
-            return null;
+            if ($this->error || empty($res->Success) || $res->Success != 'true') {
+                $error = array(
+                    ifset($res->Message),
+                    ifset($res->Details),
+                    $this->translateError(ifset($res->ErrorCode))
+                );
+                return array(
+                    'result'      => false,
+                    'description' => join(' ', $error),
+                );
+            }
+            return array(
+                'result'      => false,
+                'description' => 'Empty payment ID',
+            );
         }
 
         $args = array(
@@ -467,6 +487,13 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'PaymentId'   => $this->payment_id,
             'RebillId'    => $order_data['recurrent_id'],
         );
+        if ($this->getSettings('atolonline_on')) {
+            $receipt = $this->getReceiptData($order_data);
+            if ($receipt) {
+                $args['Receipt'] = $receipt;
+            }
+        }
+
         $res = $this->buildQuery('Charge', $args);
 
         if ($this->error || empty($res->Success) || $res->Success != 'true') {
@@ -671,7 +698,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             1096 => 'Повторите попытку позже.',
             9999 => 'Внутренняя ошибка системы.',
         );
-        return array_key_exists($error_code, $errors) ? $errors[$error_code] : 'Неизвестная ошибка.';
+        return array_key_exists($error_code, $errors) ? $errors[$error_code] : 'Неизвестная ошибка ('.$error_code.').';
     }
 
     private function getParentTransaction($native_id)
@@ -727,14 +754,14 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 if ($item['price'] > 0) {
                     $this->receipt['Items'][] = array(
                         'Name'     => mb_substr($item['name'], 0, 64),
-                        'Price'    => round($item['price'] * 100),
+                        'Price'    => round($item['amount'] * 100),
                         'Quantity' => floatval($item['quantity']),
-                        'Amount'   => round($item['price'] * $item['quantity'] * 100),
+                        'Amount'   => round($item['amount'] * $item['quantity'] * 100),
                         'Tax'      => $this->getTaxId($item),
                     );
                 }
 
-                if ($item['tax_rate'] && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18)))) {
+                if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18)))) {
                     return null;
                 }
             }
@@ -750,7 +777,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                     'Amount'   => round($order->shipping * 100),
                     'Tax'      => $this->getTaxId($item),
                 );
-                if ($item['tax_rate'] && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18)))) {
+                if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18)))) {
                     return null;
                 }
             }
