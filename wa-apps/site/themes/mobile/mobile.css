@@ -450,6 +450,19 @@ select {
 .icon-chat:before {
   content: '\e807';
 }
+.badge {
+  display: inline-block;
+  padding: 2px 4px;
+  margin: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 2px;
+  line-height: 1.2em;
+  word-wrap: break-word;
+  font-size: 0.8em;
+  background: #ccc;
+  color: #000;
+}
 iframe {
   margin: 1em 0 0;
   width: 100% !important;
