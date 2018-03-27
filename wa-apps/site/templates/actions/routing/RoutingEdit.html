@@ -3,18 +3,18 @@
 </script>
 {if !$wa->get('details')}
 <div class="s-editor s-white s-app-settings">
-	<form id="s-settings-form" method="post" action="{$wa_backend_url}site/?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
+    <form id="s-settings-form" method="post" action="{$wa_backend_url}site/?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
     {if $wa->get('reload_on_change')}<input type="hidden" name="correct_url" value="1">{/if}
-	<div class="float-left s-route">
-		<div class="block s-route-core">
+    <div class="float-left s-route">
+        <div class="block s-route-core">
 
-   	        <a href="#" class="cancel back s-route-block">&larr; [`Back`]</a>
+            <a href="#" class="cancel back s-route-block">&larr; [`Back`]</a>
 
             {if strlen($route_id)}
 
                 <!-- existing route -->
                 {if empty($route.redirect)}
-       	            <div class="s-route-block" id="s-route-what">
+                    <div class="s-route-block" id="s-route-what">
                         {if $app}
                             <img src="{$wa_url}{$app.icon.24}" />
                             <h3>{$app.name}</h3>
@@ -25,9 +25,9 @@
                 {/if}
 
                 <div class="s-route-block" id="s-route-where">
-        		    <span class="gray">
-        		        {$domain_decoded}/
-        		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                    <span class="gray">
+                        {$domain_decoded}/
+                    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
                 </div>
 
                 {if empty($route.redirect) && !$app}
@@ -42,16 +42,16 @@
 
                 <!-- new route -->
                 <div class="s-route-block" id="s-route-where">
-        		    <span class="gray">
-        		        {$domain}/
-        		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                    <span class="gray">
+                        {$domain_decoded}/
+                    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
                 </div>
 
                 {if empty($route.redirect)}
-           	        <div class="s-route-block" id="s-route-what">
-            		    <span class="gray">&rarr;</span>
-        			    <img src="{$wa_url}{$app.icon.24}" />
-        				<select class="s-select-app" name="params[app]">
+                    <div class="s-route-block" id="s-route-what">
+                        <span class="gray">&rarr;</span>
+                        <img src="{$wa_url}{$app.icon.24}" />
+                        <select class="s-select-app" name="params[app]">
                             {foreach $apps as $app}
                             <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
                             {/foreach}
@@ -66,38 +66,38 @@
 
             <div class="s-route-block" style="{if empty($route.redirect)}display: none;{/if}" id="s-route-to">
                 &rarr;
-    		    <input type="text" name="params[redirect]" {if !isset($route.redirect)}disabled{/if} value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="bold large" placeholder="http://" />
+                <input type="text" name="params[redirect]" {if !isset($route.redirect)}disabled{/if} value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="bold large" placeholder="http://" />
             </div>
 
-		</div>
+        </div>
 {/if}
-		<div class="block padded s-route-details">
-			<div class="fields form">
-				{$themes=siteHelper::getThemes($app_id, true)}
+        <div class="block padded s-route-details">
+            <div class="fields form">
+                {$themes=siteHelper::getThemes($app_id, true)}
                 {if $app}
-				<div class="field-group">
-    				<div class="field">
-    					<div class="name">[`Settlement name`]</div>
-    					<div class="value">
-    						<input type="text" name="params[_name]" value="{$route_name|escape}" class="bold" /><br />
-    						<span class="hint">[`Name is used in the <em>$wa->apps</em> navigation menu of this website`]</span>
-    					</div>
-    				</div>
+                <div class="field-group">
+                    <div class="field">
+                        <div class="name">[`Settlement name`]</div>
+                        <div class="value">
+                            <input type="text" name="params[_name]" value="{$route_name|escape}" class="bold" /><br />
+                            <span class="hint">[`Name is used in the <em>$wa->apps</em> navigation menu of this website`]</span>
+                        </div>
+                    </div>
                     {if $themes}
-    				<div class="field">
-    					<div class="name">[`Design theme`]</div>
-    					<div class="value">
-    						{html_options name="params[theme]" options=$themes selected=ifempty($route['theme'], 'default')}
-    					</div>
-    				</div>
-    				<div class="field">
-    					<div class="name">[`Mobile design theme`]</div>
-    					<div class="value">
-    						{html_options name="params[theme_mobile]" options=$themes selected=ifempty($route.theme_mobile, 'default')}
-    						<br />
-    						<span class="hint">[`Design theme for mobile multi-touch devices such as iPhone and Android`]</span>
-    					</div>
-    				</div>
+                    <div class="field">
+                        <div class="name">[`Design theme`]</div>
+                        <div class="value">
+                            {html_options name="params[theme]" options=$themes selected=ifempty($route['theme'], 'default')}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Mobile design theme`]</div>
+                        <div class="value">
+                            {html_options name="params[theme_mobile]" options=$themes selected=ifempty($route.theme_mobile, 'default')}
+                            <br />
+                            <span class="hint">[`Design theme for mobile multi-touch devices such as iPhone and Android`]</span>
+                        </div>
+                    </div>
                     <div class="field">
                         <div class="name">[`Language`]</div>
                         <div class="value">
@@ -111,8 +111,8 @@
                     <div class="field">
                         <div class="name">[`Privacy`]</div>
                         <div class="value">
-                        	<label>
-                        	<input type="checkbox" value="1" name="params[private]"{if !empty($route.private)} checked{/if}> [`Private settlement`]<br />
+                            <label>
+                            <input type="checkbox" value="1" name="params[private]"{if !empty($route.private)} checked{/if}> [`Private settlement`]<br />
                             <span class="hint">[`When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines.`]</span>
                             </label>
                         </div>
@@ -121,8 +121,9 @@
                         <div class="name">[`Security`]</div>
                         <div class="value">
                             <label>
-                                <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if}> [`Redirect to HTTPS`]<br>
-                                <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS.</a>`]<br></span>
+                                <input type="checkbox" value="1" id="ssl_all" name="params[ssl_all]" {if !empty($route.ssl_all)} checked{/if} {if empty($is_https)}disabled{/if}> [`Redirect to HTTPS`]<br>
+                                <span class="hint ssl_server_https" style="{if !empty($is_https)}display: none{/if}">[`The server can not distinguish http from https. You can not activate redirection.`]<br></span>
+                                <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
                                 <span class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement.`]
                                 <br>
                                 [`This option will work only if an SSL certificate is installed for your domain name.`]
@@ -131,52 +132,52 @@
                             </label>
                         </div>
                     </div>
-				</div>
-				{if !empty($params)}
-					{foreach $params as $p}
+                </div>
+                {if !empty($params)}
+                    {foreach $params as $p}
                     {if is_array($p)}
-					<div class="field">
-						<div class="name">{$p.name|escape}</div>
-						<div class="value">{$p.value}</div>
-					</div>
+                    <div class="field">
+                        <div class="name">{$p.name|escape}</div>
+                        <div class="value">{$p.value}</div>
+                    </div>
                     {else}
                         <h5 class="heading clear-both"><br>{$p}<br><br></h5>
                     {/if}
-					{/foreach}
-				{/if}
-				<div class="field">
-					<div class="name">[`Custom parameters`]</div>
-					<div class="value">
-						<textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
+                    {/foreach}
+                {/if}
+                <div class="field">
+                    <div class="name">[`Custom parameters`]</div>
+                    <div class="value">
+                        <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
 
 {/if}{/foreach}</textarea>
-						<br />
-						<span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals("key")&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/design/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
-					</div>
-				</div>
+                        <br />
+                        <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals("key")&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/design/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
+                    </div>
+                </div>
                 {/if}
 
                 {if !empty($route.redirect) || $app}
-				<div class="field">
-					<div class="{if !$wa->get('reload_on_change')}value{else}wa-design-save-panel block bordered-top{/if}">
+                <div class="field">
+                    <div class="{if !$wa->get('reload_on_change')}value{else}wa-design-save-panel block bordered-top{/if}">
                         {if strlen($route_id)}
                         <div class="block half-padded float-right">
-                			<ul class="menu-h">
-                				<li><a href="#" class="s-route-action s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i>[`Delete rule`]</a></li>
-                			</ul>
-                		</div>
+                            <ul class="menu-h">
+                                <li><a href="#" class="s-route-action s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i>[`Delete rule`]</a></li>
+                            </ul>
+                        </div>
                         {/if}
 
-						<input type="submit" name="save" class="button green" value="[`Save`]" />
-						<span id="s-settings-form-status"></span>
-					</div>
-				</div>
+                        <input type="submit" name="save" class="button green" value="[`Save`]" />
+                        <span id="s-settings-form-status"></span>
+                    </div>
+                </div>
                 {/if}
-			</div>
-		</div>
+            </div>
+        </div>
 {if !$wa->get('details')}
     </div>
-	</form>
+    </form>
 <div class="clear"></div>
 </div>
 
@@ -186,6 +187,7 @@ $(function () {
     //Disabled ssl checkbox
     if (window.location.protocol.replace(':', '') != 'https') {
         $('#ssl_all').attr('disabled', true);
+        $('.ssl_server_https').hide();
         $('.ssl_all_hide').show();
         $('.ssl_all_hide a').attr('href', window.location.href.replace('http', 'https'));
     }
@@ -233,9 +235,9 @@ $(function () {
         }
         return false;
     });
-	$("#s-settings-form").submit(function () {
-		var f = $(this);
-		$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
+    $("#s-settings-form").submit(function () {
+        var f = $(this);
+        $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
         var callback = function (response) {
             if (response.status == 'ok') {
                 {if strlen($route_id)}
@@ -274,7 +276,7 @@ $(function () {
                 f.find('input.button:submit').removeClass('green').addClass('red');
             }
         }
-		$.post(f.attr('action'), f.serialize(), function (response) {
+        $.post(f.attr('action'), f.serialize(), function (response) {
             if (response.status == 'ok' && response.data.confirm) {
                 if (confirm(response.data.confirm)) {
                     $.post(f.attr('action') + '&replace=' + response.data.replace, f.serialize(), callback, 'json')
@@ -285,8 +287,8 @@ $(function () {
                 callback(response);
             }
         }, "json");
-		return false;
-	});
+        return false;
+    });
     $("#s-settings-form .cancel").click(function () {
         site_routing_full();
         return false;

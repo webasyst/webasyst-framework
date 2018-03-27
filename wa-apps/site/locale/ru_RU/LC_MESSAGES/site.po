@@ -83,6 +83,9 @@ msgstr "Загрузка..."
 msgid "Upload"
 msgstr "Загрузить"
 
+msgid "Upload image"
+msgstr "Загрузить изображение"
+
 #: /wa-apps/site/templates/layouts/Default.html:63
 msgid "Save"
 msgstr "Сохранить"
@@ -983,7 +986,7 @@ msgstr "Структура сайта"
 
 #: /wa-apps/site/templates/actions/routing/Routing.html:33
 msgid "Site structure is defined by routing rules. Each rule sets which app should run by which URL (web address). Similar to how folders are used to organize files on a computer, routing rules are used to create a website powered by multiple apps."
-msgstr "Структура сайта определяется правилами маршрутизации. Каждое правило указывает по какому адресу какое приложение работает. По аналогии с тем, как папки используются для организации файлов на компьютере, правила маршрутизации используются для распределения приложений по разделам сайта."
+msgstr "Структура сайта определяется правилами маршрутизации. Каждое правило указывает, по какому адресу работает каждое приложение. По аналогии с тем, как папки используются для организации файлов на компьютере, правила маршрутизации используются для распределения приложений по разделам сайта."
 
 #: /wa-apps/site/templates/actions/routing/RoutingEdit.html:10
 msgid "Back"
@@ -1366,3 +1369,12 @@ msgstr "Перенаправлять посетителей сайта с обы
 
 msgid "To activate this option, <a>log in via HTTPS</a>."
 msgstr "Чтобы активировать эту настройку, <a>войдите через HTTPS</a>."
+
+msgid "<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?"
+msgstr "<b>Редактор WYSIWYG может изменить ваш HTML-код.</b><br><br>Это необходимо для правильного форматирования текста. Код Smarty может быть взломан, и устаревшие HTML-теги могут быть заменены на современные.<br><br>Вы действительно хотите переключиться на WYSIWYG-редактор?"
+
+msgid "Switch"
+msgstr "Переключиться"
+
+msgid "Select Webasyst default captcha or Google reCAPTCHA"
+msgstr "Выбрать стандартную капчу Webasyst или Google reCAPTCHA"

@@ -49,6 +49,7 @@ class siteSettingsAction extends waViewAction
         $this->view->assign('domain_id', siteHelper::getDomainId());
         $this->view->assign('domain', siteHelper::getDomain());
         $this->view->assign('title', siteHelper::getDomain('title'));
+        $this->view->assign('is_https', waRequest::isHttps());
 
         if ($domain_alias = wa()->getRouting()->isAlias(siteHelper::getDomain())) {
             $this->view->assign('domain_alias', $domain_alias);

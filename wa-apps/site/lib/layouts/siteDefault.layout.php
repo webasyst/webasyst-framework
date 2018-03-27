@@ -11,6 +11,7 @@ class siteDefaultLayout extends waLayout
         $this->view->assign('domain_id', $this->domain_id);
         $this->view->assign('domain_url', siteHelper::getDomain());
         $this->view->assign('domain_alias', wa()->getRouting()->isAlias(siteHelper::getDomain()));
+        $this->view->assign('domain_protocol', $this->getProtocol());
         $this->view->assign('domains', siteHelper::getDomains(true));
         $this->view->assign('pages', $this->getPages());
         $this->view->assign('domain_root_url', siteHelper::getDomainUrl());
@@ -87,5 +88,28 @@ class siteDefaultLayout extends waLayout
         }
 
         return $pages;
+    }
+
+    /**
+     * Get the protocol to create a link to files
+     * @return string
+     */
+    protected function getProtocol()
+    {
+        $domain_config_path = $this->getConfig()->getConfigPath('domains/' . siteHelper::getDomain() . '.php');
+        if (file_exists($domain_config_path)) {
+            $orig_domain_config = include($domain_config_path);
+        }
+        $domains = siteHelper::getDomains();
+        $domain_id = waRequest::get('domain_id', null, waRequest::TYPE_INT);
+        if (!empty($orig_domain_config['ssl_all'])) {
+            $protocol = 'https://';
+        } elseif ((!$domain_id || $domains[$domain_id] == wa()->getConfig()->getDomain()) && waRequest::isHttps()) { //first site in list or current site
+            $protocol = 'https://';
+        }
+        else {
+            $protocol = 'http://';
+        }
+        return $protocol;
     }
 }

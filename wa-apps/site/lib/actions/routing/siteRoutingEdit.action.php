@@ -86,6 +86,7 @@ class siteRoutingEditAction extends waViewAction
         $this->view->assign('domain_id', siteHelper::getDomainId());
         $this->view->assign('domain', siteHelper::getDomain());
         $this->view->assign('locales', array('' => _w('Auto')) + waLocale::getAll('name'));
+        $this->view->assign('is_https', waRequest::isHttps());
     }
 
     protected function getParams($route_id, $config, $values)
