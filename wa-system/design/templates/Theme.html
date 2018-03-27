@@ -2,7 +2,10 @@
 
     <h1 class="wa-theme-name">
         {sprintf('[s`%s design theme`]', $theme.name|escape)}
-        <span class="hint">{$theme.version}</span>
+        <span class="hint">
+            {$theme.version}
+            <span style="font-size: smaller;" title="[s`Theme ID`]">({$theme.id|escape})</span>
+        </span>
     </h1>
 
     <!-- THEME ACTIONS -->
@@ -14,13 +17,10 @@
             <!-- original theme version from /wa-apps/ -->
             <div class="block double-padded wa-theme-actions wa-theme-latest">
                 <ul class="menu-v with-icons">
-
                     <li>
-
                         <b><i class="icon16 yes"></i>{sprintf('[s`Original version <strong>%s</strong>`]', $theme.version)}</b>
                         <span class="hint"><br>[s`No customizations have been made to theme settings and template files.`]</span>
                     </li>
-
                 </ul>
             </div>
 
@@ -256,6 +256,15 @@
         <div class="fields" style="width: 100%">
 
             {if count($theme_routes)}<h4 class="heading">[s`Theme usage`]</h4>{/if}
+
+            <div class="field">
+                <div class="name">
+                    [s`Theme ID`]
+                </div>
+                <div class="value">
+                    {$theme.id|escape}
+                </div>
+            </div>
 
             <div class="field">
                 <div class="name">

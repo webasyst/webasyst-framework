@@ -6,9 +6,17 @@
  * - Human-readable like print_r() for nested structures.
  * - Distinguishable like var_export() for plain values.
  * - Handles self-references correctly like print_r().
- * - Adds <pre> and escapes all output with htmlspecialchars(), unless in CLI mode.
+ * - Output is a valid PHP code, if input only contains arrays and no self-references.
+ * - Escapes all output with htmlspecialchars(), unless in CLI mode.
+ * - Adds <pre>, file and line called from.
  * - Shows both protected and private fields of objects.
  * - Skips huge objects like waSystem or Smarty in nested structures.
+ * - Accepts any number of arguments.
+ *
+ * @see wa_dumpc() - does not call exit
+ * @see wa_dump_helper() - no exit, no <pre>, no 'called from' message, optionally escapes
+ * @see waLog::dump() - dumps to log file
+ * @see waException::dump() - throws exception with dumped data
  */
 function wa_dump()
 {
@@ -17,7 +25,10 @@ function wa_dump()
     exit;
 }
 
-/** Same as wa_dump(), but does not call exit. */
+/**
+ * Same as wa_dump(), but does not call exit.
+ * Unless called from template, returns its first argument.
+ */
 function wa_dumpc()
 {
     if (php_sapi_name() != 'cli') {
@@ -89,7 +100,7 @@ function wa_lambda($args, $body)
     }
 
     static $fn = array();
-    $hash = $args.md5($args.$body).md5($body);
+    $hash = 'lmbd'.md5($args.$body);
     if(!isset($fn[$hash])) {
         $fn[$hash] = create_function($args, $body);
     }
@@ -226,7 +237,7 @@ function int_ok($val)
 }
 
 /**
- * Helper function for wa_print_r() / wa_dump()
+ * Helper function for wa_dump()
  */
 function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
 {
@@ -250,7 +261,11 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     if (is_resource($value)) {
         return print_r($value, 1).' ('.get_resource_type($value).')';
     } else if (is_float($value)) {
-        return print_r($value, 1);
+        $result = print_r($value, 1);
+        if (false === strpos($result, '.') && false === strpos($result, ',')) {
+            $result .= '.0';
+        }
+        return $result;
     } else if (!is_array($value) && !is_object($value)) {
         $result = var_export($value, true);
         if (!$cli) {

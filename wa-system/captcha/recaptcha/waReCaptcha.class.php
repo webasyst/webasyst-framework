@@ -13,6 +13,36 @@ class waReCaptcha extends waAbstractCaptcha
     public function getHtml()
     {
         $sitekey = json_encode($this->options['sitekey']);
+        $invisible = ifset($this->options['invisible']);
+
+        if ($invisible) {
+            return <<<HTML
+<div class="g-recaptcha" data-sitekey="{$this->options['sitekey']}" data-size="invisible"></div>
+<script>(function() {
+    if (window.onloadWaRecaptchaCallback) {
+        return;
+    }
+
+    window.onloadWaRecaptchaCallback = function() {
+        var sitekey = {$sitekey};
+        if (!window.grecaptcha) return;
+        $('.g-recaptcha:not(.initialized)').each(function() {
+            var wrapper = $(this).addClass('initialized');
+            grecaptcha.render(wrapper[0]);
+            grecaptcha.execute();
+        });
+    };
+
+    $(function() {
+        if (window.grecaptcha) {
+            window.onloadWaRecaptchaCallback();
+        } else {
+            $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadWaRecaptchaCallback");
+        }
+    });
+})();</script>
+HTML;
+        }
 
         // Explicit rendering, as well as $.getScript(), are used
         // to allow multiple ReCaptchas on the same page.

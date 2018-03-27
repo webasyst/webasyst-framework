@@ -684,16 +684,29 @@ class waSystem
                 }
                 $log_model = new waLogModel();
                 $log_model->insert(array(
-                    'app_id' => $app,
+                    'app_id'     => $app,
                     'contact_id' => $contact_id,
-                    'datetime' => date("Y-m-d H:i:s"),
-                    'params' => 'frontend',
-                    'action' => 'logout',
+                    'datetime'   => date("Y-m-d H:i:s"),
+                    'params'     => 'frontend',
+                    'action'     => 'logout',
                 ));
             } else {
+                // We destroy session even if user is not logged in.
+                // This clears session-based pseudo-auth for many apps.
+                wa()->getStorage()->destroy();
+                // Do not allow custom URL in this case
+                // because of redirection-based phishing attacks
                 $logout_url = null;
             }
 
+            // Make sure redirect is to the same domain
+            if (!empty($logout_url)) {
+                $domain = $this->getRouting()->getDomain(null, true);
+                $next_domain = @parse_url($logout_url, PHP_URL_HOST);
+                if ($next_domain && $domain !== $next_domain) {
+                    $logout_url = null;
+                }
+            }
             // make redirect after logout
             if (empty($logout_url)) {
                 $logout_url = $this->config->getRequestUrl(false, true);

@@ -220,6 +220,7 @@ class waAutoload
 
         'waCaptcha'                => 'captcha/waCaptcha.class.php',
         'waReCaptcha'              => 'captcha/recaptcha/waReCaptcha.class.php',
+        'waPHPCaptcha'              =>'captcha/phpcaptcha/waPHPCaptcha.class.php',
 
         'waModel'                  => 'database/waModel.class.php',
         'waModelExpr'              => 'database/waModelExpr.class.php',

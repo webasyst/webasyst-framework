@@ -237,7 +237,7 @@ class waMailDecode
         // remove all on* events
         $pattern = "/<([^>]*)?[\s\r\n\t]on.+?=?\s?.+?(['\"]).*?\\2\s?(.*)?>/i";
         while (preg_match($pattern, $html)) {
-           $html = preg_replace($pattern, "<$1$3>", $html);
+            $html = preg_replace($pattern, "<$1$3>", $html);
         }
         return $html;
     }
@@ -250,7 +250,7 @@ class waMailDecode
         do {
             $email .= $data;
             if (strpos($email, '@') !== false &&
-               (strpos($email, '"') === false || (strpos($email, '"') !== strrpos($email, '"')))
+                (strpos($email, '"') === false || (strpos($email, '"') !== strrpos($email, '"')))
             ) {
                 $result[] = trim($email);
                 $email = '';

@@ -21,22 +21,22 @@ class waMailAddressParser
     protected $buffer_name = "";
     protected $buffer = "";
     protected $group;
-    
+
     protected $expected;
-    
+
     const STATE_START = 0;
     const STATE_ADDRESS = 1;
-    const STATE_NAME = 2;    
+    const STATE_NAME = 2;
     const STATE_EMAIL = 3;
     const STATE_GROUP_NAME = 4;
-    
+
     public function __construct($string)
     {
         $this->n = strlen($string);
         $this->string = $string;
         $this->offset = 0;
     }
-    
+
     public function parse()
     {
         if ($this->data === null) {
@@ -48,7 +48,7 @@ class waMailAddressParser
         }
         return $this->data;
     }
-    
+
     protected function parseAddress()
     {
         switch ($this->state) {
@@ -162,16 +162,16 @@ class waMailAddressParser
                         $this->offset = $i + 1;
                     }
                 }
-                $this->data[] = $address; 
+                $this->data[] = $address;
                 $this->buffer = $this->buffer_name = "";
                 $this->expected = "";
                 $this->state = self::STATE_START;
                 break;
         }
     }
-    
-    
-    protected function skip() 
+
+
+    protected function skip()
     {
         $symbols = array(" ", "\t", "\r", "\n");
         while ($this->offset < $this->n && in_array($this->string[$this->offset], $symbols)) {

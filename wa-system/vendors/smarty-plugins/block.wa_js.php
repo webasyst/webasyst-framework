@@ -53,9 +53,10 @@ function smarty_block_wa_js($params, $content, &$smarty) {
                 continue;
             }
 
-            // Do not allow to minify files from wa-data because they're user-writable
+            // Do not allow to minify files from wa-data because they're user-writable,
+            // and from wa-config to prevent disclosure of sensitive data
             $folders = explode("/", ltrim($f, './\\'));
-            if ($folders[0] == 'wa-data') {
+            if ($folders[0] == 'wa-data' || $folders[0] == 'wa-config') {
                 continue;
             }
 
@@ -131,7 +132,11 @@ function smarty_block_wa_js($params, $content, &$smarty) {
         }
         if ($r) {
             if ($files_combine) {
-                $result .= '<script type="text/javascript" src="'.$wa->getAppStaticUrl().$params['file'].'?v'.$mtime.'"></script>'."\n";
+                // Several seconds after compilation do not use browser cache.
+                // This hopefully fixes some weird cache-related bugs.
+                $ver = min($mtime + 5, time());
+
+                $result .= '<script type="text/javascript" src="'.$wa->getAppStaticUrl().$params['file'].'?v'.$ver.'"></script>'."\n";
             }
             return $result;
         }

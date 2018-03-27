@@ -342,7 +342,11 @@ class waSystemConfig
     {
         $path = $this->getPath('config', $file);
         if (file_exists($path)) {
-            return include($path);
+            $result = include($path);
+            if ($result === 1) {
+                return $default;
+            }
+            return $result;
         } else {
             return $default;
         }
