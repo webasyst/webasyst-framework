@@ -237,10 +237,12 @@ class blogBlogSettingsAction extends waViewAction
         $something_changed = false;
         $route_config = include($path);
         foreach($route_config as $domain => $routes) {
-            foreach($routes as $k => $route) {
-                if (!empty($route['app']) && ($route['app'] == 'blog') && !empty($route['blog_url_type']) && $route['blog_url_type'] == $blog_id) {
-                    unset($route_config[$domain][$k]);
-                    $something_changed = true;
+            if (is_array($routes)) {
+                foreach($routes as $k => $route) {
+                    if (!empty($route['app']) && ($route['app'] == 'blog') && !empty($route['blog_url_type']) && $route['blog_url_type'] == $blog_id) {
+                        unset($route_config[$domain][$k]);
+                        $something_changed = true;
+                    }
                 }
             }
         }

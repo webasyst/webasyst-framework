@@ -40,9 +40,14 @@
 
 {if $page eq 1 && !$wa->globals('disable_pageless')}
 <script type="text/javascript">
+    var url = '?layout=lazyloading',
+        query = {$blog_query|json_encode};
+    if (query) {
+        url += '&query='+query;
+    }
 $.pageless({
         auto: true, // auto load next pages
-        url: '?layout=lazyloading',
+        url: url,
         target: '.lazyloading:first',
         scroll: function(response){
             var progress = '';

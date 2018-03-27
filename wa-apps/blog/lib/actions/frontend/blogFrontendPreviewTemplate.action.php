@@ -86,7 +86,6 @@ class blogFrontendPreviewTemplateAction extends blogViewAction
         return <<<EOF
             <script src="{$app_static_url}js/postmessage.js?{$version}"></script>
             <script>$(function() {
-
                 // Make sure we're in an iframe
                 var parent_origin = window.top !== window && document.referrer && (function(a) {
                     a.href = document.referrer;
@@ -119,6 +118,13 @@ class blogFrontendPreviewTemplateAction extends blogViewAction
                         sendHeight();
                     }
                 }, parent_origin);
+
+                // Tell parent window we're ready to accept data
+                $.pm({
+                    target: window.top,
+                    type: 'updater_loaded',
+                    data: true
+                });
 
                 // Helper to send content height to parent so it can adjust iframe height
                 function sendHeight() {

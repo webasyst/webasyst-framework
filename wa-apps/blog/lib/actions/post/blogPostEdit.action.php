@@ -52,15 +52,16 @@ class blogPostEditAction extends waViewAction
             }
             $blog_id = $blog['id'];
 
+
             $post = array(
-                'status'           => $date ? blogPostModel::STATUS_DEADLINE : blogPostModel::STATUS_DRAFT,
-                'title'            => $this->getRequest()->post('title', '', waRequest::TYPE_STRING_TRIM),
-                'text'             => $this->getRequest()->post('text', '', waRequest::TYPE_STRING_TRIM),
-                'continued_text'   => null,
-                'categories'       => array(),
-                'contact_id'       => wa()->getUser()->getId(),
-                'blog_id'          => $blog_id,
-            ) + $post_model->getEmptyRow();
+                    'status'         => $date ? blogPostModel::STATUS_DEADLINE : blogPostModel::STATUS_DRAFT,
+                    'title'          => $this->getRequest()->post('title', '', waRequest::TYPE_STRING_TRIM),
+                    'text'           => $this->getRequest()->post('text', '', waRequest::TYPE_STRING_TRIM),
+                    'continued_text' => null,
+                    'categories'     => array(),
+                    'contact_id'     => wa()->getUser()->getId(),
+                    'blog_id'        => $blog_id,
+                ) + $post_model->getEmptyRow();
 
             $title = _w('Adding new post');
 
@@ -77,7 +78,7 @@ class blogPostEditAction extends waViewAction
             wa('photos');
             $album_model = new photosAlbumModel();
             $albums = $album_model->getAlbums();
-            foreach($albums as &$a) {
+            foreach ($albums as &$a) {
                 if ($a['status'] == 1) {
                     $a['frontend_link'] = photosFrontendAlbum::getLink($a);
                 } else {
@@ -94,6 +95,8 @@ class blogPostEditAction extends waViewAction
         $post['album_link_type'] = $album_link_type;
         $post['other_links'] = $all_links;
         $post['link'] = array_shift($post['other_links']);
+        $post['other_preview_links'] = blogPost::getUrl($post, 'realtime_preview');
+        $post['preview_link'] = array_shift($post['other_preview_links']);
 
         $post['remaining_time'] = null;
         if ($post['status'] == blogPostModel::STATUS_SCHEDULED && $post['datetime']) {

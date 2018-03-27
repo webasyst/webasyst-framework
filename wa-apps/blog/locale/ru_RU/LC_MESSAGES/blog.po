@@ -313,6 +313,12 @@ msgstr[0] "%d запись"
 msgstr[1] "%d записи"
 msgstr[2] "%d записей"
 
+msgid "post"
+msgid_plural "posts"
+msgstr[0] "записи"
+msgstr[1] "запись"
+msgstr[2] "записей"
+
 msgid "%d post of %d"
 msgid_plural "%d posts of %d"
 msgstr[0] "%d запись из %d"
@@ -825,9 +831,12 @@ msgstr "Может редактировать страницы"
 msgid "Protect comment submit form with CAPTCHA"
 msgstr "Защита формы добавления комментария <em>капчей</em> (CAPTCHA)"
 
+msgid "Select Webasyst default captcha or Google reCAPTCHA"
+msgstr "Выбрать стандартную капчу Webasyst или Google reCAPTCHA"
+
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:122
 msgid "Invalid captcha code"
-msgstr "Неверный код CAPTCHA"
+msgstr "Капча введена неверно"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:130
 msgid "Invalid auth provider"
