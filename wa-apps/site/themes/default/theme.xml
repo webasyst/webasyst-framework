@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.2">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.3">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -402,23 +402,36 @@
         </setting>
         <setting var="facebook_likebox_code" control_type="text">
             <value locale="en_US"><![CDATA[<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=167596066655267";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+        <script>
+            setTimeout(function () {
+                !function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                    if (!d.getElementById(id)) {
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=364718260231717";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }
+                }(document, "script", "facebook-jssdk");
 
+            }, 100)
+        </script>
 <div class="fb-page" data-href="https://www.facebook.com/Webasyst" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst"><a href="https://www.facebook.com/Webasyst">Webasyst</a></blockquote></div></div>]]></value>
             <value locale="ru_RU"><![CDATA[<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=167596066655267";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+        <script>
+            setTimeout(function () {
+                !function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                    if (!d.getElementById(id)) {
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=364718260231717";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }
+                }(document, "script", "facebook-jssdk");
+
+            }, 100)
+        </script>
 
 <div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst.RU"><a href="https://www.facebook.com/Webasyst.RU">Webasyst RU</a></blockquote></div></div>]]></value>
             <name locale="en_US">Facebook Page Plugin code</name>
@@ -427,9 +440,35 @@
             <description locale="ru_RU">Поместите в это поле код виджета вашей страницы на Фейсбуке. Код можно получить в Фейсбуке на странице https://developers.facebook.com/docs/plugins/page-plugin</description>
         </setting>
         <setting var="twitter_timeline_code" control_type="text">
-            <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="625947505319124993">Tweets by @webasyst</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
+            <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="625947505319124993">Tweets by @webasyst</a>
+        <script>
+            setTimeout(function () {
+                !function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                    if (!d.getElementById(id)) {
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = p + "://platform.twitter.com/widgets.js";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }
+                }(document, "script", "twitter-wjs");
+
+            }, 100)
+        </script>]]></value>
             <value locale="ru_RU"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst_ru" data-widget-id="624283167772528641">Tweets by @webasyst_ru</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
+        <script>
+            setTimeout(function () {
+                !function (d, s, id) {
+                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                    if (!d.getElementById(id)) {
+                        js = d.createElement(s);
+                        js.id = id;
+                        js.src = p + "://platform.twitter.com/widgets.js";
+                        fjs.parentNode.insertBefore(js, fjs);
+                    }
+                }(document, "script", "twitter-wjs");
+            }, 100)
+        </script>]]></value>
             <name locale="en_US">Twitter Timeline code</name>
             <name locale="ru_RU">Виджет Твиттера</name>
             <description locale="en_US">Embed your Twitter Timeline code here. Code can be obtained on Twitter website: https://twitter.com/settings/widgets</description>
@@ -442,7 +481,7 @@
 <!-- VK Widget -->
 <div id="vk_groups"></div>
 <script type="text/javascript">
-VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FFFFFF', color2: '2B587A', color3: '5B7FA6'}, 21415010);
+setTimeout(function (){ VK.Widgets.Group("vk_groups", { mode: 2, width: "{$width}", height: "{$height}" }, 21415010) }, 0);
 </script>]]></value>
             <name locale="en_US">VK Page Widget code</name>
             <name locale="ru_RU">Виджет Вконтакте</name>

@@ -160,13 +160,13 @@ $(document).ready(function() {
     if ($('#logo').length)
     {
         $(window).load(function(){
-        
+
             var _logo_height = $('#logo').height();
             var _logo_vertical_shift = Math.round((_logo_height-25)/2);
-            
+
             $('#globalnav').css('padding-top', _logo_vertical_shift+'px');
             $('#logo').css('margin-top', '-'+_logo_vertical_shift+'px');
-        
+
         });
     }
 
@@ -184,51 +184,229 @@ $(document).ready(function() {
         $("html, body").animate({ scrollTop: 0 }, 200);
         return false;
     });
-        
-    // MAILER app email subscribe form
-    $('#mailer-subscribe-form input.charset').val(document.charset || document.characterSet);
-    $('#mailer-subscribe-form').submit(function() {
-        var form = $(this);
 
-        var email_input = form.find('input[name="email"]');
-        var email_submit = form.find('input[type="submit"]');
-        if (!email_input.val()) {
-            email_input.addClass('error');
-            return false;
-        } else {
-            email_input.removeClass('error');
-        }
-        
-        email_submit.hide();
-        email_input.after('<i class="icon16 loading"></i>');
-
-        $('#mailer-subscribe-iframe').load(function() {
-            $('#mailer-subscribe-form').hide();
-            $('#mailer-subscribe-iframe').hide();
-            $('#mailer-subscribe-thankyou').show();
-        });
-    });
-    
     // STICKY CART for non-mobile
     if ( !(MatchMedia("only screen and (max-width: 760px)")) ) {
         $(window).scroll(function(){
            	if ( $(this).scrollTop() >= 55 && !$("#cart").hasClass( "fixed" ) && !$("#cart").hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
            	    $("#cart").hide();
-           	    
-           	    $("#cart").addClass( "fixed" );       	    
+
+           	    $("#cart").addClass( "fixed" );
            	    if ($('#cart-flyer').length)
            	    {
            	        var _width = $('#cart-flyer').width()+52;
            	        var _offset_right = $(window).width() - $('#cart-flyer').offset().left - _width + 1;
-           	        
+
            	        $("#cart").css({ "right": _offset_right+"px", "width": _width+"px" });
            	    }
-           	    
+
            	    $("#cart").slideToggle(200);
            	} else if ( $(this).scrollTop() < 50 && $("#cart").hasClass( "fixed" ) ) {
     	        $("#cart").removeClass( "fixed" );
-        	    $("#cart").css({ "width": "auto" });	   
+        	    $("#cart").css({ "width": "auto" });
         	}
         });
     }
 });
+
+// MAILER app email subscribe form
+var SubscribeSection = ( function($) {
+
+    SubscribeSection = function(options) {
+        var that = this;
+
+        // DOM
+        that.$wrapper = options["$wrapper"];
+        that.$form = that.$wrapper.find("form");
+        that.$emailField = that.$wrapper.find(".js-email-field");
+        that.$submitButton = that.$wrapper.find(".js-submit-button");
+
+        // VARS
+        that.request_uri = options["request_uri"];
+        that.locales = options["locales"];
+
+        // DYNAMIC VARS
+
+        // INIT
+        that.initClass();
+    };
+
+    SubscribeSection.prototype.initClass = function() {
+        var that = this;
+
+        that.initSubmit();
+        //
+        that.initView();
+    };
+
+    SubscribeSection.prototype.initView = function() {
+        var that = this;
+
+        that.$emailField.on("focus", function() {
+            toggleView(true);
+        });
+
+        $(document).on("click", watcher);
+
+        function watcher(event) {
+            var is_exist = $.contains(document, that.$wrapper[0]);
+            if (is_exist) {
+                var is_target = $.contains(that.$wrapper[0], event.target);
+                if (!is_target) {
+                    toggleView(false);
+                }
+            } else {
+                $(document).off("click", watcher);
+            }
+        }
+
+        function toggleView(show) {
+            var active_class = "is-extended";
+            if (show) {
+                that.$wrapper.addClass(active_class);
+            } else {
+                var email_value = that.$emailField.val();
+                if (!email_value.length) {
+                    that.$wrapper.removeClass(active_class);
+                } else {
+
+                }
+            }
+        }
+    };
+
+    SubscribeSection.prototype.initSubmit = function() {
+        var that = this,
+            $form = that.$form,
+            $errorsPlace = that.$wrapper.find(".js-errors-place"),
+            is_locked = false;
+
+        $form.on("submit", onSubmit);
+
+        function onSubmit(event) {
+            event.preventDefault();
+
+            var formData = getData();
+
+            if (formData.errors.length) {
+                renderErrors(formData.errors);
+            } else {
+                request(formData.data);
+            }
+        }
+
+        /**
+         * @return {Object}
+         * */
+        function getData() {
+            var result = {
+                    data: [],
+                    errors: []
+                },
+                data = $form.serializeArray();
+
+            $.each(data, function(index, item) {
+                if (item.value) {
+                    result.data.push(item);
+                } else {
+                    result.errors.push({
+                        name: item.name
+                    });
+                }
+            });
+
+            return result;
+        }
+
+        /**
+         * @param {Array} data
+         * */
+        function request(data) {
+            if (!is_locked) {
+                is_locked = true;
+
+                var href = that.request_uri;
+
+                $.post(href, data, function(response) {
+                    if (response.status === "ok") {
+                        renderSuccess();
+
+                    } else if (response.errors) {
+                        var errors = formatErrors(response.errors);
+                        renderErrors(errors);
+                    }
+                }, "json").always( function() {
+                    is_locked = false;
+                });
+            }
+
+            /**
+             * @param {Object} errors
+             * @result {Array}
+             * */
+            function formatErrors(errors) {
+                var result = [];
+
+                $.each(errors, function(text, item) {
+                    var name = item[0];
+
+                    if (name === "subscriber[email]") { name = "email"; }
+
+                    result.push({
+                        name: name,
+                        value: text
+                    });
+                });
+
+                return result;
+            }
+        }
+
+        /**
+         * @param {Array} errors
+         * */
+        function renderErrors(errors) {
+            var error_class = "error";
+
+            if (!errors || !errors[0]) {
+                errors = [];
+            }
+
+            $.each(errors, function(index, item) {
+                var name = item.name,
+                    text = item.value;
+
+                var $field = that.$wrapper.find("[name=\"" + name + "\"]"),
+                    $text = $("<span class='c-error' />").addClass("error");
+
+                if ($field.length && !$field.hasClass(error_class)) {
+                    if (text) {
+                        $field.parent().append($text.text(text));
+                    }
+
+                    $field
+                        .addClass(error_class)
+                        .one("focus click change", function() {
+                            $field.removeClass(error_class);
+                            $text.remove();
+                        });
+                } else {
+                    $errorsPlace.append($text);
+
+                    $form.one("submit", function() {
+                        $text.remove();
+                    });
+                }
+            });
+        }
+
+        function renderSuccess() {
+            var $text = that.$wrapper.find(".js-success-message");
+            $form.hide();
+            $text.show();
+        }
+    };
+
+    return SubscribeSection;
+
+})(jQuery);

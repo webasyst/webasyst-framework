@@ -274,7 +274,7 @@
                 {if $wa->blog}
                     <div class="footer-block">
                         <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
-                        <a href="{$wa->getUrl('blog/frontend/rss')}">[s`RSS`]</a>
+                        <a href="{$wa->blog->rssUrl()}">[s`RSS`]</a>
                         {$blogs = $wa->blog->blogs()}
                         {foreach $blogs as $b}
                             <a href="{$b.link}">{$b.name}</a>
@@ -283,15 +283,33 @@
                 {/if}
 
                 {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
-                <div class="footer-block mailer-subscribe">
-                    <a href="#" class="top">[s`Follow us`]</a>
-                    <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
-                        <input type="email" name="email" placeholder="your@email.here">
-                        <input type="submit" value="[s`Subscribe`]" class="small">
-                    </form>
-                    <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #666;float:right;background: #666;"></iframe>
-                    <p style="display:none" id="mailer-subscribe-thankyou"><i>[s`Thank you! We’ll keep you posted.`]</i></p>
-                </div>
+                    <div class="footer-block mailer-subscribe">
+                        <a href="javascript:void(0);" class="top">[s`Follow us`]</a>
+
+                        <section class="s-subscribe-section" id="js-subscribe-section">
+                            <form>
+                                <div class="line">
+                                    <input class="js-email-field" type="email" name="email" placeholder="your@email.here" required>
+                                    <input class="small js-submit-button" type="submit" value="[s`Subscribe`]">
+                                </div>
+                                <div class="s-hidden">{$wa->captcha(['app_id'=>'mailer'])}</div>
+                            </form>
+
+                            <p class="js-success-message" style="display:none">
+                                <i>[s`Thank you! We’ll keep you posted.`]</i>
+                            </p>
+
+                            <script>
+                                ( function($) {
+                                    new SubscribeSection({
+                                        $wrapper: $("#js-subscribe-section"),
+                                        request_uri: "{$wa->getUrl('mailer/frontend/subscribe')}"
+                                    })
+                                })(jQuery);
+                            </script>
+                        </section>
+
+                    </div>
                 {/if}
             {/if}
 
