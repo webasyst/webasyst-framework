@@ -78,11 +78,14 @@ class siteViewHelper extends waAppViewHelper
     {
         $page_model = new sitePageModel();
         $page = $page_model->getById($id);
-        $page['content'] = $this->wa->getView()->fetch('string:'.$page['content']);
         
         $page_params_model = new sitePageParamsModel();
         $page += $page_params_model->getById($id);
-
+        
+        $view = $this->wa->getView();
+        $view->assign('page', $page);
+        $page['content'] = ->fetch('string:'.$page['content']);
+        
         return $page;
     }
 }
