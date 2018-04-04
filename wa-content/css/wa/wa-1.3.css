@@ -41,7 +41,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 ------------------------------------------ */
 html, body { height: 100%; width: 100%; font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; font-size: 14px; }
 a, a:visited { color: #03c; outline:0 none; } /* dynamic content everywhere, so no special :visited markup */
-a { text-decoration: none; }
+a { text-decoration: none; cursor: pointer; }
 a:hover { color: red !important; }
 a:focus { outline:none; outline-offset:-4px; }
 input[type="button"]::-moz-focus-inner { border: 0; }
@@ -75,7 +75,7 @@ border:1px solid #bbb; //border:none
 fieldset p label { width:98%; }
 fieldset p input[type="text"] { width:98%; }
 fieldset p select { width:99%; }
-blockquote { color: rgba(0,0,0,.6); font-size:0.9em; font-style: italic; border-left: 1px solid rgba(0,0,0,.1);padding-left: 24px; background: #eee; }
+blockquote { color: rgba(0,0,0,.6); font-size:0.9em; border-left: 1px solid rgba(0,0,0,.1); padding: 8px 0 8px 24px; background: #eee; }
 blockquote cite { font-size:.9em; }
 p { line-height: 1.5em; font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; }
 p a { text-decoration: underline; }

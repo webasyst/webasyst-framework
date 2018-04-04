@@ -104,6 +104,20 @@ class waModel
     }
 
     /**
+     * Update and return description of table columns (like getMetadata()), bypassing all caches.
+     * @return array
+     */
+    public function clearMetadataCache()
+    {
+        $runtime_cache = new waRuntimeCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
+        $runtime_cache->delete();
+        $cache = new waSystemCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
+        $cache->delete();
+        $this->fields = null;
+        return $this->getMetadata();
+    }
+
+    /**
      * Returns array corresponding to all table fields and containing their default values defined in table
      * description file.
      *
@@ -453,6 +467,11 @@ class waModel
 
     protected function getFieldValue($field, $value)
     {
+        if (!isset($this->fields[$field])) {
+            // Make sure it's not the cache problem. Someone might have added
+            // a new column to the table, but forgot to clear cache.
+            $this->clearMetadataCache();
+        }
         if (!isset($this->fields[$field])) {
             throw new waException(sprintf('Unknown field %s', $field));
         }
@@ -906,6 +925,11 @@ class waModel
 
         // Single field, multiple values?
         if (is_array($value)) {
+            if (!isset($this->fields[$field])) {
+                // Make sure it's not the cache problem. Someone might have added
+                // a new column to the table, but forgot to clear cache.
+                $this->clearMetadataCache();
+            }
             if (!isset($this->fields[$field])) {
                 throw new waException(sprintf(_ws('Unknown field %s'), $field));
             }

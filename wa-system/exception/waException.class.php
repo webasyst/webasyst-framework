@@ -117,7 +117,9 @@ class waException extends Exception
     protected function toStringCli($wa, $additional_info)
     {
         $result = array();
-        $result[] = date("Y-m-d H:i:s")." php ".join(" ", waRequest::server('argv'));
+        if (waRequest::server('argv')) {
+            $result[] = date("Y-m-d H:i:s")." php ".join(" ", waRequest::server('argv'));
+        }
         $result[] = "Error: {$this->getMessage()}";
         $result[] = "with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}";
         $result[] = "";
@@ -268,7 +270,10 @@ HTML;
         }
 
         // Error message in non-debug mode uses a separate file as a template
-        if (!waSystemConfig::isDebug()) {
+        if (!defined('STACK_TRACE_IN_NONDEBUG') && !waSystemConfig::isDebug()) {
+            if ($send_response_code) {
+                waLog::log("Uncaught ".$this->toStringCli($wa, $additional_info));
+            }
             return $this->toStringProduction($wa);
         }
 

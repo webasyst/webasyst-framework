@@ -999,19 +999,15 @@ class waSystem
                 self::$apps = array();
                 throw new waException('File wa-config/apps.php not found.', 600);
             }
-            if (!file_exists($file) || filemtime($file) < filemtime($this->getConfig()->getPath('config', 'apps')) || waSystemConfig::isDebug()) {
+            if (!file_exists($file) || filemtime($file) < filemtime($this->getConfig()->getPath('config', 'apps'))) {
                 waFiles::create($this->getConfig()->getPath('cache').'/config');
                 $all_apps = include($this->getConfig()->getPath('config', 'apps'));
                 $all_apps['webasyst'] = true;
                 self::$apps = array();
                 foreach ($all_apps as $app => $enabled) {
                     if ($enabled) {
-                        waLocale::loadByDomain($app, $locale);
                         $app_config = $this->getAppPath('lib/config/app.php', $app);
                         if (!file_exists($app_config)) {
-                            if (false && SystemConfig::isDebug()) {
-                                throw new waException("Config not found. Create config by path ".$app_config);
-                            }
                             continue;
                         }
                         $app_info = include($app_config);
@@ -1026,6 +1022,7 @@ class waSystem
                             }
                         }
                         $app_info['id'] = $app;
+                        waLocale::loadByDomain($app, $locale);
                         $app_info['name'] = _wd($app, $app_info['name']);
                         if (isset($app_info['icon'])) {
                             if (is_array($app_info['icon'])) {
@@ -1502,7 +1499,7 @@ class waSystem
             $path = $this->getConfig()->getPath('apps');
             foreach (self::$handlers['apps'][$event_app_id][$name] as $app_id) {
                 $file_path = $path.'/'.$app_id.'/lib/handlers/'.$event_app_id.".".$name.".handler.php";
-                if (!file_exists($file_path)) {
+                if (!file_exists($file_path) || !wa()->appExists($app_id)) {
                     continue;
                 }
                 wa($app_id);

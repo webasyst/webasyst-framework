@@ -70,6 +70,11 @@ class waCaptcha
         return array(null, null);
     }
 
+    public function isValid($code = null, &$error = '')
+    {
+        return $this->getRealCaptcha()->isValid($code, $error);
+    }
+
     public function __call($name, $arguments)
     {
         $captcha = $this->getRealCaptcha();
