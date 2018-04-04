@@ -5,7 +5,7 @@ return array(
     'icon'        => 'img/yandexmoney16.png',
     'logo'        => 'img/yandexmoney.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.3.4',
+    'version'     => '1.3.5',
     'offline'     => true,
-    'discount'    => true,
+    'discount'    => false,
 );
