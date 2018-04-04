@@ -84,7 +84,7 @@ class siteViewHelper extends waAppViewHelper
         
         $view = $this->wa->getView();
         $view->assign('page', $page);
-        $page['content'] = ->fetch('string:'.$page['content']);
+        $page['content'] = $view->fetch('string:'.$page['content']);
         
         return $page;
     }
