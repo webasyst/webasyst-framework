@@ -163,9 +163,6 @@ class waContactDataStorage extends waContactStorage
                     if (isset($row['value']) && is_float($row['value'])) {
                         $row['value'] = str_replace(',', '.', ('' . $row['value']));
                     }
-                    if(strlen($row['value']) > 255) {
-                        $row['value'] = substr($row['value'], 0, 255);
-                    }
                 }
                 unset($row);
             }
