@@ -439,7 +439,7 @@ if (!window.wa_skip_ajax_setup) {
 
 if (!window.wa_skip_csrf_prefilter) {
     $.ajaxPrefilter(function (settings, originalSettings, xhr) {
-        if ((settings.type||'').toUpperCase() !== 'POST') {
+        if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST') {
             return;
         }
 
