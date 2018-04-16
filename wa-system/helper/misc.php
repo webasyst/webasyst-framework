@@ -364,6 +364,18 @@ function wa_make_pattern($string, $separator = '/')
 }
 
 /**
+ * Check if the given value represents array.
+ * @return boolean
+ */
+function wa_is_array($val)
+{
+    if (is_array($val)) {
+        return true;
+    }
+    return is_object($val) && $val instanceof ArrayAccess && $val instanceof Traversable;
+}
+
+/**
  * Calculate diff of multidimensional and hierarchical arrays
  * @param array $value1
  * @param array $value2
