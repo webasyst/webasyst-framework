@@ -345,6 +345,9 @@ p {
 p:first-child {
   margin-top: 0;
 }
+figure {
+  margin: 1em 0 0;
+}
 ul,
 ol {
   font: 400 1rem/1rem "Helvetica Neue", "Roboto Condensed", "Roboto", Arial, sans-serif;

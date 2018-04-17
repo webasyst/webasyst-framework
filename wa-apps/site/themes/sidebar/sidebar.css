@@ -26,7 +26,7 @@ a:hover { color: #f55 !important; }
 input[type="button"]::-moz-focus-inner { border: 0; }
 input[type="submit"]::-moz-focus-inner { border: 0; }
 a img { border: 0; }
-p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote { margin-bottom: 20px; }
+p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote, figure { margin-bottom: 20px; }
 h1 { font-size: 2.0em; margin-bottom: 13px; }
 h1 a { text-decoration:none; }
 h2 { font-size: 1.65em; }
