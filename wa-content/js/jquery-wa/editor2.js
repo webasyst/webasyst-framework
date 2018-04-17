@@ -135,7 +135,6 @@ jQuery.fn.waEditor2 = function () {
                 $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
             });
             $textarea.redactor('observe.images');
-            $textarea.redactor('focus.start');
 
             // Update tab selection
             $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
@@ -146,6 +145,7 @@ jQuery.fn.waEditor2 = function () {
             $textarea.redactor('core.box').show();
 
             updateLastWysiwygCode(source_val);
+            $textarea.redactor('focus.start');
             return false;
         });
 

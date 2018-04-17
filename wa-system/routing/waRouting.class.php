@@ -336,6 +336,25 @@ class waRouting
                         }
                     }
                     wa()->getResponse()->redirect($r['redirect'], 301);
+                } elseif (isset($r['static_content'])) {
+                    $response = wa()->getResponse();
+                    switch (ifset($r['static_content_type'])){
+                        case 'text/plain':
+                            $response->addHeader('Content-Type', 'text/plain; charset=utf-8');
+                            break;
+                        case 'text/html':
+                            $response->addHeader('Content-Type', 'text/html; charset=utf-8');
+                            break;
+                        default:
+                            if ($type = waFiles::getMimeType($r['url'])) {
+                                $response->addHeader('Content-Type', $type);
+                            }
+
+                            break;
+                    }
+                    $response->sendHeaders();
+                    print $r['static_content'];
+                    exit;
                 }
                 if ($vars) {
                     array_shift($match);
