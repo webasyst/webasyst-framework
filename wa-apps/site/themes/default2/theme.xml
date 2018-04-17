@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="default2" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.2.6">
+    <name locale="en_US">Default 2.0</name>
+    <name locale="ru_RU">Дефолт 2.0</name>
+    <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
+    <description locale="ru_RU">Семейство адаптивных тем дизайна для всех базовых приложений Webasyst</description>
+    <files>
+        <file path="index.html" custom="0">
+    		<description locale="en_US">Core layout of Default 2.0 theme family</description>
+    		<description locale="ru_RU">Основной макет тем дизайна семейства «Дефолт 2.0»</description>
+        </file>
+        <file path="default.css" custom="0">
+    		<description locale="en_US">Core CSS of the Default 2.0 theme family</description>
+    		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна «Дефолт 2.0»</description>
+        </file>
+        <file path="default.js" custom="0">
+        </file>
+    	<file path="head.html" custom="0">
+    		<description locale="en_US">Site app's &lt;head&gt; instructions</description>
+    		<description locale="ru_RU">Блок &lt;head&gt; приложения «Сайт»</description>
+    	</file>
+    	<file path="header.html" custom="0">
+    		<description locale="en_US">App specific header content</description>
+    		<description locale="ru_RU">Содержимое «шапки» приложения</description>
+    	</file>
+    	<file path="banner.html" custom="0">
+    		<description locale="en_US">App specific banner content</description>
+    		<description locale="ru_RU">Контент в области баннера</description>
+    	</file>
+    	<file path="main.html" custom="0">
+    		<description locale="en_US">Main layout for Site app content</description>
+    		<description locale="ru_RU">Основной вывод приложения «Сайт»</description>
+    	</file>
+    	<file path="footer.html" custom="0">
+    		<description locale="en_US">App specific footer content</description>
+    		<description locale="ru_RU">Содержимое футера приложения</description>
+        </file>
+        <file path="page.html" custom="0">
+    		<description locale="en_US">Static page content and navigation</description>
+    		<description locale="ru_RU">Содержимое открытой страницы и навигация по страницам</description>
+        </file>
+        <file path="login.html" custom="0">
+    		<description locale="en_US">Login page</description>
+    		<description locale="ru_RU">Страница входа для пользователей</description>
+    	</file>
+        <file path="signup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+            <description locale="ru_RU">Страница регистрации пользователей</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+            <description locale="ru_RU">Страница сброса пароля</description>
+        </file>
+        <file path="my.profile.html">
+            <description locale="en_US">My profile: contact info editing form</description>
+            <description locale="ru_RU">Личный кабинет: редактирование контактной информации</description>
+        </file>
+        <file path="my.nav.html">
+            <description locale="en_US">My profile navigation</description>
+            <description locale="ru_RU">Навигационное меню внутри личного кабинета</description>
+        </file>
+        <file path="error.html" custom="0">
+    		<description locale="en_US">404 and other errors</description>
+    		<description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+    </files>
+    <about locale="en_US">
+        <![CDATA[
+<p><b>Default</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Default (i.e. this) theme for the Site application. All Default design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.</p>
+<p>Default design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
+]]>
+    </about>
+    <about locale="ru_RU">
+        <![CDATA[
+<p><b>Default</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Default для приложения «Сайт» (данная тема). Все темы дизайна Default для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p>Темы дизайна семейства Default оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
+]]>
+    </about>
+    <settings>
+        <setting var="logo" control_type="image">
+            <value></value>
+            <filename>img/logo.*</filename>
+            <name locale="en_US">Logo</name>
+            <name locale="ru_RU">Логотип</name>
+        </setting>
+        <setting var="banner_caption" control_type="text">
+            <value locale="en_US"></value>
+            <value locale="ru_RU"></value>
+            <name locale="en_US">Site-wide banner caption</name>
+            <name locale="ru_RU">Заголовок на основном баннере</name>
+        </setting>
+        <setting var="color_scheme" control_type="image_select">
+            <value>img/backgrounds/themesettings/green.png</value>
+            <name locale="ru_RU">Баннер</name>
+            <name locale="en_US">Color scheme</name>
+            <options>
+                <option value="img/backgrounds/themesettings/green.png"></option>
+                <option value="img/backgrounds/themesettings/blue.png"></option>
+                <option value="img/backgrounds/themesettings/red.png"></option>
+                <option value="img/backgrounds/themesettings/yellow.png"></option>
+                <option value="img/backgrounds/themesettings/purple.png"></option>
+                <option value="img/backgrounds/themesettings/gray.png"></option>
+                <option value="img/backgrounds/themesettings/bokeh_green.jpg"></option>
+                <option value="img/backgrounds/themesettings/bokeh_blue.jpg"></option>
+                <option value="img/backgrounds/themesettings/bokeh_vivid.jpg"></option>
+                <option value="img/backgrounds/themesettings/bokeh_orange.jpg"></option>
+                <option value="img/backgrounds/themesettings/bokeh_purple.jpg"></option>
+                <option value="img/backgrounds/themesettings/bokeh_gray.jpg"></option>
+                <option value="img/backgrounds/themesettings/sky_green.jpg"></option>
+                <option value="img/backgrounds/themesettings/sky_red.jpg"></option>
+                <option value="img/backgrounds/themesettings/sky_purple.jpg"></option>
+                <option value="img/backgrounds/themesettings/sky_nebula.jpg"></option>
+                <option value="img/backgrounds/themesettings/sky_aurora.jpg"></option>
+                <option value="img/backgrounds/themesettings/sky_blue.jpg"></option>
+                <option value="img/backgrounds/themesettings/abstract_blue.jpg"></option>
+                <option value="img/backgrounds/themesettings/abstract_purple.jpg"></option>
+                <option value="img/backgrounds/themesettings/abstract_gray.jpg"></option>
+                <option value="img/backgrounds/themesettings/abstract_vivid.jpg"></option>
+                <option value="img/backgrounds/themesettings/abstract_brown.jpg"></option>
+                <option value="img/backgrounds/themesettings/abstract_orange.jpg"></option>
+                <option value="img/backgrounds/themesettings/special_winter.jpg"></option>
+            </options>
+        </setting>
+        <setting var="custom_background" control_type="image">
+            <value></value>
+            <filename>img/custom_background.*</filename>
+            <name locale="en_US">Custom banner background</name>
+            <name locale="ru_RU">Свое фоновое изображение для баннера</name>
+        </setting>
+        <setting var="custom_background_stretch" control_type="checkbox">
+            <value>0</value>
+            <name locale="en_US">Stretch custom background to fit full width</name>
+            <name locale="ru_RU">Растянуть мое фоновое изображение по всей ширине</name>
+        </setting>
+        <setting var="custom_background_banner_text_color" control_type="select">
+            <value></value>
+            <name locale="en_US">Text above custom background</name>
+            <name locale="ru_RU">Текст на фоне моего изображения</name>
+            <options>
+                <option value="">
+                    <name locale="ru_RU">Светлый</name>
+                    <name locale="en_US">Light</name>
+                </option>
+                <option value="text_scheme_dark">
+                    <name locale="ru_RU">Темный</name>
+                    <name locale="en_US">Dark</name>
+                </option>
+                <option value="text_scheme_red">
+                    <name locale="ru_RU">Красный</name>
+                    <name locale="en_US">Red</name>
+                </option>
+                <option value="text_scheme_green">
+                    <name locale="ru_RU">Зеленый</name>
+                    <name locale="en_US">Green</name>
+                </option>
+                <option value="text_scheme_blue">
+                    <name locale="ru_RU">Синий</name>
+                    <name locale="en_US">Blue</name>
+                </option>
+                <option value="text_scheme_purple">
+                    <name locale="ru_RU">Фиолетовый</name>
+                    <name locale="en_US">Purple</name>
+                </option>
+            </options>
+        </setting>
+        <setting var="facebook" control_type="text">
+            <value>http://</value>
+            <name locale="en_US">Facebook page URL</name>
+            <name locale="ru_RU">Адрес страницы в «Фейсбуке»</name>
+        </setting>
+        <setting var="twitter" control_type="text">
+            <value>username</value>
+            <name locale="en_US">Twitter username</name>
+            <name locale="ru_RU">Имя пользователя в «Твиттере»</name>
+            <description locale="en_US">Example: webasyst</description>
+            <description locale="ru_RU">Например: webasyst_ru</description>
+        </setting>
+        <setting var="vk" control_type="text">
+            <value>http://</value>
+            <name locale="en_US">VK.com page URL</name>
+            <name locale="ru_RU">Адрес страницы или группы во «ВКонтакте»</name>
+        </setting>
+        <setting var="instagram" control_type="text">
+            <value>username</value>
+            <name locale="en_US">Instagram username</name>
+            <name locale="ru_RU">Имя пользователя в «Инстаграме»</name>
+            <description locale="en_US">Example: webasyst</description>
+            <description locale="ru_RU">Например: webasyst_ru</description>
+        </setting>
+        <setting var="youtube" control_type="text">
+            <value>http://</value>
+            <name locale="en_US">Youtube channel URL</name>
+            <name locale="ru_RU">Адрес канала YouTube</name>
+        </setting>
+        <setting var="pinterest" control_type="text">
+            <value>http://</value>
+            <name locale="en_US">Pinterest page URL</name>
+            <name locale="ru_RU">Адрес страницы в Pinterest</name>
+        </setting>
+        <setting var="gplus" control_type="text">
+            <value>http://</value>
+            <name locale="en_US">Google+ URL</name>
+            <name locale="ru_RU">Адрес страницы в Google+</name>
+        </setting>
+        <setting var="pagination" control_type="select">
+            <value>lazyloading</value>
+            <name locale="en_US">Long lists</name>
+            <name locale="ru_RU">Длинные списки</name>
+            <options>
+                <option value="lazyloading">
+                    <name locale="ru_RU">Автоматическая подгрузка при скролле (lazy loading)</name>
+                    <name locale="en_US">Auto load on scroll (lazy loading)</name>
+                </option>
+                <option value="paging">
+                    <name locale="ru_RU">Постраничная навигация (1 2 3 4 ...)</name>
+                    <name locale="en_US">Paginated lists (1 2 3 4 ...)</name>
+                </option>
+            </options>
+        </setting>
+        <setting var="font_size_toggle" control_type="select">
+            <value>font_size_14</value>
+            <name locale="ru_RU">Основной размер текста</name>
+            <name locale="en_US">Main text font size</name>
+            <options>
+                <option value="font_size_12">
+                    <name locale="ru_RU">12px</name>
+                    <name locale="en_US">12px</name>
+                </option>
+                <option value="font_size_13">
+                    <name locale="ru_RU">13px</name>
+                    <name locale="en_US">13px</name>
+                </option>
+                <option value="font_size_14">
+                    <name locale="ru_RU">14px</name>
+                    <name locale="en_US">14px</name>
+                </option>
+                <option value="font_size_15">
+                    <name locale="ru_RU">15px</name>
+                    <name locale="en_US">15px</name>
+                </option>
+                <option value="font_size_16">
+                    <name locale="ru_RU">16px</name>
+                    <name locale="en_US">16px</name>
+                </option>
+            </options>
+        </setting>
+        <setting var="font_family_toggle" control_type="select">
+            <value>font_family_helvetica</value>
+            <name locale="ru_RU">Основное семейство шрифтов</name>
+            <name locale="en_US">Main font family</name>
+            <options>
+                <option value="font_family_trebuchet">
+                    <name locale="ru_RU">Trebuchet MS</name>
+                    <name locale="en_US">Trebuchet MS</name>
+                </option>
+                <option value="font_family_verdana">
+                    <name locale="ru_RU">Verdana</name>
+                    <name locale="en_US">Verdana</name>
+                </option>
+                <option value="font_family_georgia">
+                    <name locale="ru_RU">Georgia</name>
+                    <name locale="en_US">Georgia</name>
+                </option>
+                <option value="font_family_helvetica">
+                    <name locale="ru_RU">Helvetica Neue (Arial)</name>
+                    <name locale="en_US">Helvetica Neue (Arial)</name>
+                </option>
+            </options>
+        </setting>
+        <setting var="footer_notice" control_type="text">
+            <value></value>
+            <name locale="en_US">Footer notice</name>
+            <name locale="ru_RU">Уведомление в подвале сайта</name>
+        </setting>
+    </settings>
+    <locales>
+        <locale>
+            <msgid>Follow us</msgid>
+            <msgstr locale="ru_RU">Подписаться на новости</msgstr>
+        </locale>
+        <locale>
+            <msgid>Subscribe to our email newsletter</msgid>
+            <msgstr locale="ru_RU">Подписаться на рассылку</msgstr>
+        </locale>
+        <locale>
+            <msgid>Or follow us on Facebook and Twitter</msgid>
+            <msgstr locale="ru_RU">Или подписывайтесь в соцсетях</msgstr>
+        </locale>
+    </locales>
+</theme>
