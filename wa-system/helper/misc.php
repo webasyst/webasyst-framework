@@ -392,4 +392,14 @@ function wa_array_diff_r($value1, $value2, &$diff) {
     }
 }
 
+/**
+ * Immediate If. Useful replacement for ternary oprator ?:
+ * @param bool $condition
+ * @param mixed $true_value Value to return if condition is true
+ * @param mixed $false_value Value to return if condition is false
+ */
+function iif($condition, $true_value, $false_value) {
+    return ($condition ? $true_value : $false_value);
+}
+
 
