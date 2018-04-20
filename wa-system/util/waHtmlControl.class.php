@@ -185,10 +185,9 @@ class waHtmlControl
 
         $original_wrappers = self::getControlWrappers($params);
         self::makeId($params, $name);
-        $instance = self::getInstance();
         $passed_params = $params;
         $ref = &$passed_params;
-        $control = $instance->$control_name($name, $ref);
+        $control = self::getInstance()->$control_name($name, $ref);
         $custom_wrappers = self::getControlCustomWrappers($ref);
         $params = $custom_wrappers + $params;
         self::getControlWrappers($params, $original_wrappers);
@@ -726,33 +725,33 @@ HTML;
         return $control;
     }
 
+    /**
+     * Get HTML code of fields for set interval.
+     * @param string $name
+     * @param array $params Special params: 'label_from', 'label_to'.
+     * @return string
+     */
     private function getIntervalControl($name, $params = array())
     {
-        $control = '';
-        if (!isset($params['value']) || !is_array($params['value'])) {
-            $params['value'] = array();
-        }
-        $default_params = array(
-            'value' => array(
-                'from' => '',
-                'to'   => '',
-            ),
+        $params['value'] = array_merge(
+            array('from' => 0, 'to' => 0), 
+            (array) ifset($params, 'value', array())
         );
-        $params['value'] = array_merge($default_params['value'], $params['value']);
+        
+        waHtmlControl::addNamespace($params, $name);
+        
         $input_params = $params;
-        self::addNamespace($input_params, $name);
-        $input_name = "from";
         $input_params['value'] = $params['value']['from'];
-        $input_params['title'] = 'str_from';
-
-        $control .= self::getControl(self::INPUT, $input_name, $input_params)."\n";
+        $input_params['title'] = ifset($params['label_from'], _w('from'));
+        $input_params['control_wrapper'] = '%s %s%s';
+        $control = waHtmlControl::getControl(waHtmlControl::INPUT, 'from', $input_params);
 
         $input_params = $params;
-        $input_name = "to";
-        self::addNamespace($input_params, $name);
         $input_params['value'] = $params['value']['to'];
-        $input_params['title'] = 'str_to';
-        $control .= self::getControl(self::INPUT, $input_name, $input_params)."\n";
+        $input_params['title'] = ifset($params['label_to'], _w('to'));
+        $input_params['control_wrapper'] = ' %s %s%s';
+        $control .= waHtmlControl::getControl(waHtmlControl::INPUT, 'to', $input_params).PHP_EOL;
+        
         return $control;
     }
 
