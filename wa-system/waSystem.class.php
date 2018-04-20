@@ -1412,9 +1412,9 @@ class waSystem
     /**
      * Trigger event with given $name from current active application.
      *
-     * @param  string    $name        Event name.
-     * @param  mixed     $params      Parameters passed to event handlers.
-     * @param  string[]  $array_keys  Array of expected template items for UI events.
+     * @param  string|array  $name        Event name or array('app id', 'event name').
+     * @param  mixed         $params      Parameters passed to event handlers.
+     * @param  string[]      $array_keys  Array of expected template items for UI events.
      * @return  array  app_id or plugin_id => data returned from handler (unless null is returned)
      */
     public function event($name, &$params = null, $array_keys = null)
