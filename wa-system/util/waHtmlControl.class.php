@@ -67,7 +67,7 @@ class waHtmlControl
      */
     private static function getInstance()
     {
-        if (!(self::$instance instanceof self)) {
+        if (!self::$instance) {
             self::$instance = new self();
         }
         return self::$instance;
@@ -531,6 +531,9 @@ class waHtmlControl
                 'height'       => 'dynamic',
                 'lineWrapping' => 'true',
             );
+            if (ifset($params['readonly'])) {
+                $params['wysiwyg']['readOnly'] = true;
+            }
             $options = json_encode($params['wysiwyg']);
             $control .= <<<HTML
 <style type="text/css">
@@ -738,19 +741,19 @@ HTML;
             (array) ifset($params, 'value', array())
         );
         
-        waHtmlControl::addNamespace($params, $name);
+        self::addNamespace($params, $name);
         
         $input_params = $params;
         $input_params['value'] = $params['value']['from'];
-        $input_params['title'] = ifset($params['label_from'], _w('from'));
+        $input_params['title'] = ifset($params['label_from'], 'from');
         $input_params['control_wrapper'] = '%s %s%s';
-        $control = waHtmlControl::getControl(waHtmlControl::INPUT, 'from', $input_params);
+        $control = self::getControl(self::INPUT, 'from', $input_params);
 
         $input_params = $params;
         $input_params['value'] = $params['value']['to'];
-        $input_params['title'] = ifset($params['label_to'], _w('to'));
+        $input_params['title'] = ifset($params['label_to'], 'to');
         $input_params['control_wrapper'] = ' %s %s%s';
-        $control .= waHtmlControl::getControl(waHtmlControl::INPUT, 'to', $input_params).PHP_EOL;
+        $control .= self::getControl(self::INPUT, 'to', $input_params).PHP_EOL;
         
         return $control;
     }
