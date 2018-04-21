@@ -71,7 +71,7 @@ class waModel
     public function __construct($type = null, $writable = false)
     {
         $this->writable = $writable;
-        $this->type = $type ? $type : 'default';
+        $this->type = $type ? $type : waSystemConfig::database();
         $this->adapter = waDbConnector::getConnection($this->type, $this->writable);
         if ($this->table && !$this->fields) {
             $this->getMetadata();
