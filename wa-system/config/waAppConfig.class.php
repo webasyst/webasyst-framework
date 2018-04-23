@@ -113,20 +113,20 @@ class waAppConfig extends SystemConfig
             }
         }
         if ($page_ids) {
-            $class_name = $this->application . 'PageModel';
-            /**
-             * @var waPageModel $model
-             */
-            $model = new $class_name();
-            $pages = $model->query('SELECT id, name FROM '.$model->getTableName().' WHERE id IN (i:ids)', array('ids' => $page_ids))->fetchAll('id', true);
-            $app_url = wa()->getConfig()->getBackendUrl(true).$l['app_id'].'/';
-            foreach ($logs as &$l) {
-                if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($pages[$l['params']])) {
-                    $l['params_html'] = '<div class="activity-target"><a href="'.$app_url.'#/pages/'.$l['params'].'">'.
-                        htmlspecialchars($pages[$l['params']]).'</a></div>';
+            $class_name = $this->application.'PageModel';
+            if (class_exists($class_name)) {
+                /** @var waPageModel $model */
+                $model = new $class_name();
+                $pages = $model->query('SELECT id, name FROM '.$model->getTableName().' WHERE id IN (i:ids)', array('ids' => $page_ids))->fetchAll('id', true);
+                $app_url = wa()->getConfig()->getBackendUrl(true).$this->application.'/';
+                foreach ($logs as &$l) {
+                    if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($pages[$l['params']])) {
+                        $l['params_html'] = '<div class="activity-target"><a href="'.$app_url.'#/pages/'.$l['params'].'">'.
+                            htmlspecialchars($pages[$l['params']]).'</a></div>';
+                    }
                 }
+                unset($l);
             }
-            unset($l);
         }
         return $logs;
     }
@@ -332,10 +332,18 @@ class waAppConfig extends SystemConfig
             $cache->set($last_update_ts);
         }
 
+        if (empty($app_settings_model)) {
+            $app_settings_model = new waAppSettingsModel();
+        }
+
         if ($is_first_launch) {
             // Updates are all skipped on app's first launch with install.php
             $app_settings_model->set($this->application, 'update_time', $last_update_ts);
-        } else {
+        } elseif ($files) {
+            if (!$this->loaded_locale) {
+                // Force load locale
+                $this->setLocale(wa()->getLocale());
+            }
             waConfig::set('is_template', null);
             $cache_database_dir = $this->getPath('cache').'/db';
             foreach ($files as $t => $file) {
@@ -403,6 +411,9 @@ class waAppConfig extends SystemConfig
         $file = $this->getAppConfigPath('install');
         if (file_exists($file)) {
             $app_id = $this->application;
+            /**
+             * @var string $app_id
+             */
             include($file);
         }
     }
@@ -464,7 +475,17 @@ class waAppConfig extends SystemConfig
     public function getClasses()
     {
         $cache_file = waConfig::get('wa_path_cache').'/apps/'.$this->application.'/config/autoload.php';
-        if (self::isDebug() || !file_exists($cache_file)) {
+
+        $result = null;
+
+        if (!self::isDebug() && file_exists($cache_file)) {
+            $result = @include($cache_file);
+            if (!is_array($result)) {
+                $result = null;
+            }
+        }
+
+        if ($result === null) {
             waFiles::create(waConfig::get('wa_path_cache').'/apps/'.$this->application.'/config');
             $paths = array($this->getAppPath().'/lib/');
             // plugins
@@ -497,6 +518,9 @@ class waAppConfig extends SystemConfig
             foreach ($paths as $path) {
                 $files = $this->getPHPFiles($path);
                 foreach ($files as $file) {
+                    if (strpos($file, '/lib/config/data/')) {
+                        continue;
+                    }
                     $class = $this->getClassByFilename(basename($file));
                     if ($class) {
                         // Classes in dir named /custom/ have priority.
@@ -514,9 +538,10 @@ class waAppConfig extends SystemConfig
             } else {
                 waFiles::delete($cache_file);
             }
-            return $result;
+
         }
-        return include($cache_file);
+
+        return $result;
     }
 
     protected function getPHPFiles($path)
@@ -552,17 +577,26 @@ class waAppConfig extends SystemConfig
         if (count($file_parts) <= 2) {
             return false;
         }
+        array_pop($file_parts);
         $class = null;
-        switch ($file_parts[1]) {
-            case 'class':
-                return $file_parts[0];
-            default:
-                $result = $file_parts[0];
-                for ($i = 1; $i < count($file_parts) - 1; $i++) {
-                    $result .= ucfirst($file_parts[$i]);
+        switch (end($file_parts)) {
+            case 'handler':
+                $class = $this->application;
+                for ($i = 0; $i < count($file_parts); $i++) {
+                    $class .= ucfirst($file_parts[$i]);
                 }
-                return $result;
+                break;
+            case 'class':
+                $class = $file_parts[0];
+                break;
+            default:
+                $class = $file_parts[0];
+                for ($i = 1; $i < count($file_parts); $i++) {
+                    $class .= ucfirst($file_parts[$i]);
+                }
+                break;
         }
+        return $class;
     }
 
     /**

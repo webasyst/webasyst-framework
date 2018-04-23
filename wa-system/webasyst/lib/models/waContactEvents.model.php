@@ -40,7 +40,7 @@ class waContactEventsModel extends waModel
         }
         // $ccm = new waContactCalendarsModel();
         $sql = "SELECT * FROM {$this->getTableName()}
-                WHERE end >= s:start AND start <= s:end
+                WHERE end >= s:start AND start <= s:end {$condition}
                 ORDER BY is_allday DESC, start ASC";
         return $this->query($sql, array('start' => $start, 'end' => $end))->fetchAll('id');
     }

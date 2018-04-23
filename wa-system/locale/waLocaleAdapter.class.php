@@ -30,6 +30,10 @@ class waLocaleAdapter
                 // ...
             }
         }
+
+        // Always use dot separator when formatting floats
+        setlocale(LC_NUMERIC, 'C');
+
         // Bind domain
         bindtextdomain($domain, $locale_path);
         bind_textdomain_codeset($domain, 'UTF-8');
