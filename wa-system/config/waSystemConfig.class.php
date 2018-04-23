@@ -133,7 +133,7 @@ class waSystemConfig
         return $this->getSystemOption($name);
     }
     
-    public static function database($db = null)
+    public function database($db = null)
     {
         if ($db !== null) {
             self::$system_options['current_db'] = $db;
