@@ -141,6 +141,9 @@ class worldwideShipping extends waShipping
     public function requestedAddressFields()
     {
         return array(
+            'street'  => array(),
+            'city'    => array(),
+            'region'  => array(),
             'zip'     => array(),
             'country' => array('cost' => false),
         );
