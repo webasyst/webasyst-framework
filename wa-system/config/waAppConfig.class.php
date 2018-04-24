@@ -117,7 +117,7 @@ class waAppConfig extends SystemConfig
             if (class_exists($class_name)) {
                 /** @var waPageModel $model */
                 $model = new $class_name();
-                $pages = $model->query('SELECT id, name FROM '.$model->getTableName().' WHERE id IN (i:ids)', array('ids' => $page_ids))->fetchAll('id', true);
+                $pages = $model->select('id, name')->where('id IN (i:ids)', array('ids' => $page_ids))->fetchAll('id', true);
                 $app_url = wa()->getConfig()->getBackendUrl(true).$this->application.'/';
                 foreach ($logs as &$l) {
                     if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($pages[$l['params']])) {
