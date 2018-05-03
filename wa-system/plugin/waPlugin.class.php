@@ -6,6 +6,10 @@ class waPlugin
     protected $app_id;
     protected $info = array();
     protected $path;
+    /**
+     * @var string Path to folder with plugin log files.
+     */
+    protected $logs_path;
 
     /**
      * @var waAppSettingsModel
@@ -37,10 +41,39 @@ class waPlugin
             $this->app_id = waSystem::getInstance()->getApp();
         }
         $this->path = wa()->getAppPath('plugins/'.$this->id, $this->app_id);
+        $this->logs_path = $this->app_id.DIRECTORY_SEPARATOR.'plugins'.DIRECTORY_SEPARATOR.$this->id.DIRECTORY_SEPARATOR;
 
         $this->checkUpdates();
     }
+    
+    /**
+     * @param string $name Log name.
+     * @return string Path to log file.
+     */
+    public function getLogPath($name)
+    {
+        $name = empty($name) ? 'errors' : rtrim($name, '.log');
 
+        return $this->logs_path.$name.'.log';
+    }
+    
+    /**
+     * @param mixed $message Message to be logged.
+     * @param string|null $name Log name. Set null for use called method as name.
+     * @return bool Logging completion status.
+     */
+    protected function addToLogFile($message, $name = null)
+    {
+        $message = (string) $message;
+        
+        if (is_null($name)) {
+            $backtrace = debug_backtrace();
+            $name = ifset($backtrace, 1, 'function', '');
+        }
+
+        return waLog::log($message, $this->getLogPath($name));
+    }
+    
     /** @since 1.8.2 */
     public function getId()
     {
@@ -69,7 +102,7 @@ class waPlugin
             try {
                 $this->install();
             } catch (Exception $e) {
-                waLog::log($e->getMessage());
+                $this->addToLogFile($e->getMessage());
                 throw $e;
             }
             $ignore_all = true;
@@ -119,11 +152,11 @@ class waPlugin
                         $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
                     }
                 } catch (Exception $e) {
+                    // log errors
+                    $this->addToLogFile($e);
                     if ($is_debug) {
                         echo $e;
                     }
-                    // log errors
-                    waLog::log($e->__toString());
                     break;
                 }
             }
@@ -170,7 +203,7 @@ class waPlugin
                 $path = waConfig::get('wa_path_cache').'/db/';
                 waFiles::delete($path, true);
             } catch (waException $e) {
-                waLog::log($e->__toString());
+                $this->addToLogFile($e);
             }
             // clear runtime cache
             waRuntimeCache::clearAll();
@@ -187,7 +220,12 @@ class waPlugin
 
             } catch (Exception $ex) {
                 if ($force) {
-                    waLog::log(sprintf("Error while uninstall %s at %s: %s", $this->id, $this->app_id, $ex->getMessage(), 'installer.log'));
+                    $this->addToLogFile(sprintf(
+                        "Error while uninstall %s at %s: %s", 
+                        $this->id, 
+                        $this->app_id, 
+                        $ex->getMessage()
+                    ));
                 } else {
                     throw $ex;
                 }
