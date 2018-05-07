@@ -1236,18 +1236,24 @@ HTML;
         return $links;
     }
 
+    /**
+     * Get application view helper.
+     * @param string $app
+     * @return waAppViewHelper|null
+     */
     public function __get($app)
     {
-        if (!isset(self::$helpers[$app])) {
+        if (!array_key_exists($app, self::$helpers)) {
             $wa = wa($this->app_id);
-            if ($wa->getConfig()->getApplication() !== $app) {
-                if (wa()->appExists($app)) {
+            if ($this->app_id !== $app) {
+                if ($wa->appExists($app)) {
                     $wa = wa($app);
                 } else {
+                    self::$helpers[$app] = null;
                     return null;
                 }
             }
-            $class = $app.'ViewHelper';
+            $class = $app . 'ViewHelper';
             if (class_exists($class)) {
                 self::$helpers[$app] = new $class($wa);
             } else {
