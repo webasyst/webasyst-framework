@@ -528,9 +528,9 @@ class waHtmlControl
             }
             $params['wysiwyg'] += array(
                 'mode'         => 'text/html',
-                'tabMode'      => 'indent',
                 'height'       => 'dynamic',
                 'lineWrapping' => 'true',
+                'readOnly'     => isset($params['readonly']) ? 'true' : 'false',
             );
             $options = json_encode($params['wysiwyg']);
             $control .= <<<HTML
@@ -540,15 +540,17 @@ class waHtmlControl
     }
 </style>
 <script type="text/javascript">
-    if(typeof(CodeMirror) == 'function') {
-        var textarea = document.getElementById('{$params['id']}'), 
-            onchange = {
-                'onChange':function(cm) {
-                    textarea.value = cm.getValue();
-                }
-            };
-        setTimeout(function(){
-            CodeMirror.fromTextArea(textarea, $.extend($options, onchange));
+    if (typeof(CodeMirror) == 'function') {
+        setTimeout(function () {
+            CodeMirror.fromTextArea(
+                document.getElementById('{$params['id']}'), 
+                $.extend(
+                    $options, 
+                    {onChange: function (cm) {
+                        cm.getTextArea().value = cm.getValue();
+                    }}
+                )
+            );
         }, 500);
     }
 </script>
