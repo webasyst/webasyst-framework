@@ -40,7 +40,9 @@ class siteConfig extends waAppConfig
                             list($route_ar['module'], $route_ar['action']) = explode('/', $route);
                             $route = $route_ar;
                         }
-                        $route['plugin'] = $plugin;
+                        if (!array_key_exists('plugin', $route)) {
+                            $route['plugin'] = $plugin;
+                        }
                         $all_plugins_routes[$url] = $route;
                     }
                     unset($route);
