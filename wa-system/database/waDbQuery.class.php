@@ -29,7 +29,7 @@ class waDbQuery
     }
 
     /**
-     * @param string|array $select
+     * @param string $select
      * @return waDbQuery
      */
     public function select($select)
