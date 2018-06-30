@@ -10,7 +10,7 @@ $.wa = $.extend(true, $.wa, {
         if (key == undefined) {
             return this.data;
         }
-        return this.data[name] || defaultValue || null;
+        return this.data[key] || defaultValue || null;
     },
     set: function(key, val) {
         if (key == undefined) {
@@ -19,7 +19,7 @@ $.wa = $.extend(true, $.wa, {
         if (typeof(key) == 'object') {
             $.extend(this.data, key);
         } else {
-            this.data[key] = value;
+            this.data[key] = val;
         }
         return this.data;
     },
@@ -90,7 +90,7 @@ $.wa = $.extend(true, $.wa, {
         document.title = title;
     },
     array_search: function ( needle, haystack, strict ) {
-        var strict = !!strict;
+        strict = !!strict;
 
         for(var key in haystack){
             if( (strict && haystack[key] === needle) || (!strict && haystack[key] == needle) ){
@@ -253,7 +253,7 @@ $.wa = $.extend(true, $.wa, {
     },
 
     /** Click handler used in dropdownsCloseDisable() and dropdownsCloseEnable(). */
-    dropdownsClickHandler: function(e) {
+    dropdownsClickHandler: function() {
         var self = $(this);
         if (self.hasClass('no-click-close')) {
             return;
@@ -409,7 +409,7 @@ $.wa = $.extend(true, $.wa, {
 
 if (!window.wa_skip_ajax_setup) {
     $.ajaxSetup({'cache': false});
-    $(document).ajaxError(function(e, xhr, settings, exception) {
+    $(document).ajaxError(function(e, xhr) {
         // Generic error page
         if (xhr.status !== 200 && xhr.responseText) {
             if (!$.wa.errorHandler || $.wa.errorHandler(xhr)) {
