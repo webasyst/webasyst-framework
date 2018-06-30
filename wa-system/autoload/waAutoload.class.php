@@ -84,7 +84,9 @@ class waAutoload
 
             require_once $path;
 
-            if (!class_exists($class, false) && !interface_exists($class, false)) {
+            if (!class_exists($class, false) && !interface_exists($class, false) &&
+                !(function_exists('trait_exists') && trait_exists($class, false))
+            ) {
                 $msg = sprintf('Not found class [%2$s] in file [%1$s]', $path, $class);
                 if ($class == 'waException') {
                     throw new Exception($msg, 500);
