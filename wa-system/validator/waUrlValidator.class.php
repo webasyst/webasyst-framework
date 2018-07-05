@@ -18,8 +18,11 @@ class waUrlValidator extends waRegexValidator
 
     protected function init()
     {
-        $this->setMessage('not_match', 'Invalid URL');
+        if(empty($this->messages['not_match'])) {
+            $this->setMessage('not_match', 'Invalid URL');
+        }
         $this->setPattern(self::REGEX_URL);
+        parent::init();
     }
 
     public function isValid($value)
@@ -35,5 +38,3 @@ class waUrlValidator extends waRegexValidator
         return !$this->getErrors();
     }
 }
-
-// EOF
