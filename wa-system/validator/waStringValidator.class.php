@@ -17,9 +17,13 @@ class waStringValidator extends waValidator
 
     protected function init()
     {
+        if(empty($this->messages['max_length'])) {
+            $this->setMessage('max_length', sprintf(_ws('No more than %d character please', 'No more than %d characters please', $this->getOption('max_length')), $this->getOption('max_length')));
+        }
+        if(empty($this->messages['min_length'])) {
+            $this->setMessage('min_length', sprintf(_ws('No less than %d character please', 'No less than %d characters please', $this->getOption('min_length')), $this->getOption('min_length')));
+        }
         parent::init();
-        $this->setMessage('max_length', sprintf(_ws('No more than %d character please', 'No more than %d characters please', $this->getOption('max_length')), $this->getOption('max_length')));
-        $this->setMessage('min_length', sprintf(_ws('No less than %d character please', 'No less than %d characters please', $this->getOption('min_length')), $this->getOption('min_length')));
     }
 
     public function isValid($value)
@@ -36,5 +40,4 @@ class waStringValidator extends waValidator
 
         return $this->getErrors() ? false : true;
     }
-
 }
