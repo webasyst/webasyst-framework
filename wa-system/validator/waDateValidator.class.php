@@ -17,7 +17,9 @@ class waDateValidator extends waValidator
     protected function init()
     {
         parent::init();
-        $this->setMessage('incorrect_date', _ws("Incorrect date"));
+        if(empty($this->messages['incorrect_date'])) {
+            $this->setMessage('incorrect_date', _ws("Incorrect date"));
+        }
     }
 
     /**
