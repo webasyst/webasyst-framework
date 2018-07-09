@@ -49,7 +49,7 @@ class waNet
         'proxy_user'          => null,
         'proxy_password'      => null,
         'proxy_auth'          => 'basic',
-        'expected_http_code'  => 200, // null to accept any code
+        'expected_http_code'  => array(200, 302), // null to accept any code
         'priority'            => array(
             'curl',
             'fopen',
@@ -79,8 +79,11 @@ class waNet
         $this->user_agent = sprintf('Webasyst-Framework/%s', wa()->getVersion('webasyst'));
         //TODO read proxy settings from generic config
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        if (!isset($this->options['verify']) && strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->options['verify'] = false;
+        }
+        if (!empty($options['expected_http_code']) && !is_array($options['expected_http_code'])) {
+            $options['expected_http_code'] = (array) $options['expected_http_code'];
         }
         $this->options = array_merge($this->options, $options);
         $this->request_headers = array_merge($this->request_headers, $custom_headers);
@@ -114,10 +117,11 @@ class waNet
      * @param $url
      * @param array|string|SimpleXMLElement|DOMDocument $content Parameter type relate to request format (xml/json/etc)
      * @param string $method
+     * @param array $options Only for curl
      * @return string|array|SimpleXMLElement Type related to response for response format (json/xml/etc)
      * @throws waException
      */
-    public function query($url, $content = array(), $method = self::METHOD_GET)
+    public function query($url, $content = array(), $method = self::METHOD_GET, $options = array())
     {
         $transport = $this->getTransport($url);
 
@@ -126,7 +130,7 @@ class waNet
 
         switch ($transport) {
             case self::TRANSPORT_CURL:
-                $response = $this->runCurl($url, $content, $method);
+                $response = $this->runCurl($url, $content, $method, $options);
                 break;
             case self::TRANSPORT_FOPEN:
                 $response = $this->runStreamContext($url, $content, $method);
@@ -142,7 +146,7 @@ class waNet
         $this->decodeResponse($response);
 
         if ($this->options['expected_http_code'] !== null) {
-            if (empty($this->response_header['http_code']) || ($this->response_header['http_code'] != $this->options['expected_http_code'])) {
+            if (empty($this->response_header['http_code']) || !in_array($this->response_header['http_code'], $this->options['expected_http_code'])) {
                 throw new waException($response, $this->response_header['http_code']);
             }
         }
@@ -470,7 +474,7 @@ class waNet
 
         return $body;
     }
-
+    
     private function getCurl($url, $content, $method, $curl_options = array())
     {
         if (extension_loaded('curl') && function_exists('curl_init')) {
@@ -486,8 +490,8 @@ class waNet
                     $curl_options = array();
                 }
                 $curl_default_options = array(
-                    CURLOPT_HEADER            => 1,
-                    CURLOPT_RETURNTRANSFER    => 1,
+                    CURLOPT_HEADER            => true,
+                    CURLOPT_RETURNTRANSFER    => true,
                     CURLOPT_TIMEOUT           => $this->options['timeout'],
                     CURLOPT_CONNECTTIMEOUT    => $this->options['timeout'],
                     CURLE_OPERATION_TIMEOUTED => $this->options['timeout'],
@@ -590,7 +594,7 @@ class waNet
             if ($headers) {
                 $curl_options[CURLOPT_HTTPHEADER] = $headers;
             }
-
+            //TODO Why not follow location at post query?
             if (empty($curl_options[CURLOPT_POST]) && empty($curl_options[CURLOPT_POSTFIELDS])) {
                 if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
                     $curl_options[CURLOPT_FOLLOWLOCATION] = true;
@@ -638,7 +642,7 @@ class waNet
         }
 
         if ($this->options['expected_http_code'] !== null) {
-            if (!$response || !in_array($response_code, array('unknown', $this->options['expected_http_code']), true)) {
+            if (!$response || !in_array($response_code, array_merge(array('unknown'), $this->options['expected_http_code']), true)) {
                 if (empty($hint)) {
                     $hint = $this->getHint(__LINE__);
                 }
