@@ -15,6 +15,7 @@ class siteDefaultLayout extends waLayout
         $this->view->assign('domains', siteHelper::getDomains(true));
         $this->view->assign('pages', $this->getPages());
         $this->view->assign('domain_root_url', siteHelper::getDomainUrl());
+        $this->view->assign('routing_errors', wa()->getConfig()->getRoutingErrors());
         $this->view->assign('rights', array(
             'admin' => $this->getUser()->isAdmin('site'),
             'files' => $this->getRights('files'),
@@ -112,4 +113,5 @@ class siteDefaultLayout extends waLayout
         }
         return $protocol;
     }
+
 }

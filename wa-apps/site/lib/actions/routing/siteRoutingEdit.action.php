@@ -25,50 +25,66 @@ class siteRoutingEditAction extends waViewAction
             reset($apps);
             $this->view->assign('apps', $apps);
             $app_id = waRequest::get('app', key($apps));
+            if ($app_id == ':text') {
+                $route['static_content'] = '';
+                $route['static_content_type'] = '';
+            }
         }
 
         if ($app_id) {
-            $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
-            $app = wa()->getAppInfo($app_id);
-            if (file_exists($path)) {
-                // load locale of the app
-                if ($app_id != 'site') {
-                    waSystem::getInstance($app_id)->setActive($app_id);
-                }
-                $app['site'] = include($path);
-                // return old locale of the site
-                if ($app_id != 'site') {
-                    waSystem::setActive('site');
-                }
-            }
 
-            if (!$route && isset($app['routing_params']) && is_array($app['routing_params'])) {
-                $route = $app['routing_params'];
-            }
-
-            if (isset($app['site']['params'])) {
-                $params = $this->getParams($route_id, $app['site']['params'], $route);
+            if ($app_id == ':text') {
+                $app = array();
             } else {
-                $params = array();
-            }
 
-            if (!isset($route['_name'])) {
-                if ($app_id == 'site') {
-                    if ($title = siteHelper::getDomain('title')) {
-                        $route_name = $title;
-                    } else {
-                        $app_settings_model = new waAppSettingsModel();
-                        $route_name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                $app = wa()->getAppInfo($app_id);
+
+                if ($app) {
+                    $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+                    if (file_exists($path)) {
+                        // load locale of the app
+                        if ($app_id != 'site') {
+                            waSystem::getInstance($app_id)->setActive($app_id);
+                        }
+
+                        $app['site'] = include($path);
+                        // return old locale of the site
+                        if ($app_id != 'site') {
+                            waSystem::setActive('site');
+                        }
                     }
-                } else {
-                    $route_name = $app['name'];
-                }
-            } else {
-                $route_name = $route['_name'];
-            }
 
-            $this->view->assign('route_name', $route_name);
-            $this->view->assign('params', $params);
+                    if (!$route && isset($app['routing_params']) && is_array($app['routing_params'])) {
+                        $route = $app['routing_params'];
+                    }
+
+                    if (isset($app['site']['params'])) {
+                        $params = $this->getParams($route_id, $app['site']['params'], $route);
+                    } else {
+                        $params = array();
+                    }
+
+                    if (!isset($route['_name'])) {
+                        if ($app_id == 'site') {
+                            if ($title = siteHelper::getDomain('title')) {
+                                $route_name = $title;
+                            } else {
+                                $app_settings_model = new waAppSettingsModel();
+                                $route_name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                            }
+                        } else {
+                            $route_name = $app['name'];
+                        }
+                    } else {
+                        $route_name = $route['_name'];
+                    }
+
+                    $this->view->assign('route_name', $route_name);
+                    $this->view->assign('params', $params);
+                } else {
+                    $app = false;
+                }
+            }
 
         } else {
             $app = array();
@@ -77,16 +93,18 @@ class siteRoutingEditAction extends waViewAction
         $idna = new waIdna();
         $domain_decoded = $idna->decode(siteHelper::getDomain());
 
-        $this->view->assign('site_url', wa()->getAppUrl('site'));
-        $this->view->assign('domain_decoded', $domain_decoded);
-        $this->view->assign('route_id', $route_id);
-        $this->view->assign('route', $route);
-        $this->view->assign('app_id', $app_id);
-        $this->view->assign('app', $app);
-        $this->view->assign('domain_id', siteHelper::getDomainId());
-        $this->view->assign('domain', siteHelper::getDomain());
-        $this->view->assign('locales', array('' => _w('Auto')) + waLocale::getAll('name'));
-        $this->view->assign('is_https', waRequest::isHttps());
+        $this->view->assign(array(
+            'site_url'       => wa()->getAppUrl('site'),
+            'domain_decoded' => $domain_decoded,
+            'route_id'       => $route_id,
+            'route'          => $route,
+            'app_id'         => $app_id,
+            'app'            => $app,
+            'domain_id'      => siteHelper::getDomainId(),
+            'domain'         => siteHelper::getDomain(),
+            'locales'        => array('' => _w('Auto')) + waLocale::getAll('name'),
+            'is_https'       => waRequest::isHttps(),
+        ));
     }
 
     protected function getParams($route_id, $config, $values)
@@ -110,7 +128,7 @@ class siteRoutingEditAction extends waViewAction
     {
         static $id = 0;
         $html = '';
-        if ( ($value === null) && isset($info['default']) ) {
+        if (($value === null) && isset($info['default'])) {
             $value = $info['default'];
         }
         switch ($info['type']) {
@@ -129,8 +147,8 @@ class siteRoutingEditAction extends waViewAction
             case 'select':
                 $html = '<select name="params['.$info['id'].']">';
                 foreach ($info['items'] as $k => $v) {
-                    if(!is_array($v)) {
-                        $v = array('name'=>$v);
+                    if (!is_array($v)) {
+                        $v = array('name' => $v);
                     }
                     $html .= '<option '.($k == $value ? 'selected="selected" ' : '').'value="'.$k.'"'.
                                 (isset($v['description'])?(' title="'.htmlspecialchars($v['description']).'"'):'').'">'.htmlspecialchars($v['name']).
@@ -143,8 +161,8 @@ class siteRoutingEditAction extends waViewAction
                 return $html;
             case 'radio':
                 foreach ($info['items'] as $k => $v) {
-                    if(!is_array($v)) {
-                        $v = array('name'=>$v);
+                    if (!is_array($v)) {
+                        $v = array('name' => $v);
                     }
                     $html .= '<label class="s-label-with-check">'.
                                  '<input type="radio" name="params['.$info['id'].']" value="'.$k.'" />'.htmlspecialchars($v['name']).
@@ -155,8 +173,8 @@ class siteRoutingEditAction extends waViewAction
             case 'checkbox':
                 if (isset($info['items'])) {
                     foreach ($info['items'] as $k => $v) {
-                        if(!is_array($v)) {
-                            $v = array('name'=>$v);
+                        if (!is_array($v)) {
+                            $v = array('name' => $v);
                         }
                         $html .= '<label class="s-label-with-check">'.
                                     '<input type="checkbox" name="params['.$info['id'].'][]" value="'.$k.'" />'.htmlspecialchars($v['name']).
@@ -175,8 +193,8 @@ class siteRoutingEditAction extends waViewAction
             case 'radio_select':
                 $html = '<div id="s-radio-select-'.$route_id.'-'.++$id.'">';
                 foreach ($info['items'] as $k => $v) {
-                    if(!is_array($v)) {
-                        $v = array('name'=>$v);
+                    if (!is_array($v)) {
+                        $v = array('name' => $v);
                     }
                     $html .= '<label class="s-label-with-check">'.
                                  '<input type="radio" '.
@@ -206,8 +224,8 @@ class siteRoutingEditAction extends waViewAction
             case 'radio_checkbox':
                 $html = '<div id="s-radio-checkbox-'.$route_id.'-'.++$id.'">';
                 foreach ($info['items'] as $k => $v) {
-                    if(!is_array($v)) {
-                        $v = array('name'=>$v);
+                    if (!is_array($v)) {
+                        $v = array('name' => $v);
                     }
                     $html .= '<label class="s-label-with-check">'.
                         '<input type="radio" '.
@@ -246,10 +264,10 @@ class siteRoutingEditAction extends waViewAction
                 $counter = 0;
                 $selected = false;
                 foreach ($info['items'] as $k => $v) {
-                    if(!is_array($v)) {
-                        $v = array('name'=>$v);
+                    if (!is_array($v)) {
+                        $v = array('name' => $v);
                     }
-                    $checked = (sprintf('%s',$k) === $value);
+                    $checked = (sprintf('%s', $k) === $value);
                     $last = (++$counter == count($info['items']));
                     if ($last) {
                         $checked = !$selected;

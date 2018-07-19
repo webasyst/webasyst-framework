@@ -1,0 +1,63 @@
+{$_title = "[`System settings`] — {$wa->accountName()}"}
+<div class="s-system-settings-page" id="s-system-settings-page">
+    <div class="s-layout">
+        <div class="s-column sidebar left200px">
+
+            {$_menu = [
+                [
+                    "li_class" => "js-general",
+                    "icon" => "settings",
+                    "name" => "[`General settings`]",
+                    "uri" => "`$wa_app_url`#/system-settings/general"
+                ],
+                [
+                    "li_class" => "js-email",
+                    "icon" => "email",
+                    "name" => "[`Email`]",
+                    "uri" => "`$wa_app_url`#/system-settings/email/"
+                ],
+                [
+                    "li_class" => "js-maps",
+                    "icon" => "marker",
+                    "name" => "[`Maps`]",
+                    "uri" => "`$wa_app_url`#/system-settings/maps/"
+                ],
+                [
+                    "li_class" => "js-captcha",
+                    "icon" => "lock-unlocked",
+                    "name" => "[`Captcha`]",
+                    "uri" => "`$wa_app_url`#/system-settings/captcha/"
+                ]
+            ]}
+
+            <aside class="s-system-settings-sidebar" id="s-system-settings-sidebar">
+                <ul class="menu-v stack with-icons" style="margin: 0;">
+                    {foreach $_menu as $_item}
+                        <li class="{$_item.li_class|default:''}">
+                            <a href="{$_item.uri}">
+                                {if !empty($_item.icon)}
+                                    <i class="icon16 {$_item.icon}"></i>
+                                {/if}
+                                {$_item.name}
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </aside>
+
+        </div>
+        <div class="s-column s-system-settings-wrapper content bordered-left blank block double-padded">
+            {if isset($settings_html) && is_string($settings_html)}
+                {$settings_html}
+            {else}
+                {include file="$settings_template"}
+            {/if}
+        </div>
+    </div>
+
+    <script>
+        (function ($) {
+            $.wa.setTitle({$_title|json_encode});
+        })(jQuery);
+    </script>
+</div>

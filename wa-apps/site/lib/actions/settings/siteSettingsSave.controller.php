@@ -112,11 +112,22 @@ class siteSettingsSaveController extends waJsonController
                 }
             }
 
-            if (waRequest::post('cdn')) {
-                $domain_config['cdn'] = waRequest::post('cdn');
+            // CDN
+            $cdn_list = waRequest::post('cdn', array(), waRequest::TYPE_ARRAY_TRIM);
+            $cdns = array();
+            foreach ($cdn_list as $_cdn) {
+                if (!empty($_cdn)) {
+                    $cdns[] = $_cdn;
+                }
+            }
+
+            if (!empty($cdns[0])) {
+                $domain_config['cdn'] = $cdn_list[0];
+                $domain_config['cdn_list'] = $cdns;
                 $save_config = true;
-            } elseif (!empty($domain_config['cdn'])) {
+            } elseif (!empty($domain_config['cdn']) || !empty($domain_config['cdn_list'])) {
                 unset($domain_config['cdn']);
+                unset($domain_config['cdn_list']);
                 $save_config = true;
             }
 
@@ -136,6 +147,19 @@ class siteSettingsSaveController extends waJsonController
                 $domain_config['ssl_all'] = false;
             };
 
+            //Invert notifications settings key. Made to not create a meta update. @todo in webasyst 2
+            if (waRequest::post('url_notification')) {
+                $domain_config['url_notification'] = false;
+                $save_config = true;
+            } else {
+                $domain_config['url_notification'] = true;
+                $save_config = true;
+            }
+
+
+            //Delete cache problem domains
+            $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
+            $cache_domain->delete();
 
             if ($save_config && !waUtils::varExportToFile($domain_config, $domain_config_path)) {
                 $this->errors = sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
@@ -184,7 +208,6 @@ class siteSettingsSaveController extends waJsonController
         }
         return false;
     }
-
 
     protected function saveFavicon()
     {

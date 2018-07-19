@@ -165,8 +165,15 @@
 	$("#s-files-tree").append($.wa.site.getTreeHTML({json_encode($dirs)}, "s-folderlist", '', {json_encode($sub_dirs_decoded)}));
 
     $('#s-input-file').fileupload({
+        add: function(e, data) {
+			if (data.files[0]['size'] > {waRequest::getUploadMaxFilesize()}) {
+				alert('{sprintf('[`Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file.`]', {waRequest::getUploadMaxFilesize()})}')
+            } else {
+                data.submit();
+            }
+		},
         dataType: 'json',
-        start: function () {
+        start: function (e, data) {
 	        $("#s-upload-dialog div.loading").show();
 	        $("#s-upload-dialog input[type=submit]").attr('disabled', 'disabled');
         },

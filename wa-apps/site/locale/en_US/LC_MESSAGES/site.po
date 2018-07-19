@@ -233,8 +233,8 @@ msgid "Third-party authorization"
 msgstr ""
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:194
-msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"http://www.webasyst.com/framework/docs/dev/auth-adapters/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
-msgstr "Allows your website visitors to quickly sign up or sign in via accounts on popular external platforms; e.g., Facebook or Twitter. <a href=\"http://www.webasyst.com/developers/docs/auth/auth-adapters/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
+msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
+msgstr ""
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:224
 msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
@@ -1047,9 +1047,15 @@ msgstr ""
 msgid "Disabled"
 msgstr ""
 
+msgid "Redirect disabled"
+msgstr "Disabled"
+
 #: /wa-apps/site/templates/actions/personal/PersonalApp.html:19 /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
 msgid "Enabled"
 msgstr ""
+
+msgid "Redirect enabled"
+msgstr "Enabled"
 
 #: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
 msgid "%s personal account URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
@@ -1257,7 +1263,7 @@ msgid "Enable CDN (Content Delivery Network) support for this site by entering C
 msgstr ""
 
 #: /wa-apps/site/templates/actions/personal/PersonalSettings.html:73
-msgid "Allow \"Remember me\" option in authorization form"
+msgid "Allow “Remember me” option in authorization form on the website"
 msgstr ""
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:34
@@ -1271,3 +1277,6 @@ msgstr ""
 #: /wa-apps/site/lib/siteCustomSignup.action.php:61
 msgid "Specified email is already in use."
 msgstr ""
+
+msgid "”, “"
+msgstr ", "

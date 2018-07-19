@@ -142,6 +142,9 @@ msgstr "Изменить URL"
 msgid "Delete rule"
 msgstr "Удалить правило"
 
+msgid "Comment"
+msgstr "Комментарий"
+
 #: /wa-apps/site/templates/layouts/Sidebar.html:39
 msgid "http://www.webasyst.com/framework/docs/site/structure/"
 msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
@@ -153,6 +156,12 @@ msgstr "Помощь"
 #: /wa-apps/site/templates/actions/settings/Settings.html:64
 msgid "Site URL"
 msgstr "Адрес сайта"
+
+msgid "May be displayed on websites and in email notifications."
+msgstr "Может отображаться на страницах сайтов и в email-уведомлениях."
+
+msgid "May be used on websites and in email notifications."
+msgstr "Может использоваться на страницах сайтов и в email-уведомлениях."
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:67
 msgid "A valid URL pointing to this Webasyst installation."
@@ -836,8 +845,8 @@ msgid "Third-party authorization"
 msgstr "Авторизация через внешние сервисы"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:194
-msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"http://www.webasyst.com/framework/docs/dev/auth-adapters/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
-msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"http://www.webasyst.ru/developers/docs/auth/auth-adapters/\" target=\"_blank\">Документация по настройке</a> <i class=\"icon10 new-window\"></i>"
+msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
+msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"https://support.webasyst.ru/5554/third-party-auth-setup/\" target=\"_blank\">Документация по настройке</a> <i class=\"icon10 new-window\"></i>"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:224
 msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
@@ -1136,10 +1145,16 @@ msgstr "Настроить маршрутизацию"
 msgid "Disabled"
 msgstr "Выключена"
 
+msgid "Redirect disabled"
+msgstr "Выключено"
+
 #: /wa-apps/site/templates/actions/personal/PersonalApp.html:19
 #: /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
 msgid "Enabled"
 msgstr "Включена"
+
+msgid "Redirect enabled"
+msgstr "Включено"
 
 #: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
 msgid "%s personal account URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
@@ -1322,8 +1337,8 @@ msgid "Enable CDN (Content Delivery Network) support for this site by entering C
 msgstr "Введите адрес CDN (Content Delivery Network), чтобы включить его автоматическую поддержку для этого сайта."
 
 #: /wa-apps/site/templates/actions/personal/PersonalSettings.html:73
-msgid "Allow \"Remember me\" option in authorization form"
-msgstr "Можно включить «Запомнить меня» в форме авторизации"
+msgid "Allow “Remember me” option in authorization form on the website"
+msgstr "Можно включить «Запомнить меня» в форме авторизации на сайте"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:34
 msgid "Alias (mirror site) for"
@@ -1371,10 +1386,235 @@ msgid "To activate this option, <a>log in via HTTPS</a>."
 msgstr "Чтобы активировать эту настройку, <a>войдите через HTTPS</a>."
 
 msgid "<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?"
-msgstr "<b>Редактор WYSIWYG может изменить ваш HTML-код.</b><br><br>Это необходимо для правильного форматирования текста. Код Smarty может быть взломан, и устаревшие HTML-теги могут быть заменены на современные.<br><br>Вы действительно хотите переключиться на WYSIWYG-редактор?"
+msgstr "<b>Редактор WYSIWYG может изменить ваш HTML-код.</b><br><br>Это необходимо для правильного форматирования текста. Код Smarty может быть сломан, и устаревшие HTML-теги могут быть заменены на современные.<br><br>Вы действительно хотите переключиться на WYSIWYG-редактор?"
 
 msgid "Switch"
 msgstr "Переключиться"
 
 msgid "Select Webasyst default captcha or Google reCAPTCHA"
 msgstr "Выбрать стандартную капчу Webasyst или Google reCAPTCHA"
+
+msgid "You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS."
+msgstr "Включение перенаправления недоступно, потому что ваш веб-сервер не позволяет отличать подключение через HTTP от HTTPS."
+
+msgid "Settings have been saved"
+msgstr "Настройки сохранены"
+
+msgid "Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file."
+msgstr "Слишком большой файл. Либо установите ограничение на размер загружаемых файлов в конфигурации PHP выше %s байтов, либо попробуйте загрузить файл меньшего размера."
+
+msgid "General settings"
+msgstr "Общие настройки"
+
+msgid "Email address for notifications"
+msgstr "Email-адрес для уведомлений"
+
+msgid "Main account administrative email where system notification will be sent."
+msgstr "Основной электронный адрес администратора, на который будут отправляться системные уведомления."
+
+msgid "Sender email address"
+msgstr "Email-адрес отправителя"
+
+msgid "Reply-To address for system email notifications sent by Webasyst."
+msgstr "Этот электронный адрес будет указан в качестве обратного адреса в системных email-уведомлениях, отправляемых Вебасистом."
+
+msgid "Email settings"
+msgstr "Настройки email"
+
+msgid "Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>."
+msgstr "Введите <strong>email-адрес</strong>, чтобы настроить транспорт отдельно <em>для одного адреса отправителя</em>.<br>Введите <strong>доменное имя</strong>, чтобы настроить транспорт <em>для всех адресов отправителя на этом домене</em>."
+
+msgid "Select how email messages must be sent by default from your Webasyst."
+msgstr "Выберите, каким способом должны по умолчанию отправляться email-сообщения из вашего Вебасиста."
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section."
+msgstr "Если вы используете разные адреса отправителей в отдельных приложениях, то для них можно настроить дополнительные правила отправки сообщений. Для всех остальных адресов будет использоваться способ отправки, выбранный в секции «По умолчанию»."
+
+msgid "Email transport"
+msgstr "Email транспорт"
+
+msgid "Transport"
+msgstr "Транспорт"
+
+msgid "Email or domain"
+msgstr "Email или домен"
+
+msgid "php mail() function"
+msgstr "PHP-функция mail()"
+
+msgid "Debug mailer"
+msgstr "Тестовый отправитель"
+
+msgid "When this option is selected messages are sent by the default transport specified in the Webasyst framework configuration."
+msgstr "При выборе этого варианта рассылки будут отправляться транспортом по умолчанию, указанным в конфигурации фреймворка Вебасист."
+
+msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
+msgstr "Некоторые хостинг-провайдеры позволяют отправлять электронные сообщения только этим транспортом. Если имеется необходимость ввести дополнительные параметры, их можно указать в текстовом поле при выборе варианта «PHP-функция mail()». По умолчанию используется параметр -f%s."
+
+msgid "This is a default command for sending email in UNIX-like operating systems. You can edit it to use a different command for sending messages if you are an experienced server administrator."
+msgstr "Это стандартная команда для отправки email-сообщений на UNIX-хостингах. Ее можно изменить на другую системную команду для отправки сообщений, если вы самостоятельно администрируете работу сервера."
+
+msgid "A special server for sending email messages. You can send email via any SMTP server for which you have connection credentials: host, port, user name, and password. It may belong either to your web-hosting company or to a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
+msgstr "Специальный сервер, предназначенный для отправки электронной почты. Сообщения можно отправлять через любой SMTP-сервер, для подключения к которому у вас есть его адрес, номер порта, имя пользователя (логин) и пароль. Это может быть SMTP-сервер вашего хостинг-провайдера или публичного почтового сервиса: Mail.ru, Gmail и т. п."
+
+msgid "Options"
+msgstr "Параметры"
+
+msgid "Command"
+msgstr "Команда"
+
+msgid "Encryption"
+msgstr "Шифрование"
+
+msgid "None"
+msgstr "Нет"
+
+msgid "You need to install openssl php extention to use DKIM"
+msgstr "Вам необходимо установить расширение openssl php для использования DKIM"
+
+msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
+msgstr "Для использования DKIM вам потребуется PHP версии 5.3 или выше. Текущая версия:"
+
+msgid "Extension openssl is not installed"
+msgstr "Расширение openssl не установлено"
+
+msgid "Failed to create DKIM signature"
+msgstr "Не удалось сгенерировать DKIM ключ"
+
+msgid "Enter an email address in “Sender” field to use DKIM."
+msgstr "Для использования DKIM введите email-адрес в поле «Отправитель»."
+
+msgid "Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address."
+msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом оправителя."
+
+msgid "Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name"
+msgstr "Добавьте новую <b>TXT-запись</b> с данным публичным ключом DKIM в DNS-зону домена"
+
+msgid "Host "
+msgstr "Хост"
+
+msgid "Domain"
+msgstr "Домен"
+
+msgid "Record type"
+msgstr "Тип записи"
+
+msgid "Value"
+msgstr "Значение"
+
+msgid "Add email sending rule"
+msgstr "Добавить правило отправки email"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Maps settings"
+msgstr "Настройки карт"
+
+msgid "Select an online map service to display maps."
+msgstr "Выберите картографический сервис для отображения онлайн-карт."
+
+msgid "Map service"
+msgstr "Сервис карт"
+
+msgid "No map services available"
+msgstr "Нет доступных сервисов карт"
+
+msgid "Captcha"
+msgstr "Капча"
+
+msgid "Сaptcha settings"
+msgstr "Настройки капчи"
+
+msgid "Select a type of captcha to be used on your websites."
+msgstr "Выберите тип капчи, которая будет использоваться на ваших сайтах."
+
+msgid "Сaptcha type"
+msgstr "Тип капчи"
+
+msgid "Invisible mode"
+msgstr "Невидимый режим"
+
+msgid "Get site key and secret for your website"
+msgstr "Получить значения для своего сайта"
+
+msgid "You have no rules set up for %s app."
+msgid_plural "You have no rules set up for %s apps."
+msgstr[0] "Нет правил для приложения «%s»."
+msgstr[1] "Нет правил для приложений «%s»."
+msgstr[2] "Нет правил для приложений «%s»."
+
+msgid "Some rules of %s app are incorrect."
+msgid_plural "Some rules of %s appы are incorrect."
+msgstr[0] "Некоторые правила приложения «%s» настроены неправильно."
+msgstr[1] "Некоторые правила приложений «%s» настроены неправильно."
+msgstr[2] "Некоторые правила приложений «%s» настроены неправильно."
+
+msgid "”, “"
+msgstr "», «"
+
+msgid "Site structure error notifications"
+msgstr "Уведомления об ошибках в структуре сайта"
+
+msgid "Show a notification on Site’s icon in the main menu, if there are errors in the site structure."
+msgstr "Показывать уведомление об ошибках в настройках структуры сайта рядом с иконкой «Сайта» в главном меню."
+
+msgid "Site settings"
+msgstr "Настройки сайта"
+
+msgid "System settings"
+msgstr "Системные настройки"
+
+msgid "Website address"
+msgstr "Адрес сайта"
+
+msgid "Your website, blog or company URL (will be displayed as a link below the company name in the top left corner)."
+msgstr "Адрес вашего сайта или блога (будет отображаться в виде ссылки под названием компании в левом верхнем углу)."
+
+msgid "Locale of software available for installation in Installer"
+msgstr "Язык программных продуктов, доступных для установки в «Инсталлере»"
+
+msgid "Allow “Remember me” option in Webasyst backend authorization form"
+msgstr "Можно включить «Запомнить меня» при входе в бекенд Вебасиста"
+
+msgid "Auto-login"
+msgstr "Автоматическая авторизация"
+
+msgid "Login only"
+msgstr "Только логин"
+
+msgid "Login or email"
+msgstr "Логин или email"
+
+msgid "Authorization form background image"
+msgstr "Фон формы авторизации"
+
+msgid "Stretch to fill entire screen"
+msgstr "Растянуть изображение на весь экран"
+
+msgid "Localization engine"
+msgstr "Механизм локализации"
+
+msgid "Gettext (recommended)"
+msgstr "Gettext (рекомендуется)"
+
+msgid "Delete authorization form background image?"
+msgstr "Удалить фоновое изображение формы авторизации?"
+
+msgid "For developers"
+msgstr "Для разработчика"
+
+msgid "Developer mode"
+msgstr "Режим отладки (debug mode)"
+
+msgid "Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development."
+msgstr "Режим отладки отключает кеширование и включает подробный вывод сообщений об ошибках. Рекомендуется при разработке приложений."
+
+msgid "Clear cache"
+msgstr "Очистить кеш"
+
+msgid "CDN address"
+msgstr "Адрес CDN"

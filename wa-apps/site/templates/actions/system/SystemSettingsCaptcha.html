@@ -1,0 +1,66 @@
+{$_title = "[`Сaptcha settings`] — {$wa->accountName()}"}
+<div class="s-captcha-settings-page" id="s-captcha-settings-page">
+    <h1 class="s-page-header">[`Сaptcha settings`]</h1>
+    <div class="s-description">[`Select a type of captcha to be used on your websites.`]</div>
+    <div class="s-captcha-settings-fields-block">
+        <form action="?module=systemSettingsCaptchaSave">
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[`Сaptcha type`]</div>
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="captcha" {if ifset($captcha) == 'waPHPCaptcha' || empty($captcha)}checked{/if} value="waPHPCaptcha"> [`Webasyst Captcha`]
+                        </label>
+                    </div>
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="captcha" {if ifset($captcha) == 'waReCaptcha'}checked{/if} value="waReCaptcha"> [`Google reCAPTCHA`]
+                            <br><br>
+                            <div{if ifset($captcha) != 'waReCaptcha'} style="display: none"{/if} class="js-captcha-adapter-settings">
+                                <div class="field">
+                                    <div class="name">[`Site Key`]</div>
+                                    <div class="value">
+                                        <input type="text" name="captcha_options[sitekey]" value="{ifset($captcha_options.sitekey)}">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">[`Secret`]</div>
+                                    <div class="value">
+                                        <input type="text" name="captcha_options[secret]" value="{ifset($captcha_options.secret)}"><br>
+                                        <span class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[`Get site key and secret for your website`]</a> <i class="icon16 new-window"></i></span>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">
+                                        <label for="invisible">[`Invisible mode`]</label>
+                                    </div>
+                                    <div class="value no-shift">
+                                        <label>
+                                            <input id="invisible" type="checkbox" name="captcha_options[invisible]" value="true" {if ifset($captcha_options.invisible)}checked{/if}>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="s-form-buttons">
+                <div class="s-footer-actions js-footer-actions">
+                    <input class="button green js-submit-button" type="submit" name="" value="[`Save`]">
+                    <span class="c-hidden">
+                        <span style="margin: 0 4px;">[`or`]</span>
+                        <a href="{$wa_app_url}#/system-settings/captcha" class="js-cancel">[`cancel`]</a>
+                    </span>
+                    <i class="icon16 loading s-loading" style="display: none;"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    (function ($) {
+        $.wa.setTitle({$_title|json_encode});
+    })(jQuery);
+</script>

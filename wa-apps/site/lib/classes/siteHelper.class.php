@@ -7,6 +7,49 @@ class siteHelper
     protected static $locale = null;
     protected static $themes = array();
 
+    public static function getRoutingErrorsText($domain_id = null)
+    {
+        if (empty($domain_id)) {
+            $domain_id = self::getDomainId();
+        }
+        $not_install_text = '';
+        $incorrect_text = '';
+
+        // Get from cache.
+        $routing_error = wa('site')->getConfig()->getRoutingErrors();
+
+        $apps = wa()->getApps();
+
+        if (!empty($routing_error)) {
+            if (isset($routing_error['not_install'])) {
+                $not_install_id = array();
+                foreach ($routing_error['not_install'] as $app_id) {
+                    if (isset($apps[$app_id]['name'])) {
+                        $not_install_id[] = $apps[$app_id]['name'];
+                    }
+                }
+                $not_install_text = sprintf(_w('You have no rules set up for %s app.', 'You have no rules set up for %s apps.',
+                    count($routing_error['not_install']), false), implode(_w('”, “'), $not_install_id));
+            }
+
+            if (isset($routing_error['apps'][$domain_id]['incorrect'])) {
+                $incorrect_id = array();
+                foreach ($routing_error['apps'][$domain_id]['incorrect'] as $app_id) {
+                    if (isset($apps[$app_id]['name'])) {
+                        $incorrect_id[] = $apps[$app_id]['name'];
+                    }
+                }
+                $incorrect_text = sprintf(_w('Some rules of %s app are incorrect.', 'Some rules of %s apps are incorrect.',
+                    count($routing_error['apps'][$domain_id]['incorrect']), false), implode(_w('”, “'), $incorrect_id));
+            }
+        }
+
+        return array(
+            'not_install' => $not_install_text,
+            'incorrect'   => $incorrect_text,
+        );
+    }
+
     public static function getDomains($full = false)
     {
         if (!self::$domains) {
@@ -58,9 +101,9 @@ class siteHelper
             $result[$id] = $d['title'] ? $d['title'] : $d['name'];
             if ($full) {
                 $result[$id] = array(
-                    'name' => $d['name'],
-                    'title' => $result[$id],
-                    'style' => $d['style'],
+                    'name'     => $d['name'],
+                    'title'    => $result[$id],
+                    'style'    => $d['style'],
                     'is_alias' => wa()->getRouting()->isAlias($d['name'])
                 );
             }
@@ -197,7 +240,7 @@ class siteHelper
                 mkdir($dest.'/'.$rel_path);
             } elseif ($file->isFile()) {
                 copy($file->getPathName(), $dest.'/'.$rel_path);
-                if(basename($file->getPathName()) == 'theme.xml') {
+                if (basename($file->getPathName()) == 'theme.xml') {
                     @touch($dest.'/'.$rel_path);
                 }
             }
@@ -242,5 +285,20 @@ class siteHelper
             return false;
         }
         return $url;
+    }
+
+    public static function getOneStringKey($dkim_pub_key)
+    {
+        $one_string_key = trim(preg_replace('/^\-{5}[^\-]+\-{5}(.+)\-{5}[^\-]+\-{5}$/s', '$1', trim($dkim_pub_key)));
+        //$one_string_key = str_replace('-----BEGIN PUBLIC KEY-----', '', $dkim_pub_key);
+        //$one_string_key = trim(str_replace('-----END PUBLIC KEY-----', '', $one_string_key));
+        $one_string_key = preg_replace('/\s+/s', '', $one_string_key);
+        return $one_string_key;
+    }
+
+    public static function getDkimSelector($email)
+    {
+        $e = explode('@', $email);
+        return trim(preg_replace('/[^a-z0-9]/i', '', $e[0])).'wamail';
     }
 }

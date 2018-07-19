@@ -1,3 +1,9 @@
+{function name="_renderCdnItem" _cdn=''}
+    <div class="s-cdn-item js-cdn">
+        <input class="s-cdn-input" type="text" name="cdn[]" value="{$_cdn}" autocomplete="off" placeholder="[`CDN address`]" />
+        <i class="icon10 no s-cdn-remove js-cdn-remove" title="[`Remove`]" style="display: none;"></i>
+    </div>
+{/function}
 <script type="text/javascript">
     document.title = '[`Site setup`] — ' + {json_encode($domain)};
 </script>
@@ -15,7 +21,7 @@
         </ul>
     </div>
 
-    <h4 style="margin-left: 4px; margin-top:2px;">[`Settings`]</h4>
+    <h4 style="margin-left: 4px; margin-top:2px;">[`Site settings`]</h4>
 </div>
 
 <div>
@@ -58,7 +64,7 @@
                     <div class="value no-shift">
                         <label>
                             <input type="checkbox" name="ssl_all" id="ssl_all" {if ifset($ssl_all)} checked='checked'{/if} {if empty($is_https)}disabled{/if}/> [`Redirect to HTTPS`]<br>
-                            <span class="hint ssl_server_https" style="{if !empty($is_https)}display: none{/if}">[`The server can not distinguish http from https. You can not activate redirection.`]<br></span>
+                            <span class="hint ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]<br></span>
                             <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
                             <span class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection.`]
                             <br>
@@ -177,6 +183,7 @@
             </div>
 
             <div class="field-group">
+                {* FAVICON *}
                 <div class="field">
                     <div class="name">[`Favicon`]</div>
                     <div class="value">
@@ -186,6 +193,8 @@
                         {if isset($favicon_message)}<br /><span class="small" style="color: #f00;">{$favicon_message}</span>{/if}
                     </div>
                 </div>
+
+                {* ICON FOR IOS *}
                 <div class="field">
                     <div class="name">[`Touch icon for iOS`]</div>
                     <div class="value">
@@ -194,6 +203,8 @@
                         {if isset($touchicon_message)}<br /><span class="small" style="color: #f00;">{$touchicon_message}</span>{/if}
                     </div>
                 </div>
+
+                {* ROBOTS.TXT *}
                 <div class="field">
                     <div class="name">robots.txt</div>
                     <div class="value">
@@ -202,11 +213,31 @@
                         {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
                     </div>
                 </div>
+
+                {* CDN *}
                 <div class="field">
                     <div class="name">[`CDN`]</div>
-                    <div class="value">
-                        <input type="text" name="cdn" value="{$cdn}">
-                        <p class="hint">[`Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix.`]</p>
+                    <div class="value js-cdn-wrapper">
+                        <div class="js-cdn-list">
+                            {foreach $cdn_list as $_cdn}
+                                {_renderCdnItem _cdn=$_cdn}
+                            {foreachelse}
+                                {_renderCdnItem}
+                            {/foreach}
+                        </div>
+                        <a href="javascript:void(0)" class="s-cdn-add js-cdn-add inline-link"><i class="icon10 add"></i> <b><i>[`Добавить`]</i></b></a>
+                        <p class="hint">
+                            [`Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix.`]
+                        </p>
+                    </div>
+                </div>
+
+                {* ERROR NOTIFICATIONS *}
+                <div class="field">
+                    <div class="name">[`Site structure error notifications`]</div>
+                    <div class="value no-shift">
+                        <input id="s-url-notification" name="url_notification" type="checkbox" {if empty($url_notification)}checked="checked"{/if} /><br>
+                        <span class="hint">[`Show a notification on Site’s icon in the main menu, if there are errors in the site structure.`]</span>
                     </div>
                 </div>
             </div>
@@ -241,14 +272,13 @@
 </div>
 <script type="text/javascript">
 
-    //Disabled ssl checkbox
+    // Disabled ssl checkbox
     if (window.location.protocol.replace(':', '') != 'https') {
         $('#ssl_all').attr('disabled', true);
         $('.ssl_server_https').hide();
         $('.ssl_all_hide').show();
         $('.ssl_all_hide a').attr('href', window.location.href.replace('http', 'https'));
     }
-
 
     $("input.adapter").click(function () {
         var el = $(this).parent().find('div.adapter-controls');
@@ -366,7 +396,52 @@
                     $("a[href='?domain_id={$domain_id}']").parent().remove();
                 }
             }
-        }, "json")
+        }, "json");
         return false;
     });
+    
+    // CDN
+    var $cdn_wrapper = $('.js-cdn-wrapper'),
+        $cnd_list = $cdn_wrapper.find('.js-cdn-list'),
+        $add_cdn = $cdn_wrapper.find('.js-cdn-add'),
+        cdn_template = {_renderCdnItem|json_encode};
+
+    switchCdnRemoveIcon();
+    
+    $add_cdn.on('click', function (e) {
+        e.preventDefault();
+        addCdnInput();
+    });
+    
+    $cdn_wrapper.on('click', '.js-cdn-remove', function (e) {
+        var $item = $(this).parent('.js-cdn');
+        removeCdnInput($item);
+    });
+    
+    function switchCdnRemoveIcon() {
+        var $items = $cdn_wrapper.find('.js-cdn');
+        
+        if ($items.length > 1) {
+            $items.each(function (i, item) {
+                var $item = $(item);
+                $item.find('.js-cdn-remove').show();
+            });
+        } else {
+            $items.each(function (i, item) {
+                var $item = $(item);
+                $item.find('.js-cdn-remove').hide();
+            });
+        }
+    }
+    
+    function addCdnInput() {
+        var $item = $(cdn_template);
+        $cnd_list.append($item);
+        switchCdnRemoveIcon();
+    }
+    
+    function removeCdnInput($item) {
+        $item.remove();
+        switchCdnRemoveIcon();
+    }
 </script>

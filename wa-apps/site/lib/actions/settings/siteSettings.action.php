@@ -75,7 +75,7 @@ class siteSettingsAction extends waViewAction
             $this->view->assign('domain_apps_type', 1);            
         }
         $this->view->assign('domain_apps', $domain_config['apps']);
-        $this->view->assign('cdn', ifset($domain_config['cdn'], ''));
+        $this->view->assign('cdn_list', ifset($domain_config['cdn_list'], array()));
         foreach (array('head_js') as $key) {
             $this->view->assign($key, isset($domain_config[$key]) ? $domain_config[$key] : '');
         }
@@ -89,7 +89,8 @@ class siteSettingsAction extends waViewAction
         $this->view->assign('google_analytics', $domain_config['google_analytics']);
         $this->getStaticFiles($domain);
         $this->view->assign('url', $this->getDomainUrl($domain));
-        $this->view->assign('ssl_all', ifset($domain_config['ssl_all']));
+        $this->view->assign('ssl_all', ifset($domain_config, 'ssl_all', null));
+        $this->view->assign('url_notification', ifset($domain_config, 'url_notification', false));
 
         /**
          * Backend settings page

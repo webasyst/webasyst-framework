@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.3">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.4">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -401,39 +401,44 @@
             <name locale="ru_RU">Виджеты соцсетей</name>
         </setting>
         <setting var="facebook_likebox_code" control_type="text">
-            <value locale="en_US"><![CDATA[<div id="fb-root"></div>
-        <script>
-            setTimeout(function () {
-                !function (d, s, id) {
-                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
-                    if (!d.getElementById(id)) {
-                        js = d.createElement(s);
-                        js.id = id;
-                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=364718260231717";
-                        fjs.parentNode.insertBefore(js, fjs);
-                    }
-                }(document, "script", "facebook-jssdk");
-
-            }, 100)
-        </script>
-<div class="fb-page" data-href="https://www.facebook.com/Webasyst" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst"><a href="https://www.facebook.com/Webasyst">Webasyst</a></blockquote></div></div>]]></value>
-            <value locale="ru_RU"><![CDATA[<div id="fb-root"></div>
-        <script>
-            setTimeout(function () {
-                !function (d, s, id) {
-                    var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
-                    if (!d.getElementById(id)) {
-                        js = d.createElement(s);
-                        js.id = id;
-                        js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=364718260231717";
-                        fjs.parentNode.insertBefore(js, fjs);
-                    }
-                }(document, "script", "facebook-jssdk");
-
-            }, 100)
-        </script>
-
-<div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst.RU"><a href="https://www.facebook.com/Webasyst.RU">Webasyst RU</a></blockquote></div></div>]]></value>
+            <value locale="en_US"><![CDATA[
+<div id="fb-root"></div>
+<script>
+    setTimeout(function () {
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.12&appId=157158478329004&autoLogAppEvents=1';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    }, 100)
+</script>
+<div class="fb-page" data-href="https://www.facebook.com/Webasyst" data-tabs="timeline" data-width="200" data-height="300" data-small-header="false"
+     data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+    <blockquote cite="https://www.facebook.com/Webasyst" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Webasyst">Webasyst</a></blockquote>
+</div>
+]]></value>
+            <value locale="ru_RU"><![CDATA[
+<div id="fb-root"></div>
+<script>
+    setTimeout(function () {
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = 'https://connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.12&appId=157158478329004&autoLogAppEvents=1';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    }, 100)
+</script>
+<div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-tabs="timeline" data-width="200" data-height="300" data-small-header="false"
+     data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+    <blockquote cite="https://www.facebook.com/Webasyst.RU" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Webasyst.RU">Webasyst</a></blockquote>
+</div>
+]]></value>
             <name locale="en_US">Facebook Page Plugin code</name>
             <name locale="ru_RU">Виджет Фейсбука</name>
             <description locale="en_US">Embed your Facebook page badge code here. Code can be obtained on Facebook website: https://developers.facebook.com/docs/plugins/page-plugin</description>
@@ -501,6 +506,10 @@ setTimeout(function (){ VK.Widgets.Group("vk_groups", { mode: 2, width: "{$width
         <locale>
             <msgid>Or follow us on Facebook and Twitter</msgid>
             <msgstr locale="ru_RU">Или подписывайтесь в соцсетях</msgstr>
+        </locale>
+        <locale>
+            <msgid>Settings have been saved</msgid>
+            <msgstr locale="ru_RU">Настройки сохранены</msgstr>
         </locale>
     </locales>
 </theme>

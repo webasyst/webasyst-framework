@@ -5,6 +5,9 @@
         </div>
         <div class="block s-routing-header">
             <a href="#" class="inline-link" id="s-routing-addrule"><i class="icon16 add"></i><b><i>[`New rule`]</i></b></a>
+            {$routing_errors = siteHelper::getRoutingErrorsText()}
+            <span class="errormsg" id="not-install-error" style="margin: 1em 0;">{if !empty($routing_errors['not_install'])}{$routing_errors['not_install']}{/if}</span>
+            <span class="errormsg" id="incorrect-install-error" style="margin: 1em 0;">{if !empty($routing_errors['incorrect'])}{$routing_errors['incorrect']}{/if}</span>
         </div>
         <div>
             <div class="sidebar" style="width:75%;">
@@ -14,10 +17,12 @@
                         <td class="s-url">
                             <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url}/</span><span class="s-editable-url" {if !empty($route.private) || (!empty($route.app) && !is_array($route.app))} style="color: #aaa;"{/if}">{$route.url|escape|truncate:30:'...':false:true}</span>
                         </td>
-                        <td class="s-app{if !empty($route.private) || (!empty($route.app) && !is_array($route.app))} gray{/if}">
+                        <td class="s-app{if !empty($route.private) || !empty($route.disabled) || (!empty($route.app) && !is_array($route.app))} gray{/if}">
                             {if !empty($route.app)}
                                 {if is_array($route.app)}
                                 <img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
+                                {elseif $route.app ===':text'}
+                                    <img src="{$wa_app_static_url}img/script-code.png" class="s-app24x24icon-menu-v" alt=""><span class="text">{$route.text|default:''|truncate:32|escape}</span>
                                 {else}
                                 {$route.app|escape}
                                 {/if}
@@ -65,7 +70,6 @@ function site_routing_full()
     $("#s-rules tr.selected").removeClass('selected');
 }
 
-
 $("a#s-routing-addrule").click(function () {
     $("#s-rules tr.selected").removeClass('selected');
     $(".s-editor .sidebar").animate({ 'width':'25%'}, 'slow');
@@ -112,7 +116,8 @@ $("#s-rules").sortable({
         var tr = $(ui.item);
         var id = tr.attr('id').replace(/route-/, '');
         var pos = tr.prevAll('tr').size();
-        $.post("?module=routing&action=sort&domain_id={$domain_id}" , { route: id, pos: pos}, function () {
+        $.post("?module=routing&action=sort&domain_id={$domain_id}" , { route: id, pos: pos}, function (response) {
+            $.wa.site.updateRoutingErrors(response.data.routing_errors);
         }, "json");
     }
 });
