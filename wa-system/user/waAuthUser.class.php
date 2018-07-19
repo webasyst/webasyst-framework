@@ -142,7 +142,9 @@ class waAuthUser extends waUser
                 $login_log_model->insert(array(
                     'contact_id' => $this->id,
                     'datetime_in' => date("Y-m-d H:i:s"),
-                    'datetime_out' => $force == 'logout' ? date("Y-m-d H:i:s") : null
+                    'datetime_out' => $force == 'logout' ? date("Y-m-d H:i:s") : null,
+                    'ip' => waRequest::getIp()
+                  
                 ));
                 // TODO: insert record in waLog
             } else {
@@ -154,7 +156,8 @@ class waAuthUser extends waUser
                         $login_log_model->insert(array(
                             'contact_id' => $this->id,
                             'datetime_in' => date("Y-m-d H:i:s"),
-                            'datetime_out' => null
+                            'datetime_out' => null,
+                            'ip' => waRequest::getIp()
                         ));
                         // TODO: insert record in waLog
                     }
