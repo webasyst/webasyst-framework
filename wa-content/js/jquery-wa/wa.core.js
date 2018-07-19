@@ -410,8 +410,14 @@ $.wa = $.extend(true, $.wa, {
 if (!window.wa_skip_ajax_setup) {
     $.ajaxSetup({'cache': false});
     $(document).ajaxError(function(e, xhr, settings, exception) {
+        // Ignore 502 error in background process
+        if (xhr.status === 502 && exception == 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
+            console && console.log && console.log('Notice: XHR failed on load: '+ settings.url);
+            return;
+        }
+
         // Generic error page
-        if (xhr.status !== 200 && xhr.responseText) {
+        else if (xhr.status !== 200 && xhr.responseText) {
             if (!$.wa.errorHandler || $.wa.errorHandler(xhr)) {
                 if (xhr.responseText.indexOf('Exception') != -1) {
                     $.wa.dialogCreate('ajax-error', {'content': "<div>" + xhr.responseText + '</div>'});

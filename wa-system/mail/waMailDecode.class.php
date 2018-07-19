@@ -77,7 +77,7 @@ class waMailDecode
             $name = trim(preg_replace('~<?'.preg_quote($email, '~').'>?~', '', $v));
             $v = array(array('name' => $name, 'email' => $email));
         }
-        $v[0]['full'] = $header;
+        //$v[0]['full'] = $header;
         return $v;
     }
 
@@ -111,7 +111,6 @@ class waMailDecode
                     $this->read();
                 }
                 $part = $this->parse();
-
                 if ($part && is_array($part)) {
                     $this->decodePart($part);
                 }
@@ -127,11 +126,10 @@ class waMailDecode
         }
         fclose($this->source);
 
-
         $headers = $this->parts[0]['headers'];
         foreach ($headers as $h => &$v) {
             if (is_array($v)) {
-                $v = implode("\n", $v);
+                $v = implode("@///NEW-LINE///@", $v);
             }
             $v = $this->decodeHeader($v);
             if ($h == 'subject') {
@@ -350,7 +348,7 @@ class waMailDecode
                     $this->part['headers']['content-transfer-encoding'] = 'quoted-printable';
                 }
                 if ($this->part['type'] == 'multipart') {
-                    $boundary = '--'.$this->part['params']['boundary'];
+                    $boundary = isset($this->part['params']['boundary']) ? '--'.$this->part['params']['boundary'] : "--";
                     if (($i = strpos($this->buffer, $boundary, $this->buffer_offset)) !== false) {
                         if (strlen($this->buffer) < $i + strlen($boundary)) {
                             return false;
@@ -417,12 +415,12 @@ class waMailDecode
                             return array(
                                 'type' => self::TYPE_ATTACH,
                                 'value' => $this->buffer_offset,
-                                'boundary' => $this->parts[$this->part['parent']]['params']['boundary']
+                                'boundary' => isset($this->parts[$this->part['parent']]['params']['boundary']) ? $this->parts[$this->part['parent']]['params']['boundary'] : null,
                             );
                         }
                     }
                     // other parts
-                    $boundary = "\n--".$this->parts[$this->part['parent']]['params']['boundary'];
+                    $boundary = isset($this->parts[$this->part['parent']]['params']['boundary']) ? "\n--".$this->parts[$this->part['parent']]['params']['boundary'] : "\n--";
                     if (($i = strpos($this->buffer, $boundary, $this->buffer_offset)) === false) {
                         if ($this->is_last) {
                             $this->state = self::STATE_END;
@@ -610,12 +608,12 @@ class waMailDecode
                             }
                         } else {
                             $charset = mb_detect_encoding($this->part['data']);
-                            if ($charset && strtolower($charset) != "utf-8" && $temp = iconv($charset, 'UTF-8', $this->part['data'])) {
+                            if ($charset && strtolower($charset) != "utf-8" && $temp = @iconv($charset, 'UTF-8', $this->part['data'])) {
                                 $this->part['data'] = $temp;
                                 unset($temp);
                             } elseif (!preg_match("//u", $this->part['data'])) {
                                 if (!$charset) {
-                                    $temp = iconv("windows-1251", "utf-8", $this->part['data']);
+                                    $temp = iconv("windows-1251", "utf-8//IGNORE", $this->part['data']);
                                     if (preg_match("/[а-я]/ui", $temp)) {
                                         $this->part['data'] = $temp;
                                     }
@@ -675,14 +673,17 @@ class waMailDecode
                 }
             }
         } elseif (isset($this->part['params']['charset'])) {
-            $value = @iconv($this->part['params']['charset'], 'UTF-8', $value);
+            $value = iconv($this->part['params']['charset'], 'UTF-8//IGNORE', $value);
         }
         if (!preg_match('//u', $value)) {
             $charset = mb_detect_encoding($value);
-            if ($charset && $temp = iconv($charset, 'UTF-8', $value)) {
+            if ($charset && $temp = @iconv($charset, 'UTF-8', $value)) {
                 $value = $temp;
             }
         }
+
+        $value = str_replace("@///NEW-LINE///@", "\n", $value);
+
         return $value;
     }
 
@@ -709,7 +710,7 @@ class waMailDecode
                     $temp_v = explode("''", $value);
                     $value = urldecode($temp_v[1]);
                     if (strtolower($temp_v[0]) != 'utf-8') {
-                        $value = iconv($temp_v[0], 'UTF-8', $value);
+                        $value = iconv($temp_v[0], 'UTF-8//IGNORE', $value);
                     }
                 }
                 $temp[$match[1]][$match[2]] = $value;

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-04-09 09:48+0300\n"
+"PO-Revision-Date: 2018-07-17 17:29+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3710,6 +3710,9 @@ msgstr "вошел в аккаунт"
 msgid "logged out"
 msgstr "вышел из аккаунта"
 
+msgid "login failed"
+msgstr "войти не удалось"
+
 #: /wa-system/config/waAppConfig.class.php:127
 msgid "signed up"
 msgstr "зарегистрировался"
@@ -4404,8 +4407,8 @@ msgstr "Вы действительно хотите удалить фото?"
 msgid "Maps"
 msgstr "Карты"
 
-msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> only if the free limit of 25,000 map loads per 24 hours is not sufficient."
-msgstr "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Получите Google Maps API key</a>, только если вам не хватает бесплатной квоты в 25&nbsp;000 загрузок карт в течение 24&nbsp;часов."
+msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> to display a map within the Webasyst backend. Without a key, only a link to the map will be displayed."
+msgstr "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Получите ключ Google Maps API</a>, чтобы показывать карту в бекенде Webasyst. Без ключа будет показана только ссылка на карту."
 
 msgid "To be able to use an API key, <a href=\"https://console.developers.google.com/apis/api/static_maps_backend/\">enable Static Maps API</a> in your Google account."
 msgstr "Для использования API key <a href=\"https://console.developers.google.com/apis/api/static_maps_backend/\">включите Static Maps API</a> в своем аккаунте Google."
@@ -4467,3 +4470,21 @@ msgstr "Пароль"
 
 msgid "Cannot create a theme copy with specified ID. A theme with this ID already exists."
 msgstr "Не удалось создать копию темы с указанным ID. Тема с таким ID уже существует."
+
+msgid "Comma"
+msgstr "Запятая"
+
+msgid "Semicolon"
+msgstr "Точка с запятой"
+
+msgid "Tab"
+msgstr "Табуляция"
+
+msgid "Page URL is in conflict with the website structure."
+msgstr "URL страницы конфликтует с настройкой структуры сайта."
+
+msgid "Unknown page domain"
+msgstr "Неизвестный домен страницы"
+
+msgid "Unknown page route"
+msgstr "Неизвестный маршрут страницы"

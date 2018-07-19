@@ -28,13 +28,18 @@ class waViewHelper
         $this->view = $view;
         $this->app_id = wa()->getApp();
     }
-
     /**
      * @return waAppConfig
      */
     protected function getConfig()
     {
         return wa($this->app_id)->getConfig();
+    }
+
+    public function getCheatSheetButton($options = array())
+    {
+        $cheat_sheet_button = new webasystBackendCheatSheetActions();
+        return $cheat_sheet_button->buttonAction($options);
     }
 
     public function header()
@@ -694,7 +699,9 @@ HTML;
             $options = array();
         }
         // $options['app_id'] is supported since 1.8.2
-        return wa(ifset($options, 'app_id', $this->app_id))->getCaptcha($options)->getHtml($error, $absolute, $refresh);
+        $app_id = ifset($options, 'app_id', $this->app_id);
+        $options['app_id'] = $app_id;
+        return wa($app_id)->getCaptcha($options)->getHtml($error, $absolute, $refresh);
     }
 
     public function captchaUrl($add_random = true)
@@ -1234,6 +1241,11 @@ HTML;
         }
 
         return $links;
+    }
+
+    public function getCdn($url = null)
+    {
+        return wa()->getCdn($url);
     }
 
     public function __get($app)

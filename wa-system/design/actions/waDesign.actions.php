@@ -988,6 +988,11 @@ HTACCESS;
         ), $template);
     }
 
+    public function getDesignUrl()
+    {
+        return $this->design_url;
+    }
+
     protected function getView()
     {
         return wa('webasyst')->getView();

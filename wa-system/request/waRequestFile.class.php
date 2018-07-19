@@ -62,6 +62,9 @@ class waRequestFile
 
     public function transliterateFilename()
     {
+        if (empty($this->data)) {
+            return;
+        }
         $filename = $this->data['name'];
         $filename = preg_replace('/\s+/u', '-', $filename);
         $filename = waLocale::transliterate($filename);

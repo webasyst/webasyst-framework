@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of Webasyst framework.
  *
@@ -11,6 +12,7 @@
  * @package wa-system
  * @subpackage mail
  */
+
 class waMailAddressParser
 {
     protected $offset;
@@ -41,135 +43,32 @@ class waMailAddressParser
     {
         if ($this->data === null) {
             $this->data = array();
-            $this->state = self::STATE_START;
-            while ($this->offset < $this->n) {
-                $this->parseAddress();
-            }
+            $this->parseAddress();
         }
         return $this->data;
     }
 
     protected function parseAddress()
     {
-        switch ($this->state) {
-            case self::STATE_START:
-                $this->skip();
-                $c = $this->string[$this->offset];
-                if ($c == '"' || $c == "'") {
-                    $this->expected = $c;
-                    $this->offset++;
-                    $this->buffer = "";
-                    $this->state = self::STATE_NAME;
-                } elseif ($c == '<') {
-                    $this->offset++;
-                    $this->expected = '>';
-                    $this->state = self::STATE_EMAIL;
-                } elseif ($c == ',' || $c == ';') {
-                    $this->offset++;
-                } else {
-                    $this->state = self::STATE_ADDRESS;
-                }
-                break;
-            case self::STATE_GROUP_NAME:
-                $i = strpos($this->string, ':', $this->offset);
-                if ($i === false) {
-                    throw new waException(sprintf("Expected :"));
-                }
-                $this->buffer.= substr($this->string, $this->offset, $i - $this->offset);
-                $this->group = $this->buffer;
-                $this->buffer = "";
-                $this->offset = $i + 1;
-                $this->skip();
-                $this->state = self::STATE_ADDRESS;
-                break;
-            case self::STATE_NAME:
-                // find close quote
-                $i = strpos($this->string, $this->expected, $this->offset);
-                if ($i === false) {
-                    $i = strpos($this->string, ':', $this->offset);
-                    if ($i === false) {
-                        throw new waException(sprintf("Expected %s", $this->expected));
-                    } else {
-                        $this->state = self::STATE_GROUP_NAME;
-                        break;
-                    }
-                }
-                // quote escaped
-                if ($this->expected != '<' && $this->string[$i - 1] == "\\") {
-                    $this->buffer .= substr($this->string, $this->offset, $i - $this->offset - 1).$this->expected;
-                    $this->offset = $i + 1;
-                } else {
-                    $this->buffer .= substr($this->string, $this->offset, $i - $this->offset);
-                    if ($this->expected == '<') {
-                        $this->offset = $i;
-                    } else {
-                        $this->offset = $i + 1;
-                        $this->expected = "";
-                        $this->skip();
-                    }
-                    if ($this->offset < $this->n && $this->string[$this->offset] == '<') {
-                        $this->offset++;
-                        $this->expected = '>';
-                        $this->buffer_name = str_replace(array("\r\n", "\n", "\t", "  "), " ", trim($this->buffer));
-                        $this->buffer = "";
-                        $this->state = self::STATE_EMAIL;
-                    } else {
-                        throw new waException("Email not found");
-                    }
-                }
-                break;
-            case self::STATE_ADDRESS:
-                $c = $this->string[$this->offset];
-                if ($c == '@') {
-                    $this->state = self::STATE_EMAIL;
-                } elseif ($c == ' ' || $c == "\t" || $c == "\n" || $c == "\r") {
-                    $this->state = self::STATE_NAME;
-                    $this->expected = '<';
-                } else {
-                    $this->buffer .= $c;
-                    $this->offset++;
-                }
-                break;
-            case self::STATE_EMAIL:
-                // if expected symbol "<"
-                if ($this->expected) {
-                    $i = strpos($this->string, $this->expected, $this->offset);
-                    if ($i === false) {
-                        throw new waException("Bracket '<' not closed");
-                    }
-                    $this->buffer = trim(substr($this->string, $this->offset, $i - $this->offset));
-                    $this->offset = $i + 1;
-                } else {
-                    // find end of the email
-                    $symbols = array(" ", "\n", "\t", "\r", ",", ";");
-                    while ($this->offset < $this->n && !in_array($this->string[$this->offset], $symbols)) {
-                        $this->buffer .= $this->string[$this->offset];
-                        $this->offset++;
-                    }
-                }
-                $this->skip();
-                $address = array(
-                    'name' => $this->buffer_name,
-                    'email' => $this->buffer
+        $addrss = explode("\n", $this->string);
+        foreach ($addrss as $a) {
+            $name = $email = false;
+            if (preg_match('~<([^>]+)>[,;]?$~', $a, $m) && preg_match('~^[^\s@]+@[^\s@]+\.[^\s@\.]{2,6}$~u', trim($m[1]))) {
+                $name = trim(str_replace($m[0], '', $a), "'\" \t\n\r");
+                $email = trim($m[1]);
+            } elseif (preg_match('~^[^\s@]+@[^\s@]+\.[^\s@\.]{2,6}$~u', trim($a))) {
+                $name = '';
+                $email = trim($a);
+            }
+
+            if ($email) {
+                $this->data[] = array(
+                    'name'  => $name,
+                    'email' => $email,
                 );
-                // comment
-                if ($this->offset < $this->n && $this->string[$this->offset] == '(') {
-                    $i = strpos($this->string, ')', $this->offset);
-                    if ($i == false) {
-                        throw new waException("Unclosed comment, expected )");
-                    } else {
-                        $address['comment'] = trim(substr($this->string, $this->offset + 1, $i - $this->offset - 1));
-                        $this->offset = $i + 1;
-                    }
-                }
-                $this->data[] = $address;
-                $this->buffer = $this->buffer_name = "";
-                $this->expected = "";
-                $this->state = self::STATE_START;
-                break;
+            }
         }
     }
-
 
     protected function skip()
     {
@@ -179,4 +78,3 @@ class waMailAddressParser
         }
     }
 }
-

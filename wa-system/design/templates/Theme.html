@@ -153,9 +153,22 @@
                     {$wa->csrf()}
                     <br>
                     <div class="fields form">
+
+                        {$_setting_level=0}
                         {foreach $settings as $s_var => $s}
                         {if $s.control_type == 'group_divider'}
-                        <h5 class="heading clear-both"><br>{$s.name}<br><br></h5>
+                            {if !$s@first}
+                                {for $__level=$_setting_level;$__level>=$s.level;$__level--}
+                                            </div>
+                                {/for}
+                            {/if}
+                            {for $__level=$_setting_level;$__level<=$s.level;$__level++}
+                                <div class="field-group">
+                            {/for}
+                            {$_setting_level=$s.level}
+                                        {$_h_level=min(6,max(4,4+$_setting_level))}
+                            <br/>
+                            <h{$_h_level} class="heading clear-both" style="white-space: nowrap;">{$s.name}</h{$_h_level}>
                         {else}
                         <div class="field">
                             <div class="name">{$s.name}</div>
@@ -167,6 +180,7 @@
                                     {if !empty($s.description)}
                                     <div class="hint">{$s.description}</div>
                                     {/if}
+
                                 {elseif $s.control_type == 'radio'}
                                 {foreach $s.options as $v => $o}
                                     <label>
@@ -176,17 +190,20 @@
                                         {/if}
                                     </label>
                                 {/foreach}
+
                                 {elseif $s.control_type == 'color'}
                                     <input class="color" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
                                     {if !empty($s.description)}
                                     <div class="hint">{$s.description}</div>
                                     {/if}
+
                                 {elseif $s.control_type == 'checkbox'}
                                     <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="">
                                     <input type="checkbox" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" {if $s.value}checked{/if} value="1">
                                     {if !empty($s.description)}
                                     <div class="hint">{$s.description}</div>
                                     {/if}
+
                                 {elseif $s.control_type == 'image_select'}
                                     <ul class="wa-theme-image-select">
                                         {if !empty($s.parent)}
@@ -202,6 +219,7 @@
                                     {if !empty($s.description)}
                                     <div class="hint">{$s.description}</div>
                                     {/if}
+
                                 {elseif $s.control_type == 'image'}
                                     <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{ifset($s.value)}">
                                     <input type="file" name="{if !empty($s.parent)}parent_{/if}image[{$s_var}]">
@@ -220,22 +238,32 @@
                                     {if !empty($s.description)}
                                         <div class="hint">{$s.description}</div>
                                     {/if}
-                                {else}
-                                    <div>
-                                    {if !$s.value || strlen($s.value) <= 50}
-                                    <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
-                                    {else}
-                                    <textarea class="flexible" id="flex-settings-{$s@index}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">{$s.value|escape}</textarea>
-                                    {/if}
-                                    </div>
+
+                                {elseif ($s.control_type == 'help')}
                                     {if !empty($s.description)}
-                                    <div class="hint">{$s.description}</div>
+                                        {$s.description}
                                     {/if}
+                                {else}
+                                <div>
+                                    {if !$s.value || strlen($s.value) <= 50}
+                                        <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
+                                    {else}
+                                        <textarea class="flexible" id="flex-settings-{$s@index}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">{$s.value|escape}</textarea>
+                                    {/if}
+                                </div>
+                                {if !empty($s.description)}
+                                    <div class="hint">{$s.description}</div>
+                                {/if}
                                 {/if}
                             </div>
                         </div>
+
                         {/if}
                         {/foreach}
+
+                        {for $__level=$_setting_level;$__level>=0;$__level--}
+                                    </div>
+                        {/for}
 
                         <div class="wa-design-save-panel block bordered-top">
                             <input type="submit" class="button green" value="[s`Save`]">
@@ -605,7 +633,6 @@
         </form>
     </div>
 </div>
-
 <script type="text/javascript">
     var theme_id = "{$theme.id}";
     $(".theme-rename").on('click', function () {
@@ -902,7 +929,7 @@
     $(".theme-delete").on('click', function () {
         if (!$(this).hasClass('disabled') && confirm($(this).attr('title'))) {
             $.post("?module=design&action=themeDelete", { theme: theme_id}, function (response) {
-                if (response.status == 'ok') {
+                if (response.status === 'ok') {
                     if(response.data.theme_id) {
                         $('#wa-theme-block-' + response.data.theme_id).remove();
                         $('#wa-theme-list-' + response.data.theme_id).remove();
@@ -911,7 +938,7 @@
                         if ($(this).attr('href').indexOf('theme=' + theme_id) != -1) {
                             $(this).parent().remove();
                         }
-                    })
+                    });
                     location.href = $('#wa-theme-list li:first a').attr('href');
                 } else {
                     alert(response.errors);
@@ -960,5 +987,4 @@
     $('.create-new-route-control').focus(function(){
         $('#create-new-route-choice').attr('checked', 'checked');
     });
-
 </script>

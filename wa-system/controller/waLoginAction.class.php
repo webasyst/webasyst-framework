@@ -39,8 +39,8 @@ abstract class waLoginAction extends waViewAction
             $error = $e->getMessage();
             $data = array(
                 'source' => wa()->getEnv(),
-                'login' => waRequest::post('login','',waRequest::TYPE_STRING),
-                'ip' => waRequest::getIp()
+                'login'  => waRequest::post('login', '', waRequest::TYPE_STRING),
+                'ip'     => waRequest::getIp()
             );
             $this->logAction('login_failed', $data);
         }

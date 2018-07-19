@@ -19,7 +19,7 @@
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js?{$wa->version(true)}" type="text/javascript"></script>
 </head>
 <body>
-<div id="wa-login"{if $background} style="background-image: url('{$wa_url}{$background}'); {if !$stretch} background-size: auto;{/if}"{/if}>
+<div id="wa-login"{if $background} style="background-image: url('{$background}'); {if !$stretch} background-size: auto;{/if}"{/if}>
     <div class="dialog{if !empty($dialog_class)} {$dialog_class}{/if} width500px height300px{if !empty($error)} error{/if}" id="wa-login-dialog">
         <div class="dialog-background"></div>
         <div class="dialog-window"{if !empty($dialog_style)} style="{$dialog_style}"{/if}>

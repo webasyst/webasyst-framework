@@ -343,6 +343,14 @@ class waSystem
         return $result;
     }
 
+    /**
+     * @var null|string $url
+     * @return waCdn
+     */
+    public function getCdn($url = null)
+    {
+        return new waCdn($url);
+    }
 
     /**
      * Returns auth adapter.
@@ -1173,15 +1181,15 @@ class waSystem
      * Returns URL corresponding to specified combination of app's module and action based on the contents of
      * configuration file routing.php of specified app.
      *
-     * @param string  $path      App, module, and action IDs separated by slash /
-     * @param array   $params    Associative array of the following optional parameters:
+     * @param string     $path      App, module, and action IDs separated by slash /
+     * @param array|bool $params    Associative array of the following optional parameters:
      *     - 'domain': domain name specified for one of existing websites
      *     - 'module': module id
      *     - 'action': action id
      *     - dynamic URL parameters described in app configuration file routing.php for specified module and action;
      *         e.g., 'category_url' is such a dynamic parameter in the following routing configuration entry:
      *         'category/<category_url>/' => 'frontend/category',
-     * @param  bool    $absolute  Flag requiring to return an absolute URL instead of a relative one.
+     * @param  bool  $absolute  Flag requiring to return an absolute URL instead of a relative one.
      * @param string $domain
      * @param string $route
      * @return string

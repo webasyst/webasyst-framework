@@ -35,9 +35,14 @@ class waCaptcha
      */
     protected $captcha = null;
 
-    public function __construct()
+    protected $options = array();
+
+    /**
+     * @param array $options
+     */
+    public function __construct($options = array())
     {
-        // nothing to do!
+        $this->options = ifempty($options, array()) + $this->options;
     }
 
     public function getRealCaptcha()
@@ -47,6 +52,14 @@ class waCaptcha
             if (empty($class) || !class_exists($class)) {
                 $class = 'waPHPCaptcha';
                 $options = array();
+            }
+            if ($this->options) {
+                if(!isset($options)) {
+                    $options = array();
+                }
+                if (is_array($options)) {
+                    $options += $this->options;
+                }
             }
             if (method_exists($class, 'factory')) {
                 $this->captcha = call_user_func(array($class, 'factory'), $options);

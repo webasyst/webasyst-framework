@@ -299,6 +299,35 @@ class waRouting
         return $routes;
     }
 
+    public function getRuleForUrl($routes, $url) {
+        $result = null;
+        foreach ($routes as $r) {
+            if ($this->route && isset($this->route['module']) &&
+                (!isset($r['module']) || $r['module'] != $this->route['module'])) {
+                continue;
+            }
+            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), ifset($r, 'url', ''));
+            $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
+            if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
+                $offset = 0;
+                foreach ($match as $m) {
+                    if ($m[2][0]) {
+                        $p = $m[2][0];
+                    } else {
+                        $p = '.*?';
+                    }
+                    $pattern = substr($pattern, 0, $offset + $m[0][1]).'('.$p.')'.substr($pattern, $offset + $m[0][1] + strlen($m[0][0]));
+                    $offset = $offset + strlen($p) + 2 - strlen($m[0][0]);
+                }
+            }
+            if (preg_match('!^'.$pattern.'$!ui', $url, $match)) {
+                $result = $r;
+                break;
+            }
+        }
+        return $result;
+    }
+
     protected function dispatchRoutes($routes, $url)
     {
         $result = null;
@@ -324,7 +353,7 @@ class waRouting
                 }
             }
             if (preg_match('!^'.$pattern.'$!ui', $url, $match)) {
-                if (isset($r['redirect'])) {
+                if (isset($r['redirect']) && empty($r['disabled'])) {
                     $p = str_replace('.*?', '(.*?)', $pattern);
                     if ($p != $pattern) {
                         preg_match('!^'.$p.'$!ui', $url, $m);
@@ -335,7 +364,7 @@ class waRouting
                             }
                         }
                     }
-                    wa()->getResponse()->redirect($r['redirect'], 301);
+                    wa()->getResponse()->redirect($r['redirect'], 302);
                 } elseif (isset($r['static_content'])) {
                     $response = wa()->getResponse();
                     switch (ifset($r['static_content_type'])){
@@ -531,7 +560,9 @@ class waRouting
         if ($domain) {
             $result = self::getDomainUrl($domain, $absolute).'/'.$result;
             if ($absolute) {
-                if (parse_url('http://'.$domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
+                if (!empty($route['ssl_all'])) {
+                    $https = true;
+                } elseif (parse_url('http://'.$domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
                     $https = waRequest::isHttps();
                 } else {
                     $https = false;

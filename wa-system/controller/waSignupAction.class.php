@@ -294,6 +294,7 @@ class waSignupAction extends waViewAction
                 if (wa()->getAuth()->auth($contact)) {
                     $ce->updateById($email_id, array('status' => 'confirmed'));
                     $contact->delSettings(wa()->getApp(), "email_confirmation_hash");
+                    $this->logAction('signup', wa()->getEnv());
                 }
             } catch (waException $e) {
                 $errors = array('auth' => $e->getMessage());

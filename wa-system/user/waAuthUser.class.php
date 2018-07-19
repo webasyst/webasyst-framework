@@ -24,7 +24,6 @@ class waAuthUser extends waUser
         $this->init();
     }
 
-
     public function init()
     {
         parent::init();
@@ -51,11 +50,23 @@ class waAuthUser extends waUser
                 if (!waRequest::request('background_process')) {
                     $this->updateLastTime();
                 }
+                $is_data_loaded = !!$this->getCache();
+                $last_check = time() - ifset($info['storage_set'], 0);
+
+                // Make sure that the user did not change the password
+                // We do this once in a while, or in case user data is already loaded anyway.
+                $session_user = wa()->getStorage()->get('auth_user');
+                $session_token = (!empty($session_user['token'])) ? $session_user['token'] : null;
+                if ($session_token && ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_PASSWORD_CHECK'))) {
+                    if ($auth->getToken($this) !== $session_token) {
+                        throw new waException('Password changed');
+                    } else {
+                        $auth->updateAuth($this->getCache());
+                    }
+                }
 
                 // Make sure user is not banned.
                 // We do this once in a while, or in case user data is already loaded anyway.
-                $is_data_loaded = !!$this->getCache();
-                $last_check = time() - ifset($info['storage_set'], 0);
                 if ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_BAN_CHECK')) {
                     if ($this['is_user'] < 0) {
                         throw new waException('Contact is banned');
@@ -140,11 +151,10 @@ class waAuthUser extends waUser
             }
             if (!$last_activity) {
                 $login_log_model->insert(array(
-                    'contact_id' => $this->id,
-                    'datetime_in' => date("Y-m-d H:i:s"),
+                    'contact_id'   => $this->id,
+                    'datetime_in'  => date("Y-m-d H:i:s"),
                     'datetime_out' => $force == 'logout' ? date("Y-m-d H:i:s") : null,
-                    'ip' => waRequest::getIp()
-                  
+                    'ip'           => waRequest::getIp(),
                 ));
                 // TODO: insert record in waLog
             } else {
@@ -154,10 +164,10 @@ class waAuthUser extends waUser
                     if (time() - $last_datetime > self::$options['activity_timeout']) {
                         $login_log_model->updateById($last_activity['id'], array('datetime_out' => $time));
                         $login_log_model->insert(array(
-                            'contact_id' => $this->id,
-                            'datetime_in' => date("Y-m-d H:i:s"),
+                            'contact_id'   => $this->id,
+                            'datetime_in'  => date("Y-m-d H:i:s"),
                             'datetime_out' => null,
-                            'ip' => waRequest::getIp()
+                            'ip'           => waRequest::getIp(),
                         ));
                         // TODO: insert record in waLog
                     }

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-10-17 15:45+0300\n"
+"PO-Revision-Date: 2018-07-10 14:26+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2031,7 +2031,7 @@ msgid "Google Maps API key"
 msgstr ""
 
 #: /wa-system/map/adapters/googleMap.class.php:92
-msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> only if the free limit of 25,000 map loads per 24 hours is not sufficient."
+msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> to display a map within the Webasyst backend. Without a key, only a link to the map will be displayed."
 msgstr ""
 
 #: /wa-system/map/adapters/googleMap.class.php:94

@@ -269,9 +269,10 @@ return array(
         'contact_id' => array('int', 11, 'null' => 0),
         'datetime_in' => array('datetime', 'null' => 0),
         'datetime_out' => array('datetime'),
+        'ip' => array('varchar', 45),
         ':keys' => array(
             'PRIMARY' => 'id',
-            'contact_datetime' => array('contact_id', 'datetime_out'),
+            'contact_datetime' => array('contact_id', 'datetime_out')
         ),
     ),
     'wa_region' => array(

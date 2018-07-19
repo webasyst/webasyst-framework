@@ -186,11 +186,11 @@ class waAppConfig extends SystemConfig
             $actions['login'] = array(
                 'name' => _ws('logged in')
             );
-            $actions['login_failed'] = array(
-                'name' => _ws('login failed')
-            );
             $actions['logout'] = array(
                 'name' => _ws('logged out')
+            );
+            $actions['login_failed'] = array(
+                'name' => _ws('login failed')
             );
             $actions['signup'] = array(
                 'name' => _ws('signed up')

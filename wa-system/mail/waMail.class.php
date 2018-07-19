@@ -24,6 +24,7 @@ class waMail extends Swift_Mailer
                 $message->setFrom($from);
             }
         }
+
         if ($this->wa_set_transport) {
             $this->_transport = self::getTransportByEmail(key($message->getFrom()));
         }
@@ -39,18 +40,18 @@ class waMail extends Swift_Mailer
             // Find email:
             if (isset($mail_config[$sender_email])) {
                 $mail_data = $mail_config[$sender_email];
-                // Find domain
+            // Find domain:
             } elseif (isset($mail_config[$domain_name])) {
                 $mail_data = $mail_config[$domain_name];
             }
 
             if ($mail_data && ifset($mail_data['dkim']) == 1) {
-                $signer = new Swift_Signers_DKIMSigner(
+                $dkim_signer = new Swift_Signers_DKIMSigner(
                     ifset($mail_data['dkim_pvt_key']), $domain_name, ifset($mail_data['dkim_selector'])
                 );
-                $signer->ignoreHeader('Return-Path');
-                $signer->ignoreHeader('Bcc');
-                $message->attachSigner($signer);
+                $dkim_signer->ignoreHeader('Return-Path');
+                $dkim_signer->ignoreHeader('Bcc');
+                $message->attachSigner($dkim_signer);
             }
         }
 
@@ -141,8 +142,8 @@ class waMail extends Swift_Mailer
         return wa()->getConfig()->getConfigFile('mail', array());
     }
 
-    public function saveConfigFile($date)
+    public function saveConfigFile($data)
     {
-        waUtils::varExportToFile($date, wa()->getConfig()->getPath('config', 'mail'));
+        waUtils::varExportToFile($data, wa()->getConfig()->getPath('config', 'mail'));
     }
 }

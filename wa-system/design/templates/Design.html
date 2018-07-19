@@ -23,7 +23,7 @@
                         {if is_array($r)}
                             {$_t = $themes[$r.theme]}
                             {$_url = "{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}"}
-                            <li class="no-icon 2{if $current_url == $_url} selected{/if}" data-routing="{$r._routing_url}">
+                            <li class="no-icon 2{if $current_url == $_url} selected{/if}" {if !empty($r._routing_url)}data-routing="{$r._routing_url}"{/if}>
                                 <a class="bold" href="{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}">
                                     <span data-url="{$r._preview_url|escape}" class="url">{$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
                                     <span class="hint">{$_t.name}</span>
@@ -32,7 +32,7 @@
                             {if !empty($r.theme_mobile) && ($r.theme_mobile != $r.theme) && !empty($themes[$r.theme_mobile])}
                                 {$_t = $themes[$r.theme_mobile]}
                                 {$_url = "{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}"}
-                                <li class="no-icon 3{if $current_url == $_url} selected{/if}" data-routing="{$r._routing_url}">
+                                <li class="no-icon 3{if $current_url == $_url} selected{/if}" {if !empty($r._routing_url)}data-routing="{$r._routing_url}"{/if}>
                                     <a class="bold" href="{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}">
                                         <i class="icon16 mobile float-right"></i>
                                         <span class="url">{$_r_label = $r._domain|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
@@ -64,7 +64,7 @@
             <li class="pages"><a data-action="pages" href="{$design_url}pages/"><i class="icon48 pages"></i>[s`Pages`]</a></li>
             {/if}
             <li data-action="edit" class="templates"><a href="{$design_url}theme={$theme.id}&action=edit"><i class="icon48 templates"></i>[s`Templates`]</a></li>
-            <li class="themes"><a class="wa-themes-link" href="{$themes_url}"><i class="icon48 store"></i>[s`Themes`]</a></li>
+            {if $wa->user()->getRights('installer')}<li class="themes"><a class="wa-themes-link" href="{$themes_url}"><i class="icon48 store"></i>[s`Themes`]</a></li>{/if}
             <li data-action="settings" class="settings"><a href="{$design_url}action=settings"><i class="icon48 settings"></i>[s`Settings`]</a></li>
         </ul>
     </div>
@@ -254,8 +254,10 @@
 
             var a = $('#wa-design-menu li.selected a');
             if (a.length) {
-                var a_params = waDesignParams(a.attr('href'));
-                if (a_params['route']) {
+                var a_params = waDesignParams(a.attr('href')),
+                    data_routing = $('#wa-theme-list .selected').data('routing');
+
+                if (a_params['route'] && data_routing) {
                     $('#wa-design-menu li.settings a').attr('href', a.attr('href') + '&action=settings');
                     $('#wa-design-menu li.settings').show();
                 } else {
@@ -350,7 +352,7 @@
                         var params = hash.split('&');
                         for (var j = 0; j < params.length; j++) {
                             var tmp = params[j].split('=');
-                            //console.log(tmp);
+
                             if (tmp[0] == 'theme') {
                                 $('#wa-design-sidebar a[href="' + location.hash + '"]').parent().addClass('selected');
                             }
@@ -363,11 +365,12 @@
                         $('#wa-design-menu > .selected').removeClass('selected');
                         $('#wa-design-menu .info').addClass('selected');
                     }
+                    // Save theme settings
                     $("#wa-design-container").load("?module=design&" + hash, function (responseText, textStatus, XMLHttpRequest) {
                         if ($(".s-scrollable-part").length) {
-                            $(".s-scrollable-part").scrollTop(0);
+                            //$(".s-scrollable-part").scrollTop(0);
                         } else {
-                            $(document).scrollTop(0);
+                            //$(document).scrollTop(0);
                         }
                         try{
                             if (response = $.parseJSON(responseText)) {

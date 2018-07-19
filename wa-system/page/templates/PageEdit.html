@@ -177,22 +177,13 @@
             {$wa->csrf()}
         </div>
     </div>
+
     {if $options.save_panel}
     <div class="wa-page-save-panel block bordered-top">
-        <div class="wa-dropdown">
-            <div class="wa-drop-link">
-                <a class="inline-link" id="wa-editor-help-link" href="#">
-                    <i class="icon16 cheatsheet"></i><b><i>[s`Cheat sheet`]</i></b>
-                    <i class="icon10 uarr no-overhanging"></i>
-                </a>
-                <div id="wa-editor-help" class="wa-dropdown-block"></div>
-            </div>
-        </div>
-
+        {$wa->getCheatSheetButton(["app" => {$wa->app()}, 'page_id' => {$page.id|default:''}])}
         <input id="wa-page-button" type="submit" class="button green" value="[s`Save`]" />
         <em class="hint">Ctrl + S</em>
         <span id="wa-editor-status" style="margin-left: 25px; display: none"></span>
-
     </div>
     {/if}
 {$wa->csrf()}
@@ -293,38 +284,6 @@
         } else {
             $('.og-group').show().find('input,textarea').removeAttr('disabled');
         }
-    });
-
-    // Open template vars help
-    $("#wa-editor-help-link").click(function () {
-        if ($("#wa-editor-help").is(":visible")) {
-            $("#wa-editor-help").hide();
-            return false;
-        }
-        $("#wa-editor-help").load('?module=pages&action=help', "app={$wa->app()}&id={if $page}{$page.id}{/if}", function () {
-            $(this).show();
-            var f = function (e) {
-                if ($(e.target).attr('id') == 'wa-editor-help' || $(e.target).parents('#wa-editor-help').length) {
-                    $(document).one('click', f);
-                } else {
-                    $("#wa-editor-help").hide();
-                }
-            };
-            $(document).one('click', f);
-        });
-        return false;
-    });
-
-    // Insert template var into test when user clicks a row in vars help
-    $("#wa-editor-help").on('click', "div.fields a.inline-link", function () {
-        var el = $(this).find('i');
-        if (el.children('b').length) {
-            el = el.children('b');
-        }
-        $.wa_editor_ready.then(function(method) {
-            $('#wa-page-content')[method]('insert', el.text());
-        });
-        return false;
     });
 
     // Initialize editor when JS is loaded

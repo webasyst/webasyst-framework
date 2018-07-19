@@ -211,7 +211,7 @@ class twitterAuth extends waAuthAdapter
             $data = array(
                 'source' => 'twitter',
                 'source_id' => $response['id_str'],
-                'url' => "http://twitter.com/#!/".$response['screen_name'],
+                'url' => "https://twitter.com/".$response['screen_name'],
                 'name' => $response['name'],
                 'about' => $response['description'],
                 'photo_url' => $response['profile_image_url']

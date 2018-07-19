@@ -296,7 +296,7 @@ class waModel
         }
         $waDbQueryAnalyzer = new waDbQueryAnalyzer($sql);
         switch ($waDbQueryAnalyzer->getQueryType()) {
-            case 'update': case 'replace': case 'delete': case 'insert': $this->cleanCache();
+            case 'update': case 'replace': case 'delete': case 'drop': case 'insert': $this->cleanCache();
         }
 
         if (func_num_args() > 2) {
@@ -955,9 +955,11 @@ class waModel
     /**
      * Returns the number of records with the value of the specified field matching the specified value.
      *
-     * @param string $field Name of field to be checked
+     * @param string|array $field Name of field to be checked
      * @param string $value Value to be checked in the specified field of all table records
      * @return int
+     *
+     * @throws waException
      */
     public function countByField($field, $value = null)
     {

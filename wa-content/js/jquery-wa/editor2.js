@@ -135,6 +135,7 @@ jQuery.fn.waEditor2 = function () {
                 $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
             });
             $textarea.redactor('observe.images');
+            $textarea.redactor('observe.links');
 
             // Update tab selection
             $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');

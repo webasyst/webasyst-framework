@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage webasyst
  */
+
 class waAppSettingsModel extends waModel
 {
     protected static $settings = array();
@@ -53,9 +54,8 @@ class waAppSettingsModel extends waModel
         }
 
         if (is_null($name)) {
-            return  isset(self::$settings[$key]) ? self::$settings[$key] : array();
-        }
-        else {
+            return isset(self::$settings[$key]) ? self::$settings[$key] : array();
+        } else {
             return isset(self::$settings[$key][$name]) ? self::$settings[$key][$name] : $default;
         }
     }
@@ -98,5 +98,13 @@ class waAppSettingsModel extends waModel
             $params['name'] = $name;
         }
         return $this->deleteByField($params);
+    }
+
+    public function clearCache($app_id)
+    {
+        self::$settings = array();
+
+        $cache =  new waVarExportCache('app_settings/'.$app_id, SystemConfig::isDebug() ? 600 : 86400, 'webasyst');
+        $cache->delete();
     }
 }

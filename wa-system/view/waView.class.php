@@ -36,18 +36,6 @@ abstract class waView
     public function __construct(waSystem $system, $options = array())
     {
         $this->setOptions($options);
-
-        if (wa()->getEnv() == 'frontend') {
-            $domain = wa()->getRouting()->getDomain(null, true);
-            $domain_config_path = wa()->getConfig()->getConfigPath('domains/' . $domain . '.php', true, 'site');
-            if (file_exists($domain_config_path)) {
-                $domain_config = include($domain_config_path);
-                if (!empty($domain_config['cdn'])) {
-                    $this->options['cdn'] = $domain_config['cdn'];
-                }
-            }
-        }
-
     }
 
     /**
@@ -123,10 +111,7 @@ abstract class waView
 
     protected function getStaticUrl($url)
     {
-        if (!empty($this->options['cdn'])) {
-            return rtrim($this->options['cdn'], '/').$url;
-        }
-        return $url;
+        return wa()->getCdn($url);
     }
 
     abstract public function fetch($template, $cache_id = null);

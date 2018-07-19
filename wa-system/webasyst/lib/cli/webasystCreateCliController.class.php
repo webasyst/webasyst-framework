@@ -40,6 +40,20 @@ HELP;
 
     }
 
+    /**
+     * @return string
+     */
+    protected function getAction()
+    {
+        if (preg_match('/^webasyst(\w+)Cli$/', __CLASS__, $matches)) {
+            $callback = create_function('$m', 'return strtolower($m[1]);');
+            $action = preg_replace_callback('/^([\w]{1})/', $callback, $matches[1]);
+        } else {
+            $action = '';
+        }
+        return $action;
+    }
+
     protected function init()
     {
         $this->app_id = waRequest::param(0);
@@ -55,11 +69,11 @@ HELP;
     {
         $errors = array();
         if (!preg_match('@^[a-z][a-z0-9]+$@', $this->app_id)) {
-            $errors[] = "Invalid app ID";
+            $errors['app_id'] = "Invalid app ID";
         }
 
         if (!empty($params['version']) && !preg_match('@^[\d]+(\.\d+)*$@', $params['version'])) {
-            $errors[] = 'Invalid version format';
+            $errors['version'] = 'Invalid version format';
         }
 
         return $errors;
@@ -148,6 +162,7 @@ HELP;
             $default += array(
                 'version' => '0.0.1',
                 'vendor'  => '--',
+                'author'  => isset($default['vendor']) ? $default['vendor'] : '',
             );
         }
         return $field == null ? $default : (isset($default[$field]) ? $default[$field] : null);

@@ -17,7 +17,7 @@ class waLocale
     protected static $locale;
     protected static $domain;
     /**
-     * @var waLocaleAdapter
+     * @var waiLocaleAdapter
      */
     public static $adapter;
 
@@ -43,7 +43,7 @@ class waLocale
             } else if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
                 self::$adapter = new waLocalePHPAdapter();
             } else {
-                 self::$adapter = new waLocaleAdapter();
+                self::$adapter = new waLocaleAdapter();
             }
         }
     }
@@ -112,7 +112,7 @@ class waLocale
     /**
      * Returns locale adapter
      *
-     * @return waLocaleAdapter|waLocalePHPAdapter
+     * @return waiLocaleAdapter
      */
     public static function getAdapter()
     {

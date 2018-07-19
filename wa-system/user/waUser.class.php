@@ -88,10 +88,10 @@ class waUser extends waContact
     {
         parent::offsetSet($offset, $value);
         if ($offset == 'password') {
-                // set new auth token for current user
-                if ($this->id == wa()->getUser()->getId()) {
-                    wa()->getAuth()->updateAuth($this);
-                }
+            // set new auth token for current user
+            if ($this->id == wa()->getUser()->getId()) {
+                wa()->getAuth()->updateAuth($this);
+            }
         }
     }
 

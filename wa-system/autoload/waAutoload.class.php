@@ -218,9 +218,11 @@ class waAutoload
 
         'waCurrency'               => 'currency/waCurrency.class.php',
 
+        'waCdn'                    => 'cdn/waCdn.class.php',
+
         'waCaptcha'                => 'captcha/waCaptcha.class.php',
         'waReCaptcha'              => 'captcha/recaptcha/waReCaptcha.class.php',
-        'waPHPCaptcha'              =>'captcha/phpcaptcha/waPHPCaptcha.class.php',
+        'waPHPCaptcha'             =>'captcha/phpcaptcha/waPHPCaptcha.class.php',
 
         'waModel'                  => 'database/waModel.class.php',
         'waModelExpr'              => 'database/waModelExpr.class.php',
@@ -243,6 +245,7 @@ class waAutoload
 
         'waLayout'                 => 'layout/waLayout.class.php',
 
+        'waiLocaleAdapter'         => 'locale/waiLocaleAdapter.interface.php',
         'waGettext'                => 'locale/waGettext.class.php',
         'waLocale'                 => 'locale/waLocale.class.php',
         'waLocaleAdapter'          => 'locale/waLocaleAdapter.class.php',

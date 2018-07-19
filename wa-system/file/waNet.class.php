@@ -69,6 +69,10 @@ class waNet
 
     private $ch;
 
+    private static $mh;
+    /** @var waNet[]  */
+    private static $instances = array();
+
     /**
      * waNet constructor.
      * @param array $options
@@ -114,10 +118,11 @@ class waNet
      * @param $url
      * @param array|string|SimpleXMLElement|DOMDocument $content Parameter type relate to request format (xml/json/etc)
      * @param string $method
-     * @return string|array|SimpleXMLElement Type related to response for response format (json/xml/etc)
+     * @param callable $callback
+     * @return string|array|SimpleXMLElement|waNet Type related to response for response format (json/xml/etc). Self return for promises
      * @throws waException
      */
-    public function query($url, $content = array(), $method = self::METHOD_GET)
+    public function query($url, $content = array(), $method = self::METHOD_GET, $callback = null)
     {
         $transport = $this->getTransport($url);
 
@@ -126,7 +131,7 @@ class waNet
 
         switch ($transport) {
             case self::TRANSPORT_CURL:
-                $response = $this->runCurl($url, $content, $method);
+                $response = $this->runCurl($url, $content, $method, array(), $callback);
                 break;
             case self::TRANSPORT_FOPEN:
                 $response = $this->runStreamContext($url, $content, $method);
@@ -139,15 +144,28 @@ class waNet
                 break;
         }
 
+        if ($response instanceof self) {
+            return $response;
+        } else {
+
+            $this->onQueryComplete($response);
+            return $this->getResponse();
+        }
+    }
+
+    protected function onQueryComplete($response)
+    {
         $this->decodeResponse($response);
 
         if ($this->options['expected_http_code'] !== null) {
-            if (empty($this->response_header['http_code']) || ($this->response_header['http_code'] != $this->options['expected_http_code'])) {
+            $expected = $this->options['expected_http_code'];
+            if (!is_array($expected)) {
+                $expected = preg_split('@[,:;.\s]+@', $this->options['expected_http_code']);
+            }
+            if (empty($this->response_header['http_code']) || !in_array($this->response_header['http_code'], $expected)) {
                 throw new waException($response, $this->response_header['http_code']);
             }
         }
-
-        return $this->getResponse();
     }
 
     /**
@@ -347,9 +365,11 @@ class waNet
                 }
                 break;
             case self::FORMAT_XML:
+                $xml_options = LIBXML_NOCDATA | LIBXML_NOENT | LIBXML_NONET;
                 libxml_use_internal_errors(true);
+                libxml_disable_entity_loader(false);
                 libxml_clear_errors();
-                $this->decoded_response = @simplexml_load_string($this->raw_response);
+                $this->decoded_response = @simplexml_load_string($this->raw_response, null, $xml_options);
 
                 if ($this->decoded_response === false) {
                     if ($error = libxml_get_last_error()) {
@@ -453,11 +473,19 @@ class waNet
         return false;
     }
 
-    private function runCurl($url, $params, $method, $curl_options = array())
+    private function runCurl($url, $params, $method, $curl_options = array(), $callback = null)
     {
         $this->getCurl($url, $params, $method, $curl_options);
-        $response = @curl_exec($this->ch);
+        if (!empty($callback) && is_callable($callback) && !empty(self::$namespace) && !empty(self::$mh[self::$namespace])) {
+            return $this->addMultiCurl($callback);
+        } else {
+            $response = @curl_exec($this->ch);
+            return $this->handleCurlResponse($response);
+        }
+    }
 
+    private function handleCurlResponse($response)
+    {
         if (empty($response)) {
             $error_no = curl_errno($this->ch);
             $error_str = curl_error($this->ch);
@@ -469,6 +497,78 @@ class waNet
         }
 
         return $body;
+    }
+
+    protected function onMultiQueryComplete($callback)
+    {
+        $content = curl_multi_getcontent($this->ch);
+        try {
+            $body = $this->handleCurlResponse($content);
+            curl_multi_remove_handle(self::$mh[self::$namespace], $this->ch);
+            $this->onQueryComplete($body);
+
+            $response = $this->getResponse();
+            call_user_func_array($callback, array($this, $response));
+        } catch (waException $ex) {
+            call_user_func_array($callback, array($this, $ex));
+        }
+    }
+
+    private static $namespace = null;
+
+    private function addMultiCurl($callback)
+    {
+        $id = curl_multi_add_handle(self::$mh[self::$namespace], $this->ch);
+        self::$instances[self::$namespace][$id] = array(
+            'instance' => $this,
+            'callback' => $callback,
+        );
+        return $this;
+    }
+
+
+    public static function multiQuery($namespace = null)
+    {
+        if ($namespace && !isset(self::$mh[$namespace])) {
+            if (empty(self::$mh[$namespace]) && function_exists('curl_multi_init')) {
+                self::$mh[$namespace] = curl_multi_init();
+                if (!isset(self::$instances[$namespace])) {
+                    self::$instances[$namespace] = array();
+                }
+                self::$namespace = $namespace;
+            }
+        } elseif ((($namespace === null) || (self::$namespace === $namespace)) && isset(self::$mh[self::$namespace])) {
+            $namespace = self::$namespace;
+            if (self::$instances[$namespace]) {
+                $active = null;
+
+                do {
+                    $mrc = curl_multi_exec(self::$mh[$namespace], $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+                while ($active && $mrc == CURLM_OK) {
+                    if (curl_multi_select(self::$mh[$namespace]) == -1) {
+                        usleep(100);
+                    }
+
+                    do {
+                        $mrc = curl_multi_exec(self::$mh[$namespace], $active);
+                    } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+                }
+
+                foreach (self::$instances[$namespace] as $id => $data) {
+                    $instance = $data['instance'];
+                    /** @var waNet $instance */
+                    $instance->onMultiQueryComplete($data['callback']);
+                }
+                self::$instances = array();
+            }
+
+            unset(self::$instances[$namespace]);
+
+            curl_multi_close(self::$mh[$namespace]);
+            unset(self::$mh[$namespace]);
+        }
     }
 
     private function getCurl($url, $content, $method, $curl_options = array())
@@ -493,6 +593,7 @@ class waNet
                     CURLE_OPERATION_TIMEOUTED => $this->options['timeout'],
                     CURLOPT_DNS_CACHE_TIMEOUT => 3600,
                     CURLOPT_USERAGENT         => $this->user_agent,
+                    //CURLOPT_INTERFACE         => 'eth0',#TODO use actual server interface
                 );
 
                 if ($this->options['verify']) {
@@ -592,6 +693,10 @@ class waNet
             }
 
             if (empty($curl_options[CURLOPT_POST]) && empty($curl_options[CURLOPT_POSTFIELDS])) {
+                if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
+                    $curl_options[CURLOPT_FOLLOWLOCATION] = true;
+                }
+
                 if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
                     $curl_options[CURLOPT_FOLLOWLOCATION] = true;
                 }
@@ -851,6 +956,10 @@ class waNet
         }
     }
 
+    /**
+     * @since PHP 5.6.0
+     * @return array
+     */
     public function __debugInfo()
     {
         return array(

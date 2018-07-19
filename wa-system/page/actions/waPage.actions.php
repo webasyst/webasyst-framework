@@ -73,7 +73,6 @@ class waPageActions extends waActions
         $this->display($this->prepareData($data), $template);
     }
 
-
     protected function settleAction()
     {
         $pages = $this->getPages();
@@ -93,12 +92,10 @@ class waPageActions extends waActions
         $this->displayJson(array());
     }
 
-
     protected function prepareData(&$data)
     {
         return $data;
     }
-
 
     protected function getPage($id)
     {
@@ -107,7 +104,6 @@ class waPageActions extends waActions
 
     protected function editAction()
     {
-
         $id = waRequest::get('id');
         $page_model = $this->getPageModel();
 
@@ -154,15 +150,15 @@ class waPageActions extends waActions
         }
 
         $data = array(
-            'url' => $url,
-            'url_decoded' => $url_decoded,
-            'page' => $page,
-            'page_url' => $this->url,
-            'options' => $this->options,
+            'url'          => $url,
+            'url_decoded'  => $url_decoded,
+            'page'         => $page,
+            'page_url'     => $this->url,
+            'options'      => $this->options,
             'preview_hash' => $this->getPreviewHash(),
-            'lang' => substr(wa()->getLocale(), 0, 2),
-            'ibutton' => $this->ibutton,
-            'upload_url' => wa()->getDataUrl('img', true)
+            'lang'         => substr(wa()->getLocale(), 0, 2),
+            'ibutton'      => $this->ibutton,
+            'upload_url'   => wa()->getDataUrl('img', true)
         ) + $this->getPageParams($id);
 
         $data['page_edit'] = wa()->event('page_edit', $data);
@@ -226,7 +222,6 @@ class waPageActions extends waActions
         return $html;
     }
 
-
     protected function getRoutes()
     {
         $routes = wa()->getRouting()->getByApp($this->getAppId());
@@ -242,13 +237,11 @@ class waPageActions extends waActions
         return $result;
     }
 
-
     protected function getPages()
     {
         return $this->getPageModel()->
             select('id,name,url,full_url,status,domain,route,parent_id')->order('parent_id,sort')->fetchAll('id');
     }
-
 
     /**
      * @param int $id - page id
@@ -320,6 +313,13 @@ class waPageActions extends waActions
         $data['url'] = ltrim($data['url'], '/');
         $data['status'] = isset($data['status']) ? 1 : 0;
 
+        try {
+            $this->checkGlobalRouting();
+        } catch (waException $e) {
+            $this->displayJson(array(), $e->getMessage());
+            return;
+        }
+
         $page_model = $this->getPageModel();
 
         if ($id) {
@@ -346,7 +346,7 @@ class waPageActions extends waActions
             if ($data['url'] && substr($data['url'], -1) != '/' && strpos(substr($data['url'], -5), '.') === false) {
                 $data['url'] .= '/';
             }
-            if (isset($data['parent_id']) && $data['parent_id']) {
+            if (!empty($data['parent_id'])) {
                 $parent = $this->getPage($data['parent_id']);
                 $data['full_url'] = ($parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '').$data['url'];
                 $data['domain'] = $parent['domain'];
@@ -397,6 +397,62 @@ class waPageActions extends waActions
         ));
     }
 
+    protected function checkGlobalRouting()
+    {
+        $id = (int)waRequest::get('id');
+        $data = waRequest::post('info', array(), waRequest::TYPE_ARRAY_TRIM);
+        $data['url'] = ltrim($data['url'], '/');
+
+        $page_url = $data['url'];
+        if ($page_url && substr($page_url, -1) != '/' && strpos(substr($page_url, -5), '.') === false) {
+            $page_url .= '/';
+        }
+
+        // Get Domain
+        if (!empty($data['parent_id'])) {
+            $parent = $this->getPage($data['parent_id']);
+            $page_url = ($parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '') . $page_url;
+        }
+
+        if (!empty($data['domain'])) {
+            $domain = trim($data['domain']);
+
+        // Find domain by PAGE
+        } elseif ($id) {
+            $page = $this->getPageModel()->getById($id);
+            $domain = ifempty($page[$this->getPageModel()->getDomainField()]);
+            if ($this->getPageModel()->getDomainField() === 'domain_id') {
+                $domain_data = $this->getDomainModel()->getById($page['domain_id']);
+                $domain = ifempty($domain_data['name']);
+            }
+
+        // Find domain by domain_id in an external table (e.g. site_domain)
+        } elseif (!empty($data['domain_id'])) {
+            $domain_data = $this->getDomainModel()->getById($data['domain_id']);
+            $domain = ifempty($domain_data['name']);
+        }
+
+        // Get route
+        if (!empty($data['route'])) {  // post
+            $route = $data['route'];
+        } elseif (isset($parent)) {    // parent page
+            $route = $parent['route'];
+        } elseif (isset($page)) {      // page
+            $route = $page['route'];
+        }
+
+        if (!isset($domain) || empty($domain)) throw new waException(_ws('Unknown page domain'));
+        if (!isset($route) || empty($route)) throw new waException(_ws('Unknown page route'));
+
+        $page_url = str_replace('*', '', $route) . $page_url;
+        $domain_routes = wa()->getRouting()->getRoutes($domain);
+
+        $rule_for_url = wa()->getRouting()->getRuleForUrl($domain_routes, $page_url);
+
+        if ($route !== ifempty($rule_for_url['url'])) {
+            throw new waException(_ws('Page URL is in conflict with the website structure.'));
+        }
+    }
 
     public function getPageChilds($id)
     {
@@ -409,7 +465,6 @@ class waPageActions extends waActions
         }
         return $result;
     }
-
 
     protected function beforeSave(&$data, $parent = array())
     {
@@ -460,7 +515,6 @@ class waPageActions extends waActions
         }
         $this->getPageModel()->setParams($id, $params);
     }
-
 
     public function deleteAction()
     {
@@ -514,7 +568,6 @@ class waPageActions extends waActions
         }
         $this->displayJson($result, $result ? null: _w('Database error'));
     }
-
 
     public function uploadimageAction()
     {
@@ -612,128 +665,8 @@ class waPageActions extends waActions
 
     public function helpAction()
     {
-        $wa_vars = array(
-            '$wa_url' => _ws('URL of this Webasyst installation (relative)'),
-            '$wa_app_url' => _ws('URL of the current app settlement (relative)'),
-            '$wa_backend_url' => _ws('URL to access Webasyst backend (relative)'),
-            '$wa_theme_url' => _ws('URL of the current app design theme folder (relative)'),
-
-            '$wa->title()' => _ws('Title'),
-            '$wa->title("<em>title</em>")' => _ws('Assigns a new title'),
-            '$wa->accountName()' => _ws('Returns name of this Webasyst installation (name is specified in “Installer” app settings)'),
-            '$wa->apps()' => _ws('Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen'),
-            '$wa->currentUrl(bool <em>$absolute</em>)' => _ws('Returns current page URL (either absolute or relative)'),
-            '$wa->domainUrl()' => _ws('Returns this domain’s root URL (absolute)'),
-            '$wa->globals("<em>key</em>")' => _ws('Returns value of the global var by <em>key</em>. Global var array is initially empty, and can be used arbitrarily.'),
-            '$wa->globals("<em>key</em>", "<em>value</em>")' => _ws('Assigns global var a new value'),
-            '$wa->get("<em>key</em>")' => _ws('Returns GET parameter value (same as PHP $_GET["<em>key</em>"])'),
-            '$wa->isMobile()' => _ws('Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used'),
-            '$wa->locale()' => _ws('Returns user locale, e.g. "en_US", "ru_RU". In case user is authorized, locale is retrieved from “Contacts” app user record, or detected automatically otherwise'),
-            '$wa->post("<em>key</em>")' => _ws('Returns POST parameter value (same as PHP $_POST["<em>key</em>"])'),
-            '$wa->server("<em>key</em>")' => _ws('Returns SERVER parameter value (same as PHP $_SERVER["KEY"])'),
-            '$wa->session("<em>key</em>")' => _ws('Returns SESSION var value (same as PHP $_SESSION["<em>key</em>"])'),
-            '$wa->snippet("<em>id</em>")' => _ws('Embeds HTML snippet by ID'),
-            '$wa->user("<em>field</em>")' => _ws('Returns authorized user data from associated record in “Contacts” app. "<em>field</em>" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized'),
-            '$wa->userAgent("<em>key</em>")' => _ws('Returns User Agent info by specified “<em>key</em>” parameter:').'<br />'.
-                _ws('— <em>"platform"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;').'<br />'.
-                _ws('— <em>"isMobile"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;').'<br />'.
-                _ws('— not specified: returns entire User Agent string;').'<br />',
-            '$wa-><em>APP_ID</em>->themePath("<em>theme_id</em>")' => _ws('Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>'),
-        );
-
-        $app_id = waRequest::get('app');
-        $file = waRequest::get('file');
-        $vars = array();
-        if ($app_id && $app = wa()->getAppInfo($app_id)) {
-            $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
-            if (file_exists($path)) {
-                $site = include($path);
-                if (isset($site['vars'])) {
-                    if (isset($site['vars'][$file])) {
-                        $vars += $site['vars'][$file];
-                    }
-                    if (isset($site['vars']['$wa'])) {
-                        $vars += $site['vars']['$wa'];
-                    }
-                    if (isset($site['vars']['all'])) {
-                        $vars += $site['vars']['all'];
-                    }
-                }
-            }
-            if ($id = waRequest::get('id')) {
-                $page = $this->getPageModel()->getById($id);
-                if ($page) {
-                    $file = $page['name'];
-                    $path = $this->getConfig()->getAppsPath('site', 'lib/config/site.php');
-                    if (file_exists($path)) {
-                        $site = include($path);
-                    }
-                    if (isset($site['vars']['page.html'])) {
-                        $vars += $site['vars']['page.html'];
-                    }
-                }
-            }
-        } else {
-            $app = null;
-        }
-
-        $blocks = array();
-        if (wa()->appExists('site')) {
-            $active_app = wa()->getApp();
-            try {
-                $model = new waModel();
-                $blocks = $model->query('SELECT * FROM site_block ORDER BY sort')->fetchAll('id');
-                foreach (wa()->getApps() as $_app_id => $_app) {
-                    $path = $this->getConfig()->getAppsPath($_app_id, 'lib/config/site.php');
-                    if (file_exists($path)) {
-                        waLocale::load(wa()->getLocale(), $this->getConfig()->getAppsPath($_app_id, 'locale'), $_app_id, true);
-                        $site_config = include($path);
-                        if (!empty($site_config['blocks'])) {
-                            foreach ($site_config['blocks'] as $block_id => $block) {
-                                if (!is_array($block)) {
-                                    $block = array('content' => $block, 'description' => '');
-                                }
-                                $block_id = $_app_id.'.'.$block_id;
-                                if (!isset($blocks[$block_id])) {
-                                    $block['id'] = $block_id;
-                                    $block['app'] = $_app;
-                                    $blocks[$block_id] = $block;
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception $e) {
-            }
-            wa()->setActive($active_app);
-        }
-
-        $this->display(array(
-            'vars' => $vars,
-            'file' => $file,
-            'app' => $app,
-            'wa_vars' => $wa_vars,
-            'smarty_vars' => array(
-                '{$foo}' => _ws('Displays a simple variable (non array/object)'),
-                '{$foo[4]}' => _ws('Displays the 5th element of a zero-indexed array'),
-                '{$foo.bar}' => _ws('Displays the "<em>bar</em>" key value of an array. Similar to PHP $foo["bar"]'),
-                '{$foo.$bar}' => _ws('Displays variable key value of an array. Similar to PHP $foo[$bar]'),
-                '{$foo->bar}' => _ws('Displays the object property named <em>bar</em>'),
-                '{$foo->bar()}' => _ws('Displays the return value of object method named <em>bar()</em>'),
-                '{$foo|print_r}' => _ws('Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)'),
-                '{$foo|escape}' => _ws('Escapes a variable for safe display in HTML'),
-                '{$foo|wa_datetime:$format}' => _ws('Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>'),
-                '{$x+$y}' => _ws('Outputs the sum of <em>$x</em> and <em>$y</em>'),
-                '{$foo=3*4}' => _ws('Assigns variable a value'),
-                '{time()}' => _ws('Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp'),
-                '{literal}...{/literal}' => _ws('Content between {literal} tags will not be parsed by Smarty'),
-                '{include file="..."}' => _ws('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'),
-                '{if}...{else}...{/if}' => _ws('Similar to PHP if statements'),
-                '{foreach $a as $k => $v}...{foreachelse}...{/foreach}' => _ws('{foreach} is for looping over arrays of data'),
-            ),
-            'blocks' => $blocks
-        ), $this->getConfig()->getRootPath().'/wa-system/page/templates/Help.html');
-
+        $webasyst_cheat_sheet_helper = new webasystBackendCheatSheetActions();
+        return $webasyst_cheat_sheet_helper->cheatSheetAction();
     }
 
     /**
@@ -745,6 +678,19 @@ class waPageActions extends waActions
             $this->model = $this->getAppId().'PageModel';
         }
         return new $this->model();
+    }
+
+    /**
+     * @return waModel
+     */
+    protected function getDomainModel()
+    {
+        static $model;
+        if (!$model) {
+            $model = $this->getAppId().'DomainModel';
+            $model = new $model();
+        }
+        return $model;
     }
 
     protected function getView()

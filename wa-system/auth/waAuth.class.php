@@ -203,7 +203,8 @@ HTML;
 
                 $response = waSystem::getInstance()->getResponse();
                 // if remember
-                if (waRequest::post('remember')) {
+                $model = new waAppSettingsModel();
+                if (waRequest::post('remember') && $model->get('webasyst', 'rememberme', 1)) {
                     $cookie_domain = ifset($this->options['cookie_domain'], '');
                     $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, $cookie_domain, false, true);
                     $response->setCookie('remember', 1);

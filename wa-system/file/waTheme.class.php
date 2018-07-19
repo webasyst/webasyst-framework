@@ -24,7 +24,7 @@
  * @property string $parent_theme_id Parent theme ID
  * @property-read string $id
  * @property-read string $slug
- * @property-read string $author
+ * @property string $author
  * @property-read string $app
  * @property-read string $app_id
  * @property-read string $cover
@@ -274,20 +274,45 @@ class waTheme implements ArrayAccess
                         ksort($this->info['files']);
                     }
                     $this->info['settings'] = array();
+
                     if ($settings = $xml->{'settings'}) {
-                        /**
-                         * @var SimpleXMLElement $settings
-                         */
+                        $id=0;
+                        $settings_group = null;
+                        /** @var SimpleXMLElement $settings */
                         foreach ($settings->children() as $setting) {
-                            /**
-                             * @var SimpleXMLElement $setting
-                             */
-                            $var = (string)$setting['var'];
-                            $this->info['settings'][$var] = array(
+                            /** @var SimpleXMLElement $setting */
+                            $var = trim((string)$setting['var']);
+
+                            $s = array(
                                 'control_type' => isset($setting['control_type']) ? (string)$setting['control_type'] : 'text',
                                 'value'        => (string)$setting->{'value'},
                             );
-                            $s = &$this->info['settings'][$var];
+                            if ($s['control_type'] === 'group_divider') {
+                                $settings_group = $s['value'];
+                            }
+                            if ($var === '') {
+                                if ($s['control_type'] === 'group_divider') {
+                                    do {
+                                        $var = sprintf('group_divider_%d', $id++);
+                                    } while (isset($this->info['settings'][$var]));
+                                }
+
+                            } elseif (isset($this->info['settings'][$var])) {
+                                if (waSystemConfig::isDebug()) {
+                                    $message = sprintf("Duplicate setting's var property [%s] in theme.xml at %s ", $var, $this->path);
+                                    waLog::log($message, 'themes.log');
+                                }
+                                continue;
+                            }
+
+                            $s['group'] = $settings_group;
+                            if (is_int($settings_group)) {
+                                $s['level'] = max(0, $settings_group);
+                            } else {
+                                $s['level'] = strlen($settings_group) ? substr_count($settings_group, '/') + 1 : 0;
+                            }
+
+                            $this->info['settings'][$var] = &$s;
                             foreach ($setting->{'value'} as $value) {
                                 if ($value && ($locale = (string)$value['locale'])) {
                                     if (!is_array($s['value'])) {
@@ -495,7 +520,7 @@ class waTheme implements ArrayAccess
 <theme id="{$this->id}" system="0" vendor="unknown" author="unknown" app="{$this->app}" version="1.0.0" parent_theme_id="">
     <name locale="en_US">{$this->id}</name>
     <description locale="en_US">There's no description</description>
-    <files></files>
+    <files/>
     <about locale="en_US">There's no about</about>
 </theme>
 XML;
@@ -561,7 +586,7 @@ XML;
      * @param DOMNode $parent
      * @param string $name
      * @param string $value
-     * @return DOMElement
+     * @return DOMElement|DOMNode
      */
     private function &addNode($dom, $xpath, $parent, $name, $value = '')
     {
@@ -812,18 +837,14 @@ XML;
                                 $value_items = $xpath->query($query);
                             } elseif (!empty($this->info['settings'][$var]['changed'])) {
                                 $setting = $value_items->item(0)->parentNode;
-                                /**
-                                 * @var DOMElement $setting
-                                 */
+                                /** @var DOMElement $setting */
                                 $this->updateSetting($dom, $xpath, $setting, $this->info['settings'][$var]);
                                 unset($this->info['settings'][$var]['changed']);
                             }
                             $length = $value_items->length;
 
                             if ($length && ($value = $value_items->item(0))) {
-                                /**
-                                 * @var DOMElement $value
-                                 */
+                                /** @var DOMElement $value */
                                 if (ifset($this->settings[$var]['control_type']) == 'text') {
                                     $value->nodeValue = '';
                                     $value->appendChild(new DOMCdataSection(self::prepareField(ifempty($this->settings[$var]['value'], ''))));
@@ -905,9 +926,7 @@ XML;
                 );
             }
             foreach ($r as $er) {
-                /**
-                 * @var libXMLError $er
-                 */
+                /**@var libXMLError $er */
 
                 $level_name = '';
                 switch ($er->level) {
@@ -992,9 +1011,30 @@ XML;
             $instance->init();
             $instance->info['id'] = $id;
             $instance->changed['id'] = true;
-            foreach ($params as $param => $value) {
-                $instance[$param] = $value;
+
+            $description_fields = array(
+                'name',
+                'description',
+            );
+
+            foreach ($description_fields as $field) {
+                if (!empty($instance->info[$field])) {
+                    if (is_array($instance->info[$field])) {
+                        foreach ($instance->info[$field] as $locale => &$value) {
+                            $value = _ws('Copy').' '.$value;
+                            unset($value);
+                        }
+
+                    } else {
+                        $instance->info[$field] = _ws('Copy').' '.$instance->info[$field];
+                    }
+                }
             }
+
+            foreach ($params as $param => $value) {
+                $instance->{$param} = $value;
+            }
+
             $instance['system'] = false;
             $instance->save();
             return $instance;
@@ -1163,7 +1203,7 @@ XML;
 
     /**
      *
-     * Reset overriden theme changes
+     * Reset overridden theme changes
      * @return bool
      */
     public function reset()
@@ -1462,9 +1502,14 @@ HTACCESS;
             $this->changed['settings'] = array();
         }
         $this->getSettings();
+        $readonly_control_types = array(
+            'group_divider',
+            'help',
+        );
         foreach ($settings as $var => $value) {
             if (isset($this->settings[$var])) {
-                if (ifset($this->settings[$var]['value']) != $value) {
+                $readonly = in_array($this->settings[$var]['control_type'], $readonly_control_types);
+                if (!$readonly && (ifset($this->settings[$var]['value']) != $value)) {
                     $this->settings[$var]['value'] = $value;
                     $this->changed['settings'][$var] = true;
                 }
@@ -1674,6 +1719,7 @@ HTACCESS;
 
     /**
      * @param array $data
+     * @param string $locale
      * @return string
      */
     private static function getLocale($data = array(), $locale = null)
@@ -1726,7 +1772,7 @@ HTACCESS;
             }
             foreach ((array)$domains as $domain) {
                 $rules = $routing->getRoutes($domain);
-                foreach ($rules as $rule) {
+                foreach ($rules as $route => $rule) {
                     if (isset($rule['app'])) {
                         foreach ($theme_types as $type => $source) {
                             $id = isset($rule[$source]) ? $rule[$source] : 'default';
@@ -1744,7 +1790,8 @@ HTACCESS;
                                 'domain'  => $domain,
                                 'url'     => $rule['url'],
                                 'type'    => $type,
-                                'preview' => $routing->getUrlByRoute($rule, $domain)
+                                'route'   => $route,
+                                'preview' => $routing->getUrlByRoute($rule, $domain),
                             );
                         }
                     }

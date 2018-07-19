@@ -149,8 +149,8 @@ class waSessionStorage extends waStorage
     public function destroy()
     {
         self::$started = false;
-        session_unset();      
-        session_destroy();
+        session_unset();
+        @session_destroy();
     }
 
     public function __destruct()
