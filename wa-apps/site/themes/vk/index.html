@@ -68,9 +68,20 @@
     <!-- js -->
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <!-- vk iframe apps js -->
-    <script src="//vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
     <!-- internal shop-script js for vk iframe app integration -->
-    <script type="text/javascript" src="{$wa_theme_url}vk.js?v{$wa_theme_version}"></script>
+    <script type="text/javascript">
+        function inIframe () {
+            try {
+                return window.self !== window.top;
+            } catch (e) {
+                return true;
+            }
+        }
+        if (inIframe()) {
+            $.getScript( "//vk.com/js/api/xd_connection.js?2");
+            $.getScript( "{$wa_theme_url}vk.js?v{$wa_theme_version}");
+        }
+    </script>
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
     {/if}
@@ -79,6 +90,7 @@
     {include file="`$wa_active_theme_path`/head.html" inline}
 
     {$wa->head()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
+
 </head>
 <body id="{$wa_app}">
     <div id="header">
@@ -101,7 +113,7 @@
 
             <div id="vk_like" class="float-left" style="clear: none !important;"></div>
             <script type="text/javascript">
-                setTimeout(function (){ VK.Widgets && VK.Widgets.Like('vk_like', { width: 201, pageUrl: '{$wa->domainUrl()}' } )}, 0);
+                if (inIframe()) setTimeout(function (){ VK.Widgets && VK.Widgets.Like('vk_like', { width: 201, pageUrl: '{$wa->domainUrl()}' } )}, 0);
             </script>
 
             <div class="clear-both"></div>
