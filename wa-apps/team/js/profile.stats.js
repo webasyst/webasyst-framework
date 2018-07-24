@@ -326,6 +326,12 @@ var ProfileStatistic = ( function($) {
                     month = ( month < 10 ) ? "0" + month : month;
 
                     result = day + "." + month + "." + date.getFullYear();
+
+                    try {
+                        result = $.datepicker.formatDate(that.locales.dateFormat, date);
+                    } catch(e) {
+                        result = day + "." + month + "." + date.getFullYear();
+                    }
                 }
 
                 return result;

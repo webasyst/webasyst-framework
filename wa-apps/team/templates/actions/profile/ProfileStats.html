@@ -356,6 +356,7 @@
                 end_date: {if !empty($end_date)}{$end_date|json_encode}{else}false{/if},
                 contact_id: {$contact_id|json_encode},
                 locales: {
+                    dateFormat: "{waDateTime::getFormatJS('date')}",
                     months: [
                         "{_ws('January', 'January')}",
                         "{_ws('February', 'February', 1)}",

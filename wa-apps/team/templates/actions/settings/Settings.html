@@ -60,35 +60,6 @@
 
                     </div>
                 </div>
-
-                <div class="field">
-                    <div class="name">[`Maps`]</div>
-                    <div class="value">
-                        <div class="t-map-toggle" id="t-map-toggle"">
-                            <ul class="menu-v compact">
-                                <li class="t-item-wrapper">
-                                    <label>
-                                        <input class="t-input" type="radio" name="data[map][adapter]" value="google" {if $map_info.adapter == 'google'}checked="checked"{/if}>
-                                        <span class="t-name">[`Google Maps`]</span>
-                                    </label>
-                                    <div class="t-hidden-content" style="{if $map_info.adapter != 'google'}display: none;{/if}">
-                                        <span style="margin: 0 4px 0 0; vertical-align: middle;">[`Google Maps API key`]:</span>
-                                        <input type="text" name="data[map][settings][key]" value="{$map_info.settings.key|default:''}">
-                                        <div class="hint">
-                                            [`You need to <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">get a Key/Authentication</a> to use Google Maps JavaScript API`]
-                                        </div>
-                                    </div>
-                                </li>
-                                <li class="t-item-wrapper">
-                                    <label>
-                                        <input class="t-input" type="radio" name="data[map][adapter]" value="yandex" {if $map_info.adapter == 'yandex'}checked="checked"{/if}>
-                                        <span class="t-name">[`Yandex Maps`]</span>
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="field buttons">

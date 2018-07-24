@@ -5,6 +5,7 @@
 class teamAccessSaveActions extends waJsonActions
 {
     protected $id;
+    /** @var waContact */
     protected $contact;
 
     protected function preExecute()
@@ -88,6 +89,27 @@ class teamAccessSaveActions extends waJsonActions
         if (!$this->errors) {
             $this->contact['password'] = $password;
             $this->saveContact();
+        }
+    }
+
+    /** Managing user API tokens */
+    protected function apiAction()
+    {
+        $api_token_model = new waApiTokensModel();
+
+        $action = waRequest::post('action', null, waRequest::TYPE_STRING_TRIM);
+        $token_id = waRequest::post('token_id', null, waRequest::TYPE_STRING_TRIM);
+
+        $available_actions = array('remove');
+
+        if (!in_array($action, $available_actions)) {
+            return $this->errors[] = _w('Unknown action');
+        }
+
+        if ($action === 'remove' && !$token_id) {
+            return $this->errors[] = _w('Token not transferred');
+        } else {
+            return $api_token_model->deleteByField(array('contact_id' => $this->contact->getId(), 'token' => $token_id));
         }
     }
 

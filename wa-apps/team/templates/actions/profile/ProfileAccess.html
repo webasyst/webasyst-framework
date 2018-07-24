@@ -114,25 +114,28 @@
                     <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
                 {/if}
             </div>
-            {foreach $invite_tokens as $t}
-                <div class="value">
-                        <strong>[`Invitation sent`]</strong>
-                        <span class="hint">[`expires`] {$t.expire_datetime|wa_date:humandatetime}</span>
-                        {if $t.data}
-                            {$a = json_decode($t.data, true)}
-                            {if !empty($a.groups)}{strip}
-                                <br>
-                                {foreach $a.groups as $g_id}
-                                    {if isset($all_groups[$g_id])}
-                                        {$all_groups[$g_id]|escape}
-                                        {if !$g_id@last}
-                                            ,{/strip} {strip}
-                                        {/if}
-                                    {/if}
-                                {/foreach}
-                            {/strip}{/if}
-                        {/if}
 
+            {* Invite tokens *}
+            {foreach $invite_tokens as $_token}
+                <div class="value">
+                    <strong>[`Invitation sent`]</strong>
+                    <span class="hint">[`expires`] {$_token.expire_datetime|wa_date:humandatetime}</span>
+                    {if $_token.data}
+                        {$a = json_decode($_token.data, true)}
+                        {if !empty($_token.groups)}
+                            {strip}
+                            <br>
+                            {foreach $_token.groups as $g_id}
+                                {if isset($all_groups[$g_id])}
+                                    {$all_groups[$g_id]|escape}
+                                    {if !$g_id@last}
+                                        ,{/strip} {strip}
+                                    {/if}
+                                {/if}
+                            {/foreach}
+                        {/strip}
+                        {/if}
+                    {/if}
                 </div>
             {/foreach}
         </div>
@@ -284,6 +287,8 @@
 <div class="block not-padded">
     <div class="fields basic-user-fields" style="width:100%;">
         <div class="field-group">
+
+            {* Access *}
             <div class="field">
                 <div class="name">[`Access`]</div>
                 <div class="value">
@@ -343,7 +348,48 @@
                 </div>
             </div>
 
-            <div class="field c-shown-on-enabled" id="tc-customer-portal-filed"  style="{if $contact.is_user === '-1'}display:none;{/if}">
+            {* Api tokens *}
+            {if $is_superadmin && !empty($api_tokens)}
+                <div class="field c-shown-on-enabled" id="tc-api-tokens-filed">
+                    <div class="name">[`API tokens`]</div>
+                    <div class="value">
+                        <table class="zebra js-api-tokens-list" style="max-width: 700px;">
+                            <thead style="font-size: 11px; color: #777; text-transform: uppercase; font-weight: bold;">
+                                <tr class="white">
+                                    <td class="tc-column"></td>
+                                    <td class="tc-column-date">[`Create data`]</td>
+                                    <td class="tc-column-client-id">[`Client id`]</td>
+                                    <td class="tc-column-scope">[`Scope`]</td>
+                                    <td class="tc-column-expires">[`Expires`]</td>
+                                    <td class="tc-column-remove"></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach $api_tokens as $_token}
+                                    <tr class="js-token-item" data-token="{$_token.token|escape}">
+                                        <td class="tc-column"></td>
+                                        <td class="tc-column-date">{$_token.create_datetime|wa_date:humandatetime}</td>
+                                        <td class="tc-column-client-id">{$_token.client_id|escape}</td>
+                                        <td class="tc-column-scope">
+                                            {foreach $_token.installed_apps as $_app}
+                                                <img src="/{$_app.img}" title="{$_app.name|escape}" style="width: 16px; height: 16px;" />
+                                            {/foreach}
+                                            {foreach $_token.not_installed_apps as $_app}
+                                                <span style="color: #999;">{$_app|escape}{if !$_app@last},{/if}</span>
+                                            {/foreach}
+                                        </td>
+                                        <td class="tc-column-expires">{if !empty($_token.expires)}{$_token.expires|wa_date:humandatetime}}{else}<span style="color: #999;">—</span>{/if}</td>
+                                        <td class="tc-column-remove"><a href="#" title="[`Remove token`]" class="js-remove-api-token" style="display: inline-block;"><i class="icon16 no"></i></a></td>
+                                    </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {/if}
+
+            {* Customer portal *}
+            <div class="field c-shown-on-enabled" id="tc-customer-portal-filed" style="{if $contact.is_user === '-1'}display:none;{/if}">
                 <div class="name">[`Customer portal`]</div>
                 <div class="value">
                     {if $personal_portal_available}
@@ -359,6 +405,25 @@
                     </span>
                 </div>
             </div>
+
+            <div class="field c-shown-on-enabled" id="tc-email-change-log" style="{if $contact.is_user === '-1' || !$email_change_log}display:none;{/if}">
+                <div class="name">[`Email change history`]</div>
+                <div class="value">
+                    <ul class="menu-v">
+                        {foreach $email_change_log as $log_item}
+                            <li data-id="{$log_item.id}">
+                                <div>
+                                    {$log_item.datetime|wa_date:'humandatetime'}
+                                </div>
+                                <div>
+                                    {$log_item.emails|join:', '}
+                                </div>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -366,6 +431,8 @@
 <div class="clear-left"></div>
 
 </div> {* .block.double-padded *}
+
+<div id="tc-api-dialog"></div>
 
 <link href="{$wa_app_static_url}css/team.css?{$wa->version()}" rel="stylesheet"/>
 <script>
@@ -389,11 +456,14 @@
                 contact_no_access: {(int)(boolean)$noAccess},
                 contact_groups_no_access: {(int)(boolean)$gNoAccess},
 
+                url_change_api_token: {json_encode($url_change_api_token)},
+
                 loc: {
                     "Passwords do not match.": "[`Passwords do not match.`]",
                     "Login is required.": "[`Login is required.`]",
                     "cancel": "[`cancel`]",
-                    "Save": "[`Save`]"
+                    "Save": "[`Save`]",
+                    "remove_ask": "[`The user will not be able to send API requests using this token.`]"
                 }
             });
         });

@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -27,6 +27,18 @@ msgstr "Изменить фото"
 
 msgid "@"
 msgstr "в"
+
+msgid "Total:"
+msgstr "Всего:"
+
+msgid "Page:"
+msgstr "Страницы:"
+
+msgid "next"
+msgstr "следующия"
+
+msgid "prev"
+msgstr "предыдущая"
 
 msgid "Password"
 msgstr "Пароль"
@@ -153,6 +165,30 @@ msgstr "изменить логин"
 
 msgid "Belongs to groups"
 msgstr "Принадлежит к группам"
+
+msgid "API tokens"
+msgstr "Токены API"
+
+msgid "No API tokens"
+msgstr "Нет API токенов"
+
+msgid "Create data"
+msgstr "Дата создания"
+
+msgid "Client id"
+msgstr "Идентификатор клиента"
+
+msgid "Scope"
+msgstr "Доступ"
+
+msgid "Expires"
+msgstr "Истекает"
+
+msgid "Remove token"
+msgstr "Удалить токен"
+
+msgid "The user will not be able to send API requests using this token."
+msgstr "Пользователь не сможет отправлять запросы API, используя этот токен."
 
 msgid "&lt;no name&gt;"
 msgstr "&lt;без названия&gt;"
@@ -568,22 +604,6 @@ msgstr "Добавить календарь"
 #: /wa-apps/team/templates/actions/settings/Settings.html:47
 msgid "User name format"
 msgstr "Формат имени пользователя"
-
-#: /wa-apps/team/templates/actions/settings/Settings.html:65
-msgid "Maps"
-msgstr "Карты"
-
-#: /wa-apps/team/templates/actions/settings/Settings.html:72
-msgid "Google Maps"
-msgstr "Карты Google"
-
-#: /wa-apps/team/templates/actions/settings/Settings.html:75
-msgid "Google Maps API key"
-msgstr "API key карт Google"
-
-#: /wa-apps/team/templates/actions/settings/Settings.html:85
-msgid "Yandex Maps"
-msgstr "Яндекс.Карты"
 
 #: /wa-apps/team/templates/actions/users/Users.html:45
 msgid "No users."
@@ -1377,9 +1397,6 @@ msgstr "Чтобы добавить пользователя в группу %s,
 msgid "show %s weeks"
 msgstr "показать %s недель"
 
-msgid "You need to <a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\" target=\"_blank\">get a Key/Authentication</a> to use Google Maps JavaScript API"
-msgstr "Для использования JavaScript API карт Google необходимо <a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\" target=\"_blank\">получить ключ авторизации</a>"
-
 msgid "Use <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Plugins</i></b></a> section to install plugin you need."
 msgstr "Используйте раздел <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Плагины</i></b></a> для установки необходимых плагинов."
 
@@ -1507,3 +1524,6 @@ msgstr ""
 #: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:105
 msgid "Plugin not found"
 msgstr ""
+
+msgid "name@company.com"
+msgstr "name@company.ru"

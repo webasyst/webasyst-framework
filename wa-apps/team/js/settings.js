@@ -8,7 +8,6 @@ var SettingsPage = ( function($) {
         // DOM
         that.$wrapper = options["$wrapper"];
         that.$calendarToggle = that.$wrapper.find("#t-calendar-settings");
-        that.$mapToggle = that.$wrapper.find("#t-map-toggle");
         that.$form = that.$wrapper.find("form");
         that.$submitButton = that.$form.find("input[type=\"submit\"]");
 
@@ -47,20 +46,6 @@ var SettingsPage = ( function($) {
         that.$calendarToggle.on("click", ".js-add-calendar", function(event) {
             event.preventDefault();
             that.showEditDialog();
-        });
-
-        that.$mapToggle.on("change", "input:radio", function() {
-            var $input = $(this),
-                is_checked = ($input.attr("checked") == "checked");
-
-            if (is_checked) {
-                that.$mapToggle.find(".t-hidden-content").hide();
-
-                var $hiddenBlock = $input.closest("li").find(".t-hidden-content");
-                if ($hiddenBlock.length) {
-                    $hiddenBlock.show();
-                }
-            }
         });
 
         that.$form.on("submit", function(event) {

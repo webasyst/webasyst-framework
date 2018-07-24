@@ -16,7 +16,6 @@ class teamSettingsAction extends teamContentViewAction
             'calendars' => teamCalendar::getCalendars(false),
             'users' => teamHelper::getUsers(),
             'user_name_formats' => $this->getUserNameFormats(),
-            'map_info' => $this->getSettingsModel()->getMapInfo()
         ));
     }
 
