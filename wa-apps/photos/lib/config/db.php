@@ -63,7 +63,7 @@ return array(
         'title' => array('varchar', 255, 'null' => 0, 'default' => ''),
         'url' => array('varchar', 255),
         'full_url' => array('varchar', 255),
-        'content' => array('text', 'null' => 0),
+        'content' => array('mediumtext', 'null' => 0),
         'create_datetime' => array('datetime', 'null' => 0),
         'update_datetime' => array('datetime', 'null' => 0),
         'create_contact_id' => array('int', 11, 'null' => 0),
