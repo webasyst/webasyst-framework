@@ -1,6 +1,6 @@
 {$_title = "[`Email`] — {$wa->accountName()}"}
 {function name="_renderConfig" key=key config=[] is_template=is_template}
-    {$_transport = $config.type|default:null}
+    {$_transport = $config.type|default:mail}
     {$_rand = rand()}
     {strip}
         <div class="s-item {if $is_template}js-template{else}js-item{/if}">
@@ -49,7 +49,7 @@
                 </div>
                 {* MAIL PARAMS *}
                 {if isset($available_transports.mail)}
-                    <div class="s-params js-params js-mail-params"{if $_transport != 'mail'} style="display:none"{/if}>
+                    <div class="s-params js-params js-mail-params"{if $_transport !== 'mail'} style="display:none"{/if}>
                         <div class="field">
                             <div class="name">[`Options`]</div>
                             <div class="value">

@@ -122,7 +122,7 @@ class siteSettingsSaveController extends waJsonController
             }
 
             if (!empty($cdns[0])) {
-                $domain_config['cdn'] = $cdn_list[0];
+                $domain_config['cdn'] = $cdns[0];
                 $domain_config['cdn_list'] = $cdns;
                 $save_config = true;
             } elseif (!empty($domain_config['cdn']) || !empty($domain_config['cdn_list'])) {
