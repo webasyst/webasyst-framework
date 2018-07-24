@@ -18,7 +18,7 @@ class blogFrontendPreviewTemplateAction extends blogViewAction
             $blog_id = waRequest::request('blog_id', 0, 'int');
         }
 
-        $this->setLayout(new blogFrontendLayout());
+        $this->setLayout(new blogPreviewLayout());
 
         // Get contact id and name as post author
         if (wa()->getUser()->get('is_user')) {
@@ -49,6 +49,9 @@ class blogFrontendPreviewTemplateAction extends blogViewAction
             'link' => '',
         ));
 
+        //because historically all themes design waiting escaped user name
+        $post["user"]["name"] = htmlspecialchars($post["user"]["name"]);
+
         $this->getResponse()->setTitle(_w('Preview'));
         $this->getResponse()->setMeta('keywords', '');
         $this->getResponse()->setMeta('description', '');
@@ -70,13 +73,6 @@ class blogFrontendPreviewTemplateAction extends blogViewAction
             'auth_adapters' => wa()->getAuthAdapters(),
             'post' => $post,
         ));
-    }
-
-    public function display($clear_assign = false)
-    {
-        $result = parent::display($clear_assign);
-        $result = str_replace('%replace-with-real-post-title%', '<span class="replace-with-real-post-title"></span>', $result);
-        return $result;
     }
 
     public function getScripts()

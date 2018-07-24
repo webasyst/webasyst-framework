@@ -1326,16 +1326,17 @@
                             lang: wa_lang,
                             imageUpload: '?action=upload&r=2&absolute=1',
                             imageUploadFields: $textarea.data('uploadFields'),
-
-                            changeCallback: function() {
-                                if ($postpublish_edit.is(':visible')) {
-                                    $postpublish_edit.removeClass('green').addClass('yellow');
+                            callbacks: {
+                                change: function () {
+                                    if ($postpublish_edit.is(':visible')) {
+                                        $postpublish_edit.removeClass('green').addClass('yellow');
+                                    }
+                                    if ($save_button.is(':visible')) {
+                                        $save_button.removeClass('green').addClass('yellow');
+                                    }
+                                    // Make sure sticky bottom buttons behave correctly when height of an editor changes
+                                    $window.scroll();
                                 }
-                                if ($save_button.is(':visible')) {
-                                    $save_button.removeClass('green').addClass('yellow');
-                                }
-                                // Make sure sticky bottom buttons behave correctly when height of an editor changes
-                                $window.scroll();
                             }
                         }, (options || {}));
 
@@ -1343,6 +1344,12 @@
                             imageUploadError: function(json) {
                                 console.log('imageUploadError', json);
                                 alert(json.error);
+                            },
+                            syncClean: function (html) {
+                                // Unescape '->' in smarty tags
+                                return html.replace(/\{[a-z\$'"_\(!+\-][^\}]*\}/gi, function (match) {
+                                    return match.replace(/-&gt;/g, '->');
+                                });
                             },
                             syncBefore: function (html) {
                                 html = html.replace(/{[a-z$][^}]*}/gi, function (match, offset, full) {
