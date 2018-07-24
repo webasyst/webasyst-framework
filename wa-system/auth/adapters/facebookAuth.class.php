@@ -51,16 +51,21 @@ class facebookAuth extends waOAuth2Adapter
         $response = $this->get($url);
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
-                throw new waException($response['error']['message'], $response['error']['code']);
+                waLog::dump(
+                    'Error fetching facebook user info by token',
+                    $response,
+                    'auth.log'
+                );
+                return array();
             }
             $data = array(
-                'source' => 'facebook',
+                'source'    => 'facebook',
                 'source_id' => $response['id'],
-                'url' => $response['link'],
-                'name' => $response['name'],
+                'url'       => $response['link'],
+                'name'      => $response['name'],
                 'firstname' => $response['first_name'],
-                'lastname' => $response['last_name'],
-                'locale' => $response['locale'],
+                'lastname'  => $response['last_name'],
+                'locale'    => $response['locale'],
             );
             if (!empty($response['picture']) && isset($response['picture']['data']['url'])) {
                 $data['photo_url'] = self::API_URL."me/picture?access_token=".$token."&type=normal";
@@ -75,5 +80,4 @@ class facebookAuth extends waOAuth2Adapter
         }
         return array();
     }
-
 }

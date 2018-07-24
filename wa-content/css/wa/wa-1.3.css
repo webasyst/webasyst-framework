@@ -77,7 +77,7 @@ fieldset p input[type="text"] { width:98%; }
 fieldset p select { width:99%; }
 blockquote { color: rgba(0,0,0,.6); font-size:0.9em; border-left: 1px solid rgba(0,0,0,.1); padding: 8px 0 8px 24px; background: #eee; }
 blockquote cite { font-size:.9em; }
-p { line-height: 1.5em; font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; }
+p { line-height: 1.5em; font-family: "Trebuchet MS", "Helvetica Neue", Helvetica, Tahoma, sans-serif; }
 p a, blockquote a, ul a, ol a { text-decoration: underline; }
 
 /* Webasyst backend UI common elements & header

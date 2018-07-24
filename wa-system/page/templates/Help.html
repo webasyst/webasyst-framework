@@ -106,6 +106,10 @@
 {if !empty($blocks)}
     <div id="wa-helper-blocks-{$name}-content" class="tab-content wa-cheatsheet-dropdown-content" {if $show_body_flag}style="display:none"{/if}>
         <div class="fields">
+            <div class="field">
+                <div class="name"><a href="#" class="inline-link"><b><i>{literal}{{/literal}$wa->block(<em>'id', $params=[]'</em>){literal}}{/literal}</i></b></a></div>
+                <div class="value"><span class="hint">[`<strong>id</strong>: block ID.<br><strong>$params</strong>: associative array of additional parameters passed to a block (example: <code>['myparam' => 100]</code>). A parameter is available by its name as a Smarty variable within a block (example: <code>$myparam</code>).`]</span></div>
+            </div>
             {foreach $blocks as $block_id => $b}
                 <div class="field">
                     <div class="name"><a href="#" class="inline-link"><b><i>{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</i></b></a></div>

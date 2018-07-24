@@ -285,7 +285,10 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
     {
         // TODO: Try to refactor this logic
 
-        $compoundLevel = isset($compoundLevel) ? $compoundLevel : $this->_getCompoundLevel($children);
+        $compoundLevel = isset($compoundLevel)
+            ? $compoundLevel
+            : $this->_getCompoundLevel($children)
+            ;
 
         $immediateChildren = array();
         $grandchildren = array();
@@ -316,7 +319,9 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
             // Determine which composite media type is needed to accommodate the
             // immediate children
             foreach ($this->_compositeRanges as $mediaType => $range) {
-                if ($lowestLevel > $range[0] && $lowestLevel <= $range[1]) {
+                if ($lowestLevel > $range[0]
+                    && $lowestLevel <= $range[1])
+                {
                     $newContentType = $mediaType;
                     break;
                 }

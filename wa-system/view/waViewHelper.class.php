@@ -1069,7 +1069,15 @@ HTML;
         if (!$token && $code) {
             $token = $auth->getAccessToken($code);
         }
-        $data = $auth->getUserData($token);
+
+        try {
+            $data = $auth->getUserData($token);
+        } catch (waException $e) {
+            return false;
+        }
+        if (empty($data)) {
+            return false;
+        }
 
         if (wa()->getUser()->getId()) {
             wa()->getUser()->save(array(
