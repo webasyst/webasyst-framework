@@ -31,8 +31,10 @@ class waNet
     protected $user_agent = 'Webasyst Framework';
     protected $accept_cookies = false;
     protected $cookies = null;
+    protected $default_request_headers = array();
     protected $request_headers = array();
-    protected $options = array(
+    protected $options = array();
+    protected $default_options = array(
         'timeout'             => 15,
         'format'              => null,
         'request_format'      => null,
@@ -83,11 +85,29 @@ class waNet
         $this->user_agent = sprintf('Webasyst-Framework/%s', wa()->getVersion('webasyst'));
         //TODO read proxy settings from generic config
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $this->options['verify'] = false;
-        }
+        $this->_reset();
+
         $this->options = array_merge($this->options, $options);
         $this->request_headers = array_merge($this->request_headers, $custom_headers);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     */
+    function __get($name)
+    {
+        if(!in_array($name, array('options', 'request_headers'))) {
+            $trace = debug_backtrace();
+            trigger_error(
+                'Undefined property via __get(): ' . $name .
+                ' in ' . $trace[0]['file'] .
+                ' on line ' . $trace[0]['line'],
+                E_USER_NOTICE);
+            return null;
+        }
+
+        return $this->$name;
     }
 
     /**
@@ -412,6 +432,37 @@ class waNet
         return $this->response_header;
     }
 
+    /**
+     * @param array $options
+     * @return waNet $this
+     */
+    public function options(array $options)
+    {
+        $this->options = array_merge($this->options, $options);
+        return $this;
+    }
+
+    /**
+     * @param array $headers
+     * @return waNet $this
+     */
+    public function requestHeaders(array $headers)
+    {
+        $this->request_headers = array_merge($this->request_headers, $headers);
+        return $this;
+    }
+
+    /**
+     * Chainable method to reset all setting, options, cookies, headers to their default values
+     *
+     * @return waNet $this
+     */
+    public function reset()
+    {
+        $this->_reset();
+        return $this;
+    }
+
     protected function parseHeader($http_response_header)
     {
         foreach ($http_response_header as $header) {
@@ -424,6 +475,18 @@ class waNet
                     $this->response_header['http_code'] = intval($out[1]);
                 }
             }
+        }
+    }
+
+    protected function _reset()
+    {
+        $this->accept_cookies=false;
+        $this->cookies=null;
+        $this->request_headers = $this->default_request_headers;
+        $this->options = $this->default_options;
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->options['verify'] = false;
         }
     }
 
