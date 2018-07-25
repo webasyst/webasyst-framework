@@ -63,22 +63,22 @@ HELP;
             }
         } else {
             $this->app_id = (array)$this->app_id;
-            foreach ($this->app_id as $app_id) {
-                if ($info = wa()->getAppInfo($app_id)) {
-                    if (empty($info['themes'])) {
-                        $errors['themes'] = "Application '{$this->app_id}' doesn't support themes";
-                    } else {
-                        if (empty($info['frontend'])) {
-                            $errors['app_id'] = "Application {$this->app_id} doesn't support frontend";
-                        }
-                    }
-                    $this->app_id = array($this->app_id);
+        }
+        foreach ($this->app_id as $app_id) {
+            if ($info = wa()->getAppInfo($app_id)) {
+                if (empty($info['themes'])) {
+                    $errors['themes'] = "Application '{$this->app_id}' doesn't support themes";
                 } else {
-                    $errors['app_id'] = "Application not found";
+                    if (empty($info['frontend'])) {
+                        $errors['app_id'] = "Application {$this->app_id} doesn't support frontend";
+                    }
                 }
-                if (!empty($errors['app_id'])) {
-                    break;
-                }
+                $this->app_id = (array)$this->app_id;
+            } else {
+                $errors['app_id'] = "Application not found";
+            }
+            if (!empty($errors['app_id'])) {
+                break;
             }
         }
     }
@@ -105,10 +105,10 @@ HELP;
     protected function fillThemeData($params)
     {
         $data = array(
-            'vendor'      => ifempty($params['vendor'], $this->getDefaults('vendor')),
-            'author'      => ifempty($params['author'], $this->getDefaults('author')),
-            'version'     => ifempty($params['version'], $this->getDefaults('version')),
-            'name'        => ifempty($params['name'], $this->getDefaults('name'), $this->theme_id),
+            'vendor'      => ifempty($params, 'vendor', $this->getDefaults('vendor')),
+            'author'      => ifempty($params, 'author', $this->getDefaults('author')),
+            'version'     => ifempty($params, 'version', $this->getDefaults('version')),
+            'name'        => ifempty($params, 'name', $this->getDefaults('name')),
             'description' => '',
             'about'       => '',
         );
@@ -267,7 +267,7 @@ HELP;
         /** @var waTheme|string[] $themes */
         foreach ($themes as $app_id => $theme) {
             if ($theme instanceof waTheme) {
-                print "Theme created: %s@%s\n";
+                print "Theme created:\n";
                 print sprintf("\tapp_id: %s\n", $app_id);
                 print sprintf("\tpath: %s\n", $theme->path);
                 print sprintf("\tversion: %s\n", $theme->version);

@@ -411,6 +411,7 @@ class waPageActions extends waActions
         // Get Domain
         if (!empty($data['parent_id'])) {
             $parent = $this->getPage($data['parent_id']);
+            $domain = (!empty($parent['domain'])) ? $parent['domain'] : null;
             $page_url = ($parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '') . $page_url;
         }
 
@@ -441,8 +442,8 @@ class waPageActions extends waActions
             $route = $page['route'];
         }
 
-        if (!isset($domain) || empty($domain)) throw new waException(_ws('Unknown page domain'));
-        if (!isset($route) || empty($route)) throw new waException(_ws('Unknown page route'));
+        if (empty($domain)) throw new waException(_ws('Unknown page domain'));
+        if (empty($route)) throw new waException(_ws('Unknown page route'));
 
         $page_url = str_replace('*', '', $route) . $page_url;
         $domain_routes = wa()->getRouting()->getRoutes($domain);

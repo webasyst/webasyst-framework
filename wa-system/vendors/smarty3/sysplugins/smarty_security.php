@@ -230,6 +230,7 @@ class Smarty_Security {
      */
     public function isTrustedPhpFunction($function_name, $compiler)
     {
+        $function_name = strtolower($function_name);
         $unsafe = in_array($function_name, $this->php_functions);
         if (!$unsafe) {
             foreach($this->php_function_masks as $mask) {

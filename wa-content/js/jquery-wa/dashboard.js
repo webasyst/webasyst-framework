@@ -1203,17 +1203,14 @@ var DashboardWidget;
                     }
                 }
 
-            } else {
+            }
 
-                // ситуация 1x1 + 2x1, кинули в сегмент 2
-                if (groupData.widgetsArray.length === 2 && ( group_segment === 2 ) && groupData.widgetsArray[0].widget_size.width === 1) {
 
-                    side = "after";
-                    target = groupData.widgetsArray[0].$widget_wrapper;
-
-                    //console.log("Случай 1х1 + 2х1, кидаем во 2й сегмент");
-                }
-
+            // ситуация 1x1 + 2x1, кинули в сегмент 2
+            if (groupData.widgetsArray.length === 2 && groupData.widgetsArray[0].widget_size.width === 1 && groupData.widgetsArray[1].widget_size.width === 2) {
+                side = "after";
+                target = groupData.widgetsArray[0].$widget_wrapper;
+                //console.log("Случай 1х1 + 2х1, кидаем во 2й сегмент");
             }
 
             dropArea.side = side;
