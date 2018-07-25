@@ -188,7 +188,7 @@
                 <div class="field">
                     <div class="name">[`Custom parameters`]</div>
                     <div class="value">
-                        <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
+                        <textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private', 'ssl', 'ssl_all', 'disabled')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
 
 {/if}{/foreach}</textarea>
                         <br />
@@ -199,13 +199,13 @@
                     <div class="field-group">
                         <div class="field">
                             <div class="name">[`Custom text`]</div>
-                            <div class="value"><textarea name="params[static_content]" placeholder="Текст, отдаваемый при запросе данного урла">{$route.static_content|default:''|escape}</textarea></div>
+                            <div class="value"><textarea name="params[static_content]" placeholder="[`Text to be returned at specified URL`]">{$route.static_content|default:''|escape}</textarea></div>
                         </div>
                         <div class="field">
-                            <div class="name">[`Content-type`]</div>
+                            <div class="name">[`Content type`]</div>
                             <div class="value">
                                 <select name="params[static_content_type]">
-                                    <option value=""{if empty($route.static_content_type)} selected{/if}></option>
+                                    <option value=""{if empty($route.static_content_type)} selected{/if}>[`file`]</option>
                                     <option value="text/plain" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/plain')} selected{/if}>text/plain</option>
                                     <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>text/html</option>
                                 </select>
@@ -320,6 +320,11 @@ $(function () {
             });
         }
         $(this).prev().attr('src', "{$wa_url}" + $(this).find(':selected').attr('data-img')).show();
+        if ($(this).val() == ":text") {
+            $(this).prev().attr('style', 'width: 16px; height: 16px;');
+        } else {
+            $(this).prev().removeAttr('style');
+        }
     });
 
     $("a.s-route-delete").click(function () {

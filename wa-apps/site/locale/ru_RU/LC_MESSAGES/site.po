@@ -1618,3 +1618,18 @@ msgstr "Очистить кеш"
 
 msgid "CDN address"
 msgstr "Адрес CDN"
+
+msgid "Custom text"
+msgstr "Произвольный текст"
+
+msgid "Text to be returned at specified URL"
+msgstr "Текст, который должен быть доступен по указанному URL"
+
+msgid "Content type"
+msgstr "Тип содержимого"
+
+msgid "file"
+msgstr "файл"
+
+msgid "Port"
+msgstr "Порт"

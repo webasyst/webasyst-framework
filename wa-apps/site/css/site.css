@@ -176,7 +176,7 @@ table.s-settings-apps td.s-app { vertical-align: middle; width: 230px; }
 .s-route-core a.back { background: #e3e3e3; top: -2px; }
 .s-route-core img { width: 24px; height: 24px; margin-left: 6px; margin-right: 4px; position: relative; top: 4px; }
 .s-route-core h3 {font-size: 1.3em; display: inline-block; float: left\9; color: #000; }
-.s-route-core select { position: relative; top: -2px; }
+.s-route-core select { position: relative; }
 .s-route-core .s-route-block#s-route-where input { max-width: 160px; margin-right: 5px; }
 .s-route-core .s-route-block#s-route-to input { min-width: 300px; }
 

@@ -362,6 +362,9 @@
     });
 
     $("#s-settings-form").submit(function () {
+        //Remove notification indicator
+        $('#wa-app-site').find('.indicator').remove();
+
         $("#s-settings-iframe").one('load', function () {
             var response = $.parseJSON($(this).contents().find('body').html());
             if (response.status == 'ok') {

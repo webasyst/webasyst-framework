@@ -156,10 +156,11 @@ class siteSettingsSaveController extends waJsonController
                 $save_config = true;
             }
 
-
             //Delete cache problem domains
             $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
             $cache_domain->delete();
+            //Remove notification
+            wa()->getStorage()->del('apps-count');
 
             if ($save_config && !waUtils::varExportToFile($domain_config, $domain_config_path)) {
                 $this->errors = sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
@@ -178,7 +179,7 @@ class siteSettingsSaveController extends waJsonController
         $this->logAction('site_edit', $domain);
 
         $event_params = $domain_model->getById(siteHelper::getDomainId()) + array(
-            'routes' => $routes[$url],
+            'routes' => ifset($routes, $url, null),
         ) + $event_params;
         /**
          * @event domain_save

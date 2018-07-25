@@ -98,7 +98,7 @@ class siteConfig extends waAppConfig
     {
         $routing_errors = $this->getRoutingErrors();
 
-        if ($routing_errors) {
+        if ($routing_errors && empty($routing_errors['all_domains_error_report_disabled'])) {
             return '!';
         }
         return null;
@@ -134,6 +134,10 @@ class siteConfig extends waAppConfig
                     $valid_app[$app_id] = true;
                 }
             }
+
+            // If there are no domains with error reporting on,
+            // we will not report unsettled apps, too.
+            $all_domains_error_report_disabled = true;
 
             foreach ($routes as $domain_name => $settlements) {
                 if (empty($settlements) || !is_array($settlements)) {
@@ -181,13 +185,16 @@ class siteConfig extends waAppConfig
                     continue;
                 }
 
-                //Save problem url count
-                if ($tmp_incorrect_app && count($tmp_incorrect_app) > 0 && empty($domain_config['url_notification'])) {
-                    $error_domains_data['apps'][$domain_id]['incorrect'] = $tmp_incorrect_app;
+                // url_notification == false means __checked__ box in domain settings
+                // "Show a notification on Site’s icon in the main menu, if there are errors in the site structure."
+                if (empty($domain_config['url_notification'])) {
+                    $all_domains_error_report_disabled = false;
                 }
-
-                if (!empty($error_domains_data[$domain_id])) {
-                    //$error_domains_data[$domain_id]['domain_name'] = $domain_name;
+                //Save problem url count
+                if ($tmp_incorrect_app && count($tmp_incorrect_app) > 0) {
+                    $error_domains_data['apps'][$domain_id]['incorrect'] = $tmp_incorrect_app;
+                    //$error_domains_data['apps'][$domain_id]['report_enabled'] = empty($domain_config['url_notification']);
+                    //$error_domains_data['apps'][$domain_id]['domain_name'] = $domain_name;
                 }
             }
 
@@ -195,6 +202,10 @@ class siteConfig extends waAppConfig
             if (!empty($valid_app)) {
                 //array_keys Need for the same format
                 $error_domains_data['not_install'] = array_keys($valid_app);
+            }
+
+            if ($error_domains_data) {
+                $error_domains_data['all_domains_error_report_disabled'] = $all_domains_error_report_disabled;
             }
         }
 
