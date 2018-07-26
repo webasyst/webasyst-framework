@@ -405,12 +405,23 @@ class waAppConfig extends SystemConfig
 
     public function install()
     {
+        // Create database scheme
         $file_db = $this->getAppPath('lib/config/db.php');
         if (file_exists($file_db)) {
             $schema = include($file_db);
             $model = new waModel();
             $model->createSchema($schema);
         }
+
+        // Mark localization files as recently changed.
+        // This forces use of PHP localization adapter that does not get stuck in apache cache.
+        $all_files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getAppPath('locale')));
+        $po_files = new RegexIterator($all_files, '~(\.po)$~i');
+        foreach($po_files as $f) {
+            @touch($f->getPathname());
+        }
+
+        // Installation script of the app
         $file = $this->getAppConfigPath('install');
         if (file_exists($file)) {
             $app_id = $this->application;
