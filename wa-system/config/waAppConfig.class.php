@@ -415,10 +415,13 @@ class waAppConfig extends SystemConfig
 
         // Mark localization files as recently changed.
         // This forces use of PHP localization adapter that does not get stuck in apache cache.
-        $all_files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getAppPath('locale')));
-        $po_files = new RegexIterator($all_files, '~(\.po)$~i');
-        foreach($po_files as $f) {
-            @touch($f->getPathname());
+        $locale_path = $this->getAppPath('locale');
+        if (file_exists($locale_path)) {
+            $all_files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($locale_path));
+            $po_files = new RegexIterator($all_files, '~(\.po)$~i');
+            foreach($po_files as $f) {
+                @touch($f->getPathname());
+            }
         }
 
         // Installation script of the app

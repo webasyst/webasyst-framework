@@ -119,7 +119,7 @@ class waRequest
      * Returns the contents of the GET request.
      *
      * @param string|null $name GET request field name. If empty, entire contents of the GET request are returned.
-     * @param string|null $default The default value, which is returned if no value is found for the request field
+     * @param string|int|array|null $default The default value, which is returned if no value is found for the request field
      *     specified in $name parameter.
      * @param string|null $type Data type to which the cookie record value must be converted, specified by means of one
      *     of TYPE_* constants:

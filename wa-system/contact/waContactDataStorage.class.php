@@ -156,15 +156,15 @@ class waContactDataStorage extends waContactStorage
 
         if ($data) {
 
-            // float with ',' convert to string with '.'
-
+            $max_length = $this->getMaxValueLength();
             foreach ($data as $f => &$f_rows) {
                 foreach ($f_rows as $s => &$row) {
                     if (isset($row['value']) && is_float($row['value'])) {
+                        // float with ',' convert to string with '.'
                         $row['value'] = str_replace(',', '.', ('' . $row['value']));
                     }
-                    if(strlen($row['value']) > 255) {
-                        $row['value'] = substr($row['value'], 0, 255);
+                    if(mb_strlen($row['value']) > $max_length) {
+                        $row['value'] = mb_substr($row['value'], 0, $max_length);
                     }
                 }
                 unset($row);
@@ -199,6 +199,20 @@ class waContactDataStorage extends waContactStorage
             }
         }
         return true;
+    }
+
+    protected function getMaxValueLength()
+    {
+        // Determine max string length
+        // (some people change wa_contact_data value type to TEXT and suffer degraded performance)
+        $field_schema = ifset(ref($this->getModel()->getMetadata()), 'value', array());
+        $field_type = strtolower(ifset($field_schema, 'type', ''));
+        if ($field_type === 'varchar') {
+            return ifset($field_schema, 'params', 255);
+        } else if ($field_type === 'text') {
+            return 65535;
+        }
+        return 255;
     }
 
     public function deleteAll($fields, $type=null) {
