@@ -188,7 +188,7 @@ class waCSV
             fclose($h);
             
             // Hack for fast count strings.
-            $file = new SplFileObject($this->file, 'r');
+            $file = new SplFileObject($this->file);
             $file->setFlags(
                 SplFileObject::READ_CSV | SplFileObject::READ_AHEAD 
                 | SplFileObject::SKIP_EMPTY | SplFileObject::DROP_NEW_LINE
