@@ -52,7 +52,7 @@ class waLogModel extends waModel
 
     public function getLogs($where = array())
     {
-        $where_string = "l.action != 'login' AND l.action != 'logout'";
+        $where_string = "l.action != 'login' AND l.action != 'logout' AND l.action != 'login_failed'";
         if (!empty($where['max_id'])) {
             $where_string .= ' AND l.id < '.(int)$where['max_id'];
             unset($where['max_id']);

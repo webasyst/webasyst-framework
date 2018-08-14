@@ -35,7 +35,7 @@
                                 <li class="no-icon 3{if $current_url == $_url} selected{/if}" {if !empty($r._routing_url)}data-routing="{$r._routing_url}"{/if}>
                                     <a class="bold" href="{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}">
                                         <i class="icon16 mobile float-right"></i>
-                                        <span class="url">{$_r_label = $r._domain|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
+                                        <span class="url">{$_r_label =  waIdna::dec($r._domain)|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
                                         <span class="hint">{$_t.name}</span>
                                     </a>
                                 </li>
@@ -236,6 +236,14 @@
         var site_routing_full = function () { };
         var wa_design_not_load = false;
         function waDesignLoad(hash) {
+            {if $design_url && is_string($design_url) && $design_url != '#/'}
+                var design_url = {$design_url|json_encode}.replace(/.*?#\//, '');
+                if (design_url && design_url.length && hash && hash.length) {
+                    if (hash.substr(0, design_url.length) == design_url) {
+                        hash = hash.substr(design_url.length);
+                    }
+                }
+            {/if}
             var hash_params = waDesignParams(hash || location.hash);
             if (hash_params['theme']) {
                 var current_theme_url = 'theme=' + hash_params['theme'];

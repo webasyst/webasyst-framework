@@ -64,7 +64,7 @@ class waRouting
         return $this->route;
     }
 
-    protected function formatRoutes($routes, $is_app = false)
+    protected function formatRoutes($routes, $app_id = false)
     {
         $result = array();
         $routes[] = false;
@@ -77,7 +77,7 @@ class waRouting
             if (!is_array($r)) {
                 $r_parts = explode('/', $r);
                 $r = array('url' => $r_id);
-                if ($is_app) {
+                if ($app_id) {
                     $r['module'] = $r_parts[0];
                     if (isset($r_parts[1])) {
                         $r['action'] = $r_parts[1];
@@ -92,6 +92,9 @@ class waRouting
                 $r['url'] = $r_id;
             } else {
                 $key = true;
+            }
+            if ($app_id && empty($r['app'])) {
+                $r['app'] = $app_id;
             }
             if ($key) {
                 $result[$r_id] = $r;
@@ -289,7 +292,7 @@ class waRouting
     protected function getAppRoutes($app, $route = array(), $dispatch = false)
     {
         $routes = waSystem::getInstance($app, null, $dispatch)->getConfig()->getRouting($route, $dispatch);
-        $routes = $this->formatRoutes($routes, true);
+        $routes = $this->formatRoutes($routes, $app);
         if ($dispatch && wa($app)->getConfig()->getInfo('pages') && $app != 'site') {
             $page_routes = $this->getPageRoutes($app, $route);
             if ($page_routes) {

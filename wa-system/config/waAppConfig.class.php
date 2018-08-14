@@ -859,10 +859,14 @@ class waAppConfig extends SystemConfig
                             $plugin_info['img'] = 'wa-apps/'.$this->application.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
                         }
                         if (isset($plugin_info['rights']) && $plugin_info['rights']) {
-                            $plugin_info['handlers']['rights.config'] = 'rightsConfig';
+                            if (!isset($plugin_info['handlers']['rights.config'])) {
+                                $plugin_info['handlers']['rights.config'] = 'rightsConfig';
+                            }
                         }
                         if (isset($plugin_info['frontend']) && $plugin_info['frontend']) {
-                            $plugin_info['handlers']['routing'] = 'routing';
+                            if (!isset($plugin_info['handlers']['routing'])) {
+                                $plugin_info['handlers']['routing'] = 'routing';
+                            }
                         }
                         if (!empty($plugin_info[$this->application.'_settings'])) {
                             $plugin_info['custom_settings'] = $plugin_info[$this->application.'_settings'];

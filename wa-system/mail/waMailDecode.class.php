@@ -34,6 +34,8 @@ class waMailDecode
     const TYPE_PART = 3;
     const TYPE_ATTACH = 4;
 
+    const TEMP_NEW_LINE = "@///NEW-LINE///@";
+
     protected $source;
     protected $state;
 
@@ -47,8 +49,7 @@ class waMailDecode
     protected $part_index = 0;
     protected $is_last = false;
 
-    protected $body = array(
-    );
+    protected $body = array();
 
     protected $current_header;
 
@@ -129,7 +130,7 @@ class waMailDecode
         $headers = $this->parts[0]['headers'];
         foreach ($headers as $h => &$v) {
             if (is_array($v)) {
-                $v = implode("@///NEW-LINE///@", $v);
+                $v = implode(self::TEMP_NEW_LINE, $v);
             }
             $v = $this->decodeHeader($v);
             if ($h == 'subject') {
@@ -139,7 +140,7 @@ class waMailDecode
             } elseif ($h == 'date') {
                 $v = preg_replace("/[^a-z0-9:,\.\s\t\+-]/i", '', $v);
                 $v = date("Y-m-d H:i:s", strtotime($v));
-            } elseif ($h == 'to' || $h == 'cc') {
+            } elseif ($h == 'to' || $h == 'cc' || $h = 'bcc') {
                 $v = self::parseAddress($v);
             } elseif ($h == 'from' || $h == 'reply-to') {
                 $v = self::parseAddress($v);
@@ -149,7 +150,7 @@ class waMailDecode
             }
         }
         unset($v);
-        foreach (array('subject','from', 'to', 'cc', 'reply-to', 'date') as $h) {
+        foreach (array('subject','from', 'to', 'cc', 'bcc', 'reply-to', 'date') as $h) {
             if (!isset($headers[$h])) {
                 $headers[$h] = '';
             }
@@ -263,7 +264,6 @@ class waMailDecode
         $this->is_last = feof($this->source);
     }
 
-
     protected function parse()
     {
         switch ($this->state) {
@@ -295,7 +295,7 @@ class waMailDecode
                     $this->buffer_offset += 5;
                     $this->state = self::STATE_HEADER_VALUE;
                     return array(
-                        'type' => self::TYPE_HEADER,
+                        'type'  => self::TYPE_HEADER,
                         'value' => 'from ',
                     );
                 }
@@ -306,7 +306,7 @@ class waMailDecode
                     $this->state = self::STATE_HEADER_VALUE;
                     // return part info
                     return array(
-                        'type' => self::TYPE_HEADER,
+                        'type'  => self::TYPE_HEADER,
                         'value' => strtolower(trim($value))
                     );
                 } else {
@@ -328,7 +328,7 @@ class waMailDecode
                             $this->buffer_offset = $i;
                             $this->state = self::STATE_HEADER;
                             return array(
-                                'type' => self::TYPE_HEADER_VALUE,
+                                'type'  => self::TYPE_HEADER_VALUE,
                                 'value' => trim($value)
                             );
                         }
@@ -480,6 +480,8 @@ class waMailDecode
                 }
                 break;
             case self::TYPE_HEADER_VALUE:
+                $part['value'] = $this->decodeHeader($part['value']);
+
                 if ($this->current_header == 'content-type') {
                     $info = $this->parseHeader($part['value']);
                     $this->part['type'] = strtolower(strtok($info['value'], '/'));
@@ -662,6 +664,7 @@ class waMailDecode
         }
         if (preg_match("/=\?(.+)\?(B|Q)\?(.*)\?=?(.*)/i", $value, $m)) {
             $value = ltrim($value);
+            $value = str_replace("\r", "", $value);
             if (isset($m[3]) && strpos($m[3], '_') !== false && strpos($m[3], ' ') === false) {
                 $value = iconv_mime_decode(str_replace("\n", "", $value), 0, 'UTF-8');
             } else {
@@ -682,7 +685,7 @@ class waMailDecode
             }
         }
 
-        $value = str_replace("@///NEW-LINE///@", "\n", $value);
+        $value = str_replace(self::TEMP_NEW_LINE, "\n", $value);
 
         return $value;
     }

@@ -37,12 +37,18 @@ abstract class waLoginAction extends waViewAction
             }
         } catch (waException $e) {
             $error = $e->getMessage();
-            $data = array(
-                'source' => wa()->getEnv(),
-                'login'  => waRequest::post('login', '', waRequest::TYPE_STRING),
-                'ip'     => waRequest::getIp()
-            );
-            $this->logAction('login_failed', $data);
+
+            //if pick up login need logging      this action
+            $user = $auth->getByLogin(waRequest::request('login', null, waRequest::TYPE_STRING));
+            if (is_array($user) && ifset($user,'is_user', null) == 1) {
+                $data = array(
+                    'source' => wa()->getEnv(),
+                    'login'  => waRequest::post('login', '', waRequest::TYPE_STRING),
+                    'ip'     => waRequest::getIp()
+                );
+                $this->logAction('login_failed', $data);
+            }
+
         }
         $this->view->assign('error', $error);
         // assign auth options

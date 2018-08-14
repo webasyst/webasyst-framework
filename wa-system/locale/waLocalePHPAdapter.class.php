@@ -47,7 +47,7 @@ class waLocalePHPAdapter implements waiLocaleAdapter
         }
 
         if (isset(self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']) && self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']) {
-            self::$cache[$locale][$domain]['meta']['f'] = create_function('$n', self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']);
+            self::$cache[$locale][$domain]['meta']['f'] = wa_lambda('$n', self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']);
         }
 
         if ($textdomain) {

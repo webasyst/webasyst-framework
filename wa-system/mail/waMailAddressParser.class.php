@@ -50,7 +50,7 @@ class waMailAddressParser
 
     protected function parseAddress()
     {
-        $addrss = explode("\n", $this->string);
+        $addrss = preg_split("~(,\s|\n)~", $this->string);
         foreach ($addrss as $a) {
             $name = $email = false;
             if (preg_match('~<([^>]+)>[,;]?$~', $a, $m) && preg_match('~^[^\s@]+@[^\s@]+\.[^\s@\.]{2,6}$~u', trim($m[1]))) {

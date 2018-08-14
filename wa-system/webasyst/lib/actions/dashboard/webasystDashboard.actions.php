@@ -210,10 +210,10 @@ class webasystDashboardActions extends waActions
         $dashboard_url .= "/dashboard/{$dashboard['hash']}/";
 
         $this->display(array(
-            'dashboard' => $dashboard,
+            'dashboard'     => $dashboard,
             'dashboard_url' => $dashboard_url,
-            'header_date' => _ws(waDateTime::date('l')).', '.trim(str_replace(date('Y'), '', waDateTime::format('humandate')), ' ,/'),
-            'widgets' => $widgets,
+            'header_date'   => _ws(waDateTime::date('l')).', '.trim(str_replace(date('Y'), '', waDateTime::format('humandate')), ' ,/'),
+            'widgets'       => $widgets,
         ));
     }
 

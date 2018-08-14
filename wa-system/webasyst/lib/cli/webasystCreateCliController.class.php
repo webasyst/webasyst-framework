@@ -46,7 +46,7 @@ HELP;
     protected function getAction()
     {
         if (preg_match('/^webasyst(\w+)Cli$/', __CLASS__, $matches)) {
-            $callback = create_function('$m', 'return strtolower($m[1]);');
+            $callback = wa_lambda('$m', 'return strtolower($m[1]);');
             $action = preg_replace_callback('/^([\w]{1})/', $callback, $matches[1]);
         } else {
             $action = '';

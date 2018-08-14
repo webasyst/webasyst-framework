@@ -295,7 +295,7 @@ class waOrder implements ArrayAccess
 
     private function methodName($offset)
     {
-        $method = 'get'.preg_replace_callback('/(^|_)([\w])/', create_function('$c', 'return strtoupper($c[2]);'), $offset);
+        $method = 'get'.preg_replace_callback('/(^|_)([\w])/', wa_lambda('$c', 'return strtoupper($c[2]);'), $offset);
         return method_exists($this, $method) ? $method : null;
     }
 

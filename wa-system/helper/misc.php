@@ -92,7 +92,7 @@ function &wao($o)
     return $o;
 }
 
-/** Wrapper around create_function() that caches functions it creates to avoid memory leaks when used in a loop. */
+/** Wrapper around create_function that caches functions it creates to avoid memory leaks when used in a loop. */
 function wa_lambda($args, $body)
 {
     if (!isset($body)) {
@@ -100,11 +100,25 @@ function wa_lambda($args, $body)
     }
 
     static $fn = array();
-    $hash = 'lmbd'.md5($args.$body);
+    $hash = md5($args.$body);
     if(!isset($fn[$hash])) {
-        $fn[$hash] = create_function($args, $body);
+        /*      Uncomment with the minimum version 5.6
+        $f = 'return function('.$args.') {'.$body.'};';
+        $fn[$hash] = eval($f);*/
+
+        $i = count($fn);
+        do {
+            $fn_name = 'wa_lambda_'.$i;
+            $i++;
+        } while (function_exists($fn_name));
+
+        $f = 'function '.$fn_name. '('.$args.') {'.$body.'};';
+        eval($f);
+        $fn[$hash] = $fn_name;
+
     }
     return $fn[$hash];
+
 }
 
 /**
