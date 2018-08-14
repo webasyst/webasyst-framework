@@ -128,6 +128,7 @@ class waMailDecode
         fclose($this->source);
 
         $headers = $this->parts[0]['headers'];
+
         foreach ($headers as $h => &$v) {
             if (is_array($v)) {
                 $v = implode(self::TEMP_NEW_LINE, $v);
@@ -140,7 +141,7 @@ class waMailDecode
             } elseif ($h == 'date') {
                 $v = preg_replace("/[^a-z0-9:,\.\s\t\+-]/i", '', $v);
                 $v = date("Y-m-d H:i:s", strtotime($v));
-            } elseif ($h == 'to' || $h == 'cc' || $h = 'bcc') {
+            } elseif ($h == 'to' || $h == 'cc' || $h == 'bcc') {
                 $v = self::parseAddress($v);
             } elseif ($h == 'from' || $h == 'reply-to') {
                 $v = self::parseAddress($v);
