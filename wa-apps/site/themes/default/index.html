@@ -119,87 +119,94 @@
             <div id="globalnav" class="{if $theme_settings.header_scheme|strstr:'white'}light{if $theme_settings.header_scheme|strstr:'andgray'} andgray{/if}{/if}"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};"{/if}>
                 <div class="container">
 
-                    {if $theme_settings.header_sitename || $theme_settings.logo}
-                    <h2>
-                        <a href="{$wa_url}">
-                            {if $theme_settings.logo}
-                                <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
-                                <span>{$wa->accountName()}</span>
-                            {else}
-                                {$wa->accountName()}
+                    <div class="wa-flex-box full-line">
+                        <nav class="column wa-flex-box middle" style="flex: 1;">
+                            {if $theme_settings.header_sitename || $theme_settings.logo}
+                                <h2>
+                                    <a href="{$wa_url}">
+                                        {if $theme_settings.logo}
+                                            <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
+                                            <span>{$wa->accountName()}</span>
+                                        {else}
+                                            {$wa->accountName()}
+                                        {/if}
+                                    </a>
+                                </h2>
                             {/if}
-                        </a>
-                    </h2>
-                    {/if}
 
-                    <button id="mobile-nav-toggle"><!-- nav toggle for mobile devices --></button>
-
-                    <nav>
-
-                        {if $wa->isAuthEnabled()}
-                            <!-- user auth -->
-                            <ul class="auth">
-
-                                {if $wa->user()->isAuth()}
-                                    {if $wa->myUrl()}
-                                        <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
-                                            <a href="{$wa->myUrl()}" class="not-visited"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i> <strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></a>
-                                        </li>
-                                    {else}
-                                         <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
+                            {strip}
+                            <ul class="apps">
+                                {$_links = []}
+                                {if $theme_settings.header_links == 'site-pages'}
+                                    {if $wa->site}{$_links = $wa->site->pages()}{/if}
+                                {elseif $theme_settings.header_links == 'shop-pages'}
+                                    {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
+                                {elseif $theme_settings.header_links == 'blog-pages'}
+                                    {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
+                                {elseif $theme_settings.header_links == 'photos-pages'}
+                                    {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
+                                {elseif $theme_settings.header_links == 'hub-pages'}
+                                    {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
+                                {elseif $theme_settings.header_links != 'none'}
+                                    {$_links = $wa->apps()}
+                                {/if}
+                                {foreach $_links as $a}
+                                    {if !($a.url == $wa_url && $a.name == $wa->accountName())}
+                                        <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
                                     {/if}
-                                    <li><a href="?logout" class="not-visited">[s`Log out`]</a></li>
-                                {else}
-                                    <li><a href="{$wa->loginUrl()}" class="not-visited">[s`Log in`]</a></li>
-                                    <li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>
-                                {/if}
+                                {/foreach}
                             </ul>
-                        {/if}
+                            {/strip}
 
-                        {if $wa->shop}
-                            <!-- cart -->
-                            {$cart_total = $wa->shop->cart->total()}
-                            <div id="cart" class="cart{if !$cart_total} empty{/if}">
-                                 <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary">
-                                     <i class="cart-icon"></i>
-                                     <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
-                                 </a>
-                                 <div id="cart-content">
-                                     {* <div class="cart-just-added">
-                                        %s is now in your shopping cart
-                                     </div> *}
-                                 </div>
-                                 <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-to-checkout" style="display: none;">
-                                     [s`View cart`]
-                                 </a>
-                            </div>
-                        {/if}
+                            <div class="clear-both"></div>
+                        </nav>
 
-                        <!-- core site sections (apps) -->
-                        <ul class="apps">
-                            {$_links = []}
-                            {if $theme_settings.header_links == 'site-pages'}
-                                {if $wa->site}{$_links = $wa->site->pages()}{/if}
-                            {elseif $theme_settings.header_links == 'shop-pages'}
-                                {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
-                            {elseif $theme_settings.header_links == 'blog-pages'}
-                                {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
-                            {elseif $theme_settings.header_links == 'photos-pages'}
-                                {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
-                            {elseif $theme_settings.header_links == 'hub-pages'}
-                                {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
-                            {elseif $theme_settings.header_links != 'none'}
-                                {$_links = $wa->apps()}
+                        <div class="column wa-flex-box middle">
+                            {if $wa->shop}
+                                <!-- cart -->
+                                {$cart_total = $wa->shop->cart->total()}
+                                <div id="cart" class="cart{if !$cart_total} empty{/if}">
+                                    <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary">
+                                        <i class="cart-icon"></i>
+                                        <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                                    </a>
+                                    <div id="cart-content">
+                                        {* <div class="cart-just-added">
+                                           %s is now in your shopping cart
+                                        </div> *}
+                                    </div>
+                                    <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-to-checkout" style="display: none;">
+                                        [s`View cart`]
+                                    </a>
+                                </div>
                             {/if}
-                            {foreach $_links as $a}
-                                {if !($a.url == $wa_url && $a.name == $wa->accountName())}
-                                    <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
-                                {/if}
-                            {/foreach}
-                        </ul>
 
-                    </nav>
-                    <div class="clear-both"></div>
+                            {if $wa->isAuthEnabled()}
+                                <!-- user auth -->
+                                {strip}
+                                <ul class="auth">
+                                    {if $wa->user()->isAuth()}
+                                        {if $wa->myUrl()}
+                                            <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
+                                                <a href="{$wa->myUrl()}" class="not-visited"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i> <strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></a>
+                                            </li>
+                                        {else}
+                                            <li><strong>{$wa->user('firstname')|default:'[`My account`]'}</strong></li>
+                                        {/if}
+                                        <li><a href="?logout" class="not-visited">[s`Log out`]</a></li>
+                                    {else}
+                                        <li><a href="{$wa->loginUrl()}" class="not-visited">[s`Log in`]</a></li>
+                                        <li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>
+                                    {/if}
+                                </ul>
+                                {/strip}
+                            {/if}
+
+                            <button id="mobile-nav-toggle"></button>
+
+                            <div class="clear-both"></div>
+                        </div>
+                    </div>
 
                 </div>
             </div>

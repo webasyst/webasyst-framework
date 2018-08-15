@@ -106,6 +106,16 @@ input:-ms-input-placeholder { color: #bbb; }
 
 .staff { background: #eeb; padding: 1px 4px !important; color: #345; font-size: 0.9em; border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; white-space: nowrap; }
 
+.wa-flex-box { display: -webkit-box; display: -moz-box; display: -webkit-flex; display: -ms-flexbox; display: flex; }
+.wa-flex-box.middle { -webkit-box-align: center; -moz-box-align: center; -o-box-align: center; -ms-flex-align: center; -webkit-align-items: center; align-items: center; }
+.wa-flex-box.full-line { -webkit-box-pack: justify; -moz-box-pack: justify; -o-box-pack: justify; -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+.wa-flex-box.fixed { -webkit-box-pack: justify; -moz-box-pack: justify; -o-box-pack: justify; -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+.wa-flex-box.fixed.fixed > * { -webkit-flex-basis: 100%; flex-basis: 100%; -webkit-box-flex: 0; -moz-box-flex: 0; -o-box-flex: 0; -ms-box-flex: 0; box-flex: 0; -webkit-flex-grow: 0; flex-grow: 0; }
+.wa-flex-box > *.middle { -webkit-align-self: center; align-self: center; -ms-flex-item-align: center; }
+@media screen and (max-width: 760px) {
+    .wa-flex-box.adaptive { -webkit-box-orient: vertical; -moz-box-orient: vertical; -o-box-orient: vertical; -webkit-flex-direction: column; -ms-flex-direction: column; flex-direction: column; }
+}
+
 /* Buttons
 ---------- */
 
@@ -275,24 +285,24 @@ header.globalheader { background: #c22; position: relative; }
 header a { text-decoration: none; }
 
 header #globalnav { background: #000; }
-header h2 { float: left; padding: 11px 15px 9px; margin: 0 20px 0 -15px; font-size: 1.3em; }
+header h2 { padding: 10px 15px; margin: 0 20px 0 -15px; font-size: 1.3em; }
 header h2 a { color: #eee !important; }
 header h2 a span { display: none; }
 header h2 a:hover { color: #eea !important; }
 
-header .apps { padding: 0; margin: 0 0 0 -15px; }
-header .apps li { float: left; list-style: none; }
-header .apps li a { display: block; padding: 13px 14px 11px; margin-right: 0px; color: #999; font-size: 1.1em; }
+header .apps { padding: 6px 0; margin: 0; }
+header .apps li { display: inline-block; vertical-align: top; margin: 1px 21px 1px 0; list-style: none; transform: translate(0,1px); }
+header .apps li a { display: block; padding: 12px; margin: -12px; color: #999; font-size: 1.1em; }
 header .apps li a:hover { color: #eea; }
 header .apps li.selected a { color: #fff; background: #000; }
 
-header .auth { float: right; margin-bottom: 0; margin-top: 12px; padding-left: 10px; }
-header .auth li { list-style: none; float: left; }
+header .auth { display: inline-block; vertical-align: top; margin: 1px 0 0; padding: 0 0 0 10px; }
+header .auth li { display: inline-block; vertical-align: top; list-style: none; }
 header .auth li a { font-size: 0.9em; padding: 5px 6px; color: #777; }
 header .auth li a:hover { color: #eea !important; }
 header .auth li a:visited { color: #777; }
 
-header .cart { float: right; }
+header .cart { display: inline-block; vertical-align: top; }
 header .cart a { padding: 12px 16px 11px 13px; display: block; background: rgba(255,255,255,0.3); color: #fff; font-size: 1.5em; }
 header .cart a strong { color: #ff7; }
 header .cart a:hover { background: rgba(255,255,255,0.4) !important; }
@@ -556,13 +566,13 @@ html.font_size_16 body { font-size: 16px; }
 .font_family_google_fira strong,
 .font_family_google_fira .bold { font-weight: 500; }
 .font_family_google_fira header .pages li a { font-weight: 500; padding-top: 9px; }
-.font_family_google_fira header h2 { padding-top: 12px; }
+/*.font_family_google_fira header h2 { padding-top: 12px; }*/
 .font_family_google_fira ul.thumbs li { font-size: 1.05em; }
 .font_family_google_fira ul.thumbs li h5 { font-weight: 500; }
 .font_family_google_fira input[type="button"],
 .font_family_google_fira input[type="submit"] { padding-bottom: 3px; }
 .font_family_google_fira .search input { padding-top: 3px; }
-.font_family_google_fira header .auth { margin-top: 13px; }
+/*.font_family_google_fira header .auth { margin-top: 13px; }*/
 .font_family_google_fira header .auth i.userpic20 { margin-top: 1px; }
 .font_family_google_fira header .cart a strong { display: inline-block; margin-top: 1px;}
 .font_family_google_fira .staff { position: relative; top: -2px; padding-bottom: 0 !important; }
@@ -610,8 +620,7 @@ html.font_size_16 body { font-size: 16px; }
     .content.with-sidebar { margin-right: 220px; }
 
     header h2 { margin-right: 10px; }
-    header .apps { margin-left: -10px; }
-    header .apps li a { padding: 12px 10px; }
+    header .apps li { margin: 2px 10px 2px 0; }
     .search-wrapper { max-width: 150px; }
 
     .color_scheme_white header.globalheader .appnav { padding-left: 0; padding-right: 0; margin-left: 25px; margin-right: 25px; }
@@ -658,12 +667,12 @@ html.font_size_16 body { font-size: 16px; }
     header #mobile-nav-toggle { display: block; float: right; margin-right: 10px; margin-top: 13px; outline: 0; margin-bottom: 9px; }
     header .apps { display: none; }
     header .pages { margin: 0; padding: 20px 0; }
-    header .auth { float: left; padding-left: 0; display: none; }
+    header .auth { display: none; }
     header .auth li a { font-size: 1em; }
     header .auth li a i.icon16 { margin-top: 0; }
     header .apps.unfolded { display: block; }
     header .cart,
-    header .cart.fixed { position: absolute; right: 58px !important; min-width: 0 !important; max-width: 64px; }
+    header .cart.fixed { position: absolute; top: 0; right: 58px !important; min-width: 0 !important; max-width: 64px; }
     header .cart a { height: 1em; padding: 16px 9px 15px 17px; background: #ffba00; }
     header .cart.fixed a { background: #ffba00; }
     header .cart a strong { display: none !important; }

@@ -156,20 +156,6 @@ var MatchMedia = function( media_query ) {
 
 $(document).ready(function() {
 
-    // custom LOGO position adjustment
-    if ($('#logo').length)
-    {
-        $(window).load(function(){
-
-            var _logo_height = $('#logo').height();
-            var _logo_vertical_shift = Math.round((_logo_height-25)/2);
-
-            $('#globalnav').css('padding-top', _logo_vertical_shift+'px');
-            $('#logo').css('margin-top', '-'+_logo_vertical_shift+'px');
-
-        });
-    }
-
     // MOBILE nav slide-out menu
     $('#mobile-nav-toggle').click( function(){
         if (!$('.nav-negative').length) {
@@ -186,27 +172,32 @@ $(document).ready(function() {
     });
 
     // STICKY CART for non-mobile
-    if ( !(MatchMedia("only screen and (max-width: 760px)")) ) {
-        $(window).scroll(function(){
-           	if ( $(this).scrollTop() >= 55 && !$("#cart").hasClass( "fixed" ) && !$("#cart").hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
-           	    $("#cart").hide();
+    $(window).scroll(function(){
+        var is_mobile_case = MatchMedia("only screen and (max-width: 760px)");
+        if (!is_mobile_case) {
+            var scroll_top = $(this).scrollTop();
+            var $card = $("#cart"),
+                $flyer = $('#cart-flyer');
 
-           	    $("#cart").addClass( "fixed" );
-           	    if ($('#cart-flyer').length)
-           	    {
-           	        var _width = $('#cart-flyer').width()+52;
-           	        var _offset_right = $(window).width() - $('#cart-flyer').offset().left - _width + 1;
+            if ( scroll_top >= 55 && !$card.hasClass( "fixed" ) && !$card.hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
+                $card.hide();
 
-           	        $("#cart").css({ "right": _offset_right+"px", "width": _width+"px" });
-           	    }
+                $card.addClass( "fixed" );
+                if ($flyer.length) {
+                    var _width = $flyer.width()+52;
+                    var _offset_right = $(window).width() - $flyer.offset().left - _width + 1;
 
-           	    $("#cart").slideToggle(200);
-           	} else if ( $(this).scrollTop() < 50 && $("#cart").hasClass( "fixed" ) ) {
-    	        $("#cart").removeClass( "fixed" );
-        	    $("#cart").css({ "width": "auto" });
-        	}
-        });
-    }
+                    $("#cart").css({ "right": _offset_right+"px", "width": _width+"px" });
+                }
+
+                $card.show();
+                // $card.slideToggle(200);
+            } else if ( scroll_top < 50 && $("#cart").hasClass( "fixed" ) ) {
+                $card.removeClass( "fixed" );
+                $card.css({ "width": "auto" });
+            }
+        }
+    });
 });
 
 // MAILER app email subscribe form
