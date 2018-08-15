@@ -73,7 +73,7 @@ class siteConfig extends waAppConfig
             }
         }
         if ($page_ids) {
-            $class_name = $this->application . 'PageModel';
+            $class_name = $this->application.'PageModel';
             /**
              * @var waPageModel $model
              */
@@ -96,12 +96,7 @@ class siteConfig extends waAppConfig
      */
     public function onCount()
     {
-        $routing_errors = $this->getRoutingErrors();
 
-        if ($routing_errors && empty($routing_errors['all_domains_error_report_disabled'])) {
-            return '!';
-        }
-        return null;
     }
 
     /**
@@ -125,6 +120,8 @@ class siteConfig extends waAppConfig
 
         $error_domains_data = array();
 
+        $notifications_enabled = array();
+
         if ($routes) {
             $apps = wa()->getApps();
             $valid_app = array();
@@ -134,10 +131,6 @@ class siteConfig extends waAppConfig
                     $valid_app[$app_id] = true;
                 }
             }
-
-            // If there are no domains with error reporting on,
-            // we will not report unsettled apps, too.
-            $all_domains_error_report_disabled = true;
 
             foreach ($routes as $domain_name => $settlements) {
                 if (empty($settlements) || !is_array($settlements)) {
@@ -150,7 +143,7 @@ class siteConfig extends waAppConfig
                 // array = list of incorrectly settled apps (may be empty array).
                 $tmp_incorrect_app = null;
 
-                foreach ($settlements as $settlement) {
+                foreach ($settlements as $s_id => $settlement) {
                     //delete installed apps
                     if (isset($settlement['app'])) {
                         unset($valid_app[$settlement['app']]);
@@ -161,9 +154,20 @@ class siteConfig extends waAppConfig
                             $tmp_incorrect_app = array();
                         }
                     } else {
-                        $tmp_incorrect_app[] = $settlement['app'];
+                        $tmp_incorrect_app[$s_id] = ifset($settlement, 'app', null);
+
+                        //Add redirect to incorrect
+                        if (empty($settlement['app']) && isset($settlement['redirect'])) {
+                            $tmp_incorrect_app[$s_id] = ':redirect';
+                        }
+
+                        //Add text file to incorrect
+                        if (empty($settlement['app']) && isset($settlement['static_content'])) {
+                            $tmp_incorrect_app[$s_id] = ':text';
+                        }
                     }
                 }
+
 
                 //Get domain settings
                 $domain_config_path = wa('site')->getConfig()->getConfigPath('domains/'.$domain_name.'.php');
@@ -181,31 +185,25 @@ class siteConfig extends waAppConfig
                     }
                 }
 
-                if (!$domain_id) {
+                if (!$domain_id || ifempty($domain_config, 'url_notification', false)) {
                     continue;
+                } else {
+                    //Save status. We do not know all the problems until we finish the foreach.
+                    $notifications_enabled[$domain_id] = true;
                 }
 
-                // url_notification == false means __checked__ box in domain settings
-                // "Show a notification on Site’s icon in the main menu, if there are errors in the site structure."
-                if (empty($domain_config['url_notification'])) {
-                    $all_domains_error_report_disabled = false;
-                }
                 //Save problem url count
                 if ($tmp_incorrect_app && count($tmp_incorrect_app) > 0) {
                     $error_domains_data['apps'][$domain_id]['incorrect'] = $tmp_incorrect_app;
-                    //$error_domains_data['apps'][$domain_id]['report_enabled'] = empty($domain_config['url_notification']);
-                    //$error_domains_data['apps'][$domain_id]['domain_name'] = $domain_name;
                 }
+
             }
 
-            //Save not installed apps
-            if (!empty($valid_app)) {
-                //array_keys Need for the same format
-                $error_domains_data['not_install'] = array_keys($valid_app);
-            }
-
-            if ($error_domains_data) {
-                $error_domains_data['all_domains_error_report_disabled'] = $all_domains_error_report_disabled;
+            if (!empty($valid_app) && !empty($notifications_enabled)) {
+                //Save not installed apps
+                foreach ($notifications_enabled as $d_id => $bool) {
+                    $error_domains_data['apps'][$d_id]['not_install'] = array_keys($valid_app);
+                }
             }
         }
 

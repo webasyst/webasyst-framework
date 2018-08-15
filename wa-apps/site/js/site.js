@@ -36,23 +36,6 @@ $.wa.site = {
         }
     },
 
-    /**
-     * If in url not found hash and this domain have problem need redirect user to settlements settings.
-     * return bool and redirect user.
-     */
-    redirectToProblemDomain: function () {
-        var hash = window.location.hash,
-            problem_domain = $('#error-domain-' + this.domain);
-        if (problem_domain && (hash === '#/' || !hash)) {
-            var first_problem_url = problem_domain.parent().prop('href');
-            if (first_problem_url) {
-                window.location = first_problem_url + '#/routing/';
-                return false;
-            }
-        }
-        return true
-    },
-
     setHelper: function (helper) {
         if (helper === true) {
             return false;
@@ -121,18 +104,26 @@ $.wa.site = {
         }
     },
 
+    // DEFAULT ACTION
+
     defaultAction: function () {
         var hash = $("div.s-sidebar ul.s-links a:first").attr('href');
         $.wa.setHash(hash);
     },
 
+    // SITE ACTIONS
+
     pagesAction: function (id) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
         if ($('#wa-page-container').length) {
             waLoadPage(id);
         } else {
             $('#s-save-panel input').replaceWith('<input id="wa-page-button" type="button" class="button green" value="' + $_('Save') + '">');
             $("#s-content").load('?module=pages', 'domain_id=' + this.domain + (id ? '&id=' + id : ''), function () {
-// deprecated                $(".s-scrollable-part").scrollTop(0);
                 $.wa.site.savePanel(true, 's-page-editor');
                 $.wa.site.active($("#s-link-pages"));
                 $('#wa-page-button').click(function () {
@@ -141,6 +132,172 @@ $.wa.site = {
             });
         }
     },
+
+    designAction: function (params) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        if ($('#wa-design-container').length) {
+            waDesignLoad(params === undefined ? '' : params);
+            $.wa.site.savePanel(params && (params.indexOf('action=edit') != -1 || params.indexOf('file=') != -1));
+            $('#wa-design-button').removeClass('yellow').addClass('green');
+        } else {
+            var p = this.parseParams(params);
+            $('#s-save-panel input').replaceWith('<input id="wa-design-button" type="button" class="button green" value="' + $_('Save') + '">');
+            $("#s-content").load('?module=design', 'domain_id=' + this.domain, function () {
+                $.wa.site.savePanel(params && (params.indexOf('action=edit') != -1 || params.indexOf('file=') != -1));
+                $.wa.site.active($("#s-link-design"));
+                $('#wa-design-button').click(function () {
+                    $("#wa-design-form").submit();
+                });
+                waDesignLoad(params === undefined ? '' : params);
+            });
+        }
+    },
+
+    themesAction: function (params) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        this.savePanel(false);
+        if ($('#wa-design-container').length) {
+            waDesignLoad();
+        } else {
+            $("#s-content").load('?module=design', 'domain_id=' + this.domain, function () {
+                $.wa.site.active($("#s-link-design"));
+                waDesignLoad();
+            });
+        }
+    },
+
+    designAddAction: function (params) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        this.designAction(params + '&file=');
+    },
+
+    routingAction: function (id) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        this.savePanel(false);
+        $("#s-content").load('?module=routing', 'domain_id=' + this.domain, function () {
+            $.wa.site.active($("#s-link-routing"));
+            $("tr#route-" + id + ' .s-route-settings').click();
+        });
+    },
+
+    personalSettingsAction: function (hash) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        var d = this.domain;
+        this.savePanel(false);
+        var f = function () {
+            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=settings&hash=' + (hash || ''), 'domain_id=' + d, function () {
+                $('ul.s-personal-structure li.selected').removeClass('selected');
+            });
+        }
+
+        if ($('#s-personal-content').length) {
+            f();
+        } else {
+            this.personalAction(f);
+        }
+    },
+
+    personalAppAction: function (app_id) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        var d = this.domain;
+        this.savePanel(false);
+        var f = function () {
+            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=app&app_id=' + app_id, 'domain_id=' + d, function () {
+                $('ul.s-personal-structure li.selected').removeClass('selected');
+                $('#s-personal-app-' + app_id).addClass('selected');
+                $('#s-app-frontend-link').html($('#s-personal-app-' + app_id).data('link')).attr('href', $('#s-personal-app-' + app_id).data('link'));
+            });
+        }
+        if ($('#s-personal-content').length) {
+            f();
+        } else {
+            this.personalAction(f);
+        }
+    },
+
+    personalProfileAction: function () {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        var d = this.domain;
+        this.savePanel(false);
+        var f = function () {
+            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=profile', 'domain_id=' + d, function () {
+                $('ul.s-personal-structure li.selected').removeClass('selected');
+                $('#s-personal-profile-link').addClass('selected');
+            });
+        }
+        if ($('#s-personal-content').length) {
+            f();
+        } else {
+            this.personalAction(f);
+        }
+    },
+
+    personalAction: function (callback) {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        this.savePanel(false);
+        $("#s-content").load('?module=personal', 'domain_id=' + this.domain, function () {
+            $.wa.site.active($("#s-link-personal"));
+            if (callback) {
+                callback();
+            } else {
+                if ($('#s-personal-settings-link').data('enabled')) {
+                    $.wa.setHash($('ul.s-personal-structure a:first').attr('href'));
+                } else {
+                    $.wa.setHash('#/personal/settings/');
+                }
+            }
+        });
+    },
+
+    settingsAction: function (tab) {
+        this.savePanel(false);
+        $("#s-content").load('?module=settings&domain_id=' + this.domain, function () {
+            $.wa.site.active($("#s-link-settings"));
+        });
+    },
+
+    settingsRoutingAction: function () {
+        if (this.options.mirror) {
+            $.wa.setHash('#/');
+            return null;
+        }
+
+        this.settingsAction('routing');
+    },
+
+    // SYSTEM BLOCK ACTIONS
 
     newsiteAction: function (params) {
         var params = this.parseParams(params)
@@ -164,58 +321,6 @@ $.wa.site = {
         }
     },
 
-    designAction: function (params) {
-        if ($('#wa-design-container').length) {
-            waDesignLoad(params === undefined ? '' : params);
-            $.wa.site.savePanel(params && (params.indexOf('action=edit') != -1 || params.indexOf('file=') != -1));
-            $('#wa-design-button').removeClass('yellow').addClass('green');
-        } else {
-            var p = this.parseParams(params);
-            $('#s-save-panel input').replaceWith('<input id="wa-design-button" type="button" class="button green" value="' + $_('Save') + '">');
-            $("#s-content").load('?module=design', 'domain_id=' + this.domain, function () {
-// deprecated                $(".s-scrollable-part").scrollTop(0);
-                $.wa.site.savePanel(params && (params.indexOf('action=edit') != -1 || params.indexOf('file=') != -1));
-                $.wa.site.active($("#s-link-design"));
-                $('#wa-design-button').click(function () {
-                    $("#wa-design-form").submit();
-                });
-                waDesignLoad(params === undefined ? '' : params);
-            });
-        }
-    },
-
-    themesAction: function (params) {
-        this.savePanel(false);
-        if ($('#wa-design-container').length) {
-            waDesignLoad();
-        } else {
-            $("#s-content").load('?module=design', 'domain_id=' + this.domain, function () {
-// deprecated                $(".s-scrollable-part").scrollTop(0);
-                $.wa.site.active($("#s-link-design"));
-                waDesignLoad();
-            });
-        }
-    },
-
-    designAddAction: function (params) {
-        this.designAction(params + '&file=');
-    },
-
-    filesPage: function (hash) {
-        if (!hash) {
-            hash = location.hash;
-        }
-        hash = hash.split('/');
-        hash = hash[hash.length - 1];
-        if (hash && hash.substr(0, 1) == '?') {
-            hash = hash.substr(1).split('=');
-            if (hash[0] == 'page') {
-                return hash[1];
-            }
-        }
-        return 1;
-    },
-
     pluginsAction: function (params) {
         this.savePanel(false);
         if ($('#wa-plugins-container').length) {
@@ -225,20 +330,6 @@ $.wa.site = {
                 $.wa.site.active($("#s-link-plugins"));
             });
         }
-    },
-
-    systemSettings: function () {
-        var $sidebar = $('#s-system-settings-sidebar'),
-            $general_link = $sidebar.find('.js-general'),
-            $email_link = $sidebar.find('.js-email');
-
-        $general_link.on('click', function () {
-            this.systemSettingsGeneralAction;
-        });
-
-        $email_link.on('click', function () {
-            this.systemSettingsEmailAction;
-        });
     },
 
     systemSettingsGeneralAction: function () {
@@ -905,6 +996,127 @@ $.wa.site = {
         }
     },
 
+    blocksAction: function (params) {
+        $('#s-save-panel input').replaceWith('<input id="s-editor-save-button" type="button" class="button green" value="' + $_('Save') + '">');
+        $("#s-content").load('?module=blocks', params, function () {
+// deprecated            $(".s-scrollable-part").scrollTop(0);
+            waEditorAceInit({
+                id: 'content',
+                save_button: 's-editor-save-button'
+            });
+            $('#s-editor-save-button').click(function () {
+                $("#site-form").submit();
+            })
+            $.wa.site.savePanel(true);
+            $.wa.site.setHelper('app=');
+            $.wa.site.active($("#s-link-blocks"));
+        });
+    },
+
+    blocksAddAction: function () {
+        this.blocksAction('id=');
+    },
+
+    // HELP FUNCTIONS BLOCK
+
+    parseParams: function (params) {
+        if (!params) return {};
+        var p = params.split('&');
+        var result = {};
+        for (i = 0; i < p.length; i++) {
+            var t = p[i].split('=');
+            result[t[0]] = t.length > 1 ? t[1] : '';
+        }
+        return result;
+    },
+
+    active: function (el) {
+        $(".sidebar a.selected").removeClass('selected');
+        $("ul.s-links li.selected").removeClass('selected');
+        if (el && el.length) {
+            el.addClass('selected');
+        }
+    },
+
+    savePanel: function (show, add_class) {
+        if (show) {
+            $("#s-save-panel").show();
+            $("#s-save-panel input").removeClass('yellow').addClass('green');
+            $("#wa-editor-status").empty();
+            if (add_class) {
+                $("#s-save-panel .s-bottom-fixed-bar-content-offset").addClass(add_class);
+            } else {
+                $("#s-save-panel .s-bottom-fixed-bar-content-offset").attr('class', 's-bottom-fixed-bar-content-offset');
+            }
+        } else {
+            $("#s-save-panel").hide();
+        }
+    },
+
+    getTreeHTML: function (data, cl, hash, dirs_decoded) {
+        var hash = hash || '';
+        var dirs_decoded = dirs_decoded || {};
+        var html = '<ul' + (cl ? '' : ' style="display:none"') + ' class="menu-v with-icons' + (cl ? ' ' + cl : '') + '">';
+        var id = '';
+        var title = '';
+        var $div = $('<div>');
+
+        for (var i = 0; i < data.length; i++) {
+            id = typeof(data[i]) == 'string' ? data[i] : data[i]['id'];
+            html += '<li>';
+            if (typeof(data[i]) != 'string') {
+                html += '<i class="icon16 rarr overhanging"></i>';
+            }
+            if (dirs_decoded.hasOwnProperty(id)) {
+                title = dirs_decoded[id];
+            } else {
+                title = '';
+            }
+
+            html += '<a href="#/files/' + hash + decodeURI(id) + '/" title = \"'+ $div.text(title).html() +'\"><i class="icon16 folder"></i><b>' + decodeURI(id) + '</b></a>';
+
+            if (typeof(data[i]) != 'string') {
+                html +=  this.getTreeHTML(data[i]['childs'], false, hash + decodeURI(id) + '/', dirs_decoded);
+            }
+            html += '</li>';
+        }
+        html += '</ul>';
+        return html;
+    },
+
+    filesPath: function (full) {
+        var prefix = full ? 'wa-data/public/site/' : '';
+        if ($("#s-files-tree li.selected").length) {
+            return prefix + $("#s-files-tree li.selected a").attr('href').substr(8);
+        }
+        return prefix;
+    },
+
+    filesPathOptions: function (el, prefix, is_folder) {
+        var prefix = prefix || '';
+        var result = '';
+        if (prefix == '') {
+            result = '<option value="">wa-data/public/site</a>';
+            prefix = '&nbsp;&nbsp;&nbsp;'
+        }
+        var is_folder = is_folder || false;
+        el.children('li').each(function () {
+            if ((is_folder && $(this).find('> ul > li.selected').length) ||
+                (!is_folder && $(this).hasClass('selected'))) {
+                var selected = true;
+            } else {
+                var selected = false;
+            }
+
+            var a = $(this).children('a');
+            result += '<option ' + (selected ? 'selected="selected"' : '') + ' value="' + a.attr('href').substr(8)  + '">' + prefix + a.children('b').html() + '</option>';
+            if ($(this).children('ul').length && (!is_folder || !$(this).hasClass('selected'))) {
+                result += $.wa.site.filesPathOptions($(this).children('ul'), prefix + '&nbsp;&nbsp;&nbsp;', is_folder);
+            }
+        });
+        return result;
+    },
+
     filesList: function (path, page) {
         if (!path) {
             path = this.filesPath();
@@ -919,12 +1131,12 @@ $.wa.site = {
             for (var i = 0; i < response.data.files.length; i++) {
                 var r = response.data.files[i];
                 var html = '<tr class="s-file"><td class="min-width"><input type="checkbox" value="' + r.file + '" /></td>' +
-                '<td><ul class="menu-h dropdown clickable"><li>' +
-                '<a href="'+url+r.file+'"><i class="icon16 ' + r.type + '"></i> ' +
+                    '<td><ul class="menu-h dropdown clickable"><li>' +
+                    '<a href="'+url+r.file+'"><i class="icon16 ' + r.type + '"></i> ' +
                     r.file + ' <i class="icon10 darr no-overhanging s-file-actions"></i></a>' +
-                '</li></ul></td>' +
-                '<td>' + r.datetime + '</td>' +
-                '<td><span class="float-right">' + $.wa.site.getFileSize(r.size) + '</span></td></tr>';
+                    '</li></ul></td>' +
+                    '<td>' + r.datetime + '</td>' +
+                    '<td><span class="float-right">' + $.wa.site.getFileSize(r.size) + '</span></td></tr>';
                 $("#s-files-grid").append(html);
             }
             if (response.data.pages > 1) {
@@ -960,15 +1172,15 @@ $.wa.site = {
         var menu = $('<ul class="menu-v width-icons" style="display:block"></ul>');
         if (file.substr(-4) != '.php' && file.substr(-6) != '.phtml' && file.substr(0,1) != '.') {
             menu.append('<li>' +
-                            '<i class="icon16 globe"></i>' + $_('File URL') + ': ' +
-                            '<a href="'+ this.options.domain_protocol + url + '" target="_blank" class="bold">' + url + '<i class="icon10 new-window"></i></a>' +
-                        '</li>');
+                '<i class="icon16 globe"></i>' + $_('File URL') + ': ' +
+                '<a href="'+ this.options.domain_protocol + url + '" target="_blank" class="bold">' + url + '<i class="icon10 new-window"></i></a>' +
+                '</li>');
         }
         if (file.substr(-4) != '.php' && file.substr(-6) != '.phtml') {
             menu.append('<li>' +
-                    '<a href="?module=files&action=download&path=' +
-                        $.wa.site.filesPath() + '&file=' + file + '"><i class="icon16 download"></i>' + $_('Download') +
-                    '</a></li>');
+                '<a href="?module=files&action=download&path=' +
+                $.wa.site.filesPath() + '&file=' + file + '"><i class="icon16 download"></i>' + $_('Download') +
+                '</a></li>');
         }
         menu.append($('<li></li>').append('<a href="#"><i class="icon16 edit"></i>' + $_('Rename') + '</a>').click(function () {
             $("#s-rename-dialog").waDialog({
@@ -1036,220 +1248,70 @@ $.wa.site = {
         return menu;
     },
 
-    settingsAction: function (tab) {
-        this.savePanel(false);
-        $("#s-content").load('?module=settings&domain_id=' + this.domain, function () {
-            $.wa.site.active($("#s-link-settings"));
+    systemSettings: function () {
+        var $sidebar = $('#s-system-settings-sidebar'),
+            $general_link = $sidebar.find('.js-general'),
+            $email_link = $sidebar.find('.js-email');
+
+        $general_link.on('click', function () {
+            this.systemSettingsGeneralAction;
+        });
+
+        $email_link.on('click', function () {
+            this.systemSettingsEmailAction;
         });
     },
 
-    settingsRoutingAction: function () {
-        this.settingsAction('routing');
-    },
-
-    blocksAction: function (params) {
-        $('#s-save-panel input').replaceWith('<input id="s-editor-save-button" type="button" class="button green" value="' + $_('Save') + '">');
-        $("#s-content").load('?module=blocks', params, function () {
-// deprecated            $(".s-scrollable-part").scrollTop(0);
-            waEditorAceInit({
-                id: 'content',
-                save_button: 's-editor-save-button'
-            });
-            $('#s-editor-save-button').click(function () {
-                $("#site-form").submit();
-            })
-            $.wa.site.savePanel(true);
-            $.wa.site.setHelper('app=');
-            $.wa.site.active($("#s-link-blocks"));
-        });
-    },
-
-    blocksAddAction: function () {
-        this.blocksAction('id=');
-    },
-
-
-
-    active: function (el) {
-        $(".sidebar a.selected").removeClass('selected');
-        $("ul.s-links li.selected").removeClass('selected');
-        if (el && el.length) {
-            el.addClass('selected');
+    filesPage: function (hash) {
+        if (!hash) {
+            hash = location.hash;
         }
-    },
-
-    routingAction: function (id) {
-        this.savePanel(false);
-        $("#s-content").load('?module=routing', 'domain_id=' + this.domain, function () {
-            $.wa.site.active($("#s-link-routing"));
-            $("tr#route-" + id + ' .s-route-settings').click();
-        });
-    },
-
-    personalSettingsAction: function (hash) {
-        var d = this.domain;
-        this.savePanel(false);
-        var f = function () {
-            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=settings&hash=' + (hash || ''), 'domain_id=' + d, function () {
-                $('ul.s-personal-structure li.selected').removeClass('selected');
-            });
-        }
-
-        if ($('#s-personal-content').length) {
-            f();
-        } else {
-            this.personalAction(f);
-        }
-    },
-
-    personalAppAction: function (app_id) {
-        var d = this.domain;
-        this.savePanel(false);
-        var f = function () {
-            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=app&app_id=' + app_id, 'domain_id=' + d, function () {
-                $('ul.s-personal-structure li.selected').removeClass('selected');
-                $('#s-personal-app-' + app_id).addClass('selected');
-                $('#s-app-frontend-link').html($('#s-personal-app-' + app_id).data('link')).attr('href', $('#s-personal-app-' + app_id).data('link'));
-            });
-        }
-        if ($('#s-personal-content').length) {
-            f();
-        } else {
-            this.personalAction(f);
-        }
-    },
-
-    personalProfileAction: function () {
-        var d = this.domain;
-        this.savePanel(false);
-        var f = function () {
-            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=profile', 'domain_id=' + d, function () {
-                $('ul.s-personal-structure li.selected').removeClass('selected');
-                $('#s-personal-profile-link').addClass('selected');
-            });
-        }
-        if ($('#s-personal-content').length) {
-            f();
-        } else {
-            this.personalAction(f);
-        }
-    },
-
-    personalAction: function (callback) {
-        this.savePanel(false);
-        $("#s-content").load('?module=personal', 'domain_id=' + this.domain, function () {
-            $.wa.site.active($("#s-link-personal"));
-            if (callback) {
-                callback();
-            } else {
-                if ($('#s-personal-settings-link').data('enabled')) {
-                    $.wa.setHash($('ul.s-personal-structure a:first').attr('href'));
-                } else {
-                    $.wa.setHash('#/personal/settings/');
-                }
+        hash = hash.split('/');
+        hash = hash[hash.length - 1];
+        if (hash && hash.substr(0, 1) == '?') {
+            hash = hash.substr(1).split('=');
+            if (hash[0] == 'page') {
+                return hash[1];
             }
-        });
-    },
-
-    parseParams: function (params) {
-        if (!params) return {};
-        var p = params.split('&');
-        var result = {};
-        for (i = 0; i < p.length; i++) {
-            var t = p[i].split('=');
-            result[t[0]] = t.length > 1 ? t[1] : '';
         }
-        return result;
+        return 1;
     },
 
-    savePanel: function (show, add_class) {
-        if (show) {
-            $("#s-save-panel").show();
-// deprecated			$("#wa div.s-scrollable-part").removeClass('s-no-editor');
-            $("#s-save-panel input").removeClass('yellow').addClass('green');
-            $("#wa-editor-status").empty();
-            if (add_class) {
-                $("#s-save-panel .s-bottom-fixed-bar-content-offset").addClass(add_class);
-            } else {
-                $("#s-save-panel .s-bottom-fixed-bar-content-offset").attr('class', 's-bottom-fixed-bar-content-offset');
+    /**
+     * If in url not found hash and this domain have problem need redirect user to settlements settings.
+     * return bool and redirect user.
+     */
+    redirectToProblemDomain: function () {
+        var hash = window.location.hash,
+            problem_domain = $('#error-domain-' + this.domain + '.visible');
+        if (problem_domain && (hash === '#/' || !hash)) {
+            var first_problem_url = problem_domain.parent().prop('href');
+            if (first_problem_url) {
+                window.location = first_problem_url + '#/routing/';
+                return false;
             }
-        } else {
-            $("#s-save-panel").hide();
-// deprecated			$("#wa div.s-scrollable-part").addClass('s-no-editor');
         }
+        return true
     },
 
-    getTreeHTML: function (data, cl, hash, dirs_decoded) {
-        var hash = hash || '';
-        var dirs_decoded = dirs_decoded || {};
-        var html = '<ul' + (cl ? '' : ' style="display:none"') + ' class="menu-v with-icons' + (cl ? ' ' + cl : '') + '">';
-        var id = '';
-        var title = '';
-        var $div = $('<div>');
+    checkHashAvailability: function (hash) {
+        if (hash) {
 
-        for (var i = 0; i < data.length; i++) {
-            id = typeof(data[i]) == 'string' ? data[i] : data[i]['id'];
-            html += '<li>';
-            if (typeof(data[i]) != 'string') {
-                html += '<i class="icon16 rarr overhanging"></i>';
-            }
-            if (dirs_decoded.hasOwnProperty(id)) {
-                title = dirs_decoded[id];
-            } else {
-                title = '';
-            }
-
-            html += '<a href="#/files/' + hash + decodeURI(id) + '/" title = \"'+ $div.text(title).html() +'\"><i class="icon16 folder"></i><b>' + decodeURI(id) + '</b></a>';
-
-            if (typeof(data[i]) != 'string') {
-                html +=  this.getTreeHTML(data[i]['childs'], false, hash + decodeURI(id) + '/', dirs_decoded);
-            }
-            html += '</li>';
         }
-        html += '</ul>';
-        return html;
+
+        return true
     },
 
-    filesPath: function (full) {
-        var prefix = full ? 'wa-data/public/site/' : '';
-        if ($("#s-files-tree li.selected").length) {
-            return prefix + $("#s-files-tree li.selected a").attr('href').substr(8);
-        }
-        return prefix;
-    },
+    // ROUTING ERRORS BLOCK
 
-    filesPathOptions: function (el, prefix, is_folder) {
-        var prefix = prefix || '';
-        var result = '';
-        if (prefix == '') {
-            result = '<option value="">wa-data/public/site</a>';
-            prefix = '&nbsp;&nbsp;&nbsp;'
-        }
-        var is_folder = is_folder || false;
-        el.children('li').each(function () {
-            if ((is_folder && $(this).find('> ul > li.selected').length) ||
-                (!is_folder && $(this).hasClass('selected'))) {
-                var selected = true;
-            } else {
-                var selected = false;
-            }
-
-            var a = $(this).children('a');
-            result += '<option ' + (selected ? 'selected="selected"' : '') + ' value="' + a.attr('href').substr(8)  + '">' + prefix + a.children('b').html() + '</option>';
-            if ($(this).children('ul').length && (!is_folder || !$(this).hasClass('selected'))) {
-                result += $.wa.site.filesPathOptions($(this).children('ul'), prefix + '&nbsp;&nbsp;&nbsp;', is_folder);
-            }
-        });
-        return result;
-    },
     updateRoutingErrors: function (routing_errors) {
         if (routing_errors) {
             if (routing_errors.incorrect) {
                 //Show red notification icon
-                $('#s-domain-list').find('li.selected').find('i.indicator.red').show();
+                $('.s-domain-list').find('li.active').find('i.indicator.red').removeClass('hide').addClass('visible');
             } else {
                 //Hide red notification icon
-                $('#s-domain-list').find('li.selected').find('i.indicator.red').hide();
+                $('.s-domain-list').find('li.active').find('i.indicator.red').removeClass('visible').addClass('hide');
             }
 
             if (routing_errors.not_install) {
@@ -1261,6 +1323,23 @@ $.wa.site = {
             //Update text
             $('#not-install-error').text(routing_errors.not_install);
             $('#incorrect-install-error').text(routing_errors.incorrect);
+
+            this.updateIncorrectRouting(routing_errors.incorrect_ids)
+        }
+    },
+
+    updateIncorrectRouting: function(incorrect_ids) {
+        var $rules = $('#s-rules');
+
+        $rules.find('.s-incorrect-route').hide();
+        if (incorrect_ids && typeof $rules === 'object') {
+            var active_class = "is-exclamation";
+
+            $(".s-routing ." + active_class).removeClass(active_class);
+
+            $.each(incorrect_ids, function(index, value) {
+                var $node = $('#route-'+index).addClass(active_class);
+            });
         }
     }
 };

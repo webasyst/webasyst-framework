@@ -7,13 +7,14 @@ class siteHelper
     protected static $locale = null;
     protected static $themes = array();
 
-    public static function getRoutingErrorsText($domain_id = null)
+    public static function getRoutingErrorsInfo($domain_id = null)
     {
         if (empty($domain_id)) {
             $domain_id = self::getDomainId();
         }
         $not_install_text = '';
         $incorrect_text = '';
+        $incorrect_ids = array();
 
         // Get from cache.
         $routing_error = wa('site')->getConfig()->getRoutingErrors();
@@ -21,32 +22,42 @@ class siteHelper
         $apps = wa()->getApps();
 
         if (!empty($routing_error)) {
-            if (isset($routing_error['not_install'])) {
+            $not_install = ifset($routing_error, 'apps', $domain_id, 'not_install', null);
+            if ($not_install) {
                 $not_install_id = array();
-                foreach ($routing_error['not_install'] as $app_id) {
-                    if (isset($apps[$app_id]['name'])) {
-                        $not_install_id[] = $apps[$app_id]['name'];
+                foreach ($not_install as $app_name) {
+                    if (isset($apps[$app_name]['name'])) {
+                        $not_install_id[] = $apps[$app_name]['name'];
                     }
                 }
                 $not_install_text = sprintf(_w('You have no rules set up for %s app.', 'You have no rules set up for %s apps.',
-                    count($routing_error['not_install']), false), implode(_w('”, “'), $not_install_id));
+                    count($not_install), false), implode(_w('”, “'), $not_install_id));
             }
 
-            if (isset($routing_error['apps'][$domain_id]['incorrect'])) {
-                $incorrect_id = array();
-                foreach ($routing_error['apps'][$domain_id]['incorrect'] as $app_id) {
-                    if (isset($apps[$app_id]['name'])) {
-                        $incorrect_id[] = $apps[$app_id]['name'];
+            $incorrect = ifset($routing_error, 'apps', $domain_id, 'incorrect', null);
+            if ($incorrect) {
+                foreach ($incorrect as $app_id => $app_name) {
+                    if (isset($apps[$app_name]['name'])) {
+                        $incorrect_ids[$app_id] = $apps[$app_name]['name'];
+                    }
+
+                    if ($app_name == ':text') {
+                        $incorrect_ids[$app_id] = _w('Custom text');
+                    }
+
+                    if ($app_name == ':redirect') {
+                        $incorrect_ids[$app_id] = _w('Redirect');
                     }
                 }
                 $incorrect_text = sprintf(_w('Some rules of %s app are incorrect.', 'Some rules of %s apps are incorrect.',
-                    count($routing_error['apps'][$domain_id]['incorrect']), false), implode(_w('”, “'), $incorrect_id));
+                    count($routing_error['apps'][$domain_id]['incorrect']), false), implode(_w('”, “'), $incorrect_ids));
             }
         }
 
         return array(
-            'not_install' => $not_install_text,
-            'incorrect'   => $incorrect_text,
+            'not_install'   => $not_install_text,
+            'incorrect'     => $incorrect_text,
+            'incorrect_ids' => $incorrect_ids
         );
     }
 

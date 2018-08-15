@@ -1,8 +1,9 @@
-<?php 
+<?php
 
 class siteDefaultLayout extends waLayout
 {
     protected $domain_id;
+
     public function execute()
     {
         $this->domain_id = siteHelper::getDomainId();
@@ -17,11 +18,12 @@ class siteDefaultLayout extends waLayout
         $this->view->assign('domain_root_url', siteHelper::getDomainUrl());
         $this->view->assign('routing_errors', wa()->getConfig()->getRoutingErrors());
         $this->view->assign('rights', array(
-            'admin' => $this->getUser()->isAdmin('site'),
-            'files' => $this->getRights('files'),
+            'admin'  => $this->getUser()->isAdmin('site'),
+            'files'  => $this->getRights('files'),
             'themes' => $this->getRights('themes'),
             'blocks' => $this->getRights('blocks'),
         ));
+        $this->view->assign('mirror', $this->isMirror());
 
         /**
          * Extend backend sidebar
@@ -97,7 +99,7 @@ class siteDefaultLayout extends waLayout
      */
     protected function getProtocol()
     {
-        $domain_config_path = $this->getConfig()->getConfigPath('domains/' . siteHelper::getDomain() . '.php');
+        $domain_config_path = $this->getConfig()->getConfigPath('domains/'.siteHelper::getDomain().'.php');
         if (file_exists($domain_config_path)) {
             $orig_domain_config = include($domain_config_path);
         }
@@ -107,11 +109,32 @@ class siteDefaultLayout extends waLayout
             $protocol = 'https://';
         } elseif ((!$domain_id || $domains[$domain_id] == wa()->getConfig()->getDomain()) && waRequest::isHttps()) { //first site in list or current site
             $protocol = 'https://';
-        }
-        else {
+        } else {
             $protocol = 'http://';
         }
         return $protocol;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isMirror()
+    {
+        $path = $this->getConfig()->getPath('config', 'routing');
+        $routes = array();
+
+        if (file_exists($path)) {
+            $routes = include($path);
+        }
+
+        $domain_model = new siteDomainModel();
+        $domain = $domain_model->getById($this->domain_id);
+
+        if (!isset($routes[$domain['name']]) || is_array($routes[$domain['name']])) {
+            return false;
+        }
+
+        return true;
     }
 
 }

@@ -1548,7 +1548,7 @@ msgstr[1] "Нет правил для приложений «%s»."
 msgstr[2] "Нет правил для приложений «%s»."
 
 msgid "Some rules of %s app are incorrect."
-msgid_plural "Some rules of %s appы are incorrect."
+msgid_plural "Some rules of %s apps are incorrect."
 msgstr[0] "Некоторые правила приложения «%s» настроены неправильно."
 msgstr[1] "Некоторые правила приложений «%s» настроены неправильно."
 msgstr[2] "Некоторые правила приложений «%s» настроены неправильно."
@@ -1559,8 +1559,8 @@ msgstr "», «"
 msgid "Site structure error notifications"
 msgstr "Уведомления об ошибках в структуре сайта"
 
-msgid "Show a notification on Site’s icon in the main menu, if there are errors in the site structure."
-msgstr "Показывать уведомление об ошибках в настройках структуры сайта рядом с иконкой «Сайта» в главном меню."
+msgid "Show error notifications in site structure settings."
+msgstr "Показывать уведомления об ошибках в настройках структуры сайта."
 
 msgid "Site settings"
 msgstr "Настройки сайта"
@@ -1633,3 +1633,6 @@ msgstr "файл"
 
 msgid "Port"
 msgstr "Порт"
+
+msgid "This rule is disabled because it is placed below a more general rule. Move this rule higher in the list to enable it."
+msgstr "Это правило отключено, потому что оно находится ниже более общего правила. Перенесите правило выше, чтобы включить его."

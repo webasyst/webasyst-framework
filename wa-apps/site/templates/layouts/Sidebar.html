@@ -12,7 +12,7 @@
                     {$_domain_title = waIdna::dec(str_replace('www.','',$_domain.title))}
                     <li class="s-domain-list-item{if $d_id == $domain_id} active{/if}">
                         <a href="?domain_id={$d_id}" class="s-domain-link" title="{$_domain_title|escape}">
-                            <i class="indicator red error-domain-icon" id="error-domain-{$d_id}" style="display:{if isset($routing_errors['apps'][$d_id])}block{else}none{/if}">!</i>
+                            <i class="indicator red error-domain-icon {if isset($routing_errors['apps'][$d_id])}visible{else}hide{/if}" id="error-domain-{$d_id}">!</i>
                             <i class="icon16 favicon" style="background-image:url('http{if waRequest::isHttps()}s{/if}://{$_domain.name|escape}/favicon.ico')"></i>{$_domain_title|escape}
                             <i class="shortener"></i>
                         </a>

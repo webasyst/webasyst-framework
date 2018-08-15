@@ -134,6 +134,10 @@ ul.menu-v.with-icons li a { word-break: break-all; position: relative; }
 .s-routing-header { border-bottom: 1px solid #ccc; padding-left: 19px;}
 table.s-settings-apps { margin-top: 10px; }
 table.s-routing #s-routing-addrule { display: none; }
+table.s-routing .s-inc:not(.is-exclamation) .s-exclamation { display: none; }
+table.s-routing .s-inc.is-exclamation { color: #aaa; }
+table.s-routing .s-inc.is-exclamation .s-domain-url,
+table.s-routing .s-inc.is-exclamation .s-editable-url { color: inherit; text-decoration: line-through; }
 table.s-routing td.s-url { padding-left: 19px; width: 50%; }
 table.s-routing td.s-url span { color: #aaa; }
 table.s-routing td.s-url span.s-editable-url { color: #000; word-break: break-all; }
@@ -269,7 +273,8 @@ li.error a {color: red}
 
 /* indicator */
 
-.error-domain-icon, .error-structure-icon { position: absolute; right: 4px; top: 5px; font-style: normal; z-index: 20; }
+.error-domain-icon, .error-structure-icon { position: absolute; right: 4px; top: 7px; font-style: normal; z-index: 20; }
+.error-domain-icon.hide {display: none !important;}
 
 /* ***************************** ************************** */
 .animated {

@@ -31,6 +31,6 @@ class siteRoutingDeleteController extends waJsonController
         //Delete cache problem domains
         $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
         $cache_domain->delete();
-        $this->response['routing_errors'] = siteHelper::getRoutingErrorsText();
+        $this->response['routing_errors'] = siteHelper::getRoutingErrorsInfo();
     }
 }
