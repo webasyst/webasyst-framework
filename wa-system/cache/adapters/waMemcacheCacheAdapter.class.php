@@ -96,7 +96,7 @@ class waMemcacheCacheAdapter extends waCacheAdapter
             $keys[] = $key;
             $this->set($group, $keys);
         }
-        return $this->memcache->set($key, $value, 1, $expiration);
+        return $this->memcache->set($key, $value, 0, $expiration);
     }
 
     /**
