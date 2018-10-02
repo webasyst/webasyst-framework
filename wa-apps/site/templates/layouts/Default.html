@@ -62,6 +62,7 @@
         domain_url: "{$domain_url|escape}",
         domain_protocol: {json_encode($domain_protocol)}, mirror: {json_encode($mirror)}
     });
+    $.wa.site.helper = "app={$wa_app}";
     var wa_url = "{$wa_url}";
     </script>
 </div>
