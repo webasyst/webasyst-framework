@@ -362,7 +362,8 @@ class waSystemConfig
             waFiles::create($path);
             return $path;
         } else {
-            return $this->getPath('apps').'/'.$app.'/lib/config/'.$name;
+            $path_name = ($app == 'webasyst') ? 'system' : 'apps';
+            return $this->getPath($path_name).'/'.$app.'/lib/config/'.$name;
         }
     }
 

@@ -40,7 +40,7 @@ class waMail extends Swift_Mailer
             // Find email:
             if (isset($mail_config[$sender_email])) {
                 $mail_data = $mail_config[$sender_email];
-            // Find domain:
+                // Find domain:
             } elseif (isset($mail_config[$domain_name])) {
                 $mail_data = $mail_config[$domain_name];
             }
@@ -98,6 +98,9 @@ class waMail extends Swift_Mailer
             return Swift_MailTransport::newInstance();
         }
         if ($config['type'] == 'smtp') {
+            if (empty($config['port'])) {
+                $config['port'] = 25;
+            }
             $transport = Swift_SmtpTransport::newInstance($config['host'], $config['port']);
             if (isset($config['login'])) {
                 $transport->setUsername($config['login']);

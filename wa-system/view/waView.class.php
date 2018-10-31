@@ -1,7 +1,6 @@
 <?php
 /**
  * Abstract View.
- * Абстрактный Вид.
  *
  * @package   wa-system
  * @category  view
@@ -28,7 +27,7 @@ abstract class waView
 
     /**
 	 * Initialize view properties.
-	 * 
+	 *
      * @param  waSystem $system  Instance of system object
      * @param  array    $options Configuration options
      * @return void
@@ -40,7 +39,7 @@ abstract class waView
 
     /**
 	 * Get helper object.
-	 * 
+	 *
      * @return waViewHelper
      */
     public function getHelper()
@@ -54,7 +53,7 @@ abstract class waView
 
     /**
 	 * Set view options.
-	 * 
+	 *
      * @param  array $options New configuration options
      * @return waView
      */
@@ -69,7 +68,7 @@ abstract class waView
 
     /**
 	 * Get template extension.
-	 * 
+	 *
      * @return string
      */
     public function getPostfix()
@@ -87,7 +86,7 @@ abstract class waView
 
     /**
 	 * Execute prepare render temaplate.
-	 * 
+	 *
      * @return waView
      */
     protected function prepare()

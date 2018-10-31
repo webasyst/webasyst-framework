@@ -368,9 +368,10 @@ class waHtmlControl
             $params['id'] .= ++$counter.'_';
         }
         $params['id'] = preg_replace(array('/[_]{2,}/', '/[_]{1,}$/'), array('_', ''), str_replace(array('[', ']', '.'), '_', $params['id']));
+        return $params['id'];
     }
 
-    final private static function makeNamespace($params)
+    final public static function makeNamespace($params)
     {
         $namespace = null;
         if (!empty($params['namespace'])) {
@@ -425,9 +426,9 @@ class waHtmlControl
     {
         $title = '';
         if (isset($params['title']) && !empty($params['title_wrapper'])) {
-            $option_title = htmlentities(self::_wp($params['title'], $params), ENT_QUOTES, self::$default_charset);
+            $option_title = self::escape(self::_wp($params['title'], $params));
             if (!empty($params['id']) && strlen($option_title)) {
-                $params['id'] = htmlentities($params['id'], ENT_QUOTES, self::$default_charset);
+                $params['id'] = self::escape($params['id']);
                 $option_title = sprintf('<label for="%s">%s</label>', $params['id'], $option_title);
             }
             $title = sprintf($params['title_wrapper'], $option_title);
@@ -449,7 +450,7 @@ class waHtmlControl
     private function getInputControl($name, $params = array())
     {
         $control = '';
-        $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
+        $control_name = self::escape($name);
         $control .= "<input id=\"{$params['id']}\" type=\"text\" name=\"{$control_name}\" ";
         if (isset($params['format_description'])) {
             $params['format_description'] = self::_wp($params['format_description']);
@@ -459,6 +460,7 @@ class waHtmlControl
             'style',
             'size',
             'maxlength',
+            'title',
             'value',
             'placeholder',
             'readonly',
@@ -476,9 +478,9 @@ class waHtmlControl
 
     private function getHiddenControl($name, $params = array())
     {
-        $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
+        $control_name = self::escape($name);
         $control = "<input type=\"hidden\" name=\"{$control_name}\" ";
-        $control .= self::addCustomParams(array('id','class', 'value', 'disabled'), $params);
+        $control .= self::addCustomParams(array('id', 'class', 'title', 'value', 'disabled'), $params);
         $control .= ">";
         return $control;
     }
@@ -486,7 +488,7 @@ class waHtmlControl
     private function getFileControl($name, $params = array())
     {
         $control = '';
-        $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
+        $control_name = self::escape($name);
         $control .= "<input type=\"file\" name=\"{$control_name}\" ";
         $control .= self::addCustomParams(array('class', 'style', 'id'), $params);
         $control .= ">";
@@ -495,14 +497,14 @@ class waHtmlControl
                 $path = wa()->getDataPath($params['img_path'], true);
                 if (file_exists($path.'/'.$params['value'])) {
                     $url = wa()->getDataUrl($params['img_path'], true);
-                    $file = htmlentities($url.$params['value'], ENT_NOQUOTES, self::$default_charset);
+                    $file = self::escape($url.$params['value'], ENT_NOQUOTES);
                     $control .= "<br/><span><img src=\"{$file}\"></span>";
                 } else {
-                    $file = htmlentities($params['value'], ENT_NOQUOTES, self::$default_charset);
+                    $file = self::escape($params['value'], ENT_NOQUOTES);
                     $control .= "<br/><span>{$file}</span>";
                 }
             } else {
-                $file = htmlentities($params['value'], ENT_NOQUOTES, self::$default_charset);
+                $file = self::escape($params['value'], ENT_NOQUOTES);
                 $control .= "<br/><span>{$file}</span>";
             }
         }
@@ -512,10 +514,10 @@ class waHtmlControl
     private function getTextareaControl($name, $params = array())
     {
         $control = '';
-        $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
-        $value = htmlentities((string)$params['value'], ENT_QUOTES, self::$default_charset);
+        $control_name = self::escape($name);
+        $value = self::escape($params['value']);
         $control .= "<textarea name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
+        $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'title', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
         $control .= ">{$value}</textarea>";
 
         if (empty($params['wysiwyg']) && !empty($params['wisywig'])) {
@@ -561,8 +563,8 @@ HTML;
     private function getHelpControl($name, $params = array())
     {
         $control = '';
-        $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
-        $value = htmlentities((string)$params['value'], ENT_QUOTES, self::$default_charset);
+        $control_name = self::escape($name);
+        $value = self::escape($params['value']);
         $control .= "<p name=\"{$control_name}\"";
         $control .= self::addCustomParams(array('id', 'class', 'style',), $params);
         $control .= ">{$value}</p>";
@@ -572,8 +574,8 @@ HTML;
     private function getTitleControl($name, &$params = array())
     {
         $control = '';
-        $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
-        $value = htmlentities((string)$params['value'], ENT_QUOTES, self::$default_charset);
+        $control_name = self::escape($name);
+        $value = self::escape($params['value']);
         $control .= "<h3 name=\"{$control_name}\"";
         $control .= self::addCustomParams(array('id', 'class', 'style',), $params);
         $control .= ">{$value}</h3>";
@@ -592,19 +594,18 @@ HTML;
     private function getPasswordControl($name, $params = array())
     {
         $control = '';
-        $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
+        $control_name = self::escape($name);
         $control .= "<input type=\"password\" name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('id', 'class', 'style', 'size', 'maxlength', 'value', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
+        $control .= self::addCustomParams(array('id', 'class', 'style', 'size', 'maxlength', 'title', 'value', 'placeholder', 'readonly', 'autofocus', 'disabled'), $params);
         $control .= ">";
         return $control;
     }
 
     private function getRadiogroupControl($name, $params = array())
     {
-
         $control = '';
         $id = 0;
-        $value = htmlentities((string)$params['value'], ENT_QUOTES, self::$default_charset);
+        $value = self::escape($params['value']);
         $options = isset($params['options']) ? (is_array($params['options']) ? $params['options'] : array($params['options'])) : array();
         foreach ($options as $option) {
             ++$id;
@@ -615,12 +616,12 @@ HTML;
                 unset($params['checked']);
             }
             self::makeId($params, $name, md5($option_value));
-            $option_value = htmlentities((string)$option_value, ENT_QUOTES, self::$default_charset);
-            $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
+            $option_value = self::escape($option_value);
+            $control_name = self::escape($name);
             $control .= "<input type=\"radio\" name=\"{$control_name}\" value=\"{$option_value}\"";
-            $control .= self::addCustomParams(array('id', 'class', 'style', 'checked', 'readonly', 'disabled',), $params);
+            $control .= self::addCustomParams(array('id', 'class', 'style', 'checked', 'readonly', 'disabled',), $params + $option);
             if (!empty($option['title'])) {
-                $option_title = htmlentities(self::_wp($option['title'], $params), ENT_QUOTES, self::$default_charset);
+                $option_title = self::escape(self::_wp($option['title'], $params));
                 $control .= ">&nbsp;<label";
                 $control .= self::addCustomParams(array('id' => 'for',), $params);
                 $control .= self::addCustomParams(array('description' => 'title', 'class', 'style',), $option);
@@ -643,7 +644,7 @@ HTML;
         $id = 0;
         $options = isset($params['options']) ? (is_array($params['options']) ? $params['options'] : array($params['options'])) : array();
         $control .= "<select name=\"{$name}\" autocomplete=\"off\"";
-        $control .= self::addCustomParams(array('id', 'class', 'style', 'readonly', 'autofocus', 'disabled'), $params);
+        $control .= self::addCustomParams(array('id', 'class', 'style', 'title', 'readonly', 'autofocus', 'disabled'), $params);
         $control .= ">\n";
         $group = null;
         foreach ($options as $option) {
@@ -660,7 +661,7 @@ HTML;
                     ),
                     $option
                 );
-                $control .= "\n<optgroup label=\"".htmlentities($group, ENT_QUOTES, self::$default_charset)."\"".$custom_params.">\n";
+                $control .= "\n<optgroup label=\"".self::escape($group)."\"".$custom_params.">\n";
             }
 
             ++$id;
@@ -669,15 +670,16 @@ HTML;
                 $params['selected'] = 'selected';
             } elseif (isset($params['selected'])) {
                 unset($params['selected']);
+                unset($params['value']);
             }
             if (isset($option['description'])) {
                 $params['description'] = $option['description'];
             }
-            $option_value = htmlentities((string)$option_value, ENT_QUOTES, self::$default_charset);
+            $option_value = self::escape($option_value);
             $control .= "<option value=\"{$option_value}\"";
             $control .= self::addCustomParams(array('selected'), $params);
             $control .= self::addCustomParams(array('class', 'style', 'disabled', 'description' => 'title',), $option);
-            $option_title = htmlentities(self::_wp(ifset($option['title'], $option_value), $params), ENT_QUOTES, self::$default_charset);
+            $option_title = self::escape(self::_wp(ifset($option['title'], $option_value), $params));
             $control .= ">{$option_title}</option>\n";
         }
         if ($group) {
@@ -779,7 +781,7 @@ HTML;
         $control .= self::addCustomParams(array('value', 'class', 'style', 'checked', 'id', 'title', 'disabled',), $params);
         $control .= ">";
         if (isset($params['label']) && $params['label']) {
-            $control .= '&nbsp;'.htmlentities(self::_wp($params['label'], $params), ENT_QUOTES, self::$default_charset)."</label>";
+            $control .= '&nbsp;'.self::escape(self::_wp($params['label'], $params))."</label>";
         }
 
         return $control;
@@ -958,7 +960,7 @@ HTML;
                     } elseif (in_array($param, array('disabled', 'readonly'))) {
                         $param_value = $param;
                     }
-                    $param_value = htmlentities((string)$param_value, ENT_QUOTES, self::$default_charset);
+                    $param_value = self::escape($param_value);
                     if (in_array($param, array('autofocus'))) {
                         $params_string .= " {$target}";
                     } else {
@@ -976,6 +978,12 @@ HTML;
         }
         return $params_string;
     }
+
+    protected static function escape($string, $quote_style = ENT_QUOTES)
+    {
+        return htmlentities((string)$string, $quote_style, self::$default_charset);
+    }
+
 
     private static function _wp($param, $params = array())
     {

@@ -35,8 +35,8 @@ class waAuthUser extends waUser
             self::$options['session_timeout'] = 1800;
         }
 
-        if (ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
-            ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
+        if (!headers_sent() && ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
+            @ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
         }
 
         $auth = waSystem::getInstance()->getAuth();

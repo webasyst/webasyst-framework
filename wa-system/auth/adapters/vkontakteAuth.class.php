@@ -55,13 +55,14 @@ class vkontakteAuth extends waOAuth2Adapter
             $response = ifset($response['response'][0]);
             if ($response) {
                 $data = array(
-                    'source' => 'vkontakte',
-                    'source_id' => $response['id'],
-                    'url' => "http://vk.com/id".$response['id'],
-                    'name' => trim(ifset($response['first_name'], '')." ".ifset($response['last_name'], '')),
-                    'firstname' => ifset($response['first_name'], ''),
-                    'lastname' => ifset($response['last_name'], ''),
-                    'photo_url' => ifset($response['photo_medium'], '')
+                    'source'                  => 'vkontakte',
+                    'source_id'               => $response['id'],
+                    'socialnetwork.vkontakte' => $response['id'],
+                    'url'                     => "http://vk.com/id".$response['id'],
+                    'name'                    => trim(ifset($response['first_name'], '')." ".ifset($response['last_name'], '')),
+                    'firstname'               => ifset($response['first_name'], ''),
+                    'lastname'                => ifset($response['last_name'], ''),
+                    'photo_url'               => ifset($response['photo_medium'], '')
                 );
                 if (!empty($token['email'])) {
                     $data['email'] = $token['email'];

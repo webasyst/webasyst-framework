@@ -787,6 +787,7 @@ class waContact implements ArrayAccess
                 $data['create_contact_id'],
                 $data['create_app_id'],
                 $data['create_method'],
+                $data['create_domain'],
                 $data['is_company']
             );
         }
@@ -795,6 +796,8 @@ class waContact implements ArrayAccess
                 $data['login'],
                 $data['is_user']
             );
+        } else {
+            unset($data['create_domain']);
         }
         if (waConfig::get('is_template')) {
             unset(

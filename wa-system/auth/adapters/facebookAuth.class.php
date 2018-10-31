@@ -4,8 +4,8 @@ class facebookAuth extends waOAuth2Adapter
 {
     protected $check_state = true;
 
-    const LOGIN_URL = "http://www.facebook.com/v2.8/dialog/oauth";
-    const API_URL   = "https://graph.facebook.com/v2.8/";
+    const LOGIN_URL = "http://www.facebook.com/v2.9/dialog/oauth";
+    const API_URL   = "https://graph.facebook.com/v2.9/";
 
     public function __construct($options = array())
     {

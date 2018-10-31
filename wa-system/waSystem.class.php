@@ -1061,6 +1061,32 @@ class waSystem
                                 $app_info['icon'][16] = $app_info['icon'][24];
                             }
                         }
+                        // WA Header app items
+                        if (isset($app_info['header_items'])) {
+                            foreach ($app_info['header_items'] as $item_id => &$params) {
+                                if (isset($params['name'])) {
+                                    $params['name'] = _wd($app, $params['name']);
+                                }
+                                $path_to_app = ($app == 'webasyst') ? 'wa-content' : 'wa-apps/'.$app;
+                                if (isset($params['icon'])) {
+                                    if (is_array($params['icon'])) {
+                                        foreach ($params['icon'] as $size => $url) {
+                                            $params['icon'][$size] = $path_to_app.'/'.$url;
+                                        }
+                                    } else {
+                                        $params['icon'] = array(
+                                            48 => $path_to_app.'/'.$params['icon'],
+                                        );
+                                    }
+                                }
+                                if (isset($params['img'])) {
+                                    $params['img'] = $path_to_app.'/'.$params['img'];
+                                } elseif (isset($params['icon'][48])) {
+                                    $params['img'] = $params['icon'][48];
+                                }
+                            }
+                            unset($params);
+                        }
                         self::$apps[$app] = array(
                             'id' => $app,
                         ) + $app_info;

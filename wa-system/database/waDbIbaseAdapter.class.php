@@ -12,8 +12,8 @@
  * @package wa-system
  * @subpackage database
  */
- 
- 
+
+
 class waDbIbaseAdapter extends waDbAdapter
 {
     public function connect($settings)
@@ -86,10 +86,10 @@ class waDbIbaseAdapter extends waDbAdapter
 class waDbResultIbaseIterator extends waDbResultIterator
 {
 
-     private $records = array(); // Буффер для хранения уже профетчеванных записей
-     private $eof = true;        
-     private $result;            // Хэндлер результата выполненного запроса  
-         
+     private $records = array(); // buffer for storing fetched records
+     private $eof = true;
+     private $result;            // result handler for completed query
+
     public function __construct($result, waDbAdapter $adapter)
     {
     parent::__construct($result, $adapter);
@@ -104,37 +104,37 @@ class waDbResultIbaseIterator extends waDbResultIterator
         }
         return $this->records[$this->key];
     }
-    
+
     public function rewind()  // override
     {
         $this->key = -1;
-        $this->next(); // Читаем первую запись
+        $this->next(); // reading first record
     }
 
     public function valid()   // override
     {
         return !$this->eof;
     }
-                
+
     public function key() // override
     {
     return $this->key;
     }
-                                                                                                    
+
     public function next() // override
     {
-        if (count($this->records)-1 == $this->key) // если находимся на последней записи в буфере
+        if (count($this->records)-1 == $this->key) // if last record in buffer
         {
-            $row = $this->next_fetch();            // пытаемся фетчивать следующую запись из результата запроса
+            $row = $this->next_fetch();            // trying to fetch next record from query result
         }
         else
         {
-            $row = $this->next_record();           // получаем следующую запись из буфера
+            $row = $this->next_record();           // getting next record from buffer
         }
-        $this->eof = $row ? false : true;          // устанавливаем eof, если нет больше записей ни в результате запроса ни в буфере
+        $this->eof = $row ? false : true;          // setting eof, if there are no records either in query result or in buffer
         return $row;
     }
-    
+
     /**
      * Returns result of the count
      *
@@ -147,7 +147,7 @@ class waDbResultIbaseIterator extends waDbResultIterator
         }
         return count($this->records);
     }
-                                                                            
+
     private function next_fetch()
     {
         $row = $this->fetchAssoc();
@@ -157,11 +157,11 @@ class waDbResultIbaseIterator extends waDbResultIterator
         }
         return $row;
     }
-                                                                    
+
     private function next_record()
     {
     $this->key++;
         return $this->records[$this->key];
     }
-                                
+
 }

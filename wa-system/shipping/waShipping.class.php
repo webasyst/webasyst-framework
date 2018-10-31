@@ -15,6 +15,13 @@
 
 abstract class waShipping extends waSystemPlugin
 {
+    const TYPE_TODOOR = 'todoor';
+    const TYPE_PICKUP = 'pickup';
+    const TYPE_POST = 'post';
+
+    const PAYMENT_TYPE_CASH = 'cash';
+    const PAYMENT_TYPE_PREPAID = 'prepaid';
+    const PAYMENT_TYPE_CARD = 'card';
 
     const PLUGIN_TYPE = 'shipping';
 
@@ -29,10 +36,7 @@ abstract class waShipping extends waSystemPlugin
 
     private $params = array();
 
-    /**
-     *
-     * @var waAppShipping
-     */
+    /** @var waAppShipping */
     private $app_adapter;
 
     protected $app_id;
@@ -145,6 +149,11 @@ abstract class waShipping extends waSystemPlugin
         $this->items = $items;
     }
 
+    /**
+     * Get package param setted via setParams() or getRates
+     * @param string $property
+     * @return mixed|null
+     */
     protected function getPackageProperty($property)
     {
         $property_value = null;
@@ -187,12 +196,49 @@ abstract class waShipping extends waSystemPlugin
                     $property_value += $item[$property];
                 }
                 break;
+            case 'departure_datetime':
+                if (isset($this->params[$property])) {
+                    $property_value = $this->params[$property];
+                } else {
+                    // SQL DATETIME format
+                    $property_value = date('Y-m-d H:i:s', time() + 900); // 15 minutes later
+                }
+                break;
             default:
                 if (isset($this->params[$property])) {
                     $property_value = $this->params[$property];
                 }
         }
         return $property_value;
+    }
+
+    protected function getTotalSize()
+    {
+        $size = array(
+            'height' => $this->getPackageProperty('total_height'),
+            'width'  => $this->getPackageProperty('total_width'),
+            'length' => $this->getPackageProperty('total_length'),
+        );
+        if (in_array(false, $size, true)) {
+            return false;
+        } else {
+            return in_array(0, $size) ? null : $size;
+        }
+    }
+
+    protected function getTotalHeight()
+    {
+        return $this->getPackageProperty('total_height');
+    }
+
+    protected function getTotalWidth()
+    {
+        return $this->getPackageProperty('total_width');
+    }
+
+    protected function getTotalLength()
+    {
+        return $this->getPackageProperty('total_length');
     }
 
     protected function getTotalWeight()
@@ -288,6 +334,7 @@ abstract class waShipping extends waSystemPlugin
      * @return array[string]['currency']string
      * @return array[string]['rate']mixed float or array for min-max
      * @return array[string]['comment']string optional comment
+     * @return array[string]['custom_data']mixed optional custom data for input control
      */
     public function getRates($items = array(), $address = array(), $params = array())
     {
@@ -456,14 +503,31 @@ abstract class waShipping extends waSystemPlugin
         return array();
     }
 
+    /**
+     * @return array
+     */
     public function requestedAddressFields()
     {
         return array();
     }
 
+    /**
+     * @param array $service
+     * @return array
+     */
+    public function requestedAddressFieldsForService($service)
+    {
+        return $this->requestedAddressFields();
+    }
+
     public function customFields(waOrder $order)
     {
         return array();
+    }
+
+    public function customFieldsForService(waOrder $order, $service)
+    {
+        return $this->customFields($order);
     }
 
     public function displayCustomFields($fields, $env = null)
@@ -475,6 +539,28 @@ abstract class waShipping extends waSystemPlugin
      *
      */
     abstract protected function calculate();
+
+    /**
+     * @return null|array
+     */
+    public function getPromise()
+    {
+        return null;
+    }
+
+    /**
+     * @param waOrder $order
+     */
+    public function prefetch($order)
+    {
+
+    }
+
+    public function sync()
+    {
+
+    }
+
 
     /**
      *
@@ -1012,17 +1098,17 @@ HTML;
             $date_params['style'] = "z-index: 100000;";
 
             $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
-            $offset = min(365, max(0, intval(ifset($params['params']['date'], 0))));
+            $offset = min(365, max(0, intval(ifset($params, 'params', 'date', 0))));
             $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
             $date_params['description'] = _ws('Date');
-            $date_params['value'] = ifset($params['value']['date_str']);
+            $date_params['value'] = ifset($params, 'value', 'date_str', '');
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
             waHtmlControl::makeId($date_params, $date_name);
 
             $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
             $date_formatted_params = $params;
             $date_formatted_params['style'] = "display: none;";
-            $date_formatted_params['value']=ifset($params['value']['date']);
+            $date_formatted_params['value'] = ifset($params, 'value', 'date', '');
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
             waHtmlControl::makeId($date_formatted_params, $date_name);
 
@@ -1118,6 +1204,7 @@ HTML;
                     date_input.val(dateText);
                     date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
                     if (d && interval && interval.length) {
+                        /** @var int day week day (starts from 0) */
                         var day = (d.getDay() + 6) % 7;
                         /**
                          * filter select by days
@@ -1125,6 +1212,9 @@ HTML;
                         var value = typeof(interval.val()) !== 'undefined';
                         var matched = null;
                         interval.find('option').each(function () {
+                            /**
+                             * @this HTMLOptionElement
+                             */
                             var option = $(this);
                             var disabled = (option.data('days').indexOf(day) === -1) ? 'disabled' : null;
                             option.attr('disabled', disabled);
@@ -1165,13 +1255,13 @@ HTML;
                 }
             });
             $('.ui-datepicker').css({
-                "zIndex":999999,
-                "display":'none'
+                "zIndex": 999999,
+                "display": 'none'
             });
         };
 
         var init_locale = function () {
-            if ('$localization' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
+            if ('{$localization}' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
                 $.getScript('{$root_url}{$localization}', init);
             } else {
                 init();
@@ -1281,5 +1371,13 @@ HTML;
         }
 
         return $this->app_adapter;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMode()
+    {
+        return self::MODE_SIMPLE;
     }
 }

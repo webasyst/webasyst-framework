@@ -64,7 +64,7 @@ function wa_dumpc()
     if (php_sapi_name() != 'cli') {
         echo "</pre>\n";
     }
-    if (!waConfig::get('is_template')) {
+    if (class_exists('waConfig') && !waConfig::get('is_template')) {
         return reset($args);
     }
 }
@@ -351,13 +351,19 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     }
 
     $level_arr[] = &$value;
-    foreach($value_to_iterate as $key => &$val) {
+    $keys = array_keys($value_to_iterate);
+    if (class_exists('waConfig') && waConfig::get('wa_dump_sort_keys')) {
+        sort($keys);
+    }
+    foreach($keys as $key) {
         if (is_array($value)) {
-            $key = wa_dump_helper($key);
+            $escaped_key = wa_dump_helper($key);
         } else if (!$cli) {
-            $key = htmlspecialchars($key, $htmlspecialchars_mode, 'utf-8');
+            $escaped_key = htmlspecialchars($key, $htmlspecialchars_mode, 'utf-8');
+        } else {
+            $escaped_key = $key;
         }
-        $str .= $br."  ".$key.' => '.wa_dump_helper($val, $level_arr, $cli).(is_array($value) ? ',' : '');
+        $str .= $br."  ".$escaped_key.' => '.wa_dump_helper($value_to_iterate[$key], $level_arr, $cli).(is_array($value) ? ',' : '');
     }
     array_pop($level_arr);
 

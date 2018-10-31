@@ -13,7 +13,7 @@
  * 2) You can change the work of the cheat sheet. No restrictions.
  * You can make your cheat sheet design and place it in your plugin at '../templates/cheatSheet.html'
  * E.g.:
-      а) You need to insert the help menu on the page
+      a) You need to insert the help menu on the page
       b) Your plugin uses a text editor and you want to use only your variables.
  *
  * How it works (with basic settings):

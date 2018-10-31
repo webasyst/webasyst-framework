@@ -1,4 +1,16 @@
 <?php
+/*
+ * This file is part of Webasyst framework.
+ *
+ * Licensed under the terms of the GNU Lesser General Public License (LGPL).
+ * http://www.webasyst.com/framework/license/
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2017 Webasyst LLC
+ * @package wa-system
+ * @subpackage files
+ */
 
 /**
  * Class waNet
@@ -44,12 +56,16 @@ class waNet
         'authorization'       => false,
         'login'               => null,
         'password'            => null,
+        # proxy settings
         'proxy_host'          => null,
         'proxy_port'          => null,
         'proxy_user'          => null,
         'proxy_password'      => null,
         'proxy_auth'          => 'basic',
-        'expected_http_code'  => 200, // null to accept any code
+        # specify custom interface
+        'interface'           => null,
+        # string with list of expected codes separated comma or space; null to accept any code
+        'expected_http_code'  => 200,
         'priority'            => array(
             'curl',
             'fopen',
@@ -62,6 +78,8 @@ class waNet
         ),
     );
 
+    private static $master_options = array();
+
     protected $raw_response;
     protected $decoded_response;
 
@@ -70,24 +88,44 @@ class waNet
     private $ch;
 
     private static $mh;
-    /** @var waNet[]  */
+    /** @var waNet[] */
     private static $instances = array();
 
     /**
      * waNet constructor.
-     * @param array $options
+     * @param array $options key => value format
      * @param array $custom_headers key => value format
      */
     public function __construct($options = array(), $custom_headers = array())
     {
         $this->user_agent = sprintf('Webasyst-Framework/%s', wa()->getVersion('webasyst'));
-        //TODO read proxy settings from generic config
 
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->options['verify'] = false;
         }
-        $this->options = array_merge($this->options, $options);
+
+        $this->options = array_merge(
+            $this->options,
+            $this->getDefaultOptions(),
+            $options,
+            self::$master_options
+        );
+
         $this->request_headers = array_merge($this->request_headers, $custom_headers);
+    }
+
+    private function getDefaultOptions()
+    {
+        $config = wa()->getConfigPath().'/net.php';
+        $options = array();
+        if (file_exists($config)) {
+            $options = include($config);
+        }
+        if (!is_array($options)) {
+            $options = array();
+        }
+
+        return $options;
     }
 
     /**
@@ -100,6 +138,7 @@ class waNet
         if ($user_agent != null) {
             $this->user_agent = $user_agent;
         }
+
         return $current_user_agent;
     }
 
@@ -149,6 +188,7 @@ class waNet
         } else {
 
             $this->onQueryComplete($response);
+
             return $this->getResponse();
         }
     }
@@ -248,6 +288,7 @@ class waNet
             foreach ($this->request_headers as $header => $value) {
                 $headers[] = sprintf('%s: %s', $header, $value);
             }
+
             return $headers;
         }
     }
@@ -317,6 +358,7 @@ class waNet
         if (!empty($this->options['md5'])) {
             $this->request_headers['Content-MD5'] = base64_encode(md5($content, true));
         }
+
         return $content;
     }
 
@@ -330,39 +372,7 @@ class waNet
         $this->decoded_response = null;
         switch ($this->options['format']) {
             case self::FORMAT_JSON:
-                $this->decoded_response = @json_decode($this->raw_response, true);
-                if (function_exists('json_last_error')) {
-                    if (JSON_ERROR_NONE !== json_last_error()) {
-                        if (function_exists('json_last_error_msg')) {
-                            $message = json_last_error_msg();
-                        } else {
-                            $message = json_last_error();
-                            $codes = array(
-                                'JSON_ERROR_DEPTH'            => 'The maximum stack depth has been exceeded',
-                                'JSON_ERROR_STATE_MISMATCH'   => 'Invalid or malformed JSON',
-                                'JSON_ERROR_CTRL_CHAR'        => 'Control character error, possibly incorrectly encoded',
-                                'JSON_ERROR_SYNTAX'           => 'Syntax error',
-                                'JSON_ERROR_UTF8'             => 'Malformed UTF-8 characters, possibly incorrectly encoded',//PHP 5.3.3
-                                'JSON_ERROR_RECURSION'        => 'One or more recursive references in the value to be encoded',//PHP 5.5.0
-                                'JSON_ERROR_INF_OR_NAN'       => 'One or more NAN or INF values in the value to be encoded',//PHP 5.5.0
-                                'JSON_ERROR_UNSUPPORTED_TYPE' => 'A value of a type that cannot be encoded was given',//PHP 5.5.0
-                            );
-
-                            foreach ($codes as $code => $_message) {
-                                if (defined($code) && (constant($code) == $message)) {
-                                    $message = $_message;
-                                    break;
-                                }
-                            }
-
-                        }
-                        throw new waException('Error while decode JSON response: '.$message);
-                    }
-                } else {
-                    if ($this->decoded_response === null) {
-                        throw new waException('Error while decode JSON response');
-                    }
-                }
+                $this->decoded_response = waUtils::jsonDecode($this->raw_response, true);
                 break;
             case self::FORMAT_XML:
                 $xml_options = LIBXML_NOCDATA | LIBXML_NOENT | LIBXML_NONET;
@@ -407,8 +417,10 @@ class waNet
                 return $this->response_header[$header];
             }
             $header = str_replace('-', '_', strtolower($header));
+
             return ifset($this->response_header[$header]);
         }
+
         return $this->response_header;
     }
 
@@ -480,6 +492,7 @@ class waNet
             return $this->addMultiCurl($callback);
         } else {
             $response = @curl_exec($this->ch);
+
             return $this->handleCurlResponse($response);
         }
     }
@@ -523,12 +536,17 @@ class waNet
             'instance' => $this,
             'callback' => $callback,
         );
+
         return $this;
     }
 
 
-    public static function multiQuery($namespace = null)
+    public static function multiQuery($namespace = null, $options = array())
     {
+        if ($options) {
+            self::$master_options = $options;
+        }
+
         if ($namespace && !isset(self::$mh[$namespace])) {
             if (empty(self::$mh[$namespace]) && function_exists('curl_multi_init')) {
                 self::$mh[$namespace] = curl_multi_init();
@@ -593,8 +611,11 @@ class waNet
                     CURLE_OPERATION_TIMEOUTED => $this->options['timeout'],
                     CURLOPT_DNS_CACHE_TIMEOUT => 3600,
                     CURLOPT_USERAGENT         => $this->user_agent,
-                    //CURLOPT_INTERFACE         => 'eth0',#TODO use actual server interface
                 );
+
+                if (isset($this->options['interface'])) {
+                    $curl_default_options[CURLOPT_INTERFACE] = $this->options['interface'];
+                }
 
                 if ($this->options['verify']) {
 
@@ -750,6 +771,7 @@ class waNet
                 throw new waException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
             }
         }
+
         return $response;
     }
 
@@ -890,6 +912,7 @@ class waNet
             list($header, $body) = explode("\r\n\r\n", $response, 2);
             $this->parseHeader(preg_split('@[\r\n]+@', $header));
         }
+
         return $body;
     }
 
@@ -929,6 +952,7 @@ class waNet
                 $url .= '?'.http_build_query($get);
             }
         }
+
         return $post;
     }
 
@@ -941,6 +965,7 @@ class waNet
         ) {
             $hint = strip_tags($error['message']);
         }
+
         return $hint;
     }
 

@@ -84,11 +84,12 @@ HTML;
 
         $image_id = 'google-static-map-id'.uniqid();
 
+        $link_text = _ws('Link to map');
         $remove_bad_map = <<<JS
 function() {
     var badMap = document.getElementById('{$image_id}'),
         span = document.createElement('span');
-    span.innerHTML = '<i class=\'icon16 marker\'></i> Ссылка на карту';
+    span.innerHTML = '<i class=\'icon16 marker\'></i> {$link_text}';
     badMap.parentNode.replaceChild(span, badMap);
 }
 JS;

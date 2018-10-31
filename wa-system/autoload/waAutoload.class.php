@@ -66,8 +66,11 @@ class waAutoload
             if (!file_exists($path)) {
 
                 // Clear autoload cache of loaded apps
-                if (!isset($this->system_classes[$class]) && class_exists('waSystem', false) && !waSystemConfig::isDebug()) {
-                    foreach(array_keys(wa()->getApps()) as $app_id) {
+                if (!isset($this->system_classes[$class])
+                    && class_exists('waSystem', false)
+                    && !waSystemConfig::isDebug()
+                ) {
+                    foreach (array_keys(wa()->getApps()) as $app_id) {
                         if (waSystem::isLoaded($app_id)) {
                             waAppConfig::clearAutoloadCache($app_id);
                         }
@@ -84,7 +87,10 @@ class waAutoload
 
             require_once $path;
 
-            if (!class_exists($class, false) && !interface_exists($class, false)) {
+            if (!class_exists($class, false)
+                && !interface_exists($class, false)
+                && (function_exists('trait_exists') && !trait_exists($class, false))
+            ) {
                 $msg = sprintf('Not found class [%2$s] in file [%1$s]', $path, $class);
                 if ($class == 'waException') {
                     throw new Exception($msg, 500);
@@ -100,7 +106,9 @@ class waAutoload
         if (isset($this->system_classes[$class])) {
             return $this->base_path.'/wa-system/'.$this->system_classes[$class];
         } elseif (substr($class, 0, 2) == 'wa') {
-            if (strpos($class, '.') !== false) return null;
+            if (strpos($class, '.') !== false) {
+                return null;
+            }
 
             if (substr($class, 0, 4) === 'waDb') {
                 $file = $this->base_path.'/wa-system/database/'.$class.'.class.php';
@@ -241,6 +249,7 @@ class waAutoload
 
         'waFiles'                  => 'file/waFiles.class.php',
         'waNet'                    => 'file/waNet.class.php',
+        'waArchiveTar'             => 'file/waArchiveTar.class.php',
         'waTheme'                  => 'file/waTheme.class.php',
 
         'waLayout'                 => 'layout/waLayout.class.php',
@@ -275,6 +284,7 @@ class waAutoload
         'waUtils'                  => 'util/waUtils.class.php',
 
         'waEmailValidator'         => 'validator/waEmailValidator.class.php',
+        'waTimeValidator'          => 'validator/waTimeValidator.class.php',
         'waRegexValidator'         => 'validator/waRegexValidator.class.php',
         'waStringValidator'        => 'validator/waStringValidator.class.php',
         'waUrlValidator'           => 'validator/waUrlValidator.class.php',

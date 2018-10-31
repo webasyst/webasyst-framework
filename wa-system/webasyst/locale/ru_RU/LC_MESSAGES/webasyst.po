@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-07-23 15:08+0300\n"
+"PO-Revision-Date: 2018-10-17 14:23+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1683,8 +1683,8 @@ msgstr "Название страницы"
 msgid "Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line."
 msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться в шаблоне page.html или в содержимом текущей страницы как <em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
 
-msgid "http://www.webasyst.com/framework/docs/site/pages/"
-msgstr "http://www.webasyst.com/ru/framework/docs/site/pages/"
+msgid "https://developers.webasyst.com/templates/pages/"
+msgstr "https://developers.webasyst.ru/docs/templates/pages/"
 
 msgid "WYSIWYG"
 msgstr "Визуальный редактор"
@@ -2105,7 +2105,7 @@ msgid "no-title"
 msgstr "без названия"
 
 #: /wa-system/controller/waForgotPasswordAction.class.php:111
-msgid "Sorry, we can not recover password for this login name or email. Please refer to your system administrator."
+msgid "Sorry, we cannot recover password for this login name or email. Please refer to your system administrator."
 msgstr "Извините, восстановить пароль для указанного имени пользователя или email-адреса не удалось. Обратитесь к системному администратору."
 
 #: /wa-system/design/actions/waDesign.actions.php:312
@@ -2238,9 +2238,12 @@ msgstr "Сбросить все изменения"
 msgid "Parent theme"
 msgstr "Родительская тема дизайна"
 
+msgid "Select"
+msgstr "Выбрать"
+
 #: /wa-system/design/templates/Theme.html:25
-msgid "not set"
-msgstr "не задана"
+msgid "not selected"
+msgstr "не выбрана"
 
 #: /wa-system/design/templates/Theme.html:25
 msgid "Change"
@@ -3739,6 +3742,9 @@ msgstr "Данные должны быть массивом"
 msgid "Incorrect date"
 msgstr "Неправильная дата"
 
+msgid "Incorrect time"
+msgstr "Неправильное время"
+
 msgid "Facebook"
 msgstr "Фейсбук"
 
@@ -4393,7 +4399,7 @@ msgid "Drop photo here"
 msgstr "Перетащите фото сюда"
 
 #: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:30
-msgid "To change drop another photo or upload file (JPG, GIF или PNG):"
+msgid "To change drop another photo or upload file (JPG, GIF, or PNG):"
 msgstr "Для замены перетащите другое фото или загрузите файл (JPG, GIF или PNG):"
 
 #: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:33
@@ -4491,3 +4497,540 @@ msgstr "Неизвестный маршрут страницы"
 
 msgid "<strong>id</strong>: block ID.<br><strong>$params</strong>: associative array of additional parameters passed to a block (example: <code>['myparam' => 100]</code>). A parameter is available by its name as a Smarty variable within a block (example: <code>$myparam</code>)."
 msgstr "<strong>id</strong>: ID блока.<br><strong>$params</strong>: ассоциативный массив дополнительных параметров, переданных в блок (пример: <code>['myparam' => 100]</code>). Параметр доступен по своему имени в коде блока в виде переменной Smarty (пример: <code>$myparam</code>)."
+
+msgid "General settings"
+msgstr "Общие настройки"
+
+msgid "Collapse"
+msgstr "Свернуть"
+
+msgid "Expand"
+msgstr "Развернуть"
+
+msgid "Collapse all"
+msgstr "Свернуть всё"
+
+msgid "Expand all"
+msgstr "Развернуть всё"
+
+msgid "Show hidden settings"
+msgstr "Показать скрытые настройки"
+
+msgid "Settings groups"
+msgstr "Группы настроек"
+
+msgid "Find setting"
+msgstr "Найти настройку"
+
+msgid "Search results:"
+msgstr "Результаты поиска:"
+
+msgid "No settings found"
+msgstr "Настройки не найдены"
+
+msgid "Export theme settings"
+msgstr "Экспорт настроек темы"
+
+msgid "Import theme settings"
+msgstr "Импорт настроек темы"
+
+msgid "Select archive"
+msgstr "Выберите архив"
+
+msgid "Select a TAR.GZ archive file"
+msgstr "Выберите файл в формате TAR.GZ"
+
+msgid "Import"
+msgstr "Импорт"
+
+msgid "Empty archive."
+msgstr "Пустой архив."
+
+msgid "No valid settings.json file in archive."
+msgstr "В архиве отсутствует правильный файл settings.json."
+
+msgid "These settings are not for selected app’s design theme."
+msgstr "Эти настройки не соответствуют текущему приложению."
+
+msgid "No settings found in archive."
+msgstr "Настройки в архиве не найдены."
+
+msgid "These images were not found in archive: "
+msgstr "Эти изображения не найдены в архиве: "
+
+msgid "Current design settings will be lost during import. Export current settings before import to restore them later, if necessary."
+msgstr "Текущие настройки дизайна будут потеряны в ходе импорта. Экспортируйте текущие настройки до импорта, чтобы восстановить их при необходимости."
+
+msgid "May be displayed on websites and in email notifications."
+msgstr "Может отображаться на страницах сайтов и в email-уведомлениях."
+
+msgid "May be used on websites and in email notifications."
+msgstr "Может использоваться на страницах сайтов и в email-уведомлениях."
+
+msgid "Email address for notifications"
+msgstr "Email-адрес для уведомлений"
+
+msgid "Main account administrative email where system notification will be sent."
+msgstr "Основной электронный адрес администратора, на который будут отправляться системные уведомления."
+
+msgid "Sender email address"
+msgstr "Email-адрес отправителя"
+
+msgid "Reply-To address for system email notifications sent by Webasyst."
+msgstr "Этот электронный адрес будет указан в качестве обратного адреса в системных email-уведомлениях, отправляемых Вебасистом."
+
+msgid "Email settings"
+msgstr "Настройки email"
+
+msgid "Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>."
+msgstr "Введите <strong>email-адрес</strong>, чтобы настроить транспорт отдельно <em>для одного адреса отправителя</em>.<br>Введите <strong>доменное имя</strong>, чтобы настроить транспорт <em>для всех адресов отправителя на этом домене</em>."
+
+msgid "Select how email messages must be sent by default from your Webasyst."
+msgstr "Выберите, каким способом должны по умолчанию отправляться email-сообщения из вашего Вебасиста."
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section."
+msgstr "Если вы используете разные адреса отправителей в отдельных приложениях, то для них можно настроить дополнительные правила отправки сообщений. Для всех остальных адресов будет использоваться способ отправки, выбранный в секции «По умолчанию»."
+
+msgid "Email transport"
+msgstr "Email транспорт"
+
+msgid "Transport"
+msgstr "Транспорт"
+
+msgid "Email or domain"
+msgstr "Email или домен"
+
+msgid "php mail() function"
+msgstr "PHP-функция mail()"
+
+msgid "Debug mailer"
+msgstr "Тестовый отправитель"
+
+msgid "When this option is selected messages are sent by the default transport specified in the Webasyst framework configuration."
+msgstr "При выборе этого варианта рассылки будут отправляться транспортом по умолчанию, указанным в конфигурации фреймворка Вебасист."
+
+msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
+msgstr "Некоторые хостинг-провайдеры позволяют отправлять электронные сообщения только этим транспортом. Если имеется необходимость ввести дополнительные параметры, их можно указать в текстовом поле при выборе варианта «PHP-функция mail()». По умолчанию используется параметр -f%s."
+
+msgid "This is a default command for sending email in UNIX-like operating systems. You can edit it to use a different command for sending messages if you are an experienced server administrator."
+msgstr "Это стандартная команда для отправки email-сообщений на UNIX-хостингах. Ее можно изменить на другую системную команду для отправки сообщений, если вы самостоятельно администрируете работу сервера."
+
+msgid "A special server for sending email messages. You can send email via any SMTP server for which you have connection credentials: host, port, user name, and password. It may belong either to your web-hosting company or to a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
+msgstr "Специальный сервер, предназначенный для отправки электронной почты. Сообщения можно отправлять через любой SMTP-сервер, для подключения к которому у вас есть его адрес, номер порта, имя пользователя (логин) и пароль. Это может быть SMTP-сервер вашего хостинг-провайдера или публичного почтового сервиса: Mail.ru, Gmail и т. п."
+
+msgid "Options"
+msgstr "Параметры"
+
+msgid "Command"
+msgstr "Команда"
+
+msgid "Encryption"
+msgstr "Шифрование"
+
+msgid "None"
+msgstr "Нет"
+
+msgid "You need to install openssl php extention to use DKIM"
+msgstr "Вам необходимо установить расширение openssl php для использования DKIM"
+
+msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
+msgstr "Для использования DKIM вам потребуется PHP версии 5.3 или выше. Текущая версия:"
+
+msgid "Extension openssl is not installed"
+msgstr "Расширение openssl не установлено"
+
+msgid "Failed to create DKIM signature"
+msgstr "Не удалось сгенерировать DKIM ключ"
+
+msgid "Enter an email address in “Sender” field to use DKIM."
+msgstr "Для использования DKIM введите email-адрес в поле «Отправитель»."
+
+msgid "Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address."
+msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом оправителя."
+
+msgid "Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name"
+msgstr "Добавьте новую <b>TXT-запись</b> с данным публичным ключом DKIM в DNS-зону домена"
+
+msgid "Host "
+msgstr "Хост"
+
+msgid "Domain"
+msgstr "Домен"
+
+msgid "Record type"
+msgstr "Тип записи"
+
+msgid "Value"
+msgstr "Значение"
+
+msgid "Add email sending rule"
+msgstr "Добавить правило отправки email"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Maps settings"
+msgstr "Настройки карт"
+
+msgid "Select an online map service to display maps."
+msgstr "Выберите картографический сервис для отображения онлайн-карт."
+
+msgid "Map service"
+msgstr "Сервис карт"
+
+msgid "No map services available"
+msgstr "Нет доступных сервисов карт"
+
+msgid "Captcha"
+msgstr "Капча"
+
+msgid "Captcha settings"
+msgstr "Настройки капчи"
+
+msgid "Select a type of captcha to be used on your websites."
+msgstr "Выберите тип капчи, которая будет использоваться на ваших сайтах."
+
+msgid "Captcha type"
+msgstr "Тип капчи"
+
+msgid "Invisible mode"
+msgstr "Невидимый режим"
+
+msgid "Get site key and secret for your website"
+msgstr "Получить значения для своего сайта"
+
+msgid "Website address"
+msgstr "Адрес сайта"
+
+msgid "Your website, blog or company URL (will be displayed as a link below the company name in the top left corner)."
+msgstr "Адрес вашего сайта или блога (будет отображаться в виде ссылки под названием компании в левом верхнем углу)."
+
+msgid "Locale of software available for installation in Installer"
+msgstr "Язык программных продуктов, доступных для установки в «Инсталлере»"
+
+msgid "Allow “Remember me” option in Webasyst backend authorization form"
+msgstr "Можно включить «Запомнить меня» при входе в бекенд Вебасиста"
+
+msgid "Auto-login"
+msgstr "Автоматическая авторизация"
+
+msgid "Login only"
+msgstr "Только логин"
+
+msgid "Login or email"
+msgstr "Логин или email"
+
+msgid "Authorization form background image"
+msgstr "Фон формы авторизации"
+
+msgid "Stretch to fill entire screen"
+msgstr "Растянуть изображение на весь экран"
+
+msgid "Localization engine"
+msgstr "Механизм локализации"
+
+msgid "Gettext (recommended)"
+msgstr "Gettext (рекомендуется)"
+
+msgid "Delete authorization form background image?"
+msgstr "Удалить фоновое изображение формы авторизации?"
+
+msgid "For developers"
+msgstr "Для разработчика"
+
+msgid "Developer mode"
+msgstr "Режим отладки (debug mode)"
+
+msgid "Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development."
+msgstr "Режим отладки отключает кеширование и включает подробный вывод сообщений об ошибках. Рекомендуется при разработке приложений."
+
+msgid "Clear cache"
+msgstr "Очистить кеш"
+
+msgid "Cache cleared"
+msgstr "Кеш очищен"
+
+msgid "But with errors:"
+msgstr "С ошибками:"
+
+msgid "CDN address"
+msgstr "Адрес CDN"
+
+msgid "Link to map"
+msgstr "Ссылка на карту"
+
+msgid "Support"
+msgstr "Поддержка"
+
+msgid "User manual"
+msgstr "Инструкция"
+
+msgid "Images thumbnails"
+msgstr "Эскизы изображений"
+
+msgid "Contact fields"
+msgstr "Поля контакта"
+
+msgid "Main contact fields cannot be modified or disabled."
+msgstr "Главные поля контактов нельзя изменять и удалять."
+
+msgid "person"
+msgstr "персона"
+
+msgid "company"
+msgstr "компания"
+
+msgid "disabled"
+msgstr "отключено"
+
+msgid "New field"
+msgstr "Новое поле"
+
+msgid "Add field"
+msgstr "Добавить поле"
+
+msgid "Text (input)"
+msgstr "Текст (input)"
+
+msgid "Text (textarea)"
+msgstr "Текст (textarea)"
+
+msgid "Number"
+msgstr "Число"
+
+msgid "Number (input)"
+msgstr "Число (input)"
+
+msgid "Selectable (radio)"
+msgstr "Список (radio)"
+
+msgid "Selectable (select)"
+msgstr "Список (select)"
+
+msgid "Selectable (checkboxes)"
+msgstr "Список (checkboxes)"
+
+msgid "Conditional (select/input)"
+msgstr "Зависимый список (select/input)"
+
+msgid "checkbox"
+msgstr "флажок"
+
+msgid "Checkbox"
+msgstr "Флажок"
+
+msgid "Date (input)"
+msgstr "Дата (input)"
+
+msgid "Select "
+msgstr "Выпадающий список (select)"
+
+msgid "radio select"
+msgstr "список (radio)"
+
+msgid "Radio Select"
+msgstr "Список (Radio)"
+
+msgid "Composite field group"
+msgstr "Группа полей"
+
+msgid "Region"
+msgstr "Регион"
+
+msgid "Hidden field"
+msgstr "Скрытое поле"
+
+msgid "Full name"
+msgstr "Полное имя"
+
+msgid "Add item"
+msgstr "Добавить элемент"
+
+msgid "Delete field"
+msgstr "Удалить поле"
+
+msgid "No data in the field"
+msgstr "В поле нет данных."
+
+msgid "Deleting this field will not cause a loss of any contact information."
+msgstr "Удаление этого поля не приведет к потере информации о контактах."
+
+msgid "Deleting the field will cause a loss of this contact information."
+msgid_plural "Deleting the field will cause a loss of these contacts information."
+msgstr[0] "Удаление этого поля приведет к потере информации об этом контакте."
+msgstr[1] "Удаление этого поля приведет к потере информации об этих контактах."
+msgstr[2] "Удаление этого поля приведет к потере информации об этих контактах."
+
+msgid "%d contact have data in the field"
+msgid_plural "%d contacts have data in the field"
+msgstr[0] "У %d контакта есть данные в этом поле."
+msgstr[1] "У %d контактов есть данные в этом поле."
+msgstr[2] "У %d контактов есть данные в этом поле."
+
+msgid "Field name"
+msgstr "Название поля"
+
+msgid "Edit field"
+msgstr "Изменить поле"
+
+msgid "Add name in another language"
+msgstr "Добавить название на другом языке"
+
+msgid "Field ID"
+msgstr "ID поля"
+
+msgid "Type of field"
+msgstr "Тип поля"
+
+msgid "Address fields"
+msgstr "Поля адреса"
+
+msgid "This will remove field and all its data from all existing contacts. Are you sure?"
+msgstr "Будет удалено это поле и связанные с ним данные у всех контактов. Удалить?"
+
+msgid "List items"
+msgstr "Список"
+
+msgid "Enter each new item on new line"
+msgstr "Введите каждый элемент списка с новой строки"
+
+msgid "Applied to"
+msgstr "Применить к"
+
+msgid "Person"
+msgstr "Персона"
+
+msgid "Enable field"
+msgstr "Включить поле"
+
+msgid "Disable field"
+msgstr "Отключить поле"
+
+msgid "Manage conditions"
+msgstr "Настроить условия"
+
+msgid "Click “Save” button below to commit changes."
+msgstr "Нажмите на кнопку «Сохранить», чтобы подтвердить изменения."
+
+msgid "Set default fixed value"
+msgstr "Установить значение"
+
+msgid "Default fixed value:"
+msgstr "Фиксированное значение:"
+
+msgid "Enter available options for %s depending on it’s parent field value."
+msgstr "Заполните списки значений поля «%s» в зависимости от значения его родительского поля."
+
+msgid "http://www.shop-script.com/help/conditional-contact-fields/"
+msgstr "http://www.webasyst.ru/help/7/conditional-contact-fields/"
+
+msgid "Get help"
+msgstr "Помощь"
+
+msgid "<strong>IF</strong> parent field"
+msgstr "<strong>IF</strong> родительское поле"
+
+msgid "Prompt to select %s from the following list:"
+msgstr "Предлагать выбрать %s из следующих вариантов:"
+
+msgid "<strong>ELSE</strong>, in case parent field value does not match any of the listed above"
+msgstr "<strong>ELSE</strong>, если значение родительского поля не совпадает ни с одним из вариантов"
+
+msgid "Display &lt;input&gt; (custom text) field for %s"
+msgstr "Показать &lt;input&gt; для ввода произвольного текста"
+
+msgid "Do not prompt for %s"
+msgstr "Не запрашивать поле «%s»"
+
+msgid "Add rule"
+msgstr "Добавить правило"
+
+msgid "IF"
+msgstr "ЕСЛИ"
+
+msgid "Add option"
+msgstr "Добавить вариант"
+
+msgid "one-line text"
+msgstr "одна строка текста"
+
+msgid "multi-line text"
+msgstr "многострочный текст"
+
+msgid "number"
+msgstr "число"
+
+msgid "drop-down list"
+msgstr "выпадающий список"
+
+msgid "date"
+msgstr "дата"
+
+msgid "Can't construct field"
+msgstr "Не удалось создать поле"
+
+msgid "We have found %d duplicate for this field"
+msgid_plural "We have found %d duplicates for this field"
+msgstr[0] "Найден %d дубликат этого поля."
+msgstr[1] "Найдено %d дубликата этого поля."
+msgstr[2] "Найдено %d дубликатов этого поля."
+
+msgid "Unknown locale: %s"
+msgstr "Неизвестная локаль: %s"
+
+msgid "Required field"
+msgstr "Обязательное поле"
+
+msgid "Only English alphanumeric, hyphen and underline symbols are allowed"
+msgstr "Разрешены только латинские буквы, дефисы и символы подчеркивания."
+
+msgid "This ID is already in use"
+msgstr "Этот ID уже используется."
+
+msgid "Unknown field type:"
+msgstr "Неизвестный тип поля:"
+
+msgid "Countries & regions"
+msgstr "Страны и регионы"
+
+msgid "Select a country"
+msgstr "Выберите страну"
+
+msgid "Clone on top of the list"
+msgstr "Дублировать в начале списка"
+
+msgid "Regions"
+msgstr "Регионы"
+
+msgid "Region name"
+msgstr "Название региона"
+
+msgid "Region code"
+msgstr "Код региона"
+
+msgid "No regions (states, provinces) are defined for this country."
+msgstr "Для этой страны не определено ни одного региона (штата, провинции)."
+
+msgid "Add region"
+msgstr "Добавить регион"
+
+msgid "Click “Save” button below to commit the delete."
+msgstr "Нажмите на кнопку «Сохранить», чтобы подтвердить удаление."
+
+msgid "Regions are not saved. Are you sure you want to leave current page?"
+msgstr "Регионы не сохранены. Покинуть эту страницу без сохранения?"
+
+msgid "You can change the theme in settlement settings."
+msgstr "Сменить тему можно в настройках поселения."
+
+msgid "Upload image"
+msgstr "Загрузить изображение"
+
+msgid "Please contact app developer."
+msgstr "Обратитесь к разработчику приложения."
+
+msgid "Please contact server administrator."
+msgstr "Обратитесь к администратору сервера."

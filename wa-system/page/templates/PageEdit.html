@@ -156,7 +156,7 @@
                         <div class="value">
                             <textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
 {/foreach}{/if}</textarea><br />
-                            <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`http://www.webasyst.com/framework/docs/site/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
+                            <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
                         </div>
                     </div>
                 </div>
@@ -170,7 +170,7 @@
             <li><a class="html" href="#">HTML</a></li>
         </ul>
         <div style="clear:both">
-            <div class="wa-editor-upload-img hidden" title="[`Upload image`]">
+            <div class="wa-editor-upload-img hidden" title="[s`Upload image`]">
                 <i class="icon16 image"></i>
             </div>
             <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
@@ -198,20 +198,20 @@
             {$wa->csrf()}
             <div class="dialog-content">
                 <div class="dialog-content-indent">
-                    <h2>[`Upload image`]</h2>
+                    <h2>[s`Upload image`]</h2>
                     <div id="redactor-droparea" style="text-align: center;">
                         <input id="s-input-file" type="file" name="file" multiple>
                         <input type="hidden" name="path" id="s-upload-path" value="" />
                         <div class="loading" style="display:none; margin-top: 10px">
-                            <i class="icon16 loading"></i> [`Uploading...`]
+                            <i class="icon16 loading"></i> [s`Uploading...`]
                         </div>
                     </div>
                 </div>
             </div>
             <div class="dialog-buttons">
                 <div class="dialog-buttons-gradient">
-                    <input type="submit" class="button green" value="[`Upload`]">
-                    [`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+                    <input type="submit" class="button green" value="[s`Upload`]">
+                    [`or`] <a href="#" class="inline-link cancel"><b><i>[s`cancel`]</i></b></a>
                 </div>
             </div>
         </form>

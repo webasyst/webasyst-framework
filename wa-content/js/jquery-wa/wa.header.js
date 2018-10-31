@@ -1,10 +1,14 @@
 $(function () {
     $(window).resize(function() {
-        var i = parseInt(($('#wa-applist ul').width() - 1) / 72);
-        if (i-- < $('#wa-applist li[id!=""]').length) {
-            if ( !$("#wa-moreapps").hasClass('uarr') && $('#wa-applist li:eq('+i+')').attr('id')) {
-                if ($('#wa-applist li[id]:eq(' + (i - 1) + ')').length) {
-                    $('#wa-moreapps').show().parent().insertAfter($('#wa-applist li[id]:eq(' + (i - 1) + ')'));
+        var list_width = $('#wa-applist ul').width() - 1,
+            icon_width = 75, // 72px + space symbol
+            icons_count = $('#wa-applist li[id]').length,
+            max_icons = parseInt(list_width / icon_width);
+
+        if (max_icons-- < icons_count) {
+            if ( !$("#wa-moreapps").hasClass('uarr') && $('#wa-applist li:eq('+ max_icons +')').attr('id')) {
+                if ($('#wa-applist li[id]:eq(' + (max_icons - 1) + ')').length) {
+                    $('#wa-moreapps').show().parent().insertAfter($('#wa-applist li[id]:eq(' + (max_icons - 1) + ')'));
                 } else {
                     $('#wa-moreapps').hide().parent().insertAfter($('#wa-applist li:last'));
                 }
@@ -18,14 +22,6 @@ $(function () {
             }
             $('#wa-moreapps').hide();
         }
-
-        /*
-        if ($("#wa-applist ul>li").length * 75 > $('#wa-applist').width()) {
-            $('#wa-moreapps').show();
-        } else {
-            $('#wa-moreapps').hide();
-        }
-        */
     }).resize();
 
     var sortableApps = function () {
@@ -36,10 +32,10 @@ $(function () {
             opacity: 0.75,
             tolerance: 'pointer',
             stop: function () {
-            var data = $(this).sortable("toArray");
+            var data = $(this).sortable("toArray", {attribute: 'data-app'});
             var apps = [];
             for (var i = 0; i < data.length; i++) {
-                var id = data[i].replace(/wa-app-/, '');
+                var id = $.trim(data[i]);
                 if (id) {
                     apps.push(id);
                 }
@@ -180,22 +176,22 @@ $(function () {
                     for (var app_id in response.data) {
                         var n = response.data[app_id];
                         if (n) {
-                            var a = $("#wa-app-" + app_id + " a");
+                            var a = $('#wa-applist li[data-app="'+ app_id +'"] a');
                             if (typeof(n) == 'object') {
                                 a.attr('href', n.url);
                                 n = n.count;
                             }
                             if (a.find('span.indicator').length) {
-                                    if(n) {
-                                        a.find('span.indicator').html(n).show();
-                                    } else {
-                                        a.find('span.indicator').remove();
-                                    }
+                                if(n) {
+                                    a.find('span.indicator').html(n).show();
+                                } else {
+                                    a.find('span.indicator').remove();
+                                }
                             } else if(n) {
                                 a.append('<span class="indicator">' + n + '</span>');
                             }
                         } else {
-                            $("#wa-app-" + app_id + " a span.indicator").remove();
+                            $('#wa-applist li[data-app="'+ app_id +'"] a span.indicator').remove();
                         }
                     }
                     $(document).trigger('wa.appcount', response.data);

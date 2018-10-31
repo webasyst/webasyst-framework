@@ -440,6 +440,7 @@ class waContactsCollection
 
         // `&` can be escaped in search request. Need to split by not escaped ones only.
         $escapedBS = 'ESCAPED_BACKSLASH';
+        //If the user added to the request "ESCAPED_BACKSLASH" need to make it unique
         while(FALSE !== strpos($query, $escapedBS)) {
             $escapedBS .= rand(0, 9);
         }
@@ -447,6 +448,8 @@ class waContactsCollection
         while(FALSE !== strpos($query, $escapedAmp)) {
             $escapedAmp .= rand(0, 9);
         }
+
+        //Replace escaped ampersand and backslash to text 'ESCAPED_AMPERSAND' and 'ESCAPED_BACKSLASH'
         $query = str_replace('\\&', $escapedAmp, str_replace('\\\\', $escapedBS, $query));
         $query = explode('&', $query);
 
@@ -456,6 +459,7 @@ class waContactsCollection
             if (! ( $part = trim($part))) {
                 continue;
             }
+            //Return backslash and ampersand to query part
             $part = str_replace(array($escapedBS, $escapedAmp), array('\\', '&'), $part);
             $parts = preg_split("/(\\\$=|\^=|\*=|==|!=|>=|<=|=|>|<|@=)/uis", $part, 2, PREG_SPLIT_DELIM_CAPTURE);
 

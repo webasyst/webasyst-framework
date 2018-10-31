@@ -141,6 +141,7 @@ class waDateTime
      * @param string|null $timezone Time zone identifier. If not specified, the time zone is determined automatically.
      * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
      * @return string
+     * @throws waException
      */
     public static function date($format, $time = null, $timezone = null, $locale = null)
     {
@@ -182,6 +183,20 @@ class waDateTime
             }
         }
         return $result;
+    }
+
+    public static function getWeekdayNames($case='ucfirst', $length='full') {
+        $names = array();
+        for($i = 0; $i < 7; $i++) {
+            list($id, $name) = explode(' ', date('N '.($length == 'full' ? 'l' : 'D'), 1538942400 + $i*24*3600)); // 2018-10-08 was monday
+            $name = _ws($name);
+            if ($case == 'lower') {
+                $name = mb_strtolower($name);
+            }
+            $names[$id] = $name;
+        }
+        ksort($names);
+        return $names;
     }
 
     public static function getMonthNames($n=1, $case='ucfirst')
@@ -234,6 +249,7 @@ class waDateTime
      * @param string|null $timezone Time zone identifier. If not specified, the time zone is determined automatically.
      * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
      * @return string
+     * @throws waException
      */
     public static function format($format, $time = null, $timezone = null, $locale = null)
     {
@@ -312,6 +328,7 @@ class waDateTime
      * @see self::format()
      * @param string|null $locale Locale identifier. If not specifed, current user locale is determined automatically.
      * @return string
+     * @throws waException
      */
     public static function getFormat($format, $locale = null)
     {
@@ -350,6 +367,7 @@ class waDateTime
      * @see self::getFormat()
      * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
      * @return string
+     * @throws waException
      */
     public static function getFormatJS($format, $locale = null)
     {
@@ -395,6 +413,7 @@ class waDateTime
      * @param string|null $timezone Time zone identifier. If not specified, current time zone is determined automatically.
      * @param string|null $locale Locale identifier. If not specifed, current user locale is determined automatically.
      * @return string
+     * @throws waException
      */
     public static function parse($format, $string, $timezone = null, $locale = null)
     {
@@ -461,4 +480,5 @@ class waDateTime
         }
         return $result;
     }
+
 }

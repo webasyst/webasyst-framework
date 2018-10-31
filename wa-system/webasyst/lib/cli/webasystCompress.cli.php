@@ -272,6 +272,7 @@ HELP;
                 'extension' => $this->extension_id,
             )
         );
+
         return $this->filter($this->files, $blacklist, $whitelist);
     }
 
@@ -301,6 +302,7 @@ HELP;
             }
 
         }
+
         return compact('blacklist', 'whitelist');
     }
 
@@ -314,6 +316,7 @@ HELP;
         } else {
             $exclude = false;
         }
+
         return $exclude;
     }
 
@@ -345,6 +348,7 @@ HELP;
             $pattern = "@^{$base_path}({$pattern})@m";
             unset($pattern);
         }
+
         return $patterns;
     }
 
@@ -354,6 +358,7 @@ HELP;
         $pattern = preg_replace('@^/@', '^', $pattern);
         $pattern = preg_replace('@/\*\*/@', '([^/]+/){0,}', $pattern);
         $pattern = preg_replace('@\*@', '.*', $pattern);
+
         return "@{$pattern}@";
     }
 
@@ -373,6 +378,7 @@ HELP;
                 }
             }
         }
+
         return $result;
     }
 
@@ -393,6 +399,7 @@ HELP;
                 }
             }
         }
+
         return $config;
     }
 
@@ -407,6 +414,7 @@ HELP;
         if (!class_exists('PHP_CodeSniffer')) {
             $this->trace('WARNING: Code style check skipped:');
             $this->trace('         PEAR extension CodeSniffer required');
+
             return false;
         }
 
@@ -440,6 +448,7 @@ HELP;
         } catch (Exception $ex) {
             $this->tracef("ERROR: %s\n\n", $ex->getMessage());
         }
+
         return $count;
     }
 
@@ -534,6 +543,7 @@ HELP;
                 $errors_count += $count;
             }
         }
+
         return $errors_count;
     }
 
@@ -665,6 +675,8 @@ HELP;
                                 'external',
                                 'backend_custom_fields',
                                 'locale',
+                                'services_by_type',
+                                'multi_curl',
                             )
                         );
                         break;
@@ -728,7 +740,13 @@ HELP;
                 $result = false;
                 $this->tracef("Invalid %s's settings: empty routing for frontend", $this->type);
             } else {
-                //TODO test $routing
+                // TODO test routing
+
+                foreach ($routing as $name => $rule) {
+                    if (false && !preg_match('@/(\*)?@', $name)) {
+                        $this->tracef("Invalid %s's routing rule: expect / or /* at the end of %s", $this->type, $name);
+                    }
+                }
             }
         } else {
             if ($routing !== null) {
@@ -739,6 +757,7 @@ HELP;
                 $this->tracef("Invalid %s's settings: themes option will be ignored", $this->type);
             }
         }
+
         return $result;
     }
 
@@ -749,6 +768,7 @@ HELP;
         if (($install && !$uninstall) || (!$install && $uninstall)) {
             $this->tracef('NOTICE: only one of install.php & uninstall.php present');
         }
+
         return true;
     }
 
@@ -859,7 +879,7 @@ HELP;
                 }
 
                 foreach ($errors as $type => $count) {
-                    if($count){
+                    if ($count) {
                         $this->tracef("Found %d %s errors", $count, $type);
                     }
                 }
@@ -875,6 +895,7 @@ HELP;
         } else {
             $this->trace("WARNING: PHP syntax check skipped (proc_open function not available)");
         }
+
         return $result;
     }
 
@@ -1096,7 +1117,13 @@ HELP;
         }
         try {
             $time = microtime(true);
-            if (class_exists('Archive_Tar')) {
+            if (class_exists('waArchiveTar')) {
+                $tar_object = new waArchiveTar($this->archive_path, 'w');
+                $tar_object->create($archive_files);
+                unset($tar_object);
+                $size = filesize($this->archive_path);
+                $this->tracef("\ntime\t%d ms\nsize\t%0.2f KByte\n", (microtime(true) - $time) * 1000, $size / 1024);
+            } elseif (class_exists('Archive_Tar')) {
                 $tar_object = new Archive_Tar($this->archive_path, true);
                 $result = $tar_object->create($archive_files);
                 if ($result) {
@@ -1157,6 +1184,7 @@ HELP;
             $total_size / 1024,
             getcwd()
         );
+
         return $count;
     }
 
@@ -1181,6 +1209,7 @@ HELP;
                 '@(/|^)[^\.]*todo$@i'                                 => 'TODO file',
                 '@(/|^)[^\.]+$@'                                      => 'unknown type file',
                 '@(/|^)[^0-9a-z_\-\.]+$@'                             => 'invalid filename characters',
+                '@\.fw_@'                                             => 'internal files',
             )
         );
         $skipped = array();
@@ -1194,15 +1223,16 @@ HELP;
                 }
             }
         }
+
         return $skipped;
     }
 
 
     /**
      * @param string $format
-     * @param mixed $_
+     * @param mixed $_ [optional]
      */
-    protected function tracef($format)
+    protected function tracef($format, $_ = null)
     {
         $args = func_get_args();
         $format = array_shift($args);

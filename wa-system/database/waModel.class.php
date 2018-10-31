@@ -625,6 +625,7 @@ class waModel
      * );</pre>
      *
      * @return resource|bool Returns true if there are no data to be inserted.
+     * @throws waException
      */
     public function multipleInsert($data)
     {
@@ -1014,7 +1015,7 @@ class waModel
     /**
      * Prepare query and returns object of waDbStatement
      *
-     * @param string $sql - запрос
+     * @param string $sql query
      * @return waDbStatement
      */
     public function prepare($sql)

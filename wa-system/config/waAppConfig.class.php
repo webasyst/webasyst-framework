@@ -419,7 +419,7 @@ class waAppConfig extends SystemConfig
         if (file_exists($locale_path)) {
             $all_files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($locale_path));
             $po_files = new RegexIterator($all_files, '~(\.po)$~i');
-            foreach($po_files as $f) {
+            foreach ($po_files as $f) {
                 @touch($f->getPathname());
             }
         }
@@ -428,9 +428,7 @@ class waAppConfig extends SystemConfig
         $file = $this->getAppConfigPath('install');
         if (file_exists($file)) {
             $app_id = $this->application;
-            /**
-             * @var string $app_id
-             */
+            /** @var string $app_id */
             include($file);
         }
     }
@@ -606,6 +604,8 @@ class waAppConfig extends SystemConfig
             case 'class':
                 $class = $file_parts[0];
                 break;
+            case 'trait':
+            case 'interface':
             default:
                 $class = $file_parts[0];
                 for ($i = 1; $i < count($file_parts); $i++) {
@@ -660,17 +660,69 @@ class waAppConfig extends SystemConfig
     public function getRouting($route = array())
     {
         if ($this->routes === null) {
-            $path = $this->getConfigPath('routing.php', true, $this->application);
-            if (!file_exists($path)) {
-                $path = $this->getConfigPath('routing.php', false, $this->application);
-            }
-            if (file_exists($path)) {
-                $this->routes = include($path);
-            } else {
-                $this->routes = array();
-            }
+            $this->routes = $this->getRoutingRules();
         }
         return $this->routes;
+    }
+
+    protected function getRoutingRules($route = array())
+    {
+        $routes = array();
+        if ($this->getEnvironment() === 'backend') {
+            $path = $this->getRoutingPath('backend');
+            if (file_exists($path)) {
+                $routes = array_merge($routes, include($path));
+            }
+        }
+
+        $path = $this->getRoutingPath('frontend');
+        if (file_exists($path)) {
+            $routes = array_merge($routes, include($path));
+        }
+        return array_merge($this->getPluginRoutes($route), $routes);
+    }
+
+    protected function getRoutingPath($type)
+    {
+        if ($type === null) {
+            $type = $this->getEnvironment();
+        }
+        $filename = ($type === 'backend') ? 'routing.backend.php' : 'routing.php';
+        $path = $this->getConfigPath($filename, true, $this->application);
+        if (!file_exists($path)) {
+            $path = $this->getConfigPath($filename, false, $this->application);
+        }
+        return $path;
+    }
+
+    protected function getPluginRoutes($route)
+    {
+        /**
+         * Extend routing via plugin routes
+         * @event routing
+         * @param array $routes
+         * @return array $routes routes collected for every plugin
+         */
+        $result = wa()->event(array($this->application, 'routing'), $route);
+        $all_plugins_routes = array();
+        foreach ($result as $plugin_id => $routing_rules) {
+            if (!$routing_rules) {
+                continue;
+            }
+            $plugin = str_replace('-plugin', '', $plugin_id);
+            foreach ($routing_rules as $url => & $route) {
+                if (!is_array($route)) {
+                    list($route_ar['module'], $route_ar['action']) = explode('/', $route) + array(1 => '');
+                    $route = $route_ar;
+                }
+                if (!array_key_exists('plugin', $route)) {
+                    $route['plugin'] = $plugin;
+                }
+                $all_plugins_routes[$url] = $route;
+            }
+            unset($route);
+        }
+        return $all_plugins_routes;
     }
 
     public function getPrefix()
@@ -920,6 +972,14 @@ class waAppConfig extends SystemConfig
         return true;
     }
 
+    /**
+     * The method returns a counter to show in backend header near applications' icons.
+     * Three types of response are allowed.
+     * @return string|int - A prime number in the form of a int or string
+     * @return array - Array with keys 'count' - the value of the counter and 'url' - icon url
+     * @return array - An associative array in which the key is the object key from app.php, from the header_items.
+     *                 The value must be identical to the value described in one of the previous types of response.
+     */
     public function onCount()
     {
         return null;
@@ -949,5 +1009,10 @@ class waAppConfig extends SystemConfig
     {
         $m = new waAppTokensModel();
         $m->deleteById($data['token']);
+    }
+
+    public function throwFrontControllerDispatchException()
+    {
+        throw new waException('Page not found', 404);
     }
 }

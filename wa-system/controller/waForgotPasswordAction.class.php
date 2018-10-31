@@ -121,7 +121,7 @@ class waForgotPasswordAction extends waViewAction
                     if ($this->send($email, $this->getResetPasswordUrl($hash))) {
                         $this->view->assign('sent', 1);
                     } else {
-                        $error = _ws('Sorry, we can not recover password for this login name or email. Please refer to your system administrator.');
+                        $error = _ws('Sorry, we cannot recover password for this login name or email. Please refer to your system administrator.');
                     }
                 }
             } else {

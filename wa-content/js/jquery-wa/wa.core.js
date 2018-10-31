@@ -6,6 +6,7 @@ if ($.ui) {
 
 $.wa = $.extend(true, $.wa, {
     data: {},
+    content: false,
     get: function(key, defaultValue) {
         if (key == undefined) {
             return this.data;

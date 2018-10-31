@@ -68,7 +68,7 @@ class waMailDecode
         } catch (Exception $e) {
             if (preg_match('~<([^>]+)>~', $v, $m)) {
                 $email = $m[1];
-            } else if (preg_match('~(\S+\@\S+)~', $v, $m)) {
+            } elseif (preg_match('~(\S+\@\S+)~', $v, $m)) {
                 $email = $m[1];
             } else {
                 $email = explode(' ', $v);

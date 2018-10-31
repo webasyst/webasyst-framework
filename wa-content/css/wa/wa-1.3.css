@@ -335,6 +335,7 @@ position:relative; top:0.05em; margin:0 0 -0.5em; }
 .editable:hover { background: #eed; cursor:text; }
 .errormsg { display: block; font-size: 0.9em; font-weight: bold; font-style: italic; color: red; }
 .successmsg { display: block; font-size: 0.9em; font-weight: bold; font-style: italic; color: green; }
+.transparent-sprite { background: url('../../img/transparent-sprite.png'); }
 input::-webkit-input-placeholder { color: #aaa; }
 input:-moz-placeholder { color: #aaa; }
 input::-moz-placeholder { color: #aaa; }
@@ -1136,3 +1137,59 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 .wa-cheatsheet-dropdown ul.tabs li.no-tab p { margin: 0 ; line-height: 16px; white-space: nowrap;}
 .wa-cheatsheet-dropdown ul.tabs li.no-tab img { float: left; vertical-align: top; margin:2px 0 0 -32px; width: 24px; height: 24px; }
 .wa-cheatsheet-dropdown .field .name { width: 330px; word-wrap: break-word; }
+
+/* Tooltip */
+.wa-tooltip, .wa-tooltip:visited { display: inline; color: #0077AA; text-decoration: none; cursor: help; }
+.wa-tooltip:hover { color: #0099CC; }
+.wa-tooltip .info{
+    margin-top: -1px!important;
+    margin-left: 4px;
+    -webkit-transition: opacity 0.3s ease, color 0.3s ease;
+    -moz-transition: opacity 0.3s ease, color 0.3s ease;
+    -o-transition: opacity 0.3s ease, color 0.3s ease;
+    -ms-transition: opacity 0.3s ease, color 0.3s ease;
+    transition: opacity 0.3s ease, color 0.3s ease;
+    opacity: 0.3;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+    filter: alpha(opacity=30);
+}
+.wa-tooltip .info:hover{
+    -webkit-transition: opacity 0.8s ease, color 0.8s ease;
+    -moz-transition: opacity 0.8s ease, color 0.8s ease;
+    -o-transition: opacity 0.8s ease, color 0.8s ease;
+    -ms-transition: opacity 0.8s ease, color 0.8s ease;
+    transition: opacity 0.8s ease, color 0.8s ease;
+    opacity: 0.8;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    filter: alpha(opacity=80);
+}
+.wa-tooltip .wa-tooltip-content {
+    display: inline;
+    margin-left: -10px;
+    margin-top: 30px;
+    opacity: 0;
+    position: absolute;
+    text-decoration: none;
+    visibility: hidden;
+    width: auto;
+    line-height: 14px;
+    box-shadow: 2px 2px 3px rgba(0,0,0,.2);
+    background-color: #ffffdd;
+    border: 1px solid #ccc;
+    text-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    color: #555;
+    padding: 5px 10px;
+    max-width: 250px;
+    font-size: 0.8em;
+    z-index: 99;
+    -moz-transition: opacity 0.4s ease-in-out, visibility 0.99s ease-in-out;
+    -webkit-transition: opacity 0.4s ease-in-out, visibility 0.99s ease-in-out;
+    -o-transition: opacity 0.4s ease-in-out, visibility 0.99s ease-in-out;
+    -ms-transition: opacity 0.4s ease-in-out, visibility 0.99s ease-in-out;
+    transition: opacity 0.4s ease-in-out, visibility 0.99s ease-in-out;
+    -moz-transition-delay: 0.7s;
+    transition-delay: 0.7s;
+    -webkit-transition-delay: 0.7s;
+    -o-transition-delay: 0.7s;
+}
+.wa-tooltip:hover .wa-tooltip-content { position: absolute; opacity: 1; visibility: visible; }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT theme (name+,description*,files*,about*, settings?, thumbs?, locales?)>
+<!-- Theme -->
+<!ELEMENT theme (name+,description*,files*,about*, settings?, thumbs?, locales?, requirements?)>
 <!ATTLIST theme
     id CDATA #REQUIRED
     system (1|0) "0"
@@ -10,17 +11,23 @@
     version CDATA #IMPLIED
     edition CDATA #IMPLIED
     source_theme_id CDATA #IMPLIED
+    instruction CDATA #IMPLIED
+    support CDATA #IMPLIED
 >
+
 <!ELEMENT name (#PCDATA)>
 <!ATTLIST name
     locale CDATA #REQUIRED
 >
+
 <!ELEMENT description (#PCDATA)>
 <!ATTLIST description
     locale CDATA #REQUIRED
 >
+
 <!-- Theme's files list available for editing -->
 <!ELEMENT files (file+)>
+
 <!ELEMENT file (description*)>
 <!ATTLIST file
     path CDATA #REQUIRED
@@ -28,24 +35,31 @@
     parent (1|0) "0"
     modified (1|0) "0"
 >
-<!-- THeme usage hints and instructions -->
+
+<!-- Theme usage hints and instructions -->
 <!ELEMENT about (#PCDATA)>
 <!ATTLIST about
     locale CDATA #REQUIRED
 >
-<!--Theme settings-->
-<!ELEMENT settings (setting+)>
-<!ELEMENT setting (value+,filename?,name+,description*,options?)>
 
+<!-- Theme settings -->
+<!ELEMENT settings (setting+)>
+<!-- Theme setting -->
+<!ELEMENT setting (value+,filename?,name+,tooltip*,description*,options?)>
 <!ATTLIST setting
     var CDATA #REQUIRED
-    control_type (text|select|checkbox|radio|color|image|image_select|group_divider) "text"
+    control_type (text|select|checkbox|radio|color|image|image_select|paragraph|group_divider) "text"
+    invisible (true|false) "false"
 >
+
 <!ELEMENT value (#PCDATA)>
 <!ATTLIST value
     locale CDATA #IMPLIED
 >
-
+<!ELEMENT tooltip (#PCDATA)>
+<!ATTLIST tooltip
+    locale CDATA #REQUIRED
+>
 <!ELEMENT filename (#PCDATA)>
 <!ELEMENT options (option+)>
 <!ELEMENT option (name*,description*)>
@@ -65,4 +79,11 @@
     locale CDATA #REQUIRED
 >
 
-
+<!--Theme requirements-->
+<!ELEMENT requirements (requirement+)>
+<!ELEMENT requirement (name*,description*)>
+<!ATTLIST requirement
+    property CDATA #REQUIRED
+    value CDATA #REQUIRED
+    strict (true|false) "false"
+>

@@ -43,6 +43,31 @@ class waFrontController
      */
     public function dispatch()
     {
+        $app = $this->system->getApp();
+        $env = $this->system->getEnv();
+        $backend_routing_path = wa()->getAppPath('lib/config/routing.backend.php', $app);
+        if ($env == 'backend' && file_exists($backend_routing_path)) {
+            // Assign routing parameters to waRequest::param()
+            // to enable routing.backend.php
+            $module = waRequest::get($this->options['module']);
+            $plugin = waRequest::get('plugin', null, 'string');
+            if (empty($module) && empty($plugin)) {
+                $routing = new waRouting($this->system, array(
+                    'default' => array(
+                        array(
+                            'url' => wa()->getConfig()->systemOption('backend_url').'/'.$app.'/*',
+                            'app' => $app,
+                        ),
+                    ),
+                ));
+                $routing->dispatch();
+
+                if (!waRequest::param('module')) {
+                    wa()->getConfig()->throwFrontControllerDispatchException();
+                }
+            }
+        }
+
         // event init
         if (!waRequest::request('background_process')) {
             if (method_exists($this->system->getConfig(), 'onInit')) {

@@ -69,6 +69,10 @@ class waTheme implements ArrayAccess
      */
     const NONE = 'none';
     const PATH = 'theme.xml';
+    const SETTINGS_PATH = 'settings.json';
+
+    const GENERAL_SETTINGS_DIVIDER = '~general_settings_divider~';
+    const OBSOLETE_SETTINGS_DIVIDER = '~obsolete_settings_divider~';
 
     protected $app;
     protected $id;
@@ -202,6 +206,9 @@ class waTheme implements ArrayAccess
                         'version'         => '',
                         'edition'         => 0,
                         'source_theme_id' => '',
+                        'support'         => '',
+                        'instruction'     => '',
+                        'requirements'    => array(),
                     );
                     try {
                         if (!$xml = $this->getXML()) {
@@ -274,7 +281,6 @@ class waTheme implements ArrayAccess
                         ksort($this->info['files']);
                     }
                     $this->info['settings'] = array();
-
                     if ($settings = $xml->{'settings'}) {
                         $id=0;
                         $settings_group = null;
@@ -285,6 +291,8 @@ class waTheme implements ArrayAccess
 
                             $s = array(
                                 'control_type' => isset($setting['control_type']) ? (string)$setting['control_type'] : 'text',
+                                'invisible'    => isset($setting['invisible']) ? filter_var($setting['invisible'], FILTER_VALIDATE_BOOLEAN) : false,
+                                'collapsed'    => isset($setting['collapsed']) ? filter_var($setting['collapsed'], FILTER_VALIDATE_BOOLEAN) : false,
                                 'value'        => (string)$setting->{'value'},
                             );
                             if ($s['control_type'] === 'group_divider') {
@@ -329,6 +337,12 @@ class waTheme implements ArrayAccess
                             foreach ($setting->{'name'} as $value) {
                                 if ($value && ($locale = (string)$value['locale'])) {
                                     $s['name'][$locale] = (string)$value;
+                                }
+                            }
+
+                            foreach ($setting->{'tooltip'} as $value) {
+                                if ($value && ($locale = (string)$value['locale'])) {
+                                    $s['tooltip'][$locale] = (string)$value;
                                 }
                             }
 
@@ -385,6 +399,36 @@ class waTheme implements ArrayAccess
                             }
                         }
                     }
+
+                    $this->info['requirements'] = array();
+                    if ($requirements = $xml->{'requirements'}) {
+                        /**
+                         * @var SimpleXMLElement $requirements
+                         */
+                        foreach ($requirements->children() as $requirement) {
+                            if (!isset($requirement['property']) || !isset($requirement['value'])) {
+                                continue;
+                            }
+                            $r = array(
+                                'value'  => (string)$requirement['value'],
+                                'strict' => isset($requirement['strict']) ? filter_var($requirement['strict'], FILTER_VALIDATE_BOOLEAN) : false,
+                            );
+
+                            foreach ($requirement->{'name'} as $value) {
+                                if ($value && ($locale = (string)$value['locale'])) {
+                                    $r['name'][$locale] = (string)$value;
+                                }
+                            }
+
+                            foreach ($requirement->{'description'} as $value) {
+                                if ($value && ($locale = (string)$value['locale'])) {
+                                    $r['description'][$locale] = (string)$value;
+                                }
+                            }
+
+                            $this->info['requirements'][(string)$requirement['property']] = $r;
+                        }
+                    }
                     break;
                 case 'php':
                     //deprecated
@@ -439,7 +483,7 @@ class waTheme implements ArrayAccess
      */
     public function removeFile($path)
     {
-        if (preg_match('@(^|[\\/])..[\\/]@', $path)) {
+        if (preg_match('@(^|[\\/])\.\.[\\/]@', $path)) {
             throw new waException("Invalid theme's file path");
         }
         $this->init();
@@ -602,10 +646,10 @@ XML;
                     'description',
                     'files',
                     'about',
-                    //'requirements',
                     'settings',
                     'thumbs',
                     'locales',
+                    'requirements',
                 );
                 break;
             case '/theme/settings/setting':
@@ -715,6 +759,10 @@ XML;
         $this->addLocalizedField($dom, $xpath, $setting, 'name', ifempty($info['name'], ''));
         if (!empty($info['description'])) {
             $this->addLocalizedField($dom, $xpath, $setting, 'description', $info['description']);
+        }
+
+        if (!empty($info['tooltip'])) {
+            $this->addLocalizedField($dom, $xpath, $setting, 'tooltip', $info['tooltip']);
         }
 
         if (!empty($info['options'])) {
@@ -1070,14 +1118,16 @@ XML;
         $img_files = array();
         foreach ($this->getSettings() as $s) {
             if (ifset($s['control_type']) == 'image' && !empty($s['value'])) {
-                $img_files[] = $s['value'];
+                // remove file timestamp version
+                $file_name = preg_replace('~\?v[\d]{8,}$~', '', $s['value']);
+                $img_files[] = $file_name;
             }
         }
 
         $source_path = $this->path_original;
         $target_path = $this->path_custom;
 
-        $list_files = waFiles::listdir($source_path);
+        $list_files = waFiles::listdir($source_path, true);
         $skip_pattern = '/\.(files\.md5|cvs|svn|git|php\d*)$/';
 
         foreach ($list_files as $f) {
@@ -1085,13 +1135,31 @@ XML;
             if ($f !== 'build.php' && preg_match($skip_pattern, $f)) {
                 continue;
             }
-            // ignore image settings and modified
-            if ($f == 'theme.xml' || in_array($f, $img_files) || in_array($f, $modified)) {
+            // ignore image and modified
+            if (in_array($f, $img_files) || in_array($f, $modified)) {
                 continue;
             }
-            try {
-                waFiles::copy($source_path.'/'.$f, $target_path.'/'.$f);
-            } catch (waException $e) {
+
+            $critical_theme_files = array('theme.xml');
+
+            if (in_array($f, $critical_theme_files)) {
+                // save backups of theme critical files
+                try {
+                    waFiles::move($this->path_custom.'/'.$f, $this->path_custom.'/backup.'.$f);
+                } catch (waException $e) {
+                    continue;
+                }
+                try {
+                    waFiles::copy($source_path.'/'.$f, $target_path.'/'.$f);
+                    waFiles::delete($this->path_custom.'/backup.'.$f);
+                } catch (waException $e) {
+                    waFiles::move($this->path_custom.'/backup.'.$f, $this->path_custom.'/'.$f);
+                }
+            } else {
+                try {
+                    waFiles::copy($source_path.'/'.$f, $target_path.'/'.$f);
+                } catch (waException $e) {
+                }
             }
         }
 
@@ -1103,28 +1171,100 @@ XML;
                 if (empty($files[$f_id])) {
                     $this->setFiles(array($f_id => $f));
                 }
+
+                // restore 'modified' flag in file in the new theme.xml
+                if (in_array($f_id, $modified)) {
+                    $f['modified'] = true;
+                    $this->setFiles(array($f_id => $f));
+                }
             }
 
-            foreach ($theme_original->getSettings('full') as $var => $s) {
-                if (!isset($this->info['settings'][$var])) {
+            $old_settings = $this->info['settings'];
+            $new_settings = $theme_original->getSettings('full');
+
+            // attempt to restore the old value for the settings in the new theme.xml
+            foreach ($new_settings as $var => $s) {
+                if (!isset($old_settings[$var])) {
                     $this->info['settings'][$var] = $s;
                     $this->settings[$var]['value'] = ifset($s['value'], '');
                     $this->changed['settings'][$var] = true;
                 } else {
-                    $old_s = $this->info['settings'][$var];
-                    if ((ifset($old_s['control_type']) != ifset($s['control_type'])) ||
-                        (ifset($old_s['options']) != ifset($s['options']))
-                    ) {
-                        $s['value'] = ifset($old_s['value'], '');
+                    $old_s = $old_settings[$var];
+                    if (ifset($old_s['value'], '') != ifset($s['value'], '')) {
+                        $s['value'] = $old_s['value'];
                         $this->info['settings'][$var] = $s;
                         $this->settings[$var]['value'] = $s['value'];
                         $this->changed['settings'][$var] = true;
                     }
                 }
             }
+
+            // learn what old settings are not used in the new theme.xml
+            $deprecated_settings = array();
+            foreach ($old_settings as $var => $old_s) {
+                if (!isset($new_settings[$var])) {
+                    $deprecated_settings[] = $var;
+                }
+            }
+
+            // Try to find their use in the current theme templates
+            $current_files = waFiles::listdir($target_path, true);
+            $current_templates = array();
+            // all current html theme templates
+            foreach ($current_files as $_f) {
+                if (pathinfo($_f, PATHINFO_EXTENSION) == 'html') {
+                    $current_templates[] = $_f;
+                }
+            }
+
+            // In all the files are looking for the old setting
+            foreach ($deprecated_settings as $i => $var) {
+                $setting_used = false;
+                foreach ($current_templates as $template) {
+                    if (strpos(file_get_contents($target_path.'/'.$template), '$theme_settings.'.$var) !== false) {
+                        $setting_used = true;
+                        break;
+                    }
+                }
+
+                // If the setting is not used in the template - forget about it
+                if (!$setting_used) {
+                    unset($deprecated_settings[$i]);
+                }
+            }
+
+            // If the old settings that are not in the new theme.xml are used somewhere
+            // Then add them to the new theme.xml
+            if (!empty($deprecated_settings)) {
+                // Add new group divider with obsolete settings
+                $this->info['settings'][self::OBSOLETE_SETTINGS_DIVIDER] = $this->getObsoleteSettingsDevired();
+                $this->changed['settings'][self::OBSOLETE_SETTINGS_DIVIDER] = true;
+                // Add obsolete settings in end of new theme.xml
+                foreach ($deprecated_settings as $var) {
+                    $this->changed['settings'][$var] = true;
+                }
+            }
+
             $this->save();
         }
         return true;
+    }
+
+    protected function getObsoleteSettingsDevired()
+    {
+        $divired = array(
+            'control_type' => 'group_divider',
+            'name'         => array(
+                'en_US' => 'Obsolete settings',
+                'ru_RU' => 'Устаревшие настройки',
+            ),
+            'tooltip' => array(
+                'en_US' => 'Settings are not used in the new version of the design theme, but are used in templates.',
+                'ru_RU' => 'Настройки не используются в новой версии темы дизайна, но используются в шаблонах.',
+            ),
+        );
+
+        return $divired;
     }
 
     public function revertFile($file)
@@ -1504,7 +1644,7 @@ HTACCESS;
         $this->getSettings();
         $readonly_control_types = array(
             'group_divider',
-            'help',
+            'paragraph',
         );
         foreach ($settings as $var => $value) {
             if (isset($this->settings[$var])) {
@@ -1668,6 +1808,9 @@ HTACCESS;
             $this->settings = $this->info['settings'];
             foreach ($this->settings as $var => &$s) {
                 $s['name'] = isset($s['name']) ? self::prepareField($s['name']) : $var;
+                if (isset($s['tooltip'])) {
+                    $s['tooltip'] = self::prepareField($s['tooltip']);
+                }
                 if (isset($s['description'])) {
                     $s['description'] = self::prepareField($s['description']);
                 }
@@ -1701,6 +1844,7 @@ HTACCESS;
             }
             return $settings;
         }
+
         return $this->settings;
     }
 
@@ -1715,6 +1859,61 @@ HTACCESS;
             }
         }
         return $result;
+    }
+
+    public function getRequirements()
+    {
+        $this->init();
+        $requirements = array();
+
+        // check the existence of the installer
+        $installer_apps_class_path = wa()->getConfig()->getRootPath() . '/wa-installer/lib/classes/wainstallerapps.class.php';
+        $installer_requirements_class_path = wa()->getConfig()->getRootPath() . '/wa-installer/lib/classes/waInstallerRequirements.class.php';
+
+        if (!file_exists($installer_apps_class_path) || !file_exists($installer_requirements_class_path)) {
+            return $requirements;
+        }
+
+        if (!empty($this->info['requirements'])) {
+            $requirements = $this->info['requirements'];
+        }
+
+        // Prepare name
+        foreach ($requirements as $subject => &$requirement) {
+            $requirement['name'] = isset($requirement['name']) ? self::prepareField($requirement['name']) : '';
+            if (empty($requirement['name'])) {
+                unset($requirement['name']);
+            }
+        }
+        unset($requirement);
+
+        if (!class_exists('waInstallerApps')) {
+            $autoload = waAutoload::getInstance();
+            $autoload->add('waInstallerApps', 'wa-installer/lib/classes/wainstallerapps.class.php');
+            $autoload->add('waInstallerRequirements', '/wa-installer/lib/classes/waInstallerRequirements.class.php');
+        }
+
+        $current_app = wa()->getApp();
+        if (wa()->appExists('installer')) {
+            wa('installer', 1);
+        }
+        waInstallerApps::checkRequirements($requirements, false, waInstallerApps::ACTION_UPDATE);
+        wa($current_app, 1);
+
+        return $requirements;
+    }
+
+    public function getWarningRequirements()
+    {
+        $requirements = $this->getRequirements();
+        $warning_requirements = array();
+        foreach ($requirements as $subject => $requirement) {
+            if (!$requirement['passed'] && $requirement['warning']) {
+                $warning_requirements[$subject] = $requirement;
+            }
+        }
+
+        return $warning_requirements;
     }
 
     /**
@@ -1820,6 +2019,7 @@ HTACCESS;
         $this->parent_theme = null;
         $this->info['parent_theme_id'] = $id;
         $this->changed['parent_theme_id'] = true;
+        return $this;
     }
 
     /**
@@ -2083,7 +2283,6 @@ HTACCESS;
     }
 
     /**
-     *
      * Extract theme from archive
      * @throws Exception
      * @param string $source_path archive path
@@ -2117,19 +2316,16 @@ HTACCESS;
             '',
         );
 
-        $autoload = waAutoload::getInstance();
-        $autoload->add('Archive_Tar', 'wa-installer/lib/vendors/PEAR/Tar.php');
-        $autoload->add('PEAR', 'wa-installer/lib/vendors/PEAR/PEAR.php');
+
         $instance = null;
-        if (class_exists('Archive_Tar')) {
+        if ($tar_object = self::getArchiveInstance($source_path)) {
             try {
-                $tar_object = new Archive_Tar($source_path, true);
                 $files = $tar_object->listContent();
                 if (!$files) {
                     self::throwArchiveException('INVALID_OR_EMPTY_ARCHIVE');
                 }
 
-                //search theme info
+                // search theme info
                 $info = false;
                 $pattern = "@(/|^)".wa_make_pattern(self::PATH, '@')."$@";
                 foreach ($files as $file) {
@@ -2153,7 +2349,7 @@ HTACCESS;
                     self::throwThemeException('MISSING_THEME_ID');
                 } else {
                     if ($app_info = wa()->getAppInfo($app_id)) {
-                        //TODO check theme support
+                        //@todo check theme support
                         if ($parent_theme = (string)$xml['parent_theme_id']) {
                             $parent_theme = explode(':', $parent_theme, 2);
                             try {
@@ -2287,11 +2483,30 @@ HTACCESS;
     }
 
     /**
-     *
+     * @param $path
+     * @return Archive_Tar|waArchiveTar|null
+     */
+    private static function getArchiveInstance($path)
+    {
+        $instance = null;
+        if (class_exists('waArchiveTar')) {
+            $instance = new waArchiveTar($path, file_exists($path) ? 'r' : 'w');
+        } else {
+            $autoload = waAutoload::getInstance();
+            $autoload->add('Archive_Tar', 'wa-installer/lib/vendors/PEAR/Tar.php');
+            $autoload->add('PEAR', 'wa-installer/lib/vendors/PEAR/PEAR.php');
+            if (class_exists('Archive_Tar', true)) {
+                $instance = new Archive_Tar($path, true);
+            }
+        }
+        return $instance;
+    }
+
+    /**
      * Compress theme into archive file
      * @param string $path target archive path
      * @param string $name archive filename
-     * @return string arcive path
+     * @return string archive path
      */
     public function compress($path, $name = null)
     {
@@ -2300,22 +2515,238 @@ HTACCESS;
         }
         $target_file = "{$path}/{$this->app}/{$name}";
 
-        $autoload = waAutoload::getInstance();
-        $autoload->add('Archive_Tar', 'wa-installer/lib/vendors/PEAR/Tar.php');
-        $autoload->add('PEAR', 'wa-installer/lib/vendors/PEAR/PEAR.php');
-
-        if (file_exists($this->path) && class_exists('Archive_Tar', true)) {
-            waFiles::create($target_file);
-            $tar_object = new Archive_Tar($target_file, true);
-            $tar_object->setIgnoreRegexp('@(\.(php\d?|_|DS_Store|\.db|svn|git|fw_|files\.md5$))@');
+        if (file_exists($this->path)) {
             $path = getcwd();
-            chdir(dirname($this->path));
-            if (!$tar_object->create('./'.basename($this->path))) {
+            $success = false;
+            try {
+                waFiles::create($target_file);
+
+                if ($tar_object = self::getArchiveInstance($target_file)) {
+                    $tar_object->setIgnoreRegexp('@(\.(php\d?|_|DS_Store|\.db|svn|git|fw_|files\.md5$))@');
+
+                    chdir(dirname($this->path));
+                    $success = $tar_object->create('./'.basename($this->path));
+                }
+            } catch (Exception $ex) {
+                $success = false;
+            }
+            if (!$success) {
+                unset($tar_object);
                 waFiles::delete($target_file);
             }
             chdir($path);
         }
         return $target_file;
+    }
+
+    /**
+     * Compress theme settings into archive file
+     * @param string $path target archive path
+     * @param null|string $name archive filename
+     * @return string archive path
+     * @throws waException
+     */
+    public function compressSettings($path, $name = null)
+    {
+        if (!$name) {
+            $name = "webasyst.{$this->app}.theme.{$this->id}.settings";
+        }
+
+        $temp_dir = "{$path}/{$this->app}/{$name}/";
+        $target_file = "{$path}/{$this->app}/{$name}.tar.gz";
+        $settings_file = $temp_dir . self::SETTINGS_PATH;
+
+        if (file_exists($this->path)) {
+            // Write all theme settings in json file
+            waFiles::create($settings_file);
+            $settings = array(
+                'app'      => $this->app,
+                'settings' => $this->getSettings('full'),
+            );
+            waFiles::write($settings_file, waUtils::jsonEncode($settings));
+
+            // Add to our directory images that are used in the settings
+            $img_files = array();
+            foreach ($settings['settings'] as $s) {
+                if (ifset($s['control_type']) === 'image' && !empty($s['value'])) {
+                    // remove file timestamp version
+                    $file_name = preg_replace('~\?v[\d]{8,}$~', '', $s['value']);
+                    $img_files[] = $file_name;
+                }
+            }
+            // Copy images
+            foreach ($img_files as $file) {
+                try {
+                    waFiles::copy($this->path.'/'.$file, $temp_dir.$file);
+                } catch (waException $e) {
+                }
+            }
+
+            if ($tar_object = self::getArchiveInstance($target_file)) {
+                $success = false;
+                try {
+                    waFiles::create($target_file);
+
+                    $path = getcwd();
+                    chdir(dirname($temp_dir));
+
+                    $tar_object->setIgnoreRegexp('@(\.(php\d?|_|DS_Store|\.db|svn|git|fw_|files\.md5$))@');
+                    $success = $tar_object->create('./'.basename($temp_dir));
+                } catch (Exception $ex) {
+
+                }
+
+                chdir($path);
+                if (!$success) {
+                    unset($tar_object);
+                    waFiles::delete($target_file);
+                }
+            }
+        }
+
+        try {
+            waFiles::delete($temp_dir);
+        } catch (waException $e) {
+        }
+
+        return $target_file;
+    }
+
+
+    /**
+     * Extract theme settings from archive
+     * @param string $archive_path
+     * @throws Exception
+     */
+    public function extractSettings($archive_path)
+    {
+        /** @var string[] $white_list */
+        static $white_list = array(
+            'png',
+            'jpg',
+            'jpeg',
+            'jpe',
+            'tiff',
+            'bmp',
+            'gif',
+            'svg',
+        );
+
+        try {
+            $tar_object = self::getArchiveInstance($archive_path);
+
+            $files = $tar_object->listContent();
+            if (!$files) {
+                throw new waException(_ws('Empty archive.'));
+            }
+
+            // Search settings
+            $pattern = "@(/|^)".wa_make_pattern(self::SETTINGS_PATH, '@')."$@";
+            foreach ($files as $file) {
+                if (preg_match($pattern, $file['filename'])) {
+                    $settings = waUtils::jsonDecode($tar_object->extractInString($file['filename']), true);
+                    break;
+                }
+            }
+
+            if (empty($settings)) {
+                throw new waException(_ws('No valid settings.json file in archive.'));
+            }
+
+            $app_id = ifempty($settings['app']);
+
+            if (!$app_id || $app_id != $this->app) {
+                throw new waException(_ws('These settings are not for selected app’s design theme.'));
+            }
+
+            $settings = ifempty($settings['settings']);
+            if (empty($settings)) {
+                throw new waException(_ws('No settings found in archive.'));
+            }
+
+            // Find the missing pictures from the settings values
+            $missed_images = $images_from_values = array();
+            foreach ($settings as $s) {
+                if (ifset($s['control_type']) === 'image' && !empty($s['value'])) {
+                    // remove file timestamp version
+                    $file_name = preg_replace('~\?v[\d]{8,}$~', '', $s['value']);
+                    $missed_images[] = $file_name;
+                }
+            }
+
+            // Leave in the array only those that are not in the archive
+            foreach ($files as $file) {
+                $file_name = ifempty($file['filename']);
+                $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+
+                foreach ($missed_images as $i => $image) {
+                    $pattern = "@(/|^)".wa_make_pattern($image, '@')."$@";
+                    if ($file_ext && in_array($file_ext, $white_list) && preg_match($pattern, $file_name)) {
+                        unset($missed_images[$i]);
+                        $images_from_values[] = $file;
+                    }
+                }
+            }
+
+            if (!empty($missed_images)) {
+                throw new waException(_ws("These images were not found in archive: ").join(", ", $missed_images));
+            }
+
+            $old_settings = $this->getSettings('full');
+            $new_settings = array();
+            foreach ($old_settings as $var => $s) {
+                if (isset($settings[$var]) && ifempty($settings[$var]['control_type']) === ifempty($s['control_type'])) {
+                    $new_settings[$var] = ifempty($settings[$var]['value'], '');
+                }
+            }
+
+            // Set new settings value
+            $this->setSettings($new_settings);
+            $this->save();
+
+            $wa_path = "webasyst.{$app_id}.theme.{$this->id}.settings";
+
+            // Delete old images
+            $image_list = array();
+            foreach ($images_from_values as $image) {
+                $image_list[] = $image['filename'];
+                $image_path = $this->path . str_replace($wa_path, '', $image['filename']);
+                $image_backup_path = $image_path.'.backup';
+
+                if (file_exists($image_path)) {
+                    waFiles::move($image_path, $image_backup_path);
+                }
+
+                // Extract
+                $content = $tar_object->extractInString($image['filename']);
+                $successfully_writing = waFiles::write($image_path, $content);
+                if (file_exists($image_backup_path)) {
+                    // if the file is not written: restore from backup
+                    if ($successfully_writing === false) {
+                        waFiles::move($image_backup_path, $image_path);
+                    } else {
+                        waFiles::delete($image_backup_path, true);
+                    }
+                }
+            }
+
+            unset($tar_object);
+
+            $instance = new self($this->id, $app_id);
+            $instance->check();
+
+            // Remove archive
+            if (file_exists($archive_path)) {
+                waFiles::delete($archive_path, true);
+            }
+        } catch (Exception $ex) {
+            // Remove archive
+            unset($tar_object);
+            if (file_exists($archive_path)) {
+                waFiles::delete($archive_path, true);
+            }
+            throw $ex;
+        }
     }
 
     public static function getThemesPath($app_id = null, $relative = true)

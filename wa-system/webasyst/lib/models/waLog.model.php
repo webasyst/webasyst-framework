@@ -43,7 +43,7 @@ class waLogModel extends waModel
 
         if ($params !== null) {
             if (is_array($params)) {
-                $params = json_encode($params);
+                $params = waUtils::jsonEncode($params);
             }
             $data['params'] = $params;
         }
