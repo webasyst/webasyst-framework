@@ -179,7 +179,7 @@ function ShippingYandexdelivery(key, id, url) {
                                     $option.data(option.data || []);
                                     self.geo_id_select.append($option);
                                     ++count;
-                                    if (_geo_id == geo_id) {
+                                    if (_geo_id === geo_id) {
                                         selected = option.value;
                                     }
                                 }
@@ -639,6 +639,9 @@ function ShippingYandexdelivery(key, id, url) {
                 }
             }, 10);
 
+            var payment = (typeof pickup.payment === 'object') ? $.map(pickup.payment, function (p) {
+                return p;
+            }).join(", ") : pickup.payment;
 
             return {
                 "type": "Feature",
@@ -649,7 +652,14 @@ function ShippingYandexdelivery(key, id, url) {
                 },
                 "properties": {
                     "balloonContent": ((pickup.description && (pickup.title !== pickup.description)) ? ('<div class="line title-line">' + pickup.description + '</div>') : '') +
-                    (pickup.rate || pickup.payment ? ('<div class="line payments-line">' + pickup.rate + ' ' + pickup.payment + '</div>') : '') +
+                    (pickup.rate || payment ? (
+                            '<div class="line payments-line">'
+                            + (pickup.rate || '')
+                            + ' '
+                            + payment
+                            + '</div>'
+                        ) : ''
+                    ) +
                     (pickup.comment ? ('<div class="line hint hint-line">' + pickup.comment.replace(/[\r\n]+/g, '<br/>') + '</div>') : '') +
                     (pickup.schedule ? ('<div class="line yandexdelivery-list">' + pickup.schedule + '</div>') : ''),
                     "balloonContentHeader": pickup.title,
@@ -705,7 +715,10 @@ function ShippingYandexdelivery(key, id, url) {
                 this.pickup_section.find('.yandexdelivery-pickup-header').text(pickup.title);
 
                 this.pickup_section.find('.line.js-yandexdelivery-address').text((pickup.description !== pickup.title) ? pickup.description.replace(/[\r\n]+/g, '<br/>') : '');
-                this.pickup_section.find('.line.js-yandexdelivery-payment').html(pickup.payment);
+                var payment = (typeof pickup.payment === 'object') ? $.map(pickup.payment, function (p) {
+                    return p;
+                }).join(", ") : pickup.payment;
+                this.pickup_section.find('.line.js-yandexdelivery-payment').html(payment);
                 this.pickup_section.find('.line.js-yandexdelivery-schedule').html(pickup.schedule);
                 this.pickup_section.find('.line.hint').html(pickup.comment.replace(/[\r\n]+/g, '<br/>'));
             }
