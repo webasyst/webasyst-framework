@@ -61,6 +61,7 @@
             <div class="value"><label><input type="checkbox" name="{$namespace|escape}[contact_fields][region]" value="region" {if !empty($values.contact_fields.region)||!empty($values.rate_zone.region)} checked="checked"{/if} {if !empty($values.rate_zone.region)} disabled="disabled"{/if}>&nbsp;[s`State`]</label></div>
             <div class="value"><label><input type="checkbox" name="{$namespace|escape}[contact_fields][city]" value="city" {if !empty($values.contact_fields.city)||!empty($values.rate_zone.city)} checked="checked"{/if}{if !empty($values.rate_zone.city)} disabled="disabled"{/if}>&nbsp;[s`City`]</label></div>
             <div class="value"><label><input type="checkbox" name="{$namespace|escape}[contact_fields][street]" value="street" {if !empty($values.contact_fields.street)} checked="checked"{/if}>&nbsp;[s`Street address`]</label></div>
+            <div class="value"><label><input type="checkbox" name="{$namespace|escape}[contact_fields][zip]" value="zip" {if !empty($values.contact_fields.zip)}checked="checked"{/if}>&nbsp;[s`ZIP`]</label></div>
             <div class="value hint">{$p->_w('Enable shipping address fields which must always be filled by a client during checkout.')}<br>
 	            {$p->_w('Should some of the enabled fields be filled on the contact info step, then they will not be displayed on courier shipping selection.')}<br>
                 {$p->_w('Disabled can be only fields that are not completed in the above setting “Shipping region”.')}</div>

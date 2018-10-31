@@ -11,6 +11,7 @@ return array(
         'value' => array(
             'city'   => 'city',
             'street' => 'street',
+            'zip'    => 'zip'
         ),
     ),
     'required_fields' => array(

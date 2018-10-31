@@ -163,6 +163,7 @@ class courierShipping extends waShipping
                 'est_delivery' => $delivery_date,
                 'currency'     => $this->currency,
                 'rate'         => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
+                'type'         => self::TYPE_TODOOR,
             ),
         );
     }
@@ -200,7 +201,6 @@ class courierShipping extends waShipping
             foreach ($address as $field => $value) {
                 if (is_array($value)) {
                     $fields[$field] = array(
-                        'cost'     => true,
                         'required' => true,
                     );
                 } else {
@@ -212,7 +212,6 @@ class courierShipping extends waShipping
             }
 
             $value = array(
-                'cost'     => true,
                 'required' => true,
             );
             if ($this->contact_fields) {
@@ -225,18 +224,17 @@ class courierShipping extends waShipping
             }
         } else {
             $fields = array(
-                'zip'     => false,
                 'country' => array('cost' => true, 'required' => true,),
                 'region'  => array('cost' => true, 'required' => true,),
             );
 
             $contact_fields = $this->contact_fields;
-            foreach (array('country', 'region', 'city', 'street') as $field) {
+            foreach (array('country', 'region', 'city', 'street', 'zip') as $field) {
                 if (in_array($field, $contact_fields)) {
                     $fields += array(
                         $field => array(
-                            'required' => true
-                        )
+                            'required' => true,
+                        ),
                     );
                 }
             }
