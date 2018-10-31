@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{strip}
 
 {$html_class_array = []}
 {$_color_scheme_class = 'color_scheme_'|cat:str_replace('img/themesettings/','',str_replace('.png','',$theme_settings.color_scheme))}
@@ -8,6 +9,14 @@
 {if $theme_settings.font_family}{$html_class_array[] = $theme_settings.font_family}{/if}
 {if $wa->globals('isMyAccount')}{$html_class_array[] = 'my'}{/if}
 
+{if $wa->shop}
+    {$_cart_url = $wa->getUrl('shop/frontend/cart')}
+    {if $wa->param('checkout_version') == 2}
+        {$_cart_url = $wa->getUrl('shop/frontend/order')}
+    {/if}
+{/if}
+
+{/strip}
 <html{if !empty($html_class_array)} class="{join(' ', $html_class_array)}"{/if}>
 
 <head>
@@ -166,7 +175,7 @@
                                 <!-- cart -->
                                 {$cart_total = $wa->shop->cart->total()}
                                 <div id="cart" class="cart{if !$cart_total} empty{/if}">
-                                    <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary">
+                                    <a href="{$_cart_url}" class="cart-summary">
                                         <i class="cart-icon"></i>
                                         <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
                                     </a>
@@ -175,7 +184,7 @@
                                            %s is now in your shopping cart
                                         </div> *}
                                     </div>
-                                    <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-to-checkout" style="display: none;">
+                                    <a href="{$_cart_url}" class="cart-to-checkout" style="display: none;">
                                         [s`View cart`]
                                     </a>
                                 </div>
@@ -265,7 +274,7 @@
                 {if $wa->shop}
                     <div class="footer-block">
                         <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
-                        <a href="{$wa->getUrl('shop/frontend/cart')}">[s`Cart`]</a>
+                        <a href="{$_cart_url}">[s`Cart`]</a>
                         <a href="{$wa->getUrl('shop/frontend/checkout')}">[s`Checkout`]</a>
                     </div>
                 {/if}
