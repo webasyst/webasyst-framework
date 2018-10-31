@@ -308,7 +308,7 @@ class russianpostShipping extends waShipping
 
         $extra_weight = round(max(0.5, $weight) - 0.5, 3);
 
-        $rate_parcel = $halfkilocost[$zone] + $overhalfkilocost[$zone] * ceil($extra_weight / 0.5);
+        $rate_parcel = (int)$halfkilocost[$zone] + (int)$overhalfkilocost[$zone] * ceil($extra_weight / 0.5);
         $rate['parcel'] = $rate_parcel;
         $rate['bookpost'] = 0;
 
@@ -434,6 +434,7 @@ class russianpostShipping extends waShipping
                                     'est_delivery' => $delivery_date,
                                     'rate'         => $rate['bookpost'],
                                     'currency'     => 'RUB',
+                                    'type'         => self::TYPE_POST,
                                 );
                                 break;
                             case 'ordered':
@@ -443,6 +444,7 @@ class russianpostShipping extends waShipping
                                     'est_delivery' => $delivery_date,
                                     'rate'         => $rate['bookpost'],
                                     'currency'     => 'RUB',
+                                    'type'         => self::TYPE_POST,
                                 );
 
                                 break;
@@ -453,6 +455,7 @@ class russianpostShipping extends waShipping
                                     'est_delivery' => $delivery_date,
                                     'rate'         => $rate['bookpost'],
                                     'currency'     => 'RUB',
+                                    'type'         => self::TYPE_POST,
                                 );
                                 break;
                         }
@@ -477,6 +480,7 @@ class russianpostShipping extends waShipping
                                 'est_delivery' => $delivery_date,
                                 'rate'         => $rate['parcel'],
                                 'currency'     => 'RUB',
+                                'type'         => self::TYPE_POST,
                             );
                             break;
                     }
@@ -490,7 +494,10 @@ class russianpostShipping extends waShipping
                 }
             } else {
                 $services = array(
-                    array('rate' => null, 'comment' => 'Для расчета стоимости доставки укажите регион доставки')
+                    array(
+                        'rate'    => null,
+                        'comment' => 'Для расчета стоимости доставки укажите регион доставки',
+                    ),
                 );
             }
         }
