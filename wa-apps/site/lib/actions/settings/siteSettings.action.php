@@ -92,6 +92,52 @@ class siteSettingsAction extends waViewAction
         $this->view->assign('ssl_all', ifset($domain_config, 'ssl_all', null));
         $this->view->assign('url_notification', ifset($domain_config, 'url_notification', false));
 
+        // Confirm when a site is deleted
+        $domains = wa()->getRouting()->getDomains();
+        // Apps on the current domain
+        $route_apps = array();
+        foreach ($routes as $_r) {
+            if (isset($_r['app']) && isset($apps[$_r['app']])) {
+                $route_apps[] = $_r['app'];
+            }
+        }
+
+        // from here we will remove applications,
+        // the rules for which are also on other sites
+        // "latter apps"
+        $route_apps = array_unique($route_apps);
+
+        foreach ($domains as $_d) {
+            // except the current domain
+            if ($_d == $domain) {
+                continue;
+            }
+            // Apps on the domain
+            $domain_routes = wa()->getRouting()->getRoutes($_d);
+            foreach ($domain_routes as $_r) {
+                if (empty($_r['app']) || !isset($apps[$_r['app']])) {
+                    continue;
+                }
+                // If there is a rule for an application
+                // in another domain, delete him from "latter apps"
+                $app_index = array_search($_r['app'], $route_apps);
+                if ($app_index !== false) {
+                    unset($route_apps[$app_index]);
+                }
+            }
+        }
+
+        // Get the names of applications
+        $latter_apps_names = array();
+        foreach ($route_apps as $_app) {
+            $latter_apps_names[] = $apps[$_app]['name'];
+        }
+
+        $this->view->assign(array(
+            'domains'           => $domains,
+            'latter_apps_names' => $latter_apps_names,
+        ));
+
         /**
          * Backend settings page
          * UI hook allow extends backend settings page

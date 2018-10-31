@@ -225,7 +225,7 @@
                                 {_renderCdnItem}
                             {/foreach}
                         </div>
-                        <a href="javascript:void(0)" class="s-cdn-add js-cdn-add inline-link"><i class="icon10 add"></i> <b><i>[`Добавить`]</i></b></a>
+                        <a href="javascript:void(0)" class="s-cdn-add js-cdn-add inline-link"><i class="icon10 add"></i> <b><i>[`Add`]</i></b></a>
                         <p class="hint">
                             [`Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix.`]
                         </p>
@@ -381,25 +381,58 @@
     });
 
     $("#s-delete").click(function () {
-        if (!confirm('[`This will delete entire website including all its pages without the ability to recover. Are you sure?`]')) {
-            return false;
+
+        {$_domains = $domains|default:[]}
+        {$_domains_count = $_domains|count}
+        {$_latter_apps_names = $latter_apps_names|default:[]}
+        {$_latter_apps_names_count = $_latter_apps_names|count}
+
+        var single_site = {($_domains_count === 1)|json_encode},
+            content = '[`This will delete entire website including all its pages without the ability to recover. Are you sure?`]';
+
+        if (single_site) {
+            content = '[`Deleting this site will also delete routing rules set up for installed apps. This will limit their functionality. Delete the site?`]';
         }
-        $.post('?module=settings&action=delete', "domain_id={$domain_id}", function (response) {
-            if (response.status == 'ok') {
-                if ($.wa.site.domain == {$domain_id}) {
-                    location.href = '?';
-                } else {
-                    var l = $("#s-settings-domains li.selected");
-                    if (l.prev().length) {
-                        $.wa.setHash(l.prev().children('a').attr('href'));
-                    } else if (l.next().length) {
-                        $.wa.setHash(l.next().children('a').attr('href'));
-                    }
-                    l.remove();
-                    $("a[href='?domain_id={$domain_id}']").parent().remove();
-                }
+        {if !empty($latter_apps_names)}
+            content = '{sprintf(_w( "Deleting this site will also delete routing rules set up for <b>%s</b> app. This will limit its functionality.</p><p>Upon site deletion, set up routing rules for this app in the structure settings of remaining sites to continue using all functions.", "Deleting this site will also delete routing rules set up for <b>%s</b> apps. This will limit their functionality.</p><p>Upon site deletion, set up routing rules for these apps in the structure settings of remaining sites to continue using all functions.", count($latter_apps_names), false), $latter_apps_names|join:"[`”</b>, <b>“`]")}';
+        {/if}
+
+        {if !empty($domain_alias) && empty($latter_apps_names)}
+            content = '[`Delete this site alias? It will <strong>not</strong> delete any data of the main site.`]';
+        {/if}
+
+        $().waDialog({
+            'title': '[`Delete entire website`]',
+            'content': '<p>'+ content +'</p>',
+            'height': '246px',
+            'width': '450px',
+            'buttons': '<input type="submit" class="button red" value="[s`Delete`]"> [s`or`] <a href="javascript:void(0);" class="cancel">[s`cancel`]</a>',
+            onSubmit: function (d) {
+                deleteSite();
+                d.trigger('close');
+                return false;
             }
-        }, "json");
+        });
+        
+        function deleteSite() {
+            $.post('?module=settings&action=delete', "domain_id={$domain_id}", function (response) {
+                if (response.status == 'ok') {
+                    if ($.wa.site.domain == {$domain_id}) {
+                        location.href = '?';
+                    } else {
+                        var l = $("#s-settings-domains li.selected");
+                        if (l.prev().length) {
+                            $.wa.setHash(l.prev().children('a').attr('href'));
+                        } else if (l.next().length) {
+                            $.wa.setHash(l.next().children('a').attr('href'));
+                        }
+                        l.remove();
+                        $("a[href='?domain_id={$domain_id}']").parent().remove();
+                    }
+                }
+            }, "json");
+        }
+        
         return false;
     });
     

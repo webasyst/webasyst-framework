@@ -123,7 +123,7 @@
                         <select id="alias-domain" name="domain">
                             {foreach $domains as $d_id => $d}
                                 {if empty($d.is_alias)}
-                                    <option value="{$d.name|escape}">{$d.name|escape}</option>
+                                    <option value="{$d.name|escape}">{waIdna::dec($d.name)}</option>
                                 {/if}
                             {/foreach}
                         </select>

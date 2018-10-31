@@ -93,17 +93,35 @@ class siteRoutingEditAction extends waViewAction
         $idna = new waIdna();
         $domain_decoded = $idna->decode(siteHelper::getDomain());
 
+        // Warning about deleting the last route for the application
+        $last_app_route = false;
+        if (!empty($app['id'])) {
+            $routes = wa()->getRouting()->getByApp($app['id']);
+            $app_routes = array();
+            foreach ($routes as $_domain => $_routes) {
+                foreach ($_routes as $_route) {
+                    $app_routes[] = $_route;
+                }
+            }
+            // If there is only one private rule (current) -
+            // Show a warning about this when deleting
+            if (count($app_routes) === 1) {
+                $last_app_route = true;
+            }
+        }
+
         $this->view->assign(array(
-            'site_url'       => wa()->getAppUrl('site'),
-            'domain_decoded' => $domain_decoded,
-            'route_id'       => $route_id,
-            'route'          => $route,
-            'app_id'         => $app_id,
-            'app'            => $app,
-            'domain_id'      => siteHelper::getDomainId(),
-            'domain'         => siteHelper::getDomain(),
-            'locales'        => array('' => _w('Auto')) + waLocale::getAll('name'),
-            'is_https'       => waRequest::isHttps(),
+            'site_url'        => wa()->getAppUrl('site'),
+            'domain_decoded'  => $domain_decoded,
+            'route_id'        => $route_id,
+            'route'           => $route,
+            'app_id'          => $app_id,
+            'app'             => $app,
+            'domain_id'       => siteHelper::getDomainId(),
+            'domain'          => siteHelper::getDomain(),
+            'locales'         => array('' => _w('Auto')) + waLocale::getAll('name'),
+            'is_https'        => waRequest::isHttps(),
+            'last_app_route' => $last_app_route,
         ));
     }
 
@@ -114,7 +132,8 @@ class siteRoutingEditAction extends waViewAction
             if (is_array($info)) {
                 $info['id'] = $id;
                 $result[$id] = array(
-                    'name' => $info['name'],
+                    'name'  => ifset($info['name']),
+                    'type'  => $info['type'],
                     'value' => $this->getHTML($route_id, $info, isset($values[$id]) ? $values[$id] : null)
                 );
             } else {
@@ -126,177 +145,23 @@ class siteRoutingEditAction extends waViewAction
 
     protected function getHTML($route_id, $info, $value)
     {
-        static $id = 0;
-        $html = '';
+        if (!isset($id)) {
+            static $id = 0;
+        }
+
         if (($value === null) && isset($info['default'])) {
             $value = $info['default'];
         }
-        switch ($info['type']) {
-            case 'input':
-                $html = '<input type="text" name="params['.$info['id'].']" value="'.htmlspecialchars($value).'">';
-                if (isset($info['description'])) {
-                    $html .= '<p class="hint">'.$info['description'].'</p>';
-                }
-                return $html;
-            case 'textarea':
-                $html = '<textarea name="params['.$info['id'].']">'.htmlspecialchars($value).'</textarea>';
-                if (isset($info['description'])) {
-                    $html .= '<p class="hint">'.$info['description'].'</p>';
-                }
-                return $html;
-            case 'select':
-                $html = '<select name="params['.$info['id'].']">';
-                foreach ($info['items'] as $k => $v) {
-                    if (!is_array($v)) {
-                        $v = array('name' => $v);
-                    }
-                    $html .= '<option '.($k == $value ? 'selected="selected" ' : '').'value="'.$k.'"'.
-                                (isset($v['description'])?(' title="'.htmlspecialchars($v['description']).'"'):'').'">'.htmlspecialchars($v['name']).
-                            '</option>';
-                }
-                $html .= '</select>';
-                if (isset($info['description'])) {
-                    $html .= '<p class="hint">'.$info['description'].'</p>';
-                }
-                return $html;
-            case 'radio':
-                foreach ($info['items'] as $k => $v) {
-                    if (!is_array($v)) {
-                        $v = array('name' => $v);
-                    }
-                    $html .= '<label class="s-label-with-check">'.
-                                 '<input type="radio" name="params['.$info['id'].']" value="'.$k.'" />'.htmlspecialchars($v['name']).
-                    (isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
-                             '</label>';
-                }
-                return $html;
-            case 'checkbox':
-                if (isset($info['items'])) {
-                    foreach ($info['items'] as $k => $v) {
-                        if (!is_array($v)) {
-                            $v = array('name' => $v);
-                        }
-                        $html .= '<label class="s-label-with-check">'.
-                                    '<input type="checkbox" name="params['.$info['id'].'][]" value="'.$k.'" />'.htmlspecialchars($v['name']).
-                        (isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
-                                    '</label>';
-                    }
-                } else {
-                    $html .= '<label class="s-label-with-check">';
-                    $html .= '<input type="checkbox" name="params['.$info['id'].']" '.($value ? 'checked' : '').' value="1" />';
-                    $html .= '</label>';
-                }
-                if (isset($info['description'])) {
-                    $html .= ' <span class="hint">'.$info['description'].'</span>';
-                }
-                return $html;
-            case 'radio_select':
-                $html = '<div id="s-radio-select-'.$route_id.'-'.++$id.'">';
-                foreach ($info['items'] as $k => $v) {
-                    if (!is_array($v)) {
-                        $v = array('name' => $v);
-                    }
-                    $html .= '<label class="s-label-with-check">'.
-                                 '<input type="radio" '.
-                    ($value == $k || isset($v['items'][$value]) ? 'checked="checked"' : '').
-                                    ' name="params['.$info['id'].']" value="'.$k.'" />'.
-                    htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
-                             '</label>';
-                    if (isset($v['items'])) {
-                        $html .= '<select '.($value == $k || isset($v['items'][$value]) ? '' : 'disabled="disabled"').' name="params['.$info['id'].']">';
-                        foreach ($v['items'] as $k2 => $v2) {
-                            $html .= '<option '.($k2 == $value ? 'selected="selected" ' : '').'value="'.$k2.'">'.htmlspecialchars($v2).'</option>';
-                        }
-                        $html .= '</select>';
-                    }
-                }
-                $html .= '</div>';
-                $html .= '<script type="text/javascript">
-                $("#s-radio-select-'.$route_id.'-'.$id.' input[type=radio]").change(function () {
-                    if ($(this).is(":checked")) {
-                        $("#s-radio-select-'.$route_id.'-'.$id.' select").attr("disabled", "disabled");
-                        $(this).parent().next("select").removeAttr("disabled");
-                    }
-                });
-                </script>';
-                return $html;
 
-            case 'radio_checkbox':
-                $html = '<div id="s-radio-checkbox-'.$route_id.'-'.++$id.'">';
-                foreach ($info['items'] as $k => $v) {
-                    if (!is_array($v)) {
-                        $v = array('name' => $v);
-                    }
-                    $html .= '<label class="s-label-with-check">'.
-                        '<input type="radio" '.
-                        ($value == $k || (is_array($value) && isset($v['items'])) ? 'checked="checked"' : '').
-                        ' name="params['.$info['id'].']" value="'.(isset($v['items']) ? '' : $k).'" />'.
-                        htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
-                        '</label>';
-                    if (isset($v['items'])) {
-                        $disabled = !is_array($value);
-                        $html .= '<div class="block"><ul class="menu-v compact small">';
-                        foreach ($v['items'] as $k2 => $v2) {
-                            if (!is_array($v2)) {
-                                $v2 = array('name' => $v2);
-                            }
-                            $html .= '<li><label class="s-label-with-check">'.
-                                '<input '.(is_array($value) && in_array($k2, $value) ? 'checked' :'' ).' '.($disabled ? 'disabled="disabled"' : '').' type="checkbox" name="params['.$info['id'].'][]" value="'.$k2.'" />'.htmlspecialchars($v2['name']).
-                                (isset($v2['description'])?(' <span class="hint">'.$v2['description'].'</span>'):'').
-                                '</label></li>';
-                        }
-                        $html .= '</ul></div>';
-                    }
-                }
-                $html .= '</div>';
-                $html .= '<script type="text/javascript">
-                $("#s-radio-checkbox-'.$route_id.'-'.$id.' input[type=radio]").change(function () {
-                    if ($(this).is(":checked")) {
-                        $("#s-radio-checkbox-'.$route_id.'-'.$id.' input:checkbox").attr("disabled", "disabled").removeAttr("checked");
-                        $(this).parent().next("div").find("input").removeAttr("disabled");
-                    }
-                });
-                </script>';
-                return $html;
+        $view = wa('site')->getView();
+        $template = wa()->getAppPath('templates/actions/routing/RoutingRenderSetting.html', 'site');
+        $view->assign(array(
+            'id'       => ++$id,
+            'route_id' => $route_id,
+            'info'     => $info,
+            'value'    => $value,
+        ));
 
-            case 'radio_text':
-                $html = '<div id="s-radio-select-'.$route_id.'-'.++$id.'">';
-                $counter = 0;
-                $selected = false;
-                foreach ($info['items'] as $k => $v) {
-                    if (!is_array($v)) {
-                        $v = array('name' => $v);
-                    }
-                    $checked = (sprintf('%s', $k) === $value);
-                    $last = (++$counter == count($info['items']));
-                    if ($last) {
-                        $checked = !$selected;
-                    } elseif ($checked) {
-                        $selected = true;
-                    }
-                    $html .= '<label class="s-label-with-check">'.
-                                 '<input type="radio" '.
-                    ($checked? 'checked="checked"' : '').
-                                    ' name="params['.$info['id'].']" value="'.$k.'" '.($last?' class="last"':'').'/>'.
-                    htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
-                             '</label>';
-                    if ($last) {
-                        $html .= '<input '.(($checked) ? '' : 'disabled="disabled"').' name="params['.$info['id'].']"'.($checked && ($value != $k)?' value="'.htmlentities($value,ENT_QUOTES,'utf-8').'"':'').'/>';
-                    }
-                }
-                $html .= '</div>';
-                $html .= '<script type="text/javascript">
-                $("#s-radio-select-'.$route_id.'-'.$id.' input[type=radio]").change(function () {
-                    if ($(this).hasClass("last")) {
-                        $("#s-radio-select-'.$route_id.'-'.$id.' input:text").removeAttr("disabled").focus();
-                    } else {
-                        $("#s-radio-select-'.$route_id.'-'.$id.' input:text").attr("disabled", "disabled");
-                    }
-                });
-                </script>';
-                return $html;
-            default:
-                return '';
-        }
+        return $view->fetch($template);
     }
 }

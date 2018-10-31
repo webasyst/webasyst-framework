@@ -5,7 +5,7 @@
         {if $custom_image !== null && $custom_image !== false}
         <div class="s-custom-background-preview js-custom-background-preview" data-value="{$custom_image.file_name|default:null}">
             <div>
-                <img class="s-custom-image-preview js-image-img" src="{if !empty($custom_image.file_name)}{$wa_url}wa-data/public/webasyst/{$custom_image.file_name}?t={$custom_image.file_mtime|default:null}{/if}">
+                <img class="s-custom-image-preview js-image-img" src="{if !empty($custom_image.file_name)}{$images_url}/{$custom_image.file_name}?t={$custom_image.file_mtime|default:null}{/if}">
             </div>
             <div class="s-custom-image-params">
                 {* Image params *}

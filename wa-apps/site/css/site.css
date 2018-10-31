@@ -36,7 +36,7 @@ a.s-settings-link.selected { background: #eee; }
 .s-site-mgmt-tab .s-domain {  }
 .s-site-mgmt-tab .s-domain .s-domain-list { margin: 0; display: block; padding: 10px; border-bottom: 1px solid rgba(204, 204, 204, 0.2); }
 .s-site-mgmt-tab .s-domain .s-domain-list .s-selected-domain-name { color: #777; font-weight: bold; text-transform: uppercase; line-height: 17px; height: 14px; overflow: hidden; position: relative; word-break: break-all; cursor: default; }
-.s-site-mgmt-tab .s-domain .s-domain-list .s-selected-domain-name .icon10.darr { position: absolute; top: 4px; right: 1px; z-index: 1080; }
+.s-site-mgmt-tab .s-domain .s-domain-list .s-selected-domain-name .icon10.darr { position: absolute; top: 4px; right: 1px; z-index: 1050; }
 .s-site-mgmt-tab .s-domain .s-domain-list .s-selected-domain-name .shortener { -webkit-box-shadow: -25px 0 12px #f6f6f6 inset; box-shadow: -25px 0 12px #f6f6f6 inset; -moz-box-shadow: -25px 0 12px #f6f6f6 inset; -webkit-box-shadow: -25px 0 12px #f6f6f6 inset; display: block; height: 16px; position: absolute; right: 0; top: 7px; width: 33px; }
 .s-site-mgmt-tab .s-domain:hover .s-domain-list .s-selected-domain-name .shortener { -webkit-box-shadow: -25px 0 12px #e5e5e5 inset; box-shadow: -25px 0 12px #e5e5e5 inset; -moz-box-shadow: -25px 0 12px #e5e5e5 inset; -webkit-box-shadow: -25px 0 12px #e5e5e5 inset; }
 .s-site-mgmt-tab .s-domain .s-domain-list .s-domain-list-wrapper { width: 202px !important; max-height: 364px; overflow: auto; }

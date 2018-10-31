@@ -1,12 +1,12 @@
-{$_title = "[`Сaptcha settings`] — {$wa->accountName()}"}
+{$_title = "[`Captcha settings`] — {$wa->accountName()}"}
 <div class="s-captcha-settings-page" id="s-captcha-settings-page">
-    <h1 class="s-page-header">[`Сaptcha settings`]</h1>
+    <h1 class="s-page-header">[`Captcha settings`]</h1>
     <div class="s-description">[`Select a type of captcha to be used on your websites.`]</div>
     <div class="s-captcha-settings-fields-block">
         <form action="?module=systemSettingsCaptchaSave">
             <div class="field-group">
                 <div class="field">
-                    <div class="name">[`Сaptcha type`]</div>
+                    <div class="name">[`Captcha type`]</div>
                     <div class="value no-shift">
                         <label>
                             <input type="radio" name="captcha" {if ifset($captcha) == 'waPHPCaptcha' || empty($captcha)}checked{/if} value="waPHPCaptcha"> [`Webasyst Captcha`]
@@ -18,13 +18,13 @@
                             <br><br>
                             <div{if ifset($captcha) != 'waReCaptcha'} style="display: none"{/if} class="js-captcha-adapter-settings">
                                 <div class="field">
-                                    <div class="name">[`Site Key`]</div>
+                                    <div class="name">[`Site key`]</div>
                                     <div class="value">
                                         <input type="text" name="captcha_options[sitekey]" value="{ifset($captcha_options.sitekey)}">
                                     </div>
                                 </div>
                                 <div class="field">
-                                    <div class="name">[`Secret`]</div>
+                                    <div class="name">[`Secret key`]</div>
                                     <div class="value">
                                         <input type="text" name="captcha_options[secret]" value="{ifset($captcha_options.secret)}"><br>
                                         <span class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[`Get site key and secret for your website`]</a> <i class="icon16 new-window"></i></span>

@@ -1526,13 +1526,13 @@ msgstr "Нет доступных сервисов карт"
 msgid "Captcha"
 msgstr "Капча"
 
-msgid "Сaptcha settings"
+msgid "Captcha settings"
 msgstr "Настройки капчи"
 
 msgid "Select a type of captcha to be used on your websites."
 msgstr "Выберите тип капчи, которая будет использоваться на ваших сайтах."
 
-msgid "Сaptcha type"
+msgid "Captcha type"
 msgstr "Тип капчи"
 
 msgid "Invisible mode"
@@ -1636,3 +1636,36 @@ msgstr "Порт"
 
 msgid "This rule is disabled because it is placed below a more general rule. Move this rule higher in the list to enable it."
 msgstr "Это правило отключено, потому что оно находится ниже более общего правила. Перенесите правило выше, чтобы включить его."
+
+msgid "Delete route"
+msgstr "Удалить правило"
+
+msgid "You are about to delete the only routing rule set up for <b>%s</b> app."
+msgstr "Вы удаляете единственное настроенное правило маршрутизации для приложения «<b>%s</b>»."
+
+msgid "This will limit its functionality. Delete the rule?"
+msgstr "Это ограничит его функциональность. Удалить правило?"
+
+msgid "Deleting this site will also delete routing rules set up for installed apps. This will limit their functionality. Delete the site?"
+msgstr "Вместе с сайтом будут удалены правила маршрутизации для установленных приложений. Это ограничит их функциональность. Удалить сайт?"
+
+msgid "Deleting this site will also delete routing rules set up for <b>%s</b> app. This will limit its functionality.</p><p>Upon site deletion, set up routing rules for this app in the structure settings of remaining sites to continue using all functions."
+msgid_plural "Deleting this site will also delete routing rules set up for <b>%s</b> apps. This will limit their functionality.</p><p>Upon site deletion, set up routing rules for these apps in the structure settings of remaining sites to continue using all functions."
+msgstr[0] "При удалении сайта будут удалены правила маршрутизации для приложения <b>«%s»</b>. Это может ограничить его функциональность.</p><p>После удаления сайта добавьте правила маршрутизации для этого приложения в структуре оставшихся сайтов, чтобы продолжить пользоваться всеми возможностями."
+msgstr[1] "При удалении сайта будут удалены правила маршрутизации для приложений <b>«%s»</b>. Это может ограничить их функциональность.</p><p>После удаления сайта добавьте правила маршрутизации для этих приложений в структуре оставшихся сайтов, чтобы продолжить пользоваться всеми возможностями."
+msgstr[2] "При удалении сайта будут удалены правила маршрутизации для приложений <b>«%s»</b>. Это может ограничить их функциональность.</p><p>После удаления сайта добавьте правила маршрутизации для этих приложений в структуре оставшихся сайтов, чтобы продолжить пользоваться всеми возможностями."
+
+msgid "”</b>, <b>“"
+msgstr "»</b>, <b>«"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Site key"
+msgstr "Ключ"
+
+msgid "Secret key"
+msgstr "Секретный ключ"
+
+msgid "Delete this site alias? It will <strong>not</strong> delete any data of the main site."
+msgstr "Удалить этот сайт-зеркало? Никакие данные основного сайта <strong>не&nbsp;будут</strong> удалены."

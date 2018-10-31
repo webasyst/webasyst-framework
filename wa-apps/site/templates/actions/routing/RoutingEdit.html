@@ -176,10 +176,14 @@
                 {if !empty($params)}
                     {foreach $params as $p}
                     {if is_array($p)}
-                    <div class="field">
-                        <div class="name">{$p.name|escape}</div>
-                        <div class="value">{$p.value}</div>
-                    </div>
+                        {if $p.type == 'hidden'}
+                            {$p.value}
+                        {else}
+                            <div class="field">
+                                <div class="name">{$p.name|escape}</div>
+                                <div class="value">{$p.value}</div>
+                            </div>
+                        {/if}
                     {else}
                         <h5 class="heading clear-both"><br>{$p}<br><br></h5>
                     {/if}
@@ -255,6 +259,25 @@
 <div class="clear"></div>
 </div>
 
+{* DIALOGS *}
+<div class="dialog width550px height200px" id="remove-last-route">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>[`Delete route`]</h1>
+                <p>{sprintf('[`You are about to delete the only routing rule set up for <b>%s</b> app.`]', ifempty($app.name))}</p><p>[`This will limit its functionality. Delete the rule?`]</p>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <input type="submit" class="button red" value="[s`Delete`]"> [s`or`] <a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
 $(function () {
 
@@ -327,15 +350,36 @@ $(function () {
         }
     });
 
-    $("a.s-route-delete").click(function () {
-        if (confirm('[`This will delete the rule from website structure. Are you sure?`]')) {
-            $.post("?module=routing&action=delete&domain_id={$domain_id}", { "route": "{$route_id}"}, function (response) {
+    // Delete route
+    $("a.s-route-delete").on('click', function () {
+        var last_app_route = {$last_app_route|json_encode},
+            content = '[`This will delete the rule from website structure. Are you sure?`]';
+
+        if (last_app_route) {
+            content = '{sprintf('[`You are about to delete the only routing rule set up for <b>%s</b> app.`]', ifempty($app.name))}</p><p>[`This will limit its functionality. Delete the rule?`]';
+        }
+
+        $().waDialog({
+            'title': '[`Delete route`]',
+            'content': '<p>'+ content +'</p>',
+            'height': '190px',
+            'width': '400px',
+            'buttons': '<input type="submit" class="button red" value="[s`Delete`]"> [s`or`] <a href="javascript:void(0);" class="cancel">[s`cancel`]</a>',
+            onSubmit: function (d) {
+                deleteRoute();
+                d.trigger('close');
+                return false;
+            }
+        });
+
+        function deleteRoute() {
+            $.post("?module=routing&action=delete&domain_id={$domain_id}", { "route": "{$route_id}" }, function (response) {
                 if (response.status == 'ok') {
                     $("#route-{$route_id}").remove();
                     $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
                         '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
                         '<div class="clear"></div></div>'
-                    ).animate({ 'margin-left': '75%'}, 'slow');
+                    ).animate({ 'margin-left': '75%' }, 'slow');
                     $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');
                     $("#s-rules").removeClass('s-routing-minimized');
                     $("#s-rules .s-domain-url").show();
@@ -347,8 +391,10 @@ $(function () {
                 }
             }, "json");
         }
+
         return false;
     });
+
     $("#s-settings-form").submit(function () {
         var f = $(this);
         $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");

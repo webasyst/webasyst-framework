@@ -69,7 +69,7 @@ class siteConfig extends waAppConfig
                 $page_ids[] = $l['params'];
             } elseif (substr($l['action'], 0, 8) == 'template' || substr($l['action'], 0, 5) == 'theme' ||
                 substr($l['action'], 0, 5) == 'route') {
-                $logs[$l_id]['params_html'] = htmlspecialchars($l['params']);
+                $logs[$l_id]['params_html'] = htmlspecialchars(waIdna::dec($l['params']));
             }
         }
         if ($page_ids) {

@@ -83,7 +83,7 @@ class siteRoutingSaveController extends waJsonController
 
             $html = '<tr id="route-'.$route_id.'">
                         <td class="s-url">
-                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">'.$domain.'/</span><span class="s-editable-url" style="color:#000">'.htmlspecialchars($route['url']).'</span>
+                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">'.waIdna::dec($domain).'/</span><span class="s-editable-url" style="color:#000">'.htmlspecialchars($route['url']).'</span>
                         </td>
                         <td class="s-app'.(!empty($route['private']) ? ' gray' : '').'">';
             $root_url = wa()->getRootUrl();
@@ -285,6 +285,13 @@ class siteRoutingSaveController extends waJsonController
         if (empty($r['locale'])) {
             unset($r['locale']);
         }
+
+        $params = array(
+            'domain' => siteHelper::getDomain(),
+            'route'  => &$r,
+        );
+
+        wa('site')->event('save.route', $params);
 
         return $r;
     }
