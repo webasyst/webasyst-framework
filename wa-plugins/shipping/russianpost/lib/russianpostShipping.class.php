@@ -110,7 +110,7 @@ class russianpostShipping extends waShipping
         $params['control_wrapper'] = '<tr title="%3$s"><td>%1$s</td><td>&rarr;</td><td>%2$s '.$currency['sign'].'</td></tr>';
         $params['size'] = 6;
         for ($zone = 1; $zone <= 5; $zone++) {
-            $params['value'] = floatval(isset($costs[$zone]) ? $costs[$zone] : 0.0);
+            $params['value'] = self::floatval(isset($costs[$zone]) ? $costs[$zone] : 0.0);
             $params['title'] = "Пояс {$zone}";
             $control .= waHtmlControl::getControl(waHtmlControl::INPUT, $zone, $params);
         }
@@ -306,9 +306,12 @@ class russianpostShipping extends waShipping
         $halfkilocost = $this->halfkilocost;
         $overhalfkilocost = $this->overhalfkilocost;
 
+        $zone_halfkilocost = self::floatval(isset($halfkilocost[$zone]) ? $halfkilocost[$zone] : 0);
+        $zone_overhalfkilocost = self::floatval(isset($overhalfkilocost[$zone]) ? $overhalfkilocost[$zone] : 0);
+
         $extra_weight = round(max(0.5, $weight) - 0.5, 3);
 
-        $rate_parcel = (int)$halfkilocost[$zone] + (int)$overhalfkilocost[$zone] * ceil($extra_weight / 0.5);
+        $rate_parcel = $zone_halfkilocost + $zone_overhalfkilocost * ceil($extra_weight / 0.5);
         $rate['parcel'] = $rate_parcel;
         $rate['bookpost'] = 0;
 
@@ -394,7 +397,7 @@ class russianpostShipping extends waShipping
     protected function calculate()
     {
         $home_city = array_map('strtolower', array_filter(preg_split('@,\s*@', $this->exclude_cities), 'strlen'));
-        $weight = $this->getTotalWeight();
+        $weight = (float)$this->getTotalWeight();
         if ($weight > $this->max_weight) {
             $services = sprintf("Вес отправления (%0.2f) превышает максимально допустимый (%0.2f)", $weight, $this->max_weight);
         } else {
@@ -1892,7 +1895,7 @@ HTML;
 
     private static function floatval($value)
     {
-        return floatval(str_replace(array(',', ' '), array('.', ''), $value));
+        return round(floatval(str_replace(array(',', ' '), array('.', ''), $value)), 2);
     }
 
     /**

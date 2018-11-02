@@ -823,7 +823,9 @@ class yandexdeliveryShipping extends waShipping
             $params['assessed_value'] = $this->getAssessedPrice($this->insurance);
             $params['total_cost'] = round($this->getTotalPrice(), 2);
             $params['order_cost'] = $params['total_cost'];
-            if ($departure_datetime = $this->getPackageProperty('departure_datetime')) {
+            /** @var string $departure_datetime SQL DATETIME */
+            $departure_datetime = $this->getPackageProperty('departure_datetime');
+            if ($departure_datetime) {
                 $params['ship_date'] = date('Y-m-d', strtotime($departure_datetime));
             }
 
@@ -1002,6 +1004,7 @@ class yandexdeliveryShipping extends waShipping
 
         $rate = array(
             'name'          => array($service['delivery']['name'], $service['tariffName']),
+            'service'       => $service['delivery']['name'],
             'id'            => sprintf('%s:%s', $service['delivery']['id'], $service['tariffId']),
             'est_delivery'  => implode(' - ', array_unique($human_delivery_date)),
             'delivery_date' => $delivery_date,
@@ -1053,7 +1056,7 @@ class yandexdeliveryShipping extends waShipping
                     unset($interval);
                 }
 
-                ksort($intervals, SORT_NATURAL);
+                ksort($intervals, defined('SORT_NATURAL') ? constant('SORT_NATURAL') : SORT_REGULAR);
                 unset($intervals);
 
                 $date_format = waDateTime::getFormat('date');
@@ -1659,7 +1662,7 @@ HTML;
         $date_params = $params;
         $date_format = waDateTime::getFormat('date');
         if (isset($params['params']['date'])) {
-            $date_params['style'] = "z-index: 100000;";
+            $date_params['style'] = "z-index: 100000; width: 100px;";
 
             $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
             $offset = min(365, max(0, intval(ifset($params['params']['date'], 0))));
@@ -1953,6 +1956,7 @@ HTML;
                 return $this;
             } else {
                 $this->api_callback = null;
+
                 return $this->handleApiQuery($net, $response, $cache);
             }
 
