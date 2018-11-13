@@ -10,9 +10,10 @@
 {if $wa->globals('isMyAccount')}{$html_class_array[] = 'my'}{/if}
 
 {if $wa->shop}
-    {$_cart_url = $wa->getUrl('shop/frontend/cart')}
-    {if $wa->param('checkout_version') == 2}
-        {$_cart_url = $wa->getUrl('shop/frontend/order')}
+    {if method_exists($wa->shop, 'checkout')}
+        {$_cart_url = $wa->shop->checkout()->cartUrl()}
+    {else}
+        {$_cart_url = $wa->getUrl('shop/frontend/cart')}
     {/if}
 {/if}
 
@@ -193,7 +194,7 @@
                             {if $wa->isAuthEnabled()}
                                 <!-- user auth -->
                                 {strip}
-                                <ul class="auth">
+                                <ul class="auth" id="js-header-auth-wrapper">
                                     {if $wa->user()->isAuth()}
                                         {if $wa->myUrl()}
                                             <li{if $wa->globals('isMyAccount')} class="bold"{/if}>

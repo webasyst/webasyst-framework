@@ -147,14 +147,25 @@ label, button { cursor: pointer; }
 
 button,
 input[type=button],
-input[type=submit] { background: #fcd630; color: #000; outline: 0; padding: 5px 10px 6px; font-size: 1.1em; border: 1px solid rgba(0,0,0,0.3); border-color: rgba(0,0,0,0.2) rgba(0,0,0,0.3) rgba(0,0,0,0.3) rgba(0,0,0,0.3); -webkit-appearance: none; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); border-radius: 3px; text-shadow: 0 1px 0px rgba(255,255,255,0.5);
-background: #fcd630 -moz-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.0) 100%); /* FF3.6+ */
-background: #fcd630 -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.5)), color-stop(100%,rgba(255,255,255,0.0))); /* Chrome,Safari4+ */
-background: #fcd630 -webkit-linear-gradient(top, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* Chrome10+,Safari5.1+ */
-background: #fcd630 -o-linear-gradient(top, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* Opera 11.10+ */
-background: #fcd630 -ms-linear-gradient(top, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* IE10+ */
-background: #fcd630 linear-gradient(to bottom, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fde992', endColorstr='#fcd630',GradientType=0 ); /* IE6-9 */ }
+input[type=submit] {
+    color: #000;
+    outline: 0;
+    padding: 5px 10px 6px;
+    font-size: 1.1em;
+    -webkit-appearance: none;
+    border-radius: 3px;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0,0,0,0.3);
+    border-color: rgba(0,0,0,0.2) rgba(0,0,0,0.3) rgba(0,0,0,0.3) rgba(0,0,0,0.3);
+    background: #fcd630;
+    background: #fcd630 -moz-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.0) 100%); /* FF3.6+ */
+    background: #fcd630 -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0.5)), color-stop(100%,rgba(255,255,255,0.0))); /* Chrome,Safari4+ */
+    background: #fcd630 -webkit-linear-gradient(top, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* Chrome10+,Safari5.1+ */
+    background: #fcd630 -o-linear-gradient(top, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* Opera 11.10+ */
+    background: #fcd630 -ms-linear-gradient(top, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* IE10+ */
+    background: #fcd630 linear-gradient(to bottom, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fde992', endColorstr='#fcd630',GradientType=0 ); /* IE6-9 */ }
 button:hover,
 input[type=button]:hover,
 input[type=submit]:hover { cursor: pointer; background: #fcd630 linear-gradient(to bottom, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.3) 100%); }
@@ -246,7 +257,6 @@ ul.tree ul a { padding: 3px 6px; font-size: 90%; }
 .wa-form .wa-field .wa-value p input[type="checkbox"] { display: inline; }
 .wa-form .wa-field .wa-value p .field.wa-required span:after { content: " *"; color: #faa; }
 .wa-form .wa-field.wa-required .wa-name:after { content: " *"; color: #faa; }
-.wa-signup-form .wa-form .wa-field.wa-field-email { margin-top: 20px; }
 .wa-signup-form .wa-form .wa-field.wa-field-email .wa-value input { min-width: 300px; }
 .wa-signup-form .wa-form .wa-field.wa-field-password .wa-value input,
 .wa-signup-form .wa-form .wa-field.wa-field-password_confirm .wa-value input { min-width: 200px; width: 200px; }
@@ -777,3 +787,18 @@ html.font_size_16 body { font-size: 16px; }
 /* FOOTER NOTICE */
 .s-footer-notice { margin: 2.5em 0 1em; font-size: .9em; line-height: 1.3em; text-align: center; }
 .s-footer-notice a { color: inherit; text-decoration: underline; }
+
+/* OTHER */
+.wa-login-form-actions button,
+.wa-signup-form-actions button,
+.wa-forgotpassword-form-actions button,
+.wa-set-password-form-wrapper button,
+.wa-login-form-actions input[type=button],
+.wa-signup-form-actions input[type=button],
+.wa-forgotpassword-form-actions input[type=button],
+.wa-set-password-form-wrapper input[type=button],
+.wa-login-form-actions input[type=submit],
+.wa-signup-form-actions input[type=submit],
+.wa-forgotpassword-form-actions input[type=submit],
+.wa-confirm-signup-button,
+.wa-set-password-form-wrapper input[type=submit] { font-size: 18px; font-weight: bold; padding-top: 8px; padding-right: 15px; padding-bottom: 8px; padding-left: 15px; }

@@ -57,12 +57,15 @@
     </div>
     <script type="text/javascript">
         $.wa.site.init({
-        domain: {$domain_id}, static_url: "{$wa_app_static_url}",
-        wa_url: "{$wa_url}", root_url: "{$domain_root_url}",
-        domain_url: "{$domain_url|escape}",
-        domain_protocol: {json_encode($domain_protocol)}, mirror: {json_encode($mirror)}
-    });
-    var wa_url = "{$wa_url}";
+            domain: {$domain_id},
+            static_url: "{$wa_app_static_url}",
+            wa_url: "{$wa_url}",
+            root_url: "{$domain_root_url}",
+            domain_url: "{$domain_url|escape}",
+            domain_protocol: {json_encode($domain_protocol)},
+            mirror: {json_encode($mirror)}
+        });
+        var wa_url = "{$wa_url}";
     </script>
 </div>
 </body>

@@ -9,7 +9,7 @@ $.wa.errorHandler = function (xhr) {
     }
     return true;
 };
-
+ 
 $.wa.site = {
     options: [],
     domain: 0,
@@ -82,10 +82,6 @@ $.wa.site = {
 
                 // replace actionName with a hyphen in the camel case
                 actionName = actionName.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); });
-
-                if (actionName === 'systemSettings') {
-                    actionName += 'General';
-                }
 
                 if (this[actionName + 'Action']) {
                     this[actionName + 'Action'].apply(this, attr);
@@ -205,10 +201,11 @@ $.wa.site = {
         var d = this.domain;
         this.savePanel(false);
         var f = function () {
-            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=settings&hash=' + (hash || ''), 'domain_id=' + d, function () {
+            $("#s-personal-content").html('<i class="icon16 loading s-personal-loading"></i>').load('?module=personal&action=settings&hash=' + (hash || ''), 'domain_id=' + d, function () {
                 $('ul.s-personal-structure li.selected').removeClass('selected');
+                $('.js-personal-auth').addClass('selected');
             });
-        }
+        };
 
         if ($('#s-personal-content').length) {
             f();
@@ -226,12 +223,13 @@ $.wa.site = {
         var d = this.domain;
         this.savePanel(false);
         var f = function () {
-            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=app&app_id=' + app_id, 'domain_id=' + d, function () {
+            $("#s-personal-content").html('<i class="icon16 loading s-personal-loading"></i>').load('?module=personal&action=app&app_id=' + app_id, 'domain_id=' + d, function () {
                 $('ul.s-personal-structure li.selected').removeClass('selected');
+                $('.js-personal-auth').removeClass('selected');
                 $('#s-personal-app-' + app_id).addClass('selected');
                 $('#s-app-frontend-link').html($('#s-personal-app-' + app_id).data('link')).attr('href', $('#s-personal-app-' + app_id).data('link'));
             });
-        }
+        };
         if ($('#s-personal-content').length) {
             f();
         } else {
@@ -248,11 +246,11 @@ $.wa.site = {
         var d = this.domain;
         this.savePanel(false);
         var f = function () {
-            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=profile', 'domain_id=' + d, function () {
+            $("#s-personal-content").html('<i class="icon16 loading s-personal-loading"></i>').load('?module=personal&action=profile', 'domain_id=' + d, function () {
                 $('ul.s-personal-structure li.selected').removeClass('selected');
                 $('#s-personal-profile-link').addClass('selected');
             });
-        }
+        };
         if ($('#s-personal-content').length) {
             f();
         } else {
@@ -273,6 +271,7 @@ $.wa.site = {
                 callback();
             } else {
                 if ($('#s-personal-settings-link').data('enabled')) {
+                    $('.js-personal-auth').removeClass('selected');
                     $.wa.setHash($('ul.s-personal-structure a:first').attr('href'));
                 } else {
                     $.wa.setHash('#/personal/settings/');
@@ -330,592 +329,6 @@ $.wa.site = {
                 $.wa.site.active($("#s-link-plugins"));
             });
         }
-    },
-
-    systemSettingsGeneralAction: function () {
-        this.savePanel(false);
-        $("#s-content").load('?module=systemSettingsGeneral', {}, function () {
-            $.wa.site.active($("#s-link-system-settings"));
-            $('#s-system-settings-sidebar').find('li').removeClass('selected');
-            $('#s-system-settings-sidebar').find('.js-general').addClass('selected');
-
-            /* Generate settings page */
-            var $wrapper = $('#s-general-settings-page'),
-                $form = $wrapper.find('form'),
-                $footer_actions = $form.find('.js-footer-actions'),
-                $button = $footer_actions.find('.js-submit-button'),
-                $cancel = $footer_actions.find('.js-cancel'),
-                $loading = $footer_actions.find('.s-loading'),
-                is_locked = false;
-
-            /* Background image in authorization page */
-            var $backgrounds_wrapper = $wrapper.find('.js-background-images'),
-                $preview_wrapper = $wrapper.find('.js-custom-preview-wrapper'),
-                $background_input = $wrapper.find('input[name="auth_form_background"]'),
-                $upload_preview_background_wrapper = $wrapper.find('.js-upload-preview');
-
-            /* Click on background image */
-            $backgrounds_wrapper.on('click', 'li > a', function () {
-                var $image = $(this),
-                    value = $image.data('value');
-
-                $backgrounds_wrapper.find('.selected').removeClass('selected');
-                $image.parents('li').addClass('selected');
-                $background_input.val(value);
-                $form.trigger('input');
-
-                if (value.match(/^stock:/)) {
-                    $wrapper.find('.js-stretch-checkbox').prop('disabled', true);
-                } else {
-                    $wrapper.find('.js-stretch-checkbox').prop('disabled', null);
-                }
-
-                return false;
-            });
-
-            // Upload custom background image
-            $('.js-background-upload').on('change', function (e) {
-                e.preventDefault();
-
-                if (!$(this).val()) {
-                    return;
-                }
-
-                var href = "?module=systemSettingsUploadCustomBackground",
-                    image = new FormData();
-                image.append("image", $(this)[0].files[0]);
-
-                // Remove all custom image
-                // Preview in list
-                var old_value = $preview_wrapper.find('.js-custom-background-preview').data('value');
-                $backgrounds_wrapper.find('a[data-value="'+ old_value +'"]').parents('li').remove();
-                // Big preview
-                $preview_wrapper.html('');
-
-                $upload_preview_background_wrapper.find('.loading').show();
-
-                $.ajax({
-                    url: href,
-                    type: 'POST',
-                    data: image,
-                    cache: false,
-                    contentType: false,
-                    processData: false
-                }).done(function(res) {
-                    var $preview_template = $($wrapper.find('.js-preview-template').html()),
-                        $list_preview_template = $wrapper.find('.js-list-preview-template').clone();
-
-                    // Set value in hidden field
-                    $background_input.val(res.data.file_name);
-
-                    // Set big preview
-                    $preview_template.find('.js-custom-background-preview').attr('data-value', res.data.file_name);
-                    $preview_template.find('.js-image-img').attr('src', res.data.img_path);
-                    $preview_template.find('.js-image-width').text(res.data.width);
-                    $preview_template.find('.js-image-height').text(res.data.height);
-                    $preview_template.find('.js-image-size').text(res.data.file_size_formatted);
-                    $preview_template.find('.stretch').removeAttr('style').find('.js-stretch-checkbox').removeAttr('disabled');
-
-                    // Set preview in images list
-                    $list_preview_template.find('a').attr('data-value', res.data.file_name);
-                    $list_preview_template.find('img').attr('src', res.data.img_path).attr('alt', res.data.file_name);
-                    $list_preview_template.removeClass('js-list-preview-template').removeAttr('style');
-
-                    $backgrounds_wrapper.find('.selected').removeClass('selected');
-                    $backgrounds_wrapper.append($list_preview_template);
-
-                    $preview_wrapper.html($preview_template);
-
-                    $upload_preview_background_wrapper.find('.loading').hide();
-                });
-                $('.js-background-upload').val('');
-            });
-
-            // Remove custom background image
-            $wrapper.on('click', '.js-remove-custom-backgorund', function (e) {
-                var $dialog_text = $wrapper.find('.js-remove-text').clone(),
-                    dialog_buttons = $wrapper.find('.js-remove-buttons').clone().html(),
-                    value = $(this).parents('.js-custom-background-preview').data('value');
-                $dialog_text.show();
-                e.preventDefault();
-                // Show confirm dialog
-                $($dialog_text).waDialog({
-                    'buttons': dialog_buttons,
-                    'width': '500px',
-                    'height': '65px',
-                    'min-height': '65px',
-                    onSubmit: function (d) {
-                        var href = '?module=systemSettingsRemoveCustomBackground';
-
-                        $.get(href, function (res) {
-                            $backgrounds_wrapper.find('a[data-value="'+ value +'"]').parents('li').remove();
-                            $preview_wrapper.html('');
-                            $backgrounds_wrapper.find('a[data-value="stock:bokeh_vivid.jpg"]').click();
-                        });
-
-                        d.trigger('close'); // close dialog
-                        $('.dialog').remove(); // remove dialog
-                        return false;
-                    }
-                });
-            });
-
-            // Clear cache
-            $wrapper.on('click', '.js-clear-cache', function () {
-                var href = '?module=systemSettingsClearCache',
-                    $cache_loading = $wrapper.find('.js-cache-loading');
-
-                $cache_loading.removeClass('yes').addClass('loading').show();
-
-                $.get(href, function(r) {
-                    if (r.status == 'ok') {
-                        $cache_loading.removeClass('loading').addClass('yes');
-                    } else if (r.status == 'fail') {
-                        $cache_loading.removeClass('loading').addClass('no');
-                    }
-                    setTimeout(function(){
-                        $cache_loading.hide();
-                    },2000);
-                }, 'json')
-                .error(function() {
-                    $cache_loading.removeClass('loading').addClass('yes');
-                    setTimeout(function(){
-                        $cache_loading.hide();
-                    },2000);
-                });
-            });
-
-            // Submit
-            $form.on('submit', function (e) {
-                e.preventDefault();
-                if (is_locked) {
-                    return;
-                }
-                is_locked = true;
-                $button.prop('disabled', true);
-                $loading.removeClass('yes').addClass('loading').show();
-
-                var href = $form.attr('action'),
-                    data = $form.serialize();
-
-                $.post(href, data, function (res) {
-                    if (res.status === 'ok') {
-                        $button.removeClass('yellow').addClass('green');
-                        $loading.removeClass('loading').addClass('yes');
-                        $footer_actions.removeClass('is-changed');
-                        setTimeout(function(){
-                            $loading.hide();
-                        },2000);
-                    } else if (res.errors) {
-                        $.each(res.errors, function (i, error) {
-                            if (error.field) {
-                                fieldError(error.field, error.message);
-                            }
-                        });
-                        $loading.hide();
-                    }
-                    is_locked = false;
-                    $button.prop('disabled', false);
-                });
-            });
-
-            $form.on('input', function () {
-                $footer_actions.addClass('is-changed');
-                $button.removeClass('green').addClass('yellow');
-            });
-
-            // Reload on cancel
-            $cancel.on('click', function (e) {
-                e.preventDefault();
-                location.reload();
-            });
-
-            function fieldError(field_name, message) {
-                var $field = $form.find('input[name='+field_name+']'),
-                    $hint = $field.parent('.value').find('.js-error-place');
-
-                $field.addClass('shake animated').focus();
-                $hint.text(message);
-                setTimeout(function(){
-                    $field.removeClass('shake animated').focus();
-                    $hint.text('');
-                }, 1000);
-            }
-        });
-    },
-
-    systemSettingsEmailAction: function () {
-        this.savePanel(false);
-        $("#s-content").load('?module=systemSettingsEmail', {}, function () {
-            $.wa.site.active($("#s-link-system-settings"));
-            $('#s-system-settings-sidebar').find('li').removeClass('selected');
-            $('#s-system-settings-sidebar').find('.js-email').addClass('selected');
-
-            /* Email settings page */
-            var $wrapper = $('#s-email-settings-page'),
-                $form = $wrapper.find('form'),
-                $items_wrapper = $form.find('.js-settings-items'),
-                $item_add = $wrapper.find('.js-add-item'),
-                $item_template = $wrapper.find('.js-template'),
-                $footer_actions = $form.find('.js-footer-actions'),
-                $button = $footer_actions.find('.js-submit-button'),
-                $cancel = $footer_actions.find('.js-cancel'),
-                $loading = $form.find('.s-loading'),
-                is_locked = false,
-                item_class = ".js-item",
-                item_remove_class = ".js-remove",
-                key_class = ".js-key",
-                transport_class = ".js-transport",
-                dkim_checkbox_class = ".js-dkim-checkbox";
-
-            // Change transport
-            $wrapper.on('change', transport_class, function () {
-                var $item = $(this).parents(item_class),
-                    transport = $item.find(transport_class).val();
-
-                $item.find('.js-params').hide(); // Hide all params
-                $item.find('.js-transport-description').css('display', 'none'); // Hide all descriptions
-                $item.find('.js-'+ transport +'-description').css('display', 'inline-block'); // Show needed description
-                $item.find('.js-'+ transport +'-params').show(); // Show needed params
-            });
-
-            // DKIM
-            $wrapper.on('change', dkim_checkbox_class, function () {
-                var $dkim_checkbox = $(this),
-                    $item = $dkim_checkbox.parents(item_class),
-                    is_on = $dkim_checkbox.is(':checked');
-
-                if (is_on) {
-                    dkim($item, 'generateDkim');
-                } else {
-                    dkim($item, 'removeDkim');
-                }
-            });
-
-            // Remove dkim settings if email or domain is changed
-            $wrapper.on('input', key_class, function () {
-                var $item = $(this).parents(item_class);
-                if (!$.trim($(this).val())) {
-                    dkim($item, 'showNeedEmail');
-                } else {
-                    dkim($item, 'hideNeedEmail');
-                }
-            });
-
-            function dkim($item, action) {
-                var $dkim_checkbox = $item.find('.js-dkim-checkbox'),
-                    $dkim_sender_input = $item.find('.js-key'),
-                    $dkim_wrapper = $item.find('.js-dkim-field'),
-                    $dkim_private_key = $dkim_wrapper.find('.js-dkim-pvt-key'),
-                    $dkim_public_key = $dkim_wrapper.find('.js-dkim-pub-key'),
-                    $dkim_selector = $dkim_wrapper.find('.js-dkim-selector'),
-                    $dkim_info = $item.find('.js-dkim-info'),
-                    $dkim_one_string_key = $dkim_wrapper.find('.js-one-string-key'),
-                    $dkim_host_selector = $dkim_wrapper.find('.js-dkim-host-selector'),
-                    $dkim_domain_0 = $dkim_wrapper.find('.js-sender-domain-0'),
-                    $dkim_domain = $dkim_wrapper.find('.js-domain'),
-                    $dkim_needs_email = $dkim_wrapper.find('.js-dkim-needs-email'),
-                    $dkim_error = $dkim_wrapper.find('.js-dkim-error');
-
-                if (action === "generateDkim") {
-                    var email = $.trim($dkim_sender_input.val()),
-                        href = '?module=systemSettingsGenerateDkim',
-                        data = { email: email };
-
-                    $dkim_error.slideUp().text('');
-                    $.post(href, data, function(r) {
-                        if (r.status == 'ok') {
-                            $dkim_private_key.val(r.data.dkim_pvt_key);
-                            $dkim_public_key.val(r.data.dkim_pub_key);
-                            $dkim_selector.val(r.data.selector);
-                            $dkim_one_string_key.text(r.data.one_string_key);
-                            $dkim_host_selector.text(r.data.selector);
-                            $dkim_domain_0.text(r.data.domain);
-                            $dkim_domain.text(r.data.domain);
-                            $dkim_info.slideDown();
-                        } else if (r.status == 'fail' && r.errors) {
-                            $dkim_error.text(r.errors[0]).slideDown();
-                        }
-                    }, 'json')
-                    .error(function() {
-                        $dkim_error.text('Failed to create DKIM signature').slideDown();
-                    });
-                } else if (action === "removeDkim") {
-                    $dkim_info.slideUp();
-                    setTimeout(function () {
-                        removeDkimData();
-                    }, 150);
-                } else if (action === "hideNeedEmail") {
-                    $dkim_needs_email.hide();
-                    $dkim_checkbox.prop('checked', false);
-                    $dkim_info.slideUp();
-                    setTimeout(function () {
-                        removeDkimData();
-                    }, 150);
-                } else if (action === "showNeedEmail") {
-                    $dkim_needs_email.show();
-                    $dkim_checkbox.prop('checked', false);
-                    $dkim_info.slideUp();
-                    setTimeout(function () {
-                        removeDkimData();
-                    }, 150);
-                }
-
-                function removeDkimData() {
-                    $dkim_error.slideUp().text('');
-                    $dkim_private_key.val('');
-                    $dkim_public_key.val('');
-                    $dkim_selector.val('');
-                    $dkim_one_string_key.text('');
-                    $dkim_host_selector.text('');
-                    $dkim_domain_0.text('');
-                    $dkim_domain.text('');
-                }
-            }
-
-            // Add item
-            $item_add.on('click', function (e) {
-                e.preventDefault();
-                var $item = $item_template.clone().removeClass('js-template').addClass('js-item');
-                $item.find('.js-key').val('');
-                $items_wrapper.append($item);
-                $form.trigger('input');
-            });
-
-            // Remove item
-            $wrapper.on('click', item_remove_class, function (e) {
-                e.preventDefault();
-                var $item = $(this).parents(item_class);
-                $item.remove();
-                $form.trigger('input');
-            });
-
-            // Submit
-            $form.on('submit', function (e) {
-                e.preventDefault();
-
-                // Set attribute name for all item fields
-                // by data-name attribute
-                var $all_items = $items_wrapper.find('.js-item');
-                $.each($all_items, function (i, item) {
-                    setNames($(item));
-                });
-
-                // Send post
-                if (is_locked) {
-                    return;
-                }
-                is_locked = true;
-                $button.prop('disabled', true);
-                $loading.removeClass('yes').addClass('loading').show();
-
-                var href = $form.attr('action'),
-                    data = $form.serialize();
-
-                $.post(href, data, function (res) {
-                    if (res.status === 'ok') {
-                        $button.removeClass('yellow').addClass('green');
-                        $loading.removeClass('loading').addClass('yes');
-                        $footer_actions.removeClass('is-changed');
-                        setTimeout(function(){
-                            $loading.hide();
-                        }, 2000);
-                    } else if (res.errors) {
-                        $.each(res.errors, function (i, error) {
-                            if (error.field) {
-                                fieldError(error);
-                            }
-                        });
-                        $loading.hide();
-                    } else {
-                        $loading.hide();
-                    }
-                    is_locked = false;
-                    $button.prop('disabled', false);
-                });
-
-                function setNames($item) {
-                    var item_key = $item.find(key_class).val(),
-                        item_fields = $item.find('[data-name]');
-
-                    if (typeof item_key !== 'string' || !item_key) {
-                        return;
-                    }
-
-                    $.each(item_fields, function (i, field) {
-                        var $field = $(field);
-                        $field.attr('name', 'data['+ item_key +']['+ $field.data('name') +']');
-                    });
-                }
-
-            });
-
-            $form.on('input', function () {
-                $footer_actions.addClass('is-changed');
-                $button.removeClass('green').addClass('yellow');
-            });
-
-            // Reload on cancel
-            $cancel.on('click', function (e) {
-                e.preventDefault();
-                location.reload();
-            });
-
-            function fieldError(error) {
-                var $field = $form.find('input[name='+error.field+']'),
-                    $hint = $field.parent('.value').find('.js-error-place');
-
-                $field.addClass('shake animated').focus();
-                $hint.text(error.message);
-                setTimeout(function(){
-                    $field.removeClass('shake animated').focus();
-                    $hint.text('');
-                }, 1000);
-            }
-        });
-    },
-
-    systemSettingsMapsAction: function () {this.savePanel(false);
-        $("#s-content").load('?module=systemSettingsMaps', {}, function () {
-            $.wa.site.active($("#s-link-system-settings"));
-            $('#s-system-settings-sidebar').find('li').removeClass('selected');
-            $('#s-system-settings-sidebar').find('.js-maps').addClass('selected');
-
-            /* Maps settings page */
-            var $wrapper = $('#s-maps-settings-page'),
-                $form = $wrapper.find('form'),
-                $footer_actions = $form.find('.js-footer-actions'),
-                $button = $footer_actions.find('.js-submit-button'),
-                $cancel = $footer_actions.find('.js-cancel'),
-                $loading = $footer_actions.find('.s-loading'),
-                is_locked = false;
-
-            // Change adapter
-            $wrapper.on('change', ':input[name="map_adapter"]', function(e){
-                var $scope = $(this).parents('div.field'),
-                    fast = e.originalEvent ? false : true;
-
-                if (fast) {
-                    $scope.find('div.js-map-adapter-settings').hide();
-                    if (this.checked) {
-                        $scope.find('div.js-map-adapter-settings[data-adapter-id="' + this.value + '"]').show();
-                    }
-                } else {
-                    $scope.find('div.js-map-adapter-settings').slideUp();
-                    if (this.checked) {
-                        $scope.find('div.js-map-adapter-settings[data-adapter-id="' + this.value + '"]').slideDown();
-                    }
-                }
-            });
-
-            $wrapper.find(':input[name="map_adapter"]:checked').change();
-
-            // Submit
-            $form.on('submit', function (e) {
-                e.preventDefault();
-                if (is_locked) {
-                    return;
-                }
-                is_locked = true;
-                $button.prop('disabled', true);
-                $loading.removeClass('yes').addClass('loading').show();
-
-                var href = $form.attr('action'),
-                    data = $form.serialize();
-
-                $.post(href, data, function (res) {
-                    if (res.status === 'ok') {
-                        $button.removeClass('yellow').addClass('green');
-                        $loading.removeClass('loading').addClass('yes');
-                        $footer_actions.removeClass('is-changed');
-                        setTimeout(function(){
-                            $loading.hide();
-                        },2000);
-                    } else {
-                        $loading.hide();
-                    }
-                    is_locked = false;
-                    $button.prop('disabled', false);
-                });
-            });
-
-            $form.on('input', function () {
-                $footer_actions.addClass('is-changed');
-                $button.removeClass('green').addClass('yellow');
-            });
-
-            // Reload on cancel
-            $cancel.on('click', function (e) {
-                e.preventDefault();
-                location.reload();
-            });
-        });
-    },
-
-    systemSettingsCaptchaAction: function () {this.savePanel(false);
-        $("#s-content").load('?module=systemSettingsCaptcha', {}, function () {
-            $.wa.site.active($("#s-link-system-settings"));
-            $('#s-system-settings-sidebar').find('li').removeClass('selected');
-            $('#s-system-settings-sidebar').find('.js-captcha').addClass('selected');
-
-            /* Maps settings page */
-            var $wrapper = $('#s-captcha-settings-page'),
-                $form = $wrapper.find('form'),
-                $footer_actions = $form.find('.js-footer-actions'),
-                $button = $footer_actions.find('.js-submit-button'),
-                $cancel = $footer_actions.find('.js-cancel'),
-                $loading = $footer_actions.find('.s-loading'),
-                is_locked = false;
-
-            // Change adapter
-            $form.find(':input[name="captcha"]').on('change', function(){
-                if (this.value == 'waReCaptcha') {
-                    $form.find('div.js-captcha-adapter-settings').slideDown();
-                } else {
-                    $form.find('div.js-captcha-adapter-settings').slideUp();
-                }
-            });
-
-            // Submit
-            $form.on('submit', function (e) {
-                e.preventDefault();
-                if (is_locked) {
-                    return;
-                }
-                is_locked = true;
-                $button.prop('disabled', true);
-                $loading.removeClass('yes').addClass('loading').show();
-
-                var href = $form.attr('action'),
-                    data = $form.serialize();
-
-                $.post(href, data, function (res) {
-                    if (res.status === 'ok') {
-                        $button.removeClass('yellow').addClass('green');
-                        $loading.removeClass('loading').addClass('yes');
-                        $footer_actions.removeClass('is-changed');
-                        setTimeout(function(){
-                            $loading.hide();
-                        },2000);
-                    } else {
-                        $loading.hide();
-                    }
-                    is_locked = false;
-                    $button.prop('disabled', false);
-                });
-            });
-
-            $form.on('input', function () {
-                $footer_actions.addClass('is-changed');
-                $button.removeClass('green').addClass('yellow');
-            });
-
-            // Reload on cancel
-            $cancel.on('click', function (e) {
-                e.preventDefault();
-                location.reload();
-            });
-        });
     },
 
     filesAction: function (load, path) {
@@ -1246,20 +659,6 @@ $.wa.site = {
             return false;
         }));
         return menu;
-    },
-
-    systemSettings: function () {
-        var $sidebar = $('#s-system-settings-sidebar'),
-            $general_link = $sidebar.find('.js-general'),
-            $email_link = $sidebar.find('.js-email');
-
-        $general_link.on('click', function () {
-            this.systemSettingsGeneralAction;
-        });
-
-        $email_link.on('click', function () {
-            this.systemSettingsEmailAction;
-        });
     },
 
     filesPage: function (hash) {

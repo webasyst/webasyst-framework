@@ -16,9 +16,10 @@
 
     {else}
 
-        <h1>[s`Sign up`]</h1>
-        {$wa->authAdapters()}
-        {$wa->signupForm($errors)}
+        {$wa->signupForm($errors, [
+            "show_title"          => true,
+            "show_oauth_adapters" => true
+        ])}
 
         <div class="clear-both"></div>
 

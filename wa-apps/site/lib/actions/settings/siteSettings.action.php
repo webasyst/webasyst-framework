@@ -1,8 +1,7 @@
 <?php 
 
 class siteSettingsAction extends waViewAction
-{   
-    
+{
     public function execute()
     {
         $apps = wa()->getApps();

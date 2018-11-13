@@ -1124,9 +1124,12 @@ msgstr "отредактировал правило маршрутизации"
 msgid "deleted routing rule"
 msgstr "удалил правило маршрутизации"
 
+msgid "Personal account sections"
+msgstr "Разделы личного кабинета"
+
 #: /wa-apps/site/templates/actions/personal/Personal.html:37
-msgid "Personal account structure is defined by the list of installed Webasyst apps linked in the current website frontend."
-msgstr "Структура личного кабинета определяется списком установленных и подключенных на данном сайте приложений Webasyst."
+msgid "Sections are determined by connected applications"
+msgstr "Разделы определяются подключенными приложениями"
 
 #: /wa-apps/site/templates/actions/personal/Personal.html:41
 msgid "Auth & Sign Up settings"
@@ -1661,11 +1664,143 @@ msgstr "»</b>, <b>«"
 msgid "Add"
 msgstr "Добавить"
 
+msgid "Login and signup settings"
+msgstr "Настройки входа и регистрации"
+
+msgid "Login and signup settings for %s"
+msgstr "Настройки входа и регистрации на %s"
+
+msgid "User personal area"
+msgstr "Личный кабинет пользователя"
+
+msgid "The application and address used"
+msgstr "Используемое приложение и адрес"
+
+msgid "Select app"
+msgstr "Выберите приложение"
+
+msgid "Ways of login and registration"
+msgstr "Способы входа и регистрации"
+
+msgid "Social networks"
+msgstr "Социальные сети"
+
+msgid "Register form"
+msgstr "Форма регистрации"
+
+msgid "Login form"
+msgstr "Форма входа"
+
+msgid "Fields"
+msgstr "Поля"
+
 msgid "Site key"
 msgstr "Ключ"
 
 msgid "Secret key"
 msgstr "Секретный ключ"
 
+msgid "authorization enabled"
+msgstr "включен"
+
+msgid "authorization disabled"
+msgstr "выключен"
+
+msgid "Set up how website visitors will log in and sign up on your website."
+msgstr "Настройте, как посетители будут входить и регистрироваться на сайте."
+
+msgid "Login & signup forms"
+msgstr "Формы входа и регистрации"
+
+msgid "Set up fields website visitors will need to complete in login and signup forms."
+msgstr "Настройте поля форм входа и регистрации, которые будут заполнять посетители сайта."
+
+msgid "A signup confirmation link or code will be sent in a notification."
+msgstr "Ссылка или код для подтверждения регистрации будут отправлены в уведомлении."
+
+msgid "Wait for specified number of seconds before sending next one-time password"
+msgstr "Период ожидания в секундах перед отправкой следующего одноразового кода"
+
+msgid "Confirm signup"
+msgstr "Подтверждать регистрацию"
+
+msgid "Passwords type"
+msgstr "Система паролей"
+
+msgid "Successful signup notification"
+msgstr "Уведомление о завершении регистрации"
+
+msgid "Send successful signup notifications to users"
+msgstr "Отправлять пользователям уведомление о завершении регистрации"
+
+msgid "Select a group of notification templates to be used for sending login, signup, and password recovery notifications."
+msgstr "Выберите группу шаблонов уведомлений для отправки уведомлений при входе, регистрации и смене пароля."
+
+msgid "Edit email notification templates in <a href=\"%s\">Settings</a> app"
+msgstr "Изменяйте шаблоны email-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."
+
+msgid "Edit SMS notification templates in <a href=\"%s\">Settings</a> app"
+msgstr "Изменяйте шаблоны SMS-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."
+
+msgid "User notifications"
+msgstr "Уведомления пользователей"
+
+msgid "Notification templates"
+msgstr "Шаблоны уведомлений"
+
+msgid "Priority over email notifications"
+msgstr "Приоритет над email-уведомлениями"
+
+msgid "Prefer SMS over email for sending notifications. In case of SMS sending failure, email will be sent as a replacement."
+msgstr "Приоритет SMS над email при отправке уведомлений. В случае сбоя в отправке SMS будет отправлено email-уведомление."
+
+msgid "A user must enter characters shown in an image"
+msgstr "Пользователь должен ввести символы с изображения"
+
+msgid "“Remember me” option"
+msgstr "Флажок «Запомнить меня»"
+
+msgid "Email or phone"
+msgstr "Email или телефон"
+
+msgid "Cannot disable all authorization options"
+msgstr "Нельзя отключать все способы авторизации"
+
+msgid "Keep at least one authorization option enabled for website visitors to be able to log into their accounts."
+msgstr "Оставьте включенным хотя бы один способ авторизации, чтобы посетители сайта могли входить в личный кабинет."
+
+msgid "Authorization with an email address is used by default."
+msgstr "По умолчанию используется авторизация с помощью email-адреса."
+
+msgid "Services"
+msgstr "Сервисы"
+
+msgid "Invisible captcha will be used"
+msgstr "Будет использована невидимая капча"
+
+msgid "Authorization type"
+msgstr "Тип авторизации"
+
+msgid "Require captcha input"
+msgstr "Требовать ли ввод капчи"
+
+msgid "Login field placeholder"
+msgstr "Плейсхолдер в поле логина"
+
+msgid "Communication channel selection"
+msgstr "Выбор канала связи"
+
+msgid "Login, signup, and personal account"
+msgstr "Вход, регистрация и личный кабинет"
+
 msgid "Delete this site alias? It will <strong>not</strong> delete any data of the main site."
 msgstr "Удалить этот сайт-зеркало? Никакие данные основного сайта <strong>не&nbsp;будут</strong> удалены."
+
+msgid "Waiting period in seconds before sending next verification code:"
+msgstr "Интервал в секундах перед отправкой следующего кода подтверждения:"
+
+msgid "Verification code"
+msgstr "Код подтверждения"
+
+msgid "Add SMS notification templates in <a href=\"%s\">Settings</a> app."
+msgstr "Добавьте шаблоны SMS-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."
