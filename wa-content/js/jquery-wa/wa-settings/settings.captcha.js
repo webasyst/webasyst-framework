@@ -10,11 +10,11 @@ var WASettingsCaptcha = ( function($) {
         that.$button = that.$footer_actions.find('.js-submit-button');
         that.$cancel = that.$footer_actions.find('.js-cancel');
         that.$loading = that.$footer_actions.find('.s-loading');
-        that.is_locked = false;
 
         // VARS
 
         // DYNAMIC VARS
+        that.is_locked = false;
 
         // INIT
         that.initClass();

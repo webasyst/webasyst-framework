@@ -709,134 +709,233 @@ HTML;
         return $this->url().$this->app().'/captcha.php'.($add_random ? '?v='.uniqid(time()) : '');
     }
 
-    public function signupUrl($absolute = false)
-    {
-        $auth = wa()->getAuthConfig();
-        return wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/signup', array(), $absolute);
-    }
-
     public function loginUrl($absolute = false)
     {
-        $auth = wa()->getAuthConfig();
-        return wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/login', array(), $absolute);
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+        try {
+            $auth_config = waDomainAuthConfig::factory();
+            $url = $auth_config->getLoginUrl(array(), $absolute);
+        } catch (Exception $e) {
+            $url = '';
+        }
+        waConfig::set('is_template', $is_from_template);
+        return $url;
     }
 
-    public function forgotPasswordUrl()
+    public function forgotPasswordUrl($absolute = false)
     {
-        $auth = wa()->getAuthConfig();
-        return wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/forgotpassword');
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+        try {
+            $auth_config = waDomainAuthConfig::factory();
+            $url = $auth_config->getForgotPasswordUrl(array(), $absolute);
+        } catch (Exception $e) {
+            $url = '';
+        }
+        waConfig::set('is_template', $is_from_template);
+        return $url;
     }
 
     /**
+     * Old loginForm
+     *  @param string $error
+     *  @param int $form Default 1
+     *   1 - with <form action="">
+     *   2 - with <form action="LOGIN_URL">
+     *  @return string
+     *
+     * New loginForm
      * @param string $error
-     * @param int $form
-     * 1 - with <form action="">
-     * 2 - with <form action="LOGIN_URL">
-     * @return string
+     * @param array $options
+     *  - bool 'need_placeholder'
+     *  - bool 'show_title'
+     *  - bool 'show_sub_title'
+     *  - bool 'show_oauth_adapters'
      */
-    public function loginForm($error = '', $form = 1, $placeholders = false)
+    public function loginForm($error = '', $options = array())
     {
-        $auth = wa($this->app_id)->getAuth();
-        $field_id = $auth->getOption('login');
-        if ($field_id == 'login') {
-            $field_name = _ws('Login');
-        } else {
-            $field = waContactFields::get($field_id);
-            if ($field) {
-                $field_name = $field->getName();
+        $is_old_function_signature = !is_array($options);
+
+        if ($is_old_function_signature) {
+
+            // Backward compatibility for old function signature
+            // Old signature looked like this ($error = '', $form = 1, $placeholders = false)
+            // Typecast input arguments to options
+
+            $argument_form = func_num_args() > 1 ? func_get_arg(1) : 1;
+            $argument_placeholders = func_num_args() > 2 ? (bool)func_get_arg(2) : false;
+
+            $options = array();
+
+            if (!$argument_form) {
+                $options['url'] = '';
+            } elseif ($argument_form === 2) {
+                $options['url'] = $this->loginUrl();
             } else {
-                $field_name = ucfirst($field_id);
+                $options['url'] = '';
             }
-        }
-        $html = '<div class="wa-form">'.
-            ($form ? '<form action="'.($form === 2 ? $this->loginUrl() : '').'" method="post">' : '').'
-                <div class="wa-field wa-field-'.$field_id.'">
-                    <div class="wa-name">'.$field_name.'</div>
-                    <div class="wa-value">
-                        <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::post('login')).'"'.($placeholders ? ' placeholder="'.$field_name.'"' : '').'>
-                    </div>
-                </div>
-                <div class="wa-field wa-field-password">
-                    <div class="wa-name">'._ws('Password').'</div>
-                    <div class="wa-value">
-                        <input'.($error ? ' class="wa-error"' : '').' type="password" name="password"'.($placeholders ? ' placeholder="'._ws('Password').'"' : '').'>'.
-                        ($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
-                    </div>
-                </div>';
 
-        $auth_config = wa()->getAuthConfig();
-        if (!empty($auth_config['rememberme'])) {
-            $html .= '<div class="wa-field wa-field-remember-me">
-                <div class="wa-value">
-                    <label><input name="remember" type="checkbox" '.(waRequest::post('remember') ? 'checked="checked"' : '').' value="1"> '._ws('Remember me').'</label>
-                </div>
-            </div>';
+            $options['need_placeholder'] = $argument_placeholders;
         }
 
-        $html .= '<div class="wa-field">
-                    <div class="wa-value wa-submit">
-                        <input type="hidden" name="wa_auth_login" value="1">
-                        <input type="submit" value="'._ws('Sign In').'">
-                        &nbsp;
-                        <a href="'.$this->getUrl('/forgotpassword').'">'._ws('Forgot password?').'</a>
-                        &nbsp;
-                        <a href="'.$this->getUrl('/signup').'">'._ws('Sign up').'</a>
-                    </div>
-                </div>'.(waRequest::param('secure') ? $this->csrf() : '').
-            ($form ? '</form>' : '').'
-        </div>';
+        $options['include_js'] = true;
+        $options['include_css'] = true;
+
+        $data = wa()->getRequest()->post();
+
+        if (is_scalar($error)) {
+            $errors = array('' => $error);
+        } elseif (is_array($error)) {
+            $errors = $error;
+        } else {
+            $errors = array();
+        }
+
+
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+
+        try {
+            $renderer = waFrontendLoginForm::factory($options);
+
+            /**
+             * @var waFrontendLoginForm $renderer
+             */
+            $ns = $renderer->getNamespace();
+            if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
+                $data = $data[$ns];
+            }
+
+            $html = $renderer->render($data, $errors);
+        } catch (Exception $e) {
+            $html = '';
+        }
+
+        waConfig::set('is_template', $is_from_template);
+
         return $html;
     }
 
-    public function forgotPasswordForm($error = '', $placeholders = false)
+    /**
+     * Old version
+     * @param string $error
+     * @param bool $placeholders
+     * @return string
+     *
+     * New version
+     * @param string $error
+     * @param array $options
+     *  - bool 'need_placeholder'
+     * @return string
+     *
+     */
+    public function forgotPasswordForm($error = '', $options = array())
     {
-        return '<div class="wa-form">
-    <form action="" method="post">
-        <div class="wa-field">
-            <div class="wa-name wa-field-email">'._ws('Email').'</div>
-            <div class="wa-value">
-                <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::request('login', '', waRequest::TYPE_STRING)).'" autocomplete="off" '.($placeholders ? ' placeholder="'._ws('Email').'"' : '').'>
-                '.($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
-            </div>
-        </div>
-        <div class="wa-field">
-            <div class="wa-value wa-submit">
-                <input type="submit" value="'._ws('Reset password').'">
-                &nbsp;
-                <a href="'.$this->getUrl('/login').'">'._ws('I remember it now!').'</a>
-            </div>
-        </div>'.(waRequest::param('secure') ? $this->csrf() : '').'
-    </form>
-</div>';
+        if (!is_array($options)) {
+            // backward compatibility
+            $options = array(
+                'need_placeholder' => (bool)$options
+            );
+        }
 
+        $data = wa()->getRequest()->post();
+
+        if (is_scalar($error)) {
+            $errors = array('' => $error);
+        } elseif (is_array($error)) {
+            $errors = $error;
+        } else {
+            $errors = array();
+        }
+
+        $options['is_json_mode'] = true;
+        $options['include_css'] = true;
+        $options['include_js'] = true;
+
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+
+        try {
+            $renderer = waFrontendForgotPasswordForm::factory($options);
+
+            /**
+             * @var waFrontendForgotPasswordForm $renderer
+             */
+            $ns = $renderer->getNamespace();
+            if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
+                $data = $data[$ns];
+            }
+
+            $html = $renderer->render($data, $errors);
+        } catch (Exception $e) {
+            $html = '';
+        }
+
+        waConfig::set('is_template', $is_from_template);
+
+        return $html;
     }
 
-    public function setPasswordForm($error = '')
+    /**
+     * Old version
+     * @param string $error
+     * @return string
+     *
+     * New version
+     * @param string $error
+     * @param array $options
+     * @return string
+     *
+     */
+    public function setPasswordForm($error = '', $options = array())
     {
-        return '<div class="wa-form">
-    <form action="" method="post">
-        <div class="wa-field">
-            <div class="wa-name wa-field-password">'._ws('Enter a new password').'</div>
-            <div class="wa-value">
-                <input'.($error ? ' class="wa-error"' : '').' name="password" type="password">
-            </div>
-        </div>
-        <div class="wa-field wa-field-password">
-            <div class="wa-name">'._ws('Re-enter password').'</div>
-            <div class="wa-value">
-                <input'.($error ? ' class="wa-error"' : '').' name="password_confirm" type="password">
-                '.($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
-            </div>
-        </div>
-        <div class="wa-field">
-            <div class="wa-value wa-submit">
-                <input type="submit" value="'._ws('Save and log in').'">
-            </div>
-        </div>'.(waRequest::param('secure') ? $this->csrf() : '').'
-    </form>
-</div>';
+        if (!is_array($options)) {
+            $options = array();
+        }
+
+        $data = wa()->getRequest()->post();
+
+        if (is_scalar($error)) {
+            $errors = array('' => $error);
+        } elseif (is_array($error)) {
+            $errors = $error;
+        } else {
+            $errors = array();
+        }
+
+        $options['is_json_mode'] = true;
+        $options['include_css'] = true;
+        $options['include_js'] = true;
+
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+
+        try {
+            $renderer = waFrontendSetPasswordForm::factory($options);
+            /**
+             * @var waFrontendSetPasswordForm $renderer
+             */
+            $ns = $renderer->getNamespace();
+            if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
+                $data = $data[$ns];
+            }
+
+            $html = $renderer->render($data, $errors);
+        } catch (Exception $e) {
+            $html = '';
+        }
+
+        waConfig::set('is_template', $is_from_template);
+
+        return $html;
     }
 
+    /**
+     * @deprecated since version 1.10
+     * @param array $errors
+     * @return array
+     */
     public function signupFields($errors = array())
     {
         $config = wa()->getAuthConfig();
@@ -847,6 +946,7 @@ HTML;
             'email' => array('required' => true),
             'password' => array('required' => true),
         );
+
         $format_fields = array();
         foreach ($config_fields as $k => $v) {
             if (is_numeric($k)) {
@@ -886,137 +986,68 @@ HTML;
         return $fields;
     }
 
-    public function signupForm($errors = array(), $placeholders = false)
+    public function signupUrl($absolute = false)
     {
-        $fields = $this->signupFields($errors);
-        $html = '<div class="wa-form"><form action="'.$this->signupUrl().'" method="post">';
-        foreach ($fields as $field_id => $field) {
-            if ($field) {
-                $f = $field[0];
-                /**
-                 * @var waContactField $f
-                 */
-                if (isset($errors[$field_id])) {
-                    $field_error = is_array($errors[$field_id]) ? implode(', ', $errors[$field_id]): $errors[$field_id];
-                } else {
-                    $field_error = false;
-                }
-                $field[1]['id'] = $field_id;
-                if ($f instanceof waContactCompositeField) {
-                    foreach ($f->getFields() as $sf) {
-                        /**
-                         * @var waContactField $sf
-                         */
-                        $params = array('parent' => $field_id, 'id' => $sf->getId());
-                        if ($placeholders) {
-                            $params['placeholder'] = $sf->getName();
-                        }
-                        $html .= $this->signupFieldHTML($sf, $params, $field_error);
-                    }
-                } else {
-                    if ($placeholders) {
-                        $field[1]['placeholder'] = $f->getName();
-                    }
-                    $html .= $this->signupFieldHTML($f, $field[1], $field_error);
-                }
-            } else {
-                $html .= '<div class="wa-field wa-separator"></div>';
-            }
-        }
-        $config = wa()->getAuthConfig();
-        if (isset($config['signup_captcha']) && $config['signup_captcha']) {
-            $html .= '<div class="wa-field"><div class="wa-value">';
-            $html .= wa($this->app_id)->getCaptcha()->getHtml(isset($errors['captcha']) ? $errors['captcha'] : '');
-            if (isset($errors['captcha'])) {
-                $html .= '<em class="wa-error-msg">'.$errors['captcha'].'</em>';
-            }
-            $html .= '</div></div>';
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+
+        try {
+            $config = waSignupForm::factoryDomainConfig();
+            $url = $config->getSignUpUrl(array(), $absolute);
+        } catch (Exception $e) {
+            $url = '';
         }
 
-        if (!empty($config['params']['service_agreement']) && !empty($config['params']['service_agreement_text'])) {
-            $html .= '<div class="wa-field"><div class="wa-value">';
-            if ($config['params']['service_agreement'] == 'checkbox') {
-                $html .= '<label><input type="checkbox" name="data[terms_accepted]" value="1"';
-                if (!empty($_POST['data']['terms_accepted'])) {
-                    $html .= ' checked';
-                }
-                $html .= '> ';
-                $html .= $config['params']['service_agreement_text'];
-                $html .= '</label>';
-                if (isset($errors['terms_accepted'])) {
-                    $html .= '<em class="wa-error-msg">'.$errors['terms_accepted'].'</em>';
-                }
-            } else {
-                $html .= $config['params']['service_agreement_text'];
-            }
-            $html .= '</div></div>';
-        }
+        waConfig::set('is_template', $is_from_template);
 
-        $signup_submit_name = !empty($config['params']['button_caption']) ? htmlspecialchars($config['params']['button_caption']) : _ws('Sign Up');
-        $html .= '<div class="wa-field"><div class="wa-value wa-submit">
-            <input type="submit" value="'.$signup_submit_name.'"> '.sprintf(_ws('or <a href="%s">login</a> if you already have an account'), $this->getUrl('/login')).'
-        </div></div>';
-        if (waRequest::param('secure')) {
-            $html .= $this->csrf();
-        }
-        $html .= '</form></div>';
-        return $html;
+        return $url;
+
     }
 
-
-    private function signupFieldHTML(waContactField $f, $params, $error = '')
+    /**
+     * @param array $errors
+     * @param array $options
+     *   bool 'need_placeholder' - need show for each field own placeholder
+     *   bool 'show_title' - need show own title
+     *   bool 'show_oauth_adapters' - need show html block of o-auth adapters - Eg vk, facebook etc.
+     * @return mixed|string
+     */
+    public function signupForm($errors = array(), $options = array())
     {
-        $data = waRequest::post('data');
-        // get value
-        if (isset($params['parent'])) {
-            $parent_value = $data[$params['parent']];
-            $params['value'] = isset($parent_value[$params['id']]) ? $parent_value[$params['id']] : '';
-        } else {
-            $params['value'] = isset($data[$params['id']]) ? $data[$params['id']] : '';
+        if (!is_array($options)) {
+            // backward compatibility
+            $options = array(
+                'need_placeholder' => !!$options
+            );
         }
 
-        $config = wa()->getAuthConfig();
-        if (!empty($config['fields'][$f->getId()]['caption'])) {
-            $name = htmlspecialchars($config['fields'][$f->getId()]['caption']);
-        } else {
-            $name = $f->getName(null, true);
+        $options = is_array($options) ? $options : array();
 
-            if (isset($params['ext'])) {
-                $exts = $f->getParameter('ext');
-                if (isset($exts[$params['ext']])) {
-                    $name .= ' ('._ws($exts[$params['ext']]).')';
-                } else {
-                    $name .= ' ('.$params['ext'].')';
-                }
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+
+        try {
+            $data = wa()->getRequest()->post();
+            $renderer = waSignupForm::factory(null, $options);
+
+            /**
+             * @var waSignupForm $renderer
+             */
+            $ns = $renderer->getNamespace();
+            if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
+                $data = $data[$ns];
             }
-        }
-        $params['namespace'] = 'data';
-        $is_multi = $f->isMulti();
-        if ($is_multi) {
-            $f->setParameter('multi', false);
-        }
-        $attrs = $error !== false ? 'class="wa-error"' : '';
-        if (!empty($config['fields'][$f->getId()]['placeholder'])) {
-            $attrs .= ' placeholder="'.htmlspecialchars($config['fields'][$f->getId()]['placeholder']).'"';
-        } elseif (!empty($params['placeholder'])) {
-            $attrs .= ' placeholder="'.htmlspecialchars($params['placeholder']).'"';
+
+            $html = $renderer->render($data, $errors);
+        } catch (Exception $e) {
+            waLog::log($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            $html = '';
         }
 
-        if ($f instanceof waContactHiddenField) {
-            $html = $f->getHTML($params, $attrs);
-        } else {
-            $html = '<div class="wa-field wa-field-'.$f->getId().'">
-                    <div class="wa-name">'.$name.'</div>
-                    <div class="wa-value">'.$f->getHTML($params, $attrs);
-            if ($error) {
-                $html .= '<em class="wa-error-msg">'.$error.'</em>';
-            }
-            $html .= '</div></div>';
-        }
-        if ($is_multi) {
-            $f->setParameter('multi', $is_multi);
-        }
+        waConfig::set('is_template', $is_from_template);
+
         return $html;
+
     }
 
     public function authAdapters($return_array = false, $options = array())
@@ -1028,30 +1059,13 @@ HTML;
         if (!$adapters) {
             return '';
         }
-        $html = '<div class="wa-auth-adapters"><ul>';
-
-        foreach ($adapters as $adapter) {
-            /**
-             * @var waAuthAdapter $adapter
-             */
-            $html .= '<li class="wa-auth-adapter-'.$adapter->getId().'"><a href="'.$adapter->getUrl().'"><img alt="'.$adapter->getName().'" src="'.$adapter->getIcon().'"/>'.$adapter->getName().'</a></li>';
-        }
-        $html .= '</ul><p>';
-        $html .= _ws("Authorize either by entering your contact information, or through one of the websites listed above.");
-        $html .= '</p></div>';
-        $w = isset($options['width']) ? $options['width'] : 600;
-        $h = isset($options['height']) ? $options['height'] : 500;
-        $html .= <<<HTML
-<script type="text/javascript">
-$("div.wa-auth-adapters a").click(function () {
-    var left = (screen.width - {$w}) / 2;
-    var top = (screen.height - {$h}) / 2;
-    window.open($(this).attr('href'),'oauth', "width={$w},height={$h},left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
-    return false;
-});
-</script>
-HTML;
-
+        $view = wa()->getView();
+        $template = wa()->getConfig()->getRootPath().'/wa-system/auth/templates/adapters_list.html';
+        $view->assign(array(
+            'adapters' => $adapters,
+            'options'  => $options,
+        ));
+        $html = $view->fetch($template);
         return $html;
     }
 

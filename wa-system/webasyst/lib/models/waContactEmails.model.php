@@ -4,6 +4,11 @@ class waContactEmailsModel extends waModel
 {
     protected $table = "wa_contact_emails";
 
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_UNCONFIRMED = 'unconfirmed';
+    const STATUS_UNAVAILABLE = 'unavailable';
+    const STATUS_UNKNOWN = 'unknown';
+
     public function getData($ids, $fields = null)
     {
         $sql = "SELECT * FROM ".$this->table."
@@ -37,6 +42,11 @@ class waContactEmailsModel extends waModel
     {
         $sql = "SELECT email AS value, ext, status FROM ".$this->table." WHERE contact_id = i:id ORDER BY sort";
         return $this->query($sql, array('id' => $contact_id))->fetchAll();
+    }
+
+    public function getEmail($contact_id, $sort = 0)
+    {
+        return $this->getByField(array('contact_id' => $contact_id, 'sort' => $sort));
     }
 
     public function delete($email_id)
@@ -77,14 +87,6 @@ class waContactEmailsModel extends waModel
             $contact_id = $this->getContactIdByEmail($email);
         }
         return  $contact_id;
-    }
-
-    public function getContactWithPassword($email)
-    {
-        $sql = "SELECT c.id FROM ".$this->table." e JOIN wa_contact c ON e.contact_id = c.id
-                WHERE e.email LIKE '".$this->escape($email, 'like')."' AND e.sort = 0 AND c.password != ''
-                LIMIT 1";
-        return $this->query($sql)->fetchField();
     }
 
     public function getMainContactMyEmail($email)

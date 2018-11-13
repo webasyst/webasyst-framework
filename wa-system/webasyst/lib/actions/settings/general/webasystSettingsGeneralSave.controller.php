@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsGeneralSaveController extends waJsonController
+class webasystSettingsGeneralSaveController extends webasystSettingsJsonController
 {
     public function execute()
     {
@@ -9,10 +9,7 @@ class webasystSettingsGeneralSaveController extends waJsonController
         $settings = array(
             'name'                         => 'Webasyst',
             'url'                          => wa()->getRootUrl(true),
-            'auth_form_background'         => 'stock:bokeh_vivid.jpg',
-            'auth_form_background_stretch' => 0,
-            'locale'                       => 'ru_RU',
-            'rememberme'                   => 1,
+            'locale'                       => 'ru_RU'
         );
         foreach ($settings as $setting => $value) {
             $model->set('webasyst', $setting, waRequest::post($setting, $value, waRequest::TYPE_STRING_TRIM));

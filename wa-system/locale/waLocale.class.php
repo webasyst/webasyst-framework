@@ -84,6 +84,7 @@ class waLocale
         // load old locale
         if ($old_locale) {
             self::$locale = $old_locale;
+            //unset(self::$loaded[$old_locale][$domain]);
             self::loadByDomain($domain, $old_locale);
         }
         return $result;
@@ -101,8 +102,7 @@ class waLocale
             $locale_path = waSystem::getInstance()->getAppPath('locale', $domain);
         }
         if (isset(self::$loaded[$locale][$domain])) {
-//            todo: do something
-//            return;
+            return;
         }
         if (file_exists($locale_path)) {
             self::load($locale, $locale_path, $domain, false);

@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsMapsSaveController extends waJsonController
+class webasystSettingsMapsSaveController extends webasystSettingsJsonController
 {
     public function execute()
     {

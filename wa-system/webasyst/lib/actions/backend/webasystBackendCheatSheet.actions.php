@@ -88,7 +88,7 @@ class webasystBackendCheatSheetActions extends waActions
             $assign = array(
                 'vars'        => $this->getVars(),
                 'page'        => ifset($this->fields, 'page', null),
-                'apps_info'   => wa()->getApps(),
+                'apps_info'   => wa()->getApps(true),
                 'app_id'      => $app,
                 'name'        => $name,
                 'blocks'      => $this->getBlocks(),
@@ -296,7 +296,7 @@ class webasystBackendCheatSheetActions extends waActions
 
         //If null cache not set.
         if ($all_apps_site_config === null) {
-            foreach (wa()->getApps() as $_app_id => $_app) {
+            foreach (wa()->getApps(true) as $_app_id => $_app) {
                 //Set app name and other data
                 $path = $this->getConfig()->getAppsPath($_app_id, 'lib/config/site.php');
                 if (file_exists($path)) {

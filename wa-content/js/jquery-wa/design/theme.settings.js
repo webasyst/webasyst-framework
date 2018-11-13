@@ -591,6 +591,7 @@ var WAThemeSettings = ( function($) {
             e.preventDefault();
             var $divider = $(this).parents('.js-theme-setting-divider');
             that.expandGroup($divider);
+            $('html, body').animate({ scrollTop: $divider.offset().top });
         });
 
         // Collapse divider

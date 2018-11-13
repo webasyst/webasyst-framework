@@ -16,6 +16,9 @@ class waAuthUser extends waUser
 {
     protected $auth = false;
 
+    // cache for $this->getTimezone()
+    protected $auth_user_timezone = false;
+
     public function __construct($id = null, $options = array())
     {
         foreach ($options as $name => $value) {
@@ -199,23 +202,39 @@ class waAuthUser extends waUser
         $this->auth = false;
     }
 
-    public function getTimezone()
+    public function getTimezone($return_object=false)
     {
-        $data = array(
-            $this->get('timezone'),
-            waRequest::cookie('tz', '', 'string'),
-            waRequest::cookie('oldtz', '', 'string'),
-            self::$options['default']['timezone'],
-        );
-        foreach($data as $timezone) {
-            if ($timezone) {
-                try {
-                    // Make sure it's a valid timezone
-                    new DateTimeZone($timezone);
-                    return $timezone;
-                } catch (Exception $e) {
+        // this cache significantly speeds up date and time formatting
+        if ($this->auth_user_timezone === false) {
+            $this->auth_user_timezone = null;
+            $data = array(
+                $this->get('timezone'),
+                waRequest::cookie('tz', '', 'string'),
+                waRequest::cookie('oldtz', '', 'string'),
+                self::$options['default']['timezone'],
+            );
+            foreach($data as $timezone) {
+                if ($timezone) {
+                    try {
+                        // Make sure it's a valid timezone
+                        $this->auth_user_timezone = new DateTimeZone($timezone);
+                        break;
+                    } catch (Exception $e) {
+                    }
                 }
             }
+        }
+
+        if ($this->auth_user_timezone) {
+            if ($return_object) {
+                return $this->auth_user_timezone;
+            } else {
+                return $this->auth_user_timezone->getName();
+            }
+        } else if ($return_object) {
+            throw new waException('No timezone selected');
+        } else {
+            return null;
         }
     }
 }

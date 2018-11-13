@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsFieldSaveController extends waJsonController
+class webasystSettingsFieldSaveController extends webasystSettingsJsonController
 {
     public function execute()
     {

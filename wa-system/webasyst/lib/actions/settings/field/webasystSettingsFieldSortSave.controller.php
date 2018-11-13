@@ -1,7 +1,7 @@
 <?php
 
 // TODO: Change extands class
-class webasystSettingsFieldSortSaveController extends waJsonController
+class webasystSettingsFieldSortSaveController extends webasystSettingsJsonController
 {
     public function execute()
     {

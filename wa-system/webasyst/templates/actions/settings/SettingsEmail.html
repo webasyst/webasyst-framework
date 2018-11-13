@@ -43,7 +43,7 @@
                         </select>
                         <br/>
                         {foreach $available_transports as $id => $transport}
-                            <span class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}; width: 50%;">{$transport.description}</span>
+                            <span class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}; width: 50%;">{$transport.description|default:null}</span>
                         {/foreach}
                     </div>
                 </div>
@@ -97,7 +97,7 @@
                         </div>
                         {if !empty($config.pop3_host)}
                             <div class="field">
-                                <div class="name">[s`Pop3 host`]</div>
+                                <div class="name">[s`POP3 host name`]</div>
                                 <div class="value">
                                     <input type="text" data-name="pop3_host" value="{$config.pop3_host|default:null|escape}" />
                                 </div>
@@ -105,7 +105,7 @@
                         {/if}
                         {if !empty($config.pop3_port)}
                             <div class="field">
-                                <div class="name">[s`Pop3 port`]</div>
+                                <div class="name">[s`POP3 port`]</div>
                                 <div class="value">
                                     <input type="text" data-name="pop3_port" value="{$config.pop3_port|default:null|escape}" />
                                 </div>
@@ -246,7 +246,7 @@
                     <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
                     <span class="s-hidden">
                         <span style="margin: 0 4px;">[s`or`]</span>
-                        <a href="{$wa_app_url}webasyst/settings/email/" class="js-cancel">[s`cancel`]</a>
+                        <a href="{$wa_backend_url}webasyst/settings/email/" class="js-cancel">[s`cancel`]</a>
                     </span>
                     <i class="icon16 loading s-loading" style="display: none;"></i>
                 </div>

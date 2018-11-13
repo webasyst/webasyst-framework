@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsFieldTransliterateController extends waJsonController
+class webasystSettingsFieldTransliterateController extends webasystSettingsJsonController
 {
     public function execute()
     {

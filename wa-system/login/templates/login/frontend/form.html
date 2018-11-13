@@ -1,0 +1,64 @@
+{*
+ * FORM_BEGIN/FORM_END HELPER
+ * <DIV> NEED FOR OLD SHOP CHECKOUT (cause <form> injected inside checkoud <form>)
+ * <FORM> IN OTHER CASES
+ *}
+
+{function FORM_BEGIN}
+    <div data-action="{$url}" class="js-wa-form-item">
+{/function}
+
+{function FORM_END}
+    </div>
+{/function}
+
+{FORM_BEGIN}
+
+    {if !empty($show_title)}
+        {$renderer->renderTitle()}
+    {/if}
+
+    {$renderer->renderMessages()}
+
+    {if $show_sub_title}
+        {$renderer->renderSubtitle()}
+    {/if}
+
+    {if !empty($show_oauth_adapters)}
+        {include file="./oauth_adapters.html" inline}
+    {/if}
+
+    <section class="wa-login-form-fields js-login-form-fields-block">
+        {foreach $fields|default:[] as $field_id => $params}
+            {$renderer->renderField($field_id, $params)}
+        {/foreach}
+
+        {$renderer->renderRememberMe()}
+
+        {$renderer->renderCaptcha()}
+    </section>
+
+    <section class="wa-login-form-actions js-login-form-actions">
+        {$renderer->renderUncaughtErrors()}
+
+        <div class="wa-request-onetime-password-button-wrapper" style="{if !$is_onetime_password_auth_type}display:none;{/if}">
+            <button class="button wa-request-onetime-password-button" data-href="{$onetime_password_url}">[s`Sign In`]</button>
+            <i class="icon16 loading wa-request-onetime-password-button-loading" style="display: none;"></i>
+        </div>
+
+        <div class="wa-buttons-wrapper" style="{if $is_onetime_password_auth_type}display:none;{/if}">
+            <input type="hidden" name="wa_auth_login" value="1">
+            <input type="submit" value="[s`Sign In`]">
+            <i class="icon16 loading wa-loading" style="display: none;"></i>
+        </div>
+
+        <div class="wa-signup-url">
+            [s`For the first time with us?`] <a href="{$signup_url}" data-type="signup">[s`Sign Up`]</a>
+        </div>
+    </section>
+
+    {$renderer->renderCsrf()}
+
+
+{FORM_END}
+

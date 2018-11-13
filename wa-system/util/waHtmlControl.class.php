@@ -22,6 +22,7 @@ class waHtmlControl
     const TITLE = 'title';
     const CUSTOM = 'custom';
     const HIDDEN = 'hidden';
+    const DATETIME = 'datetime';
 
     static private $predefined_controls = array();
     static private $custom_controls = array();
@@ -896,6 +897,237 @@ HTML;
         }
         return $this->getSelectControl($name, $params);
 
+    }
+
+    private function getDatetimeControl($name, $params = array())
+    {
+        $html = '';
+
+        $wrappers = array(
+            'title'           => '',
+            'title_wrapper'   => '%s',
+            'description'     => '',
+            'control_wrapper' => "%s\n%3\$s\n%2\$s\n",
+            'id'              => '',
+        );
+
+        $params = array_merge($params, $wrappers);
+        $available_days = array();
+        $date_params = $params;
+        $date_format = waDateTime::getFormat('date');
+        if (isset($params['params']['date'])) {
+            $date_params['style'] = "z-index: 100000;";
+
+            $date_name = preg_replace('@([^\]]+)(\]?)$@', '$1.date_str$2', $name);
+            $offset = min(365, max(0, intval(ifset($params, 'params', 'date', 0))));
+            $date_params['placeholder'] = waDateTime::getFormatHuman($date_format);
+            $date_params['description'] = _ws('Date');
+
+            $date_params['value'] = ifset($params, 'value', 'date_str', '');
+
+            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
+            self::makeId($date_params, $date_name);
+
+            $date_name = preg_replace('@([^\]]+)(\]?)$@', '$1.date$2', $name);
+            $date_formatted_params = $params;
+            $date_formatted_params['style'] = "display: none;";
+            $date_formatted_params['value'] = ifset($params, 'value', 'date', '');
+
+            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
+            self::makeId($date_formatted_params, $date_name);
+
+
+            $date_format_map = array(
+                'PHP' => 'JavaScript',
+                'Y'   => 'yy',
+                'd'   => 'dd',
+                'm'   => 'mm',
+            );
+            $js_date_format = str_replace(array_keys($date_format_map), array_values($date_format_map), $date_format);
+            $locale = wa()->getLocale();
+            $localization = sprintf("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-%s.js", $locale);
+            if (!is_readable($localization)) {
+                $localization = '';
+            }
+
+        }
+
+        $interval_params = $params;
+        if (!empty($params['params']['interval'])) {
+
+            $intervals = ifempty($params['params']['intervals'], false);
+            if (is_array($intervals)) {
+                $interval_params['options'] = array();
+                foreach ($intervals as $id => $interval) {
+                    if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
+                        $days = ifset($interval['day'], array());
+                        $value = sprintf(
+                            '%d:%02d-%d:%02d',
+                            $interval['from'],
+                            ifset($interval['from_m'], 0),
+                            $interval['to'],
+                            ifset($interval['to_m'], 0)
+                        );
+                        $interval_params['options'][$value] = array(
+                            'value' => $value,
+                            'title' => $value,
+                            'data' => array(
+                                'days'  => array_keys($days),
+                                'value' => $value,
+                            ),
+                        );
+                        $available_days = array_merge(array_keys($days), $available_days);
+                    } else {
+                        $interval_params['options'][$id] = array(
+                            'value' => $id,
+                            'title' => $id,
+                            'data'  => array(
+                                'days'  => $interval,
+                                'value' => $id,
+                            ),
+                        );
+                        $available_days = array_merge(array_keys($interval), $available_days);
+                    }
+                }
+
+                $available_days = array_values(array_unique($available_days));
+            }
+
+            $interval_name = preg_replace('@([^\]]+)(\]?)$@', '$1.interval$2', $name);
+            $interval_params['description'] = _ws('Time');
+            if (isset($interval_params['options'])) {
+                $html .= ifset($params['control_separator']);
+                if (!isset($interval_params['options'][null])) {
+                    $option = array(
+                        'value' => '',
+                        'title' => '',
+                        'data'  => array('days' => $available_days),
+                    );
+                    array_unshift($interval_params['options'], $option);
+                }
+                $interval_params['value'] = ifset($params['value']['interval']);
+                $html .= waHtmlControl::getControl(self::SELECT, $interval_name, $interval_params);
+                self::makeId($interval_params, $interval_name);
+            } else {
+                $html .= ifset($params['control_separator']);
+                $html .= waHtmlControl::getControl(self::INPUT, $interval_name, $interval_params);
+            }
+        }
+
+
+        if (isset($params['params']['date']) && isset($offset)) {
+
+            if (empty($interval_params['id'])) {
+                $interval_params['id'] = '';
+            }
+
+            $available_days = json_encode($available_days);
+            $root_url = wa()->getRootUrl();
+            $html .= <<<HTML
+<script type="text/javascript">
+    $(function () {
+        'use strict';
+        var id_date = '{$date_params['id']}';
+        var id_date_formatted = '{$date_formatted_params['id']}';
+        var date_input = $('#' + id_date);
+        var date_formatted = $('#' + id_date_formatted);
+        var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
+        
+        date_input.data('available_days', {$available_days});
+        var init = function () {
+            date_input.datepicker();
+            date_input.datepicker("option", {
+                "dateFormat": '{$js_date_format}',
+                "minDate": {$offset},
+                "onSelect": function (dateText) {
+                    var d = date_input.datepicker('getDate');
+                    date_input.val(dateText);
+                    date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
+                    if (d && interval && interval.length) {
+                        /** @var int day week day (starts from 0) */
+                        var day = (d.getDay() + 6) % 7;
+                        /**
+                         * filter select by days
+                         */
+                        var value = typeof(interval.val()) !== 'undefined';
+                        var matched = null;
+                        interval.find('option').each(function () {
+                            /**
+                             * @this HTMLOptionElement
+                             */
+                            var option = $(this);
+                            var disabled = (option.data('days').indexOf(day) === -1) ? 'disabled' : null;
+                            option.attr('disabled', disabled);
+                            if (disabled) {
+                                if (this.selected) {
+                                    value = false;
+                                }
+                            } else {
+                                matched = this;
+                                if (!value) {
+                                    this.selected = true;
+                                    value = !!this.value;
+                                    if (typeof(interval.highlight) === 'function') {
+                                        interval.highlight();
+                                    }
+                                }
+                            }
+                        });
+
+                        if (value) {
+                            interval.removeClass('error');
+                        } else if (matched) {
+                            matched.selected = true;
+                            interval.removeClass('error');
+                        } else {
+                            interval.addClass('error');
+                        }
+                    }
+
+                },
+                "beforeShowDay": function (date) {
+                    if (interval && interval.length) {
+                        /** @var int day week day */
+                        var day = (date.getDay() + 6) % 7;
+                        var available_days = date_input.data('available_days')||[];
+                        return [available_days.indexOf(day) !== -1];
+                    } else {
+                        return [true];
+                    }
+                }
+            });
+            $('.ui-datepicker').css({
+                "zIndex": 999998,
+                "display": 'none'
+            });
+        };
+
+        var init_locale = function () {
+            if ('{$localization}' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
+                $.getScript('{$root_url}{$localization}', init);
+            } else {
+                init();
+            }
+        };
+
+        if (typeof(date_input.datepicker) !== 'function') {
+            $("<link/>", {
+                rel: "stylesheet",
+                type: "text/css",
+                href: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
+            }).appendTo("head");
+            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init_locale);
+
+        } else {
+            init_locale();
+        }
+    });
+</script>
+
+HTML;
+        }
+
+        return $html;
     }
 
     /**

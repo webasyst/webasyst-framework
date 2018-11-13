@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsFieldEditorAction extends waViewAction
+class webasystSettingsFieldEditorAction extends webasystSettingsViewAction
 {
     public function execute()
     {

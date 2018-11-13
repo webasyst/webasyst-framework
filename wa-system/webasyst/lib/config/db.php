@@ -127,6 +127,13 @@ return array(
         'ext' => array('varchar', 32, 'null' => 0, 'default' => ''),
         'value' => array('varchar', 255, 'null' => 0),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
+
+        // Status need mostly for phones
+        // Status for phone likewise status for email may be 'confirmed','unconfirmed','unavailable'
+        // NULL available, cause there are fields do not need this
+        // varchar (not ENUM), cause there are other fields that may have some other statuses
+        'status' => array('varchar', 255, 'null' => 1),
+
         ':keys' => array(
             'PRIMARY' => 'id',
             'contact_field_sort' => array('contact_id', 'field', 'sort', 'unique' => 1),
@@ -334,6 +341,40 @@ return array(
             'group_id' => 'group_id',
         ),
     ),
+    'wa_verification_channel' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'name' => array('varchar', 255, 'null' => 0),
+        'address' => array('varchar', 64, 'null' => 0),
+        'type' => array('varchar', 64, 'null' => 0),
+        'create_datetime' => array('datetime'),
+        'system' => array('int', 3, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'address' => 'address'
+        )
+    ),
+    'wa_verification_channel_params' => array(
+        'channel_id' => array('int', 11, 'null' => 0),
+        'name' => array('varchar', 64, 'null' => 0),
+        'value' => array('text'),
+        ':keys' => array(
+            'PRIMARY' => array('channel_id', 'name')
+        )
+    ),
+    'wa_verification_channel_assets' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'channel_id' => array('int', 11, 'null' => 0),
+        'address' => array('varchar', 64, 'null' => 0),
+        'name' => array('varchar', 64, 'null' => 0),
+        'value' => array('text'),
+        'expires' => array('datetime'), // IF NULL asset never expires
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'channel_address_name' => array('channel_id', 'address', 'name', 'unique' => 1),
+            'name' => 'name',
+            'expires' => 'expires'
+        )
+    ),
     'wa_widget' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'widget' => array('varchar', 32, 'null' => 0),
@@ -355,6 +396,16 @@ return array(
         'value' => array('text', 'null' => 0),
         ':keys' => array(
             'PRIMARY' => array('widget_id', 'name'),
+        ),
+    ),
+    'wa_cache' => array(
+        'id'      => array('bigint', 20, 'null' => 0, 'autoincrement' => 1),
+        'name'    => array('varchar', 255, 'null' => 0),
+        'expires' => array('datetime', 'null' => 0),
+        ':keys'   => array(
+            'PRIMARY' => 'id',
+            'name'    => array('name', 'unique' => 1),
+            'expires' => 'expires',
         ),
     ),
 );

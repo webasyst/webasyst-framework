@@ -1,0 +1,135 @@
+{**
+  * HELPER FUNC
+  * RENDER BLOCK OF ERRORS
+  *}
+{function render_errors errors=[]}
+    {foreach $errors as $error}
+        <em class="wa-error-msg">{$error}</em>
+    {/foreach}
+{/function}
+
+{**
+  * HELPER FUNC
+  * WRAPPED FIELD HTML IN BLOCK WITH LABEL AND STUFF
+  *}
+{function render_wrapped field_id='' caption='' html='' class=''}
+
+    {$caption = $caption|escape}
+
+    {$_style = ''}
+    {if $is_onetime_password_auth_type && $field_id === 'password'}
+        {$_style = 'display:none;'}
+        {$class = "`$class|default:''` wa-field-onetime-password"}
+    {/if}
+
+    <div class="wa-field wa-field-{$field_id} {$class|default:''}" data-field-id="{$field_id}" style="{$_style}">
+        <div class="wa-name">{$caption}</div>
+        <div class="wa-value">
+            {$html}
+
+            {if $is_onetime_password_auth_type && $field_id === 'password'}
+                <div class="wa-onetime-password-input-message"></div>
+                <div class="wa-send-again-onetime-password-link-wrapper" style="display: none">
+                    <a href="{$onetime_password_url}" class="wa-send-again-onetime-password-link">[`Re-send`]</a>
+                    <i class="wa-send-again-onetime-password-link-loading icon16 loading" style="display: none;"></i>
+                </div>
+            {/if}
+
+            {if $is_onetime_password_auth_type && $field_id === 'login'}
+                <div class="wa-send-onetime-password-edit-link-wrapper" style="display: none;">
+                    <a href="javascript:void(0);" class="wa-send-onetime-password-edit-link">
+                        <i class="wa-send-onetime-password-edit-icon"></i>
+                        [s`Edit`]
+                    </a>
+                </div>
+            {/if}
+
+            {if !empty($params.forgotpassword_url)}
+                <a class="wa-login-forgotpassword-url" href="{$params.forgotpassword_url}" data-type="forgotpassword">[s`Forgot password?`]</a>
+            {/if}
+
+            {render_errors errors=$errors}
+        </div>
+    </div>
+{/function}
+
+{**
+  * HELPER FUNC
+  * RENDER VIEW (HTML) OF FIELD (waContactField) BY APPLING PARAMS
+  *}
+{function render_field_html field=[] params=[]}
+    {$attrs = []}
+
+    {$classes = []}
+    {foreach $params.classes|default:[] as $clz}
+        {$classes[] = $clz|escape}
+    {/foreach}
+    {if $errors}
+        {$classes[] = 'wa-error'}
+    {/if}
+
+    {if $is_onetime_password_auth_type && $_field_id === 'password'}
+        {$classes[] = 'wa-onetime-password'}
+    {/if}
+
+    {$classes = join(' ', $classes)}
+
+    {$attrs[] = "class=\"`$classes`\""}
+
+    {$_placeholder = $params.placeholder|default:''}
+    {$_placeholder = $_placeholder|escape}
+
+    {if $_placeholder}
+        {if $is_onetime_password_auth_type && $_field_id === 'password'}
+            {$_placeholder = ''}
+        {/if}
+        {$attrs[] = "placeholder=\"`$_placeholder`\""}
+    {/if}
+
+    {if $params.disabled|default:false}
+        {$attrs[] = 'disabled="disabled"'}
+    {/if}
+
+    {$attrs = join(' ', $attrs)}
+
+    {$field->getHtml($params, $attrs)}
+{/function}
+
+{**
+  * HELPER FUNC
+  * RENDER SIGNLE FIELD (waContactField) THAT CAN BY AS INDIVIDUAL AS PART (SUBFIELD) OF COMPOSITE FIELD
+  * ALSO WRAP FIELD HTML IN FIELD-BLOCK (SEE render_field_html AND render_wrapped)
+  *}
+{function render_field field=[]}
+    {strip}
+
+    {$_field_id = $field->getId()}
+    {$_params = $params}
+
+    {capture assign="_html"}
+        {render_field_html field=$field params=$_params}
+    {/capture}
+
+    {if !$is_hidden}
+
+        {$_caption = $_params.caption|default:''}
+
+        {if $is_onetime_password_auth_type && $_field_id === 'password'}
+            {$_caption = _w('One-time password')}
+        {/if}
+
+        {render_wrapped
+            field_id=$_field_id
+            caption=$_caption
+            html=$_html
+            ext=$_params.ext|default:''}
+    {else}
+        {$_html}
+    {/if}
+
+{/strip}
+{/function}
+
+{* TEMPLATE BODY *}
+
+{render_field field=$field}

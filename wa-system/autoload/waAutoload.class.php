@@ -14,14 +14,26 @@
  */
 class waAutoload
 {
+    protected static $static_cache = array();
     protected static $registered = false;
     protected static $instance = null;
     protected $classes = array();
     protected $base_path = null;
+    protected $system_classes;
 
     protected function __construct()
     {
         $this->base_path = realpath(dirname(__FILE__).'/../..');
+
+        // load system classes
+        if (!isset(self::$static_cache['system_classes'])) {
+            $rules_path = dirname(__FILE__) . '/system_classes.php';
+            if (!file_exists($rules_path)) {
+                throw new Exception(sprintf('Unable to load system classes'));
+            }
+            self::$static_cache['system_classes'] = include($rules_path);
+        }
+        $this->system_classes = self::$static_cache['system_classes'];
     }
 
     /**
@@ -173,144 +185,4 @@ class waAutoload
         }
         return $result;
     }
-
-    protected $system_classes = array(
-        'waAPIException'           => 'api/waAPIException.class.php',
-        'waAPIController'          => 'api/waAPIController.class.php',
-        'waAPIDecorator'           => 'api/waAPIDecorator.class.php',
-        'waAPIDecoratorXML'        => 'api/waAPIDecoratorXML.class.php',
-        'waAPIDecoratorJSON'       => 'api/waAPIDecoratorJSON.class.php',
-        'waAPIRightsMethod'        => 'api/waAPIRightsMethod.class.php',
-        'waAPIMethod'              => 'api/waAPIMethod.class.php',
-
-        'waAuth'                   => 'auth/waAuth.class.php',
-        'waAuthAdapter'            => 'auth/waAuthAdapter.class.php',
-        'waOAuth2Adapter'          => 'auth/waOAuth2Adapter.class.php',
-        'waiAuth'                  => 'auth/waiAuth.interface.php',
-
-        'waAutoload'               => 'autoload/waAutoload.class.php',
-
-        'waFileCache'              => 'cache/waFileCache.class.php',
-        'waMemcachedCacheAdapter'  => 'cache/adapters/waMemcachedCacheAdapter.class.php',
-        'waFileCacheAdapter'       => 'cache/adapters/waFileCacheAdapter.class.php',
-        'waXcacheCacheAdapter'     => 'cache/adapters/waXcacheCacheAdapter.class.php',
-        'waRuntimeCache'           => 'cache/waRuntimeCache.class.php',
-        'waSerializeCache'         => 'cache/waSerializeCache.class.php',
-        'waSystemCache'            => 'cache/waSystemCache.class.php',
-        'waVarExportCache'         => 'cache/waVarExportCache.class.php',
-        'waiCache'                 => 'cache/waiCache.interface.php',
-
-        'waAppConfig'              => 'config/waAppConfig.class.php',
-        'waConfig'                 => 'config/waConfig.class.php',
-        'waRightConfig'            => 'config/waRightConfig.class.php',
-        'waSystemConfig'           => 'config/waSystemConfig.class.php',
-
-        'waAction'                 => 'controller/waAction.class.php',
-        'waActions'                => 'controller/waActions.class.php',
-        'waController'             => 'controller/waController.class.php',
-        'waDefaultViewController'  => 'controller/waDefaultViewController.class.php',
-        'waFrontController'        => 'controller/waFrontController.class.php',
-        'waJsonActions'            => 'controller/waJsonActions.class.php',
-        'waJsonController'         => 'controller/waJsonController.class.php',
-        'waUploadJsonController'   => 'controller/waUploadJsonController.class.php',
-        'waLoginAction'            => 'controller/waLoginAction.class.php',
-        'waForgotPasswordAction'   => 'controller/waForgotPasswordAction.class.php',
-        'waSignupAction'           => 'controller/waSignupAction.class.php',
-        'waLongActionController'   => 'controller/waLongActionController.class.php',
-        'waMyNavAction'            => 'controller/waMyNavAction.class.php',
-        'waMyProfileAction'        => 'controller/waMyProfileAction.class.php',
-        'waViewAction'             => 'controller/waViewAction.class.php',
-        'waViewActions'            => 'controller/waViewActions.class.php',
-        'waViewController'         => 'controller/waViewController.class.php',
-        'waWidget'                 => 'widget/waWidget.class.php',
-
-        'waCurrency'               => 'currency/waCurrency.class.php',
-
-        'waCdn'                    => 'cdn/waCdn.class.php',
-
-        'waCaptcha'                => 'captcha/waCaptcha.class.php',
-        'waReCaptcha'              => 'captcha/recaptcha/waReCaptcha.class.php',
-        'waPHPCaptcha'             =>'captcha/phpcaptcha/waPHPCaptcha.class.php',
-
-        'waModel'                  => 'database/waModel.class.php',
-        'waModelExpr'              => 'database/waModelExpr.class.php',
-        'waNestedSetModel'         => 'database/waNestedSetModel.class.php',
-
-        'waSMS'                    => 'sms/waSMS.class.php',
-        'waSMSAdapter'             => 'sms/waSMSAdapter.class.php',
-
-        'waDateTime'               => 'datetime/waDateTime.class.php',
-
-        'waEventHandler'           => 'event/waEventHandler.class.php',
-
-        'waDbException'            => 'exception/waDbException.class.php',
-        'waException'              => 'exception/waException.class.php',
-        'waRightsException'        => 'exception/waRightsException.class.php',
-
-        'waFiles'                  => 'file/waFiles.class.php',
-        'waNet'                    => 'file/waNet.class.php',
-        'waArchiveTar'             => 'file/waArchiveTar.class.php',
-        'waTheme'                  => 'file/waTheme.class.php',
-
-        'waLayout'                 => 'layout/waLayout.class.php',
-
-        'waiLocaleAdapter'         => 'locale/waiLocaleAdapter.interface.php',
-        'waGettext'                => 'locale/waGettext.class.php',
-        'waLocale'                 => 'locale/waLocale.class.php',
-        'waLocaleAdapter'          => 'locale/waLocaleAdapter.class.php',
-
-        'waAppPayment'             => 'payment/waAppPayment.class.php',
-        'waOrder'                  => 'payment/waOrder.class.php',
-        'waPayment'                => 'payment/waPayment.class.php',
-
-        'waRequest'                => 'request/waRequest.class.php',
-        'waRequestFile'            => 'request/waRequestFile.class.php',
-        'waRequestFileIterator'    => 'request/waRequestFileIterator.class.php',
-
-        'waResponse'               => 'response/waResponse.class.php',
-
-        'waSessionStorage'         => 'storage/waSessionStorage.class.php',
-        'waStorage'                => 'storage/waStorage.class.php',
-
-        'waAuthUser'               => 'user/waAuthUser.class.php',
-        'waUser'                   => 'user/waUser.class.php',
-
-        'waArrayObject'            => 'util/waArrayObject.class.php',
-        'waArrayObjectDiff'        => 'util/waArrayObjectDiff.class.php',
-        'waLazyDisplay'            => 'util/waLazyDisplay.class.php',
-        'waCSV'                    => 'util/waCSV.class.php',
-        'waHtmlControl'            => 'util/waHtmlControl.class.php',
-        'waString'                 => 'util/waString.class.php',
-        'waUtils'                  => 'util/waUtils.class.php',
-
-        'waEmailValidator'         => 'validator/waEmailValidator.class.php',
-        'waTimeValidator'          => 'validator/waTimeValidator.class.php',
-        'waRegexValidator'         => 'validator/waRegexValidator.class.php',
-        'waStringValidator'        => 'validator/waStringValidator.class.php',
-        'waUrlValidator'           => 'validator/waUrlValidator.class.php',
-        'waValidator'              => 'validator/waValidator.class.php',
-
-        'waIdna'                   => 'vendors/idna/waIdna.class.php',
-        'Smarty'                   => 'vendors/smarty3/Smarty.class.php',
-
-        'waSmarty3View'            => 'view/waSmarty3View.class.php',
-        'waView'                   => 'view/waView.class.php',
-        'waViewHelper'             => 'view/waViewHelper.class.php',
-        'waAppViewHelper'          => 'view/waAppViewHelper.class.php',
-
-        'waWorkflow'               => 'workflow/waWorkflow.class.php',
-        'waWorkflowAction'         => 'workflow/waWorkflowAction.class.php',
-        'waWorkflowEntity'         => 'workflow/waWorkflowEntity.class.php',
-        'waWorkflowState'          => 'workflow/waWorkflowState.class.php',
-
-        'waSystem'                 => 'waSystem.class.php',
-
-        'waPageModel'              => 'page/models/waPage.model.php',
-        'waPageParamsModel'        => 'page/models/waPageParams.model.php',
-        'waPageAction'             => 'page/actions/waPage.action.php',
-        'waPageActions'            => 'page/actions/waPage.actions.php',
-
-        'waDesignActions'          => 'design/actions/waDesign.actions.php',
-        'waPluginsActions'         => 'plugin/actions/waPlugins.actions.php',
-    );
 }

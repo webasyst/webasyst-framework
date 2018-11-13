@@ -145,13 +145,16 @@ class waDateTime
      */
     public static function date($format, $time = null, $timezone = null, $locale = null)
     {
-        if (is_numeric($time) && strlen($time)!= 8) {
+        if (is_numeric($time) && (strlen($time)!= 8) && ($time < PHP_INT_MAX)) {
             $time = date('Y-m-d H:i:s', $time);
         }
         try {
             $date_time = new DateTime($time);
             if ($timezone) {
-                $date_time->setTimezone(new DateTimeZone($timezone));
+                if (!$timezone instanceof DateTimeZone) {
+                    $timezone = new DateTimeZone($timezone);
+                }
+                $date_time->setTimezone($timezone);
             }
         } catch (Exception $e) {
             throw new waException($e);
@@ -257,7 +260,11 @@ class waDateTime
             $locale = wa()->getLocale();
         }
         if (!$timezone) {
-            $timezone = wa()->getUser()->getTimezone();
+            /** @var DateTimeZone $timezone */
+            $timezone = wa()->getUser()->getTimezone(true);
+            if ($timezone && !$timezone instanceof DateTimeZone) {
+                $timezone = new DateTimeZone($timezone);
+            }
         }
         waLocale::loadByDomain("webasyst", $locale);
 
@@ -279,7 +286,7 @@ class waDateTime
             $date_time = new DateTime($time);
             $base_date_time = new DateTime(date("Y-m-d H:i:s",strtotime('-1 day')));
             if ($timezone) {
-                $date_timezone = new DateTimeZone($timezone);
+                $date_timezone = $timezone;
                 $date_time->setTimezone($date_timezone);
                 $base_date_time->setTimezone($date_timezone);
             }
@@ -338,18 +345,18 @@ class waDateTime
         $locale = waLocale::getInfo($locale);
         $date_formats = isset($locale['date_formats']) ? $locale['date_formats'] : array();
         $date_formats += array(
-            'humandate' => 'd f Y',
-            'date' => 'Y-m-d',
-            'time' => 'H:i',
-            'fulltime' => 'H:i:s',
-            'datetime' => 'Y-m-d H:i',
+            'humandate'    => 'd f Y',
+            'date'         => 'Y-m-d',
+            'time'         => 'H:i',
+            'fulltime'     => 'H:i:s',
+            'datetime'     => 'Y-m-d H:i',
             'fulldatetime' => 'Y-m-d H:i:s',
-            'timestamp' => 'U',
+            'timestamp'    => 'U',
         );
 
         if (isset($date_formats[$format])) {
             return $date_formats[$format];
-        } elseif ( defined($format) && (strpos($format, 'DATE_') === 0) ) {
+        } elseif (defined($format) && (strpos($format, 'DATE_') === 0)) {
             return constant($format);
         } elseif (preg_match("~[ymdhisfjnucrzt]~i", $format)) {
             return $format;
@@ -365,7 +372,7 @@ class waDateTime
      *
      * @param string $format Format string accepted by parameter$format of method getFormat().
      * @see self::getFormat()
-     * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
+     * @param string|null $locale Locale identifier. If not specified, current user's locale is determined automatically.
      * @return string
      * @throws waException
      */
@@ -374,19 +381,19 @@ class waDateTime
         $format = self::getFormat($format, $locale);
         $pattern = array(
 
-        //day
+            //day
             'd',        //day of the month
-            'j',        //3 letter name of the day
+            'j',        //day of the month no leading zeros
             'l',        //full name of the day
             'z',        //day of the year
 
-        //month
+            //month
             'F',        //Month name full
             'M',        //Month name short
             'n',        //numeric month no leading zeros
             'm',        //numeric month leading zeros
 
-        //year
+            //year
             'Y',         //full numeric year
             'y'        //numeric year: 2 digit
         );
@@ -394,11 +401,49 @@ class waDateTime
             'dd','d','DD','o',
             'MM','M','m','mm',
             'yy','y'
-            );
-            foreach($pattern as &$p) {
-                $p = '/'.$p.'/';
-            }
-            return preg_replace($pattern, $replace, $format);
+        );
+        foreach ($pattern as &$p) {
+            $p = '/'.$p.'/';
+        }
+        return preg_replace($pattern, $replace, $format);
+    }
+
+    /**
+     * Returns human readable format strings for date/time corresponding to formats used by Webasyst framework.
+     *
+     * @param string $format Format string accepted by parameter$format of method getFormat().
+     * @see self::getFormat()
+     * @param string|null $locale Locale identifier. If not specified, current user's locale is determined automatically.
+     * @return string
+     * @throws waException
+     */
+    public static function getFormatHuman($format, $locale = null)
+    {
+        $format = self::getFormat($format, $locale);
+        $replace_map = array(
+
+            //day
+            'd' => _ws('DD'),     //day of the month
+            'j' => _ws('D'),      //day of the month no leading zero
+
+            //month
+            'F' => _ws('Month'),  //Month name full
+            'M' => _ws('Mth'),    //Month name short
+            'n' => _ws('M'),      //numeric month no leading zeros
+            'm' => _ws('MM'),     //numeric month leading zeros
+
+            //year
+            'Y' => _ws('YYYY'),   //full numeric year
+            'y' => _ws('YY'),     //numeric year: 2 digit
+        );
+        $patterns = array();
+        foreach ($replace_map as $pattern => &$name) {
+            $patterns[] = '/'.preg_quote($pattern, '/').'/';
+            $name = _ws($name);
+        }
+        unset($name);
+
+        return preg_replace($patterns, array_values($replace_map), $format);
     }
 
     /**

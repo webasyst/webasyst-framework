@@ -1271,6 +1271,23 @@ class waContact implements ArrayAccess
     }
 
     /**
+     * @param int $len
+     * @return string
+     */
+    public static function generatePassword($len = 11)
+    {
+        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789!@#$%^&*-_.?';
+        $alphabet = str_split($alphabet, 1);
+        shuffle($alphabet);
+        $password = array();
+        for ($i = 0; $i < $len; $i++) {
+            $key = array_rand($alphabet);
+            $password[] = $alphabet[$key];
+        }
+        return join('', $password);
+    }
+
+    /**
      * Adds contact to a category.
      *
      * @param int|string $category_id Category's simple numeric or system string key (app_id)
@@ -1422,5 +1439,3 @@ class waContact implements ArrayAccess
         return $event;
     }
 }
-
-// EOF

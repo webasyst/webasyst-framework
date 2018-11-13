@@ -7,6 +7,7 @@
     {$wa->css()}
 
     <link href="{$wa_url}wa-content/css/wa-settings/settings.css?v={$wa->version()}" rel="stylesheet">
+    <link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" rel="stylesheet">
 
     {* VENDOR *}
     {wa_js}
@@ -16,6 +17,7 @@
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+        {$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js
         {$wa_url}wa-content/js/ace/ace.js
         {$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js
     {/wa_js}
@@ -30,6 +32,8 @@
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.email.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.maps.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.captcha.js
+        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.sms.js
+        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.auth.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.edit.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.delete.confirm.js
@@ -70,7 +74,7 @@
     </div>
     <script>(function($) { "use strict";
 
-            {* need for editor2.js*}
+            {* need for editor2.js *}
             window.wa_app = {$wa->app()|json_encode};
             {* need for waEditorAceInit *}
             window.wa_url = {$wa_url|json_encode};

@@ -1,42 +1,4 @@
 {$_title = "[s`General settings`] — {$wa->accountName()}"}
-{function name="_renderCustomBackground" custom_image=[]}
-    {strip}
-        <div>
-            {if $custom_image !== null && $custom_image !== false}
-            <div class="s-custom-background-preview js-custom-background-preview" data-value="{$custom_image.file_name|default:null}">
-                <div>
-                    <img class="s-custom-image-preview js-image-img" src="{if !empty($custom_image.file_name)}{$images_url}/{$custom_image.file_name}?t={$custom_image.file_mtime|default:null}{/if}">
-                </div>
-                <div class="s-custom-image-params">
-                    {* Image params *}
-                    <span class="hint">
-                        <span class="js-image-width">{$custom_image.width|default:null}</span>
-                        &times;
-                        <span class="js-image-height">{$custom_image.height|default:null}</span>,
-                        <span class="s-image-size js-image-size">
-                        {if !empty($custom_image.file_size)}
-                            {$custom_image.file_size|wa_format_file_size:'%0.0f':'[s`B,KB,MB`]'}
-                        {/if}
-                        </span>
-                    </span>
-                    {* Delete image *}
-                    <span>
-                        <a class="small inline-link js-remove-custom-backgorund" href="javascript:void(0);" title="[s`Delete`]">
-                            &nbsp;<i class="icon10 no"></i>&nbsp;<b><i>[s`Delete`]</i></b>
-                        </a>
-                    </span>
-                </div>
-            </div>
-            {elseif $custom_image === null}
-            <span class="hint">[s`File not found`] {$settings.auth_form_background|escape}</span>
-            {/if}
-            <div class="stretch"{if empty($custom_image)} style="display: none;"{/if}>
-                <input class="js-stretch-checkbox" type="checkbox" value="1" name="auth_form_background_stretch" id="installer-auth-stretch-background"{if $settings.auth_form_background_stretch} checked="checked"{/if}>
-                <label for="installer-auth-stretch-background">[s`Stretch to fill entire screen`]</label>
-            </div>
-        </div>
-    {/strip}
-{/function}
 <div class="s-general-settings-page blank block double-padded" id="s-general-settings-page">
     <h1 class="s-page-header">[s`General settings`]</h1>
     <div class="s-general-settings-fields-block">
@@ -99,56 +61,6 @@
                         </div>
                     </div>
                 {/if}
-
-                {* "Remember me" in auth *}
-                <div class="field">
-                    <div class="name">
-                        [s`Auto-login`]
-                    </div>
-                    <div class="value no-shift">
-                        <input type="checkbox" name="rememberme" id="rememberme-auth-login" value="1"{if $settings.rememberme} checked="checked"{/if}>
-                        <label for="rememberme-auth-login">[s`Allow “Remember me” option in Webasyst backend authorization form`]</label>
-                    </div>
-                </div>
-
-                {* Background image in authorization page *}
-                <div class="field s-auth-background">
-                    <div class="name">
-                        [s`Authorization form background image`]
-                    </div>
-                    <div class="value">
-                        <ul class="s-background-images js-background-images">
-                            {foreach $backgrounds as $_background}
-                                <li{if $settings.auth_form_background == "stock:`$_background`"} class="selected"{/if}>
-                                    <a href="javascript:void(0);" data-value="stock:{$_background|escape}">
-                                        <img src="{$wa_url}wa-content/img/backgrounds/thumbs/{$_background}" alt="{$_background}">
-                                    </a>
-                                </li>
-                            {/foreach}
-
-                            {foreach $images as $_image}
-                                <li{if $settings.auth_form_background == $_image} class="selected"{/if}>
-                                    <a href="javascript:void(0);" data-value="{$_image|escape}">
-                                        <img src="{$images_url}/{$_image}?t={filemtime("`$images_path`/`$_image`")}" alt="{$_image}">
-                                    </a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                        <input type="hidden" name="auth_form_background" value="{$settings.auth_form_background|escape}">
-                    </div>
-                    {* Upload new image and preview *}
-                    <div class="value js-upload-preview">
-                        <input type="file" class="js-background-upload">
-                        <i class="icon16 loading" style="display: none;"></i>
-                        <div class="js-custom-preview-wrapper">
-                            {if $settings.auth_form_background}
-                                {_renderCustomBackground custom_image=$custom_image}
-                            {/if}
-                        </div>
-                    </div>
-                    <br><br>
-                </div>
-
                 {* Clear cache *}
                 <div class="field">
                     <div class="name">[s`Clear cache`]</div>
@@ -170,6 +82,14 @@
                         </label>
                     </div>
                 </div>
+
+                {* Framework version *}
+                <div class="field">
+                    <div class="name">
+                        [s`Webasyst version`]
+                    </div>
+                    <div class="value no-shift">{$version}</div>
+                </div>
             </div>
 
             <div class="s-form-buttons">
@@ -183,32 +103,6 @@
                 </div>
             </div>
         </form>
-
-        {* Templates for js *}
-
-        {* Template for confirm *}
-        {* Text *}
-        <div class="js-remove-text" style="display: none;">
-            <h3>[s`Delete authorization form background image?`]</h3>
-        </div>
-        {* Buttons *}
-        <div class="js-remove-buttons" style="display: none;">
-            <input type="submit" class="button red" value="[s`Delete`]" />
-            [s`or`]
-            <a class="cancel" href="javascript:void(0);">[s`cancel`]</a>
-        </div>
-
-        {* Template for custom image preview *}
-        <div class="js-preview-template" style="display: none;">
-            {_renderCustomBackground custom_image=[]}
-        </div>
-
-        {* Template for custom image preview in list *}
-        <li class="selected js-list-preview-template" style="display: none;">
-            <a href="javascript:void(0);" data-value="">
-                <img src="" alt="">
-            </a>
-        </li>
     </div>
 </div>
 <script type="text/javascript">

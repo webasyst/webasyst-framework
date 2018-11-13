@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsFieldConditionalValuesSaveController extends waJsonController
+class webasystSettingsFieldConditionalValuesSaveController extends webasystSettingsJsonController
 {
     /**
      * @var waContactFieldValuesModel

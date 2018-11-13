@@ -49,4 +49,9 @@ abstract class waAbstractCaptcha
      * @abstract
      */
     abstract public function display();
+
+    public function getOption($key = null, $default = null)
+    {
+        return ($key) ? ifset($this->options, $key, $default) : $this->options;
+    }
 } 

@@ -12,6 +12,7 @@ var WASettingsMaps = ( function($) {
         that.$loading = that.$footer_actions.find('.s-loading');
 
         // VARS
+        that.is_locked = false;
 
         // DYNAMIC VARS
         that.is_locked = false;

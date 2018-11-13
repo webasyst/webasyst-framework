@@ -130,6 +130,9 @@
   line-height: 17px;
   color: #000;
 }
+#wa-design-container #theme-settings .field-group .field .value .image img {
+  max-width: 300px;
+}
 #wa-design-container #theme-settings .wa-setting-highlight {
   background-color: #ffa;
 }

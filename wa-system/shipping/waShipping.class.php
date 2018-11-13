@@ -204,6 +204,8 @@ abstract class waShipping extends waSystemPlugin
                     $property_value = date('Y-m-d H:i:s', time() + 900); // 15 minutes later
                 }
                 break;
+            case 'service':
+            case 'services_by_type':
             default:
                 if (isset($this->params[$property])) {
                     $property_value = $this->params[$property];
@@ -1073,6 +1075,7 @@ HTML;
 
     /**
      * @since installer 1.5.14
+     * @deprecated use waHtmlControl::DATETIME instead
      * @param string $name
      * @param array $params
      * @return string
@@ -1373,11 +1376,19 @@ HTML;
         return $this->app_adapter;
     }
 
-    /**
-     * @return string
-     */
-    protected function getMode()
+    protected static function formatDatetime($data, $format = 'Y-m-d H:i:s')
     {
-        return self::MODE_SIMPLE;
+        if (is_array($data)) {
+            foreach ($data as &$item) {
+                $item = self::formatDatetime($item);
+                unset($item);
+            }
+
+        } elseif (is_int($data)) {
+            $data = date($format, $data);
+        } else {
+            $data = date($format, strtotime($data));
+        }
+        return $data;
     }
 }

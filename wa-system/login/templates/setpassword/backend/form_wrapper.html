@@ -1,0 +1,44 @@
+{$include_js = $include_js|default:false}
+{$include_css = $include_css|default:false}
+
+{$class_id = 'wa-set-password-form'}
+{$wrapper_id = uniqid($class_id)}
+
+{function include_assets}
+    {if $include_js}
+        <script type="text/javascript" src="{$wa_url}wa-content/js/login/setpassword-backend-form.min.js?v={$wa->version()}"></script>
+    {/if}
+{/function}
+
+{function include_form_js}
+    {$_locale = [
+        'password_required' => '[s`Password can not be empty.`]',
+        'not_match' => '[s`Passwords do not match`]',
+        'captcha_required' => '[s`Captcha is required`]'
+    ]}
+    <script>(function($) {
+            new WaBackendSetPassword({
+                $wrapper: $("#{$wrapper_id}"),
+                namespace: {$namespace|json_encode},
+                errors: {$errors|json_encode},
+                messages: {$messages|json_encode},
+                locale: {$_locale|json_encode},
+                is_json_mode: {$is_json_mode|default:false|json_encode}
+            });
+        })(jQuery);
+    </script>
+{/function}
+
+{function wrap}
+    <div class="{$class_id}" id="{$wrapper_id}">
+        {$renderer->renderTitle()}
+        {$html}
+    </div>
+    {if $include_js}
+        {include_form_js}
+    {/if}
+{/function}
+
+{include_assets}
+{wrap}
+

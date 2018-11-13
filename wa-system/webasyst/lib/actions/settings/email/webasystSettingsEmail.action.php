@@ -53,6 +53,13 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
                 'description' => _ws('This is a default command for sending email in UNIX-like operating systems. You can edit it to use a different command for sending messages if you are an experienced server administrator.')
             );
         }
+
+        if (class_exists('Swift_WadebugTransport')) {
+            $senders['wadebug'] = array(
+                'name' => 'wadebug'
+            );
+        }
+
         ksort($senders);
         return $senders;
     }

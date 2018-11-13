@@ -14,41 +14,72 @@
  */
 class waAuth implements waiAuth
 {
+    protected static $static_cache;
+
+    const LOGIN_FIELD_EMAIL = 'email';
+    const LOGIN_FIELD_PHONE = 'phone';
+    const LOGIN_FIELD_LOGIN = 'login';
+
     protected $options = array(
         'cookie_expire' => 2592000,
     );
+
+    protected $available_login_field_ids = array(
+        self::LOGIN_FIELD_LOGIN,
+        self::LOGIN_FIELD_EMAIL,
+        self::LOGIN_FIELD_PHONE
+    );
+
+    /**
+     * ID of login field by which will be found auth-contact
+     * @see getByLogin
+     * @var string|null
+     */
+    protected $current_login_field_id = null;
+
+    /**
+     * @var waAuthConfig
+     */
+    protected $auth_config;
+
+    protected $env;
 
     /**
      * @param array $options
      */
     public function __construct($options = array())
     {
+        $this->env = wa()->getEnv();
+
         if (is_array($options)) {
             foreach ($options as $k => $v) {
                 $this->options[$k] = $v;
             }
         }
-        if (!isset($this->options['login'])) {
-            $this->options['login'] = wa()->getEnv() == 'backend' ? 'login' : 'email';
-        }
 
         if (!isset($this->options['is_user'])) {
             // only contacts with is_user = 1 can auth
-            $this->options['is_user'] = wa()->getEnv() == 'backend';
+            $this->options['is_user'] = $this->env == 'backend';
         }
 
         if (!isset($this->options['remember_enabled'])) {
-            if (wa()->getEnv() == 'backend') {
+            if ($this->env == 'backend') {
                 try {
                     $app_settings_model = new waAppSettingsModel();
                     $this->options['remember_enabled'] = $app_settings_model->get('webasyst', 'rememberme', true);
-                } catch (waException $e) {
+                } catch (waAuthException $e) {
                     $this->options['remember_enabled'] = true;
                 }
             } else {
                 $this->options['remember_enabled'] = true;
             }
         }
+
+
+        $this->auth_config = waAuthConfig::factory($this->env);
+
+        $this->initLoginFieldIds();
+
     }
 
     /**
@@ -69,7 +100,7 @@ class waAuth implements waiAuth
 
     /**
      * @return array|bool|null
-     * @throws waException
+     * @throws waAuthException
      */
     public function isAuth()
     {
@@ -89,68 +120,226 @@ class waAuth implements waiAuth
 
     /**
      * @param string $email
-     * @return array
+     * @return array|null
      */
     protected function getByEmail($email)
     {
+        if (!$this->isValidEmail($email)) {
+            return null;
+        }
+
         $model = new waContactModel();
+
+        $where = array();
+        if ($this->options['is_user']) {
+            $where[] = "c.is_user = 1";
+            $where[] = "c.password != ''";
+        }
+        $where[] = "e.email LIKE s:email";
+        $where[] = "e.sort = 0";
+
+        $where = join(' AND ', $where);
+
         $sql = "SELECT c.* FROM wa_contact c
                 JOIN wa_contact_emails e ON c.id = e.contact_id
-                WHERE ".($this->options['is_user'] ? "c.is_user = 1 AND " : "")."e.email LIKE s:email AND e.sort = 0 AND c.password != ''
+                WHERE {$where}
                 ORDER BY c.id LIMIT 1";
-        return $model->query($sql, array('email' => $email))->fetch();
+        return $model->query($sql, array('email' => $email))->fetchAssoc();
     }
 
     /**
      * @param string $login
-     * @return array
-     * @throws waException
+     * @param $priority
+     * @return array|null
+     * @throws waAuthException
      */
-    public function getByLogin($login)
+    public function getByLogin($login, $priority = null)
     {
-        if (!$login) {
+        $login = is_scalar($login) ? (string)$login : '';
+        if (strlen($login) <= 0) {
             return null;
         }
-        $result = array();
+
+        // Login values for look up
+        $login_values = array();
+        foreach ($this->getLoginFieldIds() as $field_id) {
+            $login_values[$field_id] = $login;
+        }
+
+        // Priority for look up
+        if ($this->isValidEmail($login)) {
+            $priority = self::LOGIN_FIELD_EMAIL;
+        } elseif ($this->isValidPhoneNumber($login)) {
+            $priority = self::LOGIN_FIELD_PHONE;
+        } else {
+            $priority = null;
+        }
+
+        $result = $this->lookupByLoginFields($login_values, $priority, 'first');
+        if (!$result) {
+            return null;
+        }
+
+        $this->current_login_field_id = key($result);
+        $contact = $result[$this->current_login_field_id];
+
+        // being paranoid
+        $this->checkBan($contact);
+
+        return $contact;
+    }
+
+    /**
+     * @param string $phone
+     * @return array|null
+     */
+    protected function getByPhone($phone)
+    {
+        if (!$this->isValidPhoneNumber($phone)) {
+            return null;
+        }
+
+        $phone = waContactPhoneField::cleanPhoneNumber($phone);
         $model = new waContactModel();
-        if ($this->options['login'] == 'login') {
-            $result = $model->getByField('login', $login);
-            if (!$result) {
-                $result = $this->getByEmail($login);
-            }
-        } elseif ($this->options['login'] == 'email') {
-            if (strpos($login, '@') !== false) {
-                $result = $this->getByEmail($login);
-            }
-            if (!$result) {
-                $result = $model->getByField('login', $login);
+
+        $where = array();
+        if ($this->options['is_user']) {
+            $where[] = "c.is_user = 1";
+            $where[] = "c.password != ''";
+        }
+        $where[] = 'd.value = :phone';
+        $where[] = 'd.sort = 0';
+
+        $where = join(' AND ', $where);
+
+        $sql = "SELECT c.* FROM wa_contact c
+                JOIN wa_contact_data d ON c.id = d.contact_id AND d.field = 'phone'
+                WHERE {$where}
+                ORDER BY c.id LIMIT 1";
+        return $model->query($sql, array('phone' => $phone))->fetchAssoc();
+    }
+
+    /**
+     *
+     * @param array $login_values <field_id> => <value> map expected.
+     *   <field_id> it is waAuth::LOGIN_FIELD_* constant
+     *   For each field try to find contact by proper value
+     *
+     * @param string[]|string $priority order of looking up - array (or single scalar) of <field_id> waAuth::LOGIN_FIELD_*
+     *
+     * @param string $lookup_type 'all'|'first'
+     *   'all' - return all result of looking up process (Default value)
+     *   'first' - looking up stop after first success found. Return only one item array in result
+     *
+     * @return array
+     *   - Array of format <field_id> => array|null <contact>
+     *       <field_id> it is waAuth::LOGIN_FIELD_* constant
+     *       <contact> if NOT found - null, if found - array of contact info
+     *
+     *   - Array may be empty if no contacts found
+     *
+     * @throws waException
+     */
+    public function lookupByLoginFields($login_values, $priority = null, $lookup_type = 'all')
+    {
+        $login_values = is_array($login_values) ? $login_values : array();
+        $available = array_fill_keys($this->available_login_field_ids, true);
+        foreach ($login_values as $field_id => $value) {
+            if (!isset($available[$field_id])) {
+                unset($login_values[$field_id]);
             }
         }
-        if ($result) {
-            $this->checkBan($result);
+
+        $login_values = waUtils::orderKeys($login_values, $priority);
+
+        $result = array();
+
+        foreach ($login_values as $field_id => $value) {
+            $contact = null;
+            if ($field_id === self::LOGIN_FIELD_LOGIN) {
+                $model = new waContactModel();
+                $contact = $model->getByField('login', $value);
+            } elseif ($field_id === self::LOGIN_FIELD_EMAIL) {
+                $contact = $this->getByEmail($value);
+            } elseif ($field_id === self::LOGIN_FIELD_PHONE) {
+                $contact = $this->getByPhone($value);
+            }
+            if (!$contact || $contact['is_user'] <= -1) {
+                continue;
+            }
+            $result[$field_id] = $contact;
+
+            if ($lookup_type === 'first' && $contact) {
+                break;
+            }
         }
+
         return $result;
     }
 
     /**
      * @param array $data - contact/user info
-     * @throws waException
+     * @throws waAuthException
      */
     protected function checkBan($data)
     {
         if ($data['is_user'] == -1) {
-            throw new waException(_ws('Access denied.'));
+            throw new waAuthException(_ws('Access denied.'));
         }
     }
 
+    protected function _prepareAuthParams($params)
+    {
+        if ($params instanceof waContact) {
+            return $params;
+        }
+
+        $params = is_array($params) && !empty($params) ? $params : array();
+
+        $is_post = wa()->getRequest()->getMethod() === 'post' && wa()->getRequest()->post('wa_auth_login');
+
+        if (!isset($params['login']) && $is_post) {
+            $params['login'] = wa()->getRequest()->post('login');
+        }
+        if (isset($params['login'])) {
+            $params['login'] = is_scalar($params['login']) ? (string)$params['login'] : '';
+        } else {
+            $params['login'] = null;
+        }
+
+
+        if (!isset($params['password']) && $is_post) {
+            $params['password'] = wa()->getRequest()->post('password');
+        }
+        $params['password'] = isset($params['password']) && is_scalar($params['password']) ? (string)$params['password'] : '';
+
+        if (!isset($params['remember']) && wa()->getRequest()->post('remember')) {
+            $params['remember'] = !!wa()->getRequest()->post('remember');
+        }
+        $params['remember'] = isset($params['remember']) ? (bool)$params['remember'] : false;
+
+        $params['id'] = isset($params['id']) && is_scalar($params['id']) ? (int)$params['id'] : null;
+
+        return $params;
+    }
+
+    protected function _afterAuth($user_info, $params)
+    {
+        $this->_remember($user_info, $params['remember']);
+        return $this->getAuthData($user_info);
+    }
+
     /**
-     * @param $params
+     * @param array|waContact $params
      * @return array|bool
-     * @throws waException
+     * @throws waAuthException
+     * @throws waAuthInvalidCredentialsException
      */
     protected function _auth($params)
     {
-        if ($params && isset($params['id'])) {
+        $params = $this->_prepareAuthParams($params);
+
+        if ($params['id'] > 0) {
             $contact_model = new waContactModel();
             $user_info = $contact_model->getById($params['id']);
             if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user'])) {
@@ -158,78 +347,246 @@ class waAuth implements waiAuth
                 return $this->getAuthData($user_info);
             }
             return false;
-        } elseif ($params && isset($params['login']) && isset($params['password'])) {
-            $login = $params['login'];
-            $password = $params['password'];
-        } elseif (waRequest::getMethod() == 'post' && waRequest::post('wa_auth_login')) {
-            $login = waRequest::post('login');
-            $password = waRequest::post('password');
-            if (!strlen($login)) {
-                throw new waException(_ws('Login is required'));
-            }
-        } else {
-            $login = null;
         }
-        if ($login && strlen($login)) {
-            $user_info = $this->getByLogin($login);
-            if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user']) &&
-                waContact::getPasswordHash($password) === $user_info['password']) {
-                $auth_config = wa()->getAuthConfig();
-                if (wa()->getEnv() == 'frontend' && !empty($auth_config['params']['confirm_email'])) {
-                    $contact_emails_model = new waContactEmailsModel();
-                    $email_row = $contact_emails_model->getByField(array('contact_id' => $user_info['id'], 'sort' => 0));
-                    if ($email_row && $email_row['status'] == 'unconfirmed') {
-                        $login_url = wa()->getRouteUrl((isset($auth_config['app']) ? $auth_config['app'] : '').'/login', array());
-                        $html = sprintf(_ws('A confirmation link has been sent to your email address provided during the signup. Please click this link to confirm your email and to sign in. <a class="send-email-confirmation" href="%s">Resend the link</a>'), $login_url.'?send_confirmation=1');
-                        $html = '<div class="block-confirmation-email">'.$html.'</div>';
-                        $html .= <<<HTML
-<script type="text/javascript">
-    $(function () {
-        $('a.send-email-confirmation').click(function () {
-            $.post($(this).attr('href'), {
-                    login: $(this).closest('form').find("input[name='login']").val()
-                }, function (response) {
-                $('.block-confirmation-email').html(response);
-            });
-            return false;
-        });
-    });
-</script>
-HTML;
 
-                        throw new waException($html);
-                    }
+        if ($params['login'] === null) {
+            return $this->_authByCookie();
+        }
+
+        $login = $params['login'];
+        $password = $params['password'];
+        if (strlen($login) <= 0) {
+            throw new waAuthException(_ws('Login is required'));
+        }
+
+        $user_info = $this->getByLogin($login);
+        if (!$user_info || ($this->options['is_user'] && $user_info['is_user'] <= 0)) {
+            throw new waAuthException(_ws("Contact is not signed up"));
+        }
+
+        if ($this->isOnetimePasswordMode()) {
+            $result = $this->_authByOnetimePassword(new waContact($user_info['id']), $login, $password);
+            if (!$result) {
+                throw new waAuthInvalidCredentialsException();
+            }
+            return $this->_afterAuth($user_info, $params);
+        }
+
+        $result = $this->_authByPassword($user_info, $password);
+        if (!$result) {
+            throw new waAuthInvalidCredentialsException();
+        }
+
+        $this->mustNeedConfirmSignup($user_info);
+
+        return $this->_afterAuth($user_info, $params);
+
+    }
+
+
+    /**
+     * @param array $contact
+     * @throws waAuthException
+     */
+    protected function mustNeedConfirmSignup($contact)
+    {
+        if ($this->env !== 'frontend' || !$this->auth_config->getSignupConfirm()) {
+            return;
+        }
+
+        $contact = new waContact($contact['id']);
+        $is_user = $contact['is_user'];
+
+        if ($is_user) {
+            return; // User can log in
+        }
+
+        $cem = new waContactEmailsModel();
+        $email_row = $cem->getEmail($contact['id']);
+
+        $cdm = new waContactDataModel();
+        $phone_row = $cdm->getContactPhone($contact['id']);
+
+        // error that stop logging in
+        $error = new waAuthException(_ws("Contact can't be authorized"));;
+
+        // What login field used to auth
+        $login_field_id = $this->current_login_field_id;
+
+        // If try logging in by EMAIL
+        if ($login_field_id === self::LOGIN_FIELD_EMAIL) {
+
+            // If we log in by email email must exist
+            if (!$email_row) {
+                throw $error;
+            }
+
+            // Email unconfirmed case
+            if ($email_row['status'] == waContactEmailsModel::STATUS_UNCONFIRMED) {
+                if (!$phone_row) {
+                    throw $this->getAuthConfirmEmailException();
                 }
-
-                $response = waSystem::getInstance()->getResponse();
-                // if remember
-                $model = new waAppSettingsModel();
-                if (waRequest::post('remember') && $model->get('webasyst', 'rememberme', 1)) {
-                    $cookie_domain = ifset($this->options['cookie_domain'], '');
-                    $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, $cookie_domain, false, true);
-                    $response->setCookie('remember', 1);
-                } else {
-                    $response->setCookie('remember', 0);
-                }
-
-                // return array with compact user info
-                return $this->getAuthData($user_info);
-            } else {
-                if ($this->options['login'] == 'email') {
-                    throw new waException(_ws('Invalid email or password'));
-                } else {
-                    throw new waException(_ws('Invalid login or password'));
+                if ($phone_row['status'] == waContactDataModel::STATUS_UNCONFIRMED) {
+                    throw $this->getAuthConfirmEmailException();
                 }
             }
+
+            // If here that it means that email or phone are confirmed
+
+            return; // Contact can log in
+        }
+
+        // If try logging in by PHONE
+        if ($login_field_id === self::LOGIN_FIELD_PHONE) {
+
+            // If we log in by phone phone must exist
+            if (!$phone_row) {
+                throw $error;
+            }
+
+            // Phone unconfirmed case
+            if ($phone_row['status'] == waContactDataModel::STATUS_UNCONFIRMED) {
+                if (!$email_row) {
+                    throw $error;
+                }
+                if ($email_row['status'] == waContactEmailsModel::STATUS_UNCONFIRMED) {
+                    throw $error;
+                }
+            }
+
+            // If here that it means that email or phone are confirmed
+
+            return; // Contact can log in
+        }
+
+        // If try logging in by LOGIN
+        if ($login_field_id === self::LOGIN_FIELD_LOGIN) {
+
+            // At least one of "log-in" field MUST exist
+            if (!$email_row && !$phone_row) {
+                throw $error;
+            }
+
+            // At least one of "log-in" field MUST NOT BE unconfirmed
+            if ($email_row['status'] == waContactEmailsModel::STATUS_UNCONFIRMED && $phone_row['status'] == waContactDataModel::STATUS_UNCONFIRMED) {
+                throw $error;
+            }
+
+            return; // Contact can log in
+        }
+
+        throw $error;
+    }
+
+    protected function getAuthConfirmEmailException()
+    {
+        $login_url = $this->auth_config->getSignupUrl(array(
+            'get' => 'send_confirmation=1'
+        ));
+        $msg = _ws('A confirmation link has been sent to your email address provided during the signup. Please click this link to confirm your email and to sign in. <a class="send-email-confirmation" href="%s">Resend the link</a>');
+        $msg = sprintf($msg, $login_url);
+        return new waAuthConfirmEmailException($msg);
+    }
+
+
+
+    protected function _remember($user_info, $remember)
+    {
+        $response = waSystem::getInstance()->getResponse();
+
+        // if remember
+        $model = new waAppSettingsModel();
+        if ($remember && $model->get('webasyst', 'rememberme', 1)) {
+            $cookie_domain = ifset($this->options['cookie_domain'], '');
+            $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, $cookie_domain, false, true);
+            $response->setCookie('remember', 1);
         } else {
-            // try auth by cookie
-            return $this->_authByCookie();
+            $response->setCookie('remember', 0);
         }
     }
 
+    protected function isOnetimePasswordMode()
+    {
+        return $this->auth_config->getAuthType() ===  waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD;
+    }
+
+    protected function _authByPassword($contact, $password)
+    {
+        $contact_password = isset($contact['password']) && is_scalar($contact['password']) ? $contact['password'] : '';
+        return strlen($contact_password) > 0 && waContact::getPasswordHash($password) === $contact_password;
+    }
+
+    protected function _authByOnetimePassword(waContact $contact, $login, $password)
+    {
+        if (!$this->isOnetimePasswordMode()) {
+            return false;
+        }
+        if (!$contact->exists()) {
+            return false;
+        }
+
+        $csm = new waContactSettingsModel();
+        $asset_id = $csm->getOne($contact->getId(), 'webasyst', 'onetime_password_id');
+        if (!$asset_id) {
+            return false;
+        }
+
+        if ($this->isValidEmail($login)) {
+            $priority = waVerificationChannelModel::TYPE_EMAIL;
+        } elseif ($this->isValidPhoneNumber($login)) {
+            $priority = waVerificationChannelModel::TYPE_SMS;
+        } else {
+            $priority = null;
+        }
+
+        $channels = $this->auth_config->getVerificationChannels($priority);
+        if (!$channels) {
+            return false;
+        }
+
+        $result = false;
+        foreach ($channels as $channel_id => $channel) {
+            $channel = waVerificationChannel::factory($channel);
+            $result = $channel->validateOnetimePassword($password, array(
+                'recipient' => $contact,
+                'asset_id' => $asset_id
+            ));
+            if ($result) {
+                break;
+            }
+        }
+
+        return $result;
+
+    }
+
+
+    /**
+     * @param $string
+     * @return bool
+     */
+    protected function isValidEmail($string)
+    {
+        if (!is_scalar($string)) {
+            return false;
+        }
+        $validator = new waEmailValidator();
+        return $validator->isValid((string)$string);
+    }
+
+    protected function isValidPhoneNumber($string)
+    {
+        if (!is_scalar($string)) {
+            return false;
+        }
+        $validator = new waPhoneNumberValidator();
+        return $validator->isValid((string)$string);
+    }
+
+
     /**
      * @return array|bool
-     * @throws waException
+     * @throws waAuthException
      */
     protected function _authByCookie()
     {
@@ -322,6 +679,58 @@ HTML;
     public function getOption($name)
     {
         return $this->options[$name];
+    }
+
+    /**
+     * @return array
+     */
+    public function getLoginFieldIds()
+    {
+        return $this->getOption('login_field_ids');
+    }
+
+    protected function initLoginFieldIds()
+    {
+        $this->options['login_field_ids'] = $this->auth_config->getLoginFieldIds();
+        /*
+        // backend case
+        if ($this->env === 'backend') {
+            $this->options['login_field_ids'] = array('login');
+            return;
+        }
+
+        $available = array_fill_keys($this->available_login_field_ids, true);
+
+        // option injection case
+        if ( isset($this->options['login_field_ids']) &&
+                (is_array($this->options['login_field_ids']) ||
+                    is_scalar($this->options['login_field_ids'])) ) {
+            $login_field_ids = (array)$this->options['login_field_ids'];
+            foreach ($login_field_ids as $index => $field_id) {
+                if (!isset($available[$field_id])) {
+                    unset($available[$index]);
+                }
+            }
+            if (!$login_field_ids) {
+                $login_field_ids = array('login');
+            }
+            $this->options['login_field_ids'] = $login_field_ids;
+            return;
+        }
+
+        // config injection case
+        $login_field_ids = array();
+
+        foreach (waDomainAuthConfig::factory()->getFields() as $field_id => $field) {
+            if (isset($available[$field_id]) && !empty($field['required'])) {
+                $login_field_ids[] = $field_id;
+            }
+        }
+        if (!$login_field_ids) {
+            $login_field_ids = array('login');
+        }
+        $this->options['login_field_ids'] = $login_field_ids;
+        return;*/
     }
 }
 

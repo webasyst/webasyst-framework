@@ -93,6 +93,190 @@ class waUtils
         return $values;
     }
 
+    /**
+     * @param array $array
+     * @param mixed $field
+     * @param string $type 'collect', 'first', 'last'
+     * @return array
+     */
+    public static function groupBy(array $array, $field, $type = 'collect')
+    {
+        $grouped = array();
+        foreach ($array as $k => $ar) {
+
+            if (is_scalar($ar)) {
+                continue;
+            }
+
+            // For objects we use isset(). For arrays we use array_key_exists().
+            $key_exists = isset($ar[$field]);
+            if (!$key_exists && is_array($ar)) {
+                $key_exists = array_key_exists($field, $ar);
+            }
+
+            if (!$key_exists) {
+                continue;
+            }
+
+            $value = $ar[$field];
+
+            if ($type === 'collect') {
+                $grouped[$value] = isset($grouped[$value]) ? $grouped[$value] : array();
+                $grouped[$value][$k] = $ar;
+            } elseif ($type === 'first' && !isset($grouped[$value])) {
+                $grouped[$value] = $ar;
+            } elseif ($type === 'last') {
+                $grouped[$value] = $ar;
+            }
+        }
+
+        return $grouped;
+    }
+
+    /**
+     * Re-order keys of input associative array by predefined order
+     *
+     * @param array $array that what you want re-order
+     * @param array $order predefined order
+     *
+     * That keys IN $array that aren't in $order will be saved in original order
+     * That values IN $orders that aren't keys in $array will be ignored
+     *
+     * Example
+     *
+     * $fruits = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
+     * $my_order = array('watermelon', 'pineapple', 'strawberry');
+     * $fruits = waUtils::orderKeys($fruits, $my_order);
+     * $fruits === array('watermelon' => 400, 'pineapple' => 300, 'apple' => 100, 'orange' => 200);
+     *
+     * @return array
+     */
+    public static function orderKeys(array $array, $order = array())
+    {
+        if (is_scalar($order)) {
+            $order = array($order);
+        }
+        $is_traversable = is_array($order) || $order instanceof Traversable;
+        if (!$is_traversable || empty($order)) {
+            return $array;
+        }
+
+        $array_keys = array_keys($array);
+
+        $weighted_array_keys = array_fill_keys($array_keys, -1);
+
+        $sort = 0;
+        foreach ($order as $field) {
+            if (isset($weighted_array_keys[$field])) {
+                $weighted_array_keys[$field] = $sort++;
+            }
+        }
+        foreach ($weighted_array_keys as $key => $value) {
+            if ($value === -1) {
+                $weighted_array_keys[$key] = $sort++;
+            }
+        }
+
+        asort($weighted_array_keys, SORT_NUMERIC);
+        $array_keys = array_keys($weighted_array_keys);
+
+        $result = array();
+        foreach ($array_keys as $key) {
+            $result[$key] = $array[$key];
+        }
+        return $result;
+    }
+
+    /**
+     * Extract from input associative array  only specified keys
+     * @param $array
+     * @param array $keys
+     * @param bool $skip Default True
+     * @param mixed $populate
+     *
+     * That values of $keys that aren't keys in $array will be
+     *  + skipped - If $skip === True (default value)
+     *  + not skipped - If $skip === False
+     *  + populate by $populate value if $skip === False
+     *
+     * Example with skipping
+     *
+     * $fruits = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
+     * $keys = array('orange', 'watermelon', 'strawberry');
+     * $fruits = waUtils::extractValuesByKeys($fruits, $keys);
+     * $fruits === array('orange' => 200, 'watermelon' => 400);
+     *
+     * Example with populate
+     *
+     * $fruits = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
+     * $keys = array('orange', 'watermelon', 'strawberry');
+     * $fruits = waUtils::extractValuesByKeys($fruits, $keys, false, 0);
+     * $fruits === array('orange' => 200, 'watermelon' => 400, 'strawberry' => 0);
+     *
+     * @return array
+     */
+    public static function extractValuesByKeys(array $array, $keys = array(), $skip = true, $populate = null)
+    {
+        $result = array();
+        foreach ($keys as $key) {
+            if (array_key_exists($key, $array)) {
+                $result[$key] = $array[$key];
+            } elseif (!$skip) {
+                $result[$key] = $populate;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Cast to array of integers
+     * @param mixed $val
+     * @return int[]
+     */
+    public static function toIntArray($val)
+    {
+        $callback = 'return is_scalar($i) ? intval($i) : 0;';
+        $callback = wa_lambda('$i', $callback);
+        if (!is_scalar($val) && !is_array($val)) {
+            $val = array();
+        }
+        return array_map($callback, (array)$val);
+    }
+
+    /**
+     * Cast to array of strings
+     * @param mixed $val
+     * @param bool $trim
+     * @return string[]
+     */
+    public static function toStrArray($val, $trim = true)
+    {
+        $callback = 'return is_scalar($s) ? strval($s) : "";';
+        if ($trim === true) {
+            $callback = 'return is_scalar($s) ? trim(strval($s)) : "";';
+        }
+        $callback = wa_lambda('$s', $callback);
+        if (!is_scalar($val) && !is_array($val)) {
+            $val = array();
+        }
+        return array_map($callback, (array)$val);
+    }
+
+    /**
+     * Drop all not positive values from input array
+     * @param array [int] $int_array
+     * @return array[int]
+     */
+    public static function dropNotPositive($int_array)
+    {
+        foreach ($int_array as $index => $int) {
+            if ($int <= 0) {
+                unset($int_array[$index]);
+            }
+        }
+        return $int_array;
+    }
+
     public static function jsonEncode($value, $options = 0, $depth = 512)
     {
         if (!$options) {
@@ -163,5 +347,22 @@ class waUtils
         }
 
         return $res;
+    }
+
+    /**
+     * Insert a value or key/value pair after a specific key in an array.
+     * If key doesn't exist, value is appended to the end of the array.
+     *
+     * @param array $array
+     * @param string $key
+     * @param array $new
+     * @return array
+     */
+    public static function arrayInsertAfter(array $array, $key, array $new)
+    {
+        $keys = array_keys($array);
+        $index = array_search($key, $keys);
+        $pos = false === $index ? count($array) : $index + 1;
+        return array_merge(array_slice($array, 0, $pos), $new, array_slice($array, $pos));
     }
 }

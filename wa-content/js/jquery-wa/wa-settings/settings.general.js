@@ -32,132 +32,10 @@ var WASettingsGeneral = ( function($) {
         $('#s-sidebar-wrapper').find('ul li').removeClass('selected');
         $('#s-sidebar-wrapper').find('[data-id="general"]').addClass('selected');
 
-        that.initChangeBackground();
-        //
-        that.initUploadCustomBackground();
-        //
-        that.initRemoveCustomBackground();
         //
         that.initClearCache();
         //
         that.initSubmit();
-    };
-
-    WASettingsGeneral.prototype.initChangeBackground = function() {
-        var that = this;
-
-        that.$backgrounds_wrapper.on('click', 'li > a', function () {
-            var $image = $(this),
-                value = $image.data('value');
-
-            that.$backgrounds_wrapper.find('.selected').removeClass('selected');
-            $image.parents('li').addClass('selected');
-            that.$background_input.val(value);
-            that.$form.trigger('input');
-
-            if (value.match(/^stock:/)) {
-                that.$wrapper.find('.js-stretch-checkbox').prop('disabled', true);
-            } else {
-                that.$wrapper.find('.js-stretch-checkbox').prop('disabled', null);
-            }
-
-            return false;
-        });
-    };
-
-    WASettingsGeneral.prototype.initUploadCustomBackground = function () {
-        var that = this;
-
-        that.$wrapper.on('change', '.js-background-upload', function (e) {
-            e.preventDefault();
-
-            if (!$(this).val()) {
-                return;
-            }
-
-            var href = "?module=settingsUploadCustomBackground",
-                image = new FormData();
-
-            image.append("image", $(this)[0].files[0]);
-
-            // Remove all custom image
-            // Preview in list
-            var old_value = that.$preview_wrapper.find('.js-custom-background-preview').data('value');
-            that.$backgrounds_wrapper.find('a[data-value="'+ old_value +'"]').parents('li').remove();
-            // Big preview
-            that.$preview_wrapper.html('');
-
-            that.$upload_preview_background_wrapper.find('.loading').show();
-
-            $.ajax({
-                url: href,
-                type: 'POST',
-                data: image,
-                cache: false,
-                contentType: false,
-                processData: false
-            }).done(function(res) {
-                var $preview_template = $(that.$wrapper.find('.js-preview-template').html()),
-                    $list_preview_template = that.$wrapper.find('.js-list-preview-template').clone();
-
-                // Set value in hidden field
-                that.$background_input.val(res.data.file_name);
-
-                // Set big preview
-                $preview_template.find('.js-custom-background-preview').attr('data-value', res.data.file_name);
-                $preview_template.find('.js-image-img').attr('src', res.data.img_path);
-                $preview_template.find('.js-image-width').text(res.data.width);
-                $preview_template.find('.js-image-height').text(res.data.height);
-                $preview_template.find('.js-image-size').text(res.data.file_size_formatted);
-                $preview_template.find('.stretch').removeAttr('style').find('.js-stretch-checkbox').removeAttr('disabled');
-
-                // Set preview in images list
-                $list_preview_template.find('a').attr('data-value', res.data.file_name);
-                $list_preview_template.find('img').attr('src', res.data.img_path).attr('alt', res.data.file_name);
-                $list_preview_template.removeClass('js-list-preview-template').removeAttr('style');
-
-                that.$backgrounds_wrapper.find('.selected').removeClass('selected');
-                that.$backgrounds_wrapper.append($list_preview_template);
-
-                that.$preview_wrapper.html($preview_template);
-
-                that.$upload_preview_background_wrapper.find('.loading').hide();
-            });
-            $(this).val('');
-        });
-    };
-
-    WASettingsGeneral.prototype.initRemoveCustomBackground = function () {
-        var that = this;
-
-        that.$wrapper.on('click', '.js-remove-custom-backgorund', function (e) {
-            var $dialog_text = that.$wrapper.find('.js-remove-text').clone(),
-                dialog_buttons = that.$wrapper.find('.js-remove-buttons').clone().html(),
-                value = $(this).parents('.js-custom-background-preview').data('value');
-
-            $dialog_text.show();
-            e.preventDefault();
-            // Show confirm dialog
-            $($dialog_text).waDialog({
-                'buttons': dialog_buttons,
-                'width': '500px',
-                'height': '65px',
-                'min-height': '65px',
-                onSubmit: function (d) {
-                    var href = '?module=settingsRemoveCustomBackground';
-
-                    $.get(href, function (res) {
-                        that.$backgrounds_wrapper.find('a[data-value="'+ value +'"]').parents('li').remove();
-                        that.$preview_wrapper.html('');
-                        that.$backgrounds_wrapper.find('a[data-value="stock:bokeh_vivid.jpg"]').click();
-                    });
-
-                    d.trigger('close'); // close dialog
-                    $('.dialog').remove(); // remove dialog
-                    return false;
-                }
-            });
-        });
     };
 
     WASettingsGeneral.prototype.initClearCache = function () {
@@ -210,6 +88,10 @@ var WASettingsGeneral = ( function($) {
                     that.$footer_actions.removeClass('is-changed');
                     // Update company name in header
                     var company_name = $.trim(that.$form.find('#config-name').val());
+                    $('#wa-account').find('.wa-dashboard-link h3').attr('title', company_name);
+                    if (company_name.length > 18) {
+                        company_name = company_name.substr(0, 15) +'...';
+                    }
                     $('#wa-account').find('.wa-dashboard-link h3').text(company_name);
                     setTimeout(function(){
                         that.$loading.hide();

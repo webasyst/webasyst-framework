@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsCaptchaSaveController extends waJsonController
+class webasystSettingsCaptchaSaveController extends webasystSettingsJsonController
 {
     public function execute()
     {

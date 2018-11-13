@@ -27,6 +27,9 @@ class webasystConfig extends waAppConfig
 
     public function onCount()
     {
+        wa('webasyst');
+        webasystHelper::backgroundClearCache();
+
         $n = array(
             //'settings' => 1,
         );

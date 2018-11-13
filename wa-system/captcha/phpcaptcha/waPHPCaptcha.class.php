@@ -25,43 +25,54 @@ class waPHPCaptcha extends waAbstractCaptcha
         'background' => array()
     );
 
+    protected $namespace;
+
+    public function __construct(array $options = array())
+    {
+        parent::__construct($options);
+        if (isset($options['namespace']) && is_scalar($options['namespace'])) {
+            $this->namespace = $options['namespace'];
+        }
+        unset($this->options['invisible']);
+    }
+
     public function getHtml($error = null, $absolute = false, $refresh = null)
     {
-        $captcha_url = wa()->getRootUrl($absolute, true).$this->getAppId().'/captcha.php?rid='.uniqid(time());
-        if ($refresh === null) {
-            $refresh = _ws("Refresh CAPTCHA");
+        $wrapper_class = ifempty($this->options, 'wrapper_class', 'wa-captcha');
+
+        $app_id = $this->getAppId();
+        $root_url = wa()->getRootUrl($absolute, true);
+        if ($app_id == 'webasyst') {
+            $app_id = '';
+            $root_url = rtrim($root_url, '/');
         }
+        $captcha_url = $root_url . $app_id . '/captcha.php?rid=' .uniqid(time());
 
-        $class = $error ? ' wa-error': '';
+        $input_name = $this->namespace ? "{$this->namespace}[captcha]" : 'captcha';
+        $refresh = ($refresh === null) ? _ws("Refresh CAPTCHA") : $refresh;
+        $error_class = $error ? ' wa-error': '';
 
-        return <<<HTML
-<div class="wa-captcha">
-    <p>
-        <img class="wa-captcha-img" src="{$captcha_url}" alt="CAPTCHA" title="{$refresh}">
-        <strong>&rarr;</strong>
-        <input type="text" name="captcha" class="wa-captcha-input{$class}" autocomplete="off">
-    </p>
-    <p>
-        <a href="#" class="wa-captcha-refresh">{$refresh}</a>
-    </p>
-    <script type="text/javascript">
-    $(function() {
-        $('div.wa-captcha .wa-captcha-refresh, div.wa-captcha .wa-captcha-img').click(function(){
-            var div = $(this).parents('div.wa-captcha');
-            var captcha = div.find('.wa-captcha-img');
-            if(captcha.length) {
-                captcha.attr('src', captcha.attr('src').replace(/\?.*$/,'?rid='+Math.random()));
-                captcha.one('load', function() {
-                    div.find('.wa-captcha-input').focus();
-                });
-            };
-            div.find('input').val('');
-            return false;
-        });
-    });
-    </script>
-</div>
-HTML;
+        $view = wa('webasyst')->getView();
+        $view->assign(array(
+            'wrapper_class' => $wrapper_class,
+            'captcha_url'   => $captcha_url,
+            'input_name'    => $input_name,
+            'refresh'       => $refresh,
+            'error_class'   => $error_class,
+        ));
+
+        $captcha_version = ifempty($this->options, 'version', null);
+        $template_dir_path = wa()->getConfig()->getRootPath() .'/wa-system/captcha/phpcaptcha/templates/';
+        $template = $template_dir_path .'captcha.html';
+
+        if ($captcha_version) {
+            $captcha_template = $template_dir_path. 'captcha'.$captcha_version.'.html';
+            if (file_exists($captcha_template)) {
+                $template = $captcha_template;
+            }
+        }
+        
+        return $view->fetch($template);
     }
 
     /**
@@ -72,7 +83,12 @@ HTML;
     public function isValid($code = null, &$error = '')
     {
         if ($code == null) {
-            $code = waRequest::post('captcha');
+            if ($this->namespace) {
+                $post = wa()->getRequest()->post($this->namespace);
+                $code = ifset($post['captcha']);
+            } else {
+                $code = wa()->getRequest()->post('captcha');
+            }
         }
         $code = strtolower(trim($code));
         $captcha = wa()->getStorage()->get('captcha');

@@ -107,4 +107,18 @@ class waAppSettingsModel extends waModel
         $cache =  new waVarExportCache('app_settings/'.$app_id, SystemConfig::isDebug() ? 600 : 86400, 'webasyst');
         $cache->delete();
     }
+
+    public function describe($table = null, $keys = false)
+    {
+        try {
+            return parent::describe($table, $keys);
+        } catch (waDbException $e) {
+            if ($e->getCode() == 1146) {
+                // Framework not installed?.. Initialize app to create all tables.
+                wa('webasyst');
+                return parent::describe($table, $keys);
+            }
+            throw $e;
+        }
+    }
 }

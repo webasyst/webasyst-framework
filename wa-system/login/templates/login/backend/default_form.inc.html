@@ -1,0 +1,37 @@
+<div class="wa-login-default-form">
+    <form action="" method="post">
+
+        {foreach $fields|default:[] as $field_id => $params}
+            {$renderer->renderField($field_id, $params)}
+        {/foreach}
+
+        {$renderer->renderCaptcha()}
+
+        {$renderer->renderRememberMe()}
+
+        <div class="field wa-buttons">
+            <div class="value wa-submit">
+
+                {$renderer->renderMessages()}
+
+                {$renderer->renderUncaughtErrors()}
+
+                <input type="hidden" name="wa_auth_login" value="1">
+
+                <input type="submit" value="[s`Sign In`]" class="button wa-login-submit">
+                {if !empty($is_api_oauth)}
+                    [s`or`]
+                    <a href="javascript:void(0);" class="wa-login-cancel gray underline">[s`cancel`]</a>
+                {/if}
+                <i class="icon16 loading wa-loading" style="display: none;"></i>
+
+                {if $forgotpassword_url && empty($is_api_oauth)}
+                    <a href="{$forgotpassword_url}" class="wa-forgotpassword underline" data-type="forgotpassword">[s`Forgot password?`]</a>
+                {/if}
+            </div>
+        </div>
+
+        {$renderer->renderCsrf()}
+
+    </form>
+</div>

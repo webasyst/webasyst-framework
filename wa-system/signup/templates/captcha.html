@@ -1,0 +1,8 @@
+<div class="{if !$is_invisible}wa-field {/if}wa-captcha-field" data-type="{$real_class}">
+    {if !$is_invisible}
+        <div class="wa-name">[s`Spam protection`] *</div>
+    {/if}
+    <div class="wa-value">
+        {$object->getHtml($errors, true)}
+    </div>
+</div>

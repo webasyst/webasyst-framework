@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsClearCacheController extends waJsonController
+class webasystSettingsClearCacheController extends webasystSettingsJsonController
 {
     public function execute()
     {

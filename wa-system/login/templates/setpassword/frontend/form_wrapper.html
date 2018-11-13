@@ -1,0 +1,159 @@
+{$include_js = $include_js|default:false}
+{$include_css = $include_css|default:false}
+
+{* If you need to load css, but don't need js, we will load css here. If js also need to be loaded, then we will do it asynchronously below. *}
+{if $include_css && !$include_js}
+    <link href="{$wa_url}wa-content/css/login/frontend/set-password.css?v={$wa->version()}" rel="stylesheet" type="text/css"/>
+{/if}
+
+{$class_id = 'wa-set-password-form-wrapper'}
+{$wrapper_id = uniqid($class_id)}
+
+<div class="{$class_id}" id="{$wrapper_id}">
+
+    {$html}
+
+</div>
+
+{if $include_js}
+
+    {$_locale = [
+        'password_required' => '[s`Password can not be empty.`]',
+        'not_match' => '[s`Passwords do not match`]',
+        'captcha_required' => '[s`Captcha is required`]'
+    ]}
+
+    {* Resources *}
+    {$_resources = [
+        [
+            'id'   => "wa-content-setpassword-frontend-form-js",
+            'type' => "js",
+            'uri'  => "`$wa_url`wa-content/js/login/setpassword-frontend-form.min.js?v=`$wa->version()`"
+        ]
+    ]}
+
+
+    {if $include_css}
+
+        {$_resources[] = [
+            'id'   => "wa-content-setpassword-frontend-form-css",
+            'type' => "css",
+            'uri'  => "`$wa_url`wa-content/css/login/frontend/set-password.css?v=`$wa->version()`"
+        ]}
+
+    {/if}
+
+    <script>
+        ( function($) { "use strict";
+            load({$_resources|json_encode}).then(init);
+
+            function load(sources) {
+                var deferred = $.Deferred();
+
+                loader(sources).then( function() {
+                    deferred.resolve();
+                });
+
+                return deferred.promise();
+
+                function loader(sources) {
+                    var deferred = $.Deferred(),
+                        counter = sources.length;
+
+                    $.each(sources, function(i, source) {
+                        switch (source.type) {
+                            case "css":
+                                loadCSS(source);
+                                break;
+                            case "js":
+                                loadJS(source);
+                                break;
+                        }
+                    });
+
+                    return deferred.promise();
+
+                    //
+
+                    function loadCSS(source) {
+                        var $link = $("#" + source.id);
+                        if ($link.length) {
+                            $link.data("promise").then(onLoad);
+
+                        } else {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise();
+
+                            $link = $("<link />", {
+                                id: source.id,
+                                rel: "stylesheet"
+                            }).appendTo("head")
+                                .data("promise", promise);
+
+                            $link.on("load", function() {
+                                onLoad();
+                                deferred.resolve();
+                            });
+
+                            $link.attr("href", source.uri);
+                        }
+
+                        function onLoad() {
+                            counter -= 1;
+                            watcher();
+                        }
+                    }
+
+                    function loadJS(source) {
+                        var $script = $("#" + source.id);
+                        if ($script.length) {
+                            $script.data("promise").then(onLoad);
+
+                        } else {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise(),
+                                script = document.createElement("script");
+
+                            $script = $(script)
+                                .attr("id", source.id)
+                                .appendTo("head")
+                                .data("promise", promise);
+
+                            $script.on("load", function () {
+                                onLoad();
+                                deferred.resolve();
+                            });
+
+                            $script.attr("src", source.uri);
+                        }
+
+                        function onLoad() {
+                            counter -= 1;
+                            watcher();
+                        }
+                    }
+
+                    function watcher() {
+                        if (counter === 0) {
+                            deferred.resolve();
+                        }
+                    }
+                }
+            }
+
+            function init() {
+                new WaFrontendSetPassword({
+                    $wrapper: $("#{$wrapper_id}"),
+                    namespace: {$namespace|json_encode},
+                    errors: {$errors|json_encode},
+                    messages: {$messages|json_encode},
+                    locale: {$_locale|json_encode},
+                    is_json_mode: {$is_json_mode|default:false|json_encode},
+                    need_redirects: {$need_redirects|default:false|json_encode},
+                    hash: {$hash|default:''|json_encode}
+                });
+            }
+
+        })(jQuery);
+    </script>
+{/if}

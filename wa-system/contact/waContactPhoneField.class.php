@@ -22,6 +22,28 @@ class waContactPhoneField extends waContactStringField
         $this->options['formats']['value'] = new waContactPhoneFormatter();
         $this->options['formats']['html'] = new waContactPhoneTopFormatter();
         $this->options['formats']['top'] = new waContactPhoneTopFormatter();
+        if (!isset($this->options['validators'])) {
+            $this->options['validators'] = new waPhoneNumberValidator($this->options, array('required' => _ws('This field is required')));
+        }
+    }
+
+    public static function cleanPhoneNumber($value)
+    {
+        $value = is_scalar($value) ? (string)$value : '';
+        $value = trim($value);
+        if (strlen($value) > 0) {
+            $value = str_replace(str_split('+-()'), '', $value);
+            $value = preg_replace('/(\d)\s+(\d)/i', '$1$2', $value);
+        }
+        return $value;
+    }
+
+    public static function isPhoneEquals($phone1, $phone2)
+    {
+        if (!is_scalar($phone1) || !is_scalar($phone2)) {
+            return false;
+        }
+        return self::cleanPhoneNumber($phone1) === self::cleanPhoneNumber($phone2);
     }
 
     protected function setValue($value)
@@ -79,6 +101,50 @@ class waContactPhoneField extends waContactStringField
         }
         return $data;
     }
+
+
+    public function validate($data, $contact_id=null)
+    {
+        $errors = parent::validate($data, $contact_id);
+        if ($errors) {
+            return $errors;
+        }
+
+        // Validation for phones being unique is (temporary?..) disabled.
+        return $errors;
+
+        $data_model = new waContactDataModel();
+        $contact_model = new waContactModel();
+        if ($this->isMulti()) {
+            if (!empty($data[0]) && $contact_id) {
+                $c = $contact_model->getById($contact_id);
+                if (!$c['password']) {
+                    return $errors;
+                }
+                $value = $this->format($data[0], 'value');
+                $id = $data_model->getContactIdByPhone($value);
+                if ($id && $id != $contact_id) {
+                    $errors[0] = sprintf(_ws('User with the same %s is already registered'), 'phone');
+                }
+            }
+        } else {
+            $value = $this->format($data, 'value');
+            if ($value) {
+                if ($contact_id) {
+                    $c = $contact_model->getById($contact_id);
+                    if (!$c['password']) {
+                        return $errors;
+                    }
+                }
+                $id = $data_model->getContactIdByPhone($value);
+                if ($id && $id != $contact_id) {
+                    $errors = sprintf(_ws('User with the same %s is already registered'), 'phone');
+                }
+            }
+        }
+        return $errors;
+    }
+
 }
 
 class waContactPhoneFormatter extends waContactFieldFormatter

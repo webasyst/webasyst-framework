@@ -1,0 +1,51 @@
+<form action="{$url}" method="post">
+
+    {if !empty($show_title)}
+        <h1 class="wa-signup-form-title">[s`Sign up`]</h1>
+    {/if}
+
+    {if !empty($show_oauth_adapters)}
+        {include file="./oauth_adapters.html" inline}
+    {/if}
+
+    <section class="wa-signup-form-fields js-signup-form-fields">
+        {foreach $auth_config.fields|default:[] as $field_id => $params}
+            {$renderer->renderField($field_id, $params)}
+        {/foreach}
+
+        {$renderer->renderCaptcha()}
+
+        {$renderer->renderServiceAgreement()}
+    </section>
+
+    <section class="wa-signup-form-actions js-signup-form-actions">
+        <div class="wa-uncaught-errors" style="display: none;"></div>
+
+        <div class="wa-buttons-wrapper">
+            {$_button_caption = $auth_config.params.button_caption|default:_w('Sign Up')}
+            {$_button_caption = $_button_caption|escape}
+            <input type="submit" value="{$_button_caption}">
+            <i class="icon16 loading wa-loading" style="display: none;"></i>
+        </div>
+
+        {if $is_onetime_password_auth_type}
+            <div class="wa-done-signup-buttons-wrapper">
+                <button class="wa-done-signup-button">[`Done`]</button>
+                <i class="wa-confirm-signup-button-icon icon16 loading" style="display: none;"></i>
+            </div>
+        {/if}
+
+        <div class="wa-login-url">
+            [s`Already registered?`] <a href="{$login_url}" data-type="login">[s`Log in`]</a>
+        </div>
+    </section>
+
+    {if $is_need_confirm}
+        {include file="./confirmation_block.inc.html" inline}
+    {/if}
+
+    {if $is_onetime_password_auth_type}
+        {include file="./onetime_password_field.inc.html" inline}
+    {/if}
+
+</form>

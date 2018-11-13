@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsFieldDeleteController extends waJsonController
+class webasystSettingsFieldDeleteController extends webasystSettingsJsonController
 {
     public function execute()
     {

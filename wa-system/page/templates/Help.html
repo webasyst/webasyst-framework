@@ -4,7 +4,11 @@
 
 <ul class="tabs">
     {if !empty($app_id) && !empty($apps_info[$app_id])}
-        <li class="no-tab"><img src="{$wa_url}{$apps_info[$app_id]['icon'].24}" alt="">
+        {$_icon_24 = $apps_info[$app_id]['icon'].24|default:''}
+        <li class="no-tab">
+            {if $_icon_24}
+                <img src="{$wa_url}{$apps_info[$app_id]['icon'].24}" alt="">
+            {/if}
             <p class="bold">{$page|escape}</p>
             <p>
                 <span class="hint">{$apps_info[$app_id]['name']|escape}</span>
@@ -158,7 +162,7 @@
     // Start delete.
 
     $(".wa-dropdown").addClass('wa-cheatsheet-dropdown');
-    $(".wa-dropdown-block").addClass('wa-cheatsheet-dropdown-block')
+    $(".wa-dropdown-block").addClass('wa-cheatsheet-dropdown-block');
 
     $("#wa-editor-help ul.tabs li a").click(function () {
         $("#wa-editor-help ul.tabs li.selected").removeClass('selected');

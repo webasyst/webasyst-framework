@@ -9,7 +9,7 @@
             (function () {
                 "use strict";
                 var cheat_sheet_name = {$cheat_sheet_name|json_encode};
-                $.cheatsheet = $.cheatsheet || {};
+                $.cheatsheet = $.cheatsheet || { };
                 $.cheatsheet[cheat_sheet_name] = {
                     data: {$data|json_encode},
                     init: function () {
@@ -38,7 +38,6 @@
                     },
                     insertVarEvent: function () {
                         $("#wa-editor-help-" + cheat_sheet_name).on('click', "div.fields a.inline-link", function () {
-                            var el = $(this).find('i');
                             var el = $(this).find('i');
                             if (el.children('b').length) {
                                 el = el.children('b');
@@ -74,7 +73,7 @@
                             }
                             return false;
                         });
-                    },
+                    }
                 };
                 $(document).trigger('wa_cheatsheet_init.' + cheat_sheet_name);
                 $.cheatsheet[cheat_sheet_name].init()

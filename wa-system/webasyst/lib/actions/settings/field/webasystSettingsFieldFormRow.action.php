@@ -1,6 +1,6 @@
 <?php
 
-class webasystSettingsFieldFormRowAction extends waViewAction
+class webasystSettingsFieldFormRowAction extends webasystSettingsViewAction
 {
     public function execute()
     {

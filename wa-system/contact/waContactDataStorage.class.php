@@ -128,9 +128,11 @@ class waContactDataStorage extends waContactStorage
                         if (is_array($value_info)) {
                             $v = $value_info['value'];
                             $ext = isset($value_info['ext']) ? $value_info['ext'] : '';
+                            $status = isset($value_info['status']) ? $value_info['status'] : null;
                         } else {
                             $v = $value_info;
                             $ext = '';
+                            $status = null;
                         }
                         if (!strlen($v)) {
                             $sql = "DELETE FROM ".$this->getModel()->getTableName()."
@@ -141,7 +143,8 @@ class waContactDataStorage extends waContactStorage
                         }
                         $data[$field][$sort] = array(
                             'value' => $v,
-                            'ext' => $ext
+                            'ext' => $ext,
+                            'status' => $status
                         );
                     }
                     $sort++;
@@ -176,6 +179,7 @@ class waContactDataStorage extends waContactStorage
                 'contact_id' => $contact->getId(),
                 'field' => array_keys($data)
             ), true);
+
             foreach ($rows as $row) {
                 if (isset($data[$row['field']][$row['sort']])) {
                     $this->getModel()->updateById($row['id'], $data[$row['field']][$row['sort']]);
@@ -185,15 +189,23 @@ class waContactDataStorage extends waContactStorage
             $insert = array();
             foreach ($data as $f => $f_rows) {
                 foreach ($f_rows as $s => $row) {
-                    $insert[] = $contact->getId().
-                        ", '".$this->getModel()->escape($f)."', '".
-                        $this->getModel()->escape($row['ext'])."', '".
-                        $this->getModel()->escape($row['value'])."', ".(int)$s;
+                    $insert_row = array(
+                        $contact->getId(),
+                        "'" . $this->getModel()->escape($f) . "'",
+                        "'" . $this->getModel()->escape($row['ext']) . "'" ,
+                        "'" . $this->getModel()->escape($row['value']) . "'",
+                        (int)$s,
+                        isset($row['status']) ?
+                            ("'" . $this->getModel()->escape($row['status']) . "'")
+                            : 'NULL'
+                    );
+                    $insert_row = join(", ", $insert_row);
+                    $insert[] = $insert_row;
                 }
             }
             // insert new records
             if ($insert) {
-                $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, field, ext, value, sort)
+                $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, field, ext, value, sort, status)
                         VALUES (".implode("), (", $insert).")";
                 return $this->getModel()->exec($sql);
             }
@@ -301,5 +313,3 @@ class waContactDataStorage extends waContactStorage
         return $r->fetchAll('value', true);
     }
 }
-
-// EOF

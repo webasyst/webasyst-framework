@@ -33,12 +33,12 @@ class vkontakteAuth extends waOAuth2Adapter
         $response = $this->get($url, $status);
         if (!$response) {
             waLog::log($this->getId(). ':'. $status. ': '."Can't get access token from VK", 'auth.log');
-            throw new waException("Can't get access token from VK", $status ? $status : 500);
+            throw new waAuthException("Can't get access token from VK", $status ? $status : 500);
         }
         $response = json_decode($response, true);
         if (isset($response['error']) && !isset($response['access_token'])) {
             waLog::log($this->getId(). ':'. $status. ': '.$response['error']." (".$response['error_description'].')', 'auth.log');
-            throw new waException($response['error']." (".$response['error_description'].')', $status ? $status : 500);
+            throw new waAuthException($response['error']." (".$response['error_description'].')', $status ? $status : 500);
         }
         return $response;
     }
@@ -50,7 +50,7 @@ class vkontakteAuth extends waOAuth2Adapter
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
                 waLog::log($this->getId(). ':'. $status. ': Error '.$response['error']['error_code']." (".$response['error']['error_msg'].')', 'auth.log');
-                throw new waException($response['error']['error_msg'], $response['error']['error_code']);
+                throw new waAuthException($response['error']['error_msg'], $response['error']['error_code']);
             }
             $response = ifset($response['response'][0]);
             if ($response) {
@@ -83,7 +83,7 @@ class vkontakteAuth extends waOAuth2Adapter
             }
         }
         waLog::log($this->getId(). ':'. $status. ': '."Can't get user info from VK API", 'auth.log');
-        throw new waException("Can't get user info from VK API", $status ? $status : 500);
+        throw new waAuthException("Can't get user info from VK API", $status ? $status : 500);
     }
 
     public function getName()

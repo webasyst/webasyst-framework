@@ -177,6 +177,43 @@ class waSystem
     }
 
     /**
+     * @param null|waDomainAuthConfig|string $domain_config
+     * @param array $options
+     * @return waSignupForm
+     */
+    public function getSignupForm($domain_config = null, $options = array())
+    {
+        return $this->getFactory('signup_form', 'waSignupForm', $options, $domain_config);
+    }
+
+    /**
+     * @param array $options
+     * @return waFrontendLoginForm
+     */
+    public function getLoginForm($options = array())
+    {
+        return $this->getFactory('login_form', 'waFrontendLoginForm', $options);
+    }
+
+    /**
+     * @param array $options
+     * @return waFrontendForgotPasswordForm
+     */
+    public function getForgotPasswordForm($options = array())
+    {
+        return $this->getFactory('forgotpassword_form', 'waFrontendForgotPasswordForm', $options);
+    }
+
+    /**
+     * @param array $options
+     * @return waFrontendSetPasswordForm
+     */
+    public function getSetPasswordForm($options = array())
+    {
+        return $this->getFactory('setpassword_form', 'waFrontendSetPasswordForm', $options);
+    }
+
+    /**
      * Returns instance of class used for routing managing (waRouting).
      *
      * @return waRouting
@@ -393,8 +430,11 @@ class waSystem
 
     public function getAuthAdapters($domain = null)
     {
-        $config = $this->getAuthConfig($domain);
         $result = array();
+        $config = $this->getAuthConfig($domain);
+        if (!isset($config['used_auth_methods']) || !in_array('social', $config['used_auth_methods'])) {
+            return $result;
+        }
         if (!empty($config['adapters'])) {
             foreach ($config['adapters'] as $provider => $params) {
                 if ($params) {
@@ -415,6 +455,11 @@ class waSystem
             return array();
         }
         return $config[$domain];
+    }
+
+    public function getBackendAuthConfig()
+    {
+        return $this->getConfig()->getBackendAuth();
     }
 
 

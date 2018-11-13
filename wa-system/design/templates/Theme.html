@@ -39,7 +39,7 @@
 
                 {* A link that allows you to open all group settings in search mode *}
                 {if $_not_empty_global_divider}
-                    <span class="hint wa-theme-group-all-settings js-group-all-settings" style="display: none;">[s`Показать все настройки группы`] <i class="icon10 darr"></i></span>
+                    <span class="hint wa-theme-group-all-settings js-group-all-settings" style="display: none;">[s`Show all group’s settings`] <i class="icon10 darr"></i></span>
                 {/if}
 
                 {* Group divider settings *}
@@ -138,7 +138,7 @@
                             {$_url = $theme->getUrl()}
                         {/if}
                         <div class="image"><br>
-                            <img src="{$_url}{$_setting.value}">
+                            <img class="transparent-sprite" src="{$_url}{$_setting.value}">
                             <br>
                             <a class="small delete-image" href="#">[s`Delete`]</a>
                         </div>
@@ -220,7 +220,7 @@
                     {* Update is not available *}
                     {if !empty($theme.parent_theme) && !empty($theme.parent_theme->getWarningRequirements())}
                         <div class="block double-padded wa-theme-actions wa-theme-warning">
-                            <strong>[s`Обновление недоступно.`]</strong>
+                            <strong>[s`Update not available.`]</strong>
                             <ul class="menu-v">
                                 {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
                                     <li>
@@ -246,7 +246,7 @@
                 {* Update is not available *}
                 {if !empty($theme_warning_requirements)}
                     <div class="block double-padded wa-theme-actions wa-theme-warning">
-                        <strong>[s`Обновление недоступно.`]</strong>
+                        <strong>[s`Update not available.`]</strong>
                         <ul class="menu-v">
                             {foreach $theme_warning_requirements as $requirement}
                                 <li>
@@ -303,7 +303,7 @@
                 <li class="gray">
                     <i class="icon16 link"></i>[s`Parent theme`]:<br>
                     <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong>.
-                    <a class="theme-parent inline-link" href="javascript:void(0);"><b><i>{if $theme.parent_theme_id}[s`Change`]{else}[s`Select`]{/if}</i></b></a>
+                    <a class="theme-parent inline-link" href="javascript:void(0);"><b><i>{if $theme.parent_theme_id}[s`Change theme`]{else}[s`Select`]{/if}</i></b></a>
                     <div class="hint">[s`You can change the theme in settlement settings.`]</div>
                 </li>
                 {if empty($theme_warning_requirements) && empty($theme_original_warning_requirements)}
@@ -587,5 +587,5 @@
     <div class="icon-wrapper">
         <div class="icon-to-top"></div>
     </div>
-    [s`Наверх`]
+    [s`Scroll up`]
 </div>

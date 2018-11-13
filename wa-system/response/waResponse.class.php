@@ -205,19 +205,24 @@ class waResponse
         foreach ($this->headers as $name => $value) {
             if (is_array($value)) {
                 foreach ($value as $var) {
-                    header($name.': '.$var, false);
+                    $this->header($name.': '.$var, false);
                 }
             } else {
-                header($name.': '.$value);
+                $this->header($name.': '.$value);
             }
         }
 
         // Added after all that was not erased
         if ($this->status !== null) {
-            header(waRequest::server('SERVER_PROTOCOL', 'HTTP/1.0').' '.$this->status.' '.self::$statuses[$this->status]);
+            $this->header(waRequest::server('SERVER_PROTOCOL', 'HTTP/1.0').' '.$this->status.' '.self::$statuses[$this->status]);
         }
 
         return $this;
+    }
+
+    protected function header($string, $replace = true, $http_response_code = null)
+    {
+        header($string, $replace, $http_response_code);
     }
 
     /**

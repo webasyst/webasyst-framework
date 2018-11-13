@@ -58,8 +58,8 @@
     {* Account name *}
     <div id="wa-account">
         {if $reuqest_uri == $backend_url || $reuqest_uri == "`$backend_url`/"}
-            <h3>
-                {$company_name}
+            <h3 title="{$company_name}">
+                {$company_name|truncate:18:'...'}
                 <a href="{$company_url}" class="wa-frontend-link" target="_blank">
                     <i class="icon16 new-window"></i>
                 </a>
@@ -68,7 +68,7 @@
             <input id="close-dashboard-editable-mode" type="button" value="[s`Done editing`]" style="display: none;">
         {else}
             <a href="{$backend_url}" class="wa-dashboard-link">
-                <h3>{$company_name}</h3>
+                <h3 title="{$company_name}">{$company_name|truncate:18:'...'}</h3>
                 <span class="gray">{$date}</span>
             </a>
         {/if}

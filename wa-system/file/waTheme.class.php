@@ -1016,7 +1016,7 @@ XML;
             if (!empty($files)) {
                 $report[] = array(
                     'level'   => 'warning',
-                    'message' => sprintf(_w('Missed theme file(s): %s'), implode(', ', $files)),
+                    'message' => sprintf(_ws('Missing theme files: %s.'), implode(', ', $files)),
                 );
             }
         }
@@ -2103,14 +2103,14 @@ HTACCESS;
         if (preg_match('@^/?([a-z_0-9]+)/themes/([a-zA-Z_0-9\-]+)/?$@', $slug, $matches)) {
             return new self($matches[2], $matches[1]);
         } else {
-            throw new waException(_w('Invalid theme slug').$slug);
+            throw new waException(_ws('Invalid theme slug').$slug);
         }
     }
 
     public function check()
     {
         if (!$this->path) {
-            throw new waException(sprintf(_w("Theme %s not found"), $this->id));
+            throw new waException(sprintf(_ws("Theme %s not found"), $this->id));
         }
         if (!file_exists($this->path) || !file_exists($this->path.'/'.self::PATH)) {
             self::throwThemeException('MISSING_THEME_XML', $this->id);
@@ -2126,7 +2126,7 @@ HTACCESS;
     {
         if ($this->type == self::OVERRIDDEN) {
             if (empty($this->path_original)) {
-                self::throwThemeException('ORIGINAL_THEME_NOT_FOUND', _w('Brush custom theme not available'));
+                self::throwThemeException('ORIGINAL_THEME_NOT_FOUND', _ws('Brush custom theme not available'));
             }
 
             waFiles::delete($this->path_custom, false);
@@ -2363,7 +2363,7 @@ HTACCESS;
                             }
                         }
                     } else {
-                        $message = sprintf(_w('Theme “%s” is for app “%s”, which is not installed in your Webasyst. Install the app, and upload theme once again.'), $id, $app_id);
+                        $message = sprintf(_ws('Theme “%s” is for %s app, which is not installed in your Webasyst. Install the app and upload the theme once again.'), $id, $app_id);
                         throw new waException($message);
                     }
                 }
@@ -2463,8 +2463,8 @@ HTACCESS;
 
     private static function throwThemeException($code, $details = '')
     {
-        $link = sprintf(_w('http://www.webasyst.com/framework/docs/site/themes/#%s'), $code);
-        $message = _w('Invalid theme archive structure (%s). <a href="%s" target="_blank">See help</a> for details');
+        $link = sprintf(_ws('http://www.webasyst.com/framework/docs/site/themes/#%s'), $code);
+        $message = _ws('Invalid theme archive structure (%s). <a href="%s" target="_blank">See help</a> for details.');
         if (!empty($details)) {
             $details = " ({$details})";
         }
@@ -2478,8 +2478,8 @@ HTACCESS;
      */
     private static function throwArchiveException($code, $details = '')
     {
-        $link = sprintf(_w('http://www.webasyst.com/framework/docs/site/themes/#%s'), $code);
-        throw new waException(sprintf(_w('Failed to extract files from theme archive (%s). <a href="%s" target="_blank">See help</a> for details'), $code, $link));
+        $link = sprintf(_ws('http://www.webasyst.com/framework/docs/site/themes/#%s'), $code);
+        throw new waException(sprintf(_ws('Failed to extract files from theme archive (%s). <a href="%s" target="_blank">See help</a> for details.'), $code, $link));
     }
 
     /**

@@ -4,6 +4,11 @@ class waContactDataModel extends waModel
 {
     protected $table = "wa_contact_data";
 
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_UNCONFIRMED = 'unconfirmed';
+    const STATUS_UNAVAILABLE = 'unavailable';
+    const STATUS_UNKNOWN = NULL;
+
 
     /**
      * @param array|int $ids
@@ -149,6 +154,45 @@ class waContactDataModel extends waModel
                 ORDER BY n DESC
                 LIMIT i:limit";
         return $this->query($sql, array('field' => $field, 'limit'=> $limit))->fetchAll('value', true);
+    }
+
+    public function getContactIdByPhone($phone)
+    {
+        $phone = waContactPhoneField::cleanPhoneNumber($phone);
+        if (strlen($phone) <= 0) {
+            return false;
+        }
+        return $this->getContactIdByFieldValue('phone', $phone);
+    }
+
+    public function updateContactPhoneStatus($contact_id, $phone, $status)
+    {
+        $this->updateByField(array(
+            'contact_id' => $contact_id,
+            'field' => 'phone',
+            'value' => $phone
+        ), array(
+            'status' => $status
+        ));
+    }
+
+    public function getContactPhone($contact_id, $sort = 0)
+    {
+        return $this->getByField(array(
+            'contact_id' => $contact_id,
+            'field' => 'phone',
+            'sort' => $sort
+        ));
+    }
+
+    protected function getContactIdByFieldValue($field_id, $value)
+    {
+        $sql = "SELECT contact_id FROM ".$this->table."
+                WHERE
+                    `field` = :field_id AND
+                    `value` LIKE ('".$this->escape($value, 'like')."')
+                ORDER BY sort LIMIT 1";
+        return $this->query($sql, array('field_id' => $field_id))->fetchField();
     }
 }
 

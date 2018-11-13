@@ -351,6 +351,11 @@ class waAppConfig extends SystemConfig
             $cache_database_dir = $this->getPath('cache').'/db';
             foreach ($files as $t => $file) {
                 try {
+
+                    if (self::isDebug()) {
+                        waLog::dump(sprintf('Try include file %s by app %s', $file, $this->application), 'meta_update.log');
+                    }
+
                     $this->includeUpdate($file);
                     waFiles::delete($cache_database_dir);
                     $app_settings_model->set($this->application, 'update_time', $t);

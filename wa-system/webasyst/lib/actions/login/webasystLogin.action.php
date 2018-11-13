@@ -1,21 +1,15 @@
 <?php
 
-class webasystLoginAction extends waLoginAction
+class webasystLoginAction extends waBackendLoginAction
 {
-
     public function execute()
     {
-        $this->view->assign('title', $this->getTitle());
-        $this->view->assign('title_style', $this->getTitleStyle());
+        $this->assign('title', $this->getTitle());
+        $this->assign('title_style', $this->getTitleStyle());
 
         $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
         if ($this->template === null) {
-            if (waRequest::isMobile()) {
-                $this->setLayout(null);
-                $this->template = 'LoginMobile.html';
-            } else {
-                $this->template = 'Login.html';
-            }
+            $this->template = 'Login.html';
             $template_file = wa()->getDataPath('templates/'.$this->template, false, 'webasyst');
             if (file_exists($template_file)) {
                 $this->template = 'file:'.$template_file;
@@ -23,12 +17,14 @@ class webasystLoginAction extends waLoginAction
                 $this->template = wa()->getAppPath('templates/actions/login/', 'webasyst') . $this->template;
             }
         }
-        $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
+
+
         $this->view->assign(array(
-            'login'     => waRequest::post('login', $this->getStorage()->read('auth_login')),
-            'auth_type' => ($request_url === 'api.php/auth') ? 'oauth' : 'login',
+            'login' => waRequest::post('login', $this->getStorage()->read('auth_login'))
         ));
+
         parent::execute();
+
         if ($this->layout) {
             $this->layout->assign('error', $this->view->getVars('error'));
         }
@@ -39,16 +35,7 @@ class webasystLoginAction extends waLoginAction
         } else if (!$ref) {
             $this->getStorage()->remove('login_back_on_cancel');
         }
-        $this->view->assign('back_on_cancel', wa()->getStorage()->read('login_back_on_cancel'));
-    }
-
-    protected function saveReferer()
-    {
-
-    }
-
-    protected function checkAuthConfig()
-    {
+        $this->assign('back_on_cancel', wa()->getStorage()->read('login_back_on_cancel'));
 
     }
 
@@ -80,6 +67,18 @@ class webasystLoginAction extends waLoginAction
     public function getTitleStyle()
     {
         return $this->getConfig()->getOption('login_form_title_style');
+    }
+
+    /**
+     * @param array $options
+     * @return waBackendLoginForm
+     */
+    protected function getFormRenderer($options = array())
+    {
+        $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
+        $is_api_oauth = $request_url === 'api.php/auth';
+        $options['is_api_oauth'] = $is_api_oauth;
+        return parent::getFormRenderer($options);
     }
 }
 

@@ -6,6 +6,7 @@ class webasystSettingsEmailSaveController extends webasystSettingsJsonController
         'mail'     => array('type', 'options'),
         'smtp'     => array('type', 'host', 'port', 'login', 'password', 'encryption', 'pop3_host', 'pop3_port'),
         'sendmail' => array('type', 'command'),
+        'wadebug'  => array('type'),
     );
 
     protected $config_default_values = array(
@@ -73,7 +74,7 @@ class webasystSettingsEmailSaveController extends webasystSettingsJsonController
     }
 
     protected function isValidEmail($email) {
-        if (!preg_match('~^[^\s@]+@[^\s@]+\.[^\s@\.]{2,6}$~u', $email)) {
+        if (!preg_match('~^[^\s@]+@[^\s@]+(\.+[A-Za-z]{2,6})?$~u', $email)) {
             return false;
         }
         return true;
@@ -81,7 +82,7 @@ class webasystSettingsEmailSaveController extends webasystSettingsJsonController
 
     protected function isValidDomain($domain)
     {
-        if (!preg_match('~^(?:[-A-Za-z0-9]+\.)+[A-Za-z]{2,6}$~u', $domain)) {
+        if (!preg_match('~^(?:[-A-Za-z0-9]+)(\.+[A-Za-z]{2,6})?$~u', $domain)) {
             return false;
         }
         return true;
