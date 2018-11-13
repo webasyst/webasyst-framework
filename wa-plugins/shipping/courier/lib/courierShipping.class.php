@@ -145,25 +145,49 @@ class courierShipping extends waShipping
             $prices[] = $this->parseCost($rate['cost']);
         }
         if ($this->delivery_time) {
+            /** @var string $departure_datetime SQL DATETIME */
+            $departure_datetime = $this->getPackageProperty('departure_datetime');
+            /** @var  int $departure_timestamp */
+            if ($departure_datetime) {
+                $departure_timestamp = max(0, strtotime($departure_datetime) - time());
+            } else {
+                $departure_timestamp = 0;
+            }
+
             $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
             foreach ($delivery_date as & $date) {
-                $date = waDateTime::format('humandate', $date);
+                $date += $departure_timestamp;
             }
             unset($date);
-            $delivery_date = implode(' — ', $delivery_date);
+            $delivery_date = array_unique($delivery_date);
+
+            $est_delivery = array();
+            foreach ($delivery_date as $date) {
+                $est_delivery[] = waDateTime::format('humandate', $date);
+            }
+            $est_delivery = implode(' — ', $est_delivery);
+
+            if (count($delivery_date) == 1) {
+                $delivery_date = reset($delivery_date);
+            }
+            $delivery_date = self::formatDatetime($delivery_date);
+
         } else {
             $delivery_date = null;
+            $est_delivery = null;
         }
 
         if (($limit !== null) && ($price === null)) {
             return false;
         }
+
         return array(
             'delivery' => array(
-                'est_delivery' => $delivery_date,
-                'currency'     => $this->currency,
-                'rate'         => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
-                'type'         => self::TYPE_TODOOR,
+                'est_delivery'  => $est_delivery,
+                'delivery_date' => $delivery_date,
+                'currency'      => $this->currency,
+                'rate'          => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
+                'type'          => self::TYPE_TODOOR,
             ),
         );
     }
@@ -260,7 +284,6 @@ class courierShipping extends waShipping
     {
         $fields = parent::customFields($order);
 
-        $this->registerControl('CustomDeliveryIntervalControl');
         $setting = $this->getSettings('customer_interval');
 
         if (!empty($setting['interval']) || !empty($setting['date'])) {
@@ -286,7 +309,7 @@ class courierShipping extends waShipping
             $fields['desired_delivery'] = array(
                 'value'        => $value,
                 'title'        => $this->_w('Preferred delivery time'),
-                'control_type' => 'CustomDeliveryIntervalControl',
+                'control_type' => waHtmlControl::DATETIME,
                 'params'       => array(
                     'date'      => empty($setting['date']) ? null : ifempty($offset, 0),
                     'interval'  => ifset($setting['interval']),

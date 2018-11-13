@@ -160,8 +160,6 @@ class yandexdeliveryShipping extends waShipping
 
     private function getDeliveryIntervalField(waOrder $order, $service = array())
     {
-        $setting = array();
-
         $value = array();
 
         $shipping_params = $order->shipping_params;
@@ -177,22 +175,23 @@ class yandexdeliveryShipping extends waShipping
             $value['date'] = $shipping_params['desired_delivery.date'];
         }
 
-        //TODO use 'CustomDeliveryIntervalControl' control
-        $control_type = 'YandexdeliveryDate';
-        $this->registerControl($control_type, array($this, 'settingDateControl'));
+        if ($service) {
+            $intervals = ifset($service, 'custom_data', 'courier', 'intervals', array());
+        } else {
+            $intervals = array(
+                null => array(0, 1, 2, 3, 4, 5, 6),
+            );
+        }
 
         return array(
             'desired_delivery' => array(
                 'value'        => $value,
                 'title'        => 'Желаемые дата и время доставки',
-                'control_type' => $control_type,
+                'control_type' => waHtmlControl::DATETIME,
                 'params'       => array(
                     'date'      => (int)ifset($service, 'custom_data', 'courier', 'offset', 0),
-                    'interval'  => ifset($setting['interval']),
-                    'intervals' => ifset($service, 'custom_data', 'courier', 'intervals', array()),
-                ),
-                'options'      => array(
-                    'intervals' => ifset($service, 'custom_data', 'intervals'),
+                    'interval'  => true,
+                    'intervals' => $intervals,
                 ),
             ),
         );
@@ -812,6 +811,8 @@ class yandexdeliveryShipping extends waShipping
                     $response = include($response);
 
                     return $this->handleCalculateResponse(null, $response['data']);
+                } else {
+                    return 'Demo data not available.';
                 }
             }
             $params = array();
@@ -1007,7 +1008,7 @@ class yandexdeliveryShipping extends waShipping
             'service'       => $service['delivery']['name'],
             'id'            => sprintf('%s:%s', $service['delivery']['id'], $service['tariffId']),
             'est_delivery'  => implode(' - ', array_unique($human_delivery_date)),
-            'delivery_date' => $delivery_date,
+            'delivery_date' => self::formatDatetime($delivery_date),
             'rate'          => ifset($service['costWithRules'], $service['cost']),
             'currency'      => 'RUB',
         );
@@ -1046,7 +1047,7 @@ class yandexdeliveryShipping extends waShipping
                     if (!isset($intervals[$interval])) {
                         $intervals[$interval] = array();
                     }
-                    $intervals[$interval][] = $schedule['day'];
+                    $intervals[$interval][] = $schedule['day'] - 1;
                 }
 
                 foreach ($intervals as &$interval) {
@@ -1086,7 +1087,7 @@ class yandexdeliveryShipping extends waShipping
     {
         $schedule = array();
         $days = array(
-            1 => 'Пн',
+            'Пн',
             'Вт',
             'Ср',
             'Чт',
@@ -1096,7 +1097,7 @@ class yandexdeliveryShipping extends waShipping
         );
 
         foreach ($pickup_point['schedules'] as $schedule_item) {
-            $day = intval($schedule_item['day']);
+            $day = intval($schedule_item['day']) - 1;
             $from = preg_replace('@\:00$@', '', $schedule_item['from']);
             $to = preg_replace('@\:00$@', '', $schedule_item['to']);
             $schedule[$day] = array(
@@ -1107,7 +1108,7 @@ class yandexdeliveryShipping extends waShipping
         $prev = null;
 
         foreach ($schedule as $day => $schedule_item) {
-            if ($prev && (strcmp($schedule[$prev]['time'], $schedule_item['time'])) === 0) {
+            if (($prev !== null) && (strcmp($schedule[$prev]['time'], $schedule_item['time'])) === 0) {
                 $schedule[$prev]['days'][] = $day;
                 unset($schedule[$day]);
             } else {
@@ -1119,9 +1120,12 @@ class yandexdeliveryShipping extends waShipping
 <div class="yandexdelivery-list-item">%s: %s</div>
 HTML;
 
-
         foreach ($schedule as $day => &$schedule_item) {
-            $day = implode(' - ', array_unique(array($days[min($schedule_item['days'])], $days[max($schedule_item['days'])])));
+            $schedule_days = array(
+                $days[min($schedule_item['days'])],
+                $days[max($schedule_item['days'])],
+            );
+            $day = implode(' - ', array_unique($schedule_days));
             $schedule_item = sprintf($template, $day, $schedule_item['time']);
         }
         $schedule = implode($schedule);
@@ -1600,220 +1604,6 @@ HTML;
         return $html;
     }
 
-
-    /**
-     * @param string $name
-     * @param array $params
-     * @return string
-     */
-    public function settingDateControl($name, $params = array())
-    {
-        $html = '';
-        $javascript = '';
-
-        $wrappers = array(
-            'title'           => '',
-            'title_wrapper'   => '%s',
-            'description'     => '',
-            'control_wrapper' => "%s\n%3\$s\n%2\$s\n",
-        );
-
-        $params = array_merge($params, $wrappers);
-        $value = ifset($params['value']);
-        if (!is_array($value)) {
-            $value = array();
-        }
-        $params['value'] = null;
-
-        $available_days = array(1, 2, 3, 4, 5, 6, 7);
-        unset($params['id']);
-
-        $interval_params = $params;
-        $interval_params['value'] = ifset($value['interval']);
-        $interval_params['data'] = array(
-            'value' => $interval_params['value'],
-        );
-
-        $interval_params['description'] = _ws('Time');
-        if (!empty($params['params']['intervals'])) {
-            $interval_params['options'] = array();
-            foreach ($params['params']['intervals'] as $interval => $days) {
-                $interval_params['options'][$interval] = array(
-                    'value' => $interval,
-                    'title' => $interval,
-                    'data'  => array(
-                        'days' => $days,
-                    ),
-                );
-            };
-        } else {
-            $interval_params['options'] = array(
-                array(
-                    'value' => '',
-                    'title' => '',
-                    'data'  => array('days' => $available_days),
-                ),
-            );
-        }
-
-        $interval_name = preg_replace('@([_\w]+)(\]?)$@', '$1.interval$2', $name);
-        waHtmlControl::makeId($interval_params, $interval_name);
-
-        $date_params = $params;
-        $date_format = waDateTime::getFormat('date');
-        if (isset($params['params']['date'])) {
-            $date_params['style'] = "z-index: 100000; width: 100px;";
-
-            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
-            $offset = min(365, max(0, intval(ifset($params['params']['date'], 0))));
-            $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
-            $date_params['description'] = _ws('Date');
-
-            $date_params['value'] = ifset($value['date_str']);
-            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
-            waHtmlControl::makeId($date_params, $date_name);
-
-            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
-            $date_formatted_params = $params;
-            $date_formatted_params['style'] = "display: none;";
-
-            $date_formatted_params['value'] = ifset($value['date']);
-            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
-            waHtmlControl::makeId($date_formatted_params, $date_name);
-
-            $date_format_map = array(
-                'PHP' => 'JavaScript',
-                'Y'   => 'yy',
-                'd'   => 'dd',
-                'm'   => 'mm',
-            );
-            $js_date_format = str_replace(array_keys($date_format_map), array_values($date_format_map), $date_format);
-            $locale = wa()->getLocale();
-            $localization = sprintf("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-%s.js", $locale);
-            if (!is_readable($localization)) {
-                $localization = '';
-            }
-
-
-            if (empty($interval_params['id'])) {
-                $interval_params['id'] = '';
-            }
-
-            $available_days = json_encode($available_days);
-            $root_url = wa()->getRootUrl();
-
-
-            $javascript = <<<HTML
-<script type="text/javascript">
-    $(function () {
-        'use strict';
-        var id_date = '{$date_params['id']}';
-        var id_date_formatted = '{$date_formatted_params['id']}';
-        var date_input = $('#' + id_date);
-        var date_formatted = $('#' + id_date_formatted);
-        var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
-        var available_days = {$available_days};
-
-        /* date_input.data('available_days', {$available_days}); */
-        var init = function () {
-            date_input.datepicker();
-            date_input.datepicker("option", {
-                "dateFormat": '{$js_date_format}',
-                "minDate": {$offset},
-                "onSelect": function (dateText) {
-                    var d = date_input.datepicker('getDate');
-                    date_input.val(dateText);
-                    date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
-                    if (d && interval && interval.length) {
-                        /** @var int day week day (starts from 0) */
-                        var day = (d.getDay() + 6) % 7;
-                        /**
-                         * filter select by days
-                         */
-                        var value = typeof(interval.val()) !== 'undefined';
-                        var matched = null;
-                        interval.find('option').each(function () {
-                            /**
-                             * @this HTMLOptionElement
-                             */
-                            var option = $(this);
-                            var disabled = (option.data('days').indexOf(day) === -1) ? 'disabled' : null;
-                            option.attr('disabled', disabled);
-                            if (disabled) {
-                                if (this.selected) {
-                                    value = false;
-                                }
-                            } else {
-                                matched = this;
-                                if (!value) {
-                                    this.selected = true;
-                                    value = !!this.value;
-                                    if (typeof(interval.highlight) === 'function') {
-                                        interval.highlight();
-                                    }
-                                }
-                            }
-                        });
-
-                        if (value) {
-                            interval.removeClass('error');
-                        } else if (matched) {
-                            matched.selected = true;
-                            interval.removeClass('error');
-                        } else {
-                            interval.addClass('error');
-                        }
-                    }
-                },
-                "beforeShowDay": function (date) {
-                    if (interval && interval.length) {
-                        /** @var int day week day (starts from 1) */
-                        var day = ((date.getDay() + 6) % 7) + 1;
-                        return [(date_input.data('available_days')||available_days||[]).indexOf(day) !== -1];
-                    } else {
-                        return [true];
-                    }
-                }
-            });
-            $('.ui-datepicker').css({
-                "zIndex": 999998,
-                "display": 'none'
-            });
-        };
-
-        var init_locale = function () {
-            if ('{$localization}' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
-                $.getScript('{$root_url}{$localization}', init);
-            } else {
-                init();
-            }
-        };
-
-        if (typeof(date_input.datepicker) !== 'function') {
-            $("<link/>", {
-                rel: "stylesheet",
-                type: "text/css",
-                href: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
-            }).appendTo("head");
-            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init_locale);
-
-        } else {
-            init_locale();
-        }
-    });
-</script>
-HTML;
-        }
-
-        $html .= ifset($params['control_separator']);
-        unset($interval_params['id']);
-        $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
-
-        $html .= $javascript;
-
-        return $html;
-    }
-
     private function sendJsonError($error)
     {
         $response = array(
@@ -1924,7 +1714,7 @@ HTML;
         );
         $cache = null;
         if (isset($cache_ttl[$method])) {
-            $cache = new waVarExportCache($this->getCacheKey($key), $cache_ttl[$method], 'webasyst');
+            $cache = new waVarExportCache($this->getCacheKey($key), $cache_ttl[$method], 'webasyst', true);
             if ($cache->isCached()) {
                 return $cache->get();
             }

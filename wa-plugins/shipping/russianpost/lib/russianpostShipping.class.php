@@ -410,19 +410,41 @@ class russianpostShipping extends waShipping
                     $services = array();
 
                     $delivery_date = null;
+                    $est_delivery = null;
 
                     if ($this->delivery_date_show) {
                         $delivery_date = array();
+                        /** @var string $departure_datetime SQL DATETIME */
+                        $departure_datetime = $this->getPackageProperty('departure_datetime');
+                        /** @var  int $departure_timestamp */
+                        if ($departure_datetime) {
+                            $departure_timestamp = max(time(), strtotime($departure_datetime));
+                        } else {
+                            $departure_timestamp = time();
+                        }
                         if ($this->delivery_date_min) {
-                            $delivery_date[] = waDateTime::format('humandate', strtotime(sprintf('+%d days', $this->delivery_date_min)));
+                            $delivery_date[] = strtotime(sprintf('+%d days', $this->delivery_date_min), $departure_timestamp);
                         }
                         if ($this->delivery_date_max) {
-                            $delivery_date[] = waDateTime::format('humandate', strtotime(sprintf('+%d days', $this->delivery_date_max)));
+                            $delivery_date[] = strtotime(sprintf('+%d days', $this->delivery_date_max), $departure_timestamp);
                         }
-                        if ($delivery_date) {
-                            $delivery_date = implode(' - ', $delivery_date);
-                        } else {
+                        if (!$delivery_date) {
                             $delivery_date = null;
+                        } else {
+                            $delivery_date = array_unique($delivery_date);
+                            # format estimate delivery date
+                            $est_delivery = $delivery_date;
+                            foreach ($est_delivery as &$date) {
+                                $date = waDateTime::format('humandate', $date);
+                            }
+                            unset($date);
+                            $est_delivery = implode(' - ', $est_delivery);
+
+                            # format delivery date
+                            if (count($delivery_date) == 1) {
+                                $delivery_date = reset($delivery_date);
+                            }
+                            $delivery_date = self::formatDatetime($delivery_date);
                         }
                     }
 
@@ -432,33 +454,36 @@ class russianpostShipping extends waShipping
                         switch ($this->bookpost) {
                             case 'simple':
                                 $services['bookpost_simple'] = array(
-                                    'name'         => 'Бандероль простая',
-                                    'id'           => 'bookpost_simple',
-                                    'est_delivery' => $delivery_date,
-                                    'rate'         => $rate['bookpost'],
-                                    'currency'     => 'RUB',
-                                    'type'         => self::TYPE_POST,
+                                    'name'          => 'Бандероль простая',
+                                    'id'            => 'bookpost_simple',
+                                    'est_delivery'  => $est_delivery,
+                                    'delivery_date' => $delivery_date,
+                                    'rate'          => $rate['bookpost'],
+                                    'currency'      => 'RUB',
+                                    'type'          => self::TYPE_POST,
                                 );
                                 break;
                             case 'ordered':
                                 $services['bookpost_ordered'] = array(
-                                    'name'         => 'Бандероль заказная',
-                                    'id'           => 'bookpost_ordered',
-                                    'est_delivery' => $delivery_date,
-                                    'rate'         => $rate['bookpost'],
-                                    'currency'     => 'RUB',
-                                    'type'         => self::TYPE_POST,
+                                    'name'          => 'Бандероль заказная',
+                                    'id'            => 'bookpost_ordered',
+                                    'est_delivery'  => $est_delivery,
+                                    'delivery_date' => $delivery_date,
+                                    'rate'          => $rate['bookpost'],
+                                    'currency'      => 'RUB',
+                                    'type'          => self::TYPE_POST,
                                 );
 
                                 break;
                             case 'declared':
                                 $services['bookpost_declared'] = array(
-                                    'name'         => 'Бандероль с объявленной ценностью',
-                                    'id'           => 'bookpost_declared',
-                                    'est_delivery' => $delivery_date,
-                                    'rate'         => $rate['bookpost'],
-                                    'currency'     => 'RUB',
-                                    'type'         => self::TYPE_POST,
+                                    'name'          => 'Бандероль с объявленной ценностью',
+                                    'id'            => 'bookpost_declared',
+                                    'est_delivery'  => $est_delivery,
+                                    'delivery_date' => $delivery_date,
+                                    'rate'          => $rate['bookpost'],
+                                    'currency'      => 'RUB',
+                                    'type'          => self::TYPE_POST,
                                 );
                                 break;
                         }
@@ -478,12 +503,13 @@ class russianpostShipping extends waShipping
                         case true:
                         case 'always':
                             $services['parcel'] = array(
-                                'name'         => 'Посылка',
-                                'id'           => 'parcel',
-                                'est_delivery' => $delivery_date,
-                                'rate'         => $rate['parcel'],
-                                'currency'     => 'RUB',
-                                'type'         => self::TYPE_POST,
+                                'name'          => 'Посылка',
+                                'id'            => 'parcel',
+                                'est_delivery'  => $est_delivery,
+                                'delivery_date' => $delivery_date,
+                                'rate'          => $rate['parcel'],
+                                'currency'      => 'RUB',
+                                'type'          => self::TYPE_POST,
                             );
                             break;
                     }
