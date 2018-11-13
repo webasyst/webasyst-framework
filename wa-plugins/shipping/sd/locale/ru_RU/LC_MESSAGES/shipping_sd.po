@@ -1,0 +1,215 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-plugins/shipping/sd\n"
+"POT-Creation-Date: 2018-11-02 12:02+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: wa-plugins/shipping/sd\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 2.0.6\n"
+"Language: ru_RU\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Basic settings"
+msgstr "Базовые настройки"
+
+msgid "Currency"
+msgstr "Валюта"
+
+msgid "Weight dimension unit"
+msgstr "Единица измерения веса"
+
+msgid "Length dimension unit"
+msgstr "Единица измерения длины"
+
+msgid "Service"
+msgstr "Название службы"
+
+msgid "Storage time"
+msgstr "Срок хранения"
+
+msgid "days"
+msgstr "дней"
+
+msgid "Available delivery options"
+msgstr "Условия доступности варианта доставки"
+
+msgid "Address"
+msgstr "Адрес"
+
+msgid "Country"
+msgstr "Страна"
+
+msgid "Region"
+msgstr "Регион"
+
+msgid "Cities"
+msgstr "Города"
+
+msgid "Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country."
+msgstr "Доставка будет доступна только в выбранной стране. Указанные ниже тарифы будут действовать для всех регионов страны."
+
+msgid "Shipping will be restricted to the selected region."
+msgstr "Доставка будет доступна только в выбранном регионе."
+
+msgid "Separate cities with a comma"
+msgstr "Перечислите города через запятую"
+
+msgid "Coordinates"
+msgstr "Координаты"
+
+msgid "Latitude"
+msgstr "Широта"
+
+msgid "Longitude"
+msgstr "Долгота"
+
+msgid "Use this service to get coordinates:"
+msgstr "Для получения координат используйте:"
+
+msgid "Max weight"
+msgstr "Максимальный вес"
+
+msgid "Max length"
+msgstr "Максимальная длина"
+
+msgid "Max width"
+msgstr "Максимальная ширина"
+
+msgid "Max height"
+msgstr "Максимальная высота"
+
+msgid "Use data provided by special plugins for comparison with common order dimensions. If no order dimensions data are available, the maximum length, width, and height values of order items are used."
+msgstr "Для сравнения с общими размерами заказа использовать данные, вычисленные специальными плагинами. Если информация о размерах заказа недоступна, будут использоваться максимальные значения длины, ширины и высоты позиций заказа."
+
+msgid "Shipping cost"
+msgstr "Стоимость доставки"
+
+msgid "Minimum order cost for free delivery"
+msgstr "Минимальная стоимость заказа для бесплатной доставки"
+
+msgid "Base cost and markups are ignored when free delivery is applied."
+msgstr "Базовая стоимость и наценки игнорируются, когда применяется бесплатная доставка."
+
+msgid "Base cost"
+msgstr "Базовая стоимость"
+
+msgid "Basic shipping cost"
+msgstr "Базовая стоимость доставки"
+
+msgid "Markup for extra order weight"
+msgstr "Наценка за превышение веса заказа"
+
+msgid "Threshold weight"
+msgstr "Пороговый вес"
+
+msgid "Markup for weight"
+msgstr "Наценка за вес"
+
+msgid "Markup for extra order dimensions"
+msgstr "Наценка за превышение размеров заказа"
+
+msgid "Threshold length"
+msgstr "Пороговая длина"
+
+msgid "Threshold width"
+msgstr "Пороговая ширина"
+
+msgid "Threshold height"
+msgstr "Пороговая высота"
+
+msgid "Markup for order dimensions"
+msgstr "Наценка за размеры заказа"
+
+msgid "from"
+msgstr "от"
+
+msgid "to"
+msgstr "до"
+
+msgid "Work time"
+msgstr "Рабочее время"
+
+msgid "Time zone"
+msgstr "Временная зона"
+
+msgid "Day of the week"
+msgstr "День недели"
+
+msgid "Works"
+msgstr "Работает"
+
+msgid "Extra workdays"
+msgstr "Дополнительные рабочие"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Time"
+msgstr "Время"
+
+msgid "Add date"
+msgstr "Добавить дату"
+
+msgid "Extra weekend"
+msgstr "Дополнительные выходные"
+
+msgid "Shipping time"
+msgstr "Срок доставки"
+
+msgid "hours"
+msgstr "часов"
+
+msgid "Invalid date"
+msgstr "Некорректная дата"
+
+msgid "Invalid time"
+msgstr "Некорректное время"
+
+msgid "Additional info"
+msgstr "Дополнительная информация"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "How to reach"
+msgstr "Как добраться"
+
+msgid "Download photo"
+msgstr "Загрузить фото"
+
+msgid "Photos"
+msgstr "Фотографии"
+
+msgid "remove"
+msgstr "удалить"
+
+msgid "Pickup is not available for this address."
+msgstr "Самовывоз не доступен для указанного адреса."
+
+msgid "Weight values above the limit."
+msgstr "Вес превышает максимальный."
+
+msgid "Size values above the limit."
+msgstr "Размер превышает максимальный."
+
+msgid "kg"
+msgstr "кг"
+
+msgid "lbs"
+msgstr "фунт"
+
+msgid "Fill in the required field."
+msgstr "Заполните обязательное поле."
+
+msgid "At least one working day is required."
+msgstr "Нужен хотя бы один рабочий день."
+
+msgid "Pickup points"
+msgstr "Пункты выдачи заказов"

@@ -1,0 +1,190 @@
+{function addDate date=[] type='' iterator = 0}
+    <tr>
+        <td>
+            <input type="text"
+                   class="js-sd-date js-datepicker"
+                   value="{ifset($date, 'date', '')|wa_date|escape}"
+                   name="{$namespace}[{$type}][{$iterator}][date]"
+                   data-name="date"
+                   placeholder="{waDateTime::format('date')}"
+                   autocomplete="off"
+                   required>
+        </td>
+        <td>
+            <a class="js-sd-delete-date" href="#" data-type="{$type}">
+                <i class="icon16 no"></i>
+            </a>
+        </td>
+    </tr>
+{/function}
+
+{function addDateTime date=[] type='' iterator = 0}
+    <tr>
+        <td>
+            <input type="text"
+                   class="js-sd-date js-datepicker"
+                   value="{ifset($date, 'date', '')|wa_date|escape}"
+                   name="{$namespace}[{$type}][{$iterator}][date]"
+                   data-name="date"
+                   placeholder="{waDateTime::format('date')}"
+                   autocomplete="off"
+                   required>
+        </td>
+        <td>
+            {$obj->_w('from')} <input type="time"
+                                      class="js-sd-time-start"
+                                      name="{$namespace}[{$type}][{$iterator}][start_work]"
+                                      value="{ifset($date, 'start_work', '10:00')|escape}"
+                                      data-name="start_work"
+                                      required>
+            {$obj->_w('to')} <input type="time"
+                                    class="js-sd-time-end"
+                                    name="{$namespace}[{$type}][{$iterator}][end_work]"
+                                    value="{ifset($date, 'end_work', '19:00')|escape}"
+                                    data-name="end_work"
+                                    required>
+        </td>
+        <td>
+            <a class="js-sd-delete-date" href="#" data-type="{$type}">
+                <i class="icon16 no"></i>
+            </a>
+        </td>
+    </tr>
+{/function}
+
+
+
+<div class="field-group">
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Work time')}</h3></div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Time zone')}</div>
+        <div class="value">
+            <select name="{$namespace}[timezone]">
+                {foreach $timezones as $timezone => $cities}
+                    <option value="{$timezone}" {if $timezone == $settings.timezone|default:''|escape}selected{/if}>{$cities}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="value js-sd-worktime-wrapper">
+            <table class="zebra" style="max-width: 430px;">
+                <thead>
+                <tr>
+                    <th>{$obj->_w('Day of the week')}</th>
+                    <th>{$obj->_w('Works')}</th>
+                    <th>{$obj->_w('Work time')}</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {foreach $weekdays as $id => $day_data}
+                    {$is_works = ifset($day_data, 'works', false)}
+                    <tr class="day">
+                        <td>{$day_data['name']}</td>
+                        <td>
+                            <input type="checkbox"
+                                   value="1"
+                                   name="{$namespace}[weekdays][{$id}][works]"
+                                   class="js-sd-worktime-toggle"
+                                   {if $is_works}checked{/if}>
+                        </td>
+                        <td class="js-sd-time-wrapper">
+                            {$obj->_w('from')} <input type="time"
+                                                      name="{$namespace}[weekdays][{$id}][start_work]"
+                                                      value="{if $is_works}{ifset($day_data,'start_work', '')}{/if}"
+                                                      placeholder="10:00"
+                                                      class="js-sd-time-start"
+                                                      {if !$is_works}disabled{/if}
+                                                      required>
+                            {$obj->_w('to')} <input type="time"
+                                                    name="{$namespace}[weekdays][{$id}][end_work]"
+                                                    value="{if $is_works}{ifset($day_data,'end_work', '')}{/if}"
+                                                    placeholder="19:00"
+                                                    class="js-sd-time-end"
+                                                    {if !$is_works}disabled{/if}
+                                                    required>
+                        </td>
+                    </tr>
+                {/foreach}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br>
+    {*WORKDAYS*}
+    <div class="field-group">
+        <div class="field">
+            <div class="name">
+                {$obj->_w('Extra workdays')}
+            </div>
+            <div class="value js-sd-worktime-wrapper">
+                <table class="zebra js-sd-workdays" style="max-width: 430px;">
+                    <thead>
+                    <tr>
+                        <th>{$obj->_w('Date')}</th>
+                        <th>{$obj->_w('Time')}</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr class="white">
+                        <td><a class="inline-link js-sd-add-date" data-type="workdays"><i class="icon16 add"></i><b><i>{$obj->_w('Add date')}</i></b></a></td>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {if !empty($settings['workdays'])}
+                        {foreach $settings['workdays'] as $workdate}
+                            {addDateTime date = $workdate type='workdays' iterator = $workdate@iteration}
+                        {/foreach}
+                    {/if}
+                    </tbody>
+                </table>
+                <br><br>
+            </div>
+        </div>
+    </div>
+    <br>
+    {*WEEKEND*}
+    <div class="field-group">
+        <div class="field">
+            <div class="name">
+                {$obj->_w('Extra weekend')}
+            </div>
+            <div class="value js-sd-worktime-wrapper">
+                <table class="zebra js-sd-weekend" style="max-width: 160px;">
+                    <thead>
+                    <tr>
+                        <th class="align-center">{$obj->_w('Date')}</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr class="white">
+                        <td><a class="inline-link js-sd-add-date" data-type="weekend"><i class="icon16 add"></i><b><i>{$obj->_w('Add date')}</i></b></a></td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    </tfoot>
+                    <tbody>
+                    {if !empty($settings['weekend'])}
+                        {foreach $settings['weekend'] as $weekend_date}
+                            {addDate date = $weekend_date type='weekend' iterator = $weekend_date@iteration}
+                        {/foreach}
+                    {/if}
+                    </tbody>
+                </table>
+                <br><br>
+            </div>
+        </div>
+    </div>
+</div>
+
+{capture name="_error_date_html"}
+    <p class="js-sd-error-date-msg errormsg">{$obj->_w('Invalid date')}</p>
+{/capture}

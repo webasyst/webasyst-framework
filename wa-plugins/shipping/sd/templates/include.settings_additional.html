@@ -1,0 +1,68 @@
+<div class="field-group">
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Additional info')}</h3></div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            {$obj->_w('How to reach')}
+        </div>
+        <div class="value">
+            <textarea name="{$namespace}[way]">{$settings['way']|default:''|escape}</textarea>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            {$obj->_w('Description')}
+        </div>
+        <div class="value">
+            <textarea name="{$namespace}[additional]">{$settings['additional']|default:''|escape}</textarea>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            {$obj->_w('Download photo')}
+        </div>
+        <div class="value">
+            <input type="file" name="{$namespace}[photo]" class="js-upload-image">
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            {$obj->_w('Photos')}
+        </div>
+        <div class="value">
+            <ul class="sd-images js-sd-images">
+                {if (!empty($settings['photos']))}
+                    {foreach $settings['photos'] as $photo}
+                        <li>
+                            <a href="javascript:void(0);" class="js-sd-image">
+                                <img src="{$photo['uri']}">
+                                <input type="hidden" name="{$namespace}[photos][{$photo@iteration}][uri]" value="{$photo['uri']|escape}" class="js-sd-image-uri">
+                            </a>
+                            <a class="js-sd-image-delete" href="javascript:void(0);">
+                                <i class="icon16 delete"></i>{$obj->_w('remove')}
+                            </a>
+                        </li>
+                    {/foreach}
+                {/if}
+            </ul>
+        </div>
+    </div>
+</div>
+
+{capture name="_new_photo_html"}
+    <li>
+        <a class="js-sd-image" href="javascript:void(0);">
+            <img src="%s">
+            <input type="hidden" name="{$namespace}[photos][]" value="%s">
+        </a>
+        <a class="js-sd-image-delete" href="javascript:void(0);">
+            <i class="icon16 delete"></i>{$obj->_w('remove')}
+        </a>
+    </li>
+{/capture}

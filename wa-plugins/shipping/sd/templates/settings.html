@@ -1,0 +1,39 @@
+<script type="text/javascript" src="{$wa_url}wa-plugins/shipping/sd/js/settings.js?{$wa->version(true)}"></script>
+<link rel="stylesheet" href="{$wa_url}wa-plugins/shipping/sd/css/sd.css?{$wa->version(true)}">
+
+<div id="js-shipping-sd-settings">
+    {*BASIC SETTINGS*}
+    {include file='./include.settings_basic_settings.html' inline}
+
+    {*Availability of delivery*}
+    {include file='./include.settings_available_shipping.html' inline}
+
+    {*DELIVERY COST*}
+    {include file='./include.settings_shipping_cost.html' inline}
+
+    {*WORK TIME*}
+    {include file='./include.settings_work_time.html' inline}
+
+    {*ADDITIONAL*}
+    {include file='./include.settings_additional.html' inline}
+</div>
+
+<script>
+    (function ($) {
+        new systemShippingSDPluginSettings({
+            $wrapper: $("#js-shipping-sd-settings"),
+            regions_url: {json_encode($regions_url)},
+            current_currency: {json_encode($settings.currency|default:'')},
+            current_weight: {ifset($weight_units,  $settings.weight_unit, '')|json_encode},
+            current_length: {ifset($length_units,  $settings.length_unit, '')|json_encode},
+            namespace: {$namespace|json_encode},
+            date_format: {waDateTime::getFormatJs('date')|json_encode},
+            templates: {
+                new_datetime_html: {addDateTime|json_encode},
+                new_date_html: {addDate|json_encode},
+                error_date_html: {$smarty.capture._error_date_html|json_encode},
+                new_photo_html: {$smarty.capture._new_photo_html|json_encode}
+            }
+        });
+    })(jQuery);
+</script>

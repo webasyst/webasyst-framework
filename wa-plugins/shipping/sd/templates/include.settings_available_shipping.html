@@ -1,0 +1,104 @@
+<div class="field-group">
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Available delivery options')}</h3></div>
+    </div>
+
+    {*ADDRESS*}
+    <div class="field">
+        <div class="name">{$obj->_w('Address')}</div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Country')}</div>
+        <div class="value">
+            <i class="icon16 loading js-sd-country-loader" style="display:none; margin-left: -23px;"></i>
+            <select name="{$namespace}[country]" class="js-sd-select-country" required>
+                {foreach $countries as $country}
+                    <option value="{$country.iso3letter|escape}"
+                            {if $settings.country|default:''|escape == $country.iso3letter}selected="selected"{/if}>{$country.name|escape}
+                    </option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            {$obj->_w('Region')}
+        </div>
+        <div class="value">
+            <div class="js-sd-regions-msg" {if !empty($regions)}style="display: none;"{/if}>
+                <p class="small">
+                    {$obj->_w('Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country.')}
+                </p>
+            </div>
+            <div class="js-sd-regions" {if empty($regions)}style="display: none;"{/if}>
+                {$current_region = ifset($settings, 'region', '')}
+
+                <select name="{$namespace}[region]" class="js-sd-select-region">
+                    {foreach $regions as $region}
+                        <option value="{$region.code|escape}"{if $settings.region|default:''|escape == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
+                    {/foreach}
+                </select>
+                <p class="small">{$obj->_w('Shipping will be restricted to the selected region.')}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            {$obj->_w('Cities')}
+        </div>
+        <div class="value">
+            <input name="{$namespace}[city]" value="{$settings.city|default:''|escape}" type="text">
+
+            <p class="hint">{$obj->_w('Separate cities with a comma')}</p>
+        </div>
+    </div>
+
+    {*COORDITNATES*}
+    <div class="field">
+        <div class="name">{$obj->_w('Coordinates')}</div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Latitude')}</div>
+        <div class="value">
+            <input name="{$namespace}[latitude]" value="{$settings.latitude|default:''|escape}" type="number" min="0" step="any">
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Longitude')}</div>
+        <div class="value">
+            <input name="{$namespace}[longitude]" value="{$settings.longitude|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('Use this service to get coordinates:')} <a href="https://yandex.ru/map-constructor/location-tool/" target="_blank">Yandex Map
+                    Constructor</a></p>
+        </div>
+    </div>
+
+    {*MAX SIZE AND WEIGHT*}
+    <div class="field">
+        <div class="name">{$obj->_w('Max weight')}</div>
+        <div class="value">
+            <input class="js-sd-weight" name="{$namespace}[max_weight]" value="{$settings.max_weight|default:''|escape}" type="number" min="0" step="any">
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Max length')}</div>
+        <div class="value">
+            <input class="js-sd-length" name="{$namespace}[max_length]" value="{$settings.max_length|default:''|escape}" type="number" min="0" step="any">
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Max width')}</div>
+        <div class="value">
+            <input class="js-sd-length" name="{$namespace}[max_width]" value="{$settings.max_width|default:''|escape}" type="number" min="0" step="any">
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Max height')}</div>
+        <div class="value">
+            <input class="js-sd-length" name="{$namespace}[max_height]" value="{$settings.max_height|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('Use data provided by special plugins for comparison with common order dimensions. If no order dimensions data are available, the maximum length, width, and height values of order items are used.')}</p>
+        </div>
+    </div>
+</div>

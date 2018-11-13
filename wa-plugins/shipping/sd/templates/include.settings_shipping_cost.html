@@ -1,0 +1,76 @@
+<div class="field-group">
+    {*COST*}
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Shipping cost')}</h3></div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Minimum order cost for free delivery')}</div>
+        <div class="value">
+            <input class="js-sd-currency" name="{$namespace}[free_shipping]" value="{$settings.free_shipping|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('Base cost and markups are ignored when free delivery is applied.')}</p>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Base cost')}</div>
+        <div class="value">
+            <input class="js-sd-currency" name="{$namespace}[basic_shipping]" value="{$settings.basic_shipping|default:''|escape}" type="number" min="0" step="any" required>
+        </div>
+    </div>
+
+    {*MARKUP WEIGHT*}
+    <div class="field">
+        <div class="name">{$obj->_w('Markup for extra order weight')}</div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Threshold weight')}</div>
+        <div class="value">
+            <input class="js-sd-weight" name="{$namespace}[markup_weight]" value="{$settings.markup_weight|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('')}</p>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Markup for weight')}</div>
+        <div class="value">
+            <input class="js-sd-currency" name="{$namespace}[markup_weight_price]" value="{$settings.markup_weight_price|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('')}</p>
+        </div>
+    </div>
+
+    {*MARKUP SIZE*}
+    <div class="field">
+        <div class="name">{$obj->_w('Markup for extra order dimensions')}</div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Threshold length')}</div>
+        <div class="value">
+            <input class="js-sd-length" name="{$namespace}[markup_length]" value="{$settings.markup_length|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('')}</p>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Threshold width')}</div>
+        <div class="value">
+            <input class="js-sd-length" name="{$namespace}[markup_width]" value="{$settings.markup_width|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('')}</p>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Threshold height')}</div>
+        <div class="value">
+            <input class="js-sd-length" name="{$namespace}[markup_height]" value="{$settings.markup_height|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('')}</p>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Markup for order dimensions')}</div>
+        <div class="value">
+            <input class="js-sd-currency" name="{$namespace}[markup_size_price]" value="{$settings.markup_size_price|default:''|escape}" type="number" min="0" step="any">
+            <p class="hint">{$obj->_w('Use data provided by special plugins for comparison with common order dimensions. If no order dimensions data are available, the maximum length, width, and height values of order items are used.')}</p>
+        </div>
+    </div>
+</div>

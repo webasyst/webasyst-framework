@@ -1,0 +1,68 @@
+<div class="field-group">
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Basic settings')}</h3></div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Currency')}</div>
+        <div class="value">
+            <select name="{$namespace}[currency]" class="js-sd-select-currency">
+                {if !empty($currencies)}
+                    {foreach $currencies as $currency}
+                        <option value="{$currency['code']}" {if $currency['code'] == $settings.currency|default:''|escape}selected{/if}>{$currency['code']}</option>
+                    {/foreach}
+                {/if}
+            </select>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Weight dimension unit')}</div>
+        <div class="value">
+            <select name="{$namespace}[weight_unit]" class="js-sd-select-weight">
+                {foreach $weight_units as $wu => $wu_name}
+                    <option value="{$wu}" {if $settings.weight_unit == $wu}selected{/if}>{$wu_name}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Length dimension unit')}</div>
+        <div class="value">
+            <select name="{$namespace}[length_unit]" class="js-sd-select-length">
+                {foreach $length_units as $lu => $lu_name}
+                    <option value="{$lu}" {if $settings.length_unit == $lu}selected{/if}>{$lu_name}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Service')}</div>
+        <div class="value">
+            <input type="text" name="{$namespace}[service]" value="{ifset($settings, 'service', '')}">
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            {$obj->_w('Shipping time')}
+        </div>
+        <div class="value">
+            <input type="number"
+                   name="{$namespace}[processing]"
+                   value="{$settings['processing']|default:''|escape}"
+                   placeholder="0"
+                   min="0"> {$obj->_w('hours')}
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Storage time')}</div>
+        <div class="value">
+            <input type="number" name="{$namespace}[storage_days]" value="{ifset($settings, 'storage_days', '')}" min="0"> {$obj->_w('days')}
+        </div>
+    </div>
+</div>
