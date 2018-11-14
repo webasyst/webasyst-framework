@@ -452,7 +452,8 @@ class waHtmlControl
     {
         $control = '';
         $control_name = self::escape($name);
-        $control .= "<input id=\"{$params['id']}\" type=\"text\" name=\"{$control_name}\" ";
+        $field_type = self::escape((string)ifset($params, 'field_type', 'text'));
+        $control .= "<input id=\"{$params['id']}\" type=\"{$field_type}\" name=\"{$control_name}\" ";
         if (isset($params['format_description'])) {
             $params['format_description'] = self::_wp($params['format_description']);
         }
@@ -469,6 +470,13 @@ class waHtmlControl
             'disabled',
             'autocomplete',
             'autofocus',
+            'min',
+            'max',
+            'step',
+            'spellcheck',
+            'multiple', // for field_type 'email' as example
+            'autocorrect', // Safari
+            'autocapitalize', // Safari
             'format'             => 'data-regexp',
             'format_description' => 'data-regexp-hint',
         );
