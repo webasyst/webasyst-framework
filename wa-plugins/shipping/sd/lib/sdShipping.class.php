@@ -170,8 +170,8 @@ class sdShipping extends waShipping
      */
     protected function isValidRegion()
     {
-        $saved_region = $this->region;
-        $requested_region = $this->getAddress('region');
+        $saved_region = mb_strtolower($this->region);
+        $requested_region = mb_strtolower($this->getAddress('region'));
 
         if (empty($saved_region) || $saved_region === $requested_region) {
             return true;
@@ -187,7 +187,7 @@ class sdShipping extends waShipping
     protected function isValidCity()
     {
         $saved_city = $this->getCity();
-        $requested_city = $this->getAddress('city');
+        $requested_city = mb_strtolower($this->getAddress('city'));
 
         if (empty($saved_city) || in_array($requested_city, $saved_city)) {
             return true;
@@ -620,12 +620,19 @@ class sdShipping extends waShipping
      */
     protected function getCity()
     {
-        $city = $this->getSettings('city');
-        if ($city && is_string($city)) {
-            $city = array_map('trim', explode(',', $city));
+        $cities = $this->getSettings('city');
+        $result = array();
+
+        if ($cities && is_string($cities)) {
+            $cities = explode(',', $cities);
+            foreach ($cities as $city) {
+                $result[] = trim(mb_strtolower($city));
+            }
+        } else {
+            $result = $cities;
         }
 
-        return $city;
+        return $result;
     }
 
 
