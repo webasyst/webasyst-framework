@@ -125,7 +125,7 @@ var WaLoginAbstractForm = ( function($) {
         if ($form.is('form')) {
             return $form.serializeArray();
         }
-        return $form.find('input,select').serializeArray();
+        return $form.find(':input:not(:disabled)').serializeArray();
     };
 
     Self.prototype.beforeSubmit = function () {
@@ -491,15 +491,18 @@ var WaLoginAbstractForm = ( function($) {
             });
         } else {
             // Emulate
-            $form.find(':submit,button').click(function (e) {
-                e.preventDefault();
-                handler(e);
+            $form.find(':submit,button').not(':disabled').click(function (e) {
+                var $button = $(this);
+                if (!$button.data('ignore')) {
+                    e.preventDefault();
+                    handler(e);
+                }
             });
             $form.on('keydown', 'input', function (e) {
                 if (e.keyCode == 13) {
                     e.preventDefault();
                     // Emulate how browser works - find first button in FORM and click it
-                    $form.find(':submit,button').filter(':first').trigger('click');
+                    $form.find(':submit,button').not(':disabled').filter(':first').trigger('click');
                 }
             })
         }

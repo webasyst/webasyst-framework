@@ -12,7 +12,7 @@
             <input type="text" name="{$renderer->getInputName('login')}" class="wa-login-text-input"
                    value="{$_value|escape}"
                    autocomplete="off"
-                   {if $need_placeholder}placeholder="{$login_placeholder|escape}"{/if}>
+                   placeholder="{$login_placeholder|escape}">
 
             <div class="wa-edit-login-link-wrapper">
                 <a class="wa-edit-login-link" href="javascript:void(0)">[`Change`]</a>
@@ -27,8 +27,7 @@
         </div>
         <div class="value">
             <input type="text" name="{$renderer->getInputName('confirmation_code')}"
-                   class="wa-login-text-input"
-                   {if $need_placeholder}placeholder="[`Confirmation code`]"{/if}>
+                   class="wa-login-text-input" placeholder="{$code_placeholder|escape}">
 
             <div class="wa-confirmation-code-input-message"></div>
             <div class="wa-send-again-confirmation-code-link-wrapper" style="display: none">

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * Class waFrontendSetPasswordForm
+ *
+ * Concrete class for set password form in frontend environment
+ *
+ * Set password form shows second in recover password process
+ *
+ */
 class waFrontendSetPasswordForm extends waSetPasswordForm
 {
     /**
@@ -7,9 +15,14 @@ class waFrontendSetPasswordForm extends waSetPasswordForm
      */
     protected $auth_config;
 
+    /**
+     * waFrontendSetPasswordForm constructor.
+     * @param array $options - options are inherited
+     */
     public function __construct($options = array())
     {
         parent::__construct($options);
+
         $this->default_templates_path = waConfig::get('wa_path_system') . '/login/templates/setpassword/frontend/';
         $this->auth_config = waDomainAuthConfig::factory();
 
@@ -29,7 +42,7 @@ class waFrontendSetPasswordForm extends waSetPasswordForm
     }
 
     /**
-     * @param array $options
+     * @param array $options - that options will be passed to proper factory/constructor
      * @return waFrontendSetPasswordForm
      */
     public static function factory($options = array())
@@ -41,30 +54,17 @@ class waFrontendSetPasswordForm extends waSetPasswordForm
         return wa($auth_config->getApp())->getSetPasswordForm($options);
     }
 
-    public function renderCaptcha()
+    /**
+     * Options for captcha
+     * @see getCaptcha
+     * @return array
+     */
+    protected function getCaptchaOptions()
     {
-        if (!$this->auth_config->needLoginCaptcha()) {
-            return '';
-        }
-
-        $template = $this->getTemplate('captcha');
-        $object = wa()->getCaptcha(array(
-            'namespace'     => $this->namespace,
-            'version'       => 2,
-            'wrapper_class' => 'wa-captcha-section',
-        ));
-
-        $assign = array(
-            'object'       => $object,
-            'is_invisible' => $object->getOption('invisible'),
-            'class'        => get_class($object),
-            'real_class'   => get_class($object->getRealCaptcha()),
-            'errors'       => $this->getErrors('captcha'),
-            'error'        => $this->getErrors('captcha', '<br>')
-        );
-        return $this->renderTemplate($template, $assign);
+        $options = parent::getCaptchaOptions();
+        $options['version'] = 2;    // in frontend must use v2 captcha
+        return $options;
     }
-
 
     /**
      * Get info from last response of forgot-password action

@@ -206,7 +206,7 @@ class waCurrency
             if ($precision === '.') {
                 $frac_only_exists = false;
             }
-            $precision = $locale['frac_digits'];
+            $precision = ifset($locale, 'frac_digits', 2);
         }
 
         //
@@ -251,15 +251,15 @@ class waCurrency
                     if ($frac_only_exists && ($n == (int) $n) && $precision_arr[0] === '') {
                         $precision = 0;
                     }
-                    $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
+                    $result = number_format($n, $precision, ifset($locale, 'decimal_point', '.'), ifset($locale, 'thousands_sep', ''));
                 }
             }
 
             // Cut off trailing zeros after decimal separator
             if (false !== strpos($format_lower, 't')) {
-                if (false !== strpos($result, $locale['decimal_point'])) {
+                if (false !== strpos($result, ifset($locale, 'decimal_point', '.'))) {
                     $result = rtrim($result, '0');
-                    $result = rtrim($result, $locale['decimal_point']);
+                    $result = rtrim($result, ifset($locale, 'decimal_point', '.'));
                 } else if ($precision_arr[0] === '' && !empty($precision_arr[1])) {
                     $result = rtrim($result, '0');
                     if ($result === '') {

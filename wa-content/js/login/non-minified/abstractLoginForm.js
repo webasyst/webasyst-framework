@@ -77,7 +77,6 @@ var WaLoginAbstractLoginForm = ( function($) {
 
     Self.prototype.initOnetimePasswordLink = function (options) {
         var that = this,
-            $form = that.getFormInput(),
             options = options || {},
             $link = options.$link,
             $loading = options.$loading;
@@ -87,6 +86,9 @@ var WaLoginAbstractLoginForm = ( function($) {
         }
 
         var xhr = null;
+
+        // ignore submit emulation on this button
+        $link.data('ignore', '1');
 
         $link.on('click', function (e) {
 

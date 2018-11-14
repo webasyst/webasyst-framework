@@ -72,7 +72,11 @@ class waFunctionCache
             return call_user_func_array($this->function, $args);
         }
 
-        $hash = md5(var_export(array($this->function, $args), true).$this->hash_salt);
+        $hash_data = var_export(array($this->function, $args), true).$this->hash_salt;
+        $hash = md5($hash_data);
+        //waLog::log($hash_data, 'wa_fun_cache/'.$hash.'.log');
+        unset($hash_data);
+
         $app_id = $this->namespace ? $this->namespace : wa()->getApp();
         $cache = new waVarExportCache('fn_'.$hash, $this->ttl, $app_id, $this->hard_clean);
         $result = $cache->get();

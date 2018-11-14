@@ -745,13 +745,25 @@ HTML;
      *   2 - with <form action="LOGIN_URL">
      *  @return string
      *
+     *
      * New loginForm
      * @param string $error
+     *
      * @param array $options
-     *  - bool 'need_placeholder'
-     *  - bool 'show_title'
-     *  - bool 'show_sub_title'
-     *  - bool 'show_oauth_adapters'
+     *
+     *   bool   'need_placeholder' - need or not to show for each field own placeholder. Default - FALSE
+     *
+     *   bool   'show_title' - need or not to show own title. Default - FALSE
+     *
+     *   bool   'show_sub_title' - need or not to show own title. Default - FALSE
+     *
+     *   bool   'show_oauth_adapters' - need or not to show html block of o-auth adapters - Eg vk, facebook etc. Default - FALSE
+     *
+     *   bool   'need_redirects' - need or not server trigger redirects. Default - TRUE
+     *
+     *   bool   'include_css' - include or not default css. Default - TRUE
+     *
+     *   string 'url' - custom url of login action. Default (if skip option) - login_url from proper auth config. You can also pass empty string ''
      */
     public function loginForm($error = '', $options = array())
     {
@@ -778,9 +790,6 @@ HTML;
 
             $options['need_placeholder'] = $argument_placeholders;
         }
-
-        $options['include_js'] = true;
-        $options['include_css'] = true;
 
         $data = wa()->getRequest()->post();
 
@@ -826,7 +835,19 @@ HTML;
      * New version
      * @param string $error
      * @param array $options
-     *  - bool 'need_placeholder'
+     *
+     *   bool   'need_placeholder' - need or not to show for each field own placeholder. Default - FALSE
+     *
+     *   bool   'show_title' - need or not to show own title. Default - FALSE
+     *
+     *   bool   'show_sub_title' - need or not to show own title. Default - FALSE
+     *
+     *   bool   'show_oauth_adapters' - need or not to show html block of o-auth adapters - Eg vk, facebook etc. Default - FALSE
+     *
+     *   bool   'need_redirects' - need or not server trigger redirects. Default - TRUE
+     *
+     *   bool   'include_css' - include or not default css. Default - TRUE
+
      * @return string
      *
      */
@@ -848,10 +869,6 @@ HTML;
         } else {
             $errors = array();
         }
-
-        $options['is_json_mode'] = true;
-        $options['include_css'] = true;
-        $options['include_js'] = true;
 
         $is_from_template = waConfig::get('is_template');
         waConfig::set('is_template', null);
@@ -885,6 +902,21 @@ HTML;
      * New version
      * @param string $error
      * @param array $options
+     *
+     *   bool   'need_placeholder' - need or not to show for each field own placeholder. Default - FALSE
+     *
+     *   bool   'show_title' - need or not to show own title. Default - FALSE
+     *
+     *   bool   'show_sub_title' - need or not to show own title. Default - FALSE
+     *
+     *   bool   'show_oauth_adapters' - need or not to show html block of o-auth adapters - Eg vk, facebook etc. Default - FALSE
+     *
+     *   bool   'need_redirects' - need or not server trigger redirects. Default - TRUE
+     *
+     *   bool   'include_css' - include or not default css. Default - TRUE
+     *
+     *   string 'url' - custom url of login action. Default (if skip option) - login_url from proper auth config. You can also pass empty string ''
+     *
      * @return string
      *
      */
@@ -903,10 +935,6 @@ HTML;
         } else {
             $errors = array();
         }
-
-        $options['is_json_mode'] = true;
-        $options['include_css'] = true;
-        $options['include_js'] = true;
 
         $is_from_template = waConfig::get('is_template');
         waConfig::set('is_template', null);
@@ -1007,9 +1035,21 @@ HTML;
     /**
      * @param array $errors
      * @param array $options
-     *   bool 'need_placeholder' - need show for each field own placeholder
-     *   bool 'show_title' - need show own title
-     *   bool 'show_oauth_adapters' - need show html block of o-auth adapters - Eg vk, facebook etc.
+     *
+     *   bool   'need_placeholder' - need show for each field own placeholder. Default - FALSE
+     *
+     *   bool   'show_title' - need show own title. Default - FALSE
+     *
+     *   bool   'show_oauth_adapters' - need show html block of o-auth adapters - Eg vk, facebook etc. Default - FALSE
+     **
+     *   bool   'need_redirects' - need server trigger redirects. Default - TRUE
+     *
+     *   bool   'auth_after_link_sent' - need authorize contact right away after confirmation link sent. Default - FALSE
+     *
+     *   string 'contact_type' - what type of contact to create 'person' or 'contact'. Default - 'person'
+     *
+     *   bool   'include_css' - include or not default css. Default - TRUE
+     *
      * @return mixed|string
      */
     public function signupForm($errors = array(), $options = array())

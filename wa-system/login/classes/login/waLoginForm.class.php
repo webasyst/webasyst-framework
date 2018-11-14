@@ -1,6 +1,12 @@
 <?php
 
-class waLoginForm extends waLoginFormRenderer
+/**
+ * Class waLoginForm
+ *
+ * Abstract class for rendering login form
+ *
+ */
+abstract class waLoginForm extends waLoginFormRenderer
 {
     /**
      * @var waAuthConfig
@@ -14,7 +20,9 @@ class waLoginForm extends waLoginFormRenderer
     protected $is_rendered = array();
 
     /**
-     * @param array $options
+     * @param array $options that options will be passed to proper factory/constructor
+     * @see waBackendLoginForm
+     * @see waFrontendLoginForm
      * @return waLoginForm
      */
     public static function factory($options = array())
@@ -22,7 +30,6 @@ class waLoginForm extends waLoginFormRenderer
         if (waConfig::get('is_template')) {
             return null;
         }
-
         if (wa()->getEnv() === 'backend') {
             return new waBackendLoginForm($options);
         } else {
@@ -30,42 +37,25 @@ class waLoginForm extends waLoginFormRenderer
         }
     }
 
+    /**
+     * Prepares assign array before form rendering
+     * @return array
+     */
     protected function prepareForm()
     {
-        $fields = array('login' => array(), 'password' => array('forgotpassword_url' => $this->getForgotpasswordUrl()));
-
-        $urls = array(
-            'url'                  => $this->getLoginUrl(),
-            'signup_url'           => $this->getSignupUrl(),
-            'forgotpassword_url'   => $this->getForgotpasswordUrl(),
-            'onetime_password_url' => $this->getSendOnetimePasswordUrl(),
-        );
-
-        return array_merge($urls, array(
-            'auth_config' => $this->auth_config->getData('login'),
-            'fields'      => $fields,
-            'renderer'    => $this,
-            'data'        => $this->data,
-            'errors'      => $this->errors,
-            'messages'    => $this->messages,
-            'is_onetime_password_auth_type' => $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD
+        $assign = parent::prepareForm();
+        return array_merge($assign, array(
+            'fields' => array(
+                'login' => array(),
+                'password' => array('forgotpassword_url' => $this->getForgotpasswordUrl())
+            )
         ));
     }
 
-    protected function prepareFormWrapper($form_html)
-    {
-        $urls = array(
-            'url' => $this->getLoginUrl(),
-            'signup_url' => $this->getSignupUrl(),
-            'forgotpassword_url' => $this->getForgotpasswordUrl(),
-            'onetime_password_url' => $this->getSendOnetimePasswordUrl(),
-        );
-
-        return array_merge($urls, array(
-            'auth_config' => $this->auth_config->getData('login')
-        ));
-    }
-
+    /**
+     * Gets errors that not assign to any field (or control)
+     * @return array
+     */
     public function getUncaughtErrors()
     {
         $errors = array();
@@ -78,7 +68,13 @@ class waLoginForm extends waLoginFormRenderer
         return $errors;
     }
 
-    public function renderField($field_id, $params = null)
+    /**
+     * Render form field
+     * @param string $field_id
+     * @param array $params
+     * @return string
+     */
+    public function renderField($field_id, $params = array())
     {
         if (!$field_id) {
             return '';
@@ -87,6 +83,10 @@ class waLoginForm extends waLoginFormRenderer
         return $this->renderContactField($field_id, $params);
     }
 
+    /**
+     * Render 'remember me' control
+     * @return string
+     */
     public function renderRememberMe()
     {
         $template = $this->getTemplate('remember_me');
@@ -99,62 +99,66 @@ class waLoginForm extends waLoginFormRenderer
 
         $html = $this->renderTemplate($template, array(
             'checked'    => $checked,
-            'input_name' => $this->getInputName('remember'),
-            'is_onetime_password_auth_type' => $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD
+            'input_name' => $this->getInputName('remember')
         ));
 
         $this->is_rendered['rememberme'] = strlen($html) > 0;
         return $html;
     }
 
+    /**
+     * Render captcha
+     * Already takes into account proper auth config option
+     * @return string
+     */
     public function renderCaptcha()
     {
-        if (!$this->auth_config->needLoginCaptcha()) {
-            return '';
-        }
-
-        $template = $this->getTemplate('captcha');
-        $object = wa()->getCaptcha(array(
-            'namespace'     => $this->namespace,
-        ));
-
-        $assign = array(
-            'object'       => $object,
-            'class'        => get_class($object),
-            'real_class'   => get_class($object->getRealCaptcha()),
-            'errors'       => $this->getErrors('captcha'),
-            'error'        => $this->getErrors('captcha', '<br>')
-        );
-        $html = $this->renderTemplate($template, $assign);
+        $html = parent::renderCaptcha();
         $this->is_rendered['captcha'] = strlen($html) > 0;
         return $html;
     }
 
+    /**
+     * Render contact id
+     * @param string $field_id
+     * @param array $params
+     * @return string
+     */
     protected function renderContactField($field_id, array $params)
     {
         $field = $this->getContactField($field_id);
         $params['data_field_id'] = $field_id;
         $assign = $this->prepareContactField($field, $params);
-        $assign['namespace'] = $this->namespace;
+        $assign['namespace'] = $this->getNamespace();
         $assign['auth_type'] = $this->auth_config->getAuthType();
         $html = $this->renderTemplate($this->getTemplate('field'), $assign);
         $this->is_rendered[$field_id] = strlen($html) > 0;
-
         return $html;
     }
 
+    /**
+     * Get value for field
+     * @param string $field_id
+     * @return mixed
+     */
     protected function getContactFieldValue($field_id)
     {
         return isset($this->data[$field_id]) ? $this->data[$field_id] : null;
     }
 
+    /**
+     * Prepare assign array for template before rendering for contact field
+     * @param waContactField $field
+     * @param array $params
+     * @return array
+     */
     protected function prepareContactField(waContactField $field, array $params)
     {
         $field_id = $field->getId();
 
         $params['value'] = $this->getContactFieldValue($field_id);
         $params['caption'] = $this->getContactFieldCaption($field);
-        $params['namespace'] = $this->namespace;
+        $params['namespace'] = $this->getNamespace();
 
         if ($this->options['need_placeholder']) {
             $params['placeholder'] = $this->getContactFieldPlaceholder($field);
@@ -172,6 +176,12 @@ class waLoginForm extends waLoginFormRenderer
         return $info;
     }
 
+    /**
+     * Get field caption for concrete field
+     * Takes into proper account auth config option
+     * @param waContactField $field
+     * @return null|string
+     */
     protected function getContactFieldCaption(waContactField $field)
     {
         $field_id = $field->getId();
@@ -188,6 +198,12 @@ class waLoginForm extends waLoginFormRenderer
         return $caption;
     }
 
+    /**
+     * Get field caption for concrete field
+     * Takes into proper account auth config option
+     * @param waContactField $field
+     * @return null|string
+     */
     protected function getContactFieldPlaceholder(waContactField $field)
     {
         $field_id = $field->getId();
@@ -204,6 +220,11 @@ class waLoginForm extends waLoginFormRenderer
         return $placeholder;
     }
 
+    /**
+     * Constructor-getter of waContactField
+     * @param string $field_id
+     * @return waContactPasswordField|waContactStringField|waContactField
+     */
     protected function getContactField($field_id)
     {
         if ($field_id == 'login') {
@@ -215,40 +236,31 @@ class waLoginForm extends waLoginFormRenderer
         return new waContactStringField($field_id, _ws('Unknown field'));
     }
 
-    protected function getSignupUrl()
-    {
-        return $this->auth_config->getSignupUrl();
-    }
-
-    protected function getLoginUrl()
-    {
-        return $this->auth_config->getLoginUrl();
-    }
-
+    /**
+     * Url of action that generates one time password
+     * Takes into account proper auth config option
+     * @return string|null
+     */
     protected function getSendOnetimePasswordUrl()
     {
         if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
-            return $this->auth_config->getSendOneTimePasswordUrl();
+            return parent::getSendOnetimePasswordUrl();
         } else {
             return null;
         }
     }
 
+    /**
+     * Recover password page url
+     * Takes into account proper auth config option
+     * @return mixed|null
+     */
     protected function getForgotpasswordUrl()
     {
         if ($this->auth_config->getAuthType() !== waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
-            return $this->auth_config->getForgotPasswordUrl();
+            return parent::getForgotpasswordUrl();
         } else {
             return null;
         }
-    }
-
-    protected function prepareTemplateAssign($assign = array())
-    {
-        $assign = parent::prepareTemplateAssign($assign);
-        $assign = array_merge($assign, array(
-            'is_onetime_password_auth_type' => $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD
-        ));
-        return $assign;
     }
 }

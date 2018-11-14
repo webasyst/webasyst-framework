@@ -41,6 +41,7 @@
  * @property-read array $used theme settlement URLs
  * @property-read bool $system
  * @property-read string[] $thumbs
+ * @property-read array[] $requirements
  */
 class waTheme implements ArrayAccess
 {
@@ -1861,18 +1862,11 @@ HTACCESS;
         return $result;
     }
 
-    public function getRequirements()
+    public function getRequirements($check = true)
     {
         $this->init();
         $requirements = array();
 
-        // check the existence of the installer
-        $installer_apps_class_path = wa()->getConfig()->getRootPath() . '/wa-installer/lib/classes/wainstallerapps.class.php';
-        $installer_requirements_class_path = wa()->getConfig()->getRootPath() . '/wa-installer/lib/classes/waInstallerRequirements.class.php';
-
-        if (!file_exists($installer_apps_class_path) || !file_exists($installer_requirements_class_path)) {
-            return $requirements;
-        }
 
         if (!empty($this->info['requirements'])) {
             $requirements = $this->info['requirements'];
@@ -1893,12 +1887,14 @@ HTACCESS;
             $autoload->add('waInstallerRequirements', '/wa-installer/lib/classes/waInstallerRequirements.class.php');
         }
 
-        $current_app = wa()->getApp();
-        if (wa()->appExists('installer')) {
-            wa('installer', 1);
+        if ($check && class_exists('waInstallerApps')) {
+            $current_app = wa()->getApp();
+            if (wa()->appExists('installer')) {
+                wa('installer', 1);
+            }
+            waInstallerApps::checkRequirements($requirements, false, waInstallerApps::ACTION_UPDATE);
+            wa($current_app, 1);
         }
-        waInstallerApps::checkRequirements($requirements, false, waInstallerApps::ACTION_UPDATE);
-        wa($current_app, 1);
 
         return $requirements;
     }

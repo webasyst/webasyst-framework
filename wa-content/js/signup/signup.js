@@ -36,6 +36,7 @@ var WaSignup = ( function($) {
         that.is_need_confirm = options.is_need_confirm || false;
         that.need_redirects = options.need_redirects || '';
         that.auth_after_link_sent = options.auth_after_link_sent || false;
+        that.contact_type = options.contact_type || '';
 
         // INIT
         that.init();
@@ -254,6 +255,7 @@ var WaSignup = ( function($) {
         if ($.isPlainObject(data)) {
             data['need_redirects'] = that.need_redirects;
             data['auth_after_link_sent'] = that.auth_after_link_sent;
+            data['contact_type'] = that.contact_type;
         } else if ($.isArray(data)) {
             data = data.concat([
                 {
@@ -263,11 +265,16 @@ var WaSignup = ( function($) {
                 {
                     name: 'auth_after_link_sent',
                     value: that.auth_after_link_sent
+                },
+                {
+                    name: 'contact_type',
+                    value: that.contact_type
                 }
             ]);
         } else if (data) {
             data += '&need_redirects=' + that.need_redirects;
             data += '&auth_after_link_sent=' + that.auth_after_link_sent;
+            data += '&contact_type=' + that.contact_type;
         } else {
             data = {};
         }

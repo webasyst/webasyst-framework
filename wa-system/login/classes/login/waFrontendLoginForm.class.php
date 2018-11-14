@@ -1,10 +1,29 @@
 <?php
 
+/**
+ * Class waFrontendLoginForm
+ *
+ * Concrete class for rendering login form in frontend environment
+ *
+ */
 class waFrontendLoginForm extends waLoginForm
 {
+    /**
+     * @var string
+     */
     protected $env = 'frontend';
+
+    /**
+     * @var null|string
+     */
     protected $url;
 
+    /**
+     * waFrontendLoginForm constructor.
+     * @param array $options - options are inherited
+     *   Additional options
+     *     string|null 'url' - custom url of login action
+     */
     public function __construct($options = array())
     {
         parent::__construct($options);
@@ -51,7 +70,8 @@ class waFrontendLoginForm extends waLoginForm
     }
 
     /**
-     * @param array $options
+     * @param array $options that options will be passed to constructor
+     * @see __construct
      * @return waFrontendLoginForm
      */
     public static function factory($options = array())
@@ -63,14 +83,11 @@ class waFrontendLoginForm extends waLoginForm
         return wa($auth_config->getApp())->getLoginForm($options);
     }
 
-    public function renderField($field_id, $params = null)
-    {
-        if (!$field_id) {
-            return $this->renderSeparator();
-        }
-        return parent::renderField($field_id, $params);
-    }
-
+    /**
+     * Render 'remember me' control
+     * Takes into account proper auth config option
+     * @return string
+     */
     public function renderRememberMe()
     {
         if (!$this->auth_config->getRememberMe()) {
@@ -79,32 +96,22 @@ class waFrontendLoginForm extends waLoginForm
         return parent::renderRememberMe();
     }
 
-    public function renderCaptcha()
+    /**
+     * Options for captcha
+     * @see getCaptcha
+     * @return array
+     */
+    protected function getCaptchaOptions()
     {
-        if (!$this->auth_config->needLoginCaptcha()) {
-            return '';
-        }
-
-        $template = $this->getTemplate('captcha');
-        $object = wa()->getCaptcha(array(
-            'namespace'     => $this->namespace,
-            'version'       => 2,
-            'wrapper_class' => 'wa-captcha-section',
-        ));
-
-        $assign = array(
-            'object'       => $object,
-            'is_invisible' => $object->getOption('invisible'),
-            'class'        => get_class($object),
-            'real_class'   => get_class($object->getRealCaptcha()),
-            'errors'       => $this->getErrors('captcha'),
-            'error'        => $this->getErrors('captcha', '<br>')
-        );
-        $html = $this->renderTemplate($template, $assign);
-        $this->is_rendered['captcha'] = strlen($html) > 0;
-        return $html;
+        $options = parent::getCaptchaOptions();
+        $options['version'] = 2;    // in frontend must use v2 captcha
+        return $options;
     }
 
+    /**
+     * Render messages
+     * @return array
+     */
     public function getMessages()
     {
         $messages = $this->messages;
@@ -115,21 +122,20 @@ class waFrontendLoginForm extends waLoginForm
         return $messages;
     }
 
-    protected function renderSeparator()
-    {
-        return '<div class="wa-field wa-separator"></div>';
-    }
-
-    protected function getSignupUrl()
-    {
-        return $this->auth_config->getSignUpUrl();
-    }
-
+    /**
+     * Login url
+     * @return string
+     */
     protected function getLoginUrl()
     {
         return $this->url;
     }
 
+    /**
+     * Get value for field
+     * @param string $field_id
+     * @return mixed
+     */
     protected function getContactFieldValue($field_id)
     {
         if (isset($this->data[$field_id])) {

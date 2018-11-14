@@ -970,8 +970,8 @@ HTML;
                         );
                         $interval_params['options'][$value] = array(
                             'value' => $value,
-                            'title' => $value,
-                            'data' => array(
+                            'title' => empty($value) ? _ws('Time') : $value,
+                            'data'  => array(
                                 'days'  => array_keys($days),
                                 'value' => $value,
                             ),
@@ -980,7 +980,7 @@ HTML;
                     } else {
                         $interval_params['options'][$id] = array(
                             'value' => $id,
-                            'title' => $id,
+                            'title' => empty($id)?_ws('Time'):$id,
                             'data'  => array(
                                 'days'  => $interval,
                                 'value' => $id,
@@ -1000,7 +1000,7 @@ HTML;
                 if (!isset($interval_params['options'][null])) {
                     $option = array(
                         'value' => '',
-                        'title' => '',
+                        'title' => _ws('Time'),
                         'data'  => array('days' => $available_days),
                     );
                     array_unshift($interval_params['options'], $option);
@@ -1024,8 +1024,8 @@ HTML;
             $available_days = json_encode($available_days);
             $root_url = wa()->getRootUrl();
             $html .= <<<HTML
-<script type="text/javascript">
-    $(function () {
+<script>
+    ( function() {
         'use strict';
         var id_date = '{$date_params['id']}';
         var id_date_formatted = '{$date_formatted_params['id']}';
@@ -1034,9 +1034,9 @@ HTML;
         var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
         
         date_input.data('available_days', {$available_days});
-        var init = function () {
-            date_input.datepicker();
-            date_input.datepicker("option", {
+
+        var initDatePicker = function () {
+            date_input.datepicker({
                 "dateFormat": '{$js_date_format}',
                 "minDate": {$offset},
                 "onSelect": function (dateText) {
@@ -1096,32 +1096,135 @@ HTML;
                     }
                 }
             });
-            $('.ui-datepicker').css({
-                "zIndex": 999998,
-                "display": 'none'
-            });
         };
 
-        var init_locale = function () {
-            if ('{$localization}' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
-                $.getScript('{$root_url}{$localization}', init);
+        $(document).ready( function() {
+            if (typeof $.fn.datepicker === "function") {
+                initDatePicker();
+
             } else {
-                init();
+                load([
+                    {
+                        id: "wa-content-jquery-ui-js",
+                        type: "js",
+                        uri: "{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js"
+                    },
+                    {
+                        id: "wa-content-jquery-ui-css",
+                        type: "css",
+                        uri: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
+                    }
+                ]).then(function() {
+
+                    var locale = "{$locale}".substr(0, 2);
+                    if (locale === "ru") {
+                        load([{
+                            id: "wa-content-jquery-ui-locale-js",
+                            type: "js",
+                            uri: "{$root_url}{$localization}"
+                        }]).then(initDatePicker);
+                    } else {
+                        initDatePicker();
+                    }
+                    
+                });
             }
-        };
-
-        if (typeof(date_input.datepicker) !== 'function') {
-            $("<link/>", {
-                rel: "stylesheet",
-                type: "text/css",
-                href: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
-            }).appendTo("head");
-            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init_locale);
-
-        } else {
-            init_locale();
-        }
-    });
+        });
+        
+        function load(sources) {
+                var deferred = $.Deferred();
+        
+                loader(sources).then( function() {
+                    deferred.resolve();
+                });
+        
+                return deferred.promise();
+        
+                function loader(sources) {
+                    var deferred = $.Deferred(),
+                        counter = sources.length;
+        
+                    $.each(sources, function(i, source) {
+                        switch (source.type) {
+                            case "css":
+                                loadCSS(source);
+                                break;
+                            case "js":
+                                loadJS(source);
+                                break;
+                        }
+                    });
+        
+                    return deferred.promise();
+        
+                    /**/
+        
+                    function loadCSS(source) {
+                        var link = $("#" + source.id);
+                        if (link.length) {
+                            link.data("promise").then(onLoad);
+        
+                        } else {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise();
+        
+                            link = $("<link />", {
+                                id: source.id,
+                                rel: "stylesheet"
+                            }).appendTo("head")
+                                .data("promise", promise);
+        
+                            link.on("load", function() {
+                                onLoad();
+                                deferred.resolve();
+                            });
+        
+                            link.attr("href", source.uri);
+                        }
+        
+                        function onLoad() {
+                            counter -= 1;
+                            watcher();
+                        }
+                    }
+        
+                    function loadJS(source) {
+                        var script = $("#" + source.id);
+                        if (script.length) {
+                            script.data("promise").then(onLoad);
+        
+                        } else {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise(),
+                                script = document.createElement("script");
+        
+                            script = $(script)
+                                .attr("id", source.id)
+                                .appendTo("head")
+                                .data("promise", promise);
+        
+                            script.on("load", function () {
+                                onLoad();
+                                deferred.resolve();
+                            });
+        
+                            script.attr("src", source.uri);
+                        }
+        
+                        function onLoad() {
+                            counter -= 1;
+                            watcher();
+                        }
+                    }
+        
+                    function watcher() {
+                        if (counter === 0) {
+                            deferred.resolve();
+                        }
+                    }
+                }
+            }
+    })();
 </script>
 
 HTML;

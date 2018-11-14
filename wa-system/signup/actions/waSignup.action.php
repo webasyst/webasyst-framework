@@ -1134,6 +1134,7 @@ class waSignupAction extends waViewAction
         $data_to_save['create_method'] = 'signup';
         $data_to_save['create_ip'] = waRequest::getIp();
         $data_to_save['create_user_agent'] = waRequest::getUserAgent();
+        $data_to_save['is_company'] = waRequest::request('contact_type') === 'company' ? 1 : 0;
 
         if (wa()->getEnv() === 'frontend') {
             $data['create_domain'] = wa()->getRouting()->getDomain();
@@ -1161,6 +1162,7 @@ class waSignupAction extends waViewAction
             }
             return null;
         }
+        
         return $contact;
     }
 

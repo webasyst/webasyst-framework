@@ -1,4 +1,4 @@
-<form action="{$url}" method="post">
+<form action="{$forgotpassword_url}" method="post">
 
     {if !empty($show_title)}
         {$renderer->renderTitle()}
@@ -15,9 +15,9 @@
                 <input type="text" name="{$renderer->getInputName('login')}"
                        value="{$_value|escape}"
                        autocomplete="off"
-                       {if $need_placeholder}placeholder="{$login_placeholder|escape}"{/if}>
+                       placeholder="{$login_placeholder|escape}">
                 <div class="wa-forgotpassword-buttom">
-                    <input class="gray" type="submit" value="{if $auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD}[s`Reset password`]{else}[s`Recover password`]{/if}">
+                    <input class="gray" type="submit" value="{if $auth_config.auth_type === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD}[s`Reset password`]{else}[s`Recover password`]{/if}">
                 </div>
                 <div class="wa-edit-login-link-wrapper" style="display: none;">
                     <a href="javascript:void(0);" class="wa-edit-login-link">

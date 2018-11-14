@@ -179,7 +179,7 @@ class waLocale
             $decimals = $locale_info['frac_digits'];
         }
 
-        return number_format($n, $decimals, $locale_info['decimal_point'], $locale_info['thousands_sep']);
+        return number_format($n, $decimals, ifset($locale_info, 'decimal_point', '.'), ifset($locale_info, 'thousands_sep', ''));
     }
 
     /**

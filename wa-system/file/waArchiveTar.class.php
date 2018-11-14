@@ -938,8 +938,6 @@ class waArchiveTar
     {
         $counter = 0;
 
-        $list_detail = array();
-
         $path = $this->workupExtractPath($path);
 
         $remove_path = $this->translateWinPath($remove_path);
@@ -969,9 +967,46 @@ class waArchiveTar
 
         clearstatcache();
 
-        if ($this->getOffset()) {
-            //TODO: for partial mode find intersection of files list and internal map and sort by offset
-            $this->rewind();
+        $offset_map = array();
+
+        if ($_next_offset = $this->getOffset()) {
+            if ((!$extract_all) && (is_array($file_list))) {
+                //optimize partial extract
+                $map = array();
+                foreach ($file_list as $_path) {
+                    if (substr($_path, -1) == '/') {
+                        foreach ($this->files as $_file) {
+                            if (strpos($_file['path'], $_path) === 0) {
+                                $map[$_file['offset']] = $_file['path'];
+                            }
+                        }
+                    } elseif (isset($this->files[$_path])) {
+                        $map[$this->files[$_path]['offset']] = $_path;
+                    } elseif (true) {
+                        $map = array();
+                        break;
+                    }
+                }
+                if ($map) {
+                    ksort($map, SORT_NUMERIC);
+
+                    reset($map);
+                    $this->seekBlock(key($map), true);
+                    $map = array_reverse($map, true);
+
+
+                    foreach ($map as $_offset => $_path) {
+                        $offset_map[$_path] = $_next_offset;
+                        $_next_offset = $_offset;
+                    }
+
+                } else {
+                    $this->rewind();
+                }
+
+            } else {
+                $this->rewind();
+            }
         }
 
         while (strlen($binary_data = $this->readBlock()) != 0) {
@@ -985,7 +1020,7 @@ class waArchiveTar
 
             if ((!$extract_all) && (is_array($file_list))) {
                 // ----- By default no unzip if the file is not found
-                $extract_file = $this->pathMatched($header['path'], $file_list);
+                $extract_file = $this->pathMatched($header['filename'], $file_list);
             } else {
                 $extract_file = true;
             }
@@ -993,7 +1028,6 @@ class waArchiveTar
             // ----- Look if this file need to be extracted
             if (($extract_file) && (!$listing)) {
                 if ($extract_file) {
-
                     if (file_exists($header['path'])) {
                         $this->verifyItem($header);
                     } else {
@@ -1008,6 +1042,14 @@ class waArchiveTar
                     }
 
                     $this->writeItem($header);
+                    if ($file_list && is_array($file_list)) {
+                        if (isset($offset_map[$header['filename']])) {
+                            $_offset = ceil(($header['size'] / self::BLOCK_SIZE)) + $header['offset'] + 1;
+                            if ($_offset < $offset_map[$header['filename']]) {
+                                $this->seekBlock($offset_map[$header['filename']], true);
+                            }
+                        }
+                    }
                 } else {
                     $this->seekBlock(ceil(($header['size'] / self::BLOCK_SIZE)));
                 }
@@ -1015,16 +1057,7 @@ class waArchiveTar
                 $this->seekBlock(ceil(($header['size'] / self::BLOCK_SIZE)));
             }
 
-            //TODO check list and partial modes
-            if ($listing) {
-                // ----- Log extracted files
-                $list_detail[$counter] = $header;
-            }
 
-            $counter++;
-            if ($file_list && is_array($file_list) && ($counter == count($file_list))) {
-                break;
-            }
         }
 
         return $this->files;
@@ -1066,18 +1099,15 @@ class waArchiveTar
     {
         $matched = false;
 
-        //TODO optimize it
-        for ($i = 0; $i < count($file_list); $i++) {
+        foreach ($file_list as $pattern) {
             // ----- Look if it is a directory
-            if (substr($file_list[$i], -1) == '/') {
+            if (substr($pattern, -1) == '/') {
                 // ----- Look if the directory is in the filename path
-                if ((strlen($path) > strlen($file_list[$i]))
-                    && (substr($path, 0, strlen($file_list[$i])) == $file_list[$i])
-                ) {
+                if (strpos($path, $pattern) === 0) {
                     $matched = true;
                     break;
                 }
-            } elseif ($file_list[$i] == $path) {
+            } elseif ($pattern == $path) {
                 // ----- It is a file, so compare the file names
                 $matched = true;
                 break;

@@ -50,6 +50,11 @@ abstract class waAbstractCaptcha
      */
     abstract public function display();
 
+    /**
+     * @param null|string $key
+     * @param mixed $default
+     * @return array|mixed|null
+     */
     public function getOption($key = null, $default = null)
     {
         return ($key) ? ifset($this->options, $key, $default) : $this->options;

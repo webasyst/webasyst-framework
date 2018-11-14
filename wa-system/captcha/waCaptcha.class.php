@@ -1,7 +1,9 @@
 <?php
+
 /**
  * Wraps around a different captcha class.
  * Selects between captcha implementations depending on system options.
+ * @method getOption($key = null, $default = null)
  */
 class waCaptcha
 {

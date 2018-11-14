@@ -44,12 +44,15 @@ abstract class waAuthConfig
     }
 
 
+    /**
+     * Ensure that some channel set in config and it exists
+     */
     public function ensureChannelExists()
     {
+        $vcm = $this->getVerificationChannelModel();
         $channel_ids = $this->getRawVerificationChannelIds();
-        if (!$channel_ids) {
-            // MUST ALWAYS EXISTS EMAIL CHANNEL
-            $vcm = $this->getVerificationChannelModel();
+        $channels = $vcm->getChannels($channel_ids);
+        if (!$channels) {
             $channel = $vcm->getDefaultSystemEmailChannel();
             $channel_ids[] = $channel['id'];
             $this->setRawVerificationChannelIds($channel_ids);

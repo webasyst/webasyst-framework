@@ -51,7 +51,7 @@
     {$classes = join(' ', $classes)}
 
     <div class="{$classes}" id="{$wrapper_id}">
-        <h1 class="wa-login-form-title">{$renderer->getTitle()|truncate:20:'...'}</h1>
+        <h1 class="wa-login-form-title">{$renderer->getTitle()|truncate:20:'...'|escape}</h1>
         {$html}
     </div>
 

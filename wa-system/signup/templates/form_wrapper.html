@@ -20,6 +20,9 @@
     'confirmation_code_required' => '[`Enter a confirmation code to complete signup`]'
 ]}
 
+{$include_css = $include_css|default:false}
+{$include_js = $include_js|default:false}
+
 <div class="{$_classes}" id="{$wrapper_id}" style="visibility: hidden;">
 
     {* SIGN UP FORM ITSELF *}
@@ -144,7 +147,8 @@
                     is_onetime_password_auth_type: {$is_onetime_password_auth_type|json_encode},
                     is_need_confirm: {$is_need_confirm|json_encode},
                     need_redirects: {$need_redirects|default:''|json_encode},
-                    auth_after_link_sent: {$auth_after_link_sent|default:false|json_encode}
+                    auth_after_link_sent: {$auth_after_link_sent|default:false|json_encode},
+                    contact_type: {$contact_type|default:''|json_encode}
                 });
             }
         })(jQuery);

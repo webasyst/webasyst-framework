@@ -47,9 +47,13 @@ class waSignupForm
      *
      *   string 'namespace' - namespace for input names in form. Default - 'data'
      *
-     *   bool   'need_redirects' - need or not server trigger redirects. Default - TRUE
+     *   bool   'need_redirects' - need server trigger redirects. Default - TRUE
      *
-     *   bool   'auth_after_link_sent' - after link for confirmation sent authorize (log in) contact right away or not. Default - FALSE
+     *   bool   'auth_after_link_sent' - need authorize contact right away after confirmation link sent. Default - FALSE
+     *
+     *   string 'contact_type' - what type of contact to create 'person' or 'contact'. Default - 'person'
+     *
+     *   bool 'include_css' - include or not default css. Default - TRUE
      *
      */
     public function __construct($domain_config = null, $options = array())
@@ -75,6 +79,21 @@ class waSignupForm
 
         // init 'auth_after_link_sent'
         $this->options['auth_after_link_sent'] = isset($this->options['auth_after_link_sent']) ? (bool)$this->options['auth_after_link_sent'] : false;
+
+        // init 'contact_type' option
+        if (isset($this->options['contact_type']) && is_scalar($this->options['contact_type'])) {
+            $this->options['contact_type'] = (string)$this->options['contact_type'];
+        } else {
+            $this->options['contact_type'] = 'person';
+        }
+
+        // init 'include_css'
+        $include_css = true;
+        if (array_key_exists('include_css', $this->options)) {
+            $include_css = (bool)$this->options['include_css'];
+        }
+        $this->options['include_css'] = $include_css;
+
     }
 
     /**
@@ -516,7 +535,10 @@ class waSignupForm
             'show_title' => $this->options['show_title'],
             'show_oauth_adapters' => $this->options['show_oauth_adapters'],
             'need_redirects' => $this->options['need_redirects'],
-            'auth_after_link_sent' => $this->options['auth_after_link_sent']
+            'auth_after_link_sent' => $this->options['auth_after_link_sent'],
+            'contact_type' => $this->options['contact_type'],
+            'include_css' => $this->options['include_css'],
+            'include_js' => true
         ));
 
         return $assign;
