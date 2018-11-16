@@ -239,12 +239,12 @@ class sdShipping extends waShipping
                     break;
                 }
             }
-        } elseif ($total_size) {
-
+        } elseif (is_array($total_size)) {
             if (($max_l && $max_l < $total_size['length']) || ($max_w && $max_w < $total_size['width']) || ($max_h && $max_h < $total_size['height'])) {
                 $is_valid = false;
             }
-
+        } else {
+            $is_valid = false;
         }
 
         return $is_valid;
@@ -317,10 +317,8 @@ class sdShipping extends waShipping
                 }
             }
         } elseif ($total_size) {
-
             if (($markup_l && $markup_l < $total_size['length']) || ($markup_w && $markup_w < $total_size['width']) || ($markup_h && $markup_h < $total_size['height'])) {
                 $markup = $markup_price;
-
             }
         }
 
