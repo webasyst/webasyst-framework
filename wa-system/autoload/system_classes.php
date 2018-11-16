@@ -15,6 +15,7 @@ return array(
     'waiAuth'                           => 'auth/waiAuth.interface.php',
     'waAuthException'                   => 'auth/exceptions/waAuthException.class.php',
     'waAuthConfirmEmailException'       => 'auth/exceptions/waAuthConfirmEmailException.class.php',
+    'waAuthConfirmPhoneException'       => 'auth/exceptions/waAuthConfirmPhoneException.class.php',
     'waAuthInvalidCredentialsException' => 'auth/exceptions/waAuthInvalidCredentialsException.class.php',
 
     'waAutoload'                        => 'autoload/waAutoload.class.php',

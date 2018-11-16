@@ -263,12 +263,6 @@
 #wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-field-submit .wa-submit .wa-confirm-button {
   display: none;
 }
-#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) input[type="text"] {
-  font-size: 2em;
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-}
 #wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-uncaught-errors {
   margin-bottom: 20px;
   -webkit-box-flex: 1;
@@ -303,6 +297,69 @@
 }
 #wa-login.wa-backend-login-page .wa-forgotpassword-wrapper.wa-with-confirmation-code .wa-info-messages {
   margin-left: 105px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input::-webkit-input-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:-moz-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input::-moz-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:-ms-input-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus::-webkit-input-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus:-moz-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus::-moz-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus:-ms-input-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code {
+  margin-top: 0.5em;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-img-wrapper {
+  display: inline-block;
+  width: 120px;
+  height: 45px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  margin: 3px 0 0 5px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh {
+  color: #aaa;
+  font-size: 12px;
+  width: 65px;
+  line-height: 14px;
+  -webkit-transition: all 200ms linear;
+  -moz-transition: all 200ms linear;
+  -o-transition: all 200ms linear;
+  -ms-transition: all 200ms linear;
+  transition: all 200ms linear;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh:hover {
+  color: #555;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh .wa-captcha-refresh-icon {
+  display: table-cell;
+  background-image: url("../../../img/captcha-shape-gray.svg");
+  background-repeat: no-repeat;
+  width: 10.7px;
+  height: 9px;
+  padding-right: 6px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh .wa-captcha-refresh-text {
+  display: table-cell;
+  width: 65px;
 }
 @media screen and (max-width: 500px) {
   #wa-login.wa-backend-login-page .dialog .dialog-window {

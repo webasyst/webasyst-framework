@@ -3631,7 +3631,7 @@ msgstr ""
 
 #: /wa-system/design/templates/Theme.html:223
 #: /wa-system/design/templates/Theme.html:249
-msgid "Update not available."
+msgid "Update not available"
 msgstr ""
 
 #: /wa-system/design/templates/Theme.html:591
@@ -3789,4 +3789,12 @@ msgstr ""
 
 #: /wa-system/datetime/waDateTime.class.php:427
 msgid "D"
+msgstr ""
+
+#: /wa-system/auth/waAuth.class.php:533
+msgid "Please confirm your phone number to sign in."
+msgstr ""
+
+#: /wa-system/auth/exceptions/waAuthConfirmPhoneException.class.php:9
+msgid "Phone number confirmation error."
 msgstr ""

@@ -67,6 +67,17 @@ class waContactDataModel extends waModel
         }
     }
 
+    public function getContactWithPassword($name, $value)
+    {
+        $sql = "SELECT c.id 
+                  FROM `{$this->table}` d 
+                  JOIN wa_contact c ON d.contact_id = c.id
+                WHERE d.field = :name AND 
+                  d.value LIKE '".$this->escape($value, 'like')."' AND d.sort = 0 AND c.password != ''
+                LIMIT 1";
+        return $this->query($sql, array('name' => $name))->fetchField();
+    }
+
     public function getByContact($id)
     {
         $sql = "SELECT * FROM ".$this->table."

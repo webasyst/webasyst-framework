@@ -51,7 +51,7 @@ class waSignupForm
      *
      *   bool   'auth_after_link_sent' - need authorize contact right away after confirmation link sent. Default - FALSE
      *
-     *   string 'contact_type' - what type of contact to create 'person' or 'contact'. Default - 'person'
+     *   string 'contact_type' - what type of contact to create 'person' or 'company'. Default - 'person'
      *
      *   bool 'include_css' - include or not default css. Default - TRUE
      *

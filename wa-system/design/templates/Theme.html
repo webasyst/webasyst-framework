@@ -180,6 +180,25 @@
     {* THEME ACTIONS *}
     <div class="wa-theme-sidebar sidebar right250px">
 
+        {* Theme help *}
+        {if !empty($support) || !empty($instruction)}
+            <div class="block wa-theme-help">
+                <div class="heading bold"><span class="wa-theme-help-icon"></span>[s`Help`]</div>
+                <ul>
+                    {if !empty($instruction)}
+                        <li>
+                            <a href="{$instruction|escape}" target="_blank" class="no-underline">[s`Design theme user manual`]</a> <i class="icon10 new-window"></i>
+                        </li>
+                    {/if}
+                    {if !empty($support)}
+                        <li>
+                            <a href="{$support|escape}" target="_blank" class="no-underline">[s`User support`]</a> <i class="icon10 new-window"></i>
+                        </li>
+                    {/if}
+                </ul>
+            </div>
+        {/if}
+
         {* Theme update *}
         {if $theme.type == waTheme::ORIGINAL}
 
@@ -206,7 +225,7 @@
         {elseif $theme.type == waTheme::OVERRIDDEN}
 
             {if $theme.version == $theme_original_version}
-                {if !$theme.parent_theme || $theme.parent_theme.version == $theme_parent_original_version}
+                {if !$theme.parent_theme || $theme.parent_theme.type == waTheme::ORIGINAL || $theme.parent_theme.version == $theme_parent_original_version}
                     {* Modified, but still the latest version *}
                     <div class="block double-padded wa-theme-actions wa-theme-latest">
                         <ul class="menu-v with-icons">
@@ -220,7 +239,7 @@
                     {* Update is not available *}
                     {if !empty($theme.parent_theme) && !empty($theme.parent_theme->getWarningRequirements())}
                         <div class="block double-padded wa-theme-actions wa-theme-warning">
-                            <strong>[s`Update not available.`]</strong>
+                            <strong>[s`Update not available`]</strong>
                             <ul class="menu-v">
                                 {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
                                     <li>
@@ -231,7 +250,7 @@
                         </div>
 
                     {* Update is available *}
-                    {else}
+                    {elseif $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN && $theme.parent_theme.version != $theme_parent_original_version}
                         <div class="block double-padded wa-theme-actions wa-theme-update-available">
                             <ul class="menu-v with-icons">
                                 <li>
@@ -244,9 +263,9 @@
                 {/if}
             {else}
                 {* Update is not available *}
-                {if !empty($theme_warning_requirements)}
+                {if $theme.version != $theme_original_version && !empty($theme_warning_requirements)}
                     <div class="block double-padded wa-theme-actions wa-theme-warning">
-                        <strong>[s`Update not available.`]</strong>
+                        <strong>[s`Update not available`]</strong>
                         <ul class="menu-v">
                             {foreach $theme_warning_requirements as $requirement}
                                 <li>
@@ -256,8 +275,21 @@
                         </ul>
                     </div>
 
+                {* Update is not available *}
+                {elseif $theme.version != $theme_original_version && !empty($theme_original_warning_requirements)}
+                    <div class="block double-padded wa-theme-actions wa-theme-warning">
+                        <strong>[s`Update not available`]</strong>
+                        <ul class="menu-v">
+                            {foreach $theme_original_warning_requirements as $requirement}
+                                <li>
+                                    {$requirement.warning}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+
                 {* Update is available *}
-                {else}
+                {elseif $theme.version != $theme_original_version}
                     <div class="block double-padded wa-theme-actions wa-theme-update-available">
                         <ul class="menu-v with-icons">
                             <li>
@@ -271,7 +303,7 @@
 
         {else}
 
-            {* No original theme with same ID *}
+            {* No original (eg. cloned) theme with same ID *}
             <div class="block double-padded wa-theme-actions wa-theme-orphan">
                 <ul class="menu-v with-icons">
                     <li>
@@ -386,25 +418,6 @@
             {/if}
 
         </div>
-
-        {* Theme help *}
-        {if !empty($theme.support) || !empty($theme.instruction)}
-            <div class="block wa-theme-help">
-                <h4 class="heading">[s`Help`]</h4>
-                <ul>
-                    {if !empty($theme.support)}
-                        <li>
-                            <a href="{$theme.support|escape}" target="_blank" class="no-underline">[s`Support`]</a> <i class="icon10 new-window"></i>
-                        </li>
-                    {/if}
-                    {if !empty($theme.instruction)}
-                        <li>
-                            <a href="{$theme.instruction|escape}" target="_blank" class="no-underline">[s`User manual`]</a> <i class="icon10 new-window"></i>
-                        </li>
-                    {/if}
-                </ul>
-            </div>
-        {/if}
     </div>
 
     <div class="wa-theme-content content right250px">
@@ -504,6 +517,7 @@
         <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
             {$wa->csrf()}
             <br>
+            <div class="wa-theme-search-min-symbol bold js-search-min-symbol" style="display: none;">[s`Minimum 3 characters`]</div>
             <div class="wa-theme-search-result js-search-result" style="display: none;">[s`Search results:`]</div>
             <div class="wa-theme-search-no-result js-search-no-result" style="display: none;">[s`No settings found`]</div>
 

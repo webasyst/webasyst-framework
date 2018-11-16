@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Theme -->
-<!ELEMENT theme (name+,description*,files*,about*, settings?, thumbs?, locales?, requirements?)>
+<!ELEMENT theme (name+,description*,instruction*,support*,files*,about*, settings?, thumbs?, locales?, requirements?)>
 <!ATTLIST theme
     id CDATA #REQUIRED
     system (1|0) "0"
@@ -11,8 +11,6 @@
     version CDATA #IMPLIED
     edition CDATA #IMPLIED
     source_theme_id CDATA #IMPLIED
-    instruction CDATA #IMPLIED
-    support CDATA #IMPLIED
 >
 
 <!ELEMENT name (#PCDATA)>
@@ -22,6 +20,16 @@
 
 <!ELEMENT description (#PCDATA)>
 <!ATTLIST description
+    locale CDATA #REQUIRED
+>
+
+<!ELEMENT instruction (#PCDATA)>
+<!ATTLIST instruction
+    locale CDATA #REQUIRED
+>
+
+<!ELEMENT support (#PCDATA)>
+<!ATTLIST support
     locale CDATA #REQUIRED
 >
 

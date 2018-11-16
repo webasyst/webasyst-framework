@@ -69,7 +69,7 @@ class waContactEmailField extends waContactStringField
                     return $errors;
                 }
                 $value = $this->format($data[0], 'value');
-                $id = $email_model->getContactIdByEmail($value);
+                $id = $email_model->getContactWithPassword($value);
                 if ($id && $id != $contact_id) {
                     $errors[0] = sprintf(_ws('User with the same %s is already registered'), 'email');
                 }
@@ -83,7 +83,7 @@ class waContactEmailField extends waContactStringField
                         return $errors;
                     }
                 }
-                $id = $email_model->getContactIdByEmail($value);
+                $id = $email_model->getContactWithPassword($value);
                 if ($id && $id != $contact_id) {
                     $errors = sprintf(_ws('User with the same %s is already registered'), 'email');
                 }

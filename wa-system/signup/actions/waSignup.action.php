@@ -1082,9 +1082,9 @@ class waSignupAction extends waViewAction
      */
     protected function trySignupContact(waContact $contact, $need_auth = true)
     {
-        $need_generate_password = $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD &&
-            !$contact->get('password');
-        if ($need_generate_password) {
+        // Always generate password if contact hasn't it
+        // contact.password must not be empty
+        if (!$contact->get('password')) {
             $password = $this->getGeneratePassword();
             $contact->save(array('password' => $password));
         }
@@ -1135,6 +1135,10 @@ class waSignupAction extends waViewAction
         $data_to_save['create_ip'] = waRequest::getIp();
         $data_to_save['create_user_agent'] = waRequest::getUserAgent();
         $data_to_save['is_company'] = waRequest::request('contact_type') === 'company' ? 1 : 0;
+
+        if (empty($data_to_save['password'])) {
+            $data_to_save['password'] = $this->getGeneratePassword();
+        }
 
         if (wa()->getEnv() === 'frontend') {
             $data['create_domain'] = wa()->getRouting()->getDomain();

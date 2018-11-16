@@ -95,6 +95,18 @@
   margin-bottom: 20px;
   padding-bottom: 0;
 }
+#wa-design-container .wa-theme-sidebar .wa-theme-help .heading {
+  cursor: default;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-help .heading .wa-theme-help-icon {
+  background: url("../../../../wa-content/img/help-icon@2x.png") no-repeat;
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  padding-left: 21px;
+  padding-top: 0;
+  margin-left: -3px;
+}
 #wa-design-container .wa-theme-sidebar .wa-theme-help ul {
   padding-left: 18px;
 }
@@ -185,6 +197,9 @@
 }
 #wa-design-container #theme-settings .wa-theme-settings-group {
   margin-left: 20px;
+}
+#wa-design-container #theme-settings .wa-theme-settings-group[data-divider-level="1"] {
+  margin-bottom: 21px;
 }
 #wa-design-container #theme-settings .wa-theme-paragraph {
   text-align: left;

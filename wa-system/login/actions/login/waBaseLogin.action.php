@@ -87,10 +87,31 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
     }
 
+    protected function validateCode($code, $phone)
+    {
+        if (!$this->auth_config->getSignupConfirm()) {
+            return null;
+        }
+        if (!$code) {
+            return _ws('Enter a confirmation code to complete signup');
+        }
+
+        if (!$this->isValidPhoneNumber($phone)) {
+            return _ws('Incorrect phone number value');
+        }
+
+        $channel = $this->auth_config->getSMSVerificationChannelInstance();
+        if (!$channel->validateSignUpConfirmation($code, $phone)) {
+            return _ws('Incorrect or expired confirmation code. Try again or request a new code.');
+        } else {
+            return null;
+        }
+    }
+
     protected function validate($data, $fields = null)
     {
         $fields = is_array($fields) || is_scalar($fields) ? (array)$fields : array(
-            'login', 'password', 'captcha'
+            'login', 'password', 'captcha', 'confirmation_code'
         );
 
         $errors = array();
@@ -102,6 +123,8 @@ abstract class waBaseLoginAction extends waLoginModuleController
                 $error = $this->validatePassword($data['password']);
             } elseif ($field_id === 'captcha') {
                 $error = $this->validateCaptcha();
+            } elseif ($field_id === 'confirmation_code' && isset($data['confirmation_code'])) {
+                $error = $this->validateCode($data['confirmation_code'], $data['login']);
             }
             if ($error !== null) {
                 $errors[$field_id] = $error;
@@ -134,9 +157,17 @@ abstract class waBaseLoginAction extends waLoginModuleController
             return false;
         }
 
-        $errors = array();
-
         $auth = wa()->getAuth();
+
+        if (isset($data['confirmation_code'])) {
+            $contact_info = $auth->getByLogin($data['login'], waAuth::LOGIN_FIELD_PHONE);
+            if ($contact_info) {
+                $dm = new waContactDataModel();
+                $dm->updateContactPhoneStatus($contact_info['id'], $data['login'], waContactDataModel::STATUS_CONFIRMED);
+            }
+        }
+
+        $errors = array();
 
         try {
             if ($auth->auth($data)) {
@@ -144,7 +175,49 @@ abstract class waBaseLoginAction extends waLoginModuleController
                 $this->afterAuth();
             }
         } catch (waAuthConfirmEmailException $e) {
-            $errors['confirm_email'] = $e->getMessage();
+            $errors['login']['confirm_email'] = $e->getMessage();
+        } catch (waAuthConfirmPhoneException $e) {
+
+            // PHONE IS NOT CONFIRMED
+
+            $errors['confirmation_code']['confirm_phone'] = $e->getMessage();
+
+            // check timeout first
+            if (!$this->isSentCodeTimeoutPassed()) {
+                $errors['confirmation_code'] = array(
+                    'timeout' => array(
+                        'message' => $this->auth_config->getConfirmationCodeTimeoutErrorMessage(),
+                        'timeout' => $this->auth_config->getConfirmationCodeTimeout()
+                    )
+                );
+            } else {
+
+                // Ok timeout is passed - resent code
+
+                $channel = $this->auth_config->getSMSVerificationChannelInstance();
+                $sent = $channel->sendSignUpConfirmationMessage($data['login'], array(
+                    'use_session' => true
+                ));
+
+                if (!$sent) {
+                    $errors['auth'] = "Sorry, we cannot sent confirmation code. Please refer to your system administrator.";
+                } else {
+
+                    $msg = _ws('An SMS message has been sent to phone number <strong>%s</strong> for you to confirm signup.');
+                    $msg = sprintf($msg, waContactPhoneField::cleanPhoneNumber($data['login']));
+
+                    $this->assign(array(
+                        'code_sent' => true,
+                        'code_sent_message' => $msg,
+                        'code_sent_timeout_message' => $this->auth_config->getConfirmationCodeTimeoutMessage(),
+                        'code_sent_timeout' => $this->auth_config->getConfirmationCodeTimeout()
+                    ));
+                }
+
+            }
+
+
+
         } catch (waAuthInvalidCredentialsException $e) {
             if ($this->auth_config->getAuthType() ===  waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
                 $errors['password'] = _ws('Incorrect or expired one-time password. Try again or request a new one-time password.');
@@ -175,6 +248,20 @@ abstract class waBaseLoginAction extends waLoginModuleController
         $this->assign('errors', $errors);
 
         return !$errors;
+    }
+
+    protected function isSentCodeTimeoutPassed()
+    {
+        $key = 'wa/login/sent_code/last_time/';
+        $last_time = wa()->getStorage()->get($key);
+        if (!wa_is_int($last_time) || $last_time <= 0) {
+            $last_time = 0;
+        }
+        $now_time = time();
+        $timeout = $this->auth_config->getConfirmationCodeTimeout();
+        $result = $now_time - $last_time > $timeout;
+        wa()->getStorage()->set($key, $now_time);
+        return $result;
     }
 
     protected function afterExecute()

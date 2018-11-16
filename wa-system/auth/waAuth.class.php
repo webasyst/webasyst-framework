@@ -133,8 +133,8 @@ class waAuth implements waiAuth
         $where = array();
         if ($this->options['is_user']) {
             $where[] = "c.is_user = 1";
-            $where[] = "c.password != ''";
         }
+        $where[] = "c.password != ''";
         $where[] = "e.email LIKE s:email";
         $where[] = "e.sort = 0";
 
@@ -205,8 +205,9 @@ class waAuth implements waiAuth
         $where = array();
         if ($this->options['is_user']) {
             $where[] = "c.is_user = 1";
-            $where[] = "c.password != ''";
         }
+
+        $where[] = "c.password != ''";
         $where[] = 'd.value = :phone';
         $where[] = 'd.sort = 0';
 
@@ -377,6 +378,9 @@ class waAuth implements waiAuth
             throw new waAuthInvalidCredentialsException();
         }
 
+        // In case auth channel confirmation is required,
+        // check that this contact has phone or email confirmed.
+        // Otherwise do not allow to log in via frontend.
         $this->mustNeedConfirmSignup($user_info);
 
         return $this->_afterAuth($user_info, $params);
@@ -413,6 +417,9 @@ class waAuth implements waiAuth
         // What login field used to auth
         $login_field_id = $this->current_login_field_id;
 
+        // Verification channels - will need to check availability of concrete type of channel
+        $channels = $this->auth_config->getVerificationChannelInstances();
+
         // If try logging in by EMAIL
         if ($login_field_id === self::LOGIN_FIELD_EMAIL) {
 
@@ -422,11 +429,14 @@ class waAuth implements waiAuth
             }
 
             // Email unconfirmed case
-            if ($email_row['status'] == waContactEmailsModel::STATUS_UNCONFIRMED) {
+            if ($email_row['status'] != waContactEmailsModel::STATUS_CONFIRMED) {
                 if (!$phone_row) {
                     throw $this->getAuthConfirmEmailException();
                 }
-                if ($phone_row['status'] == waContactDataModel::STATUS_UNCONFIRMED) {
+                if ($phone_row['status'] != waContactDataModel::STATUS_CONFIRMED) {
+                    throw $this->getAuthConfirmEmailException();
+                }
+                if (!$this->isChannelAvailable($channels, self::LOGIN_FIELD_PHONE)) {
                     throw $this->getAuthConfirmEmailException();
                 }
             }
@@ -445,12 +455,15 @@ class waAuth implements waiAuth
             }
 
             // Phone unconfirmed case
-            if ($phone_row['status'] == waContactDataModel::STATUS_UNCONFIRMED) {
+            if ($phone_row['status'] != waContactDataModel::STATUS_CONFIRMED) {
                 if (!$email_row) {
-                    throw $error;
+                    throw $this->getAuthConfirmPhoneException();
                 }
-                if ($email_row['status'] == waContactEmailsModel::STATUS_UNCONFIRMED) {
-                    throw $error;
+                if ($email_row['status'] != waContactEmailsModel::STATUS_CONFIRMED) {
+                    throw $this->getAuthConfirmPhoneException();
+                }
+                if (!$this->isChannelAvailable($channels, self::LOGIN_FIELD_EMAIL)) {
+                    throw $this->getAuthConfirmPhoneException();
                 }
             }
 
@@ -478,6 +491,34 @@ class waAuth implements waiAuth
         throw $error;
     }
 
+    /**
+     * @param array|waVerificationChannel[] $channels Array of channels
+     * @param string $login_field_id self::LOGIN_FIELD_* const
+     * @return bool
+     */
+    protected function isChannelAvailable($channels, $login_field_id)
+    {
+        $is_available = false;
+
+        if ($login_field_id === self::LOGIN_FIELD_LOGIN) {
+            return true;
+        }
+
+        foreach ($channels as $channel) {
+            $channel = waVerificationChannel::factory($channel);
+            if ($login_field_id === self::LOGIN_FIELD_EMAIL && $channel->getType() === waVerificationChannelModel::TYPE_EMAIL) {
+                $is_available = true;
+                break;
+            }
+            if ($login_field_id === self::LOGIN_FIELD_PHONE && $channel->getType() === waVerificationChannelModel::TYPE_SMS) {
+                $is_available = true;
+                break;
+            }
+        }
+
+        return $is_available;
+    }
+
     protected function getAuthConfirmEmailException()
     {
         $login_url = $this->auth_config->getSignupUrl(array(
@@ -488,7 +529,11 @@ class waAuth implements waiAuth
         return new waAuthConfirmEmailException($msg);
     }
 
-
+    protected function getAuthConfirmPhoneException()
+    {
+        $msg = _ws('Please confirm your phone number to sign in.');
+        return new waAuthConfirmPhoneException($msg);
+    }
 
     protected function _remember($user_info, $remember)
     {

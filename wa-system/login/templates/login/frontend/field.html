@@ -25,7 +25,17 @@
     <div class="wa-field wa-field-{$field_id} {$class|default:''}" data-field-id="{$field_id}" style="{$_style}">
         <div class="wa-name">{$caption}</div>
         <div class="wa-value">
+
             {$html}
+
+            {if $is_need_confirm && $field_id === 'login'}
+                <div class="wa-edit-login-link-wrapper" style="display: none;">
+                    <a href="javascript:void(0);" class="wa-edit-login-link">
+                        <i class="wa-edit-login-link-icon"></i>
+                        [`Change`]
+                    </a>
+                </div>
+            {/if}
 
             {if $is_onetime_password_auth_type && $field_id === 'password'}
                 <div class="wa-onetime-password-input-message"></div>
@@ -51,6 +61,11 @@
             {render_errors errors=$errors}
         </div>
     </div>
+
+    {if $is_need_confirm && $field_id === 'login'}
+        {include file="./confirmation_block.inc.html" inline}
+    {/if}
+
 {/function}
 
 {**

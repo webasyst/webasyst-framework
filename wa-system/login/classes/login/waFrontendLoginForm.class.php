@@ -97,18 +97,6 @@ class waFrontendLoginForm extends waLoginForm
     }
 
     /**
-     * Options for captcha
-     * @see getCaptcha
-     * @return array
-     */
-    protected function getCaptchaOptions()
-    {
-        $options = parent::getCaptchaOptions();
-        $options['version'] = 2;    // in frontend must use v2 captcha
-        return $options;
-    }
-
-    /**
      * Render messages
      * @return array
      */

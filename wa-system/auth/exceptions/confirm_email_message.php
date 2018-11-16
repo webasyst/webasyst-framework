@@ -9,8 +9,13 @@
             var wrapper_id = '<?php echo $wrapper_id; ?>',
                 $wrapper = $('#' + wrapper_id);
             $wrapper.find('a:first').click(function () {
+                var $link = $(this),
+                    $form = $link.closest('form');
+                if (!$form.length) {
+                    $form = $link.closest('.js-wa-form-item')
+                }
                 var data = {
-                    login: $(this).closest('form').find("input[name='login']").val()
+                    login: $form.find("input[name='login']").val()
                 };
                 $.ajax({
                     url: $(this).attr('href'),

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-11-13 15:09+0300\n"
+"PO-Revision-Date: 2018-11-16 15:33+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5735,8 +5735,8 @@ msgstr "Версия Webasyst"
 
 #: /wa-system/design/templates/Theme.html:223
 #: /wa-system/design/templates/Theme.html:249
-msgid "Update not available."
-msgstr "Обновление недоступно."
+msgid "Update not available"
+msgstr "Обновление недоступно"
 
 #: /wa-system/signup/actions/waSignup.action.php:381
 msgid "You have successfully signed up. Please check new mail at <strong>%s</strong>, we have sent you a message with your password."
@@ -5813,3 +5813,20 @@ msgstr "ГГГГ"
 #: /wa-system/datetime/waDateTime.class.php:437
 msgid "YY"
 msgstr "ГГ"
+
+#: /wa-system/auth/waAuth.class.php:533
+msgid "Please confirm your phone number to sign in."
+msgstr "Подтвердите свой номер телефона, чтобы войти."
+
+#: /wa-system/auth/exceptions/waAuthConfirmPhoneException.class.php:9
+msgid "Phone number confirmation error."
+msgstr "Ошибка подтверждения номера телефона."
+
+msgid "Design theme user manual"
+msgstr "Инструкция к теме дизайна"
+
+msgid "User support"
+msgstr "Поддержка пользователей"
+
+msgid "Minimum 3 characters"
+msgstr "Минимум 3 символа"

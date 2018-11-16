@@ -10,10 +10,11 @@
   font-size: 1.142857142857143em;
   line-height: 1.125em;
   border: 1px solid #cfcfcf;
+  min-height: 28px;
 }
 .wa-signup-form-wrapper select {
   max-width: 100%;
-  height: 2em;
+  min-height: 28px;
 }
 .wa-signup-form-wrapper select option[disabled] {
   color: #aaa;
@@ -258,6 +259,8 @@
   color: #faa;
 }
 .wa-signup-form-wrapper .wa-field.wa-field-birthday .wa-value select {
+  vertical-align: top;
+  width: auto;
   margin-right: 12px;
 }
 .wa-signup-form-wrapper .wa-field .wa-value label {

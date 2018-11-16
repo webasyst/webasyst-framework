@@ -421,19 +421,6 @@ var WaLoginAbstractForm = ( function($) {
         return true;
     };
 
-    Self.prototype.showCaptcha = function (captcha) {
-        var that = this,
-            $captcha_wrapper = that.getFormItem().find('.wa-field-captcha');
-
-        // The plan is this: if we already have a captcha in our form,
-        // then we do not do anything. She is updated after the request.
-        //
-        // But if it's not there - insert it before the submit button field
-        if (!$captcha_wrapper.length) {
-            var $last_field = that.getFormItem().find('.wa-field').last(); // Submit field
-            $last_field.before(captcha);
-        }
-    };
 
     Self.prototype.afterShowErrors = function () {
 
@@ -558,10 +545,7 @@ var WaLoginAbstractForm = ( function($) {
     Self.prototype.onDoneSubmitHandlers = function () {
         var that = this;
         return {
-            captcha: function (captcha) {
-                that.showCaptcha(captcha);
-            },
-            errors: function (errors) {
+            errors: function (errors, response) {
                 that.showErrors(errors);
                 return true;
             },
@@ -584,24 +568,20 @@ var WaLoginAbstractForm = ( function($) {
             handlers = that.onDoneSubmitHandlers(),
             ok = r && r.status === 'ok',
             data = (r && r.data) || {},
-            captcha = (r && r.captcha) || null,
-            messages = (r && r.data && r.data.messages) || {},
+            messages = data.messages || {},
             errors = (r && r.errors) || {},
             stop = false;
 
         if (!ok) {
-            if (captcha) {
-                handlers.captcha(captcha);
-            }
-
             stop = (handlers.errors && handlers.errors(errors, r));
             if (stop) {
                 return;
             }
         }
 
-        if (data.redirect_url) {
-            stop = (handlers.redirect && handlers.redirect(data.redirect_url, r));
+        if (that.isRedirectResponse(r)) {
+            var url = that.getRedirectUrl(r);
+            stop = (handlers.redirect && handlers.redirect(url, r));
             if (stop) {
                 return;
             }
@@ -645,14 +625,20 @@ var WaLoginAbstractForm = ( function($) {
 
         return that.jsonPost(url, data)
             .done(function (r) {
-                $button.attr('disabled', false);
+
+                if (!that.isRedirectResponse(r)) {
+                    // On 'redirect' response
+                    // DO NOT hide loading and enable button right away
+                    // for UI/UX reason
+                    $button.attr('disabled', false);
+                    $loading.hide();
+                }
+
                 that.onDoneSubmit(r);
+
             })
             .fail(function () {
                 $button.attr('disabled', false);
-            })
-            .always(function () {
-                $loading.hide();
             });
     };
 
@@ -693,11 +679,37 @@ var WaLoginAbstractForm = ( function($) {
         return data;
     };
 
+    /**
+     * Check type of response from json server
+     * @param {Object} response
+     * @returns {boolean}
+     */
+    Self.prototype.isRedirectResponse = function (response) {
+        return this.getRedirectUrl(response) !== null;
+    };
+
+    /**
+     * @param {Object} response
+     * @returns {String|null} Null if not correct redirect url of it isn't presented
+     */
+    Self.prototype.getRedirectUrl = function (response) {
+        var url = response && response.status === 'ok' && response.data && response.data.redirect_url;
+        if (typeof url === 'string') {
+            return url;
+        } else {
+            return null;
+        }
+    };
+
     Self.prototype.jsonPost = function (url, data) {
         var that = this;
+        // prepare data
         data = that.beforeJsonPost(url, data);
-        return $.post(url, data, 'json').always(function () {
-            $('.wa-captcha-refresh').trigger('click');
+        return $.post(url, data, 'json').always(function (r) {
+            if (!that.isRedirectResponse(r)) {
+                // Not need call redundant refresh request
+                $('.wa-captcha-refresh').trigger('click');
+            }
         });
     };
 
@@ -714,6 +726,9 @@ var WaLoginAbstractForm = ( function($) {
             $error = that.prepareErrorItem('timeout', message);
 
         that.beforeErrorTimerStart();
+
+        // not need auto clearing on blur on input change
+        $error.data('notClear', 1).attr('data-not-clear', 1);
 
         // Run timer
         that.runTimeoutMessage($error, {
@@ -738,7 +753,12 @@ var WaLoginAbstractForm = ( function($) {
             items = [$error];
         } else {
             $.each(errors || [], function (index, error) {
-                var $error = that.prepareErrorItem(name, error, index);
+                var $error;
+                if (index === 'timeout') {
+                    $error = that.prepareTimeoutErrorItem(error.message, error.timeout);
+                } else {
+                    $error = that.prepareErrorItem(name, error, index);
+                }
                 items.push($error);
             });
         }

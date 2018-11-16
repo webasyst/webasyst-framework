@@ -24,8 +24,9 @@
                     src = $img.attr('src');
 
                 if ($img.length) {
-                    $img.attr('src', src.replace(/\?.*$/, '?rid=' + Math.random()));
+                    $img.css('opacity', '0.5').attr('src', src.replace(/\?.*$/, '?rid=' + Math.random()));
                     $img.one('load', function () {
+                        $img.css('opacity', '');
                         $(window).trigger('wa_captcha_loaded');
                         $input.val('').focus();
                     });

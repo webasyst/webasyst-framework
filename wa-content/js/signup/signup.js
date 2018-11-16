@@ -285,8 +285,34 @@ var WaSignup = ( function($) {
         var that = this;
         // prepare data
         data = that.beforeJsonPost(url, data);
-        // Send post and trigger events
-        return $.post(url, data, 'json');
+        return $.post(url, data, 'json').always(function (r) {
+            if (!that.isRedirectResponse(r)) {
+                // Not need call redundant refresh request
+                $('.wa-captcha-refresh').trigger('click');
+            }
+        });
+    };
+
+    /**
+     * Check type of response from json server
+     * @param {Object} response
+     * @returns {boolean}
+     */
+    WaSignup.prototype.isRedirectResponse = function (response) {
+        return this.getRedirectUrl(response) !== null;
+    };
+
+    /**
+     * @param {Object} response
+     * @returns {String|null} Null if not correct redirect url of it isn't presented
+     */
+    WaSignup.prototype.getRedirectUrl = function (response) {
+        var url = response && response.status === 'ok' && response.data && response.data.redirect_url;
+        if (typeof url === 'string') {
+            return url;
+        } else {
+            return null;
+        }
     };
 
     WaSignup.prototype.submit = function (options) {
@@ -316,22 +342,34 @@ var WaSignup = ( function($) {
 
         $loading.show();
 
-        // $button can be <a> link
-        $button.attr('disabled', true).addClass('wa-is-disabled');
+        var disableButton = function (disabled) {
+            // $button can be <a> link
+            disabled = !!disabled;
+            $button.attr('disabled', disabled);
+            if (disabled) {
+                $button.addClass('wa-is-disabled');
+            } else {
+                $button.removeClass('wa-is-disabled');
+            }
+        };
+
+        disableButton(true);
 
         return that.jsonPost(url, data)
             .done(function (r) {
-                // $button can be <a> link
-                $button.attr('disabled', false).removeClass('wa-is-disabled');
+
+                if (!that.isRedirectResponse(r)) {
+                    // On 'redirect' response
+                    // DO NOT hide loading and enable button right away
+                    // for UI/UX reason
+                    disableButton(false);
+                    $loading.hide();
+                }
+
                 that.onDoneSubmit(r);
             })
             .fail(function () {
-                // $button can be <a> link
-                $button.attr('disabled', false).removeClass('wa-is-disabled');
-            })
-            .always(function () {
-                $loading.hide();
-                $('.wa-captcha-refresh').trigger('click');
+                disableButton(false);
             });
     };
 
@@ -454,8 +492,10 @@ var WaSignup = ( function($) {
             that.onOnetimePasswordSent(r.data);
         }
 
-        if (r.data.redirect_url) {
-            window.location.href = r.data.redirect_url;
+
+        if (that.isRedirectResponse(r)) {
+            var url = that.getRedirectUrl(r);
+            window.location.href = url;
             return;
         }
 

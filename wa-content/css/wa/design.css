@@ -86,7 +86,7 @@ h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: upper
 .wa-theme-actions.wa-theme-latest { background: #dfc; }
 .wa-theme-actions.wa-theme-update-available { background: #ffc; }
 .wa-theme-actions.wa-theme-orphan { background: #eee; }
-.wa-theme-actions.wa-theme-warning { background: #fff3cc; margin-bottom: 30px; }
+.wa-theme-actions.wa-theme-warning { background: #ffe7e7; margin-bottom: 30px; }
 .wa-theme-actions.wa-theme-warning ul { margin: 0; }
 .wa-theme-actions ul.menu-v.with-icons li a { word-break: keep-all; }
 .wa-theme-actions ul.menu-v.with-icons li b { display: block; }

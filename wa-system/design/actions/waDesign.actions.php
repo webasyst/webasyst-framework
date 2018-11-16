@@ -609,7 +609,6 @@ HTACCESS;
                 $this->displayJson(array('redirect' => $this->themes_url));
             }
         } else {
-
             $current_locale = null;
             $routes = $this->getRoutes();
             $theme_routes = array();
@@ -622,7 +621,6 @@ HTACCESS;
                     $preview_url = $r['_url'].'?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
                 }
             }
-
             $settings = $current_theme->getSettings(false, $current_locale);
 
             try {
@@ -646,10 +644,7 @@ HTACCESS;
             }
 
             $settings = $this->convertSettingsToTree($settings);
-
-            if (isset($settings['level'])) {
-                unset($settings['level']);
-            }
+            unset($settings['level']);
 
             $global_group_divideres = array();
             if (!empty($settings['items'])) {
@@ -695,28 +690,39 @@ HTACCESS;
                 $original_warning_requirements = $theme_original->getWarningRequirements();
             }
 
+            $theme_parent_original_version = false;
             if ($current_theme->parent_theme && $current_theme->parent_theme->type == waTheme::OVERRIDDEN) {
                 $theme_parent_original = new waTheme($current_theme->parent_theme->id, $current_theme->parent_theme->app_id, waTheme::ORIGINAL);
                 $theme_parent_original_version = $theme_parent_original->version;
-            } else {
-                $theme_parent_original_version = false;
+            }
+
+            $support = $current_theme['support'];
+            // Parse support from parent theme
+            if (empty($support) && $current_theme->parent_theme && !empty($current_theme->parent_theme['support'])) {
+                $support = $current_theme->parent_theme['support'];
             }
 
             // Prepare support website or email
-            if (!empty($current_theme['support'])) {
+            if (!empty($support)) {
                 $email_validator = new waEmailValidator();
-                if ($email_validator->isValid($current_theme['support'])) {
-                    $current_theme['support'] = 'mailto:'.$current_theme['support'];
+                if ($email_validator->isValid($support) && !preg_match('~^https?://~', $support)) {
+                    $support = 'mailto:'.$support;
                 } else {
-                    if (!preg_match('~^https?://~', $current_theme['support'])) {
-                        $current_theme['support'] = 'http://'.$current_theme['support'];
+                    if (!preg_match('~^https?://~', $support)) {
+                        $support = 'http://'.$support;
                     }
                 }
             }
 
+            // Parse instruction from parent theme
+            $instruction = $current_theme['instruction'];
+            if (empty($instruction) && $current_theme->parent_theme && !empty($current_theme->parent_theme['instruction'])) {
+                $instruction = $current_theme->parent_theme['instruction'];
+            }
+
             // Prepare instruction site
-            if (!empty($current_theme['instruction']) && !preg_match('~^https?://~', $current_theme['instruction'])) {
-                $current_theme['instruction'] = 'http://'.$current_theme['instruction'];
+            if (!empty($instruction) && !preg_match('~^https?://~', $instruction)) {
+                $instruction = 'http://'.$instruction;
             }
 
             $theme_warning_requirements = $current_theme->getWarningRequirements();
@@ -731,6 +737,8 @@ HTACCESS;
                 'design_url'                          => $this->design_url,
                 'app'                                 => wa()->getAppInfo($app_id),
                 'theme'                               => $current_theme,
+                'support'                             => $support,
+                'instruction'                         => $instruction,
                 'theme_warning_requirements'          => $theme_warning_requirements,
                 'theme_original_warning_requirements' => $original_warning_requirements,
                 'theme_original_version'              => $theme_original_version,

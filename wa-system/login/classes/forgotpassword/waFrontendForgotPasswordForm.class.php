@@ -42,16 +42,4 @@ class waFrontendForgotPasswordForm extends waForgotPasswordForm
         $auth_config = waDomainAuthConfig::factory();
         return wa($auth_config->getApp())->getForgotPasswordForm($options);
     }
-
-    /**
-     * Options for captcha
-     * @see getCaptcha
-     * @return array
-     */
-    protected function getCaptchaOptions()
-    {
-        $options = parent::getCaptchaOptions();
-        $options['version'] = 2;    // in frontend must use v2 captcha
-        return $options;
-    }
 }

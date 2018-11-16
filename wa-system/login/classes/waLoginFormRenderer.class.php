@@ -477,6 +477,7 @@ abstract class waLoginFormRenderer
             'need_redirects'                => $this->options['need_redirects'],
             'is_onetime_password_auth_type' => $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD,
             'auth_config'                   => $this->auth_config->getData(),
+            'is_need_confirm'               => $this->auth_config->getSignUpConfirm(),
             'namespace'                     => $this->getNamespace(),
             'include_js'                    => $this->options['include_js'],
             'include_css'                   => $this->options['include_css'],
@@ -520,6 +521,7 @@ abstract class waLoginFormRenderer
         return array(
             'namespace'     => $this->namespace,
             'wrapper_class' => 'wa-captcha-section',
+            'version'       => 2,
         );
     }
 

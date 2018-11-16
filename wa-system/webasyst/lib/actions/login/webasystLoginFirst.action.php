@@ -25,7 +25,7 @@ class webasystLoginFirstAction extends waViewAction
             $login = is_scalar($login) ? (string)$login : '';
 
             if (strlen($login) <= 0) {
-                $errors['email'] = _ws('Login is required');
+                $errors['login'] = _ws('Login is required');
             } else {
                 $validator = new waLoginValidator();
                 if (!$validator->isValid($login)) {

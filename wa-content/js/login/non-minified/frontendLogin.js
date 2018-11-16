@@ -15,12 +15,7 @@ var WaFrontendLogin = ( function($) {
     Self.prototype.init = function (options) {
         var that = this;
         Parent.prototype.init.call(that, options);
-
-        if (that.isOneTypePasswordMode()) {
-            that.initOnetimePasswordView();
-        }
-
-        that.initAuthAdapters();
+        that.initView();
     };
 
     Self.prototype.initVars = function (options) {
@@ -36,6 +31,21 @@ var WaFrontendLogin = ( function($) {
         that.className = Self.className;
         that.is_onetime_password_auth_type = options.is_onetime_password_auth_type || false;
         that.env = 'frontend';
+        that.is_need_confirm = options.is_need_confirm || false;
+    };
+
+    Self.prototype.initView = function () {
+        var that = this;
+
+        if (that.isOneTypePasswordMode()) {
+            that.initOnetimePasswordView();
+        }
+
+        if (that.isNeedConfirm()) {
+            that.initConfirmView();
+        }
+
+        that.initAuthAdapters();
     };
 
     Self.prototype.initAuthAdapters = function() {
@@ -59,6 +69,39 @@ var WaFrontendLogin = ( function($) {
                 var new_window = window.open(href, "oauth", "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
             }
         }
+    };
+
+    Self.prototype.isNeedConfirm = function () {
+        return this.is_need_confirm;
+    };
+
+    Self.prototype.initConfirmView = function () {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $edit_link = $wrapper.find('.wa-edit-login-link-wrapper'),
+            $sent_link = $wrapper.find('.wa-send-again-confirmation-code-link-wrapper'),
+            $confirm_block = $wrapper.find('.wa-signup-form-confirmation-block'),
+            $login = that.getFormInput('login');
+
+        // see onConfirmPhoneError
+
+        that.turnOffBlock($confirm_block);
+        that.turnOffBlock($edit_link);
+        that.turnOffBlock($sent_link);
+
+        $edit_link.click(function () {
+            that.turnOffBlock($confirm_block);
+            $login.removeAttr('readonly');
+        });
+
+        $sent_link.click(function () {
+            // re-request code - disable confirmation code input
+            that.turnOffBlock($confirm_block);
+
+            // trigger submit
+            var $form = that.getFormItem();
+            $form.find(':submit:first:not(:disabled)').trigger('click');
+        });
     };
 
     Self.prototype.initOnetimePasswordView = function () {
@@ -189,9 +232,63 @@ var WaFrontendLogin = ( function($) {
         return Parent.prototype.beforeJsonPost.call(that, url, data);
     };
 
+    Self.prototype.onConfirmPhoneError = function (response) {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $edit_link = $wrapper.find('.wa-edit-login-link-wrapper'),
+            $sent_link = $wrapper.find('.wa-send-again-confirmation-code-link-wrapper'),
+            $confirm_block = $wrapper.find('.wa-signup-form-confirmation-block'),
+            $login = that.getFormInput('login');
+
+        //that.turnOnBlock($edit_link);
+        that.turnOnBlock($confirm_block);
+
+        // "Disable" LOGIN input
+        $login.attr('readonly', 1);
+
+        var data = response.data;
+
+        // Code not sent
+        if (!data.code_sent) {
+            return;
+        }
+
+        // Format message about timeout
+        var $timeout_message = that.formatInfoMessage(data.code_sent_timeout_message, false, 'timeout');
+
+        // Place messages
+        $wrapper.find('.wa-confirmation-code-input-message').html($timeout_message);
+
+        // Ensure links are hidden
+        $sent_link.hide();
+        $edit_link.hide();
+
+        // Run timer inside message
+        that.runTimeoutMessage($timeout_message, {
+            timeout: data.code_sent_timeout,
+            onFinish: function () {
+                // Show link(s)
+                $sent_link.show();
+                $edit_link.show();
+            }
+        });
+
+    };
+
     Self.prototype.onDoneSubmitHandlers = function () {
         var that = this,
             handlers = Parent.prototype.onDoneSubmitHandlers.call(that);
+        handlers.errors = function (errors, response) {
+
+            // case when contact must confirm phone
+            if (!$.isEmptyObject(errors.confirmation_code)) {
+                that.onConfirmPhoneError(response);
+            }
+
+            that.showErrors(errors);
+
+            return true;
+        };
         handlers.rest = function (r) {
             // Trigger event for further processing successfully authorized contact
             if (r.data.auth_status === 'ok') {

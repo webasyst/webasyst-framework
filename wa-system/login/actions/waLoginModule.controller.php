@@ -11,8 +11,6 @@ abstract class waLoginModuleController extends waViewAction
     protected $response = array();
     private $is_json_mode;
 
-    protected $send_captcha = false;
-
     protected function assign($name, $value = null)
     {
         if (is_scalar($name)) {
@@ -79,8 +77,11 @@ abstract class waLoginModuleController extends waViewAction
 
             $errors = $this->getErrors();
             if ($errors) {
-                $captcha_needed = $this->send_captcha ? true : false;
-                $this->sendJson($errors, false, $captcha_needed);
+                $response = $this->response;
+                if (isset($response['errors'])) {
+                    unset($response['errors']);
+                }
+                $this->sendFailJsonResponse($errors, $response);
             } else {
 
                 // We can't send waContact object by json, just array, so extract info from waContact
@@ -99,8 +100,7 @@ abstract class waLoginModuleController extends waViewAction
                     );
                 }
 
-
-                $this->sendJson($this->response);
+                $this->sendOkJsonResponse($this->response);
             }
         }
     }
@@ -193,7 +193,7 @@ abstract class waLoginModuleController extends waViewAction
             return parent::redirect($params, $code);
         } else {
             $url = $this->unpackRedirectParams($params);
-            return $this->sendJson(array(
+            return $this->sendOkJsonResponse(array(
                 'redirect_url' => $url,
                 'redirect_code' => $code
             ));
@@ -205,18 +205,18 @@ abstract class waLoginModuleController extends waViewAction
         // override it
     }
 
-    protected function sendJson($response, $ok = true, $captcha_needed = false)
+    protected function sendFailJsonResponse($errors, $data = array())
     {
         $this->getResponse()->addHeader('Content-Type', 'application/json');
-        if ($ok) {
-            $response = array('status' => 'ok', 'data' => $response);
-        } else {
-            $response = array('status' => 'fail', 'errors' => $response);
-            if ($captcha_needed && $this->getFormRenderer() instanceof waLoginFormRenderer) {
-                $response['captcha'] = $this->getFormRenderer()->renderCaptcha();
-            }
-        }
+        $response = array('status' => 'fail', 'errors' => $errors, 'data' => $data);
+        $this->getResponse()->sendHeaders();
+        die(json_encode($response));
+    }
 
+    protected function sendOkJsonResponse($response)
+    {
+        $this->getResponse()->addHeader('Content-Type', 'application/json');
+        $response = array('status' => 'ok', 'data' => $response);
         $this->getResponse()->sendHeaders();
         die(json_encode($response));
     }

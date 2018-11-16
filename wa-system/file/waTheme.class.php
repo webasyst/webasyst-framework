@@ -18,6 +18,8 @@
  * @property string $name
  * @property string $description
  * @property string $about
+ * @property string $instruction
+ * @property string $support
  * @property string $version
  * @property string $vendor
  * @property int $edition Incremental counter of theme changes
@@ -201,14 +203,14 @@ class waTheme implements ArrayAccess
 
                     $this->info = array(
                         'name'            => array($locale => $this->id),
+                        'instruction'     => array(),
+                        'support'         => array(),
                         'files'           => array(),
                         'settings'        => array(),
                         'parent_theme_id' => '',
                         'version'         => '',
                         'edition'         => 0,
                         'source_theme_id' => '',
-                        'support'         => '',
-                        'instruction'     => '',
                         'requirements'    => array(),
                     );
                     try {
@@ -223,7 +225,7 @@ class waTheme implements ArrayAccess
                     /**
                      * @var SimpleXMLElement $xml
                      */
-                    $ml_fields = array('name', 'description', 'about');
+                    $ml_fields = array('name', 'description', 'instruction', 'support', 'about');
 
                     foreach ($ml_fields as $field) {
                         $this->info[$field] = array();
@@ -645,6 +647,8 @@ XML;
                 $before = array(
                     'name',
                     'description',
+                    'instruction',
+                    'support',
                     'files',
                     'about',
                     'settings',
@@ -816,7 +820,7 @@ XML;
                      * @var DOMElement $theme
                      */
 
-                    $ml_fields = array('name', 'description', 'about');
+                    $ml_fields = array('name', 'description', 'about', 'instruction', 'support');
                     foreach ($ml_fields as $field) {
                         if (isset($this->changed[$field]) && $this->info[$field]) {
                             $this->addLocalizedField($dom, $xpath, $theme, $field, $this->info[$field]);
@@ -1191,7 +1195,8 @@ XML;
                     $this->changed['settings'][$var] = true;
                 } else {
                     $old_s = $old_settings[$var];
-                    if (ifset($old_s['value'], '') != ifset($s['value'], '')) {
+                    // Ignore group_divider and paragraph
+                    if (ifset($old_s, 'value', '') != ifset($s, 'value', '') && $s['control_type'] !== 'group_divider' && $s['control_type'] !== 'paragraph') {
                         $s['value'] = $old_s['value'];
                         $this->info['settings'][$var] = $s;
                         $this->settings[$var]['value'] = $s['value'];
@@ -1200,10 +1205,11 @@ XML;
                 }
             }
 
-            // learn what old settings are not used in the new theme.xml
+            // Learn what old settings are not used in the new theme.xml
             $deprecated_settings = array();
             foreach ($old_settings as $var => $old_s) {
-                if (!isset($new_settings[$var])) {
+                // Ignore group_divider and paragraph
+                if (!isset($new_settings[$var]) && $old_s['control_type'] !== 'group_divider' && $old_s['control_type'] !== 'paragraph') {
                     $deprecated_settings[] = $var;
                 }
             }
@@ -1538,6 +1544,18 @@ HTACCESS;
         $this->changed['about'] = true;
     }
 
+    public function setInstruction($text)
+    {
+        $this->info['instruction'] = self::prepareSetField($this->init('instruction') ? $this->info['instruction'] : '', $text);
+        $this->changed['instruction'] = true;
+    }
+
+    public function setSupport($text)
+    {
+        $this->info['support'] = self::prepareSetField($this->init('support') ? $this->info['support'] : '', $text);
+        $this->changed['support'] = true;
+    }
+
     private static function prepareSetField($field, $value)
     {
         $field = self::prepareField($field, true);
@@ -1596,6 +1614,16 @@ HTACCESS;
     public function getAbout($full = false)
     {
         return self::prepareField($this->init('about') ? $this->info['about'] : '', $full);
+    }
+
+    public function getInstruction($full = false)
+    {
+        return self::prepareField($this->init('instruction') ? $this->info['instruction'] : '', $full);
+    }
+
+    public function getSupport($full = false)
+    {
+        return self::prepareField($this->init('support') ? $this->info['support'] : '', $full);
     }
 
     /**
@@ -1881,10 +1909,13 @@ HTACCESS;
         }
         unset($requirement);
 
-        if (!class_exists('waInstallerApps')) {
+        $wa_installer_apps = 'wa-installer/lib/classes/wainstallerapps.class.php';
+        $wa_installer_requirements = 'wa-installer/lib/classes/waInstallerRequirements.class.php';
+
+        if (!class_exists('waInstallerApps') && file_exists(wa()->getConfig()->getRootPath() .'/'. $wa_installer_apps)) {
             $autoload = waAutoload::getInstance();
-            $autoload->add('waInstallerApps', 'wa-installer/lib/classes/wainstallerapps.class.php');
-            $autoload->add('waInstallerRequirements', '/wa-installer/lib/classes/waInstallerRequirements.class.php');
+            $autoload->add('waInstallerApps', $wa_installer_apps);
+            $autoload->add('waInstallerRequirements', $wa_installer_requirements);
         }
 
         if ($check && class_exists('waInstallerApps')) {
@@ -2555,10 +2586,20 @@ HTACCESS;
         if (file_exists($this->path)) {
             // Write all theme settings in json file
             waFiles::create($settings_file);
+
+            // Ignore group_dividers and paragraphs
+            $settings = $this->getSettings('full');
+            foreach ($settings as $var => $setting) {
+                if ($setting['control_type'] == 'group_divider' || $setting['control_type'] == 'paragraph') {
+                    unset($settings[$var]);
+                }
+            }
+
             $settings = array(
                 'app'      => $this->app,
-                'settings' => $this->getSettings('full'),
+                'settings' => $settings,
             );
+
             waFiles::write($settings_file, waUtils::jsonEncode($settings));
 
             // Add to our directory images that are used in the settings

@@ -358,6 +358,36 @@
   position: static;
   margin-top: 2px;
 }
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper {
+  display: inline-block;
+  margin-left: 16px;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper .wa-edit-login-link {
+  display: inline-block;
+  text-decoration: none;
+  color: #777;
+  font-size: 14px;
+  opacity: 0.7;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+  filter: alpha(opacity=70);
+  -webkit-transition: opacity 200ms linear;
+  -moz-transition: opacity 200ms linear;
+  -o-transition: opacity 200ms linear;
+  -ms-transition: opacity 200ms linear;
+  transition: opacity 200ms linear;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper .wa-edit-login-link:hover {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper .wa-edit-login-link .wa-edit-login-link-icon {
+  display: inline-block;
+  background-image: url("../../../img/edit-gray.svg");
+  background-repeat: no-repeat;
+  width: 12px;
+  height: 11px;
+}
 .wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=text] {
   width: 80px;
   min-width: 80px;
@@ -366,8 +396,8 @@
 .wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value .wa-confirmation-code-input-message {
   display: inline-block;
 }
-.wa-login-form-wrapper.wa-is-need-confirm .wa-confirm-signup-button-wrapper .wa-confirm-signup-button-icon {
-  margin-top: 8px;
+.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value .wa-send-again-confirmation-code-link-wrapper {
+  display: inline-block;
 }
 .wa-login-form-wrapper .wa-loading {
   margin: 12px 0 0 10px;

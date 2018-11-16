@@ -37,7 +37,7 @@ var WaFrontendForgotPassword = ( function($) {
             that.getFormInput('login').removeAttr('readonly');
 
             // Submit button must be shown
-            that.turnOnBlock(that.$wrapper.find('.wa-forgotpassword-buttom'));
+            that.turnOnBlock(that.$wrapper.find('.wa-forgotpassword-button'));
 
             // Links must be hidden
             that.$wrapper.find('.wa-edit-login-link-wrapper').hide();
@@ -106,7 +106,7 @@ var WaFrontendForgotPassword = ( function($) {
             that.getFormInput('confirmation_code').val('');
 
             // Hide main Submit button
-            that.turnOffBlock(that.$wrapper.find('.wa-forgotpassword-buttom'));
+            that.turnOffBlock(that.$wrapper.find('.wa-forgotpassword-button')); 
 
             showSentMessage(r);
 

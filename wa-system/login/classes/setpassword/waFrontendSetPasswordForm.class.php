@@ -55,18 +55,6 @@ class waFrontendSetPasswordForm extends waSetPasswordForm
     }
 
     /**
-     * Options for captcha
-     * @see getCaptcha
-     * @return array
-     */
-    protected function getCaptchaOptions()
-    {
-        $options = parent::getCaptchaOptions();
-        $options['version'] = 2;    // in frontend must use v2 captcha
-        return $options;
-    }
-
-    /**
      * Get info from last response of forgot-password action
      *
      * NOTICE: delete response from storage right away, cause we need process this response only 1 time!

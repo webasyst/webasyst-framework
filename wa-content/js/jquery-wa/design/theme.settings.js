@@ -425,7 +425,9 @@ var WAThemeSettings = ( function($) {
 
     WAThemeSettings.prototype.initSettingsSearch = function() {
         var that = this,
+            timer = null,
             $search_input = that.$search_input,
+            $result_min_symbol = that.$wrapper.find('.js-search-min-symbol'),
             $result_label = that.$wrapper.find('.js-search-result'),
             $no_result_label = that.$wrapper.find('.js-search-no-result');
 
@@ -446,24 +448,32 @@ var WAThemeSettings = ( function($) {
                 that.$anchors.show();
             }
 
-            settingSearch(q);
+            timer && clearTimeout(timer);
+            timer = setTimeout(function(){
+                settingSearch(q);
+            }, 400);
         });
 
         function settingSearch(query) {
             var $settings_list = that.$settings_list,
                 filter = new RegExp(query, 'i'),
-                empty_query = query.length === 0,
+                query_length = query.length,
+                empty_query = query_length === 0,
+                small_query = query_length < 4,
                 results = false;
 
             $result_label.hide();
             $no_result_label.hide();
+            $result_min_symbol.hide();
             that.$wrapper.find('.js-group-all-settings').hide();
             that.$wrapper.find('.js-theme-other-data').hide();
 
             // Collapse all global dividers
-            that.$global_dividers.each(function () {
-                $(this).hide();
-            });
+            if (!small_query) {
+                that.$global_dividers.each(function () {
+                    $(this).hide();
+                });
+            }
 
             $settings_list.find('.js-search-item').each(function () {
                 var $item = $(this),
@@ -472,6 +482,14 @@ var WAThemeSettings = ( function($) {
                     $divider = $item.parents('.js-theme-setting-divider[data-divider-level="1"]'),
                     data_search = '' + $item.data('search'),
                     matched = null;
+
+                if (small_query) {
+                    $item_search_name.html(item_name);
+                    $item.show();
+                    $divider.show();
+                    that.collapseGroup($divider);
+                    return;
+                }
 
                 if (filter) {
                     matched = data_search.match(filter);
@@ -507,7 +525,9 @@ var WAThemeSettings = ( function($) {
             });
 
             if (!empty_query) {
-                if (!results) {
+                if (small_query) {
+                    $result_min_symbol.show();
+                } else if (!results) {
                     $no_result_label.show();
                 } else {
                     $result_label.show();
