@@ -172,7 +172,8 @@
                         </nav>
 
                         <div class="column wa-flex-box middle">
-                            {if $wa->shop}
+                            {$_hide_cart = $wa->globals("hideCart")}
+                            {if $wa->shop && empty($_hide_cart)}
                                 <!-- cart -->
                                 {$cart_total = $wa->shop->cart->total()}
                                 <div id="cart" class="cart{if !$cart_total} empty{/if}">

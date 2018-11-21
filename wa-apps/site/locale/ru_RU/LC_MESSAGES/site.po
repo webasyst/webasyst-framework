@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -1128,8 +1128,11 @@ msgid "Personal account sections"
 msgstr "Разделы личного кабинета"
 
 #: /wa-apps/site/templates/actions/personal/Personal.html:37
-msgid "Sections are determined by connected applications"
-msgstr "Разделы определяются подключенными приложениями"
+msgid "Sections are determined by connected applications."
+msgstr "Разделы определяются подключенными приложениями."
+
+msgid "Read <a href=\"https://support.webasyst.com/29298/site-auth-settings/\" target=\"_blank\">user manual</a>."
+msgstr "Смотрите <a href=\"https://support.webasyst.ru/29281/site-auth-settings/\" target=\"_blank\">инструкцию</a>."
 
 #: /wa-apps/site/templates/actions/personal/Personal.html:41
 msgid "Auth & Sign Up settings"
@@ -1682,8 +1685,8 @@ msgstr "Выберите приложение"
 msgid "Ways of login and registration"
 msgstr "Способы входа и регистрации"
 
-msgid "Social networks"
-msgstr "Социальные сети"
+msgid "Social networks (additional authorization option)"
+msgstr "Социальные сети (дополнительный способ входа)"
 
 msgid "Register form"
 msgstr "Форма регистрации"
@@ -1763,11 +1766,11 @@ msgstr "Флажок «Запомнить меня»"
 msgid "Email or phone"
 msgstr "Email или телефон"
 
-msgid "Cannot disable all authorization options"
-msgstr "Нельзя отключать все способы авторизации"
+msgid "Cannot disable both authorization options “Email” &amp; “Phone”"
+msgstr "Нельзя отключать оба способа авторизации «Email» и «Телефон»"
 
-msgid "Keep at least one authorization option enabled for website visitors to be able to log into their accounts."
-msgstr "Оставьте включенным хотя бы один способ авторизации, чтобы посетители сайта могли входить в личный кабинет."
+msgid "Keep at least one of these two basic authorization option enabled for website visitors to be able to log into their accounts."
+msgstr "Оставьте включенным хотя бы один из этих двух основных способов авторизации, чтобы посетители сайта могли входить в личный кабинет."
 
 msgid "Authorization with an email address is used by default."
 msgstr "По умолчанию используется авторизация с помощью email-адреса."
@@ -1799,8 +1802,8 @@ msgstr "Удалить этот сайт-зеркало? Никакие данн
 msgid "Waiting period in seconds before sending next verification code:"
 msgstr "Интервал в секундах перед отправкой следующего кода подтверждения:"
 
-msgid "Verification code"
-msgstr "Код подтверждения"
+msgid "Verification code re-sending"
+msgstr "Повторная отправка кода подтверждения"
 
 msgid "Add SMS notification templates in <a href=\"%s\">Settings</a> app."
 msgstr "Добавьте шаблоны SMS-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."

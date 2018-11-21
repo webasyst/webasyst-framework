@@ -166,8 +166,8 @@ var SitePersonalSettings = ( function($) {
                 if ($active_method_checkbox.length === 0 || ($.inArray('email', active_methods) === -1 && $.inArray('sms', active_methods) === -1)) {
                     var $dialog = that.$minimum_auth_type_dialog.clone();
                     $dialog.waDialog({
-                        width: '400px',
-                        height: '180px',
+                        width: '410px',
+                        height: '240px',
                         onClose: function () {
                             var $email_methods_toogle = that.$auth_methods_wrapper.find('input[name="used_auth_methods[email]"]');
                             $email_methods_toogle.prop("checked", true).trigger("change");

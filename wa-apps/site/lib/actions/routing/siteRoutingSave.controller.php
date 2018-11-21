@@ -76,8 +76,16 @@ class siteRoutingSaveController extends waJsonController
                 $this->response['add'] = 'top';
             }
 
-            // save
+            // Save new route
+            $params = array(
+                'domain' => $domain,
+                'route'  => &$route,
+            );
+            wa()->event('route_save.before', $params);
+            $routes[$domain][$route_id] = $route;
             waUtils::varExportToFile($routes, $path);
+            wa()->event('route_save.after', $params);
+
             // log
             $this->logAction('route_add', $domain.'/'.$route['url']);
 
@@ -155,8 +163,15 @@ class siteRoutingSaveController extends waJsonController
                 $routes[$domain][$route_id] = $new;
             }
 
-            // save
+            $params = array(
+                'domain' => $domain,
+                'route'  => &$new,
+            );
+
+            wa()->event('route_save.before', $params);
+            $routes[$domain][$route_id] = $new;
             waUtils::varExportToFile($routes, $path);
+            wa()->event('route_save.after', $params);
 
             $this->response['url'] = $routes[$domain][$route_id]['url'];
             $this->response['private'] = !empty($routes[$domain][$route_id]['private']);
@@ -285,13 +300,6 @@ class siteRoutingSaveController extends waJsonController
         if (empty($r['locale'])) {
             unset($r['locale']);
         }
-
-        $params = array(
-            'domain' => siteHelper::getDomain(),
-            'route'  => &$r,
-        );
-
-        wa('site')->event('save.route', $params);
 
         return $r;
     }

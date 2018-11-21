@@ -84,7 +84,7 @@
 {function timeout}
     <div class="field-group">
         <div class="field">
-            <div class="name">[`Verification code`]</div>
+            <div class="name">[`Verification code re-sending`]</div>
             <div class="value">
                 <div style="margin-bottom: 10px;">
                     <label>
@@ -147,7 +147,7 @@
             <a href="javascript:void(0);" class="link-options inline-link inline js-settings-link"{if !$_social_used} style="display: none"{/if}><i class="icon16 settings"></i><b><i>[`Settings`]</i></b></a>
             <input name="used_auth_methods[{waAuthConfig::AUTH_METHOD_SOCIAL}]" data-method="{waAuthConfig::AUTH_METHOD_SOCIAL}" class="ibutton js-auth-method-toogle" type="checkbox"{if $_social_used} checked="checked"{/if}>
         </div>
-        <h3 class="name">[`Social networks`]</h3>
+        <h3 class="name">[`Social networks (additional authorization option)`]</h3>
         <div class="s-settings-wrapper js-settings-wrapper" style="display: none;">
             <p class="hint">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="https://support.webasyst.com/5556/third-party-auth-setup/" target="_blank">Setup instructions</a> <i class="icon10 new-window"></i>`]</p>
             <div class="field">

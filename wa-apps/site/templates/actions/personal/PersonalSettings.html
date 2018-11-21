@@ -53,13 +53,13 @@
                                 {* EMAIL *}
                                 {email_settings}
 
-                                {* SOCIAL NETWORKS *}
-                                {social_networks_settings}
-
                                 {if $phone_available}
                                     {* MOBILE PHONE *}
                                     {phone_settings}
                                 {/if}
+
+                                {* SOCIAL NETWORKS *}
+                                {social_networks_settings}
                             </tbody>
                         </table>
                     </div>
@@ -99,8 +99,8 @@
             <div class="dialog-window">
                 <div class="dialog-content">
                     <div class="dialog-content-indent">
-                        <h2>[`Cannot disable all authorization options`]</h2>
-                        <p>[`Keep at least one authorization option enabled for website visitors to be able to log into their accounts.`]</p>
+                        <h2>[`Cannot disable both authorization options “Email” &amp; “Phone”`]</h2>
+                        <p>[`Keep at least one of these two basic authorization option enabled for website visitors to be able to log into their accounts.`]</p>
                         <p>[`Authorization with an email address is used by default.`]</p>
                     </div>
                     <div class="clear"></div>
