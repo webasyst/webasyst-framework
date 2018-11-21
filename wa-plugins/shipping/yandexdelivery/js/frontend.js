@@ -7,7 +7,7 @@
  * @property {string} description Full address
  * @property {string} comment
  * @property {string} payment
- * @property {string} schedule
+ * @property {string} schedule_html
  * @property {float} rate
  *
  * @property {string} input_id
@@ -661,7 +661,7 @@ function ShippingYandexdelivery(key, id, url) {
                         ) : ''
                     ) +
                     (pickup.comment ? ('<div class="line hint hint-line">' + pickup.comment.replace(/[\r\n]+/g, '<br/>') + '</div>') : '') +
-                    (pickup.schedule ? ('<div class="line yandexdelivery-list">' + pickup.schedule + '</div>') : ''),
+                    (pickup.schedule_html ? ('<div class="line yandexdelivery-list">' + pickup.schedule_html + '</div>') : ''),
                     "balloonContentHeader": pickup.title,
                     "balloonContentFooter": '<div class="line actions">' +
                     '<div class="t-layout">' +
@@ -719,7 +719,7 @@ function ShippingYandexdelivery(key, id, url) {
                     return p;
                 }).join(", ") : pickup.payment;
                 this.pickup_section.find('.line.js-yandexdelivery-payment').html(payment);
-                this.pickup_section.find('.line.js-yandexdelivery-schedule').html(pickup.schedule);
+                this.pickup_section.find('.line.js-yandexdelivery-schedule').html(pickup.schedule_html);
                 this.pickup_section.find('.line.hint').html(pickup.comment.replace(/[\r\n]+/g, '<br/>'));
             }
             this.pickup_section.slideDown();

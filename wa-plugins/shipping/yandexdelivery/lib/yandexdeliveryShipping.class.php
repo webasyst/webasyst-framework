@@ -646,10 +646,16 @@ class yandexdeliveryShipping extends waShipping
 
     public function inputDataAction()
     {
-        $key = $this->getCacheKey();
-        $storage = wa()->getStorage();
-        $data = $storage->get($key);
-        $storage->del($key);
+        $key = waRequest::request('key', $this->getCacheKey(), waRequest::TYPE_STRING_TRIM);
+        $data = null;
+        if (strlen($key)) {
+            $cache = new waVarExportCache($key.'.data', 600, 'webasyst', true);
+            if ($cache->isCached()) {
+                $data = $cache->get($data);
+            }
+            $cache->delete();
+        }
+
         if (is_array($data)) {
             $response = array(
                 'services' => $data,
@@ -904,9 +910,9 @@ class yandexdeliveryShipping extends waShipping
                     }
                 }
 
-                //$this->cache_key = md5(var_export($params, true));
-                if ($storage = wa()->getStorage()) {
-                    $storage->set($this->getCacheKey(), $data);
+                if ($key = $this->getCacheKey()) {
+                    $cache = new waVarExportCache($key.'.data', 600, 'webasyst', true);
+                    $cache->set($data);
                 }
             }
             $this->api_callback = null;
@@ -993,6 +999,9 @@ class yandexdeliveryShipping extends waShipping
 
         }
 
+        $min_delivery_date = min($delivery_date);
+        $n = max(7, abs($service['maxDays'] - $service['minDays']));
+
         $human_delivery_date = array(
             'minDays' => waDateTime::format('humandate', min($delivery_date)),
             'maxDays' => waDateTime::format('humandate', max($delivery_date)),
@@ -1070,7 +1079,7 @@ class yandexdeliveryShipping extends waShipping
                 $pickup_points = ifset($service['pickupPoints'], array());
                 $rate['custom_data']['pickup'] = array();
                 foreach ($pickup_points as $pickup_point) {
-                    $rate['custom_data']['pickup'] = $this->formatPickupPoint($pickup_point);
+                    $rate['custom_data']['pickup'] = $this->formatPickupPoint($pickup_point, $min_delivery_date);
                     $pickup_rate = $rate;
                     $pickup_rate['name'] .= sprintf(' %s', $pickup_point['name']);
                     $pickup_rate['comment'] = ifset($pickup_point['full_address'], '');
@@ -1083,7 +1092,7 @@ class yandexdeliveryShipping extends waShipping
         return $rates ? $rates : array($type.'.'.$rate['id'] => $rate);
     }
 
-    private function formatPickupPoint($pickup_point)
+    private function formatPickupPoint($pickup_point, $delivery_date = null)
     {
         $schedule = array();
         $days = array(
@@ -1096,15 +1105,39 @@ class yandexdeliveryShipping extends waShipping
             'Вс',
         );
 
+        $schedule_array = array();
+
+        $formatted_schedule = array();
+
         foreach ($pickup_point['schedules'] as $schedule_item) {
             $day = intval($schedule_item['day']) - 1;
             $from = preg_replace('@\:00$@', '', $schedule_item['from']);
             $to = preg_replace('@\:00$@', '', $schedule_item['to']);
+            $formatted_schedule[$day] = array(
+                'start_work' => $schedule_item['from'],
+                'end_work'   => $schedule_item['to'],
+            );
             $schedule[$day] = array(
                 'days' => array($day),
                 'time' => sprintf('%s - %s', $from, $to),
             );
         }
+        if ($delivery_date && $formatted_schedule) {
+            $first_day = date('N', $delivery_date) - 1;
+            for ($i = 0; count($schedule_array) < 7; $i++) {
+                $day = ($i + $first_day) % 7;
+                if (isset($formatted_schedule[$day])) {
+                    $sql_time = $formatted_schedule[$day];
+                    $sql_day = date('Y-m-d', strtotime(sprintf('+%d days', $i), $delivery_date));
+                    $schedule_array[] = array(
+                        'start_work' => $sql_day.' '.$sql_time['start_work'],
+                        'end_work'   => $sql_day.' '.$sql_time['end_work'],
+                        'type'       => 'workday',
+                    );
+                }
+            }
+        }
+
         $prev = null;
 
         foreach ($schedule as $day => $schedule_item) {
@@ -1144,14 +1177,15 @@ HTML;
         $comment = ifset($pickup_point['address']['comment'], '');
 
         $data = array(
-            'id'          => $pickup_point['id'],
-            'lat'         => $pickup_point['lat'],
-            'lng'         => $pickup_point['lng'],
-            'title'       => ifset($pickup_point['name'], $pickup_point['id']),
-            'description' => ifset($pickup_point['full_address'], ''),
-            'comment'     => htmlentities($comment, ENT_QUOTES, 'UTF-8'),
-            'payment'     => $payment,
-            'schedule'    => $schedule,
+            'id'            => $pickup_point['id'],
+            'lat'           => $pickup_point['lat'],
+            'lng'           => $pickup_point['lng'],
+            'title'         => ifset($pickup_point['name'], $pickup_point['id']),
+            'description'   => ifset($pickup_point['full_address'], ''),
+            'comment'       => htmlentities($comment, ENT_QUOTES, 'UTF-8'),
+            'payment'       => $payment,
+            'schedule'      => $delivery_date ? array('weekdays' => $schedule_array) : $schedule,
+            'schedule_html' => $schedule,
         );
 
         return $data;
@@ -1476,6 +1510,7 @@ HTML;
         $url_params = array(
             'action_id' => 'inputData',
             'plugin_id' => $this->key,
+            'key'       => $this->getCacheKey(),
         );
         $url = json_encode(wa()->getRouteUrl(sprintf('%s/frontend/shippingPlugin', $this->app_id), $url_params, true));
 
