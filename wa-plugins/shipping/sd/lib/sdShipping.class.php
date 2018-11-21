@@ -66,6 +66,7 @@ class sdShipping extends waShipping
         $timestamp = $this->getShippingCompleteDate();
         $est_delivery = waDateTime::format('humandate', $timestamp);
 
+        $schedule = $this->getSchedule($timestamp);
         //convert to server time
         $timestamp = $this->changeTimezone('U', $timestamp, $this->timezone, date_default_timezone_get());
         $result = array(
@@ -82,11 +83,11 @@ class sdShipping extends waShipping
                         'timezone'   => $this->timezone,
                         'lat'        => $this->latitude,
                         'lng'        => $this->longitude,
-                        'schedule'   => $this->getSchedule($timestamp),
+                        'schedule'   => $schedule,
                         'photos'     => $this->photos,
                         'way'        => $this->way,
                         'additional' => $this->additional,
-                        'storage'    => $this->getStorageInfo($timestamp),
+                        'storage'    => $this->getStorageInfo(),
                     )
                 ),
             )
@@ -336,21 +337,14 @@ class sdShipping extends waShipping
 
         //convert to pickup timezone
         $timestamp = $this->changeTimezone('U', date('Y-m-d', $time_with_processing), $this->timezone);
+        $date_time_timestamp = $this->changeTimezone('U', $time_with_processing, date_default_timezone_get(), $this->timezone);
 
         //Get day type for time
         $type = $this->getDayType($timestamp);
 
         //Check today.
         if ($type !== false) {
-            $work_time = 0;
-
-            if ($type == 'weekday') {
-                $work_time = $this->getWeekDayTimeStamp($timestamp);
-            } elseif ($type == 'workday') {
-                $work_time = ifset($this->extra_days, 'workdays', $timestamp, 'start_work', 0);
-            }
-
-            $date_time_timestamp = $this->changeTimezone('U', $time_with_processing, date_default_timezone_get(), $this->timezone);
+            $work_time = $this->getStartWorkTime($type, $timestamp);
             //Today you can only pick up if the goods were brought before the opening.
             if ($date_time_timestamp > $work_time) {
                 $type = false;
@@ -358,18 +352,39 @@ class sdShipping extends waShipping
         }
 
         //If today did not work, we are looking for the first valid day but not more than a year later.
-        if ($type === false) {
-            $i = 0;
-            while (!$type && $i <= 365) {
-                //Add day
-                $timestamp = strtotime('+1 day', $timestamp);
-                $i++;
+        $i = 0;
+        while ($type === false && $i <= 365) {
+            //Add day
+            $timestamp = strtotime('+1 day', $timestamp);
+            $i++;
 
-                $type = $this->getDayType($timestamp);
-            }
+            $type = $this->getDayType($timestamp);
+        }
+
+        if ($type) {
+            $timestamp = $this->getStartWorkTime($type, $timestamp);
         }
 
         return $timestamp;
+    }
+
+    /**
+     * Get start work time
+     * @param $type
+     * @param $timestamp
+     * @return int|mixed|null
+     */
+    protected function getStartWorkTime($type, $timestamp)
+    {
+        $work_time = 0;
+
+        if ($type == 'weekday') {
+            $work_time = $this->getWeekDayTimeStamp($timestamp);
+        } elseif ($type == 'workday') {
+            $work_time = ifset($this->extra_days, 'workdays', $timestamp, 'start_work', 0);
+        }
+
+        return $work_time;
     }
 
     /**
@@ -541,11 +556,10 @@ class sdShipping extends waShipping
      * Check the mode of operation after the day of delivery
      * @param int first_day timestamp
      * @return array timezone and days list.
-     * @throws waException
      */
     protected function getSchedule($first_day)
     {
-        $date = $timestamp = $this->changeTimezone('U', date('Y-m-d', $first_day), $this->timezone);
+        $date = $this->changeTimezone('U', date('Y-m-d', $first_day), $this->timezone);
 
         $result = array();
 
@@ -590,23 +604,13 @@ class sdShipping extends waShipping
     }
 
     /**
-     * @param $time
      * @return array
      */
-    protected function getStorageInfo($time)
+    protected function getStorageInfo()
     {
-        $storage_time = $this->storage_days;
         $info = array(
-            'storage_days' => $storage_time,
-            'storage_time' => 0,
+            'storage_days' => $this->storage_days,
         );
-
-        if (is_numeric($storage_time)) {
-            $day_count = '+'.$storage_time.' day';
-
-            //add day
-            $info['storage_time'] = strtotime($day_count, $time);
-        }
 
         return $info;
     }
