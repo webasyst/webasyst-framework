@@ -160,9 +160,7 @@ abstract class waLoginForm extends waLoginFormRenderer
         $params['caption'] = $this->getContactFieldCaption($field);
         $params['namespace'] = $this->getNamespace();
 
-        if ($this->options['need_placeholder']) {
-            $params['placeholder'] = $this->getContactFieldPlaceholder($field);
-        }
+        $params['placeholder'] = $this->getContactFieldPlaceholder($field);
 
         $info = array(
             'field'     => $field,
@@ -207,14 +205,13 @@ abstract class waLoginForm extends waLoginFormRenderer
     protected function getContactFieldPlaceholder(waContactField $field)
     {
         $field_id = $field->getId();
-        $placeholder = null;
+        $placeholder = '';
         if ($field_id === 'login') {
             $login_placeholder = $this->auth_config->getLoginPlaceholder();
             if (strlen($login_placeholder) > 0) {
                 $placeholder = $login_placeholder;
             }
-        }
-        if ($placeholder === null) {
+        } elseif ($field_id === 'password') {
             $placeholder = $field->getName();
         }
         return $placeholder;

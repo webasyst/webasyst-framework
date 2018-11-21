@@ -110,8 +110,14 @@ class waContactDataStorage extends waContactStorage
                         continue;
                     }
                     if (is_array($value_info) && (isset($value_info['data']) || $f instanceof waContactCompositeField)) {
-                        $v = isset($value_info['data']) ? $value_info['data'] : (isset($value_info['value']) ? $value_info['value'] : array());
                         $ext = isset($value_info['ext']) ? $value_info['ext'] : '';
+                        $v = isset($value_info['data']) ? $value_info['data'] : (isset($value_info['value']) ? $value_info['value'] : array());
+                        foreach($f->getParameter('fields') as $sf) {
+                            $sf_id = $sf->getId();
+                            if (!array_key_exists($sf_id, $v)) {
+                                $v[$sf_id] = '';
+                            }
+                        }
                         foreach ($v as $subfield => $subvalue) {
                             if (!strlen($subvalue)) {
                                     $sql = "DELETE FROM ".$this->getModel()->getTableName()."

@@ -10,6 +10,7 @@
   font-size: 1.142857142857143em;
   line-height: 1.125em;
   border: 1px solid #cfcfcf;
+  margin-right: 16px;
 }
 .wa-login-form-wrapper input.wa-onetime-password {
   width: 80px;
@@ -231,7 +232,7 @@
   margin: 0 0 34px 0;
 }
 .wa-login-form-wrapper .wa-form-sub-title {
-  margin: 30px 0 15px 0;
+  margin: 15px 0 30px 0;
 }
 .wa-login-form-wrapper a.wa-is-disabled {
   color: #808080;
@@ -243,11 +244,15 @@
 .wa-login-form-wrapper .wa-is-hidden {
   display: none;
 }
+.wa-login-form-wrapper .wa-info-messages {
+  margin: 0 0 1.071428571428571em;
+}
 .wa-login-form-wrapper .wa-login-form-fields {
-  margin: 1.071428571428571em 0 0;
+  margin: 0;
 }
 .wa-login-form-wrapper .wa-login-form-fields .wa-login-forgotpassword-url {
-  margin-left: 16px;
+  margin-right: 16px;
+  display: inline-block;
 }
 .wa-login-form-wrapper .wa-login-form-actions {
   margin: 1.071428571428571em 0 0;
@@ -313,11 +318,9 @@
 .wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-field-onetime-password .wa-value .wa-onetime-password-input-message {
   display: inline-block;
   font-size: 14px;
-  margin-left: 16px;
 }
 .wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link-wrapper {
   display: inline-block;
-  margin-left: 16px;
 }
 .wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link-wrapper .wa-send-onetime-password-edit-link {
   display: inline-block;

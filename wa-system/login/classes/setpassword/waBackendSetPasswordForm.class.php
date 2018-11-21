@@ -13,7 +13,6 @@ class waBackendSetPasswordForm extends waSetPasswordForm
      */
     public function __construct(array $options = array())
     {
-        $options['need_placeholder'] = true;
         parent::__construct($options);
         $this->auth_config = waBackendAuthConfig::getInstance();
         $this->default_templates_path = waConfig::get('wa_path_system') . '/login/templates/setpassword/backend/';

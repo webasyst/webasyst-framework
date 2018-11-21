@@ -262,9 +262,9 @@ class waDateTime
         if (!$timezone) {
             /** @var DateTimeZone $timezone */
             $timezone = wa()->getUser()->getTimezone(true);
-            if ($timezone && !$timezone instanceof DateTimeZone) {
-                $timezone = new DateTimeZone($timezone);
-            }
+        }
+        if (!$timezone instanceof DateTimeZone) {
+            $timezone = new DateTimeZone($timezone);
         }
         waLocale::loadByDomain("webasyst", $locale);
 

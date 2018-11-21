@@ -67,15 +67,52 @@ class waContactDataModel extends waModel
         }
     }
 
-    public function getContactWithPassword($name, $value)
+    /**
+     * Get first contact with password by this phone
+     * @param string $phone
+     * @param int|int[]|null $exclude_ids contact ids that excluded from searching
+     * @return null|int
+     */
+    public function getContactWithPasswordByPhone($phone, $exclude_ids = array())
     {
+        $phone = is_scalar($phone) ? $phone : '';
+        if (strlen($phone) <= 0) {
+            return null;
+        }
+
+        $phone = waContactPhoneField::cleanPhoneNumber($phone);
+        if (strlen($phone) <= 0) {
+            return null;
+        }
+
+        $validator = new waPhoneNumberValidator();
+        if (!$validator->isValid($phone)) {
+            return null;
+        }
+
+        $exclude_ids = waUtils::toIntArray($exclude_ids);
+        $exclude_ids = waUtils::dropNotPositive($exclude_ids);
+
+        $where = array(
+            "d.field = 'phone'",
+            "d.value = :phone",
+            "d.sort = 0",
+            "c.password != ''"
+        );
+
+        if ($exclude_ids) {
+            $where[] = "c.id NOT IN (:ids)";
+        }
+
+        $where = join(" AND ", $where);
+
         $sql = "SELECT c.id 
                   FROM `{$this->table}` d 
                   JOIN wa_contact c ON d.contact_id = c.id
-                WHERE d.field = :name AND 
-                  d.value LIKE '".$this->escape($value, 'like')."' AND d.sort = 0 AND c.password != ''
+                WHERE {$where}
                 LIMIT 1";
-        return $this->query($sql, array('name' => $name))->fetchField();
+
+        return $this->query($sql, array('phone' => $phone, 'ids' => $exclude_ids))->fetchField();
     }
 
     public function getByContact($id)

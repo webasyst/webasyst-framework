@@ -35,7 +35,7 @@
     {$_placeholder = $params.placeholder|default:''}
     {$_placeholder = $_placeholder|escape}
 
-    {if $_placeholder}
+    {if strlen($_placeholder) > 0}
         {$attrs[] = "placeholder=\"`$_placeholder`\""}
     {/if}
 

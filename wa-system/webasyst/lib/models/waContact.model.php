@@ -97,6 +97,10 @@ class waContactModel extends waModel
             $contact_rights_model->deleteByField('group_id', $nid);
         }
 
+        // Clean tied verification channel assets
+        $verification_channel_assets_model = new waVerificationChannelAssetsModel();
+        $verification_channel_assets_model->clearByContact($id);
+
         // Delete settings
         $setting_model = new waContactSettingsModel();
         $setting_model->deleteByField('contact_id', $id);

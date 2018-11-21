@@ -442,11 +442,8 @@ var WAThemeSettings = ( function($) {
         $search_input.on('input', function (e) {
             var q = $.trim($(this).val());
 
-            if (!!(q)) {
-                that.$anchors.hide();
-            } else {
-                that.$anchors.show();
-            }
+            that.setExpandAllItems();
+            that.$anchors.hide();
 
             timer && clearTimeout(timer);
             timer = setTimeout(function(){
@@ -459,7 +456,7 @@ var WAThemeSettings = ( function($) {
                 filter = new RegExp(query, 'i'),
                 query_length = query.length,
                 empty_query = query_length === 0,
-                small_query = query_length < 4,
+                small_query = query_length < 3,
                 results = false;
 
             $result_label.hide();

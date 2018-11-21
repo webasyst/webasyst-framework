@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Class waVerificationChannelNull
+ *
+ * Null verification channel
+ * Doesn't do any work
+ * Enhances code stability and reduces redundant IF checking in application code
+ *
+ * @see https://en.wikipedia.org/wiki/Null_object_pattern
+ *
+ */
 class waVerificationChannelNull extends waVerificationChannel
 {
     public function __construct() {}
@@ -34,6 +44,26 @@ class waVerificationChannelNull extends waVerificationChannel
      * @return mixed
      */
     public function sendSignUpConfirmationMessage($recipient, $options = array())
+    {
+        return false;
+    }
+
+    /**
+     *
+     * Has been sent confirmation message for signup
+     *
+     * @param string|array|waContact $recipient recipient to send confirmation
+     *  - string: means 'address' where send confirmation message
+     *  - array: have keys
+     *    + 'address' ('email','phone') field where send confirmation message
+     *    + 'name' Optional. Name of recipient
+     *  - waContact: extract from object proper info for send confirmation message
+     *  - id: means contact ID, extract by this ID proper info for send confirmation message
+     *
+     * @param array $options For feature use
+     * @return bool
+     */
+    public function hasSentSignUpConfirmationMessage($recipient, $options = array())
     {
         return false;
     }

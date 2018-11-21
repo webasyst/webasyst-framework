@@ -138,16 +138,15 @@ var WaFrontendForgotPassword = ( function($) {
 
         var onSentEmail = function (r) {
             showSentMessage(r);
-
-            // Hide login field
-            that.turnOffBlock(that.getFormField('login'));
-
-            // Hide main Submit button
-            that.turnOffBlock(that.$wrapper.find('.js-forgotpassword-form-actions'));
+            // Remove all UI blocks
+            that.$wrapper.find('.js-forgotpassword-form-fields').remove();
+            that.$wrapper.find('.js-forgotpassword-form-actions').remove();
         };
 
         handlers.rest = function (r) {
-            if (r.data.code_confirmed) {
+            if (r.data.generated_password_sent === true) {
+                that.triggerEvent('wa_auth_resent_password');
+            } else if (r.data.code_confirmed) {
                 that.triggerEvent('wa_auth_set_password', [ r.data.hash || '' ])
             } else if (r.data.channel_type === 'sms') {
                 onSentSMS(r);

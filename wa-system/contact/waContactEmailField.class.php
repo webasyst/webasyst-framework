@@ -57,9 +57,6 @@ class waContactEmailField extends waContactStringField
             return $errors;
         }
 
-        // Validation for emails being unique is (temporary?..) disabled.
-        return $errors;
-
         $email_model = new waContactEmailsModel();
         $contact_model = new waContactModel();
         if ($this->isMulti()) {
@@ -69,8 +66,8 @@ class waContactEmailField extends waContactStringField
                     return $errors;
                 }
                 $value = $this->format($data[0], 'value');
-                $id = $email_model->getContactWithPassword($value);
-                if ($id && $id != $contact_id) {
+                $id = $email_model->getContactWithPassword($value, $contact_id);
+                if ($id > 0) {
                     $errors[0] = sprintf(_ws('User with the same %s is already registered'), 'email');
                 }
             }
@@ -83,8 +80,8 @@ class waContactEmailField extends waContactStringField
                         return $errors;
                     }
                 }
-                $id = $email_model->getContactWithPassword($value);
-                if ($id && $id != $contact_id) {
+                $id = $email_model->getContactWithPassword($value, $contact_id);
+                if ($id > 0) {
                     $errors = sprintf(_ws('User with the same %s is already registered'), 'email');
                 }
             }

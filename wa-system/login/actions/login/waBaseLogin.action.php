@@ -175,7 +175,28 @@ abstract class waBaseLoginAction extends waLoginModuleController
                 $this->afterAuth();
             }
         } catch (waAuthConfirmEmailException $e) {
+
+            // EMAIL IS NOT CONFIRMED
+
+            $channel = $this->auth_config->getEmailVerificationChannelInstance();
+
+            // Confirmation code has not be sent, so sent it
+            $sent = $channel->hasSentSignUpConfirmationMessage($data['login']);
+            if (!$sent) {
+                $confirmation_url = $this->auth_config->getSignUpUrl(array(
+                    'get' => array('confirm' => 'confirmation_hash')
+                ), true);
+                $confirmation_url = str_replace('confirmation_hash', '{$confirmation_hash}', $confirmation_url);
+                $channel->sendSignUpConfirmationMessage($data['login'], array(
+                    'site_url' => $this->auth_config->getSiteUrl(),
+                    'site_name' => $this->auth_config->getSiteName(),
+                    'confirmation_url' => $confirmation_url,
+                ));
+            }
+
+            // Show proper error
             $errors['login']['confirm_email'] = $e->getMessage();
+
         } catch (waAuthConfirmPhoneException $e) {
 
             // PHONE IS NOT CONFIRMED

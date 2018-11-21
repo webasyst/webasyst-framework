@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-11-16 15:33+0300\n"
+"PO-Revision-Date: 2018-11-20 18:19+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -5290,8 +5290,8 @@ msgstr "Одноразовый пароль (код из 4 цифр) отпра�
 msgid "Waiting period in seconds before sending next verification code:"
 msgstr "Интервал в секундах перед отправкой следующего кода подтверждения:"
 
-msgid "Verification code"
-msgstr "Код подтверждения"
+msgid "Re-sending of verification code"
+msgstr "Повторная отправка кода подтверждения"
 
 msgid "Please contact app developer."
 msgstr "Обратитесь к разработчику приложения."
@@ -5580,10 +5580,6 @@ msgstr "Может отображаться на страницах сайтов
 #: /wa-system/webasyst/templates/actions/settings/Settings.html:29
 msgid "May be used on websites and in email notifications."
 msgstr "Может использоваться на страницах сайтов и в email-уведомлениях."
-
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:39
-msgid "Locale of software available for installation in Installer"
-msgstr "Язык программных продуктов, доступных для установки в «Инсталлере»"
 
 #: /wa-system/webasyst/lib/updates/dev/1535442590.php:12
 msgid "System"

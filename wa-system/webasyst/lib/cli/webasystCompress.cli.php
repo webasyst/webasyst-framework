@@ -54,6 +54,7 @@ Slug examples:
     wa-plugins/payment/myplugin
     wa-plugins/shipping/myplugin
     wa-plugins/sms/myplugin
+    wa-widgets/mywidget
 Optional parameters:
     -style true|false|no-vendors Options for code style checks:
         true         Check all code.
@@ -88,6 +89,10 @@ HELP;
                     $this->app_id = $matches[1];
                     $this->type = $matches[2];
                     $this->extension_id = $matches[3];
+                } elseif (preg_match("@^wa-widgets/({$id_pattern})$@", $slug, $matches)) {
+                    $this->app_id = 'webasyst';
+                    $this->type = 'widgets';
+                    $this->extension_id = $matches[1];
                 } else {
                     throw new waException("invalid SLUG");
                 }
@@ -206,11 +211,19 @@ HELP;
                 $namespace = $this->app_id;
                 $this->path = wa()->getConfig()->getAppsPath($this->app_id, null);
                 break;
-            case 'widget': #TODO #51.808
+            case 'widget':
+
+                if ($this->app_id === 'webasyst') {
+                    $namespace = $this->extension_id.ucfirst($type);
+                    $this->path = wa()->getConfig()->getPath('widgets').'/'.$this->extension_id;
+                } else {
+                    $namespace = $this->app_id.ucfirst($this->extension_id).ucfirst($type);
+                    $this->path = wa()->getConfig()->getAppsPath($this->app_id, $this->type.'/'.$this->extension_id);
+                }
+                break;
             case 'plugin':
             case 'theme':
                 $namespace = $this->app_id.ucfirst($this->extension_id);
-
                 $this->path = wa()->getConfig()->getAppsPath($this->app_id, $this->type.'/'.$this->extension_id);
                 break;
             case 'shipping':
@@ -676,6 +689,7 @@ HELP;
                                 'backend_custom_fields',
                                 'locale',
                                 'services_by_type',
+                                'type',
                                 'multi_curl',
                             )
                         );

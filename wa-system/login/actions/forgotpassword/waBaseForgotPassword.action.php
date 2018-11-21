@@ -78,6 +78,19 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         throw new waException(_w('Page not found'), 404);
     }
 
+    /**
+     * Generates and sets password
+     * Method is actual only for 'generated_password' auth type
+     *
+     * Needs hash, that grands rights for setting new (or generated) password
+     *
+     * NOTICE:
+     * There is a little bit overhead for 'confirmation_code' case
+     * But to keep code more simple and not duplicated we will use this method
+     * @see forgotPassword around 'confirmation_code' case
+     *
+     * @param string $hash
+     */
     protected function setGeneratedPassword($hash)
     {
         list($ok, $details) = $this->validateHash($hash);
@@ -297,23 +310,46 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             if (!$errors) {
 
                 // IMPORTANT: Protocol detail
-                // If 'confirmation_code' presented
-                //   than we are in "Confirmation step" forgot-password form
+                // If 'confirmation_code' presented than we are in "Confirmation step" forgot-password form
                 if (isset($data['confirmation_code'])) {
 
-                    // Code is already checked (see forgotPasswordValidate method)
+                    /**
+                     * Confirmation code is already checked
+                     * @see forgotPasswordValidate
+                     * @see validateCode
+                     */
 
-                    // Redirect to Set-Password Form
+                    // Secret HASH, that grant temporary rights to set new password
                     $hash = $this->generateHashByCode($data['confirmation_code']);
-                    $set_password_url = $this->auth_config->getForgotPasswordUrl(array(
-                        'get' => array('key' => $hash)
-                    ));
+
+
+                    // 'generated_password' auth type case
+                    if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD) {
+
+                        // To keep code simple call this method - a little be overhead for this case
+                        $this->setGeneratedPassword($hash);
+                        return;
+
+                    }
+
+                    // 'user_password' case
+
                     if ($this->needRedirects()) {
+
+                        // Redirect to Set-Password Form
+                        $set_password_url = $this->auth_config->getForgotPasswordUrl(array(
+                            'get' => array('key' => $hash)
+                        ));
                         $this->redirect($set_password_url);
+
                     } else {
+
+                        // Just signal client side about what happens
                         $this->assign('code_confirmed', true);
                         $this->assign('hash', $hash);
+
                     }
+
                     return;
                 }
 

@@ -67,8 +67,6 @@ abstract class waLoginFormRenderer
      *
      * @param array $options
      *
-     *   bool   'need_placeholder' - need show for each field own placeholder. Default - FALSE
-     *
      *   bool   'show_title' - need show own title. Default - FALSE
      *
      *   bool   'show_sub_title' - need show own title. Default - FALSE
@@ -98,7 +96,6 @@ abstract class waLoginFormRenderer
     protected function initOptions($options)
     {
         $this->options = is_array($options) ? $options : array();
-        $this->options['need_placeholder'] = $this->getBoolVal($this->options, 'need_placeholder');
         $this->options['namespace'] = $this->getStrVal($this->options, 'namespace');
         $this->options['show_title'] = $this->getBoolVal($this->options, 'show_title');
         $this->options['show_sub_title'] = $this->getBoolVal($this->options, 'show_sub_title');
@@ -487,8 +484,9 @@ abstract class waLoginFormRenderer
             'login_url'                     => $this->getLoginUrl(),
             'signup_url'                    => $this->getSignupUrl(),
             'forgotpassword_url'            => $this->getForgotpasswordUrl(),
-            'onetime_password_url'          => $this->getSendOnetimePasswordUrl()
-
+            'onetime_password_url'          => $this->getSendOnetimePasswordUrl(),
+            'is_email_channel_available'    => !!$this->auth_config->getEmailVerificationChannel(),
+            'is_sms_channel_available'      => !!$this->auth_config->getSMSVerificationChannel()
         ));
     }
 

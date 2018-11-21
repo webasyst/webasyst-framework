@@ -91,6 +91,7 @@ class Smarty_Security {
         'array_intersect_uassoc', 'array_intersect_ukey', 'extract', 'parse_str',
         'array_uintersect', 'array_walk', 'array_walk_recursive', 'pfsockopen', 'fsockopen',
         'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply', 'iptcembed',
+        'forward_static_call', 'forward_static_call_array', 'get_defined_functions',
         'dom_import_simplexml', 'simplexml_load_string', 'show_source', 'php_strip_whitespace', 'get_meta_tags',
         'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init',
         'debug_backtrace', 'mail', 'mb_send_mail', 'set', 'php_uname',

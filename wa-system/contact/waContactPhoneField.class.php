@@ -110,9 +110,6 @@ class waContactPhoneField extends waContactStringField
             return $errors;
         }
 
-        // Validation for phones being unique is (temporary?..) disabled.
-        return $errors;
-
         $data_model = new waContactDataModel();
         $contact_model = new waContactModel();
         if ($this->isMulti()) {
@@ -122,8 +119,8 @@ class waContactPhoneField extends waContactStringField
                     return $errors;
                 }
                 $value = $this->format($data[0], 'value');
-                $id = $data_model->getContactWithPassword('phone', $value);
-                if ($id && $id != $contact_id) {
+                $id = $data_model->getContactWithPasswordByPhone($value, $contact_id);
+                if ($id > 0) {
                     $errors[0] = sprintf(_ws('User with the same %s is already registered'), 'phone');
                 }
             }
@@ -136,8 +133,8 @@ class waContactPhoneField extends waContactStringField
                         return $errors;
                     }
                 }
-                $id = $data_model->getContactWithPassword('phone', $value);
-                if ($id && $id != $contact_id) {
+                $id = $data_model->getContactWithPasswordByPhone($value, $contact_id);
+                if ($id > 0) {
                     $errors = sprintf(_ws('User with the same %s is already registered'), 'phone');
                 }
             }

@@ -1096,6 +1096,10 @@ HTML;
                     }
                 }
             });
+
+            $(".ui-datepicker").each( function() {
+                $(this).hide().css({ zIndex: 1000 });
+            });
         };
 
         $(document).ready( function() {

@@ -68,12 +68,43 @@ class waContactEmailsModel extends waModel
         return $this->query($sql)->fetchField();
     }
 
-    public function getContactWithPassword($email)
+    /**
+     * Get first contact with password by this email
+     * @param string $email Must be valid email
+     * @param int|int[]|null $exclude_ids contact ids that excluded from searching
+     * @return null|int
+     */
+    public function getContactWithPassword($email, $exclude_ids = array())
     {
+        $email = is_scalar($email) ? (string)$email : '';
+        if (strlen($email) <= 0) {
+            return null;
+        }
+
+        $validator = new waEmailValidator();
+        if (!$validator->isValid($email)) {
+            return null;
+        }
+
+        $exclude_ids = waUtils::toIntArray($exclude_ids);
+        $exclude_ids = waUtils::dropNotPositive($exclude_ids);
+
+        $where = array(
+            "e.email LIKE s:email",
+            "e.sort = 0",
+            "c.password != ''"
+        );
+
+        if ($exclude_ids) {
+            $where[] = "c.id NOT IN (:ids)";
+        }
+
+        $where = join(" AND ", $where);
+
         $sql = "SELECT c.id FROM ".$this->table." e JOIN wa_contact c ON e.contact_id = c.id
-                WHERE e.email LIKE '".$this->escape($email, 'like')."' AND e.sort = 0 AND c.password != ''
+                WHERE {$where}
                 LIMIT 1";
-        return $this->query($sql)->fetchField();
+        return $this->query($sql, array('email' => $email, 'ids' => $exclude_ids))->fetchField();
     }
 
     public function getContactIdsByEmails($emails)

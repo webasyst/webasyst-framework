@@ -253,11 +253,18 @@ HTML;
         return $this->head();
     }
 
-
+    /**
+     * Is auth (log in, sign up, my account page) turned on for current domainisAuthEnabled
+     * @return bool
+     */
     public function isAuthEnabled()
     {
-        $config = wa()->getAuthConfig();
-        return isset($config['auth']) && $config['auth'];
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+        $auth_config = waDomainAuthConfig::factory();
+        $is_enabled = $auth_config->isAuthEnabled();
+        waConfig::set('is_template', $is_from_template);
+        return $is_enabled;
     }
 
     public function user($field=null, $format='html')
@@ -738,20 +745,11 @@ HTML;
     }
 
     /**
-     * Old loginForm
-     *  @param string $error
-     *  @param int $form Default 1
-     *   1 - with <form action="">
-     *   2 - with <form action="LOGIN_URL">
-     *  @return string
+     * Show login form
      *
-     *
-     * New loginForm
-     * @param string $error
+     * @param string|array $errors initial errors to display
      *
      * @param array $options
-     *
-     *   bool   'need_placeholder' - need or not to show for each field own placeholder. Default - FALSE
      *
      *   bool   'show_title' - need or not to show own title. Default - FALSE
      *
@@ -764,43 +762,20 @@ HTML;
      *   bool   'include_css' - include or not default css. Default - TRUE
      *
      *   string 'url' - custom url of login action. Default (if skip option) - login_url from proper auth config. You can also pass empty string ''
+     *
+     *  @return string
      */
-    public function loginForm($error = '', $options = array())
+    public function loginForm($errors = array(), $options = array())
     {
-        $is_old_function_signature = !is_array($options);
+        $options = is_array($options) ? $options : array();
 
-        if ($is_old_function_signature) {
-
-            // Backward compatibility for old function signature
-            // Old signature looked like this ($error = '', $form = 1, $placeholders = false)
-            // Typecast input arguments to options
-
-            $argument_form = func_num_args() > 1 ? func_get_arg(1) : 1;
-            $argument_placeholders = func_num_args() > 2 ? (bool)func_get_arg(2) : false;
-
-            $options = array();
-
-            if (!$argument_form) {
-                $options['url'] = '';
-            } elseif ($argument_form === 2) {
-                $options['url'] = $this->loginUrl();
-            } else {
-                $options['url'] = '';
-            }
-
-            $options['need_placeholder'] = $argument_placeholders;
+        if (is_scalar($errors)) {
+            $errors = array('' => (string)$errors);
+        } else {
+            $errors = is_array($errors) ? $errors : array();
         }
 
         $data = wa()->getRequest()->post();
-
-        if (is_scalar($error)) {
-            $errors = array('' => $error);
-        } elseif (is_array($error)) {
-            $errors = $error;
-        } else {
-            $errors = array();
-        }
-
 
         $is_from_template = waConfig::get('is_template');
         waConfig::set('is_template', null);
@@ -827,16 +802,13 @@ HTML;
     }
 
     /**
-     * Old version
-     * @param string $error
-     * @param bool $placeholders
-     * @return string
      *
-     * New version
-     * @param string $error
+     * Show forgot password form
+     * First step form in recovery password process
+     *
+     * @param string|array $errors initial errors to display
+     *
      * @param array $options
-     *
-     *   bool   'need_placeholder' - need or not to show for each field own placeholder. Default - FALSE
      *
      *   bool   'show_title' - need or not to show own title. Default - FALSE
      *
@@ -851,24 +823,16 @@ HTML;
      * @return string
      *
      */
-    public function forgotPasswordForm($error = '', $options = array())
+    public function forgotPasswordForm($errors = array(), $options = array())
     {
-        if (!is_array($options)) {
-            // backward compatibility
-            $options = array(
-                'need_placeholder' => (bool)$options
-            );
+        if (is_scalar($errors)) {
+            $errors = array('' => (string)$errors);
+        } else {
+            $errors = is_array($errors) ? $errors : array();
         }
 
         $data = wa()->getRequest()->post();
 
-        if (is_scalar($error)) {
-            $errors = array('' => $error);
-        } elseif (is_array($error)) {
-            $errors = $error;
-        } else {
-            $errors = array();
-        }
 
         $is_from_template = waConfig::get('is_template');
         waConfig::set('is_template', null);
@@ -895,15 +859,13 @@ HTML;
     }
 
     /**
-     * Old version
-     * @param string $error
-     * @return string
      *
-     * New version
-     * @param string $error
+     * Show set password form
+     * Second step form in recovery password process
+     *
+     * @param string|array $errors initial errors to display
+     *
      * @param array $options
-     *
-     *   bool   'need_placeholder' - need or not to show for each field own placeholder. Default - FALSE
      *
      *   bool   'show_title' - need or not to show own title. Default - FALSE
      *
@@ -920,21 +882,15 @@ HTML;
      * @return string
      *
      */
-    public function setPasswordForm($error = '', $options = array())
+    public function setPasswordForm($errors = array(), $options = array())
     {
-        if (!is_array($options)) {
-            $options = array();
+        if (is_scalar($errors)) {
+            $errors = array('' => (string)$errors);
+        } else {
+            $errors = is_array($errors) ? $errors : array();
         }
 
         $data = wa()->getRequest()->post();
-
-        if (is_scalar($error)) {
-            $errors = array('' => $error);
-        } elseif (is_array($error)) {
-            $errors = $error;
-        } else {
-            $errors = array();
-        }
 
         $is_from_template = waConfig::get('is_template');
         waConfig::set('is_template', null);
@@ -1036,15 +992,11 @@ HTML;
      * @param array $errors
      * @param array $options
      *
-     *   bool   'need_placeholder' - need show for each field own placeholder. Default - FALSE
-     *
      *   bool   'show_title' - need show own title. Default - FALSE
      *
      *   bool   'show_oauth_adapters' - need show html block of o-auth adapters - Eg vk, facebook etc. Default - FALSE
      **
      *   bool   'need_redirects' - need server trigger redirects. Default - TRUE
-     *
-     *   bool   'auth_after_link_sent' - need authorize contact right away after confirmation link sent. Default - FALSE
      *
      *   string 'contact_type' - what type of contact to create 'person' or 'company'. Default - 'person'
      *
@@ -1054,13 +1006,6 @@ HTML;
      */
     public function signupForm($errors = array(), $options = array())
     {
-        if (!is_array($options)) {
-            // backward compatibility
-            $options = array(
-                'need_placeholder' => !!$options
-            );
-        }
-
         $options = is_array($options) ? $options : array();
 
         $is_from_template = waConfig::get('is_template');

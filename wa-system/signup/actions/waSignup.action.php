@@ -436,16 +436,6 @@ class waSignupAction extends waViewAction
                 'confirmation_link_sent_message' => $msg,
             ));
 
-            // authorize right away
-            $auth_after_link_sent = $this->getRequest()->request('auth_after_link_sent');
-            if ($auth_after_link_sent && $details['contact']) {
-                wa()->getAuth()->auth($details['contact']);
-                $this->assign(array(
-                    'contact' => $details['contact'],
-                    'is_auth' => true
-                ));
-            }
-
             return;
         }
 
@@ -761,26 +751,6 @@ class waSignupAction extends waViewAction
 
         }
 
-        // Enough errors in that point
-        if ($errors) {
-            return $errors;
-        }
-
-        // Ok, no errors => check existing of contact
-        $auth = wa()->getAuth();
-        $contacts = $auth->lookupByLoginFields($data);
-        foreach ($contacts as $field_id => $contact) {
-            $errors[$field_id] = (array)ifset($errors[$field_id]);
-            $errors[$field_id]['exists'] = sprintf(_ws('User with the same %s is already registered'), $this->getFieldCaption($field_id));
-        }
-
-        // User already exists - stop work => return errors
-        if ($errors) {
-            return $errors;
-        }
-
-        // Ok, user NOT exist
-
         // Check agreement with terms of service
         if ($this->auth_config->getServiceAgreement() == 'checkbox') {
             if (empty($data['terms_accepted'])) {
@@ -796,13 +766,31 @@ class waSignupAction extends waViewAction
             }
         }
 
+        // Enough errors in that point
+        if ($errors) {
+            return $errors;
+        }
+
+        
+        // Ok, no errors => check existing of contact
+        $auth = wa()->getAuth();
+        $contacts = $auth->lookupByLoginFields($data);
+        foreach ($contacts as $field_id => $contact) {
+            $errors[$field_id] = (array)ifset($errors[$field_id]);
+            $errors[$field_id]['exists'] = sprintf(_ws('User with the same %s is already registered'), $this->getFieldCaption($field_id));
+        }
+
+        // User already exists - stop work => return errors
+        if ($errors) {
+            return $errors;
+        }
+
+        // Ok, user NOT exist - continue validation
+
         // IMPORTANT: Implementation detail
         // Validation related with channel MUST BE at the end, cause successful validation remove asset (secret) from DB
         // So if there are ERRORS already - NEED BE returned
 
-        if ($errors) {
-            return $errors;
-        }
 
         // Need to validate onetime password OR not
         $onetime_password_validation_need = $onetime_password_need && isset($data['onetime_password']);
@@ -1227,17 +1215,17 @@ class waSignupAction extends waViewAction
             return false;
         }
 
-        $signup_url = $this->auth_config->getSignUpUrl(array(
+        $confirmation_url = $this->auth_config->getSignUpUrl(array(
             'get' => array('confirm' => 'confirmation_hash')
         ), true);
-        $signup_url = str_replace('confirmation_hash', '{$confirmation_hash}', $signup_url);
+        $confirmation_url = str_replace('confirmation_hash', '{$confirmation_hash}', $confirmation_url);
 
 
         $channel = $this->auth_config->getEmailVerificationChannelInstance();
         $result = $channel->sendSignUpConfirmationMessage($recipient, array(
             'site_url' => $this->auth_config->getSiteUrl(),
             'site_name' => $this->auth_config->getSiteName(),
-            'confirmation_url' => $signup_url,
+            'confirmation_url' => $confirmation_url,
         ));
 
         if (!$result) {

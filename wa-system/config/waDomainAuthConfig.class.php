@@ -149,19 +149,6 @@ class waDomainAuthConfig extends waAuthConfig
     }
 
     /**
-     * @return bool
-     */
-    public function getAuth()
-    {
-        return $this->getBoolValue('auth');
-    }
-
-    public function setAuth($enable = true)
-    {
-        $this->setBoolValue('auth', $enable);
-    }
-
-    /**
      * @return null|string
      */
     public function getApp()
@@ -247,9 +234,7 @@ class waDomainAuthConfig extends waAuthConfig
      */
     public function getLoginPlaceholder()
     {
-        $placeholder = $this->getScalarValue('login_placeholder');
-        $placeholder = strlen($placeholder) > 0 ? $placeholder : _ws('Email');
-        return $placeholder;
+        return $this->getScalarValue('login_placeholder', _ws('Email'));
     }
 
     public function setLoginPlaceholder($placeholder)

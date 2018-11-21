@@ -60,6 +60,35 @@ abstract class waAuthConfig
     }
 
     /**
+     * @return bool
+     */
+    public function isAuthEnabled()
+    {
+        return $this->getAuth();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAuthDisabled()
+    {
+        return !$this->isAuthEnabled();
+    }
+
+    /**
+     * @return bool
+     */
+    public function getAuth()
+    {
+        return $this->getBoolValue('auth');
+    }
+
+    public function setAuth($enable = true)
+    {
+        $this->setBoolValue('auth', $enable);
+    }
+
+    /**
      * @return string
      */
     public function getAuthType()
@@ -553,9 +582,9 @@ abstract class waAuthConfig
         }
     }
 
-    protected function getScalarValue($name)
+    protected function getScalarValue($name, $default = '')
     {
-        $value = isset($this->config[$name]) && is_scalar($this->config[$name]) ? (string)$this->config[$name] : '';
+        $value = isset($this->config[$name]) && is_scalar($this->config[$name]) ? (string)$this->config[$name] : $default;
         return trim($value);
     }
 

@@ -62,7 +62,7 @@
         </div>
     </div>
 
-    {if $is_need_confirm && $field_id === 'login'}
+    {if $is_need_confirm && $field_id === 'login' && $is_sms_channel_available}
         {include file="./confirmation_block.inc.html" inline}
     {/if}
 
@@ -94,7 +94,7 @@
     {$_placeholder = $params.placeholder|default:''}
     {$_placeholder = $_placeholder|escape}
 
-    {if $_placeholder}
+    {if strlen($_placeholder) > 0}
         {if $is_onetime_password_auth_type && $_field_id === 'password'}
             {$_placeholder = ''}
         {/if}
@@ -130,7 +130,7 @@
         {$_caption = $_params.caption|default:''}
 
         {if $is_onetime_password_auth_type && $_field_id === 'password'}
-            {$_caption = _w('One-time password')}
+            {$_caption = _ws('One-time password')}
         {/if}
 
         {render_wrapped

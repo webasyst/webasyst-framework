@@ -38,14 +38,8 @@ abstract class waForgotPasswordForm extends waLoginFormRenderer
     {
         $assign = parent::prepareForm();
 
-        if ($this->options['need_placeholder']) {
-            $login_placeholder = $this->auth_config->getLoginPlaceholder();
-            $login_placeholder = strlen($login_placeholder) > 0 ? $login_placeholder : _ws('Login');
-            $code_placeholder = _ws('Confirmation code');
-        } else {
-            $login_placeholder = '';
-            $code_placeholder = '';
-        }
+        $login_placeholder = $this->auth_config->getLoginPlaceholder();
+        $code_placeholder = _ws('Confirmation code');
 
         $login_caption = $this->auth_config->getLoginCaption();
 

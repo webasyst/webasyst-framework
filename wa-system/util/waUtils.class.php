@@ -98,6 +98,7 @@ class waUtils
      * @param mixed $field
      * @param string $type 'collect', 'first', 'last'
      * @return array
+     * @since 1.10.0
      */
     public static function groupBy(array $array, $field, $type = 'collect')
     {
@@ -150,6 +151,7 @@ class waUtils
      * $fruits === array('watermelon' => 400, 'pineapple' => 300, 'apple' => 100, 'orange' => 200);
      *
      * @return array
+     * @since 1.10.0
      */
     public static function orderKeys(array $array, $order = array())
     {
@@ -214,6 +216,7 @@ class waUtils
      * $fruits === array('orange' => 200, 'watermelon' => 400, 'strawberry' => 0);
      *
      * @return array
+     * @since 1.10.0
      */
     public static function extractValuesByKeys(array $array, $keys = array(), $skip = true, $populate = null)
     {
@@ -232,6 +235,7 @@ class waUtils
      * Cast to array of integers
      * @param mixed $val
      * @return int[]
+     * @since 1.10.0
      */
     public static function toIntArray($val)
     {
@@ -248,6 +252,7 @@ class waUtils
      * @param mixed $val
      * @param bool $trim
      * @return string[]
+     * @since 1.10.0
      */
     public static function toStrArray($val, $trim = true)
     {
@@ -266,6 +271,7 @@ class waUtils
      * Drop all not positive values from input array
      * @param array [int] $int_array
      * @return array[int]
+     * @since 1.10.0
      */
     public static function dropNotPositive($int_array)
     {
@@ -277,6 +283,14 @@ class waUtils
         return $int_array;
     }
 
+    /**
+     * Wraps json_encode() adding proper options if available depending on PHP version.
+     * @param mixed $value
+     * @param int $options
+     * @param int $depth
+     * @return string
+     * @since 1.10.0
+     */
     public static function jsonEncode($value, $options = 0, $depth = 512)
     {
         if (!$options) {
@@ -298,12 +312,15 @@ class waUtils
     }
 
     /**
+     * Wraps json_decode() adding error handling via exceptions
+     *
      * @param string $json The json string being decoded
      * @param bool $assoc When TRUE, returned objects will be converted into associative arrays
      * @param int $depth User specified recursion depth (since PHP 5.3.0)
      * @param int $options Bitmask of JSON decode options (since PHP 5.4.0)
      * @return mixed
      * @throws waException
+     * @since 1.10.0
      */
     public static function jsonDecode($json, $assoc = false, $depth = 512, $options = 0)
     {
@@ -357,6 +374,7 @@ class waUtils
      * @param string $key
      * @param array $new
      * @return array
+     * @since 1.10.0
      */
     public static function arrayInsertAfter(array $array, $key, array $new)
     {

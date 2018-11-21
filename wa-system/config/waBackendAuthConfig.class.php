@@ -51,6 +51,14 @@ class waBackendAuthConfig extends waAuthConfig
     }
 
     /**
+     * @return bool
+     */
+    public function getAuth()
+    {
+        return true;
+    }
+
+    /**
      * @param $type 'set' | 'get'
      * @param null|string $key
      * @return mixed

@@ -476,6 +476,38 @@ abstract class waVerificationChannel
     abstract public function sendSignUpConfirmationMessage($recipient, $options = array());
 
     /**
+     *
+     * Has been sent confirmation message for signup
+     *
+     * @param string|array|waContact $recipient recipient to send confirmation
+     *  - string: means 'address' where send confirmation message
+     *  - array: have keys
+     *    + 'address' ('email','phone') field where send confirmation message
+     *    + 'name' Optional. Name of recipient
+     *  - waContact: extract from object proper info for send confirmation message
+     *  - id: means contact ID, extract by this ID proper info for send confirmation message
+     *
+     * @param array $options For feature use
+     * @return bool
+     */
+    public function hasSentSignUpConfirmationMessage($recipient, $options = array())
+    {
+        $recipient = $this->typecastInputRecipient($recipient);
+        if (!$recipient) {
+            return false;
+        }
+
+        $vca = new waVerificationChannelAssetsModel();
+        $asset = $vca->getAsset(array(
+            'channel_id' => $this->getId(),
+            'address' => $recipient['email'],
+            'name' => waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH
+        ));
+
+        return (bool)$asset;
+    }
+
+    /**
      * @param string $confirmation_secret
      * @param array $options
      * @return bool

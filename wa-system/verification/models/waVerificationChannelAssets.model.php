@@ -106,10 +106,59 @@ class waVerificationChannelAssetsModel extends waModel
         return $asset;
     }
 
-    public function getById($value)
+    public function getAsset($key)
+    {
+        if (wa_is_int($key)) {
+            return $this->getById($key);
+        } elseif (is_array($key)) {
+
+            $field = array();
+
+            // Build proper field (conditions) array to find asset by UNIQUE key
+            // Order matters (for efficient search by using index)
+            $fields = array('channel_id', 'address', 'name');
+            foreach ($fields as $field_id) {
+                if (array_key_exists($field_id, $key)) {
+                    $field[$field_id] = $key[$field_id];
+                } else {
+                    // not needed field_id
+                    return null;
+                }
+            }
+
+            return $this->getByField($field);
+
+        } else {
+            return null;
+        }
+    }
+
+    public function getByField($field, $value = null, $all = false, $limit = false)
     {
         $this->clearExpired();  // for sure
-        return parent::getById($value);
+        return parent::getByField($field, $value, $all, $limit);
+    }
+
+    public function clearByContact($id)
+    {
+        $ids = waUtils::toIntArray($id);
+        $ids = waUtils::dropNotPositive($ids);
+        if (!$ids) {
+            return;
+        }
+
+        $cem = new waContactEmailsModel();
+        $emails = $cem->select('email')->where('contact_id IN(:ids)', array('ids' => $ids))->fetchAll(null, true);
+
+        $cdm = new waContactDataModel();
+        $phones = $cdm->select('value')->where('contact_id IN(:ids)', array('ids' => $ids))->fetchAll(null, true);
+
+        $addresses = array_merge($emails, $phones);
+        $addresses = array_unique($addresses);
+
+        $this->deleteByField(array(
+            'address' => $addresses,
+        ));
     }
 
     protected function clearExpired()

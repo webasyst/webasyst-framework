@@ -125,6 +125,12 @@ var WaLoginAbstractForm = ( function($) {
         if ($form.is('form')) {
             return $form.serializeArray();
         }
+
+        // Because some outer js can un-disable inputs
+        // We need to ENSURE turned off block not has :input disabled
+
+        $form.find('[data-turn-off=1]').find(":input").attr('disabled', true);
+
         return $form.find(':input:not(:disabled)').serializeArray();
     };
 
@@ -205,7 +211,7 @@ var WaLoginAbstractForm = ( function($) {
     Self.prototype.turnOffBlock = function ($block) {
         var that = this;
 
-        $block.hide();
+        $block.data('turnOff', 1).attr('data-turn-off', 1).hide();
         $block.find(":input").attr('disabled', true);
 
         // Buttons move to the end - place temporary dummy item
@@ -246,7 +252,9 @@ var WaLoginAbstractForm = ( function($) {
             $new_place.remove();
         });
 
-        $block.show().find(":input").attr('disabled', false);
+        $block.data('turnOff', '').attr('data-turn-off', '').show();
+        $block.find(":input").attr('disabled', false);
+
         that.triggerEvent('wa_auth_form_change_view');
 
     };
@@ -477,14 +485,16 @@ var WaLoginAbstractForm = ( function($) {
                 handler(e);
             });
         } else {
-            // Emulate
-            $form.find(':submit,button').not(':disabled').click(function (e) {
+            // Click submit Emulate
+            $form.on('click', ':submit,button', function (e) {
                 var $button = $(this);
-                if (!$button.data('ignore')) {
-                    e.preventDefault();
-                    handler(e);
+                if ($button.is(':disabled') || $button.data('ignore')) {
+                    return;
                 }
+                e.preventDefault();
+                handler(e);
             });
+            // Press Enter submit emulate
             $form.on('keydown', 'input', function (e) {
                 if (e.keyCode == 13) {
                     e.preventDefault();

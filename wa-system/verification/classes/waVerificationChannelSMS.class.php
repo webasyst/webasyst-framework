@@ -48,7 +48,10 @@ class waVerificationChannelSMS extends waVerificationChannel
         ));
 
         $result = $this->sendSMS($recipient['phone'], $message);
-        if (!$result) {
+
+        // clean asset in failed sending
+        if (!$result && $asset_id > 0) {
+            $vca->deleteById($asset_id);
             return false;
         }
 

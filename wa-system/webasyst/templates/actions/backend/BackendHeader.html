@@ -1,5 +1,5 @@
 {* Announcements *}
-{function name="_renderAnnouncement" _app_id="" _test=[]}
+{function name="_renderAnnouncement" _app_id="" _texts=[]}
     {strip}
         <a href="#" rel="{$_app_id}" class="wa-announcement-close" title="close">&times;</a>
         <p>
@@ -18,6 +18,13 @@
             {else}
                 {$_item_url = "`$backend_url``$_id`/"}
             {/if}
+        {* Version *}
+        {if !empty($_info.version)}
+            {$_version = "?v=`$_info.version|escape`"}
+        {else}
+            {$_version = null}
+        {/if}
+
         <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($reuqest_uri, $_item_url) !== false} class="selected"{/if}>
             {* Build app icon count *}
             {$_count = null}
@@ -31,7 +38,7 @@
             {/if}
             <a href="{$_item_url}">
                 {if isset($_info.img)}
-                    <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}"{/if} src="{$root_url}{$_info.img}" alt="">
+                    <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{$_info.img}{$_version}" alt="">
                 {/if}
                 {$_info.name|ifempty}
                 {if $_count}

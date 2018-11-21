@@ -122,9 +122,10 @@ class waVerificationChannelEmail extends waVerificationChannel
 
         $confirmation_hash = $this->generateHash();
 
+        $vca = new waVerificationChannelAssetsModel();
+
         $asset_id = 0;
         if (!$is_test_send) {
-            $vca = new waVerificationChannelAssetsModel();
             $asset_id = $vca->set($this->getId(), $recipient['email'], waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH,
                 $confirmation_hash, '24 hours');
             if ($asset_id <= 0) {
@@ -152,7 +153,14 @@ class waVerificationChannelEmail extends waVerificationChannel
         $subject = $this->renderTemplate($subject_template, $vars);
 
         // Send message
-        return $this->sendMessage($recipient, $subject, $body);
+        $result = $this->sendMessage($recipient, $subject, $body);
+
+        // clean asset in failed sending
+        if (!$result && $asset_id > 0) {
+            $vca->deleteById($asset_id);
+        }
+
+        return $result;
     }
 
     protected function generateHash()

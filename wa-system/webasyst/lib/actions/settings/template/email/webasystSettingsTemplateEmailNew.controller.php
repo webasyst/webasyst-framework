@@ -11,7 +11,6 @@ class webasystSettingsTemplateEmailNewController extends webasystSettingsJsonCon
         }
 
         $channel = new waVerificationChannelEmail(0);
-        $channel->setType(waVerificationChannelModel::TYPE_EMAIL);
         $channel->save($data);
 
         $this->response = $channel->getInfo();

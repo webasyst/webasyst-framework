@@ -23,7 +23,6 @@ class waBackendLoginForm extends waLoginForm
      */
     public function __construct($options = array())
     {
-        $options['need_placeholder'] = true;
         parent::__construct($options);
         $this->auth_config = waBackendAuthConfig::getInstance();
         $this->default_templates_path = waConfig::get('wa_path_system') . '/login/templates/login/backend/';

@@ -379,6 +379,9 @@ class waSystemConfig
 
     public function setSms($data)
     {
+        if (waConfig::get('is_template')) {
+            return false;
+        }
         $path = $this->getPath('config', 'sms');
         if (waUtils::varExportToFile($data, $path)) {
             return true;
@@ -393,6 +396,9 @@ class waSystemConfig
 
     public function setMail($data)
     {
+        if (waConfig::get('is_template')) {
+            return false;
+        }
         $path = $this->getPath('config', 'mail');
         if (waUtils::varExportToFile($data, $path)) {
             return true;

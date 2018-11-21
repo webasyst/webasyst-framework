@@ -11,6 +11,7 @@
   line-height: 1.125em;
   border: 1px solid #cfcfcf;
   min-height: 28px;
+  margin-right: 16px;
 }
 .wa-signup-form-wrapper select {
   max-width: 100%;
@@ -239,8 +240,11 @@
 .wa-signup-form-wrapper .wa-is-hidden {
   display: none;
 }
+.wa-signup-form-wrapper .wa-info-messages {
+  margin: 0 0 1.071428571428571em;
+}
 .wa-signup-form-wrapper .wa-signup-form-fields {
-  margin: 1.071428571428571em 0 0;
+  margin: 0;
 }
 .wa-signup-form-wrapper .wa-signup-form-actions {
   margin: 1.071428571428571em 0 0;
@@ -307,15 +311,14 @@
   width: 80px;
   min-width: 80px;
   display: inline-block;
+  margin-right: 16px;
 }
 .wa-signup-form-wrapper.wa-is-onetime-password-auth-type .wa-field-onetime-password .wa-value .wa-onetime-password-input-message {
   display: inline-block;
   font-size: 14px;
-  margin-left: 16px;
 }
 .wa-signup-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link-wrapper {
   display: inline-block;
-  margin-left: 16px;
 }
 .wa-signup-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link {
   display: inline-block;
@@ -369,7 +372,6 @@
 }
 .wa-signup-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value .wa-confirmation-code-input-message {
   display: inline-block;
-  margin-left: 16px;
 }
 .wa-signup-form-wrapper.wa-is-need-confirm .wa-confirm-signup-button-wrapper {
   margin: 1.071428571428571em 0 0;

@@ -34,8 +34,9 @@ var WaSignup = ( function($) {
         that.is_onetime_password_auth_type = options.is_onetime_password_auth_type || false;
         that.onetime_password_url = options.onetime_password_url || '';
         that.is_need_confirm = options.is_need_confirm || false;
-        that.need_redirects = options.need_redirects || '';
-        that.auth_after_link_sent = options.auth_after_link_sent || false;
+
+        // Default value is TRUE
+        that.need_redirects = options.need_redirects !== undefined ? !!options.need_redirects : true;
         that.contact_type = options.contact_type || '';
 
         // INIT
@@ -66,7 +67,10 @@ var WaSignup = ( function($) {
 
         name = that.normalizeFieldId(name);
 
-        var input_name = namespace + '[' + name + ']';
+        var input_name = name;
+        if (name !== 'captcha') {
+            input_name = namespace + '[' + name + ']';
+        }
 
         return $form.find('[name="' + input_name + '"]');
     };
@@ -208,7 +212,18 @@ var WaSignup = ( function($) {
             };
         });
 
-        $form.on('keydown', ':text', function () {
+        $form.on('submit', function () {
+            $.each(contexts, function (name) {
+                if (contexts[name] && contexts[name].timer) {
+                    clearTimeout(contexts[name].timer);
+                }
+            });
+        });
+
+        $form.on('keydown', ':text', function (e) {
+            if (e.keyCode === 13) {
+                return;
+            }
             var $input = $(this),
                 name = $input.attr('name'),
                 context = contexts[name] || {},
@@ -252,29 +267,28 @@ var WaSignup = ( function($) {
     WaSignup.prototype.beforeJsonPost = function(url, data) {
         var that = this;
         that.hideOauthAdaptersBlock();
+
+        var vars = {
+            need_redirects : that.need_redirects ? 1 : 0
+        };
+
         if ($.isPlainObject(data)) {
-            data['need_redirects'] = that.need_redirects;
-            data['auth_after_link_sent'] = that.auth_after_link_sent;
+            data['need_redirects'] = vars.need_redirects;
             data['contact_type'] = that.contact_type;
         } else if ($.isArray(data)) {
             data = data.concat([
                 {
                     name: 'need_redirects',
-                    value: that.need_redirects
-                },
-                {
-                    name: 'auth_after_link_sent',
-                    value: that.auth_after_link_sent
+                    value: vars.need_redirects
                 },
                 {
                     name: 'contact_type',
-                    value: that.contact_type
+                    value: vars.contact_type
                 }
             ]);
         } else if (data) {
-            data += '&need_redirects=' + that.need_redirects;
-            data += '&auth_after_link_sent=' + that.auth_after_link_sent;
-            data += '&contact_type=' + that.contact_type;
+            data += '&need_redirects=' + vars.need_redirects;
+            data += '&contact_type=' + vars.contact_type;
         } else {
             data = {};
         }
@@ -546,6 +560,9 @@ var WaSignup = ( function($) {
                     msg = that.locale.confirmation_code_required || msg;
                 }
                 errors[name] = msg;
+            }
+            if (that.normalizeFieldId(name) === 'captcha' && value.length <= 0) {
+                errors['captcha'] = [that.locale.captcha_required || that.locale.required || ''];
             }
         });
         return errors;

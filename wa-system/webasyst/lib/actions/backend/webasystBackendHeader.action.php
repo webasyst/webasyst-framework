@@ -9,7 +9,6 @@ class webasystBackendHeaderAction extends waViewAction
         }
 
         $this->view = wa('webasyst')->getView();
-        $header_items = $this->getHeaderItems();
         $user = wa()->getUser();
         $apps = $user->getApps();
         $current_app = wa()->getApp();
@@ -61,7 +60,7 @@ class webasystBackendHeaderAction extends waViewAction
             'company_url'   => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
             'date'          => $date,
             'user'          => $user,
-            'header_items'  => $header_items,
+            'header_items'  => $this->getHeaderItems(),
             'reuqest_uri'   => waRequest::server('REQUEST_URI'),
             'current_app'   => $current_app,
             'counts'        => $counts,
@@ -94,13 +93,18 @@ class webasystBackendHeaderAction extends waViewAction
             }
         }
 
-        $header_items = $sorted_header_items = array();
+        $header_items = array();
         foreach ($apps as $app_id => $app_info) {
             if ($app_id !== 'webasyst' && !isset($app_info['header_items'])) {
                 $header_items[$app_id] = $app_info;
             }
-            if (!empty($app_info['header_items'])) {
+            if (isset($app_info['header_items']) && is_array($app_info['header_items'])) {
                 foreach ($app_info['header_items'] as $item_id => $item_info) {
+                    // Add version
+                    if (empty($item_info['version']) && !empty($app_info['version'])) {
+                        $item_info['version'] = $app_info['version'];
+                    }
+
                     // Check rights
                     if (!$is_admin && !empty($item_info['rights'])) {
                         $access_is_allowed = true;
@@ -137,6 +141,7 @@ class webasystBackendHeaderAction extends waViewAction
             array_splice($sort, 4, 0, array('webasyst.settings'));
         }
 
+        $sorted_header_items = array();
         foreach ($sort as $item_id) {
             if (isset($header_items[$item_id])) {
                 $sorted_header_items[$item_id] = $header_items[$item_id];

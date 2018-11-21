@@ -39,8 +39,6 @@ class waSignupForm
      *
      * @param array $options
      *
-     *   bool   'need_placeholder' - need show for each field own placeholder. Default - FALSE
-     *
      *   bool   'show_title' - need show own title. Default - FALSE
      *
      *   bool   'show_oauth_adapters' - need show html block of o-auth adapters - Eg vk, facebook etc. Default - FALSE
@@ -49,12 +47,11 @@ class waSignupForm
      *
      *   bool   'need_redirects' - need server trigger redirects. Default - TRUE
      *
-     *   bool   'auth_after_link_sent' - need authorize contact right away after confirmation link sent. Default - FALSE
-     *
      *   string 'contact_type' - what type of contact to create 'person' or 'company'. Default - 'person'
      *
      *   bool 'include_css' - include or not default css. Default - TRUE
      *
+     * @throws waException
      */
     public function __construct($domain_config = null, $options = array())
     {
@@ -62,7 +59,6 @@ class waSignupForm
 
         $this->options = is_array($options) ? $options : array();
 
-        $this->options['need_placeholder'] = isset($this->options['need_placeholder']) ? (bool)$this->options['need_placeholder'] : false;
         $this->options['show_title'] = isset($this->options['show_title']) ? (bool)$this->options['show_title'] : false;
         $this->options['show_oauth_adapters'] = isset($this->options['show_oauth_adapters']) ? (bool)$this->options['show_oauth_adapters'] : false;
 
@@ -76,9 +72,6 @@ class waSignupForm
             $need_redirects = (bool)$this->options['need_redirects'];
         }
         $this->options['need_redirects'] = $need_redirects;
-
-        // init 'auth_after_link_sent'
-        $this->options['auth_after_link_sent'] = isset($this->options['auth_after_link_sent']) ? (bool)$this->options['auth_after_link_sent'] : false;
 
         // init 'contact_type' option
         if (isset($this->options['contact_type']) && is_scalar($this->options['contact_type'])) {
@@ -309,16 +302,14 @@ class waSignupForm
         $params['namespace'] = $this->namespace;
         $params['ext'] = $this->getExt($data_field_id);
 
-        if ($this->options['need_placeholder']) {
-            if (empty($params['placeholder'])) {
-                $params['placeholder'] = $field->getName();
-            }
+        if (isset($params['placeholder'])) {
+            $params['placeholder'] = is_scalar($params['placeholder']) ? (string)$params['placeholder'] : '';
         } else {
             $params['placeholder'] = '';
         }
 
-        if ($field_id === 'password' && $params['placeholder']) {
-            $params['password_confirm_placeholder'] = _ws('Confirm password');
+        if ($field_id === 'password') {
+            $params['password_confirm_placeholder'] = $params['placeholder'];
         }
 
         $info = array(
@@ -355,13 +346,7 @@ class waSignupForm
             $params['caption'] = $this->getContactFieldCaption($sub_field, $params);
             $params['namespace'] = $this->namespace;
 
-            if ($this->options['need_placeholder']) {
-                if (empty($params['placeholder'])) {
-                    $params['placeholder'] = $sub_field->getName();
-                }
-            } else {
-                $params['placeholder'] = '';
-            }
+            $params['placeholder'] = '';
 
             $errors = isset($result['errors']) ? $result['errors'] : array();
             $errors = isset($errors[$sub_field_id]) ? $errors[$sub_field_id] : array();
@@ -535,7 +520,6 @@ class waSignupForm
             'show_title' => $this->options['show_title'],
             'show_oauth_adapters' => $this->options['show_oauth_adapters'],
             'need_redirects' => $this->options['need_redirects'],
-            'auth_after_link_sent' => $this->options['auth_after_link_sent'],
             'contact_type' => $this->options['contact_type'],
             'include_css' => $this->options['include_css'],
             'include_js' => true
