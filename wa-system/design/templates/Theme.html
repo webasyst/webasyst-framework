@@ -237,7 +237,7 @@
                     </div>
                 {else}
                     {* Update is not available *}
-                    {if !empty($theme.parent_theme) && !empty($theme.parent_theme->getWarningRequirements())}
+                    {if !empty($theme_parent_warning_requirements)}
                         <div class="block double-padded wa-theme-actions wa-theme-warning">
                             <strong>[s`Update not available`]</strong>
                             <ul class="menu-v">
@@ -489,7 +489,7 @@
                         <li><b>{$requirement.warning}</b></li>
                     {/foreach}
                 </ul>
-            {elseif !empty($theme.parent_theme) && !empty($theme.parent_theme->getWarningRequirements())}
+            {elseif !empty($theme_parent_warning_requirements)}
                 <ul>
                     {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
                         <li><b>{$requirement.warning}</b></li>

@@ -727,6 +727,11 @@ HTACCESS;
 
             $theme_warning_requirements = $current_theme->getWarningRequirements();
 
+            $theme_parent_warning_requirements = false;
+            if ($current_theme->parent_theme) {
+                $theme_parent_warning_requirements = $current_theme->parent_theme->getWarningRequirements();
+            }
+
             $this->display(array(
                 'current_locale'                      => $current_locale,
                 'routes'                              => $routes,
@@ -743,6 +748,7 @@ HTACCESS;
                 'theme_original_warning_requirements' => $original_warning_requirements,
                 'theme_original_version'              => $theme_original_version,
                 'theme_parent_original_version'       => $theme_parent_original_version,
+                'theme_parent_warning_requirements'   => $theme_parent_warning_requirements,
                 'options'                             => $this->options,
                 'parent_themes'                       => $parent_themes,
                 'theme_routes'                        => $theme_routes,

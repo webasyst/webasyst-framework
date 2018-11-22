@@ -533,7 +533,7 @@ abstract class waLoginFormRenderer
 
 
     /**
-     * @param $captcha
+     * @param waAbstractCaptcha $captcha
      * @return array
      */
     protected function prepareCaptcha($captcha)
@@ -542,7 +542,7 @@ abstract class waLoginFormRenderer
             'object'       => $captcha,
             'is_invisible' => $captcha->getOption('invisible'),
             'class'        => get_class($captcha),
-            'real_class'   => get_class($captcha->getRealCaptcha()),
+            'real_class'   => waCaptcha::getCaptchaType($captcha),
             'errors'       => $this->getErrors('captcha'),
             'error'        => $this->getErrors('captcha', '<br>')
         );

@@ -3,7 +3,13 @@
 /**
  * Wraps around a different captcha class.
  * Selects between captcha implementations depending on system options.
+ *
+ *
+ * IMPLEMENTS waAbstractCaptcha interface
  * @method getOption($key = null, $default = null)
+ * @method getHtml()
+ * @method display()
+ *
  */
 class waCaptcha
 {

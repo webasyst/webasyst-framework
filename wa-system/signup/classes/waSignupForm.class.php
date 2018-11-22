@@ -229,7 +229,7 @@ class waSignupForm
             'object'       => $object,
             'is_invisible' => $object->getOption('invisible'),
             'class'        => get_class($object),
-            'real_class'   => get_class($object->getRealCaptcha()),
+            'real_class'   => waCaptcha::getCaptchaType($object),
             'errors'       => $this->getErrors('captcha')
         );
         return $this->renderTemplate($template, $assign);

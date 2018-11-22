@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-11-20 18:19+0300\n"
+"PO-Revision-Date: 2018-11-22 12:03+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4381,7 +4381,8 @@ msgstr "%s сейчас онлайн"
 msgid "Plugin not found"
 msgstr "Плагин не найден"
 
-#: /wa-system/file/waNet.class.php:415 /wa-system/file/waNet.class.php:419
+#: /wa-system/file/waNet.class.php:415
+#: /wa-system/file/waNet.class.php:419
 msgid "Error cUrl init"
 msgstr "Ошибка инициализации cUrl"
 
@@ -5826,3 +5827,4 @@ msgstr "Поддержка пользователей"
 
 msgid "Minimum 3 characters"
 msgstr "Минимум 3 символа"
+
