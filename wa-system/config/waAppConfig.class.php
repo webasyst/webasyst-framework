@@ -684,7 +684,7 @@ class waAppConfig extends SystemConfig
         if (file_exists($path)) {
             $routes = array_merge($routes, include($path));
         }
-        return array_merge($this->getPluginRoutes($route), $routes);
+        return $routes;
     }
 
     protected function getRoutingPath($type)
@@ -700,6 +700,9 @@ class waAppConfig extends SystemConfig
         return $path;
     }
 
+    /**
+     * TODO: The method that we will ever learn to use.
+     */
     protected function getPluginRoutes($route)
     {
         /**
@@ -721,6 +724,7 @@ class waAppConfig extends SystemConfig
                     $route = $route_ar;
                 }
                 if (!array_key_exists('plugin', $route)) {
+                    $route['app'] = $this->application;
                     $route['plugin'] = $plugin;
                 }
                 $all_plugins_routes[$url] = $route;

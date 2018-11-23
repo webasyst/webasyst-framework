@@ -164,22 +164,46 @@ class waSignupAction extends waViewAction
         exit;
     }
 
+    /**
+     * @param $confirm_hash
+     * @throws waException
+     */
     protected function executeConfirmEmailAction($confirm_hash)
     {
-        $validated_email = $this->validateConfirmationHash($confirm_hash);
-        if (!$validated_email) {
+        $validation_result = $this->validateConfirmationHash($confirm_hash);
+
+        // Validation is failed
+        if (!$validation_result['status']) {
             throw new waException(_ws('Email confirmation failed'));
         }
 
-        $cem = new waContactEmailsModel();
-        $cem->updateByField(array('email' => $validated_email), array('status' => waContactEmailsModel::STATUS_CONFIRMED));
-        $contact_id = $cem->getContactIdByEmail($validated_email);
+        // With current validation process must be bind certain contact
+        $contact_id = $validation_result['details']['contact_id'];
         $contact = new waContact($contact_id);
 
+        // Contact doesn't exist or not have been bind with validation process
         if (!$contact->exists()) {
-            return;
+            throw new waException(_ws('Email confirmation failed'));
         }
 
+        // Ok, we have email - mark it as confirmed
+        $validated_email = $validation_result['details']['address'];
+
+        $cem = new waContactEmailsModel();
+        $email_row = $cem->getByField(array(
+            'contact_id' => $contact->getId(),
+            'email' => $validated_email
+        ));
+
+        // Email has been deleted from this contact
+        if (!$email_row) {
+            throw new waException(_ws('Email confirmation failed'));
+        }
+
+        // Email is now confirmed
+        $cem->updateById($email_row['id'], array('status' => waContactEmailsModel::STATUS_CONFIRMED));
+
+        // For some reasons can't signup contact
         if (!$this->trySignupContact($contact)) {
             throw new waException(_ws('Email confirmation failed'));
         }
@@ -988,16 +1012,25 @@ class waSignupAction extends waViewAction
         // Confirm need - try send confirmation message
         $confirmation_sent = null;
         $channels = $this->auth_config->getVerificationChannelInstances();
+        $contact_created = null;
 
         foreach ($channels as $channel_id => $channel) {
             if ($channel->isEmail() && !empty($data['email'])) {
-                $recipient = array(
-                    'email' => $data['email'],
-                    'name'  => waContactNameField::formatName($data)
-                );
-                if ($this->sendLink($recipient)) {
+
+                // For this case with must create contact first
+                // Cause with need validate email related for this contact ONLY
+                $contact_created = $this->trySaveContact($data, $errors);
+                if ($errors) {
+                    break;
+                }
+
+                if ($this->sendLink($contact_created)) {
                     $confirmation_sent = waVerificationChannelModel::TYPE_EMAIL;
                     break;
+                } else {
+                    // sending is failed
+                    $contact_created->delete();
+                    $contact_created = null;
                 }
             }
 
@@ -1015,15 +1048,9 @@ class waSignupAction extends waViewAction
 
         // Confirmation sent by email
         if ($confirmation_sent === waVerificationChannelModel::TYPE_EMAIL) {
-            // yes, save contact if use email
-            $contact = $this->trySaveContact($data, $errors);
-            if ($errors) {
-                return array(self::SIGNED_UP_STATUS_FAILED, $errors);
-            }
-
             return array(self::SIGNED_UP_STATUS_IN_PROCESS, array(
                 'confirmation_link_sent' => true,
-                'contact' => $contact
+                'contact' => $contact_created
             ));
         }
 
@@ -1191,21 +1218,15 @@ class waSignupAction extends waViewAction
 
     /**
      * Send confirmation link
-     * @param waContact|int|array|string $recipient
+     * @param waContact
      * @return bool
+     * @throws waException
      */
     public function sendLink($recipient)
     {
         $email = '';
-        if (wa_is_int($recipient)) {
-            $recipient = new waContact($recipient);
-        }
         if ($recipient instanceof waContact && $recipient->exists()) {
             $email = $recipient->get('email', 'default');
-        } elseif (is_scalar($recipient)) {
-            $email = $recipient;
-        } elseif (is_array($recipient)) {
-            $email = isset($recipient['email']) && is_scalar($recipient['email']) ? $recipient['email'] : '';
         }
         if (!$email) {
             return false;
@@ -1222,6 +1243,10 @@ class waSignupAction extends waViewAction
 
 
         $channel = $this->auth_config->getEmailVerificationChannelInstance();
+
+        /**
+         * @var waContact $recipient
+         */
         $result = $channel->sendSignUpConfirmationMessage($recipient, array(
             'site_url' => $this->auth_config->getSiteUrl(),
             'site_name' => $this->auth_config->getSiteName(),
@@ -1342,6 +1367,7 @@ class waSignupAction extends waViewAction
      * @param $code
      * @param $phone
      * @return bool
+     * @throws waException
      */
     protected function validateConfirmationCode($code, $phone)
     {
@@ -1349,9 +1375,10 @@ class waSignupAction extends waViewAction
             return false;
         }
         $channel = $this->auth_config->getSMSVerificationChannelInstance();
-        return !!$channel->validateSignUpConfirmation($code, array(
+        $result = $channel->validateSignUpConfirmation($code, array(
             'recipient' => $phone
         ));
+        return $result['status'];
     }
 
     /**
@@ -1388,13 +1415,20 @@ class waSignupAction extends waViewAction
 
     /**
      * @param $confirmation_hash
-     * @return bool|string
+     *
+     * @return array
+     *   Format the same as validateSignUpConfirmation returns
+     * @see waVerificationChannel::validateSignUpConfirmation
+     *
      * @throws waException
      */
     protected function validateConfirmationHash($confirmation_hash)
     {
         if (!$this->auth_config->getSignUpConfirm()) {
-            return false;
+            return array(
+                'status' => false,
+                'details' => array()
+            );
         }
         $channel = $this->auth_config->getEmailVerificationChannelInstance();
         return $channel->validateSignUpConfirmation($confirmation_hash);

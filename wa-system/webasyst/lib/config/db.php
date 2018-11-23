@@ -365,12 +365,13 @@ return array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'channel_id' => array('int', 11, 'null' => 0),
         'address' => array('varchar', 64, 'null' => 0),
+        'contact_id' => array('int', 11, 'null' => 0, 'default' => 0),
         'name' => array('varchar', 64, 'null' => 0),
         'value' => array('text'),
         'expires' => array('datetime'), // IF NULL asset never expires
         ':keys' => array(
             'PRIMARY' => 'id',
-            'channel_address_name' => array('channel_id', 'address', 'name', 'unique' => 1),
+            'channel_address_name' => array('channel_id', 'address', 'contact_id', 'name', 'unique' => 1),
             'name' => 'name',
             'expires' => 'expires'
         )

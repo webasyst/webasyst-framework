@@ -29,28 +29,55 @@ class waVerificationChannelAssetsModel extends waModel
      */
     public function set($channel_id, $address, $name, $value, $ttl = null)
     {
-        $channel_id = is_scalar($channel_id) ? (int)$channel_id : 0;
-        if ($channel_id <= 0) {
+        return $this->setAsset(array(
+            'channel_id' => $channel_id,
+            'address' => $address,
+            'name' => $name,
+            'value' => $value
+        ), $ttl);
+    }
+
+    /**
+     * @param array $data
+     *   int 'channel_id'
+     *   string 'address'
+     *   int 'contact_id' (may be skipped)
+     *   string 'name'
+     *   string 'value'
+     * @param null $ttl
+     * @return bool|int|resource
+     */
+    public function setAsset($data = array(), $ttl = null)
+    {
+        // 'channel_id' is required
+        $data['channel_id'] = isset($data['channel_id']) && wa_is_int($data['channel_id']) ? (int)$data['channel_id'] : 0;
+        if ($data['channel_id'] <= 0) {
             return false;
         }
 
-        $address = is_scalar($address) ? (string)$address : '';
-        if (strlen($address) <= 0) {
+        // 'address' is required
+        $data['address'] = isset($data['address']) && is_scalar($data['address']) ? (string)$data['address'] : '';
+        if (strlen($data['address']) <= 0) {
             return false;
         }
 
-        $name = is_scalar($name) ? (string)$name : '';
-        if (strlen($name) <= 0) {
+        // 'contact_id' may be skipped
+        if (isset($data['contact_id'])) {
+            $data['contact_id'] = wa_is_int($data['contact_id']) ? (int)$data['contact_id'] : 0;
+        }
+
+        // 'name' is required
+        $data['name'] = isset($data['name']) && is_scalar($data['name']) ? (string)$data['name'] : '';
+        if (strlen($data['name']) <= 0) {
             return false;
         }
 
-        if (is_scalar($value)) {
-            $value = (string)$value;
-            if (strlen($value) <= 0) {
+        // 'value' may be skipped
+        if (isset($data['value'])) {
+            $data['value'] =  is_scalar($data['value']) ? (string)$data['value'] : '';
+            if (strlen($data['value']) <= 0) {
                 return false;
             }
-        } elseif (!$value) {
-            return false;
         }
 
         $expires = null;
@@ -77,13 +104,9 @@ class waVerificationChannelAssetsModel extends waModel
             }
         }
 
-        return $this->insert(array(
-            'channel_id' => $channel_id,
-            'address' => $address,
-            'name' => $name,
-            'value' => $value,
-            'expires' => $expires
-        ), 1);
+        $data['expires'] = $expires;
+
+        return $this->insert($data, 1);
     }
 
     /**
@@ -116,10 +139,12 @@ class waVerificationChannelAssetsModel extends waModel
 
             // Build proper field (conditions) array to find asset by UNIQUE key
             // Order matters (for efficient search by using index)
-            $fields = array('channel_id', 'address', 'name');
+            $fields = array('channel_id', 'address', 'contact_id', 'name');
             foreach ($fields as $field_id) {
                 if (array_key_exists($field_id, $key)) {
                     $field[$field_id] = $key[$field_id];
+                } elseif ($field_id === 'contact_id') {
+                    $field['contact_id'] = 0;
                 } else {
                     // not needed field_id
                     return null;

@@ -1910,7 +1910,7 @@ HTACCESS;
         unset($requirement);
 
         $wa_installer_apps = 'wa-installer/lib/classes/wainstallerapps.class.php';
-        $wa_installer_requirements = 'wa-installer/lib/classes/waInstallerRequirements.class.php';
+        $wa_installer_requirements = 'wa-installer/lib/classes/wainstallerrequirements.class.php';
 
         if (!class_exists('waInstallerApps') && file_exists(wa()->getConfig()->getRootPath() .'/'. $wa_installer_apps)) {
             $autoload = waAutoload::getInstance();

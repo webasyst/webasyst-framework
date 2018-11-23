@@ -169,7 +169,7 @@ class waSystem
 
     /**
      * @param array $options
-     * @return waCaptcha
+     * @return waAbstractCaptcha
      */
     public function getCaptcha($options = array())
     {
@@ -1486,6 +1486,30 @@ class waSystem
         } else {
             throw new waException('Widget '.$widget_id.' not found', 404);
         }
+    }
+
+    /**
+     * For debug need delete before release
+     * @param $name
+     * @param null $params
+     * @param null $array_keys
+     * @return array
+     */
+    public function eventNew($name, &$params = null, $array_keys = null)
+    {
+        if (is_array($name)) {
+            $event_app_id = $name[0];
+            $name = $name[1];
+        } else {
+            $event_app_id = $this->getConfig()->getApplication();
+        }
+
+        $options = array(
+            'array_keys' => $array_keys
+        );
+
+        $event_class = new waEvent($event_app_id, $name, $options);
+        return $event_class->run($params);
     }
 
     /**

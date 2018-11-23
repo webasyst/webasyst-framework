@@ -73,6 +73,7 @@ return array(
 
     'waDateTime'                        => 'datetime/waDateTime.class.php',
 
+    'waEvent'                           => 'event/waEvent.class.php',
     'waEventHandler'                    => 'event/waEventHandler.class.php',
 
     'waDbException'                     => 'exception/waDbException.class.php',

@@ -125,17 +125,35 @@ class waVerificationChannelSMS extends waVerificationChannel
      *       If isset than use it AS asset ID that says where secret placed in DB
      *       Otherwise try asset ID from session ( @see sendSignUpConfirmationMessage )
      *
-     * @return bool
+     * @return array Associative array
+     *
+     *   Format of this associative array:
+     *
+     *   - bool  'status'  - successful or not was validation
+     *
+     *   - array 'details' - detailed information about result of validation
+     *      Format of details depends on 'status'
+     *        If 'status' is TRUE
+     *          - string 'address'     - address that was validated
+     *          - int    'contact_id'  - id of contact bind to this address
+     *        Otherwise details is empty array
      */
     public function validateSignUpConfirmation($confirmation_secret, $options = array())
     {
+        // Initialize result structure
+        $result = array(
+            'status' => false,
+            'details' => array()
+        );
+
         $confirmation_secret = is_scalar($confirmation_secret) ? (string)$confirmation_secret : '';
         if (strlen($confirmation_secret) <= 0) {
-            return false;
+            return $result;
         }
 
         $use_session = !isset($options['asset_id']);
 
+        $session_key = '';
         if ($use_session) {
             $session_key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_CODE;
             $asset_id = wa()->getStorage()->get($session_key);
@@ -145,14 +163,14 @@ class waVerificationChannelSMS extends waVerificationChannel
         }
 
         if ($asset_id <= 0) {
-            return false;
+            return $result;
         }
         $confirmation_code = $confirmation_secret;
 
         $vca = new waVerificationChannelAssetsModel();
         $asset = $vca->getById($asset_id);
         if (!$asset) {
-            return false;
+            return $result;
         }
 
         $recipient = null;
@@ -161,13 +179,13 @@ class waVerificationChannelSMS extends waVerificationChannel
         }
 
         if ($recipient !== null && !waContactPhoneField::isPhoneEquals($asset['address'], $recipient['address'])) {
-            return false;
+            return $result;
         }
 
         if ($asset['channel_id'] != $this->getId() ||
             $asset['name'] != waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_CODE ||
             $asset['value'] != waContact::getPasswordHash($confirmation_code)) {
-            return false;
+            return $result;
         }
 
         // clean asset
@@ -176,7 +194,15 @@ class waVerificationChannelSMS extends waVerificationChannel
             wa()->getStorage()->del($session_key);
         }
 
-        return waContactPhoneField::cleanPhoneNumber($asset['address']);
+        // successful validation result
+
+        $result['status'] = true;
+        $result['details'] = array(
+            'address' => waContactPhoneField::cleanPhoneNumber($asset['address']),
+            'contact_id' => $asset['contact_id']
+        );
+
+        return $result;
     }
 
     /**
@@ -360,15 +386,30 @@ class waVerificationChannelSMS extends waVerificationChannel
      *       If isset than use it AS asset ID that says where secret placed in DB
      *       Otherwise try asset ID from session ( @see sendSignUpConfirmationMessage )
      *
-     * @return bool|string
-     *   If fail - return FALSE
-     *   Otherwise string phone
+     * @return array Associative array
+     *
+     *   Format of this associative array:
+     *
+     *   - bool  'status'  - successful or not was validation
+     *
+     *   - array 'details' - detailed information about result of validation
+     *      Format of details depends on 'status'
+     *        If 'status' is TRUE
+     *          - string 'address'     - address that was validated
+     *          - int    'contact_id'  - id of contact bind to this address
+     *        Otherwise details is empty array
      */
     public function validateRecoveryPasswordSecret($secret, $options = array())
     {
+        // Initialize result structure
+        $result = array(
+            'status' => false,
+            'details' => array()
+        );
+
         $secret = is_scalar($secret) ? (string)$secret : '';
         if (strlen($secret) <= 0) {
-            return false;
+            return $result;
         }
 
         $session_key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE;
@@ -381,13 +422,13 @@ class waVerificationChannelSMS extends waVerificationChannel
         }
 
         if ($asset_id <= 0) {
-            return false;
+            return $result;
         }
 
         $vca = new waVerificationChannelAssetsModel();
         $asset = $vca->getById($asset_id);
         if (!$asset) {
-            return false;
+            return $result;
         }
 
         $recipient = null;
@@ -396,16 +437,22 @@ class waVerificationChannelSMS extends waVerificationChannel
         }
 
         if ($recipient !== null && !waContactPhoneField::isPhoneEquals($asset['address'], $recipient['address'])) {
-            return false;
+            return $result;
         }
 
         if ($asset['channel_id'] != $this->getId() ||
             $asset['name'] != waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE ||
             $asset['value'] != waContact::getPasswordHash($secret)) {
-            return false;
+            return $result;
         }
 
-        return waContactPhoneField::cleanPhoneNumber($asset['address']);
+        $result['status'] = true;
+        $result['details'] = array(
+            'address' => waContactPhoneField::cleanPhoneNumber($asset['address']),
+            'contact_id' => $asset['contact_id']
+        );
+
+        return $result;
     }
 
     /**

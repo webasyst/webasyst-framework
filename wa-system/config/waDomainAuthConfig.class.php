@@ -336,23 +336,53 @@ class waDomainAuthConfig extends waAuthConfig
     }
 
     /**
-     * @return array
+     * @param null|string[]|string $fields
+     *
+     * That peace of information that need presented for each app in returned array
+     * By default 'id', 'icon', 'name' ('id' is always presented)
+     *
+     * Also can be $fields === 'all'
+     * In that case will be return all available information
+     *
+     * @return array Array of app array
      */
-    public function getAuthApps()
+    public function getAuthApps($fields = null)
     {
         $all_apps = $this->getAllApps();
         $domain_apps = $this->getDomainApps($this->domain);
         $domain_apps_map = array_fill_keys($domain_apps, true);
 
+        if ($fields === null) {
+            $fields = array('id', 'icon', 'name');
+        } elseif ($fields === 'all') {
+            $fields = array('id', 'icon', 'name', 'login_url');
+        } elseif (is_array($fields) || is_scalar($fields)) {
+            $fields = (array)$fields;
+        } else {
+            $fields = array('id');
+        }
+
+        $fields = array_fill_keys($fields, true);
+
         $auth_apps = array();
         foreach ($all_apps as $app_id => $app) {
             if (isset($app['frontend']) && !empty($app['auth']) && isset($domain_apps_map[$app_id])) {
-                $auth_apps[$app_id] = array(
+                $app_info = array(
                     'id' => $app_id,
-                    'icon' => $app['icon'],
-                    'name' => $app['name'],
-                    'login_url' => wa()->getRouteUrl($app_id.'/login', array('domain' => $this->domain), true)
+                    'icon' => '',
+                    'name' => '',
+                    'login_url' => ''
                 );
+                if (!empty($fields['icon'])) {
+                    $app_info['icon'] = $app['icon'];
+                }
+                if (!empty($fields['name'])) {
+                    $app_info['name'] = $app['name'];
+                }
+                if (!empty($fields['login_url'])) {
+                    $app_info['login_url'] = wa()->getRouteUrl($app_id.'/login', array('domain' => $this->domain), true);
+                }
+                $auth_apps[$app_id] = $app_info;
             }
         }
         return $auth_apps;

@@ -101,7 +101,9 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
 
         $channel = $this->auth_config->getSMSVerificationChannelInstance();
-        if (!$channel->validateSignUpConfirmation($code, $phone)) {
+
+        $result = $channel->validateSignUpConfirmation($code, $phone);
+        if (!$result['status']) {
             return _ws('Incorrect or expired confirmation code. Try again or request a new code.');
         } else {
             return null;
@@ -180,14 +182,17 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
             $channel = $this->auth_config->getEmailVerificationChannelInstance();
 
+            $contact_info = $auth->getByLogin($data['login'], waAuth::LOGIN_FIELD_EMAIL);
+            $contact = new waContact($contact_info['id']);
+
             // Confirmation code has not be sent, so sent it
-            $sent = $channel->hasSentSignUpConfirmationMessage($data['login']);
+            $sent = $channel->hasSentSignUpConfirmationMessage($contact);
             if (!$sent) {
                 $confirmation_url = $this->auth_config->getSignUpUrl(array(
                     'get' => array('confirm' => 'confirmation_hash')
                 ), true);
                 $confirmation_url = str_replace('confirmation_hash', '{$confirmation_hash}', $confirmation_url);
-                $channel->sendSignUpConfirmationMessage($data['login'], array(
+                $channel->sendSignUpConfirmationMessage($contact, array(
                     'site_url' => $this->auth_config->getSiteUrl(),
                     'site_name' => $this->auth_config->getSiteName(),
                     'confirmation_url' => $confirmation_url,

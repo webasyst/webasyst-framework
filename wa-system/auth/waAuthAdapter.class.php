@@ -27,6 +27,14 @@ abstract class waAuthAdapter
         return isset($this->options[$name]) ? $this->options[$name] : $default;
     }
 
+    /**
+     * @return mixed
+     * @throws waAuthException
+     * @throws waAuthInvalidCredentialsException
+     * @throws waAuthConfirmEmailException
+     * @throws waAuthConfirmPhoneException
+     * @throws waException
+     */
     abstract public function auth();
 
     public function getId()

@@ -90,6 +90,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      * @see forgotPassword around 'confirmation_code' case
      *
      * @param string $hash
+     * @throws waException
      */
     protected function setGeneratedPassword($hash)
     {
@@ -558,6 +559,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      * @return array
      *   - 0 bool <status>
      *   - 1 array <details>
+     * @throws waException
      */
     protected function validateHash($hash)
     {
@@ -593,30 +595,51 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         if (isset($send_details['address'])) {
             $options['recipient'] = $send_details['address'];
         }
-        $validated_address = $channel->validateRecoveryPasswordSecret($secret, $options);
 
-        if (!$validated_address) {
-            // Validation is failed
+        $validation_result = $channel->validateRecoveryPasswordSecret($secret, $options);
+
+        // Validation is failed
+        if (!$validation_result['status']) {
             return array(false, array());
         }
 
-        // Define contact by address
+        // Ok we have address
+        $validated_address = $validation_result['details']['address'];
+
+        // Define contact by address (or contact_id)
         if ($channel->getType() === waVerificationChannelModel::TYPE_SMS) {
+
             $cdm = new waContactDataModel();
-            $contact_id = $cdm->getContactIdByPhone($validated_address);
+
+            $contact_id = $cdm->getContactWithPasswordByPhone($validated_address);
+            $contact = new waContact($contact_id);
+            if (!$contact->exists()) {
+                return array(false, array());
+            }
+
         } else {
+
+            // With current validation process must be bind certain contact
+            $contact_id = $validation_result['details']['contact_id'];
+            $contact = new waContact($contact_id);
+
+            // Contact doesn't exist or not have been bind with validation process
+            if (!$contact->exists()) {
+                return array(false, array());
+            }
+
+            // Check existing email and its binding with contact
             $cem = new waContactEmailsModel();
-            $contact_id = $cem->getContactIdByEmail($validated_address);
-        }
+            $email_row = $cem->getByField(array(
+                'contact_id' => $contact->getId(),
+                'email' => $validated_address
+            ));
 
-        if ($contact_id <= 0) {
-            return array(false, array());
-        }
+            // Email has been deleted from this contact
+            if (!$email_row) {
+                return array(false, array());
+            }
 
-        $contact = new waContact($contact_id);
-
-        if (!$contact->exists()) {
-            return array(false, array());
         }
 
         // set contact locale

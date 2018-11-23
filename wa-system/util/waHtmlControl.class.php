@@ -1201,10 +1201,11 @@ HTML;
                             var deferred = $.Deferred(),
                                 promise = deferred.promise(),
                                 script = document.createElement("script");
+                                
+                            document.getElementsByTagName("head")[0].appendChild(script);
         
                             script = $(script)
                                 .attr("id", source.id)
-                                .appendTo("head")
                                 .data("promise", promise);
         
                             script.on("load", function () {

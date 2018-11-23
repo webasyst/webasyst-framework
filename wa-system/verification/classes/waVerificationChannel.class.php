@@ -501,6 +501,7 @@ abstract class waVerificationChannel
         $asset = $vca->getAsset(array(
             'channel_id' => $this->getId(),
             'address' => $recipient['email'],
+            'contact_id' => isset($recipient['id']) ? $recipient['id'] : 0,
             'name' => waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH
         ));
 
@@ -510,7 +511,20 @@ abstract class waVerificationChannel
     /**
      * @param string $confirmation_secret
      * @param array $options
-     * @return bool
+     *
+     * @return array Associative array
+     *
+     *   Format of this associative array:
+     *
+     *   - bool  'status'  - successful or not was validation
+     *
+     *   - array 'details' - detailed information about result of validation
+     *      Format of details depends on 'status'
+     *        If 'status' is TRUE
+     *          - string 'address'     - address that was validated
+     *          - int    'contact_id'  - id of contact bind to this address
+     *        Otherwise details is empty array
+     *
      */
     abstract public function validateSignUpConfirmation($confirmation_secret, $options = array());
 
@@ -624,9 +638,19 @@ abstract class waVerificationChannel
      * @see sendRecoveryPasswordMessage
      * @param string $secret
      * @param array $options Depends on concrete implementation of method
-     * @return bool|string
-     *   If validation fail must be return FALSE
-     *   Otherwise may return string that represent address of recipient (email or phone)
+     *
+     * @return array Associative array
+     *
+     *   Format of this associative array:
+     *
+     *   - bool  'status'  - successful or not was validation
+     *
+     *   - array 'details' - detailed information about result of validation
+     *      Format of details depends on 'status'
+     *        If 'status' is TRUE
+     *          - string 'address'     - address that was validated
+     *          - int    'contact_id'  - id of contact bind to this address
+     *        Otherwise details is empty array
      */
     abstract public function validateRecoveryPasswordSecret($secret, $options = array());
 

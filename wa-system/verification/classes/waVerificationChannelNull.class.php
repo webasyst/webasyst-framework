@@ -71,11 +71,25 @@ class waVerificationChannelNull extends waVerificationChannel
     /**
      * @param string $confirmation_secret
      * @param array $options
-     * @return bool
+     * @return array Associative array
+     *
+     *   Format of this associative array:
+     *
+     *   - bool  'status'  - successful or not was validation
+     *
+     *   - array 'details' - detailed information about result of validation
+     *      Format of details depends on 'status'
+     *        If 'status' is TRUE
+     *          - string 'address'     - address that was validated
+     *          - int    'contact_id'  - id of contact bind to this address
+     *        Otherwise details is empty array
      */
     public function validateSignUpConfirmation($confirmation_secret, $options = array())
     {
-        return false;
+        return array(
+            'status' => false,
+            'details' => array()
+        );
     }
 
     /**
@@ -147,11 +161,26 @@ class waVerificationChannelNull extends waVerificationChannel
     /**
      * @param string $secret
      * @param array $options
-     * @return bool
+     *
+     * @return array Associative array
+     *
+     *   Format of this associative array:
+     *
+     *   - bool  'status'  - successful or not was validation
+     *
+     *   - array 'details' - detailed information about result of validation
+     *      Format of details depends on 'status'
+     *        If 'status' is TRUE
+     *          - string 'address'     - address that was validated
+     *          - int    'contact_id'  - id of contact bind to this address
+     *        Otherwise details is empty array
      */
     public function validateRecoveryPasswordSecret($secret, $options = array())
     {
-        return false;
+        return array(
+            'status' => false,
+            'details' => array()
+        );
     }
 
     public function invalidateRecoveryPasswordSecret($secret, $options = array())

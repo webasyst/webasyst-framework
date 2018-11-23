@@ -87,6 +87,9 @@ class waAuth implements waiAuth
      *
      * @param array $params
      * @return mixed
+     * @throws waAuthException
+     * @throws waAuthInvalidCredentialsException
+     * @throws waException
      */
     public function auth($params = array())
     {
@@ -335,6 +338,9 @@ class waAuth implements waiAuth
      * @return array|bool
      * @throws waAuthException
      * @throws waAuthInvalidCredentialsException
+     * @throws waAuthConfirmEmailException
+     * @throws waAuthConfirmPhoneException
+     * @throws waException
      */
     protected function _auth($params)
     {
@@ -391,6 +397,9 @@ class waAuth implements waiAuth
     /**
      * @param array $contact
      * @throws waAuthException
+     * @throws waAuthConfirmEmailException
+     * @throws waAuthConfirmPhoneException
+     * @throws waException
      */
     protected function mustNeedConfirmSignup($contact)
     {
@@ -519,6 +528,9 @@ class waAuth implements waiAuth
         return $is_available;
     }
 
+    /**
+     * @return waAuthConfirmEmailException
+     */
     protected function getAuthConfirmEmailException()
     {
         $login_url = $this->auth_config->getSignupUrl(array(
@@ -529,6 +541,9 @@ class waAuth implements waiAuth
         return new waAuthConfirmEmailException($msg);
     }
 
+    /**
+     * @return waAuthConfirmPhoneException
+     */
     protected function getAuthConfirmPhoneException()
     {
         $msg = _ws('Please confirm your phone number to sign in.');
