@@ -225,9 +225,12 @@ var SubscribeSection = ( function($) {
     SubscribeSection.prototype.initClass = function() {
         var that = this;
 
+        var $invisible_captcha = that.$form.find(".wa-invisible-recaptcha");
+        if (!$invisible_captcha.length) {
+            that.initView();
+        }
+
         that.initSubmit();
-        //
-        that.initView();
     };
 
     SubscribeSection.prototype.initView = function() {

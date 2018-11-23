@@ -29,7 +29,7 @@ class sitePersonalSettingsAction extends waViewAction
             'auth_config'                => $auth_config->getData(),
             'params'                     => $auth_config->getParams(),
             'auth_adapters'              => $auth_config->getAvailableAuthAdapters(),
-            'auth_apps'                  => $auth_config->getAuthApps(),
+            'auth_apps'                  => $auth_config->getAuthApps('all'),
             'auth_types'                 => $auth_config->getAuthTypes(),
             'signup_captcha'             => $auth_config->getSignUpCaptcha(),
             'rememberme'                 => $auth_config->getRememberMe(),
