@@ -72,6 +72,7 @@ class Smarty_Security {
         'waLog',
         'waRequest::file',
         'waDbConnector',
+        'waEvent',
     );
     /**
      * This is an array of disabled PHP functions.

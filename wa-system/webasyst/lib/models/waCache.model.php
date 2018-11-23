@@ -29,7 +29,7 @@ class waCacheModel extends waModel
 
     public function getInvalid($params = array())
     {
-        if (!empty($params['limit'] && wa_is_int($params['limit']))) {
+        if (!empty($params['limit']) && wa_is_int($params['limit'])) {
             $limit = (int) ifset($params, 'limit', 20);
         } else {
             $limit = null;

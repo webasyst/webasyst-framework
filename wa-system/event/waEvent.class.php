@@ -120,7 +120,7 @@ class waEvent
 
         foreach ($methods as $method) {
             if (is_string($method) && method_exists($object, $method)) {
-                $result[get_class($object).'_'.$method.'-plugin'] = $object->{$method}($params, $this->name);
+                $result[get_class($object).'-'.$method.'-plugin'] = $object->{$method}($params, $this->name);
             }
         }
 
@@ -274,29 +274,34 @@ class waEvent
      */
     protected function setStaticData()
     {
+        // Don't do anything if already loaded to memory
+        if (is_array(self::$handlers) && is_array(self::$plugins)) {
+            return;
+        }
+
+        self::reset();
+
+        // Get from cache unless disabled for development
         if (!defined('WA_EVENT_CLEAR_CACHE')) {
-            if (self::$handlers === null || self::$plugins === null) {
-                self::reset();
-                $cache_export = self::getCacheExport();
-                $cache = $cache_export->get();
+            $cache_export = self::getCacheExport();
+            $cache = $cache_export->get();
 
-                self::$plugins = ifset($cache, 'plugins', null);
-                self::$handlers = ifset($cache, 'handlers', null);
+            self::$plugins = ifset($cache, 'plugins', null);
+            self::$handlers = ifset($cache, 'handlers', null);
+        }
 
-                if (self::$handlers === null || self::$plugins === null) {
-                    $this->setHandlers();
-                    $this->setPlugins();
-
-                    $cache_export->set(array(
-                        'plugins'  => self::$plugins,
-                        'handlers' => self::$handlers
-                    ));
-                }
-            }
-        } elseif (self::$handlers === null || self::$plugins === null) {
-            self::reset();
+        // Collect app and plugin handlers if not found in cache
+        if (!is_array(self::$handlers) || !is_array(self::$plugins)) {
             $this->setHandlers();
             $this->setPlugins();
+        }
+
+        // Write to cache unless disabled
+        if (!defined('WA_EVENT_CLEAR_CACHE')) {
+            $cache_export->set(array(
+                'plugins'  => self::$plugins,
+                'handlers' => self::$handlers
+            ));
         }
     }
 

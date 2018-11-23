@@ -68,10 +68,6 @@ class waDomainAuthConfig extends waAuthConfig
      */
     public static function factory($domain = null)
     {
-        if (waConfig::get('is_template')) {
-            return null;
-        }
-
         if (!$domain) {
             $domain = wa()->getRouting()->getDomain(null, true, false);
         }
@@ -543,7 +539,7 @@ class waDomainAuthConfig extends waAuthConfig
         if ($absolute) {
             $domain = $this->domain;
         }
-        
+
         $path = $auth_app . '/' . ltrim(trim($url), '/');
         $url = wa()->getRouteUrl($path, $params, $absolute, $domain);
         return $this->buildUrl($url, is_array($params) ? ifset($params['get']) : null);
