@@ -48,6 +48,8 @@ var SitePersonalSettings = ( function($) {
         //
         that.initSelectAuthType();
         //
+        that.initAuthByLoginToogle();
+        //
         that.initRequiredFieldsForMethods();
         //
         that.initAuthAdapters();
@@ -278,6 +280,18 @@ var SitePersonalSettings = ( function($) {
                 $signup_notify_checkbox.prop('disabled', false); 
             }
         }).find(':radio:checked').change();
+    };
+
+    SitePersonalSettings.prototype.initAuthByLoginToogle = function () {
+        var that = this,
+            $toogle = that.$form.find('#s-auth-by-login');
+
+        $toogle.iButton({
+            labelOn: "",
+            labelOff: "",
+            className: 's-inline-toogle',
+            classContainer: 'ibutton-container mini'
+        });
     };
 
     SitePersonalSettings.prototype.initRequiredFieldsForMethods = function () {

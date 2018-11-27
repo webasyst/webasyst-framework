@@ -1807,3 +1807,9 @@ msgstr "Повторная отправка кода подтверждения"
 
 msgid "Add SMS notification templates in <a href=\"%s\">Settings</a> app."
 msgstr "Добавьте шаблоны SMS-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."
+
+msgid "Authorization by login name"
+msgstr "Вход по имени пользователя"
+
+msgid "Enable to allow backend users to log in on the website with their login names"
+msgstr "Включите, чтобы пользователи бекенда могли входить на сайт со своими логинами"

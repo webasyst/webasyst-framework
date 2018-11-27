@@ -97,6 +97,22 @@
     </div>
 {/function}
 
+{function auth_by_login}
+    <div class="field-group">
+        <div class="field">
+            <div class="name">
+                <label for="s-auth-by-login">[`Authorization by login name`]</label>
+            </div>
+            <div class="value">
+                <input type="hidden" name="can_login_by_contact_login" value="0" />
+                <input id="s-auth-by-login" name="can_login_by_contact_login" class="ibutton" type="checkbox" value="1"
+                        {if $auth_config.can_login_by_contact_login} checked="checked"{/if}>
+            </div>
+            <div class="value hint">[`Enable to allow backend users to log in on the website with their login names`]</div>
+        </div>
+    </div>
+{/function}
+
 {* Email settings *}
 {function email_settings}
 {$_email_used = in_array(waAuthConfig::AUTH_METHOD_EMAIL, $used_auth_methods)}
