@@ -657,13 +657,14 @@ var WAThemeSettings = ( function($) {
             html = html.replace(/value(\s*?=\s*?['"][\s\S]*?['"])*/, '');
             html = html.replace(/type\s*?=\s*?['"]text['"]/, '');
             html = html.replace('input', 'textarea');
-            html = html.replace(/(\/\s*?>|>)/, '>' + val  + '</textarea>');
+            html = html.replace(/(\/\s*?>|>)/, '></textarea>');
+
 
             if (rm) {
                 p.remove();
             }
 
-            return $(html);
+            return $(html).val(val);
         };
 
         var textarea2input = function(textarea) {
@@ -678,14 +679,14 @@ var WAThemeSettings = ( function($) {
             var val = textarea.val(),
                 html = p.html();
 
-            html = html.replace('textarea', 'input type="text" value="' + val + '"');
+            html = html.replace('textarea', 'input type="text"');
             html = html.replace('</textarea>', '');
 
             if (rm) {
                 p.remove();
             }
 
-            return $(html);
+            return $(html).val(val);
         };
 
         that.$wrapper.find('.flexible').each(function () {

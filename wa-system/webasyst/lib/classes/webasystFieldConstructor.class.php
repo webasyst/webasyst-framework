@@ -831,7 +831,11 @@ class webasystFieldConstructor
         if ($this->crm_installed !== null) {
             return $this->crm_installed;
         }
-        wa('crm');
-        return $this->crm_installed = wa()->appExists('crm');
+
+        $this->crm_installed = wa()->appExists('crm');
+        if ($this->crm_installed) {
+            wa('crm');
+        }
+        return $this->crm_installed;
     }
 }

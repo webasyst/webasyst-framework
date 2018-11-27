@@ -1,3 +1,6 @@
+{$include_css = $include_css|default:false}
+{$include_js = $include_js|default:false}
+
 {$class_id = 'wa-signup-form-wrapper'}
 {$wrapper_id = uniqid($class_id)}
 
@@ -21,155 +24,167 @@
     'captcha_required' => '[s`Captcha is required`]'
 ]}
 
-{$include_css = $include_css|default:false}
-{$include_js = $include_js|default:false}
+{* If you need to load css, but don't need js, we will load css here. If js also need to be loaded, then we will do it asynchronously below. *}
+{if $include_css && !$include_js}
+    <link href="{$wa_url}wa-content/css/signup/signup.css?v={$wa->version()}" rel="stylesheet" type="text/css"/>
+{/if}
 
 <div class="{$_classes}" id="{$wrapper_id}" style="visibility: hidden;">
 
     {* SIGN UP FORM ITSELF *}
     {$form}
 
-    <script>
-        ( function($) { "use strict";
-            load([
-                {
-                    id: "wa-content-signup-css",
-                    type: "css",
-                    uri: "{$wa_url}wa-content/css/signup/signup.css?v={$wa->version()}"
-                },
-                {
-                    id: "wa-content-signup-js",
-                    type: "js",
-                    uri: "{$wa_url}wa-content/js/signup/signup.js?v={$wa->version()}"
-                }
-            ]).then(init);
+    {if $include_js}
 
-            function load(sources) {
-                var deferred = $.Deferred();
+        {* Resources *}
+        {$_resources = [
+            [
+                'id'   => "wa-content-signup-js",
+                'type' => "js",
+                'uri'  => "`$wa_url`wa-content/js/signup/signup.js?v=`$wa->version()`"
+            ]
+        ]}
 
-                loader(sources).then( function() {
-                    deferred.resolve();
-                }, function(bad_sources) {
-                    if (console && console.error) {
-                        console.error("Error loading resource", bad_sources);
-                    }
-                    deferred.reject(bad_sources);
-                });
+        {if $include_css}
+            {$_resources[] = [
+                'id'   => "wa-content-signup-css",
+                'type' => "css",
+                'uri'  => "`$wa_url`wa-content/css/signup/signup.css?v=`$wa->version()`"
+            ]}
+        {/if}
 
-                return deferred.promise();
+        <script>
+            ( function($) { "use strict";
+                load({$_resources|json_encode}).then(init);
 
-                function loader(sources) {
-                    var deferred = $.Deferred(),
-                        counter = sources.length;
+                function load(sources) {
+                    var deferred = $.Deferred();
 
-                    var bad_sources = [];
-
-                    $.each(sources, function(i, source) {
-                        switch (source.type) {
-                            case "css":
-                                loadCSS(source).then(onLoad, onError);
-                                break;
-                            case "js":
-                                loadJS(source).then(onLoad, onError);
-                                break;
+                    loader(sources).then( function() {
+                        deferred.resolve();
+                    }, function(bad_sources) {
+                        if (console && console.error) {
+                            console.error("Error loading resource", bad_sources);
                         }
+                        deferred.reject(bad_sources);
                     });
 
                     return deferred.promise();
 
-                    function loadCSS(source) {
+                    function loader(sources) {
                         var deferred = $.Deferred(),
-                            promise = deferred.promise();
+                            counter = sources.length;
 
-                        var $link = $("#" + source.id);
-                        if ($link.length) {
-                            promise = $link.data("promise");
+                        var bad_sources = [];
 
-                        } else {
-                            $link = $("<link />", {
-                                id: source.id,
-                                rel: "stylesheet"
-                            }).appendTo("head")
-                                .data("promise", promise);
+                        $.each(sources, function(i, source) {
+                            switch (source.type) {
+                                case "css":
+                                    loadCSS(source).then(onLoad, onError);
+                                    break;
+                                case "js":
+                                    loadJS(source).then(onLoad, onError);
+                                    break;
+                            }
+                        });
 
-                            $link
-                                .on("load", function() {
-                                    deferred.resolve(source);
-                                }).on("error", function() {
-                                deferred.reject(source);
-                            });
+                        return deferred.promise();
 
-                            $link.attr("href", source.uri);
-                        }
+                        function loadCSS(source) {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise();
 
-                        return promise;
-                    }
+                            var $link = $("#" + source.id);
+                            if ($link.length) {
+                                promise = $link.data("promise");
 
-                    function loadJS(source) {
-                        var deferred = $.Deferred(),
-                            promise = deferred.promise();
-
-                        var $script = $("#" + source.id);
-                        if ($script.length) {
-                            promise = $script.data("promise");
-
-                        } else {
-                            var script = document.createElement("script");
-                            document.getElementsByTagName("head")[0].appendChild(script);
-
-                            $script = $(script)
-                                .attr("id", source.id)
-                                .data("promise", promise);
-
-                            $script
-                                .on("load", function() {
-                                    deferred.resolve(source);
-                                }).on("error", function() {
-                                deferred.reject(source);
-                            });
-
-                            $script.attr("src", source.uri);
-                        }
-
-                        return promise;
-                    }
-
-                    function onLoad(source) {
-                        counter -= 1;
-                        watcher();
-                    }
-
-                    function onError(source) {
-                        bad_sources.push(source);
-                        counter -= 1;
-                        watcher();
-                    }
-
-                    function watcher() {
-                        if (counter === 0) {
-                            if (!bad_sources.length) {
-                                deferred.resolve();
                             } else {
-                                deferred.reject(bad_sources);
+                                $link = $("<link />", {
+                                    id: source.id,
+                                    rel: "stylesheet"
+                                }).appendTo("head")
+                                    .data("promise", promise);
+
+                                $link
+                                    .on("load", function() {
+                                        deferred.resolve(source);
+                                    }).on("error", function() {
+                                    deferred.reject(source);
+                                });
+
+                                $link.attr("href", source.uri);
+                            }
+
+                            return promise;
+                        }
+
+                        function loadJS(source) {
+                            var deferred = $.Deferred(),
+                                promise = deferred.promise();
+
+                            var $script = $("#" + source.id);
+                            if ($script.length) {
+                                promise = $script.data("promise");
+
+                            } else {
+                                var script = document.createElement("script");
+                                document.getElementsByTagName("head")[0].appendChild(script);
+
+                                $script = $(script)
+                                    .attr("id", source.id)
+                                    .data("promise", promise);
+
+                                $script
+                                    .on("load", function() {
+                                        deferred.resolve(source);
+                                    }).on("error", function() {
+                                    deferred.reject(source);
+                                });
+
+                                $script.attr("src", source.uri);
+                            }
+
+                            return promise;
+                        }
+
+                        function onLoad(source) {
+                            counter -= 1;
+                            watcher();
+                        }
+
+                        function onError(source) {
+                            bad_sources.push(source);
+                            counter -= 1;
+                            watcher();
+                        }
+
+                        function watcher() {
+                            if (counter === 0) {
+                                if (!bad_sources.length) {
+                                    deferred.resolve();
+                                } else {
+                                    deferred.reject(bad_sources);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            function init() {
-                new WaSignup({
-                    $wrapper: $("#{$wrapper_id}").removeAttr("style"),
-                    namespace: {$namespace|json_encode},
-                    locale: {$_locale|json_encode},
-                    timeout: {$_timeout|json_encode},
-                    url: {$url|json_encode},
-                    is_onetime_password_auth_type: {$is_onetime_password_auth_type|json_encode},
-                    is_need_confirm: {$is_need_confirm|json_encode},
-                    need_redirects: {$need_redirects|default:''|json_encode},
-                    contact_type: {$contact_type|default:''|json_encode}
-                });
-            }
-        })(jQuery);
-    </script>
+                function init() {
+                    new WaSignup({
+                        $wrapper: $("#{$wrapper_id}").removeAttr("style"),
+                        namespace: {$namespace|json_encode},
+                        locale: {$_locale|json_encode},
+                        timeout: {$_timeout|json_encode},
+                        url: {$url|json_encode},
+                        is_onetime_password_auth_type: {$is_onetime_password_auth_type|json_encode},
+                        is_need_confirm: {$is_need_confirm|json_encode},
+                        need_redirects: {$need_redirects|default:''|json_encode},
+                        contact_type: {$contact_type|default:''|json_encode}
+                    });
+                }
+            })(jQuery);
+        </script>
+
+    {/if}
 </div>

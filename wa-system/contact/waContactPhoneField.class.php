@@ -121,7 +121,7 @@ class waContactPhoneField extends waContactStringField
                 $value = $this->format($data[0], 'value');
                 $id = $data_model->getContactWithPasswordByPhone($value, $contact_id);
                 if ($id > 0) {
-                    $errors[0] = sprintf(_ws('User with the same %s is already registered'), 'phone');
+                    $errors[0] = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
                 }
             }
         } else {
@@ -135,7 +135,7 @@ class waContactPhoneField extends waContactStringField
                 }
                 $id = $data_model->getContactWithPasswordByPhone($value, $contact_id);
                 if ($id > 0) {
-                    $errors = sprintf(_ws('User with the same %s is already registered'), 'phone');
+                    $errors = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
                 }
             }
         }

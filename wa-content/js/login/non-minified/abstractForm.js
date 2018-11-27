@@ -462,11 +462,6 @@ var WaLoginAbstractForm = ( function($) {
 
     };
 
-    Self.prototype.isJsonMode = function () {
-        var that = this;
-        return that.is_json_mode;
-    };
-
     Self.prototype.initSubmit = function () {
         var that = this,
             $form = that.getFormItem(),

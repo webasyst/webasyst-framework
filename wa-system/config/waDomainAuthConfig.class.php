@@ -417,6 +417,7 @@ class waDomainAuthConfig extends waAuthConfig
                 'params'                    => array('signup'),
                 'used_auth_methods'         => array('login', 'signup'),
                 'priority_auth_method'      => array('login', 'signup'),
+                'can_login_by_contact_login' => array('login')
             );
             $methods = array();
             foreach ($keys as $k => $nss) {
@@ -950,12 +951,21 @@ class waDomainAuthConfig extends waAuthConfig
     }
 
     /**
-     * Can log in (auth) by wa_contact.login field
+     * Can log in (auth) by wa_contact.login field getter
      * @return bool
      */
-    public function canLoginByContactLogin()
+    public function getCanLoginByContactLogin()
     {
-        return $this->getBoolValue('can_login_by_contact_login');
+        return $this->getBoolValue('can_login_by_contact_login', true);
+    }
+
+    /**
+     * Can log in (auth) by wa_contact.login field setter
+     * @param bool $enabled
+     */
+    public function setCanLoginByContactLogin($enabled)
+    {
+        $this->setBoolValue('can_login_by_contact_login', $enabled, true);
     }
 
     /**
@@ -975,7 +985,7 @@ class waDomainAuthConfig extends waAuthConfig
         if (!empty($used_method_map[self::AUTH_METHOD_SMS])) {
             $field_ids[] = waAuth::LOGIN_FIELD_PHONE;
         }
-        if ($this->getBoolValue('can_login_by_contact_login')) {
+        if ($this->getCanLoginByContactLogin()) {
             $field_ids[] = waAuth::LOGIN_FIELD_LOGIN;
         }
         return $field_ids;

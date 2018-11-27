@@ -78,7 +78,7 @@ class waException extends Exception
         $root_path = str_replace('\\', '/', $root_path);
         $root_path = preg_quote($root_path, '~');
         $str = str_replace('\\', '/', $str);
-        return preg_replace("~(^|\s){$root_path}/?~", '$1', $str);
+        return preg_replace("~(^|\s|'|\"){$root_path}/?~", '$1', $str);
     }
 
     private function getFileContext()
@@ -188,17 +188,17 @@ class waException extends Exception
             $post = wa_dump_helper($_);
         }
 
-        $message = nl2br(htmlspecialchars($this->getMessage(), self::$htmlspecialchars_mode, 'utf-8'));
+        $message = nl2br(htmlspecialchars($this->hideRootPath($this->getMessage()), self::$htmlspecialchars_mode, 'utf-8'));
         $message = ifempty($message, get_class($this));
         $trace = htmlspecialchars($this->getFullTraceAsString(), self::$htmlspecialchars_mode, 'utf-8');
         $additional_info = htmlspecialchars($additional_info, self::$htmlspecialchars_mode, 'utf-8');
 
-        $context = trim($this->getFileContext());
+        $context = false;//trim($this->getFileContext());
         if ($context) {
             $context = htmlspecialchars($context, self::$htmlspecialchars_mode, 'utf-8');
             $context = <<<HTML
                 <div id="Context" style="display: block;">
-                    <h3>{$this->getFile()} around line {$this->getLine()}</h3>
+                    <h3>{$this->hideRootPath($this->getFile())} around line {$this->getLine()}</h3>
                     <pre>{$context}</pre>
                 </div>
 HTML;

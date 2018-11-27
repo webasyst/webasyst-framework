@@ -25,6 +25,10 @@ class Smarty_Internal_Write_File {
      */
     public static function writeFile($_filepath, $_contents, Smarty $smarty)
     {
+        if (preg_match('~<script\s+language\s*=\s*[\"\']?\s*php~i', $_contents, $matches)) {
+            throw new SmartyException("Unable to compile due to WA security setting '{$_filepath}'");
+        }
+
         $_error_reporting = error_reporting();
         error_reporting($_error_reporting & ~E_NOTICE & ~E_WARNING);
         if ($smarty->_file_perms !== null) {

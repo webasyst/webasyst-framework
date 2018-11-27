@@ -267,30 +267,29 @@ var WaSignup = ( function($) {
     WaSignup.prototype.beforeJsonPost = function(url, data) {
         var that = this;
         that.hideOauthAdaptersBlock();
-
         var vars = {
-            need_redirects : that.need_redirects ? 1 : 0
+            wa_json_mode: 1,
+            need_redirects : that.need_redirects ? 1 : 0,
+            contact_type: that.contact_type
         };
+        data = that.mixinVarsInData(vars, data);
+        return data;
+    };
 
+    WaSignup.prototype.mixinVarsInData = function (vars, data) {
         if ($.isPlainObject(data)) {
-            data['need_redirects'] = vars.need_redirects;
-            data['contact_type'] = that.contact_type;
+            data = $.extend(data, vars);
         } else if ($.isArray(data)) {
-            data = data.concat([
-                {
-                    name: 'need_redirects',
-                    value: vars.need_redirects
-                },
-                {
-                    name: 'contact_type',
-                    value: vars.contact_type
-                }
-            ]);
+            $.each(vars, function (key, val) {
+                data.push({
+                    name: key,
+                    value: val
+                })
+            });
         } else if (data) {
-            data += '&need_redirects=' + vars.need_redirects;
-            data += '&contact_type=' + vars.contact_type;
-        } else {
-            data = {};
+            $.each(vars, function (key, val) {
+                data += '&' + key + '=' + val;
+            });
         }
         return data;
     };

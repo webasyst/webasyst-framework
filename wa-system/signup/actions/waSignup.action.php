@@ -14,6 +14,11 @@ class waSignupAction extends waViewAction
     protected $generated_password;
     protected $response = array();
 
+    /**
+     * @var bool
+     */
+    private $is_json_mode;
+
     public function __construct($params = null)
     {
         parent::__construct($params);
@@ -295,7 +300,13 @@ class waSignupAction extends waViewAction
 
     protected function isJsonMode()
     {
-        return waRequest::isXMLHttpRequest();
+        if ($this->is_json_mode !== null) {
+            return !!$this->is_json_mode;
+        }
+        $is_json_mode = $this->getRequest()->request('wa_json_mode');
+        $is_ajax = waRequest::isXMLHttpRequest();
+        $this->is_json_mode = $is_ajax && $is_json_mode;
+        return $this->is_json_mode;
     }
 
     public function redirect($params = array(), $code = null)
@@ -528,23 +539,23 @@ class waSignupAction extends waViewAction
         list($notify_sent, $notify_details) = $this->sendSignupNotify($data, $priority);
 
         // IMPORTANT detail
+        // Through 'assign' we inform ALSO signup & login forms
+        // Login form for example need know about notification detail to show client feedback message
+        $this->assign('notify_sent', $notify_sent);
+        if ($notify_sent) {
+            $this->assign($notify_details);
+        }
+
+        // IMPORTANT detail
         // Generated password MUST BE sent withing notification about successful signing up
         $generated_password_auth_type = $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD;
 
-        // This is bad
-        if (!$notify_sent) {
-            // And this is very bad
-            if ($generated_password_auth_type) {
-                $this->assign('errors', array('signup' => 'Sign up failed - password not sent'));
-            }
+        // If notify hasn't sent - it is bad, but not fatal
+        // But if client can't get password - need show errors to client
+        if (!$notify_sent && $generated_password_auth_type) {
+            $this->assign('errors', array('signup' => 'Sign up failed - password not sent'));
             return;
         }
-
-
-        // IMPORTANT detail
-        // Through 'assign' we inform ALSO signup & login forms
-        // Login form for example need know about notification detail to show client feedback message
-        $this->assign($notify_details);
 
         // Generated password has been sent (see above)
         // So we redirect client straight to login page
@@ -795,13 +806,13 @@ class waSignupAction extends waViewAction
             return $errors;
         }
 
-        
+
         // Ok, no errors => check existing of contact
         $auth = wa()->getAuth();
         $contacts = $auth->lookupByLoginFields($data);
         foreach ($contacts as $field_id => $contact) {
             $errors[$field_id] = (array)ifset($errors[$field_id]);
-            $errors[$field_id]['exists'] = sprintf(_ws('User with the same %s is already registered'), $this->getFieldCaption($field_id));
+            $errors[$field_id]['exists'] = sprintf(_ws('User with the same “%s” field value is already registered.'), $this->getFieldCaption($field_id));
         }
 
         // User already exists - stop work => return errors
@@ -1113,7 +1124,7 @@ class waSignupAction extends waViewAction
         // after sign up callback
         $this->afterSignup($contact);
 
-        $this->logAction('signup', wa()->getEnv());
+        $this->logAction('signup', wa()->getEnv(), null, $contact->getId());
 
         // try auth new contact if needed
         if ($need_auth) {
@@ -1181,7 +1192,7 @@ class waSignupAction extends waViewAction
             }
             return null;
         }
-        
+
         return $contact;
     }
 
