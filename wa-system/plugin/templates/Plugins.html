@@ -24,15 +24,23 @@
     <div class="sidebar left200px">
         <div class="wa-inner-sidebar">
             <ul class="menu-v with-icons stack" id="wa-plugin-list">
-                {if !empty($installer)}
-                <li id="wa-plugins-list" class="selected bottom-padded" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}">
-                    <a href="{$plugins_hash}/"><i class="icon16 star"></i>[s`Popular plugins`]</a>
-                </li>
-                {if !empty($plugins)}<h6 class="heading">[s`Installed`]</h6>{/if}
-                {/if}
+                
+                {capture name="li_plugins_list"}
+                    {if !empty($installer)}
+                        {if $wa->debug()}<li class="hr"></li>{/if}
+                        <li id="wa-plugins-list" class="{if !$wa->debug()}bottom-padded{/if}" data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}">
+                            <a href="{$plugins_hash}/"><i class="icon16 star"></i>[s`Popular plugins`]</a>
+                        </li>
+                    {/if}
+                {/capture}
+                
+                {if !$wa->debug()}{$smarty.capture.li_plugins_list}{/if}
+                
+                {if !empty($plugins)}<li class="heading"><h6>[s`Installed`]</h6></li>{/if}
+                
                 {foreach $plugins as $plugin}
                 {$plugin_names[$plugin.id] = $plugin.name|escape}
-                <li id="plugin-{$plugin.id}" {if !empty($plugin.custom_settings_url)}data-url="{$plugin.custom_settings_url}"{elseif !empty($plugin.custom_settings)}data-settings="1"{/if}>
+                <li  class="wa-plugin" id="plugin-{$plugin.id}" {if !empty($plugin.custom_settings_url)}data-url="{$plugin.custom_settings_url}"{elseif !empty($plugin.custom_settings)}data-settings="1"{/if}>
                 <a href="{$plugins_hash}/{$plugin.id}/">
                     <i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}'); background-size: 16px 16px;{/if}"></i>{$plugin.name|escape}
                     {if !empty($plugin.description)}
@@ -41,7 +49,10 @@
                 </a>
                 </li>
                 {/foreach}
+                
+                {if $wa->debug()}{$smarty.capture.li_plugins_list}{/if}
             </ul>
+            
             {if empty($plugins)}
             {* nothing was displayed in foreach above *}
             <div class="align-center hint hr block double-padded">
@@ -120,12 +131,12 @@
 
                 this.dispatch(location.hash, true);
 
-                if (this.$menu.find('> li:not(#wa-plugins-list) > a').length) {
+                if (this.$menu.find('> li.wa-plugin > a').length) {
                     this.helper.loadJqUI(function() {
                         $.plugins.$menu.sortable({
                             containment: 'parent',
                             distance: 5,
-                            items: '> li:not(#wa-plugins-list)',
+                            items: '> li.wa-plugin',
                             tolerance: 'pointer',
                             update: $.plugins.sortHandler
                         });
@@ -157,7 +168,7 @@
             }
 
             if (!hash) {
-                $plugin = this.$menu.find('li:first > a:first');
+                $plugin = this.$menu.find('li.wa-plugin > a:first');
                 if ($plugin.length) {
                     hash = $plugin.attr('href');
                 }
