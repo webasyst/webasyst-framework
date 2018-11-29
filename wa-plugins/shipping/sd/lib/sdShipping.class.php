@@ -31,6 +31,7 @@
  * @property string markup_size_price
  *
  * //Address
+ * @property string $address
  * @property string $country
  * @property string $region
  * @property string $way
@@ -64,30 +65,30 @@ class sdShipping extends waShipping
         }
 
         $timestamp = $this->getShippingCompleteDate();
-        $est_delivery = waDateTime::format('humandate', $timestamp);
 
-        $schedule = $this->getSchedule($timestamp);
-        //convert to server time
-        $timestamp = $this->changeTimezone('U', $timestamp, $this->timezone, date_default_timezone_get());
+        $est_delivery = waDateTime::format('humandate', $timestamp['pickup']);
+        $schedule = $this->getSchedule($timestamp['pickup']);
+
         $result = array(
             array(
                 'rate'          => $this->getShippingRate(),
                 'est_delivery'  => $est_delivery,
-                'delivery_date' => self::formatDatetime($timestamp),
+                'delivery_date' => self::formatDatetime($timestamp['server']),
                 'service'       => $this->service,
                 'currency'      => $this->currency,
                 'type'          => self::TYPE_PICKUP,
                 'custom_data'   => array(
                     self::TYPE_PICKUP => array(
-                        'id'         => $this->id,
-                        'timezone'   => $this->timezone,
-                        'lat'        => $this->latitude,
-                        'lng'        => $this->longitude,
-                        'schedule'   => $schedule,
-                        'photos'     => $this->photos,
-                        'way'        => $this->way,
-                        'additional' => $this->additional,
-                        'storage'    => $this->getStorageInfo(),
+                        'id'          => $this->id,
+                        'timezone'    => $this->timezone,
+                        'lat'         => $this->latitude,
+                        'lng'         => $this->longitude,
+                        'schedule'    => $schedule,
+                        'photos'      => $this->photos,
+                        'way'         => $this->way,
+                        'additional'  => $this->additional,
+                        'description' => $this->address,
+                        'storage'     => $this->getStorageInfo(),
                     )
                 ),
             )
@@ -139,11 +140,7 @@ class sdShipping extends waShipping
      */
     protected function isValidAddress()
     {
-        $is_country = $this->isValidCountry();
-        $is_region = $this->isValidRegion();
-        $is_city = $this->isValidCity();
-
-        if ($is_country && $is_region && $is_city) {
+        if ($this->isValidCountry() && $this->isValidRegion() && $this->isValidCity()) {
             return true;
         } else {
             return false;
@@ -329,15 +326,16 @@ class sdShipping extends waShipping
     /**
      * Get the next day in the time zone of the point when you can pick up the package.
      * Time converted to plug-in time zone
-     * @return int
+     * @return array
+     * @throws Exception
      */
     protected function getShippingCompleteDate()
     {
         $time_with_processing = $this->getTimeWithProcessing();
 
         //convert to pickup timezone
-        $timestamp = $this->changeTimezone('U', date('Y-m-d', $time_with_processing), $this->timezone);
         $date_time_timestamp = $this->changeTimezone('U', $time_with_processing, date_default_timezone_get(), $this->timezone);
+        $timestamp = $this->changeTimezone('U', date('Y-m-d', $date_time_timestamp), $this->timezone);
 
         //Get day type for time
         $type = $this->getDayType($timestamp);
@@ -365,7 +363,10 @@ class sdShipping extends waShipping
             $timestamp = $this->getStartWorkTime($type, $timestamp);
         }
 
-        return $timestamp;
+        return array(
+            'server' => $this->changeTimezone('U', $timestamp, $this->timezone, date_default_timezone_get()),
+            'pickup' => $timestamp,
+        );
     }
 
     /**
@@ -408,16 +409,12 @@ class sdShipping extends waShipping
      */
     protected function getDayType($time)
     {
-        $extra_workday = $this->isExtraWorkday($time);
-        $extra_weekend = $this->isExtraWeekend($time);
-        $workday = $this->isWorkday($time);
-
         $type = false;
 
-        if ($extra_workday) {
+        if ($this->isExtraWorkday($time)) {
             $type = 'workday';
         } else {
-            if ($workday && !$extra_weekend) {
+            if ($this->isWorkday($time) && !$this->isExtraWeekend($time)) {
                 $type = 'weekday';
             }
         }
@@ -432,7 +429,7 @@ class sdShipping extends waShipping
      */
     protected function isExtraWorkday($time)
     {
-        $workdays = $this->getExtendWorkdays();
+        $workdays = $this->getExtraWorkdays();
 
         if ($workdays && isset($workdays[$time])) {
             return true;
@@ -448,7 +445,7 @@ class sdShipping extends waShipping
      */
     protected function isExtraWeekend($time)
     {
-        $weekend = $this->getExtendWeekend();
+        $weekend = $this->getExtraWeekend();
 
         if ($weekend && isset($weekend[$time])) {
             return true;
@@ -483,7 +480,7 @@ class sdShipping extends waShipping
     {
         $weekdays = $this->weekdays;
         $day_name_code = date('N', $time);
-        $start_work = ifset($weekdays, $day_name_code, 'start_work', '');
+        $start_work = ifset($weekdays, $day_name_code, 'start_work', 0);
 
         $start_work = explode(':', $start_work);
         $hours = ifset($start_work, 0, 0);
@@ -498,7 +495,7 @@ class sdShipping extends waShipping
      * Get saved extra workdays formatted to timestamp
      * @return array
      */
-    protected function getExtendWorkdays()
+    protected function getExtraWorkdays()
     {
         $extra_workdays = ifset($this->extra_days, 'workdays', null);
 
@@ -531,7 +528,7 @@ class sdShipping extends waShipping
      * Get saved extra weekend formatted to timestamp
      * @return array
      */
-    protected function getExtendWeekend()
+    protected function getExtraWeekend()
     {
         $extra_weekend = ifset($this->extra_days, 'weekend', null);
 
@@ -556,6 +553,7 @@ class sdShipping extends waShipping
      * Check the mode of operation after the day of delivery
      * @param int first_day timestamp
      * @return array timezone and days list.
+     * @throws Exception
      */
     protected function getSchedule($first_day)
     {
@@ -789,11 +787,11 @@ class sdShipping extends waShipping
                 $days[$id]['date'] = $this->parseDayFormat($day['date']);
             }
             if (isset($day['start_work'])) {
-                $this->validateTimeFormat($day['start_work']);
+                $this->isValidateTimeFormat($day['start_work']);
             }
 
             if (isset($day['end_work'])) {
-                $this->validateTimeFormat($day['end_work']);
+                $this->isValidateTimeFormat($day['end_work']);
             }
         }
 
@@ -816,10 +814,12 @@ class sdShipping extends waShipping
         return $new_date;
     }
 
-    protected function validateTimeFormat($time)
+    protected function isValidateTimeFormat($time)
     {
         if (!preg_match('/(^[01]?[0-9]|2[0-3])($|:([0-5][0-9]$))/ui', $time)) {
             throw new waException($this->_w('Invalid time'));
+        } else {
+            return true;
         }
     }
 
@@ -837,6 +837,7 @@ class sdShipping extends waShipping
      * @param $from
      * @param null $to
      * @return false|int|string
+     * @throws Exception
      */
     protected function changeTimezone($format, $time, $from, $to = null)
     {

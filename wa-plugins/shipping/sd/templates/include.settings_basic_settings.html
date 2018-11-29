@@ -47,6 +47,13 @@
     </div>
 
     <div class="field">
+        <div class="name">{$obj->_w('Address')}</div>
+        <div class="value">
+            <input type="text" name="{$namespace}[address]" value="{ifset($settings, 'address', '')}">
+        </div>
+    </div>
+
+    <div class="field">
         <div class="name">
             {$obj->_w('Shipping time')}
         </div>

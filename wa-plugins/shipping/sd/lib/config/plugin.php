@@ -4,8 +4,8 @@ return array(
     'description'      => '',
     'icon'             => 'img/sd-16x16.png',
     'logo'             => 'img/sd-60x32.png',
-    'version'          => '1.0.0',
+    'version'          => '1.0.1',
     'vendor'           => 'webasyst',
     'services_by_type' => true,
-    'type'             => waShipping::TYPE_PICKUP,
+    'type'             => 'pickup',
 );
