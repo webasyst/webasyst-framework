@@ -564,9 +564,9 @@ class waModel
             }
         }
         if ($values) {
-            $sql = "INSERT ".($type === 2 ? "IGNORE " : "")." INTO ".$this->table."
+            $sql = "INSERT ".($type === self::INSERT_IGNORE ? "IGNORE " : "")." INTO ".$this->table."
                    (".implode(", ", array_keys($values)).") VALUES (".implode(", ", $values).")";
-            if ($type === 1 || $type === true) {
+            if ($type === self::INSERT_ON_DUPLICATE_KEY_UPDATE || $type === true) {
                 $sql .= " ON DUPLICATE KEY UPDATE ";
                 if (is_array($this->id)) {
                     foreach ($this->id as $id) {
