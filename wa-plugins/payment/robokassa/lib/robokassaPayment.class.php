@@ -15,8 +15,13 @@
  * @property-read boolean $commission
  * @property-read boolean $receipt
  * @property-read string $sno
- * @link http://docs.robokassa.ru/ru/
- * @link http://docs.robokassa.ru/#6865
+ * @property-read string $payment_object_type_product
+ * @property-read string $payment_object_type_service
+ * @property-read string $payment_object_type_shipping
+ * @property-read string $payment_method_type
+ *
+ * @link https://docs.robokassa.ru/ru/
+ * @link https://docs.robokassa.ru/#6865
  *
  */
 class robokassaPayment extends waPayment implements waIPayment
@@ -65,8 +70,13 @@ class robokassaPayment extends waPayment implements waIPayment
         }
 
         $form_fields['SignatureValue'] = $this->getPaymentHash($form_fields);
-        if ($this->receipt && ($email = $order->getContactField('email'))) {
-            $form_fields['Email'] = $email;
+        if ($this->receipt) {
+            if ($email = $order->getContactField('email')) {
+                $form_fields['Email'] = $email;
+            }
+            if (!empty($form_fields['Receipt'])) {
+                $form_fields['Receipt'] = urlencode($form_fields['Receipt']);
+            }
         }
         $form_fields['IsTest'] = sprintf('%d', !!$this->testmode);
         $form_fields['Desc'] = mb_substr($description, 0, 100, "UTF-8");
@@ -457,10 +467,11 @@ HTML;
             #shipping
             if (strlen($order->shipping_name) || $order->shipping) {
                 $item = array(
-                    'name'     => mb_substr($order->shipping_name,0 ,64),
+                    'name'     => mb_substr($order->shipping_name, 0, 64),
                     'quantity' => 1,
                     'amount'   => $order->shipping,
                     'tax_rate' => $order->shipping_tax_rate,
+                    'type'     => 'shipping',
                 );
                 if ($order->shipping_tax_included !== null) {
                     $item['tax_included'] = $order->shipping_tax_included;
@@ -468,18 +479,33 @@ HTML;
                 $receipt['items'][] = $this->formatReceiptItem($item);
             }
 
-            $receipt = json_encode($receipt);
+            $receipt = waUtils::jsonEncode($receipt);
         }
         return $receipt;
     }
 
     private function formatReceiptItem($item)
     {
+        switch (ifset($item['type'])) {
+            case 'shipping':
+                $item['payment_object_type'] = $this->payment_object_type_shipping;
+                break;
+            case 'service':
+                $item['payment_object_type'] = $this->payment_object_type_service;
+                break;
+            case 'product':
+            default:
+                $item['payment_object_type'] = $this->payment_object_type_product;
+                break;
+        }
+
         return array(
-            'name'     => mb_substr($item['name'], 0, 64),
-            'sum'      => number_format($item['amount'], 2, '.', ''),
-            'quantity' => $item['quantity'],
-            'tax'      => $this->getTaxId($item),
+            'name'           => mb_substr($item['name'], 0, 64),
+            'sum'            => number_format(floatval($item['amount']) * $item['quantity'], 2, '.', ''),
+            'quantity'       => $item['quantity'],
+            'tax'            => $this->getTaxId($item),
+            'payment_object' => $item['payment_object_type'],
+            'payment_method' => $this->payment_method_type,
         );
     }
 
@@ -514,6 +540,13 @@ HTML;
                         $tax = 'vat18';//НДС чека по ставке 18%;
                     } else {
                         $tax = 'vat118';// НДС чека по расчетной ставке 18/118.
+                    }
+                    break;
+                case 20:
+                    if ($tax_included) {
+                        $tax = 'vat20';//НДС чека по ставке 20%;
+                    } else {
+                        $tax = 'vat120';// НДС чека по расчетной ставке 20/120.
                     }
                     break;
                 default:

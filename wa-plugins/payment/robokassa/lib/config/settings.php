@@ -109,34 +109,50 @@ HTML
     'receipt'             => array(
         'value'        => false,
         'title'        => 'Фискализировать чеки',
-        'description'  => 'Для  пользователей Robokassa, выбравших для себя Облачное или Кассовое решение.<br>
+        'description'  => 'Подходит для  решений «Робочеки», «Облачное» и «Кассовое».<br>
 Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:
 <br>
 — к элементам заказа и стоимости доставки не применяются налоги
 <br>
 — налог составляет 0%, 10% либо 18% и <em>включен</em> в стоимость элементов заказа и стоимость доставки'.
 
-'
+<<<HTML
 <script type="text/javascript">
 (function () {
-    $(\':input[name$="\[receipt\]"]\').unbind(\'change\').bind(\'change\', function (event) {
+    $(':input[name$="\[receipt\]"]').unbind('change').bind('change', function (event) {
         var show = this.checked;
         var fast = !event.originalEvent;
-        $(this).parents(\'form\').find(\':input[name$="\[sno\]"]\').each(function () {
+        var name = [
+            'sno',
+            'payment_object_type_product',
+            'payment_object_type_service',
+            'payment_object_type_shipping',
+            'payment_method_type'
+        ];
+        var selector = [];
+        for (var i = 0; i < name.length; i++) {
+            selector.push(':input[name$="\[' + name[i] + '\]"]');
+        }
+        selector = selector.join(', ');
+        console.log('selector', selector);
+        $(this).parents('form').find(selector).each(function () {
             if (show) {
-                $(this).parents(\'div.field\').show(400);
+                $(this).parents('div.field').show(400);
             } else {
                 if (fast) {
-                    $(this).parents(\'div.field\').hide();
+                    $(this).parents('div.field').hide();
                 } else {
-                    $(this).parents(\'div.field\').hide(400);
+                    $(this).parents('div.field').hide(400);
                 }
             }
         })
-    }).trigger(\'change\');
+    }).trigger('change');
 })();
+
+
 </script>
-',
+HTML
+,
         'control_type' => waHtmlControl::CHECKBOX,
     ),
     'sno'                 => array(
@@ -152,6 +168,85 @@ HTML
             'envd'               => 'единый налог на вмененный доход',
             'esn'                => 'единый сельскохозяйственный налог',
             'patent'             => 'патентная СН',
+        ),
+    ),
+    'payment_object_type_product'  => array(
+        'value'            => 'commodity',
+        'title'            => 'Признак предмета расчёта для товаров в чеках',
+        'description'      => 'todo: Категория ваших товаров в чеке для налоговой.',
+        'control_type'     => waHtmlControl::SELECT,
+        'options' => array(
+            'commodity'             => 'товар',
+            'excise'                => 'подакцизный товар',
+            'job'                   => 'работа',
+            'service'               => 'услуга',
+            'gambling_bet'          => 'ставка в азартной игре',
+            'gambling_prize'        => 'выигрыш в азартной игре',
+            'lottery'               => 'лотерейный билет',
+            'lottery_prize'         => 'выигрыш в лотерею',
+            'intellectual_activity' => 'результаты интеллектуальной деятельности',
+            'payment'               => 'платеж',
+            'agent_commission'      => 'агентское вознаграждение',
+            'composite'             => 'несколько вариантов',
+            'another'               => 'другое',
+        ),
+    ),
+    'payment_object_type_service' => array(
+        'value'            => 'service',
+        'title'            => 'Признак предмета расчёта для услуг в чеках',
+        'description'      => 'todo: Категория ваших услуг для товаров в чеке для налоговой.',
+        'control_type'     => waHtmlControl::SELECT,
+        'options' => array(
+            'commodity'             => 'товар',
+            'excise'                => 'подакцизный товар',
+            'job'                   => 'работа',
+            'service'               => 'услуга',
+            'gambling_bet'          => 'ставка в азартной игре',
+            'gambling_prize'        => 'выигрыш в азартной игре',
+            'lottery'               => 'лотерейный билет',
+            'lottery_prize'         => 'выигрыш в лотерею',
+            'intellectual_activity' => 'результаты интеллектуальной деятельности',
+            'payment'               => 'платеж',
+            'agent_commission'      => 'агентское вознаграждение',
+            'composite'             => 'несколько вариантов',
+            'another'               => 'другое',
+        ),
+    ),
+    'payment_object_type_shipping' => array(
+        'value'            => 'service',
+        'title'            => 'Признак предмета расчёта для доставки в чеках',
+        'description'      => 'todo: Категория услуги по доставке заказа в чеке для налоговой.',
+        'control_type'     => waHtmlControl::SELECT,
+        'options' => array(
+            'commodity'             => 'товар',
+            'excise'                => 'подакцизный товар',
+            'job'                   => 'работа',
+            'service'               => 'услуга',
+            'gambling_bet'          => 'ставка в азартной игре',
+            'gambling_prize'        => 'выигрыш в азартной игре',
+            'lottery'               => 'лотерейный билет',
+            'lottery_prize'         => 'выигрыш в лотерею',
+            'intellectual_activity' => 'результаты интеллектуальной деятельности',
+            'payment'               => 'платеж',
+            'agent_commission'      => 'агентское вознаграждение',
+            'composite'             => 'несколько вариантов',
+            'another'               => 'другое',
+        ),
+    ),
+
+    'payment_method_type'=>array(
+        'value'            => 'full_prepayment',
+        'title'            => 'Признак способа расчёта в чеках',
+        'description'      => 'todo: Категория способа оплаты всех позиций в чеке для налоговой.',
+        'control_type'     => waHtmlControl::SELECT,
+        'options' => array(
+            'full_prepayment'    => 'полная предоплата',
+            'partial_prepayment' => 'частичная предоплата',
+            'advance'            => 'аванс',
+            'full_payment'       => 'полный расчет',
+            'partial_payment'    => 'частичный расчет и кредит',
+            'credit'             => 'кредит',
+            'credit_payment'     => 'выплата по кредиту',
         ),
     ),
 );

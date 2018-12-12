@@ -2,6 +2,6 @@
 return array(
     'app.installer' => array(
         'strict'  => true,
-        'version' => '>=1.5.13.56',
+        'version' => '>=1.10.5.343',
     ),
 );
