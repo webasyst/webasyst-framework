@@ -172,8 +172,8 @@ HTML
     ),
     'payment_object_type_product'  => array(
         'value'            => 'commodity',
-        'title'            => 'Признак предмета расчёта для товаров в чеках',
-        'description'      => 'todo: Категория ваших товаров в чеке для налоговой.',
+        'title'            => 'Признак предмета расчета для товаров в чеках',
+        'description'      => 'Категория ваших товаров в чеке — для передачи в налоговую инспекцию.',
         'control_type'     => waHtmlControl::SELECT,
         'options' => array(
             'commodity'             => 'товар',
@@ -193,8 +193,8 @@ HTML
     ),
     'payment_object_type_service' => array(
         'value'            => 'service',
-        'title'            => 'Признак предмета расчёта для услуг в чеках',
-        'description'      => 'todo: Категория ваших услуг для товаров в чеке для налоговой.',
+        'title'            => 'Признак предмета расчета для услуг в чеках',
+        'description'      => 'Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.',
         'control_type'     => waHtmlControl::SELECT,
         'options' => array(
             'commodity'             => 'товар',
@@ -214,8 +214,8 @@ HTML
     ),
     'payment_object_type_shipping' => array(
         'value'            => 'service',
-        'title'            => 'Признак предмета расчёта для доставки в чеках',
-        'description'      => 'todo: Категория услуги по доставке заказа в чеке для налоговой.',
+        'title'            => 'Признак предмета расчета для доставки в чеках',
+        'description'      => 'Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.',
         'control_type'     => waHtmlControl::SELECT,
         'options' => array(
             'commodity'             => 'товар',
@@ -236,8 +236,8 @@ HTML
 
     'payment_method_type'=>array(
         'value'            => 'full_prepayment',
-        'title'            => 'Признак способа расчёта в чеках',
-        'description'      => 'todo: Категория способа оплаты всех позиций в чеке для налоговой.',
+        'title'            => 'Признак способа расчета в чеках',
+        'description'      => 'Категория способа оплаты всех позиций в чеке — для передачи в налоговую инспекцию.',
         'control_type'     => waHtmlControl::SELECT,
         'options' => array(
             'full_prepayment'    => 'полная предоплата',
