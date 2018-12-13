@@ -14,11 +14,18 @@
  * @property-read string $payment_mode
  * @property-read array $paymentType
  * @property-read boolean $receipt
+ * @property-read string $payment_subject_type_product
+ * @property-read string $payment_subject_type_service
+ * @property-read string $payment_subject_type_shipping
+ * @property-read string $payment_method_type
  * @property-read int $taxSystem
  * @property-read string $taxes
  * @property-read string $merchant_currency
  *
+ *
  * @see https://money.yandex.ru/doc.xml?id=526537
+ * @see https://tech.yandex.ru/money/doc/payment-solution/About-docpage/
+ * @see https://kassa.yandex.ru/docs/checkout-api/
  */
 class yandexmoneyPayment extends waPayment implements waIPayment
 {
@@ -222,6 +229,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                         'amount'       => round($order->shipping, 2),
                         'tax_rate'     => $order->shipping_tax_rate,
                         'tax_included' => ($order->shipping_tax_included !== null) ? $order->shipping_tax_included : true,
+                        'type'         => 'shipping',
                     );
                     $receipt['items'][] = $this->formatReceiptItem($item);
                 }
@@ -235,13 +243,27 @@ class yandexmoneyPayment extends waPayment implements waIPayment
         if (isset($item['tax_included']) && empty($item['tax_included']) && !empty($item['tax_rate'])) {
             $item['amount'] += round(floatval($item['tax_rate']) * $item['amount'] / 100.0, 2);
         }
+        switch (ifset($item['type'])) {
+            case 'shipping':
+                $item['payment_subject_type'] = $this->payment_subject_type_shipping;
+                break;
+            case 'service':
+                $item['payment_subject_type'] = $this->payment_subject_type_service;
+                break;
+            case 'product':
+            default:
+                $item['payment_subject_type'] = $this->payment_subject_type_product;
+                break;
+        }
         return array(
-            'quantity' => $item['quantity'],
-            'price'    => array(
+            'quantity'           => $item['quantity'],
+            'price'              => array(
                 'amount' => number_format(round($item['amount'], 2), 2, '.', ''),
             ),
-            'tax'      => $this->getTaxId($item),
-            'text'     => mb_substr($item['name'], 0, 128),
+            'tax'                => $this->getTaxId($item),
+            'text'               => mb_substr($item['name'], 0, 128),
+            'paymentSubjectType' => $item['payment_subject_type'],
+            'paymentMethodType'  => $this->payment_method_type,
         );
     }
 
@@ -266,23 +288,32 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
                 switch ($rate) {
                     case 18:
-                        if ($tax_included) {# 4 — НДС чека по ставке 18%;
+                    case 20:
+                        if ($tax_included) {
+                            # 4 — НДС чека по ставке 18% до 31.12.2018;
+                            # 4 — НДС чека по ставке 20% после 01.01.2019;
                             $id = 4;
-                        } else { #6 — НДС чека по расчетной ставке 18/118.
+                        } else {
+                            #6 — НДС чека по расчетной ставке 18/118 до 31.12.2018;
+                            #6 — НДС чека по расчетной ставке 18/118 после 01.01.2019;
                             $id = 6;
                         }
                         break;
                     case 10:
-                        if ($tax_included) {# 3 — НДС чека по ставке 10%;
+                        if ($tax_included) {
+                            # 3 — НДС чека по ставке 10%;
                             $id = 3;
-                        } else { #  5 — НДС чека по расчетной ставке 10/110;
+                        } else {
+                            #  5 — НДС чека по расчетной ставке 10/110;
                             $id = 5;
                         }
                         break;
-                    case 0: # 2 — НДС по ставке 0%;
+                    case 0:
+                        # 2 — НДС по ставке 0%;
                         $id = 2;
                         break;
-                    default: # 1 — без НДС;
+                    default:
+                        # 1 — без НДС;
                         $id = 1;
                         break;
                 }
@@ -706,6 +737,25 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             'QW' => 'Оплата через QIWI Wallet',
             'KV' => 'Оплата через КупиВкредит (Тинькофф Банк)',
             'QP' => 'Оплата через Доверительный платеж («Куппи.ру»)',
+        );
+    }
+
+    public static function settingsPaymentSubjectTypeOptions()
+    {
+        return array(
+            'commodity'             => 'товар',
+            'excise'                => 'подакцизный товар',
+            'job'                   => 'работа',
+            'service'               => 'услуга',
+            'gambling_bet'          => 'ставка в азартной игре',
+            'gambling_prize'        => 'выигрыш в азартной игре',
+            'lottery'               => 'лотерейный билет',
+            'lottery_prize'         => 'выигрыш в лотерею',
+            'intellectual_activity' => 'результаты интеллектуальной деятельности',
+            'payment'               => 'платеж',
+            'agent_commission'      => 'агентское вознаграждение',
+            'composite'             => 'несколько вариантов',
+            'another'               => 'другое',
         );
     }
 
