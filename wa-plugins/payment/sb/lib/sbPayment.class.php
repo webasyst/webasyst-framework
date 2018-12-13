@@ -13,6 +13,13 @@
  * @property-read $tax_system
  * @property-read $fiscalization
  * @property-read $cancel  Need to activate in Sberbank
+ *
+ * @property-read array payment_method
+ * @property-read array payment_subject_product
+ * @property-read array payment_subject_service
+ * @property-read array payment_subject_shipping
+ *
+ * @link https://developer.sberbank.ru/doc
  */
 class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 {
@@ -66,14 +73,14 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         if ($auto_submit && $this->TESTMODE) {
             $auto_submit = false;
-            self::log($this->id, var_export($order_data, true));
+            $this->logError($this->id, var_export($order_data, true));
         }
         $this->getTransactionsForOrder($order_data['id']);
         $status = $this->getGatewayOrderStatus();
 
         //If settings error
         if ($status && $status['orderStatus'] == 3 && $status['orderStatus'] == 6) {
-            self::log($this->id, $status['errorCode'].': '.$status['errorMessage']);
+            $this->logError($this->id, $status['errorCode'].': '.$status['errorMessage']);
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
@@ -227,7 +234,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $response = $net->query($this->getURL('URL_PAYMENT_CANCEL'), $request_cancel, waNet::METHOD_POST);
 
         if ($response['errorCode'] != '0') {
-            self::log($this->id, $response['errorCode'].': '.$response['errorMessage']);
+            $this->logError($this->id, $response['errorCode'].': '.$response['errorMessage']);
             throw new waPaymentException($response['errorMessage']);
         }
 
@@ -277,7 +284,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $response = $net->query($this->getURL('URL_PAYMENT_COMPLETE'), $request_completion, waNet::METHOD_POST);
 
         if ($response['errorCode']) {
-            self::log($this->id, $response['errorCode'].': '.$response['errorMessage']);
+            $this->logError($this->id, $response['errorCode'].': '.$response['errorMessage']);
             throw new waPaymentException($response['errorMessage']);
         }
 
@@ -394,11 +401,10 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $phone = $contact->get('phone', 'default');
 
         if (!$email && !$phone) {
-            $mail = new waMail();
-            $email = $mail->getDefaultFrom();
+            $email = waMail::getDefaultFrom();
             $email = key($email);
             if (!$email) {
-                self::log($this->id, 'Не установлен системный Email.');
+                $this->logError($this->id, 'Не установлен системный Email.');
                 throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
             }
 
@@ -439,26 +445,25 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
      */
     protected function getTaxType($tax = null)
     {
-        $sberbank_tax_codes = array(
-            0  => 1,
-            10 => 2,
-            18 => 3,
-        );
+        $tax_type = null;
 
-        if ($tax === null) {
-            return 0; //without tax
-        }
-
-        $tax = intval($tax);
-        if (empty($sberbank_tax_codes[$tax])) {
-            self::log(
+        if ($tax == 18 || $tax == 20) {
+            $tax_type = 3;
+        } elseif ($tax == 10) {
+            $tax_type = 2;
+        } elseif ($tax === 0 || $tax === '0') {
+            $tax_type = 1;
+        } elseif ($tax === null) {
+            $tax_type = 0;
+        } else {
+            $this->logError(
                 $this->id,
                 "Unknown VAT rate: {$tax}. The list of available bets: see Sberbank documentation."
             );
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
-        return $sberbank_tax_codes[$tax];
+        return $tax_type;
     }
 
     /**
@@ -488,7 +493,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         if (is_array($order_data['items'])) {
             foreach ($order_data['items'] as $key => $data) {
                 if (!$data['tax_included'] && (int)$data['tax_rate'] > 0) {
-                    self::log($this->id, sprintf('НДС не включен в цену товара: %s.', var_export($data, true)));
+                    $this->logError($this->id, sprintf('НДС не включен в цену товара: %s.', var_export($data, true)));
                     throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
                 }
                 $items[] = $this->formalizeItemData($data, $order_data, $key);
@@ -497,7 +502,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
         if (!empty($order_data['shipping'])) {
             if (!$order_data->shipping_tax_included && (int)$order_data->shipping_tax_rate > 0) {
-                self::log($this->id, sprintf('НДС не включен в стоимость доставки (%s).', $order_data->shipping_name));
+                $this->logError($this->id, sprintf('НДС не включен в стоимость доставки (%s).', $order_data->shipping_name));
                 throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
             }
             $data = array(
@@ -506,6 +511,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 'price'    => $order_data->shipping,
                 'quantity' => 1,
                 'tax_rate' => $order_data->shipping_tax_rate,
+                'type'     => 'shipping'
             );
             $position = count($items);
             $items[] = $this->formalizeItemData($data, $order_data, $position);
@@ -530,23 +536,55 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
         $tax_sum = $this->getTaxSum($data['price'], $data['tax_rate']);
         $item_data = array(
-            'positionId'   => $number,
-            'name'         => mb_substr($data['name'], 0, 100),
-            'quantity'     => array(
+            'positionId'     => $number,
+            'name'           => mb_substr($data['name'], 0, 100),
+            'quantity'       => array(
                 'value'   => $data['quantity'],
                 'measure' => 'шт.',
             ),
-            'itemAmount'   => round($data['total'] * 100),
-            'itemCurrency' => $this->getCurrencyISO4217Code($order_data['currency']),
-            'itemCode'     => $this->app_id.'_order_'.$order_data['id'].'_'.$order_data['type'].'_'.rand(1, 100000),
-            'tax'          => array(
+            'itemAmount'     => round($data['total'] * 100),
+            'itemCurrency'   => $this->getCurrencyISO4217Code($order_data['currency']),
+            'itemCode'       => $this->app_id.'_order_'.$order_data['id'].'_'.$order_data['type'].'_'.rand(1, 100000),
+            'tax'            => array(
                 'taxType' => $this->getTaxType($data['tax_rate']),
                 'taxSum'  => round($tax_sum * 100, 2),
             ),
-            'itemPrice'    => round($data['price'] * 100),
+            'itemPrice'      => round($data['price'] * 100),
+            'itemAttributes' => array(
+                'attributes' => array(
+                    array(
+                        'name'  => 'paymentMethod',
+                        'value' => $this->payment_method,
+                    ),
+                    array(
+                        'name'  => 'paymentObject',
+                        'value' => $this->getPaymentObject(ifset($data, 'type', null))
+                    ),
+                )
+            )
+
         );
 
         return $item_data;
+    }
+
+    protected function getPaymentObject($type)
+    {
+        $result = '13';
+
+        switch ($type) {
+            case 'product':
+                $result = $this->payment_subject_product;
+                break;
+            case 'service':
+                $result = $this->payment_subject_service;
+                break;
+            case 'shipping':
+                $result = $this->payment_subject_shipping;
+                break;
+        }
+
+        return $result;
     }
 
     /**
@@ -576,7 +614,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     'response' => $net->getResponse(true),
                     'headers'  => $net->getResponseHeader(),
                 ), true));
-                self::log($this->id, $message);
+                $this->logError($this->id, $message);
             }
         }
 
@@ -591,7 +629,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     protected function validateRegisterResponse($response)
     {
         if (!empty($response['errorCode']) && $response['errorCode'] != '0') {
-            self::log($this->id, array(
+            $this->logError($this->id, array(
                 'errorMessage' => ifset($response['errorMessage']),
                 'errorCode'    => ifset($response['errorCode']),
             ));
@@ -600,7 +638,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         if (!ifset($response['formUrl'])) {
-            self::log($this->id, 'formUrl not received');
+            $this->logError($this->id, 'formUrl not received');
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
@@ -769,7 +807,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     protected function getURL($url)
     {
         $domain = 'https://securepayments.sberbank.ru';
-        
+
         $urls = array(
             'URL_ORDER_REGISTER'     => '/payment/rest/register.do',
             'URL_ORDER_STATUS'       => '/payment/rest/getOrderStatusExtended.do',
@@ -785,4 +823,34 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
         return $domain.$urls[$url];
     }
+
+    /**
+     * need for tests. Delete when we go to the version of php> 5.3 and use static::log();
+     * @param $module_id
+     * @param $data
+     */
+    protected function logError($module_id, $data)
+    {
+        self::log($module_id, $data);
+    }
+    
+    public static function settingsPaymentSubjectOptions()
+    {
+        return array(
+            '1'  => 'товар',
+            '2'  => 'подакцизный товар',
+            '3'  => 'работа',
+            '4'  => 'услуга',
+            '5'  => 'ставка в азартной игре',
+            '6'  => 'выигрыш в азартной игре',
+            '7'  => 'лотерейный билет',
+            '8'  => 'выигрыш в лотерею',
+            '9'  => 'результаты интеллектуальной деятельности',
+            '10' => 'платеж',
+            '11' => 'агентское вознаграждение',
+            '12' => 'несколько вариантов',
+            '13' => 'другое',
+        );
+    }
+
 }
