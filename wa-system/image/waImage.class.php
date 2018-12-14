@@ -39,28 +39,58 @@ class waImage
 
     const Gd = 'Gd';
     const Imagick = 'Imagick';
-
+    
+    /** 
+     * @var string Adapter by default 
+     */
     public static $default_adapter;
-
-    //Status adapter
+    /** 
+     * @var bool Status default adapter
+     */
     protected static $checked = false;
-
-    public $width;
-    public $height;
+    
+    /** 
+     * @var string real path to file
+     */
     public $file;
+    /** 
+     * @var int
+     */
+    public $width;
+    /** 
+     * @var int
+     */
+    public $height;
+    /** 
+     * @var int constant IMAGETYPE_*
+     */
     public $type;
+    /** 
+     * @var string content type
+     */
+    public $mime;
+    /** 
+     * @var string file extension
+     */
     public $ext;
 
+    /**
+     * @throws waException
+     * @param string $file path
+     */
     public function __construct($file)
     {
         try {
             $file = realpath($file);
             $image_info = @getimagesize($file);
+        } catch (Exception $e) {
+            if (SystemConfig::isDebug()) {
+                waLog::log($e->getMessage(), get_class($this).'.errors.log');
+            }
         }
-        catch (Exception $e){}
         if (empty($file) OR empty($image_info)) {
-            if(!preg_match('//u', $file)) {
-                $file = iconv('windows-1251','utf-8',$file);
+            if (!preg_match('//u', $file)) {
+                $file = iconv('windows-1251', 'utf-8', $file);
             }
             throw new waException(_ws('Not an image or invalid image: ').$file);
         }
@@ -68,52 +98,49 @@ class waImage
         $this->width  = $image_info[0];
         $this->height = $image_info[1];
         $this->type   = $image_info[2];
-        $this->mime   = image_type_to_mime_type($this->type);
-
+        $this->mime   = $image_info['mime'];
+        $this->ext    = @image_type_to_extension($this->type, false);
     }
 
     /**
      * Returns name extension of a graphical file corresponding to its type.
      *
-     * @return string|null Returns null if image type is not JPEG, GIF, or PNG.
+     * @return string Returns null if image type is not JPEG, GIF, or PNG.
      */
     public function getExt()
     {
-        switch ($this->type)
-        {
-            case IMAGETYPE_JPEG: {
-                return 'jpg';
-                break;
-            }
-            case IMAGETYPE_GIF: {
-                return 'gif';
-                break;
-            }
-            case IMAGETYPE_PNG: {
-                return 'png';
-                break;
-            }
-        }
-        return null;
+        return $this->ext;
     }
 
-    private static function getDefaultAdapter()
+    /**
+     * Get default adapter.
+     *
+     * @throws waException
+     * @return string
+     */
+    protected static function getDefaultAdapter()
     {
-        $adapter = null;
-        $adapters = array();
-        if (self::$default_adapter) {
-            $adapters[] = self::$default_adapter;
-        }
-        $adapters[] = self::Imagick;
-        $adapters[] = self::Gd;
-        foreach($adapters as $adapter) {
-            if (extension_loaded(strtolower($adapter))) {
-                break;
-            } else {
-                $adapter = null;
+        if (!self::$checked) {
+            $adapters = array(self::Imagick, self::Gd);
+            if (self::$default_adapter) {
+                array_unshift($adapters, self::$default_adapter);
             }
+            self::$default_adapter = null;
+            foreach (array_unique($adapters) as $adapter) {
+                if (extension_loaded(strtolower($adapter))) {
+                    self::$default_adapter = $adapter;
+                    break;
+                }
+            }
+            
+            if (!self::$default_adapter) {
+                throw new waException(_ws('Default adapter not defined.'));
+            }
+            
+            self::$checked = true;
         }
-        return $adapter;
+        
+        return self::$default_adapter;
     }
 
     /**
@@ -453,4 +480,3 @@ class waImage
         return $this->_getPixel($x, $y);
     }
 }
-
