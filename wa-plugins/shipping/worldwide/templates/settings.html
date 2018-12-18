@@ -5,6 +5,13 @@
     .{$plid}-disable-region-link:hover i.delete { opacity: 1; }
 </style>
 <div class="field-group" id="{$plid}-deliverty-settings">
+    {if $services_by_type}
+    <div class="field">
+        <div class="name">{$p->_w('Shipping service name')}</div>
+        <div class="value"><input type="text" name="{$namespace|escape}[service_name]" value="{$values.service_name|default:''|escape}"></div>
+        <div class="value hint">{$p->_w('Enter optional shipping service name which will be shown to customers next to this shipping option')}</div>
+    </div>
+    {/if}
     <div class="field">
         <div class="name">{$p->_w('Currency')}</div>
         <div class="value">

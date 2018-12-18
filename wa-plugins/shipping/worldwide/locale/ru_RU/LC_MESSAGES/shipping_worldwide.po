@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.7.6\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -149,3 +149,9 @@ msgstr "Не определено ни одного тарифа."
 #: /wa-plugins/shipping/worldwide/templates/settings.html:187
 msgid "Add weight"
 msgstr "Добавить"
+
+msgid "Shipping service name"
+msgstr "Название службы доставки"
+
+msgid "Enter optional shipping service name which will be shown to customers next to this shipping option"
+msgstr "Введите необязательное название службы доставки, которое будет показано покупателю рядом с этим вариантом доставки"

@@ -5,6 +5,7 @@
  * @property-read array|string $weights
  * @property-read string $currency
  * @property-read string $weight_dimension
+ * @property-read string $service_name
  */
 class worldwideShipping extends waShipping
 {
@@ -47,6 +48,7 @@ class worldwideShipping extends waShipping
 
         $view->assign(
             array(
+                'services_by_type'   => $this->getAdapter()->getAppProperties('desired_date'),
                 'countries'          => $countries,
                 'country_names'      => $country_names,
                 'regions'            => $this->getRegionsForJs(),
@@ -141,8 +143,8 @@ class worldwideShipping extends waShipping
     public function requestedAddressFields()
     {
         return array(
-            'zip'     => array(),
-            'country' => array('cost' => false),
+            'zip'     => array('cost' => false),
+            'country' => array('cost' => true),
         );
     }
 
@@ -283,26 +285,48 @@ class worldwideShipping extends waShipping
                 $prices = array($this->parseCost(min($rates)), $this->parseCost(max($rates)));
             }
         } else {
-            $price = $this->parseCost($item['rate']);
+            $rate = $item['rate'];
+            if (is_array($rate)) {
+                $rate = reset($rate);
+            }
+            $price = $this->parseCost($rate);
         }
 
-        $delivery_date = '';
+        $est_delivery = '';
+        $delivery_date = null;
         if (!empty($item['transit_time'])) {
-            $delivery_date = array_map('strtotime', explode(',', $item['transit_time'], 2));
-            foreach ($delivery_date as & $date) {
-                $date = waDateTime::format('humandate', $date);
+            /** @var string $departure_datetime SQL DATETIME */
+            $departure_datetime = $this->getPackageProperty('departure_datetime');
+            /** @var  int $departure_timestamp */
+            if ($departure_datetime) {
+                $departure_timestamp = max(strtotime($departure_datetime), time());
+            } else {
+                $departure_timestamp = time();
+            }
+            $delivery_date = array_unique(explode(',', $item['transit_time'], 2));
+            $est_delivery = array();
+            foreach ($delivery_date as &$date) {
+                $date = strtotime(trim($date), $departure_timestamp);
+                $est_delivery[] = waDateTime::format('humandate', $date);
             }
             unset($date);
-            $delivery_date = implode(' — ', $delivery_date);
+            $est_delivery = implode(' — ', $est_delivery);
+            $delivery_date = self::formatDatetime($delivery_date);
         }
 
-        return array(
-            'delivery' => array(
-                'est_delivery' => $delivery_date,
-                'currency'     => $this->currency,
-                'rate'         => $prices ? $prices : $price,
-            ),
+        $service = array(
+            'est_delivery'  => $est_delivery,
+            'delivery_date' => $delivery_date,
+            'currency'      => $this->currency,
+            'rate'          => $prices ? $prices : $price,
+            'type'          => 'post',
         );
+
+        if (strlen($this->service_name)) {
+            $service['service'] = $this->service_name;
+        }
+
+        return array('delivery' => $service);
     }
 
     protected function getEuropeanCountries()

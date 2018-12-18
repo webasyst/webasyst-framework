@@ -7,6 +7,9 @@
  * @property-read string $currency
  * @property-read string $delivery
  * @property-read bool $prompt_address
+ * @property-read string $service_type
+ * @property-read string $service_name
+ * @property-read array $shipping_address
  *
  */
 class flatrateShipping extends waShipping
@@ -57,17 +60,35 @@ class flatrateShipping extends waShipping
     {
         if ($this->delivery === '') {
             $est_delivery = null;
+            $delivery_date = null;
         } else {
-            $est_delivery = waDateTime::format('humandate', strtotime($this->delivery));
+            /** @var string $departure_datetime SQL DATETIME */
+            $departure_datetime = $this->getPackageProperty('departure_datetime');
+            /** @var  int $departure_timestamp */
+            if ($departure_datetime) {
+                $departure_timestamp = max(strtotime($departure_datetime), time());
+            } else {
+                $departure_timestamp = time();
+            }
+            $timestamp = strtotime($this->delivery, $departure_timestamp);
+            $est_delivery = waDateTime::format('humandate', $timestamp);
+            $delivery_date = self::formatDatetime($timestamp);
+        }
+        $service = array(
+            //'name'         => $this->_w('Ground shipping'), optional shipping service name
+            'description'   => '',
+            'est_delivery'  => $est_delivery, //string
+            'delivery_date' => $delivery_date,
+            'currency'      => $this->currency,
+            'rate'          => $this->parseCost($this->cost),
+            'type'          => $this->service_type,
+        );
+
+        if (strlen($this->service_name)) {
+            $service['service'] = $this->service_name;
         }
         return array(
-            'ground' => array(
-                //'name'         => $this->_w('Ground shipping'), optional shipping service name
-                'description'  => '',
-                'est_delivery' => $est_delivery, //string
-                'currency'     => $this->currency,
-                'rate'         => $this->parseCost($this->cost),
-            ),
+            'ground' => $service,
         );
     }
 
@@ -164,7 +185,23 @@ class flatrateShipping extends waShipping
     public function allowedAddress()
     {
         //this plugin allows shipping orders to any addresses without limitations
-        return array();
+        $address = array();
+        if ($this->shipping_address) {
+            if (!empty($this->shipping_address['country'])) {
+                $address['country'] = $this->shipping_address['country'];
+                if (!empty($this->shipping_address['region'])) {
+                    $address['region'] = $this->shipping_address['region'];
+                }
+            }
+
+            if (!empty($this->shipping_address['city'])) {
+                $city = array_filter(array_map('trim', preg_split('@,+@', $this->shipping_address['city'])), 'strlen');
+                if ($city) {
+                    $address['city'] = $city;
+                }
+            }
+        }
+        return $address ? array($address) : $address;
     }
 
     /**
@@ -191,7 +228,19 @@ class flatrateShipping extends waShipping
     public function requestedAddressFields()
     {
         //request either all or no address fields depending on the value of the corresponding plugin settings option
-        return $this->prompt_address ? array() : false;
+        $fields = false;
+        if ($this->prompt_address) {
+            $fields = array();
+            $shipping_address = $this->shipping_address;
+            if (is_array($shipping_address)) {
+                foreach ($shipping_address as $field => $value) {
+                    if (!empty($value)) {
+                        $fields[$field] = array('required' => true);
+                    }
+                }
+            }
+        }
+        return $fields;
     }
 
     /**
