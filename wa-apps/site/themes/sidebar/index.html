@@ -63,11 +63,70 @@
             </a>
         </h2>
 
-        {if $wa->shop && $wa->shop->settings('phone')}
+        {if $wa->shop}
             <!-- offline contact information -->
             <div class="offline">
-                <b>{$wa->shop->settings('phone')}</b>
-                {if $wh = $wa->shop->settings('workhours')}
+                {if $wa->shop->settings('phone')}
+                    <b>{$wa->shop->settings('phone')}</b>
+                {/if}
+
+                {if method_exists($wa->shop, 'schedule')}
+                    {if $_schedule = $wa->shop->schedule()}{/if}
+
+                    <div class="s-schedule-wrapper" id="js-schedule-wrapper">
+                        <div class="s-visible">
+                            <div class="s-label-wrapper js-show-schedule">
+                                <div class="workhours-wrapper">[`Business hours`] <i class="s-icon"></i></div>
+                            </div>
+                        </div>
+                        <div class="s-hidden">
+                            <div class="s-days-wrapper">
+                                {foreach $_schedule.current_week as $_day}
+                                    <div class="s-day-wrapper">
+                                        <div class="s-date">{$_day.name|escape}</div>
+                                        <div class="s-value">
+                                            {if !empty($_day.work)}
+                                                <div class="s-time">{$_day.start_work|escape} — {$_day.end_work|escape}</div>
+                                            {else}
+                                                <div class="s-text">[`day off`]</div>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                {/foreach}
+                            </div>
+                        </div>
+
+                        <script>
+                            ( function($) {
+                                var $wrapper = $("#js-schedule-wrapper");
+
+                                var open_class = "is-open";
+
+                                $wrapper.on("click", ".js-show-schedule", function(event) {
+                                    event.preventDefault();
+                                    $wrapper.toggleClass(open_class);
+                                });
+
+                                $(document).on("click", watcher);
+
+                                function watcher(event) {
+                                    var is_exist = $.contains(document, $wrapper[0]);
+                                    if (is_exist) {
+                                        var is_target = $.contains($wrapper[0], event.target);
+                                        if (!is_target) {
+                                            if ($wrapper.hasClass(open_class)) {
+                                                $wrapper.removeClass(open_class);
+                                            }
+                                        }
+                                    } else {
+                                        $(document).off("click", watcher);
+                                    }
+                                }
+                            })(jQuery);
+                        </script>
+                    </div>
+
+                {elseif $wh = $wa->shop->settings('workhours')}
                     <span class="hint">{$wh.days_from_to}{if $wh.hours_from && $wh.hours_to} {$wh.hours_from}—{$wh.hours_to}{/if}</span>
                 {/if}
             </div>
