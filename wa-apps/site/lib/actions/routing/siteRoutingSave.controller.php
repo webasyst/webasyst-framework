@@ -81,10 +81,10 @@ class siteRoutingSaveController extends waJsonController
                 'domain' => $domain,
                 'route'  => &$route,
             );
-            wa()->event('route_save.before', $params);
+            wa('site')->event('route_save.before', $params);
             $routes[$domain][$route_id] = $route;
             waUtils::varExportToFile($routes, $path);
-            wa()->event('route_save.after', $params);
+            wa('site')->event('route_save.after', $params);
 
             // log
             $this->logAction('route_add', $domain.'/'.$route['url']);
@@ -97,7 +97,7 @@ class siteRoutingSaveController extends waJsonController
             $root_url = wa()->getRootUrl();
             if (!empty($route['app'])) {
                 if ($route['app'] == ':text') {
-                    $html .= '<img src="'.$root_url.'wa-apps/site/img/script-code.png" class="s-app24x24icon-menu-v" alt="">
+                    $html .= '<img src="'.$root_url.'wa-apps/site/img/script-code.png?v=1" class="s-app24x24icon-menu-v" alt="">
                                 <span class="text">'.htmlspecialchars(substr($route['static_content'], 0, 32)).(strlen($route['static_content'])>32?'...':'').'</span>';
                 } else {
                     $app = wa()->getAppInfo($route['app']);
@@ -168,10 +168,10 @@ class siteRoutingSaveController extends waJsonController
                 'route'  => &$new,
             );
 
-            wa()->event('route_save.before', $params);
+            wa('site')->event('route_save.before', $params);
             $routes[$domain][$route_id] = $new;
             waUtils::varExportToFile($routes, $path);
-            wa()->event('route_save.after', $params);
+            wa('site')->event('route_save.after', $params);
 
             $this->response['url'] = $routes[$domain][$route_id]['url'];
             $this->response['private'] = !empty($routes[$domain][$route_id]['private']);

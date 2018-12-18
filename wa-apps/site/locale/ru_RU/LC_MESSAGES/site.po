@@ -778,8 +778,8 @@ msgid "Enable sign up and login forms for this site"
 msgstr "Включить формы регистрации и входа для этого сайта"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:152
-msgid "Select the app that will handle authorization forms:"
-msgstr "Выберите приложение, которое будет отвечать за функциональность форм регистрации и авторизации пользователей на этом сайте:"
+msgid "Select a site section where visitors will sign up and log into their personal accounts."
+msgstr "Выберите раздел сайта, в котором посетители будут регистрироваться и входить в личный кабинет."
 
 msgid "Enable captcha for signup form"
 msgstr "Требовать ввод капчи (captcha) в форме регистрации"
@@ -1676,8 +1676,8 @@ msgstr "Настройки входа и регистрации на %s"
 msgid "User personal area"
 msgstr "Личный кабинет пользователя"
 
-msgid "The application and address used"
-msgstr "Используемое приложение и адрес"
+msgid "Site section for login and signup"
+msgstr "Раздел сайта для авторизации и регистрации"
 
 msgid "Select app"
 msgstr "Выберите приложение"
@@ -1688,7 +1688,7 @@ msgstr "Способы входа и регистрации"
 msgid "Social networks (additional authorization option)"
 msgstr "Социальные сети (дополнительный способ входа)"
 
-msgid "Register form"
+msgid "Signup form"
 msgstr "Форма регистрации"
 
 msgid "Login form"
@@ -1811,5 +1811,8 @@ msgstr "Добавьте шаблоны SMS-уведомлений в прило
 msgid "Authorization by login name"
 msgstr "Вход по имени пользователя"
 
-msgid "Enable to allow backend users to log in on the website with their login names"
-msgstr "Включите, чтобы пользователи бекенда могли входить на сайт со своими логинами"
+msgid "Enable to allow backend users to log in on the website with their login names. Only login names different from phone numbers, i.e. containing characters other than digits, are supported."
+msgstr "Включите, чтобы пользователи бекенда могли входить на сайт со своими логинами. Поддерживаются имена пользователей, отличающиеся от телефонных номеров, т. е. состоящие не только из цифр."
+
+msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section of Settings app."
+msgstr "Не заполнен email-адрес отправителя в разделе «<a href=\"%s\">Настройки email</a>» приложения «Настройки»."

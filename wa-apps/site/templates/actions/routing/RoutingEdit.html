@@ -57,7 +57,7 @@
                             {foreach $apps as $app}
                             <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
                             {/foreach}
-                            <option value=":text" data-img="wa-apps/site/img/script-code.png">[`Custom text`]</option>
+                            <option value=":text" data-img="wa-apps/site/img/script-code.png?v=1">[`Custom text`]</option>
                             <option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>
                         </select>
                     </div>
@@ -342,12 +342,20 @@ $(function () {
                 classContainer: "c-ibutton ibutton-container mini"
             });
         }
-        $(this).prev().attr('src', "{$wa_url}" + $(this).find(':selected').attr('data-img')).show();
-        if ($(this).val() == ":text") {
-            $(this).prev().attr('style', 'width: 16px; height: 16px;');
-        } else {
-            $(this).prev().removeAttr('style');
-        }
+
+        var $select = $(this),
+            $option = $select.find(':selected'),
+            $img = $select.prev();
+
+        var src = "{$wa_url}" + $option.attr('data-img');
+
+        $img.attr('src', src).show();
+
+        // if ($select.val() == ":text") {
+        //     $img.attr('style', 'width: 16px; height: 16px;');
+        // } else {
+        //     $img.removeAttr('style');
+        // }
     });
 
     // Delete route

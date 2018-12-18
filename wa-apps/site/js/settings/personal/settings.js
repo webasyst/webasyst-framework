@@ -14,7 +14,6 @@ var SitePersonalSettings = ( function($) {
         that.$loading = that.$form.find('.icon16.loading');
         that.$constructor = that.$wrapper.find('.form-constructor');
         that.$enabled_toggle = $("#s-auth-enabled");
-        that.$selected_app = that.$wrapper.find('.js-selected-app-id');
         that.$fields = that.$wrapper.find('.js-fields');
         that.$preview = that.$wrapper.find('.js-form-constructor-preview');
         that.$auth_content = that.$wrapper.find('.js-auth-content');
@@ -24,6 +23,7 @@ var SitePersonalSettings = ( function($) {
         that.$minimum_auth_type_dialog = options["$minimum_auth_type_dialog"];
 
         // VARS
+        that.no_channels = options["no_channels"];
         that.domain_id = options.domain_id || '';
         that.locale = options["locale"];
 
@@ -86,9 +86,8 @@ var SitePersonalSettings = ( function($) {
         $toggle.change(function(){
             status_check(this);
             var enabled = $(this).is(':checked') ? 1 : 0,
-                app_id = that.$selected_app.val(),
                 href = '?module=personal&action=authEnable&domain_id=' + that.domain_id,
-                data = {enabled: enabled, app_id: app_id};
+                data = { enabled: enabled };
 
             $.post(href, data, function () {
                 if (enabled) {
@@ -226,26 +225,33 @@ var SitePersonalSettings = ( function($) {
             $wrapper = that.$auth_content.find('.js-auth-apps-select'),
             $selected_app_id_input = $wrapper.find('.js-selected-app-id'),
             $selected_app_icon = $wrapper.find('.js-selected-app-icon'),
-            $selected_app_name = $wrapper.find('.js-selected-app-name');
+            $selected_app_name = $wrapper.find('.js-selected-app-name'),
+            $endpoin_login_url = $wrapper.find('.js-endpoint-login-url'),
+            $endpoin_signup_url = $wrapper.find('.js-endpoint-signup-url');
 
         $wrapper.on('click', '.js-auth-app', function () {
             var $link = $(this),
-                id = $link.data('id'),
                 icon = $link.data('icon'),
                 name = $link.data('name'),
+                route_url = $link.data('route-url'),
+                login_url = $link.data('login-url'),
+                signup_url = $link.data('signup-url'),
                 $menu_v = $link.parents('.menu-v'),
                 $li = $link.parent('li');
 
-            $selected_app_id_input.val(id);
-            $selected_app_name.text(name);
+            $selected_app_id_input.val(route_url);
+            $selected_app_name.html($.wa.encodeHTML(name) + ' <span class="hint">(' + $.wa.encodeHTML(route_url) + ')</span>');
             $selected_app_icon.attr('src', icon);
+            $endpoin_login_url.text(login_url);
+            $endpoin_signup_url.text(signup_url);
             $menu_v.find('li').removeClass('selected');
             $li.addClass('selected');
 
             // Hide apps list
             $menu_v.hide();
             setTimeout(function() {
-                $menu_v.removeAttr("style");
+                $menu_v.removeAttr('style');
+                $menu_v.css({'margin-top': '12px', 'min-width': '300px'});
             }, 200);
         });
     };
@@ -276,8 +282,8 @@ var SitePersonalSettings = ( function($) {
 
             if (value == 'generate_password') {
                 $signup_notify_checkbox.prop('disabled', false).prop('checked', true).prop('disabled', true);
-            } else {
-                $signup_notify_checkbox.prop('disabled', false); 
+            } else if (!that.no_channels) {
+                $signup_notify_checkbox.prop('disabled', false);
             }
         }).find(':radio:checked').change();
     };

@@ -6,7 +6,7 @@
 <div class="{$wrapper_class}" id="{$wrapper_id}">
     <h1 style="padding: 20px 20px 0 20px;">{sprintf('[`Login and signup settings for %s`]', $domain|escape)}</h1>
 
-    {if $auth_apps}
+    {if $auth_endpoints}
         {* Auth enabled checkbox *}
         <div class="fields">
             <div class="field" style="padding: 0 20px;">
@@ -17,11 +17,11 @@
                             <li>
                                 <div>
                                     <input id="s-auth-enabled" name="enabled" class="ibutton" type="checkbox"
-                                        {if !$auth_apps} disabled="disabled"{/if}
+                                        {if !$auth_endpoints} disabled="disabled"{/if}
                                         {if $auth_config.auth} checked="checked"{/if}>
                                 </div>
                             </li>
-                            <li><label for="s-auth-enabled"name="auth_type"><span id="s-personal-app-enabled-label">[`authorization enabled`]</span></label></li>
+                            <li><label for="s-auth-enabled"><span id="s-personal-app-enabled-label">[`authorization enabled`]</span></label></li>
                         </ul>
                         <br>
                         <p{if $auth_config.auth} style="display:none"{/if} class="gray"><i class="icon10 no-bw top-padded"></i> {sprintf('[`User sign up, authorization and personal accounts are not enabled on %s.`]', $domain)}</p>
@@ -31,8 +31,9 @@
 
             <form action="?module=personalSettingsSave">
                 <div class="s-auth-content js-auth-content"{if !$auth_config.auth} style="display:none"{/if}>
-                    {* Auth apps list *}
-                    {auth_apps_select}
+
+                    {* Auth endpoints (app and urls) list *}
+                    {auth_endpoints_select}
 
                     {* Ways of login and registration *}
                     <div class="s-big-label">
@@ -130,6 +131,7 @@
             $(function () {
                 new SitePersonalSettings({
                     $wrapper: $('#{$wrapper_id}'),
+                    no_channels: {$no_channels|json_encode},
                     $minimum_auth_type_dialog: $('#s-minimum-auth-type-dialog'),
                     domain_id: {$domain_id},
                     locale: {$_locale|json_encode}

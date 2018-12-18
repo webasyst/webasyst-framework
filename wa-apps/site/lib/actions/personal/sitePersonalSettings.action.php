@@ -24,12 +24,26 @@ class sitePersonalSettingsAction extends waViewAction
             }
         }
 
+        $used_auth_methods = $auth_config->getUsedAuthMethods();
+
+        // If there are no email channels and no SMS is used as
+        // a verification channel, will limit some functionality. #51.5712
+        $no_channels = (empty($email_channels) && !in_array(waVerificationChannelModel::TYPE_SMS, $used_auth_methods));
+
+        // Prepare auth endpoints
+        $auth_endpoints = $auth_config->getAuthEndpoints();
+        foreach ($auth_endpoints as $route_url => &$auth_endpoint) {
+            $auth_endpoint['login_url'] = waIdna::dec($auth_endpoint['login_url']);
+            $auth_endpoint['signup_url'] = waIdna::dec($auth_endpoint['signup_url']);
+        }
+        unset($auth_endpoint);
+
         wa('webasyst');
         $this->view->assign(array(
             'auth_config'                => $auth_config->getData(),
             'params'                     => $auth_config->getParams(),
             'auth_adapters'              => $auth_config->getAvailableAuthAdapters(),
-            'auth_apps'                  => $auth_config->getAuthApps('all'),
+            'auth_endpoints'             => $auth_endpoints,
             'auth_types'                 => $auth_config->getAuthTypes(),
             'signup_captcha'             => $auth_config->getSignUpCaptcha(),
             'rememberme'                 => $auth_config->getRememberMe(),
@@ -40,9 +54,10 @@ class sitePersonalSettingsAction extends waViewAction
             'demo_captcha'               => wa()->getCaptcha(),
             'available_fields'           => $auth_config->getAvailableFields(),
             'enable_fields'              => $auth_config->getEnableFields(),
-            'used_auth_methods'          => $auth_config->getUsedAuthMethods(),
-            'sms_channels'               => $sms_channels,
+            'used_auth_methods'          => $used_auth_methods,
             'email_channels'             => $email_channels,
+            'sms_channels'               => $sms_channels,
+            'no_channels'                => $no_channels,
             'verification_channel_types' => $auth_config->getVerificationChannelTypes(),
             'domain'                     => waIdna::dec($domain),
             'domain_id'                  => siteHelper::getDomainId(),

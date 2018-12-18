@@ -248,6 +248,7 @@ $.wa.site = {
         var f = function () {
             $("#s-personal-content").html('<i class="icon16 loading s-personal-loading"></i>').load('?module=personal&action=profile', 'domain_id=' + d, function () {
                 $('ul.s-personal-structure li.selected').removeClass('selected');
+                $('.js-personal-auth').removeClass('selected');
                 $('#s-personal-profile-link').addClass('selected');
             });
         };

@@ -24,7 +24,7 @@
                                 {if is_array($route.app)}
                                 <img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
                                 {elseif $route.app ===':text'}
-                                    <img src="{$wa_app_static_url}img/script-code.png" class="s-app24x24icon-menu-v" alt=""><span class="text">{$route.text|default:''|truncate:32|escape}</span>
+                                    <img src="{$wa_app_static_url}img/script-code.png?v=1" class="s-app24x24icon-menu-v" alt=""><span class="text">{$route.text|default:''|truncate:32|escape}</span>
                                 {else}
                                 {$route.app|escape}
                                 {/if}

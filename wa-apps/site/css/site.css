@@ -287,10 +287,17 @@ li.error a {color: red}
 .s-personal-settings-wrapper .s-auth-apps-select .dropdown > li:hover { background: none; }
 .s-personal-settings-wrapper .s-auth-apps-select .dropdown > li > a { padding: 0; margin: 0; }
 .s-personal-settings-wrapper .s-auth-apps-select .s-visible-link span { display: inline-block; max-width: 135px; -o-text-overflow: ellipsis; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
-.s-personal-settings-wrapper .s-auth-apps-select .menu-v { width: 200px; }
-.s-personal-settings-wrapper .s-auth-apps-select .menu-v a { padding-left: 4px; }
+.s-personal-settings-wrapper .s-auth-apps-select .menu-v { width: 200px; max-height: 364px; overflow: auto; }
+
+.s-personal-settings-wrapper .s-auth-apps-select .menu-v a { padding-left: 4px; -webkit-transition: unset; -o-transition: unset; transition: unset; line-height: 14px; height: 14px; overflow: hidden; position: relative; word-break: break-all; }
+.s-personal-settings-wrapper .s-auth-apps-select .menu-v a { padding-left: 4px; -webkit-transition: unset; -o-transition: unset; transition: unset; line-height: 14px; height: 14px; overflow: hidden; position: relative; word-break: break-all; }
+.s-personal-settings-wrapper .s-auth-apps-select .menu-v a .shortener { -webkit-box-shadow: -25px 0 12px #fff inset; box-shadow: -25px 0 12px #fff inset; -moz-box-shadow: -25px 0 12px #fff inset; -webkit-box-shadow: -25px 0 12px #fff inset; display: block; height: 16px; position: absolute; right: 0; top: 7px; width: 33px; }
+.s-personal-settings-wrapper .s-auth-apps-select .menu-v li:hover a .shortener { -webkit-box-shadow: -25px 0 12px #ededed inset; box-shadow: -25px 0 12px #ededed inset; -moz-box-shadow: -25px 0 12px #ededed inset; -webkit-box-shadow: -25px 0 12px #ededed inset; }
+
 .s-personal-settings-wrapper .s-auth-apps-select .menu-v li.selected { background: #eaeaea; }
 .s-personal-settings-wrapper .s-auth-apps-select .menu-v li.selected a { background: none; }
+.s-personal-settings-wrapper .s-auth-apps-select .menu-v li.selected a .shortener { -webkit-box-shadow: -25px 0 12px #eaeaea inset; box-shadow: -25px 0 12px #eaeaea inset; -moz-box-shadow: -25px 0 12px #eaeaea inset; -webkit-box-shadow: -25px 0 12px #eaeaea inset; }
+
 .s-personal-settings-wrapper .s-auth-apps-select .menu-v a i { color: inherit; font-weight: normal; border: 0; font-style: normal; }
 .s-personal-settings-wrapper .s-auth-apps-select .s-selected-app .icon10 { margin-top: 6px; }
 .s-personal-settings-wrapper .s-auth-apps-select .s-auth-app { position: relative; }

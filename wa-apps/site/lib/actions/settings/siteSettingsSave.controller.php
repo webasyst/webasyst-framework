@@ -214,7 +214,9 @@ class siteSettingsSaveController extends waJsonController
     {
         $favicon = waRequest::file('favicon');
         if ($favicon->uploaded()) {
-            if ($favicon->extension !== 'ico') {
+            $ext = strtolower($favicon->extension);
+            $mime_favicon = $favicon->type === 'image/x-icon' || $favicon->type === 'image/vnd.microsoft.icon';
+            if ($ext !== 'ico' && !$mime_favicon) {
                 $this->errors = _w('Files with extension *.ico are allowed only.');
             } else {
                 $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/', true);
@@ -233,7 +235,8 @@ class siteSettingsSaveController extends waJsonController
     {
         $touchicon = waRequest::file('touchicon');
         if ($touchicon->uploaded()) {
-            if ($touchicon->extension !== 'png') {
+            $ext = strtolower($touchicon->extension);
+            if ($ext !== 'png' && $touchicon->type !== 'image/png') {
                 $this->errors = _w('Files with extension *.png are allowed only.');
             } else {
                 $path = wa()->getDataPath('data/'.siteHelper::getDomain().'/', true);
