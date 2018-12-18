@@ -32,8 +32,6 @@ abstract class waLoginModuleController extends waViewAction
     {
         if (!$this->isJsonMode()) {
 
-            wa()->getResponse()->setTitle($this->getTitle());
-
             $this->response = array_merge($this->response, array(
                 'data'      => $this->getData(),
                 'errors'    => $this->getErrors(),
@@ -114,42 +112,6 @@ abstract class waLoginModuleController extends waViewAction
         $is_ajax = waRequest::isXMLHttpRequest();
         $this->is_json_mode = $is_ajax && $is_json_mode;
         return $this->is_json_mode;
-    }
-
-    /**
-     * @param array|waVerificationChannel[] $channels Array of channels
-     * @param string $login
-     * @return bool
-     */
-    protected function isChannelAvailable($channels, $login)
-    {
-        $is_available = false;
-
-        if ($this->isValidEmail($login)) {
-            $login_field = 'email';
-        } elseif ($this->isValidPhoneNumber($login)) {
-            $login_field = 'phone';
-        } else {
-            $login_field = 'login';
-        }
-
-        if ($login_field === 'login') {
-            return true;
-        }
-
-        foreach ($channels as $channel) {
-            $channel = waVerificationChannel::factory($channel);
-            if ($login_field === 'email' && $channel->getType() === waVerificationChannelModel::TYPE_EMAIL) {
-                $is_available = true;
-                break;
-            }
-            if ($login_field === 'phone' && $channel->getType() === waVerificationChannelModel::TYPE_SMS) {
-                $is_available = true;
-                break;
-            }
-        }
-
-        return $is_available;
     }
 
     protected function getChannelPriorityByLogin($login)

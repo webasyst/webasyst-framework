@@ -213,6 +213,17 @@ class waContactDataModel extends waModel
         return $this->getContactIdByFieldValue('phone', $phone);
     }
 
+    public function getPhones($contact_id)
+    {
+        $sql = "SELECT `values`, ext, status FROM ".$this->table." WHERE contact_id = i:id AND `field` = 'phone' ORDER BY sort";
+        return $this->query($sql, array('id' => $contact_id))->fetchAll();
+    }
+
+    public function getPhone($contact_id, $sort = 0)
+    {
+        return $this->getByField(array('contact_id' => $contact_id, 'field' => 'phone', 'sort' => $sort));
+    }
+
     public function updateContactPhoneStatus($contact_id, $phone, $status)
     {
         $this->updateByField(array(
@@ -221,15 +232,6 @@ class waContactDataModel extends waModel
             'value' => $phone
         ), array(
             'status' => $status
-        ));
-    }
-
-    public function getContactPhone($contact_id, $sort = 0)
-    {
-        return $this->getByField(array(
-            'contact_id' => $contact_id,
-            'field' => 'phone',
-            'sort' => $sort
         ));
     }
 

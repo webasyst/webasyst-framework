@@ -193,6 +193,36 @@ class waAuth implements waiAuth
     }
 
     /**
+     * @param $login
+     * @return array|null
+     */
+    protected function getByContactLogin($login)
+    {
+        $login = is_scalar($login) ? (string)$login : '';
+        if (strlen($login) <= 0) {
+            return null;
+        }
+
+        $where = array();
+        if ($this->options['is_user']) {
+            $where[] = "is_user = 1";
+        }
+
+        $where[] = "password != ''";
+        $where[] = 'login = :login';
+
+        $where = join(' AND ', $where);
+
+        $sql = "SELECT * FROM wa_contact
+                WHERE {$where}
+                ORDER BY id
+                LIMIT 1";
+
+        $model = new waContactModel();
+        return $model->query($sql, array('login' => $login))->fetchAssoc();
+    }
+
+    /**
      * @param string $phone
      * @return array|null
      */
@@ -261,8 +291,7 @@ class waAuth implements waiAuth
         foreach ($login_values as $field_id => $value) {
             $contact = null;
             if ($field_id === self::LOGIN_FIELD_LOGIN) {
-                $model = new waContactModel();
-                $contact = $model->getByField('login', $value);
+                $contact = $this->getByContactLogin($value);
             } elseif ($field_id === self::LOGIN_FIELD_EMAIL) {
                 $contact = $this->getByEmail($value);
             } elseif ($field_id === self::LOGIN_FIELD_PHONE) {
@@ -368,7 +397,7 @@ class waAuth implements waiAuth
 
         $user_info = $this->getByLogin($login);
         if (!$user_info || ($this->options['is_user'] && $user_info['is_user'] <= 0)) {
-            throw new waAuthException(_ws("Contact is not signed up"));
+            throw new waAuthException(_ws("Contact is not registered."));
         }
 
         if ($this->isOnetimePasswordMode()) {
@@ -418,7 +447,7 @@ class waAuth implements waiAuth
         $email_row = $cem->getEmail($contact['id']);
 
         $cdm = new waContactDataModel();
-        $phone_row = $cdm->getContactPhone($contact['id']);
+        $phone_row = $cdm->getPhone($contact['id']);
 
         // error that stop logging in
         $error = new waAuthException(_ws("Contact can't be authorized"));;
@@ -504,6 +533,7 @@ class waAuth implements waiAuth
      * @param array|waVerificationChannel[] $channels Array of channels
      * @param string $login_field_id self::LOGIN_FIELD_* const
      * @return bool
+     * @throws waException
      */
     protected function isChannelAvailable($channels, $login_field_id)
     {
@@ -647,6 +677,7 @@ class waAuth implements waiAuth
     /**
      * @return array|bool
      * @throws waAuthException
+     * @throws waException
      */
     protected function _authByCookie()
     {

@@ -53,12 +53,12 @@ class waFrontendLoginForm extends waLoginForm
             }
 
             if (!isset($this->options['sub_title'])) {
-                $this->options['sub_title'] = _ws('Login');
+                $this->options['sub_title'] = _ws('Log in');
             }
 
         } else {
             if (!isset($this->options['title'])) {
-                $this->options['title'] = _ws('Login');
+                $this->options['title'] = _ws('Log in');
             }
         }
 

@@ -175,11 +175,18 @@ class waSignupAction extends waViewAction
      */
     protected function executeConfirmEmailAction($confirm_hash)
     {
+        // already auth contact
+        if ($this->getUser()->isAuth()) {
+            $this->redirectToAppPage();
+            return;
+        }
+
         $validation_result = $this->validateConfirmationHash($confirm_hash);
 
         // Validation is failed
         if (!$validation_result['status']) {
-            throw new waException(_ws('Email confirmation failed'));
+            $this->redirectToLoginPage();
+            return;
         }
 
         // With current validation process must be bind certain contact
@@ -188,7 +195,8 @@ class waSignupAction extends waViewAction
 
         // Contact doesn't exist or not have been bind with validation process
         if (!$contact->exists()) {
-            throw new waException(_ws('Email confirmation failed'));
+            $this->redirectToLoginPage();
+            return;
         }
 
         // Ok, we have email - mark it as confirmed
@@ -202,7 +210,8 @@ class waSignupAction extends waViewAction
 
         // Email has been deleted from this contact
         if (!$email_row) {
-            throw new waException(_ws('Email confirmation failed'));
+            $this->redirectToLoginPage();
+            return;
         }
 
         // Email is now confirmed
@@ -210,7 +219,8 @@ class waSignupAction extends waViewAction
 
         // For some reasons can't signup contact
         if (!$this->trySignupContact($contact)) {
-            throw new waException(_ws('Email confirmation failed'));
+            $this->redirectToLoginPage();
+            return;
         }
 
         // send sign up notification
@@ -453,7 +463,7 @@ class waSignupAction extends waViewAction
      */
     protected function processSignupFailedStatus($data, $details)
     {
-        $errors = $details ? $details : array('signup' => _ws('Sign up failed'));
+        $errors = $details ? $details : array('signup' => _ws('Signup failed.'));
         $this->assign('errors', $errors);
     }
 
@@ -553,7 +563,7 @@ class waSignupAction extends waViewAction
         // If notify hasn't sent - it is bad, but not fatal
         // But if client can't get password - need show errors to client
         if (!$notify_sent && $generated_password_auth_type) {
-            $this->assign('errors', array('signup' => 'Sign up failed - password not sent'));
+            $this->assign('errors', array('signup' => _ws('Signup has failed, password was not sent.')));
             return;
         }
 
@@ -600,7 +610,7 @@ class waSignupAction extends waViewAction
                 break;
             default:
                 // Unknown status
-                $this->assign('errors', array('signup' => 'Sign up failed'));
+                $this->assign('errors', array('signup' => _ws('Signup failed.')));
                 break;
         }
     }

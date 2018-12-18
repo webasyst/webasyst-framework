@@ -67,7 +67,7 @@ class waRequest
                 if (!is_array($val)) {
                     $val = (array)$val;
                 }
-                foreach($val as $k => $v) {
+                foreach ($val as $k => $v) {
                     if (is_array($v)) {
                         if ($rec_limit > 0) {
                             $val[$k] = self::cast($v, self::TYPE_ARRAY_TRIM, $rec_limit - 1);
@@ -105,7 +105,7 @@ class waRequest
     }
 
     /**
-     * Verifies availablility of specified field in POST request.
+     * Verifies availability of specified field in POST request.
      *
      * @param string $name POST request field
      * @return bool
@@ -162,7 +162,7 @@ class waRequest
 
     /**
      * Returns iterator for file
-     *
+     * @param string $name
      * @return waRequestFileIterator
      */
     public static function file($name)
@@ -260,13 +260,13 @@ class waRequest
 
         $mobile_platforms = array(
             "google-mobile" => "googlebot\-mobile",
-            "android"    => "android",
-            "blackberry" => "(blackberry|rim tablet os)",
-            "iphone"     => "(iphone|ipod)",
-            "opera"      => "opera (mini|mobi|mobile)",
-            "palm"       => "(palmos|avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
-            "windows"    => "windows\sce;\s(iemobile|ppc|smartphone)",
-            "generic"    => "(kindle|mobile|mmp|midp|o2|pda|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap)"
+            "android"       => "android",
+            "blackberry"    => "(blackberry|rim tablet os)",
+            "iphone"        => "(iphone|ipod)",
+            "opera"         => "opera (mini|mobi|mobile)",
+            "palm"          => "(palmos|avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
+            "windows"       => "windows\sce;\s(iemobile|ppc|smartphone)",
+            "generic"       => "(kindle|mobile|mmp|midp|o2|pda|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap)",
         );
         foreach ($mobile_platforms as $id => $pattern) {
             if (preg_match('/'.$pattern.'/i', $user_agent)) {
@@ -347,7 +347,7 @@ class waRequest
     /**
      * Sets custom values for additional request parameters.
      *
-     * @param string $key Parameter name.
+     * @param string|mixed[string] $key Parameter name.
      * @param mixed $value Parameter value. If not specified, default value null is set.
      */
     public static function setParam($key, $value = null)
@@ -450,11 +450,16 @@ class waRequest
         } else {
             $result = $locales[0];
         }
-        if (!self::server('HTTP_ACCEPT_LANGUAGE')) {
+
+        $pattern = "/([a-z]{1,8})(?:-([a-z]{1,8}))?(?:\s*;\s*q\s*=\s*(1|1\.0{0,3}|0|0\.[0-9]{0,3}))?\s*(?:,|$)/i";
+
+        if (!self::server('HTTP_ACCEPT_LANGUAGE')
+            || !preg_match_all($pattern, self::server('HTTP_ACCEPT_LANGUAGE'), $matches)
+        ) {
             return $result;
         }
-        preg_match_all("/([a-z]{1,8})(?:-([a-z]{1,8}))?(?:\s*;\s*q\s*=\s*(1|1\.0{0,3}|0|0\.[0-9]{0,3}))?\s*(?:,|$)/i",
-            self::server('HTTP_ACCEPT_LANGUAGE'), $matches);
+
+
         $max_q = 0;
         for ($i = 0; $i < count($matches[0]); $i++) {
             $lang = $matches[1][$i];
@@ -549,7 +554,7 @@ class waRequest
         if (!empty($_SERVER['HTTP_X_SSL']) && (strtolower($_SERVER['HTTP_X_SSL']) == 'yes' || $_SERVER['HTTP_X_SSL'] == '1')) {
             return true;
         }
-        if(!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+        if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
             return true;
         }
         if (!empty($_SERVER['HTTP_X_SCHEME']) && strtolower($_SERVER['HTTP_X_SCHEME']) == 'https') {

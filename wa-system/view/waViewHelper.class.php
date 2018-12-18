@@ -770,7 +770,11 @@ HTML;
         $options = is_array($options) ? $options : array();
 
         if (is_scalar($errors)) {
-            $errors = array('' => (string)$errors);
+            $error = (string)$errors;
+            $errors = array();
+            if (strlen($error) > 0) {
+                $errors = array('' => $error);
+            }
         } else {
             $errors = is_array($errors) ? $errors : array();
         }
@@ -1007,6 +1011,16 @@ HTML;
     public function signupForm($errors = array(), $options = array())
     {
         $options = is_array($options) ? $options : array();
+
+        if (is_scalar($errors)) {
+            $error = (string)$errors;
+            $errors = array();
+            if (strlen($error) > 0) {
+                $errors = array('' => $error);
+            }
+        } else {
+            $errors = is_array($errors) ? $errors : array();
+        }
 
         $is_from_template = waConfig::get('is_template');
         waConfig::set('is_template', null);

@@ -207,8 +207,8 @@ class webasystBackendCheatSheetActions extends waActions
                 if ($apps_site_config) {
                     foreach ($apps_site_config as $_app_id => $_app) {
                         wa($_app_id, 1);
-                        if (!empty($site_config['blocks'])) {
-                            foreach ($site_config['blocks'] as $block_id => $block) {
+                        if (!empty($_app['blocks'])) {
+                            foreach ($_app['blocks'] as $block_id => $block) {
                                 if (!is_array($block)) {
                                     $block = array('content' => $block, 'description' => '');
                                 }

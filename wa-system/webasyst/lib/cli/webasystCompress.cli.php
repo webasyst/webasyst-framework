@@ -6,6 +6,7 @@ class webasystCompressCli extends waCliController
     private $type;
     private $app_id;
     private $extension_id;
+    private $slug;
     private $folder;
 
     private $files = array();
@@ -14,6 +15,7 @@ class webasystCompressCli extends waCliController
     private $archive_path;
 
     private $params = array();
+    private $default_params = array();
 
     private static $default = array(
         'style' => 'no-vendors',
@@ -33,6 +35,17 @@ class webasystCompressCli extends waCliController
                 waAutoload::getInstance()->add('PEAR', '/wa-installer/lib/vendors/PEAR/PEAR.php');
             }
         }
+
+        $default_path = wa()->getConfig()->getPath('config', 'developer');
+        $default = array();
+        if (file_exists($default_path)) {
+            $default = include($default_path);
+        }
+        if (!is_array($default)) {
+            $default = array();
+        }
+        $keys = array('style', 'skip', 'php');
+        $this->default_params = array_intersect_key($default, array_fill_keys($keys, true));
     }
 
     private function printHelp()
@@ -67,37 +80,54 @@ Optional parameters:
         all          Skip all above.
         none         (default choice) Do not skip anything.
     -php /path/to/php/bin Option to specify custom path to check php syntax
-HELP;
+    
+Hint: use wa-config/developer.php to setup common defaults e.g. style, skip, php
 
+HELP;
+        if ($this->default_params) {
+            $help .= "Current default values at developer.php:\n";
+            foreach ($this->default_params as $param => $value) {
+                $help .= sprintf("\t%s\t%s\n", $param, $value);
+            }
+            $help .= "\n";
+        }
         print($help)."\n";
+    }
+
+    protected function verifyParams()
+    {
+        $this->slug = waRequest::param(0);
+        $this->params = waRequest::param();
+        $id_pattern = '[a-z][a-z0-9_]+';
+
+        if (preg_match("@^({$id_pattern})($|/(plugins|widgets|themes)/({$id_pattern})$)@", $this->slug, $matches)) {
+            $this->type = ifset($matches[3], 'app');
+            $this->app_id = $matches[1];
+            $this->extension_id = ifset($matches[4]);
+        } elseif (preg_match("@^(wa-plugins/(payment|shipping|sms))/({$id_pattern})$@", $this->slug, $matches)) {
+            $this->app_id = $matches[1];
+            $this->type = $matches[2];
+            $this->extension_id = $matches[3];
+        } elseif (preg_match("@^wa-widgets/({$id_pattern})$@", $this->slug, $matches)) {
+            $this->app_id = 'webasyst';
+            $this->type = 'widgets';
+            $this->extension_id = $matches[1];
+        } else {
+            throw new waException("invalid SLUG");
+        }
+
+        $this->params += $this->default_params;
     }
 
     public function execute()
     {
-        $slug = waRequest::param(0);
-        $this->params = waRequest::param();
-        $id_pattern = '[a-z][a-z0-9_]+';
+
         try {
-            if (empty($this->params) || isset($this->params['help']) || empty($slug)) {
+            $this->verifyParams();
+            if (empty($this->params) || isset($this->params['help'])) {
                 $this->printHelp();
             } else {
-                if (preg_match("@^({$id_pattern})($|/(plugins|widgets|themes)/({$id_pattern})$)@", $slug, $matches)) {
-                    $this->type = ifset($matches[3], 'app');
-                    $this->app_id = $matches[1];
-                    $this->extension_id = ifset($matches[4]);
-                } elseif (preg_match("@^(wa-plugins/(payment|shipping|sms))/({$id_pattern})$@", $slug, $matches)) {
-                    $this->app_id = $matches[1];
-                    $this->type = $matches[2];
-                    $this->extension_id = $matches[3];
-                } elseif (preg_match("@^wa-widgets/({$id_pattern})$@", $slug, $matches)) {
-                    $this->app_id = 'webasyst';
-                    $this->type = 'widgets';
-                    $this->extension_id = $matches[1];
-                } else {
-                    throw new waException("invalid SLUG");
-                }
-
-                $this->tracef('Check & compress %s with params:', $slug);
+                $this->tracef('Check & compress %s with params:', $this->slug);
 
                 foreach (self::$default as $param => $default) {
                     $this->tracef("\t%s\t%s", $param, implode(', ', $this->getParam($param)));
@@ -133,7 +163,7 @@ HELP;
                 }
 
 
-                if ($compress && ('theme' != $this->type)) {
+                if ($compress && ('theme' != $this->type) && !in_array($skip, array('test', 'all'), true)) {
                     $style = $this->getParam('style');
 
                     if (!in_array('false', $style, true)) {
@@ -155,6 +185,8 @@ HELP;
                     } else {
                         $this->trace('Code style check skipped');
                     }
+                } else {
+                    $this->trace('Code style check skipped');
                 }
 
                 if ($compress && !in_array($skip, array('compress', 'all'), true)) {
@@ -375,21 +407,86 @@ HELP;
         return "@{$pattern}@";
     }
 
+    private function getTokensBlackList()
+    {
+        $list = array(
+            T_FUNC_C,
+            T_FUNCTION,
+            T_INTERFACE,
+            T_CLASS,
+            T_CLASS_C,
+            T_CONST,
+            T_DOUBLE_COLON,
+            T_OPEN_TAG_WITH_ECHO,
+            T_EXIT,
+            T_NEW,
+            T_PRINT,
+            T_ECHO,
+            T_DECLARE,
+            T_GLOBAL,
+            T_HALT_COMPILER,
+        );
+
+        $extra = array(
+            'T_NAMESPACE',
+            'T_TRAIT',
+            'T_TRAIT_C',
+            'T_USE',
+            'T_OPEN_SHORT_ARRAY',
+            'T_YIELD',
+        );
+
+        foreach ($extra as $constant) {
+            if (defined($constant)) {
+                $list[] = constant($constant);
+            }
+        }
+        return $list;
+    }
+
     private function checkConfig($path)
     {
         $result = true;
         $name = '/lib/config/'.$path.'.php';
         $config_path = $this->path.$name;
+        $list = $this->getTokensBlackList();
         if (file_exists($config_path)) {
             $content = file_get_contents($config_path);
             $tokens = token_get_all($content);
+            foreach ($tokens as &$token) {
+                if (is_array($token)) {
+                    $token['name'] = token_name($token[0]);
+                }
+                unset($token);
+            }
+
             foreach ($tokens as $id => $token) {
-                if (is_array($token) && (in_array($token[0], array(T_FUNC_C, T_FUNCTION, T_CLASS, T_CLASS_C)))) {
-                    $result = false;
-                    $this->tracef('ERROR: Unexpected %s at config file %s on line', token_name($token[0]), $name, $token[2]);
-                    break;
+                if (is_array($token)) {
+                    if (in_array($token[0], $list)) {
+                        if ($result) {
+                            $this->tracef("\nERROR encountered in config file %s:", $name);
+                        }
+                        $result = false;
+                        $this->tracef("\tUnexpected '%s' (%s) on line %d", $token[1], token_name($token[0]), $name, $token[2]);
+                    } elseif (($token[0] === T_OPEN_TAG) && ($token[1] === '<?')) {
+                        if ($result) {
+                            $this->tracef("\nERROR encountered in config file %s:", $name);
+                        }
+                        $result = false;
+                        $this->tracef("\tPHP short open tag not allowed on line %d", $token[2]);
+                    } elseif (($token[0] === T_STRING) && !in_array($token[1], array('true', 'false', 'null'), true)) {
+                        if ($result) {
+                            $this->tracef("\nERROR encountered in config file %s:", $name);
+                        }
+                        $result = false;
+                        $this->tracef("\tUnexpected '%s' (%s) on line %d", $token[1], token_name($token[0]), $name, $token[2]);
+                    }
                 }
             }
+        }
+
+        if (!$result) {
+            $this->trace("\n");
         }
 
         return $result;
@@ -410,6 +507,8 @@ HELP;
                         $config = false;
                     }
                 }
+            } else {
+                $config = false;
             }
         }
 
@@ -616,6 +715,7 @@ HELP;
 
     private function testConfig()
     {
+        $this->tracef("Start test item config.");
         $valid = true;
         $available = array(
             'name',
@@ -701,6 +801,7 @@ HELP;
                                 'type',
                                 'locale',
                                 'offline',
+                                'discount',
                             )
                         );
                         break;
@@ -734,12 +835,19 @@ HELP;
             }
 
             if (empty($images)) {
-                $this->tracef('WARNING: not found any of %s', implode(', ', $fields));
+                $this->tracef('WARNING: not found any of %s options at item config', implode(', ', $fields));
                 $valid = false;
             }
-        } else {
-            $this->trace('ERROR: Empty or invalid item config');
+        } elseif ($this->config === false) {
+            $this->trace('ERROR: Invalid item config');
             $valid = false;
+        } else {
+            $this->trace('ERROR: Empty item config');
+            $valid = false;
+        }
+
+        if ($valid) {
+            $this->tracef("\tOK");
         }
 
         return $valid;
@@ -777,6 +885,7 @@ HELP;
 
     private function testInstall()
     {
+        $this->tracef("Start test item install/uninstall section.");
         $install = in_array('lib/config/install.php', $this->files);
         $uninstall = in_array('lib/config/uninstall.php', $this->files);
         if (($install && !$uninstall) || (!$install && $uninstall)) {
@@ -789,6 +898,7 @@ HELP;
 
     private function testDb()
     {
+
         $result = true;
         switch ($this->type) {
             case 'plugin':
@@ -806,6 +916,7 @@ HELP;
         }
 
         if ($namespace) {
+            $this->tracef("Start test item database section.");
             $db = $this->getItemConfig('db');
             if ($db) {
                 $pattern = "@^{$namespace}(_.+)?$@";
@@ -828,32 +939,64 @@ HELP;
         return $result;
     }
 
+    private function getPhpBinary()
+    {
+        $paths = array();
+
+        if (defined('PHP_BINARY')) {
+            $php_bin = constant('PHP_BINARY');
+        } elseif (defined('PHP_BINDIR')) {
+            $php_bin = constant('PHP_BINDIR');
+        } else {
+            $php_bin = 'php';
+        }
+
+        $version = $this->getPhpVersion($php_bin);
+        if (($version === false) && ($php_bin != 'php')) {
+            $php_bin = 'php';
+            $version = $this->getPhpVersion($php_bin);
+        }
+
+        if ($version !== false) {
+            $paths[$php_bin] = $version;
+        }
+
+        if (!empty($this->params['php'])) {
+            $php_bins = preg_split('@[\s;,]+@', $this->params['php']);
+            foreach ($php_bins as $php_bin) {
+                $version = $this->getPhpVersion($php_bin);
+                if ($version !== false) {
+                    $paths[$php_bin] = $version;
+                }
+            }
+        }
+        return $paths;
+    }
+
+    private function getPhpVersion($path)
+    {
+        $command = sprintf('%s -v', $path);
+        $res = $this->exec($command, $outputs);
+        if ($res === 0) {
+            $version = implode("\n\t", $outputs);
+        } else {
+            $version = false;
+        }
+        return $version;
+    }
+
     private function testPhp($param)
     {
         $result = true;
 
         if ($this->execAvailable()) {
 
-            if (defined('PHP_BINARY')) {
-                $php_bin = constant('PHP_BINARY');
-            } elseif (defined('PHP_BINDIR')) {
-                $php_bin = constant('PHP_BINDIR');
-            } else {
-                $php_bin = 'php';
-            }
+            $php_bins = $this->getPhpBinary();
 
+            foreach ($php_bins as $php_bin => $version) {
 
-            $command = sprintf('%s -v', $php_bin);
-            $res = $this->exec($command, $outputs);
-            if (($res !== 0) && ($php_bin != 'php')) {
-                $php_bin = 'php';
-                $command = sprintf('%s -v', $php_bin);
-                $res = $this->exec($command, $outputs);
-            }
-
-            if ($res === 0) {
                 $this->trace("\nRun PHP syntax check");
-                $this->tracef("bin path: %s\nPHP Version:\n\t%s\n", $php_bin, implode("\n\t", $outputs));
+                $this->tracef("bin path: %s\nPHP Version:\n\t%s\n", $php_bin, $version);
                 $errors = array(
                     'ignored' => 0,
                     'strict'  => 0,
@@ -903,7 +1046,8 @@ HELP;
                 } else {
                     $this->trace("PHP file syntax check\tFAILED");
                 }
-            } else {
+            }
+            if (empty($php_bins)) {
                 $this->trace("PHP binary not found, compile check skipped");
             }
         } else {
@@ -977,12 +1121,16 @@ HELP;
                             case T_CLASS:
                                 $next_id = $id;
                                 do {
-                                    $next = ifset($tokens[++$next_id]);
+                                    $next = ifset($tokens, ++$next_id, array());
                                 } while (ifset($next[0]) != T_STRING);
-                                if (!isset($info['classes'][$next[1]])) {
-                                    $info['classes'][$next[1]] = array();
+
+                                if (is_array($next) && isset($next[1])) {
+                                    if (!isset($info['classes'][$next[1]])) {
+                                        $info['classes'][$next[1]] = array();
+                                    }
+
+                                    $info['classes'][$next[1]][] = $file;
                                 }
-                                $info['classes'][$next[1]][] = $file;
                                 break;
                             case T_STRING_VARNAME:
                             case T_VARIABLE:
@@ -1034,7 +1182,13 @@ HELP;
         # 3.2 Class names
         switch ($this->type) {
             case 'plugin':
-                $pattern = sprintf('@^%s\w*$@', waRequest::param('prefix', $this->app_id.ucfirst($this->extension_id)));
+                if (strpos($this->app_id, 'wa-plugins') === 0) {
+                    $type = substr($this->app_id, 11);
+                    $prefix = $this->extension_id.ucfirst($type);
+                } else {
+                    $prefix = $this->app_id.ucfirst($this->extension_id);
+                }
+                $pattern = sprintf('@^%s\w*$@', waRequest::param('prefix', $prefix));
                 break;
             case 'app':
                 $pattern = sprintf('@^%s\w+$@', $this->app_id);

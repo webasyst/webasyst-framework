@@ -52,7 +52,9 @@ class waDomainAuthConfig extends waAuthConfig
             $this->original_domain = $this->domain;
         }
 
-        $this->config = wa()->getAuthConfig($this->original_domain);
+        if ($this->config === null) {
+            $this->config = wa()->getAuthConfig($this->original_domain);
+        }
 
         if ($this->getAuthType() === waAuthConfig::AUTH_TYPE_USER_PASSWORD) {
             $this->must_have_fields[] = 'password';
@@ -149,20 +151,59 @@ class waDomainAuthConfig extends waAuthConfig
      */
     public function getApp()
     {
-        $auth_apps = $this->getAuthApps();
-        if (isset($this->config['app']) && isset($auth_apps[$this->config['app']])) {
-            return $this->config['app'];
-        } else {
-            $app = end($auth_apps);
-            return $app ? $app['id'] : null;
+        $route_url = $this->getRouteUrl();
+        $routes = $this->getAuthRoutes();
+        if (isset($routes[$route_url])) {
+            return $routes[$route_url]['app'];
+        }
+        return '';
+    }
+
+    public function getRouteUrl()
+    {
+        $routes = $this->getAuthRoutes();
+
+        if (!isset($this->config['route_url']) || !isset($routes[$this->config['route_url']]) || empty($routes[$this->config['route_url']])) {
+
+            // try define by app saved in config
+            $this->config['route_url'] = null;
+            $auth_apps = $this->getAuthApps();
+            if (isset($this->config['app']) && !empty($auth_apps[$this->config['app']])) {
+                $this->config['route_url'] = $this->getRouteUrlByApp($this->config['app']);
+            }
+
+            // so get last route - cause last is more common rule
+            if (!$this->config['route_url'] || empty($routes[$this->config['route_url']])) {
+                $route = end($routes);
+                $this->config['route_url'] = $route ? $route['url'] : '';
+            }
+        }
+
+        return $this->config['route_url'];
+    }
+
+    public function setRouteUrl($route_url)
+    {
+        $routes = $this->getAuthRoutes();
+        if (isset($routes[$route_url])) {
+            $this->config['route_url'] = $route_url;
+            $this->config['app'] = $routes[$route_url]['app'];
         }
     }
 
-    public function setApp($app)
+    protected function getRouteUrlByApp($app_id)
     {
-        $auth_apps = $this->getAuthApps();
-        $auth_app_ids = array_keys($auth_apps);
-        $this->setVariant('app', $app, $auth_app_ids);
+        if ($app_id === null) {
+            return '';
+        }
+        $app_login_url = wa()->getRouteUrl($app_id.'/login', array('domain' => $this->domain), true);
+        $endpoints = $this->getAuthEndpoints();
+        foreach ($endpoints as $route_url => $endpoint) {
+            if ($endpoint['app']['id'] === $app_id && $endpoint['login_url'] === $app_login_url) {
+                return $route_url;
+            }
+        }
+        return '';
     }
 
     /**
@@ -248,7 +289,7 @@ class waDomainAuthConfig extends waAuthConfig
 
     public function setSignUpConfirm($enable = true)
     {
-        $this->setBoolValue('signup_confirm', (bool)$enable, true);
+        $this->setBoolValue('signup_confirm', (bool)$enable);
     }
 
     /**
@@ -276,7 +317,7 @@ class waDomainAuthConfig extends waAuthConfig
 
     public function setSignUpNotify($enable = true)
     {
-        $this->setBoolValue('signup_notify', (bool)$enable, true);
+        $this->setBoolValue('signup_notify', (bool)$enable);
     }
 
     /**
@@ -332,56 +373,112 @@ class waDomainAuthConfig extends waAuthConfig
     }
 
     /**
-     * @param null|string[]|string $fields
-     *
-     * That peace of information that need presented for each app in returned array
-     * By default 'id', 'icon', 'name' ('id' is always presented)
-     *
-     * Also can be $fields === 'all'
-     * In that case will be return all available information
-     *
+     * Get that apps that responsible for authorization and settled in current domain
      * @return array Array of app array
      */
-    public function getAuthApps($fields = null)
+    protected function getAuthApps()
     {
+        if (isset(self::$static_cache['auth_apps'][$this->domain])) {
+            return self::$static_cache['auth_apps'][$this->domain];
+        }
+
         $all_apps = $this->getAllApps();
         $domain_apps = $this->getDomainApps($this->domain);
         $domain_apps_map = array_fill_keys($domain_apps, true);
-
-        if ($fields === null) {
-            $fields = array('id', 'icon', 'name');
-        } elseif ($fields === 'all') {
-            $fields = array('id', 'icon', 'name', 'login_url');
-        } elseif (is_array($fields) || is_scalar($fields)) {
-            $fields = (array)$fields;
-        } else {
-            $fields = array('id');
-        }
-
-        $fields = array_fill_keys($fields, true);
 
         $auth_apps = array();
         foreach ($all_apps as $app_id => $app) {
             if (isset($app['frontend']) && !empty($app['auth']) && isset($domain_apps_map[$app_id])) {
                 $app_info = array(
                     'id' => $app_id,
-                    'icon' => '',
-                    'name' => '',
-                    'login_url' => ''
+                    'icon' => $app['icon'],
+                    'name' => $app['name']
                 );
-                if (!empty($fields['icon'])) {
-                    $app_info['icon'] = $app['icon'];
-                }
-                if (!empty($fields['name'])) {
-                    $app_info['name'] = $app['name'];
-                }
-                if (!empty($fields['login_url'])) {
-                    $app_info['login_url'] = wa()->getRouteUrl($app_id.'/login', array('domain' => $this->domain), true);
-                }
                 $auth_apps[$app_id] = $app_info;
             }
         }
+        self::$static_cache['auth_apps'][$this->domain] = $auth_apps;
         return $auth_apps;
+    }
+
+    /**
+     * Get authorizing endpoints indexed by <route_url>
+     *
+     * Endpoint is info array hold app info and urls of login and signup
+     *
+     * @return array
+     *   - array 'app' app info array
+     *   - string 'login_url' url of login page
+     *   - string 'signup_url' url of signup page
+     */
+    public function getAuthEndpoints()
+    {
+        if (isset(self::$static_cache['auth_endpoints'][$this->domain])) {
+            return self::$static_cache['auth_endpoints'][$this->domain];
+        }
+
+        $endpoints = array();
+        $auth_apps = $this->getAuthApps();
+        $routing = wa()->getRouting();
+        $routes = $this->getAuthRoutes();
+
+        $old_route = $routing->getRoute();
+        $old_domain = $routing->getDomain();
+
+        foreach ($routes as $route) {
+
+            // app info
+            $app_id = $route['app'];
+            if (!isset($auth_apps[$app_id])) {
+                continue;
+            }
+
+            $routing->setRoute($route, $this->domain);
+
+            $login_url = $routing->getUrl($app_id.'/login', array('domain' => $this->domain), true);
+            $signup_url = $routing->getUrl($app_id.'/signup', array('domain' => $this->domain), true);
+
+            $endpoints[$route['url']] = array(
+                'app'        => $auth_apps[$app_id],
+                'login_url'  => $login_url,
+                'signup_url' => $signup_url
+            );
+        }
+
+        // restore current route rule
+        $routing->setRoute($old_route, $old_domain);
+
+        self::$static_cache['auth_endpoints'][$this->domain] = $endpoints;
+
+        return $endpoints;
+    }
+
+    /**
+     * @return waRouting
+     */
+    protected function getRouting()
+    {
+        return wa()->getRouting();
+    }
+
+    protected function getAuthRoutes()
+    {
+        if (isset(self::$static_cache['auth_routes'][$this->domain])) {
+            return self::$static_cache['auth_routes'][$this->domain];
+        }
+
+        $auth_apps = $this->getAuthApps();
+        $auth_routes = array();
+        $routes = $this->getRouting()->getRoutes($this->domain);
+        foreach ($routes as $route) {
+            if (isset($route['app']) && isset($auth_apps[$route['app']])) {
+                $auth_routes[$route['url']] = $route;
+            }
+        }
+
+        self::$static_cache['auth_routes'][$this->domain] = $auth_routes;
+
+        return $auth_routes;
     }
 
     /**
@@ -392,12 +489,10 @@ class waDomainAuthConfig extends waAuthConfig
      */
     protected function getMethodByKey($type, $key = null, $ns = 'all')
     {
-        static $methods;
-
-        if ($methods === null) {
+        if (!isset(self::$static_cache['methods'])) {
             $keys = array(
                 'auth'                      => array('login', 'signup'),
-                'app'                       => array('login', 'signup'),
+                'route_url'                 => array('login', 'signup'),
                 'rememberme'                => array('login', 'signup'),
                 'adapters'                  => array('login', 'signup'),
                 'auth_type'                 => array('login', 'signup'),
@@ -514,7 +609,7 @@ class waDomainAuthConfig extends waAuthConfig
         } else {
             $params['get'] = $get;
         }
-        return $this->getLoginUrl($params);
+        return $this->getLoginUrl($params, $absolute);
     }
 
     /**
@@ -536,14 +631,33 @@ class waDomainAuthConfig extends waAuthConfig
     {
         $auth_app = $this->getApp();
 
-        $domain = null;
-        if ($absolute) {
-            $domain = $this->domain;
+        $route_url = $this->getRouteUrl();
+        $routes = $this->getAuthRoutes();
+
+        $routing = $this->getRouting();
+
+        $old_route = null;
+        $new_route = isset($routes[$route_url]) ? $routes[$route_url] : null;
+        $old_domain = null;
+
+        if ($new_route !== null) {
+            $old_route = $routing->getRoute();
+            $old_domain = $routing->getDomain();
+            $routing->setRoute($routes[$route_url], $this->domain);
         }
 
         $path = $auth_app . '/' . ltrim(trim($url), '/');
-        $url = wa()->getRouteUrl($path, $params, $absolute, $domain);
-        return $this->buildUrl($url, is_array($params) ? ifset($params['get']) : null);
+
+        $params['domain'] = $this->domain;
+        $url = $routing->getUrl($path, $params, $absolute);
+
+        $url = $this->buildUrl($url, is_array($params) ? ifset($params['get']) : null);
+
+        if ($new_route !== null) {
+            $routing->setRoute($old_route, $old_domain);
+        }
+
+        return $url;
     }
 
     /**
@@ -551,7 +665,6 @@ class waDomainAuthConfig extends waAuthConfig
      */
     protected function ensureConsistency()
     {
-        $this->ensureAuthAppConsistency();
         $this->ensureVerificationChannelIdsConsistency();
         $this->ensureFieldsConsistency();
         $this->ensureSignupNotifyConsistency();
@@ -583,14 +696,6 @@ class waDomainAuthConfig extends waAuthConfig
 
         $channel_ids = waUtils::getFieldValues($channels, 'id');
         $this->setArrayValue('verification_channel_ids', $channel_ids);
-    }
-
-    protected function ensureAuthAppConsistency()
-    {
-        if (!$this->getApp() || !$this->getAuth()) {
-            $this->unsetKey('auth');
-            $this->unsetKey('app');
-        }
     }
 
     protected function ensureFieldsConsistency()
@@ -936,7 +1041,7 @@ class waDomainAuthConfig extends waAuthConfig
     {
         $all_apps = $this->getAllApps();
         $domain_apps = array();
-        $routes = wa()->getRouting()->getRoutes($domain);
+        $routes = $this->getRouting()->getRoutes($domain);
         foreach ($routes as $route) {
             if (isset($route['app']) && isset($all_apps[$route['app']])) {
                 $domain_apps[] = $route['app'];
@@ -965,29 +1070,6 @@ class waDomainAuthConfig extends waAuthConfig
      */
     public function setCanLoginByContactLogin($enabled)
     {
-        $this->setBoolValue('can_login_by_contact_login', $enabled, true);
-    }
-
-    /**
-     * Array of fields by which we can log in
-     * Consume by waAuth
-     * @see waAuth
-     * @return string[] Array of waAuth::LOGIN_FIELD_* constact
-     */
-    public function getLoginFieldIds()
-    {
-        $field_ids = array();
-        $used_method = $this->getUsedAuthMethods();
-        $used_method_map = array_fill_keys($used_method, true);
-        if (!empty($used_method_map[self::AUTH_METHOD_EMAIL])) {
-            $field_ids[] = waAuth::LOGIN_FIELD_EMAIL;
-        }
-        if (!empty($used_method_map[self::AUTH_METHOD_SMS])) {
-            $field_ids[] = waAuth::LOGIN_FIELD_PHONE;
-        }
-        if ($this->getCanLoginByContactLogin()) {
-            $field_ids[] = waAuth::LOGIN_FIELD_LOGIN;
-        }
-        return $field_ids;
+        $this->setBoolValue('can_login_by_contact_login', $enabled);
     }
 }

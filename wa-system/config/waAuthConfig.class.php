@@ -49,6 +49,10 @@ abstract class waAuthConfig
      */
     public function ensureChannelExists()
     {
+        // for user_password type without confirmation has existed channel is not critical, so skip
+        if ($this->getAuthType() === self::AUTH_TYPE_USER_PASSWORD && !$this->getSignupConfirm()) {
+            return;
+        }
         $vcm = $this->getVerificationChannelModel();
         $channel_ids = $this->getRawVerificationChannelIds();
         $channels = $vcm->getChannels($channel_ids);
@@ -457,13 +461,13 @@ abstract class waAuthConfig
     public function getRecoveryPasswordTimeoutMessage()
     {
         $timeout = $this->getRecoveryPasswordTimeout();
-        return $this->formatTimeoutMessage(_ws("You can request a code in <strong>%s:%s</strong>."), $timeout);
+        return $this->formatTimeoutMessage(_ws("You can request password recovery in <strong>%s:%s</strong>."), $timeout);
     }
 
     public function getRecoveryPasswordTimeoutErrorMessage()
     {
         $timeout = $this->getRecoveryPasswordTimeout();
-        return $this->formatTimeoutMessage(_ws("You have been requesting code too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
+        return $this->formatTimeoutMessage(_ws("You have been requesting password recovery too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
     }
 
     public function getOnetimePasswordTimeout()
@@ -478,13 +482,13 @@ abstract class waAuthConfig
     public function getOnetimePasswordTimeoutMessage()
     {
         $timeout = $this->getOnetimePasswordTimeout();
-        return $this->formatTimeoutMessage(_ws("You can request a code in <strong>%s:%s</strong>."), $timeout);
+        return $this->formatTimeoutMessage(_ws("You can request a one-time password in <strong>%s:%s</strong>."), $timeout);
     }
 
     public function getOnetimePasswordTimeoutErrorMessage()
     {
         $timeout = $this->getOnetimePasswordTimeout();
-        return $this->formatTimeoutMessage(_ws("You have been requesting code too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
+        return $this->formatTimeoutMessage(_ws("You have been requesting a one-time password too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
     }
 
     /**
@@ -528,7 +532,7 @@ abstract class waAuthConfig
     public function getConfirmationCodeTimeoutErrorMessage()
     {
         $timeout = $this->getOnetimePasswordTimeout();
-        return $this->formatTimeoutMessage(_ws("You have been requesting code too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
+        return $this->formatTimeoutMessage(_ws("You have been requesting a code too frequently. Try again in <strong>%s:%s</strong>."), $timeout);
     }
 
     /**
@@ -540,6 +544,29 @@ abstract class waAuthConfig
         $this->setOnetimePasswordTimeout($timeout);
         $this->setConfirmationCodeTimeout($timeout);
         $this->setRecoveryPasswordTimeout($timeout);
+    }
+
+    /**
+     * Array of fields by which we can log in
+     * Consume by waAuth
+     * @see waAuth
+     * @return string[] Array of waAuth::LOGIN_FIELD_* constact
+     */
+    public function getLoginFieldIds()
+    {
+        $field_ids = array();
+        $used_method = $this->getUsedAuthMethods();
+        $used_method_map = array_fill_keys($used_method, true);
+        if (!empty($used_method_map[self::AUTH_METHOD_EMAIL])) {
+            $field_ids[] = waAuth::LOGIN_FIELD_EMAIL;
+        }
+        if (!empty($used_method_map[self::AUTH_METHOD_SMS])) {
+            $field_ids[] = waAuth::LOGIN_FIELD_PHONE;
+        }
+        if ($this->getCanLoginByContactLogin()) {
+            $field_ids[] = waAuth::LOGIN_FIELD_LOGIN;
+        }
+        return $field_ids;
     }
 
     protected function formatTimeoutMessage($message_template, $timeout)
@@ -556,15 +583,10 @@ abstract class waAuthConfig
         return isset($this->config[$name]) ? !!$this->config[$name] : (bool)$default;
     }
 
-    protected function setBoolValue($name, $value, $default = false)
+    protected function setBoolValue($name, $value)
     {
         $value = (bool)$value;
-        $default = (bool)$default;
-        if ($value !== $default) {
-            $this->config[$name] = $value;
-        } else {
-            $this->unsetKey($name);
-        }
+        $this->config[$name] = $value;
     }
 
     protected function getArrayValue($name)
@@ -689,6 +711,11 @@ abstract class waAuthConfig
     }
 
     /**
+     * @return mixed
+     */
+    abstract public function getCanLoginByContactLogin();
+
+    /**
      * Url of site
      * @return string
      */
@@ -763,14 +790,6 @@ abstract class waAuthConfig
      * @return bool
      */
     abstract public function getSignupConfirm();
-
-    /**
-     * Array of fields by which we can log in
-     * Consume by waAuth
-     * @see waAuth
-     * @return string[] Array of waAuth::LOGIN_FIELD_* constact
-     */
-    abstract public function getLoginFieldIds();
 
     /**
      * Driver method for getting and saving data all at once

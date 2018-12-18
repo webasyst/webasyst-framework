@@ -406,14 +406,6 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
 
         $channels = $this->auth_config->getVerificationChannelInstances($priority);
 
-        $is_available = $this->isChannelAvailable($channels, $login);
-        if (!$is_available) {
-            $msg = _ws('Couldn’t recover password via “%s”.');
-            $msg = sprintf($msg, $login);
-            $errors = array('fail' => $msg);
-            return array(false, $errors);
-        }
-
         if (!$contact->exists()) {
             return array(false, array(
                 'fail' => _ws("Contact doesn't exist.")

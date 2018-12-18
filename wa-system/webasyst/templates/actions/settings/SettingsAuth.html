@@ -49,14 +49,17 @@
                 <div class="field">
                     <div class="name">[s`Passwords type`]</div>
                     <div class="value js-auth-type-select">
-                        {$_auth_type = $auth_config['auth_type']}
+                        {$_auth_type = $auth_config.auth_type|default:waAuthConfig::AUTH_TYPE_USER_PASSWORD}
+                        {if $no_channels}
+                            {$_auth_type = waAuthConfig::AUTH_TYPE_USER_PASSWORD}
+                        {/if}
                         <ul class="menu-v" style="margin-top: -4px;">
                             {foreach $auth_types as $_auth_type_id => $_auth_type_info}
                                 {$_name = $_auth_type_info.name}
                                 {$_is_checked = $_auth_type === $_auth_type_id}
                                 <li class="js-auth-type">
                                     <label>
-                                        <input type="radio" name="auth_type" value="{$_auth_type_id|escape}"{if $_is_checked} checked="checked"{/if}>
+                                        <input type="radio" name="auth_type" value="{$_auth_type_id|escape}"{if $_is_checked} checked="checked"{/if}{if $no_channels && !$_is_checked} disabled{/if}>
                                         {$_name|escape}
                                     </label>
                                 </li>
@@ -86,13 +89,18 @@
                                 [`Email`]
                             </label>
                             <div class="hint s-template-link">
-                                [s`Email notification templates`]
-                                <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;">
-                                    {foreach $email_channels as $_id => $_channel}
-                                        <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
-                                    {/foreach}
-                                </select>
-                                {sprintf('[`Edit the list in “<a href="%s">Email&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/template/")}
+                                {if $no_channels}
+                                    {sprintf('[`No sender email address specified in “<a href="%s">Email settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/")}
+                                {else}
+                                    [s`Email notification templates`]
+                                    <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;">
+                                        <option value="">[s`Select template`]</option>
+                                        {foreach $email_channels as $_id => $_channel}
+                                            <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
+                                        {/foreach}
+                                    </select>
+                                    {sprintf('[`Edit the list in “<a href="%s">Email&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/template/")}
+                                {/if}
                             </div>
                         </div>
 
@@ -111,11 +119,7 @@
                                             <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
                                         {/foreach}
                                     </select>
-                                    {if !empty($sms_channels)}
-                                        {sprintf('[s`Edit the list in “<a href="%s">SMS&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/sms/template/")}
-                                    {else}
-                                        {sprintf('[s`Edit the list in “<a href="%s">SMS&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/sms/template/")}
-                                    {/if}
+                                    {sprintf('[s`Edit the list in “<a href="%s">SMS&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/sms/template/")}
                                 </div>
                             </div>
                         {/if}

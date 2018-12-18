@@ -357,7 +357,7 @@ class waAppConfig extends SystemConfig
                     }
 
                     $this->includeUpdate($file);
-                    waFiles::delete($cache_database_dir);
+                    waFiles::delete($cache_database_dir, true);
                     $app_settings_model->set($this->application, 'update_time', $t);
                 } catch (Exception $e) {
                     if (self::isDebug()) {

@@ -72,19 +72,14 @@ CLI;
         }
 
         // work through all domain auth configs and 'choose' that default channel
-        $need_to_set = false;
         foreach ($domain_configs as $domain => &$config) {
-            $changed = $this->setVerificationChannelForAuthConfig($config, $channel_id);
-            if ($changed && isset($config['params']) && is_array($config['params'])) {
-                $config['signup_confirm'] = !empty($config['params']['confirm_email']);
-            }
-            $need_to_set = $need_to_set || $changed;
+            $this->setVerificationChannelForAuthConfig($config, $channel_id);
+            $need_confirm_email = isset($config['params']) && is_array($config['params']) && !empty($config['params']['confirm_email']);
+            $config['signup_confirm'] = $need_confirm_email;
         }
         unset($config);
 
-        if ($need_to_set) {
-            wa()->getConfig()->setAuth($domain_configs);
-        }
+        wa()->getConfig()->setAuth($domain_configs);
     }
 
     protected function setVerificationChannelForBackendConfig($channel_id)

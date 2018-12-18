@@ -1043,6 +1043,11 @@ class waSystem
         return $dir;
     }
 
+    /**
+     * @param bool $system
+     * @return array|mixed
+     * @throws waException
+     */
     public function getApps($system = false)
     {
         if (self::$apps === null) {
@@ -1489,13 +1494,14 @@ class waSystem
     }
 
     /**
-     * For debug need delete before release
-     * @param $name
-     * @param null $params
-     * @param null $array_keys
-     * @return array
+     * Trigger event with given $name from current active application.
+     *
+     * @param  string $name Event name.
+     * @param  mixed $params Parameters passed to event handlers.
+     * @param  string[] $array_keys Array of expected template items for UI events.
+     * @return  array  app_id or plugin_id => data returned from handler (unless null is returned)
      */
-    public function eventNew($name, &$params = null, $array_keys = null)
+    public function event($name, &$params = null, $array_keys = null)
     {
         if (is_array($name)) {
             $event_app_id = $name[0];
@@ -1510,242 +1516,6 @@ class waSystem
 
         $event_class = new waEvent($event_app_id, $name, $options);
         return $event_class->run($params);
-    }
-
-    /**
-     * Trigger event with given $name from current active application.
-     *
-     * @param  string    $name        Event name.
-     * @param  mixed     $params      Parameters passed to event handlers.
-     * @param  string[]  $array_keys  Array of expected template items for UI events.
-     * @return  array  app_id or plugin_id => data returned from handler (unless null is returned)
-     */
-    public function event($name, &$params = null, $array_keys = null)
-    {
-        $plugins = null;
-        $result = array();
-        $event_system = $this;
-        if (is_array($name)) {
-            $event_app_id = $name[0];
-            $name = $name[1];
-            if ($this->appExists($event_app_id)) {
-                $event_system = self::getInstance($event_app_id);
-            } else {
-                $event_system = self::getInstance('webasyst');
-                $plugins = array();
-            }
-        } else {
-            $event_app_id = $this->getConfig()->getApplication();
-        }
-
-        // Super event hook in wa-config/SystemConfig is called for all events
-        if (method_exists($event_system->getConfig(), 'eventHook')) {
-            $r = $event_system->getConfig()->eventHook($event_app_id, $name, $params);
-            if (is_array($r)) {
-                return $r;
-            }
-        }
-
-        // Make sure active app stays the same after the event
-        $old_app = self::getApp();
-
-        // Load event handlers list from apps
-        if (!isset(self::$handlers['apps'])) {
-            self::$handlers['apps'] = array();
-            $cache_file = $this->config->getPath('cache', 'config/handlers');
-            if (!waSystemConfig::isDebug() && file_exists($cache_file)) {
-                self::$handlers['apps'] = include($cache_file);
-            }
-            if (!self::$handlers['apps'] || !is_array(self::$handlers['apps'])) {
-                $apps = $this->getApps();
-                $path = $this->getConfig()->getPath('apps');
-                foreach ($apps as $app_id => $app_info) {
-                    $files = waFiles::listdir($path.'/'.$app_id.'/lib/handlers/');
-                    foreach ($files as $file) {
-                        if (substr($file, -12) == '.handler.php') {
-                            $file = explode('.', substr($file, 0, -12), 2);
-                            self::$handlers['apps'][$file[0]][$file[1]][] = $app_id;
-                        }
-                    }
-                }
-                if (!waSystemConfig::isDebug()) {
-                    waUtils::varExportToFile(self::$handlers['apps'], $cache_file);
-                }
-            }
-        }
-
-        // Load event handlers list from plugins
-        if (!isset(self::$handlers['plugins'][$event_app_id])) {
-            if ($plugins === null) {
-                $plugins = $event_system->getConfig()->getPlugins();
-            }
-            self::$handlers['plugins'][$event_app_id] = array();
-            foreach ($plugins as $plugin_id => $plugin) {
-                if (!empty($plugin['handlers'])) {
-                    foreach ($plugin['handlers'] as $handler_event => $handler_method) {
-                        if (!is_array($handler_method)) {
-                            if ($handler_event && $handler_event{0} != '/') {
-                                self::$handlers['plugins'][$event_app_id][$handler_event][$plugin_id] = $handler_method;
-                            } else {
-                                // Allows plugins to ask for all events based on regex match, e.g. '/backend_.*/'
-                                self::$handlers['plugins'][$event_app_id]['*'][$plugin_id][$handler_event] = $handler_method;
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-
-        // Trigger event handlers of apps
-        if (isset(self::$handlers['apps'][$event_app_id][$name])) {
-            $path = $this->getConfig()->getPath('apps');
-            foreach (self::$handlers['apps'][$event_app_id][$name] as $app_id) {
-                $file_path = $path.'/'.$app_id.'/lib/handlers/'.$event_app_id.".".$name.".handler.php";
-                if (!file_exists($file_path) || !wa()->appExists($app_id)) {
-                    continue;
-                }
-                wa($app_id);
-                include_once($file_path);
-                $class_name = $name;
-                if (strpos($name, '.') !== false) {
-                    $class_name = strtok($class_name, '.').ucfirst(strtok(''));
-                }
-                $class_name = $app_id.ucfirst($event_app_id).ucfirst($class_name)."Handler";
-                if (!class_exists($class_name)) {
-                    if (waSystemConfig::isDebug()) {
-                        waLog::log('Event handler class does not exist: '.$class_name);
-                    }
-                    continue;
-                }
-
-                /**
-                 * @var $handler waEventHandler
-                 */
-                self::pushActivePlugin(null, $app_id);
-                try {
-                    $handler = new $class_name();
-                    $r = $handler->execute($params);
-                    if ($r !== null) {
-                        $result[$app_id] = $r;
-                    }
-                } catch (Exception $e) {
-                    waLog::log('Event handling error in '.$file_path.': '.$e->getMessage());
-                }
-                self::popActivePlugin();
-            }
-        }
-
-        //
-        // Trigger event handlers of plugins
-        //
-
-        // Each plugin can only be called once per event.
-        // (Except several regex-based wildcard matches when
-        // there are no higher-priority handlers defined for the event.)
-        $plugins_called = array();
-
-        // Try plugin handlers: literal match first, then wildcards.
-        $aliases = array($name);
-        if (strpos($name, '.') !== false) {
-            $aliases[] = preg_replace('@\.[^\.]+$@', '.*', $name);
-        }
-        $aliases[] = '*';
-        foreach ($aliases as $alias) {
-            if (!isset(self::$handlers['plugins'][$event_app_id][$alias])) {
-                continue;
-            }
-            if ($plugins === null) {
-                $plugins = $event_system->getConfig()->getPlugins();
-            }
-            foreach (self::$handlers['plugins'][$event_app_id][$alias] as $plugin_id => $methods) {
-                if (!isset($plugins[$plugin_id]) || !empty($plugins_called[$plugin_id])) {
-                    continue;
-                }
-                $plugins_called[$plugin_id] = true;
-                $class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
-                if (!class_exists($class_name)) {
-                    if (waSystemConfig::isDebug()) {
-                        waLog::log('Event handler class does not exist: '.$class_name);
-                    }
-                    continue;
-                }
-
-                // Make sure there is at least one plugin method that passes a regex test.
-                // This optimizes away expensive waLocale::load() call for wildcard-based handlers.
-                // (There may be several methods when plugin subscribed for several regex wildcards.)
-                if (!is_array($methods)) {
-                    $methods = array('' => $methods);
-                }
-                foreach($methods as $regex => $method) {
-                    if ($regex != '' && !preg_match($regex, $name)) {
-                        unset($methods[$regex]);
-                    }
-                }
-                if (!$methods) {
-                    continue;
-                }
-
-                // Activate _wp() for current plugin
-                self::pushActivePlugin($plugin_id, $event_app_id);
-
-                // Load plugin locale
-                $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
-                if (is_dir($locale_path)) {
-                    waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
-                }
-
-                // Call plugin handler methods that match the event.
-                try {
-                    $class = new $class_name($plugins[$plugin_id]);
-                    foreach($methods as $regex => $method) {
-                        if (!method_exists($class, $method)) {
-                            if (waSystemConfig::isDebug()) {
-                                waLog::log('Event handler method does not exist: '.$class_name.'->'.$method.'()');
-                            }
-                            continue;
-                        }
-                        if ($name == $alias) {
-                            $r = $class->$method($params);
-                        } else {
-                            $r = $class->$method($params, $name);
-                        }
-                        if ($r !== null) {
-                            if ($array_keys && is_array($r)) {
-                                foreach ($array_keys as $k) {
-                                    if (!isset($r[$k])) {
-                                        $r[$k] = '';
-                                    }
-                                }
-                            }
-                            $result[$plugin_id.'-plugin'] = $r;
-
-                            // Only one result can be returned per event per plugin.
-                            // So we ignore all other methods matched by regex wildcard
-                            // after we get a result.
-                            break;
-                        }
-                    }
-                } catch (Exception $e) {
-                    waLog::log('Event handling error in '.$class_name.":\n".$e->getMessage()."\n".$e->getTraceAsString());
-                }
-
-                // Deactivate _wp() for current plugin
-                self::popActivePlugin();
-            }
-        }
-
-        wa($old_app, 1);
-
-        // Super event hook in wa-config/SystemConfig is called for all events
-        if (method_exists($event_system->getConfig(), 'eventHookAfter')) {
-            $r = $event_system->getConfig()->eventHookAfter($event_app_id, $name, $params, $result);
-            if (is_array($r)) {
-                return $r;
-            }
-        }
-
-        return $result;
     }
 
     /**

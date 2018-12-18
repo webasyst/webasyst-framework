@@ -251,7 +251,7 @@ return array(
         'cnt' => array('int', 11, 'null' => 0, 'default' => '0'),
         'icon' => array('varchar', 255, 'null' => 1),
         'sort' => array('int', 11, 'null' => 1),
-        'type' => array('enum', "'group', 'location'", 'null' => 0, 'default' => 'group'),
+        'type' => array('enum', "'group','location'", 'null' => 0, 'default' => 'group'),
         'description' => array('text'),
         ':keys' => array(
             'PRIMARY' => 'id',
@@ -307,7 +307,7 @@ return array(
         'error' => array('varchar', 255),
         'state' => array('varchar', 20),
         'view_data' => array('text'),
-        'amount' => array('float'),
+        'amount' => array('decimal', "20,8", 'null' => 0, 'default' => '0.00000000'),
         'currency_id' => array('varchar', 3),
         ':keys' => array(
             'PRIMARY' => 'id',
@@ -352,7 +352,7 @@ return array(
             'PRIMARY' => 'id',
             'address' => 'address'
         )
-    ),
+        ),
     'wa_verification_channel_params' => array(
         'channel_id' => array('int', 11, 'null' => 0),
         'name' => array('varchar', 64, 'null' => 0),

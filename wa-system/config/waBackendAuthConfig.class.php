@@ -111,6 +111,7 @@ class waBackendAuthConfig extends waAuthConfig
 
     public function commit()
     {
+        $this->ensureChannelExists();
         return wa()->getConfig()->setBackendAuth($this->config);
     }
 
@@ -182,23 +183,11 @@ class waBackendAuthConfig extends waAuthConfig
     }
 
     /**
-     * Array of fields by which we can log in
-     * Consume by waAuth
-     * @see waAuth
-     * @return string[] Array of waAuth::LOGIN_FIELD_* constact
+     * Always can
+     * @return mixed
      */
-    public function getLoginFieldIds()
+    public function getCanLoginByContactLogin()
     {
-        $field_ids = array();
-        $used_method = $this->getUsedAuthMethods();
-        $used_method_map = array_fill_keys($used_method, true);
-        if (!empty($used_method_map[self::AUTH_METHOD_EMAIL])) {
-            $field_ids[] = waAuth::LOGIN_FIELD_EMAIL;
-        }
-        if (!empty($used_method_map[self::AUTH_METHOD_SMS])) {
-            $field_ids[] = waAuth::LOGIN_FIELD_PHONE;
-        }
-        $field_ids[] = waAuth::LOGIN_FIELD_LOGIN;
-        return $field_ids;
+        return true;
     }
 }

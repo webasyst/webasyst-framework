@@ -674,33 +674,49 @@ abstract class waShipping extends waSystemPlugin
     public static function settingRegionZoneControl($name, $params = array())
     {
         $html = "";
+        /** @var waShipping $plugin */
         $plugin = $params['instance'];
-        /**
-         * @var waShipping $plugin
-         */
-        $params['items']['country']['value'] =
-            !empty($params['value']['country']) ? $params['value']['country'] : '';
-        $params['items']['region']['value'] =
-            !empty($params['value']['region']) ? $params['value']['region'] : '';
+        if (isset($params['translate'])) {
+            $translate = (!empty($params['translate']) && is_callable($params['translate'])) ? $params['translate'] : false;
+        } else {
+            $translate = array($plugin, '_wp');
+        }
+
+
+        $params['items']['country']['value'] = !empty($params['value']['country']) ? $params['value']['country'] : '';
+        $params['items']['region']['value'] = !empty($params['value']['region']) ? $params['value']['region'] : '';
 
         if (isset($params['items']['city'])) {
-            $params['items']['city']['value'] =
-                !empty($params['value']['city']) ? $params['value']['city'] : '';
+            $params['items']['city']['value'] = !empty($params['value']['city']) ? $params['value']['city'] : '';
         }
+
 
         // country section
         $cm = new waCountryModel();
-        $html .= "<div class='country'>";
-        $html .= "<select name='{$name}[country]'><option value=''></option>";
-        foreach ($cm->all() as $country) {
-            $html .= "<option value='{$country['iso3letter']}'".
-                ($params['items']['country']['value'] == $country['iso3letter']
-                    ? " selected='selected'" : ""
-                ).
-                ">{$country['name']}</value>";
+        if ($translate) {
+            $_description = call_user_func($translate, $params['items']['country']['description']);
+        } else {
+            $_description = $params['items']['country']['description'];
         }
-        $html .= "</select><br>";
-        $html .= "<span class='hint'>{$params['items']['country']['description']}</span></div><br>";
+        $html .= <<<HTML
+<div class='country'>
+    <select name='{$name}[country]'>
+        <option value=''></option>
+HTML;
+
+        foreach ($cm->all() as $country) {
+            $country['name'] = htmlentities($country['name'], ENT_NOQUOTES, waHtmlControl::$default_charset);
+            $_selected = ($params['items']['country']['value'] == $country['iso3letter']) ? " selected='selected'" : "";
+            $html .= "<option value='{$country['iso3letter']}'{$_selected}>{$country['name']}</value>";
+        }
+        $html .= <<<HTML
+    </select>
+    <br/>
+    <span class='hint'>{$_description}</span>
+</div>
+<br/>
+HTML;
+
 
         $regions = array();
         if ($params['items']['country']['value']) {
@@ -709,42 +725,60 @@ abstract class waShipping extends waSystemPlugin
         }
 
         // region section
-        $html .= '<div class="region">';
-        $html .= '<i class="icon16 loading" style="display:none; margin-left: -23px;"></i>';
-        $html .= '<div class="empty"'.
-            (!empty($regions) ? 'style="display:none;"' : '').
-            '><p class="small">'.
-            $plugin->_w("Shipping will be restricted to the selected country").
-            "</p>";
-        $html .= "<input name='{$name}[region]' value='' type='hidden'".
-            (!empty($regions) ? 'disabled="disabled"' : '').
-            '></div>';
-        $html .= '<div class="not-empty" '.
-            (empty($regions) ? 'style="display:none;"' : '').">";
-        $html .= "<select name='{$name}[region]'".
-            (empty($regions) ? 'disabled="disabled"' : '').
-            '><option value=""></option>';
+        $html .= <<<HTML
+<div class="region">
+    <i class="icon16 loading" style="display:none; margin-left: -23px;"></i>
+HTML;
+
+
+        $_style =!empty($regions) ? ' style="display:none;"' : '';
+        $_disabled = !empty($regions) ? ' disabled="disabled"' : '';
+
+        $html .= <<<HTML
+    <div class='empty'{$_style}>
+        <p class='small'>{$plugin->_w("Shipping will be restricted to the selected country")}</p>
+        <input name='{$name}[region]' value='' type='hidden'{$_disabled}>
+    </div>
+    <div class='not-empty'{$_style}>
+        <select name='{$name}[region]'{$_disabled}>
+            <option value=''></option>
+HTML;
 
         foreach ($regions as $region) {
-            $html .= "<option value='{$region['code']}'".
-                ($params['items']['region']['value'] == $region['code']
-                    ? ' selected="selected"' : ""
-                ).
-                ">{$region['name']}</option>";
+            $_selected = ($params['items']['region']['value'] == $region['code']) ? ' selected="selected"' : "";
+            $region['name'] = htmlentities($region['name'], ENT_NOQUOTES, waHtmlControl::$default_charset);
+            $html .= "<option value='{$region['code']}'{$_selected}>{$region['name']}</option>";
         }
-        $html .= "</select><br>";
-        $html .= "<span class='hint'>{$params['items']['region']['description']}</span></div><br>";
+        $html .= <<<HTML
+        </select>
+        <br/>
+        <span class='hint'>{$params['items']['region']['description']}</span>
+    </div>
+    <br/>
+HTML;
 
         // city section
         if (isset($params['items']['city'])) {
-            $html .= "<div class='city'>";
-            $html .= "<input name='{$name}[city]' value='".
-                (!empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "")."' type='text'>
-                <br>";
-            $html .= "<span class='hint'>{$params['items']['city']['description']}</span></div>";
+            $_value = !empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "";
+            $_value = htmlentities($_value, ENT_QUOTES, waHtmlControl::$default_charset);
+            if ($translate) {
+                $_description = call_user_func($translate, $params['items']['city']['description']);
+            } else {
+                $_description = $params['items']['city']['description'];
+            }
+            $html .= <<<HTML
+    <div class='city'>
+        <input name='{$name}[city]' value='{$_value}' type='text'>
+        <br>
+        <span class='hint'>{$_description}</span>
+    </div>
+HTML;
         }
 
-        $html .= "</div>";
+        $html .= <<<HTML
+</div>
+HTML;
+
 
         $url = wa()->getAppUrl('webasyst').'?module=backend&action=regions';
 

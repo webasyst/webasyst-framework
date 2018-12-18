@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-11-27 13:17+0300\n"
+"PO-Revision-Date: 2018-12-12 10:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1394,8 +1394,8 @@ msgstr "Мгновенные сообщения"
 msgid "Social network"
 msgstr "Социальная сеть"
 
-msgid "Invalid login or password"
-msgstr "Неправильный логин или пароль"
+msgid "Invalid login name or password."
+msgstr "Неправильное имя пользователя или пароль."
 
 msgid "Invalid email or password"
 msgstr "Неправильный email или пароль"
@@ -3973,7 +3973,7 @@ msgid "You have successfully confirmed your email."
 msgstr "Вы успешно подтвердили ваш email-адрес."
 
 msgid "You have successfully signed up."
-msgstr "Вы успешно зарегистрировались."
+msgstr "Вы зарегистрировались."
 
 msgid "A confirmation link has been sent to you by email. Please click this link to confirm your signup and to sign in."
 msgstr "Ссылка на подтверждение регистрации была отправлена вам по электронной почте. Пожалуйста, щелкните по этой ссылке, чтобы подтвердить регистрацию и авторизоваться на сайте."
@@ -5498,8 +5498,8 @@ msgid "Auth exception"
 msgstr "Ошибка авторизации"
 
 #: /wa-system/auth/waAuth.class.php:380
-msgid "Contact is not signed up"
-msgstr "Контакт не зарегистрирован"
+msgid "Contact is not registered."
+msgstr "Контакт не зарегистрирован."
 
 #: /wa-system/auth/waAuth.class.php:427
 msgid "Contact can't be authorized"
@@ -5643,10 +5643,6 @@ msgstr "Чтобы завершить регистрацию, введите п�
 msgid "Done"
 msgstr "Готово"
 
-#: /wa-system/signup/templates/email_confirmed.html:14
-msgid "You have successfully signed up"
-msgstr "Вы зарегистрировались"
-
 #: /wa-system/signup/templates/email_confirmed.html:19
 msgid "Open website →"
 msgstr "Открыть сайт →"
@@ -5669,8 +5665,11 @@ msgid "You have successfully signed up. An SMS message with your password has be
 msgstr "Вы успешно зарегистрировались. На номер телефона <strong>%s</strong> отправлено SMS-сообщение с паролем для входа."
 
 #: /wa-system/signup/actions/waSignup.action.php:419
-msgid "Sign up failed"
-msgstr "Регистрация не удалась"
+msgid "Signup failed."
+msgstr "Регистрация не удалась."
+
+msgid "Signup has failed, password was not sent."
+msgstr "Регистрация не удалась, пароль не был отправлен."
 
 #: /wa-system/signup/actions/waSignup.action.php:423
 msgid "Please check new mail at <strong>%s</strong>, we have sent a message for you to confirm signup."
@@ -5697,11 +5696,23 @@ msgstr "Дата"
 msgid "You can request a code in <strong>%s:%s</strong>."
 msgstr "Вы можете запросить код через <strong>%s:%s</strong>."
 
+msgid "You can request password recovery in <strong>%s:%s</strong>."
+msgstr "Вы можете запросить восстновление пароля через <strong>%s:%s</strong>."
+
+msgid "You can request a one-time password in <strong>%s:%s</strong>."
+msgstr "Вы можете запросить одноразовый пароль через <strong>%s:%s</strong>."
+
 #: /wa-system/config/waAuthConfig.class.php:348
 #: /wa-system/config/waAuthConfig.class.php:369
 #: /wa-system/config/waAuthConfig.class.php:413
-msgid "You have been requesting code too frequently. Try again in <strong>%s:%s</strong>."
+msgid "You have been requesting a code too frequently. Try again in <strong>%s:%s</strong>."
 msgstr "Вы запрашивали код слишком часто. Повторите попытку через <strong>%s:%s</strong>."
+
+msgid "You have been requesting password recovery too frequently. Try again in <strong>%s:%s</strong>."
+msgstr "Вы запрашивали восстановление пароля слишком часто. Повторите попытку через <strong>%s:%s</strong>."
+
+msgid "You have been requesting a one-time password too frequently. Try again in <strong>%s:%s</strong>."
+msgstr "Вы запрашивали одноразовый пароль слишком часто. Повторите попытку через <strong>%s:%s</strong>."
 
 #: /wa-system/verification/models/waVerificationChannel.model.php:66
 msgid "New channel %s"
@@ -5826,3 +5837,6 @@ msgstr "Поддержка пользователей"
 
 msgid "Minimum 3 characters"
 msgstr "Минимум 3 символа"
+
+msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section."
+msgstr "Не заполнен email-адрес отправителя в разделе «<a href=\"%s\">Настройки email</a>»."

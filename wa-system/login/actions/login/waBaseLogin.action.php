@@ -17,6 +17,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * @var waAuthConfig
      */
     protected $auth_config;
+
     protected $env;
 
     public function __construct($params = null)
@@ -29,6 +30,8 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
     public function execute()
     {
+        wa()->getResponse()->setTitle(_w('Login'));
+        
         if (wa()->getRequest()->request('send_onetime_password')) {
             $this->trySendOnetimePassword();
             return;
@@ -141,20 +144,6 @@ abstract class waBaseLoginAction extends waLoginModuleController
         $errors = $this->validate($data);
 
         if ($errors) {
-            $this->assign('errors', $errors);
-            return false;
-        }
-
-        $channels = $this->auth_config->getVerificationChannelInstances();
-
-        /**
-         * @var waVerificationChannel[] $channels
-         */
-        $is_available = $this->isChannelAvailable($channels, $data['login']);
-        if (!$is_available) {
-            $msg = _ws('Couldn’t sign in via “%s”.');
-            $msg = sprintf($msg, $data['login']);
-            $errors = array('auth' => $msg);
             $this->assign('errors', $errors);
             return false;
         }
@@ -356,14 +345,6 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
         $priority = $this->getChannelPriorityByLogin($data['login']);
         $channels = $auth_config->getVerificationChannelInstances($priority);
-
-        $is_available = $this->isChannelAvailable($channels, $data['login']);
-        if (!$is_available) {
-            $msg = _ws('Couldn’t sign in via “%s”.');
-            $msg = sprintf($msg, $data['login']);
-            $errors = array('auth' => $msg);
-            return array(false, $errors);
-        }
 
         $recipient = new waContact($user_info['id']);
         if (!$recipient->exists()) {

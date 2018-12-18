@@ -900,7 +900,7 @@ XML;
                                 /** @var DOMElement $value */
                                 if (ifset($this->settings[$var]['control_type']) == 'text') {
                                     $value->nodeValue = '';
-                                    $value->appendChild(new DOMCdataSection(self::prepareField(ifempty($this->settings[$var]['value'], ''))));
+                                    $value->appendChild(new DOMCdataSection(self::prepareField(ifset($this->settings[$var]['value'], ''))));
                                 } else {
                                     $value->nodeValue = self::prepareField(ifempty($this->settings[$var]['value'], ''));
                                 }

@@ -8,6 +8,7 @@ class waEvent
     protected $options = array();
 
     protected $result = array();
+    protected $execution_time = array();
 
     protected static $handlers = null;
     protected static $plugins = null;
@@ -41,7 +42,6 @@ class waEvent
      *
      * @param mixed &$params
      * @return array
-     * @throws waException
      */
     public function run(&$params = null)
     {
@@ -78,20 +78,22 @@ class waEvent
          *
          */
         foreach ($handlers as $handler) {
+            $start_execution = microtime(true);
             $plugin_id = ifset($handler, 'plugin_id', null);
             $object = ifset($handler, 'object', null);
 
             if (is_object($object)) {
                 $this->result += $this->runCustom($params, $handler);
-                continue;
             } elseif ($plugin_id) {
                 $this->result += $this->runPlugins($params, $handler);
-                continue;
             } else {
                 $this->result += $this->runApps($params, $handler);
-                continue;
             }
+
+            $this->addExecutionTime($handler, $start_execution);
         }
+
+        $this->logExecutionTime();
 
         //Return active apps
         wa($old_app, 1);
@@ -189,7 +191,6 @@ class waEvent
      * @param mixed $params
      * @param array $handler
      * @return array
-     * @throws waException
      */
     protected function runPlugins(&$params, $handler)
     {
@@ -267,10 +268,9 @@ class waEvent
      * The method loads information from the file cache and sets it to the memory cache.
      * If nothing is found in the file cache, then it collects information from plugins and applications.
      *
-     * @var const WA_EVENT_CLEAR_CACHE This is a constant that will always reset the memory cache.
+     * @var CONST WA_EVENT_CLEAR_CACHE This is a constant that will always reset the memory cache.
      *
      * @return void
-     * @throws waException
      */
     protected function setStaticData()
     {
@@ -309,14 +309,19 @@ class waEvent
      * Get handlers from apps and plugins and set to cache memory
      *
      * @return void
-     * @throws waException
      */
     protected function setHandlers()
     {
         self::$handlers = array();
 
         //Get app handlers
-        $apps = wa()->getApps();
+        try {
+            $apps = wa()->getApps();
+        } catch (Exception $e) {
+            $this->debugLog($e->getMessage());
+            $apps = array();
+        }
+
 
         foreach ($apps as $event_app_id => $app_info) {
             $this->parseAppsHandlersFiles($event_app_id);
@@ -331,13 +336,17 @@ class waEvent
      * Set in memory cache data about plugins
      *
      * @return void
-     * @throws waException
      */
     protected function setPlugins()
     {
         self::$plugins = array();
 
-        $apps = wa()->getApps();
+        try {
+            $apps = wa()->getApps();
+        } catch (Exception $e) {
+            $this->debugLog($e->getMessage());
+            $apps = array();
+        }
 
         foreach ($apps as $app_id => $app) {
             $plugins = wa($app_id)->getConfig()->getPlugins();
@@ -357,7 +366,6 @@ class waEvent
      *
      * @param array $handler
      * @return null
-     * @throws waException
      */
     public static function addCustomHandler($handler)
     {
@@ -393,6 +401,8 @@ class waEvent
             'regex'  => $regex,
             'method' => $methods,
         );
+
+        return null;
     }
     ##############
     # PARSE DATA #
@@ -608,7 +618,7 @@ class waEvent
     /**
      * Load locale for plugin
      * @param $plugin_id
-     * @param sting $app_id
+     * @param string $app_id
      * @return void
      */
     protected function includePluginLocale($plugin_id, $app_id)
@@ -645,7 +655,6 @@ class waEvent
      * Return plugins from memory cache
      *
      * @return array
-     * @throws waException
      */
     protected function getPlugins()
     {
@@ -660,7 +669,6 @@ class waEvent
      * @param string $app_id
      * @param string $plugin_id
      * @return mixed|null
-     * @throws waException
      */
     protected function getPluginInfo($app_id, $plugin_id)
     {
@@ -744,6 +752,32 @@ class waEvent
     }
 
     /**
+     * If launched by backend user and the key 'event_log_execution' is added to the cookie then log the runtime of each handler
+     */
+    protected function logExecutionTime()
+    {
+        $is_on_log = waRequest::cookie('event_log_execution', false);
+
+        if ($is_on_log && $this->execution_time && wa()->getUser()->get('is_user')) {
+            waLog::log(
+                "===Start log block=== \nRecorded: ".wa()->getUser()->getName()."\n".
+                var_export($this->execution_time, true)."\n===End log block===", 'webasyst/waEventExecutionTime.log');
+        }
+    }
+
+    /**
+     * @param $handler
+     * @param $start_execution
+     */
+    protected function addExecutionTime($handler, $start_execution)
+    {
+        if (waRequest::cookie('event_log_execution') && wa()->getUser()->get('is_user')) {
+            $handler['execution_time'] = round(microtime(true) - $start_execution, 4);
+            $this->execution_time[$this->name][] = $handler;
+        }
+    }
+
+    /**
      * @return waVarExportCache
      */
     protected static function getCacheExport()
@@ -769,42 +803,3 @@ class waEvent
         self::$plugins = null;
     }
 }
-
-/*
- *         $event1_params = $params;
-        $event1_name = $name;
-
-
-        $event1_result = $this->event1($event1_name, $event1_params);
-
-        if ($event1_result !== $result) {
-            $debug = null;
-        }
-        if ($event1_params !== $params) {
-            $debug = null;
-        }
-        $diff = [
-            'params' => $event1_params === $params,
-            'result' => $event1_result === $result,
-        ];
-        wa_dumpc($diff);
-
-
-    public function event($name, &$params = null, $array_keys = null)
-    {
-        if (is_array($name)) {
-            $event_app_id = $name[0];
-            $name = $name[1];
-        } else {
-            $event_app_id = $this->getConfig()->getApplication();
-        }
-
-        $options = array(
-            'array_keys' => $array_keys
-        );
-
-        $event_class = new waEvent($event_app_id, $name, $options);
-        return $event_class->run($params);
-    }
-
-*/

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-11-27 13:17+0300\n"
+"PO-Revision-Date: 2018-12-12 10:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -474,10 +474,6 @@ msgstr "Login name is required"
 #: /wa-system/auth/waAuth.class.php:161
 msgid "Invalid email or password"
 msgstr "Invalid email address or password"
-
-#: /wa-system/auth/waDemoAuth.class.php:81
-msgid "Invalid login or password"
-msgstr "Invalid login name or password"
 
 #: /wa-system/api/waAPIController.class.php:20
 msgid "Application \"%s\" not exists"
@@ -2272,7 +2268,7 @@ msgid "Auth exception"
 msgstr ""
 
 #: /wa-system/auth/waAuth.class.php:380
-msgid "Contact is not signed up"
+msgid "Contact is not registered."
 msgstr ""
 
 #: /wa-system/auth/waAuth.class.php:427
@@ -3290,7 +3286,7 @@ msgid "Email confirmation failed"
 msgstr ""
 
 #: /wa-system/signup/actions/waSignup.action.php:419
-msgid "Sign up failed"
+msgid "Signup failed."
 msgstr ""
 
 #: /wa-system/signup/actions/waSignup.action.php:645
@@ -3645,7 +3641,7 @@ msgid "Done"
 msgstr ""
 
 #: /wa-system/signup/templates/email_confirmed.html:14
-msgid "You have successfully signed up"
+msgid "You have successfully signed up."
 msgstr ""
 
 #: /wa-system/signup/templates/email_confirmed.html:19

@@ -276,7 +276,7 @@ class waSystemConfig
 
     public function init()
     {
-        $file_path = $this->root_path.'/wa-config/config.php';
+        $file_path = $this->getPath('config').'/config.php';
         if (file_exists($file_path)) {
             $config = include($file_path);
             foreach ($config as $name => $value) {

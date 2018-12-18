@@ -204,7 +204,7 @@ class webasystFieldConstructor
             if (strlen($id) === 0) {
                 return array(null, array(array("id_val" => _ws('Required field'))));
             }
-            if (preg_match('/[^a-z_0-9]/i', $id)) {
+            if (preg_match('/[^a-z_\-0-9]/i', $id)) {
                 return array(
                     null,
                     array(

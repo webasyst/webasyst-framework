@@ -110,36 +110,68 @@ class waContactPhoneField extends waContactStringField
             return $errors;
         }
 
-        $data_model = new waContactDataModel();
-        $contact_model = new waContactModel();
         if ($this->isMulti()) {
-            if (!empty($data[0]) && $contact_id) {
-                $c = $contact_model->getById($contact_id);
-                if (!$c['password']) {
-                    return $errors;
-                }
+            if (!empty($data[0])  && $contact_id) {
                 $value = $this->format($data[0], 'value');
-                $id = $data_model->getContactWithPasswordByPhone($value, $contact_id);
-                if ($id > 0) {
+                $phone_exists = $this->phoneExistsAmongAuthorizedContacts($value, $contact_id);
+                if ($phone_exists) {
                     $errors[0] = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
                 }
             }
         } else {
             $value = $this->format($data, 'value');
-            if ($value) {
-                if ($contact_id) {
-                    $c = $contact_model->getById($contact_id);
-                    if (!$c['password']) {
-                        return $errors;
-                    }
-                }
-                $id = $data_model->getContactWithPasswordByPhone($value, $contact_id);
-                if ($id > 0) {
-                    $errors = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
-                }
+            $phone_exists = $this->phoneExistsAmongAuthorizedContacts($value, $contact_id);
+            if ($phone_exists) {
+                $errors = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
             }
         }
         return $errors;
+    }
+
+    /**
+     * Helper method
+     * Checks that suggested phone value for current contact ALREADY exists among all default phones of authorized contacts
+     * Authorize contact is contact with password != 0
+     * @param string $suggested_phone_value
+     * @param id|null $contact_id
+     * @return bool
+     */
+    protected function phoneExistsAmongAuthorizedContacts($suggested_phone_value, $contact_id = null)
+    {
+        $suggested_phone_value = is_scalar($suggested_phone_value) ? (string)$suggested_phone_value : '';
+        if (strlen($suggested_phone_value) <= 0) {
+            // phone is empty - not go further - it's doesn't matter
+            return false;
+        }
+
+        $contact_model = new waContactModel();
+
+        $contact = null;
+        if ($contact_id > 0) {
+            $contact = $contact_model->getById($contact_id);
+            $is_authorized = $contact && $contact['password'];
+            if (!$is_authorized) {
+                // not authorized contact (or not exists) - not go further - it's doesn't matter
+                return false;
+            }
+        }
+
+        $data_model = new waContactDataModel();
+
+        // update phone for existing contact case - check if value has changed
+        if ($contact) {
+            $old_value_row = $data_model->getPhone($contact_id);
+            if ($old_value_row && waContactPhoneField::isPhoneEquals($suggested_phone_value, $old_value_row['value'])) {
+                // phone has not changed - so not go further - it's doesn't matter
+                return false;
+            }
+
+            $contact_id = $contact['id'];
+        }
+
+        // check suggested phone value for current contact ALREADY exists among all default phones of authorized contacts
+        $other_contact_id = $data_model->getContactWithPasswordByPhone($suggested_phone_value, $contact_id);
+        return $other_contact_id > 0;
     }
 
 }

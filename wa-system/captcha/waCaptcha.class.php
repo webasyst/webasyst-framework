@@ -85,7 +85,7 @@ class waCaptcha
         if (file_exists($captcha_config_path)) {
             $config = include($captcha_config_path);
             $class = ifset($config, 'captcha', 0, 'waPHPCaptcha');
-            $options = ifset($config, 'captcha', 1, null);
+            $options = ifset($config, 'captcha', 1, array());
             return array($class, $options);
         }
         return array(null, null);

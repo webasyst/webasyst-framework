@@ -655,7 +655,7 @@ class waVerificationChannelEmail extends waVerificationChannel
                 return $result;
             }
         }
-        
+
         if ($asset['channel_id'] != $this->getId() ||
             $asset['name'] != waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_HASH ||
             $asset['value'] != $hash) {

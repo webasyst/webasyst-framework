@@ -58,6 +58,12 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             }
         }
 
+        $used_auth_methods = $auth_config->getUsedAuthMethods();
+
+        // If there are no email channels and no SMS is used as
+        // a verification channel, will limit some functionality. #51.5712
+        $no_channels = (empty($email_channels) && !in_array(waVerificationChannelModel::TYPE_SMS, $used_auth_methods));
+
         $this->view->assign(array(
             'auth_config'                => $auth_config->getData(),
             'auth_types'                 => $auth_config->getAuthTypes(),
@@ -65,9 +71,10 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             'login_captcha'              => $auth_config->getLoginCaptcha(),
             'login_placeholder'          => $auth_config->getLoginPlaceholder(),
             'onetime_password_timeout'   => $auth_config->getOnetimePasswordTimeout(),
-            'used_auth_methods'          => $auth_config->getUsedAuthMethods(),
+            'used_auth_methods'          => $used_auth_methods,
             'email_channels'             => $email_channels,
             'sms_channels'               => $sms_channels,
+            'no_channels'                => $no_channels,
             'login_captcha_variants'     => $auth_config->getLoginCaptchaVariants(),
             'verification_channel_types' => $auth_config->getVerificationChannelTypes(),
             'verification_channels'      => $auth_config->getAvailableVerificationChannels(),

@@ -1061,16 +1061,23 @@ return array(
                     1 => 'Perth',
                 ),
         ),
+    'Asia/Irkutsk'               =>
+        array(
+            0 => '+08',
+            1 =>
+                array(
+                    0 => 'Irkutsk',
+                ),
+        ),
     'Asia/Dili'                  =>
         array(
             0 => '+09',
             1 =>
                 array(
                     0 => 'Dili',
-                    1 => 'Irkutsk',
-                    2 => 'Jayapura',
-                    3 => 'Pyongyang',
-                    4 => 'Seoul',
+                    1 => 'Jayapura',
+                    2 => 'Pyongyang',
+                    3 => 'Seoul',
                 ),
         ),
     'Asia/Tokyo'                 =>
