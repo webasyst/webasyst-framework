@@ -33,6 +33,7 @@
                 {$current_region = ifset($settings, 'region', '')}
 
                 <select name="{$namespace}[region]" class="js-sd-select-region">
+                    <option value=""></option>
                     {foreach $regions as $region}
                         <option value="{$region.code|escape}"{if $settings.region|default:''|escape == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
                     {/foreach}
@@ -44,12 +45,12 @@
 
     <div class="field">
         <div class="name">
-            {$obj->_w('Cities')}
+            {$obj->_w('Localities')}
         </div>
         <div class="value">
             <input name="{$namespace}[city]" value="{$settings.city|default:''|escape}" type="text">
 
-            <p class="hint">{$obj->_w('Separate cities with a comma')}</p>
+            <p class="hint">{$obj->_w('Separate localities with a comma')}</p>
         </div>
     </div>
 

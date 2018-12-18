@@ -154,13 +154,13 @@ var systemShippingSDPluginSettings = (function ($) {
         $worktime_toggle.on('change', function () {
                 var self = this,
                     $self = $(self),
-                    $worktime_wrapper = $self.parent().siblings('.js-sd-time-wrapper'),
-                    $worktime_input = $worktime_wrapper.find('input[type=time]');
+                    $day_wrapper = $self.closest('tr'),
+                    $fields = $day_wrapper.find('input[type=time]');
 
                 if (self.checked) {
-                    $worktime_input.prop('disabled', false);
+                    $fields.prop('required', true);
                 } else {
-                    $worktime_input.prop('disabled', true);
+                    $fields.prop('required', false);
                 }
             }
         );
@@ -177,8 +177,17 @@ var systemShippingSDPluginSettings = (function ($) {
         that.$wrapper.on('change', '.js-sd-time-end', function () {
             var $self = $(this),
                 time = $self.val(),
-                $time_start = $self.siblings('.js-sd-time-start');
-            $time_start.attr('max', time);
+                $day_wrapper = $self.closest('tr'),
+                $time = $day_wrapper.find('.js-sd-time-start, .js-sd-end-process');
+            $time.attr('max', time);
+        });
+
+        that.$wrapper.on('change', '.js-sd-end-process', function () {
+            var $self = $(this),
+                time = $self.val(),
+                $day_wrapper = $self.closest('tr'),
+                $time = $day_wrapper.find('.js-sd-time-end');
+            $time.attr('min', time);
         });
     };
 
@@ -322,7 +331,7 @@ var systemShippingSDPluginSettings = (function ($) {
 
         $form.on('submit', function () {
             var $date = that.$wrapper.find('.js-sd-date'),
-                $time = that.$wrapper.find('.js-sd-time');
+                $time = that.$wrapper.find('.js-sd-time-start, .js-sd-time-end');
 
             $date.trigger('change');
             $time.trigger('change');

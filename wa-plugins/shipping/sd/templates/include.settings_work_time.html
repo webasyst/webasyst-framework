@@ -11,6 +11,15 @@
                    required>
         </td>
         <td>
+            <input type="text"
+                   maxlength="64"
+                   class="js-sd-time-additional"
+                   name="{$namespace}[{$type}][{$iterator}][additional]"
+                   value="{ifset($date, 'additional', '')|escape}"
+                   data-name="additional"
+                   >
+        </td>
+        <td>
             <a class="js-sd-delete-date" href="#" data-type="{$type}">
                 <i class="icon16 no"></i>
             </a>
@@ -45,13 +54,30 @@
                                     required>
         </td>
         <td>
+            <input type="time"
+                   class="js-sd-time-start"
+                   name="{$namespace}[{$type}][{$iterator}][end_process]"
+                   value="{ifset($date, 'end_process', '14:00')|escape}"
+                   data-name="end_process"
+                   required>
+        </td>
+        <td>
+            <input type="text"
+                   maxlength="64"
+                   class="js-sd-time-additional"
+                   name="{$namespace}[{$type}][{$iterator}][additional]"
+                   value="{ifset($date, 'additional', '')|escape}"
+                   data-name="additional"
+                   >
+        </td>
+
+        <td>
             <a class="js-sd-delete-date" href="#" data-type="{$type}">
                 <i class="icon16 no"></i>
             </a>
         </td>
     </tr>
 {/function}
-
 
 
 <div class="field-group">
@@ -73,12 +99,14 @@
 
     <div class="field">
         <div class="value js-sd-worktime-wrapper">
-            <table class="zebra" style="max-width: 430px;">
+            <table class="zebra">
                 <thead>
                 <tr>
                     <th>{$obj->_w('Day of the week')}</th>
                     <th>{$obj->_w('Works')}</th>
                     <th>{$obj->_w('Work time')}</th>
+                    <th>{$obj->_w('Orders for pickup')}</th>
+                    <th>{$obj->_w('Description')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -97,24 +125,38 @@
                         <td class="js-sd-time-wrapper">
                             {$obj->_w('from')} <input type="time"
                                                       name="{$namespace}[weekdays][{$id}][start_work]"
-                                                      value="{if $is_works}{ifset($day_data,'start_work', '')}{/if}"
+                                                      value="{ifset($day_data,'start_work', '')}"
                                                       placeholder="10:00"
                                                       class="js-sd-time-start"
-                                                      {if !$is_works}disabled{/if}
-                                                      required>
+                                                      {if $is_works}required{/if}>
                             {$obj->_w('to')} <input type="time"
                                                     name="{$namespace}[weekdays][{$id}][end_work]"
-                                                    value="{if $is_works}{ifset($day_data,'end_work', '')}{/if}"
+                                                    value="{ifset($day_data,'end_work', '')}"
                                                     placeholder="19:00"
                                                     class="js-sd-time-end"
-                                                    {if !$is_works}disabled{/if}
-                                                    required>
+                                                    {if $is_works}required{/if}>
+                        </td>
+                        <td>
+                            <input type="time"
+                                   class="js-sd-end-process"
+                                   name="{$namespace}[weekdays][{$id}][end_process]"
+                                   value="{ifset($day_data,'end_process', '')}"
+                                   {if $is_works}required{/if}
+                                   >
+                        </td>
+                        <td>
+                            <input type="text"
+                                   maxlength="64"
+                                   class="js-sd-time-additional"
+                                   name="{$namespace}[weekdays][{$id}][additional]"
+                                   value="{ifset($day_data,'additional', '')}">
                         </td>
                     </tr>
                 {/foreach}
 
                 </tbody>
             </table>
+            <p class="hint">{sprintf($obj->_w('Values in “%s” column denote the last hour of a pickup point’s workday until which orders are accepted to be ready for pickup by customers on the same day. Orders received after that hour are ready for pickup on the next workday.'), $obj->_w('Orders for pickup'))}</p>
         </div>
     </div>
     <br>
@@ -125,11 +167,13 @@
                 {$obj->_w('Extra workdays')}
             </div>
             <div class="value js-sd-worktime-wrapper">
-                <table class="zebra js-sd-workdays" style="max-width: 430px;">
+                <table class="zebra js-sd-workdays">
                     <thead>
                     <tr>
                         <th>{$obj->_w('Date')}</th>
                         <th>{$obj->_w('Time')}</th>
+                        <th>{$obj->_w('Orders for pickup')}</th>
+                        <th>{$obj->_w('Description')}</th>
                         <th>&nbsp;</th>
                     </tr>
                     </thead>
@@ -158,10 +202,11 @@
                 {$obj->_w('Extra weekend')}
             </div>
             <div class="value js-sd-worktime-wrapper">
-                <table class="zebra js-sd-weekend" style="max-width: 160px;">
+                <table class="zebra js-sd-weekend">
                     <thead>
                     <tr>
                         <th class="align-center">{$obj->_w('Date')}</th>
+                        <th>{$obj->_w('Description')}</th>
                         <th>&nbsp;</th>
                     </tr>
                     </thead>

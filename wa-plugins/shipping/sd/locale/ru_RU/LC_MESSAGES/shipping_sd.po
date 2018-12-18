@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.2\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -49,8 +49,8 @@ msgstr "Страна"
 msgid "Region"
 msgstr "Регион"
 
-msgid "Cities"
-msgstr "Города"
+msgid "Localities"
+msgstr "Населенные пункты"
 
 msgid "Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country."
 msgstr "Доставка будет доступна только в выбранной стране. Указанные ниже тарифы будут действовать для всех регионов страны."
@@ -58,8 +58,8 @@ msgstr "Доставка будет доступна только в выбра�
 msgid "Shipping will be restricted to the selected region."
 msgstr "Доставка будет доступна только в выбранном регионе."
 
-msgid "Separate cities with a comma"
-msgstr "Перечислите города через запятую"
+msgid "Separate localities with a comma"
+msgstr "Перечислите населенные пункты через запятую"
 
 msgid "Coordinates"
 msgstr "Координаты"
@@ -166,6 +166,9 @@ msgstr "Срок доставки"
 msgid "hours"
 msgstr "часов"
 
+msgid "Time required to deliver ordered items to this pickup point, which is added to the total order ready time."
+msgstr "Время, необходимое для доставки заказанных товаров в этот пункт выдачи заказов; оно прибавляется к общему времени готовности заказа."
+
 msgid "Invalid date"
 msgstr "Некорректная дата"
 
@@ -213,3 +216,9 @@ msgstr "Нужен хотя бы один рабочий день."
 
 msgid "Pickup point"
 msgstr "Пункт выдачи заказов"
+
+msgid "Orders for pickup"
+msgstr "Заказы на выдачу"
+
+msgid "Values in “%s” column denote the last hour of a pickup point’s workday until which orders are accepted to be ready for pickup by customers on the same day. Orders received after that hour are ready for pickup on the next workday."
+msgstr "Значения в столбце «%s» обозначают последний час рабочего дня пункта выдачи заказов, до которого принимаются заказы для самовывоза в течение того же рабочего дня. Заказы, полученные после указанного часа, будут готовы для самовывоза на следующий рабочий день."

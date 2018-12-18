@@ -49,7 +49,7 @@ class sdShipping extends waShipping
     # CALCULATE BLOCK #
     ###################
 
-    protected $extra_days = array();
+    protected $days = array();
     protected $est_delivery = null;
 
     protected function calculate()
@@ -323,6 +323,7 @@ class sdShipping extends waShipping
         return $markup;
     }
 
+
     /**
      * Get the next day in the time zone of the point when you can pick up the package.
      * Time converted to plug-in time zone
@@ -334,58 +335,74 @@ class sdShipping extends waShipping
         $time_with_processing = $this->getTimeWithProcessing();
 
         //convert to pickup timezone
-        $date_time_timestamp = $this->changeTimezone('U', $time_with_processing, date_default_timezone_get(), $this->timezone);
-        $timestamp = $this->changeTimezone('U', date('Y-m-d', $date_time_timestamp), $this->timezone);
+        $datetime = $this->changeTimezone('U', $time_with_processing, date_default_timezone_get(), $this->timezone);
+        $date = $this->changeTimezone('U', date('Y-m-d', $datetime), $this->timezone);
 
-        //Get day type for time
-        $type = $this->getDayType($timestamp);
+        for ($i = 0; $i < 365; $i++) {
+            //Get day type for time
+            $type = $this->getDayType($date);
+            $end_process = $this->getEndProcessTime($type, $date);
+            $start_work = $this->setStartWorkTime($type, $date);
 
-        //Check today.
-        if ($type !== false) {
-            $work_time = $this->getStartWorkTime($type, $timestamp);
-            //Today you can only pick up if the goods were brought before the opening.
-            if ($date_time_timestamp > $work_time) {
-                $type = false;
+            //Time to create an order should be no earlier than the start of work pickup point.
+            //This is required to correctly display the time when the order can be picked up.
+            if ($start_work >= $datetime) {
+                $datetime = $start_work;
             }
-        }
 
-        //If today did not work, we are looking for the first valid day but not more than a year later.
-        $i = 0;
-        while ($type === false && $i <= 365) {
-            //Add day
-            $timestamp = strtotime('+1 day', $timestamp);
-            $i++;
+            //The order must be created before the end of processing time. Otherwise, go the next day.
+            if ($end_process && $end_process > $datetime) {
+                break;
+            }
 
-            $type = $this->getDayType($timestamp);
-        }
-
-        if ($type) {
-            $timestamp = $this->getStartWorkTime($type, $timestamp);
+            $date = strtotime('+1 day', $date);
         }
 
         return array(
-            'server' => $this->changeTimezone('U', $timestamp, $this->timezone, date_default_timezone_get()),
-            'pickup' => $timestamp,
+            'server' => $this->changeTimezone('U', $datetime, $this->timezone, date_default_timezone_get()),
+            'pickup' => $date,
         );
+    }
+
+    /**
+     * @param $type
+     * @param $date
+     * @return bool|int
+     */
+    protected function getEndProcessTime($type, $date)
+    {
+        $end_process = false;
+
+        if ($type === 'extra_workday') {
+            $end_process = ifset($this->days, 'workdays', $date, 'end_process', false);
+        } elseif ($type === 'workday') {
+            $day_name_code = date('N', $date);
+            $end_process = ifset($this->days, 'weekdays', $day_name_code, 'end_process', false);
+
+            if ($end_process && is_numeric($end_process)) {
+                $end_process = $date + $end_process;
+            }
+        }
+
+        return $end_process;
     }
 
     /**
      * Get start work time
      * @param $type
-     * @param $timestamp
-     * @return int|mixed|null
+     * @param $date
+     * @return int
      */
-    protected function getStartWorkTime($type, $timestamp)
+    protected function setStartWorkTime($type, $date)
     {
-        $work_time = 0;
-
-        if ($type == 'weekday') {
-            $work_time = $this->getWeekDayTimeStamp($timestamp);
-        } elseif ($type == 'workday') {
-            $work_time = ifset($this->extra_days, 'workdays', $timestamp, 'start_work', 0);
+        if ($type === 'extra_workday') {
+            $date = ifset($this->days, 'workdays', $date, 'start_work', $date);
+        } elseif ($type === 'workday') {
+            $day_name_code = date('N', $date);
+            $date = $date + ifset($this->days, 'weekdays', $day_name_code, 'start_work', 0);
         }
 
-        return $work_time;
+        return $date;
     }
 
     /**
@@ -404,19 +421,21 @@ class sdShipping extends waShipping
 
     /**
      * Check day type.
-     * @param $time
+     * @param $date
      * @return bool|string If weekend return false
      */
-    protected function getDayType($time)
+    protected function getDayType($date)
     {
         $type = false;
 
-        if ($this->isExtraWorkday($time)) {
+        if ($this->isExtraWorkday($date)) {
+            $type = 'extra_workday';
+        } elseif ($this->isExtraWeekend($date)) {
+            $type = 'extra_weekend';
+        } elseif ($this->isWorkday($date)) {
             $type = 'workday';
-        } else {
-            if ($this->isWorkday($time) && !$this->isExtraWeekend($time)) {
-                $type = 'weekday';
-            }
+        } elseif ($this->isWeekend($date)) {
+            $type = 'weekend';
         }
 
         return $type;
@@ -440,14 +459,14 @@ class sdShipping extends waShipping
 
     /**
      * Check if it time is a extra weekend day.
-     * @param $time
+     * @param $date
      * @return bool
      */
-    protected function isExtraWeekend($time)
+    protected function isExtraWeekend($date)
     {
         $weekend = $this->getExtraWeekend();
 
-        if ($weekend && isset($weekend[$time])) {
+        if ($weekend && isset($weekend[$date])) {
             return true;
         } else {
             return false;
@@ -456,39 +475,75 @@ class sdShipping extends waShipping
 
     /**
      * Check if it time is a working day.
-     * @param $time
+     * @param $date
      * @return bool
      */
-    protected function isWorkday($time)
+    protected function isWorkday($date)
     {
-        $weekdays = $this->weekdays;
-        $day_name_code = date('N', $time);
+        $weekdays = $this->getSavedWeekdays();
+        $day_name_code = date('N', $date);
 
-        if (isset($weekdays[$day_name_code])) {
+        $weekday = ifset($weekdays, $day_name_code, false);
+
+        if ($weekday && $weekday['works']) {
             return true;
         } else {
             return false;
         }
     }
 
-    /**
-     * Get date with start work time.
-     * @param $time
-     * @return int
-     */
-    protected function getWeekDayTimeStamp($time)
+    protected function isWeekend($date)
     {
-        $weekdays = $this->weekdays;
-        $day_name_code = date('N', $time);
-        $start_work = ifset($weekdays, $day_name_code, 'start_work', 0);
+        $weekdays = $this->getSavedWeekdays();
+        $day_name_code = date('N', $date);
 
-        $start_work = explode(':', $start_work);
-        $hours = ifset($start_work, 0, 0);
-        $minutes = ifset($start_work, 1, 0);
+        $weekday = ifset($weekdays, $day_name_code, false);
 
-        $work_time = $time + ($hours * 3600) + ($minutes * 60);
+        if ($weekday && !$weekday['works']) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-        return $work_time;
+    protected function hoursToSecond($time)
+    {
+        if ($time) {
+            $times = explode(':', $time);
+
+            $hours = ifset($times, 0, 0);
+            $minutes = ifset($times, 1, 0);
+
+            $time = ($hours * 3600) + ($minutes * 60);
+        }
+
+        return $time;
+    }
+
+    protected function getSavedWeekdays()
+    {
+        $weekdays = ifset($this->days, 'weekdays', null);
+
+        if ($weekdays === null) {
+            $weekdays = array();
+            $raw_weekdays = $this->weekdays;
+
+            if ($raw_weekdays) {
+                foreach ($raw_weekdays as $day_id => $weekday) {
+                    $weekdays[$day_id] = array(
+                        'works'       => ifset($weekday, 'works', '0'),
+                        'start_work'  => $this->hoursToSecond(ifset($weekday, 'start_work', '10:00')),
+                        'end_work'    => $this->hoursToSecond(ifset($weekday, 'end_work', '19:00')),
+                        'end_process' => $this->hoursToSecond(ifset($weekday, 'end_process', '14:00')),
+                        'additional'  => ifset($weekday, 'additional', ''),
+                    );
+                }
+            }
+
+            $this->days['weekdays'] = $weekdays;
+        }
+
+        return $weekdays;
     }
 
     /**
@@ -497,29 +552,27 @@ class sdShipping extends waShipping
      */
     protected function getExtraWorkdays()
     {
-        $extra_workdays = ifset($this->extra_days, 'workdays', null);
+        $extra_workdays = ifset($this->days, 'workdays', null);
 
         if ($extra_workdays === null) {
             $extra_workdays = array();
-
             $workdays = $this->workdays;
+
             if (is_array($workdays)) {
                 foreach ($workdays as $workday) {
-                    $start_time = $workday['date'].' '.$workday['start_work'];
-                    $start_time = strtotime($start_time);
-                    $end_work = $workday['date'].' '.$workday['end_work'];
-                    $end_work = strtotime($end_work);
 
                     $date_timestamp = strtotime($workday['date']);
-
                     $extra_workdays[$date_timestamp] = array(
-                        'start_work' => $start_time,
-                        'end_work'   => $end_work
+                        'start_work'  => strtotime($workday['date'].' '.$workday['start_work']),
+                        'end_work'    => strtotime($workday['date'].' '.$workday['end_work']),
+                        'end_process' => strtotime($workday['date'].' '.ifset($weekday, 'end_process', '14:00')),
+                        'additional'  => ifset($workday, 'additional', ''),
                     );
                 }
             }
+
+            $this->days['workdays'] = $extra_workdays;
         }
-        $this->extra_days['workdays'] = $extra_workdays;
 
         return $extra_workdays;
     }
@@ -530,21 +583,24 @@ class sdShipping extends waShipping
      */
     protected function getExtraWeekend()
     {
-        $extra_weekend = ifset($this->extra_days, 'weekend', null);
+        $extra_weekend = ifset($this->days, 'weekend', null);
 
         if ($extra_weekend === null) {
             $extra_weekend = array();
-
             $weekend = $this->weekend;
+
             if (is_array($weekend)) {
                 foreach ($weekend as $day) {
-                    $date = $day['date'];
-                    $date_timestamp = strtotime($date);
-                    $extra_weekend[$date_timestamp] = true;
+                    $date_timestamp = strtotime($day['date']);
+
+                    $extra_weekend[$date_timestamp] = array(
+                        'additional' => ifset($day, 'additional', ''),
+                    );
                 }
             }
+
+            $this->days['weekend'] = $extra_weekend;
         }
-        $this->extra_days['weekend'] = $extra_weekend;
 
         return $extra_weekend;
     }
@@ -562,36 +618,56 @@ class sdShipping extends waShipping
         $result = array();
 
         for ($i = 0; $i <= 6; $i++) {
-            $day_info = array();
             $type = $this->getDayType($date);
 
+            $day_info = array(
+                'type'       => 'weekend',
+                'start_work' => date('Y-m-d H:i', $date),
+                'end_work'   => date('Y-m-d H:i', $date),
+                'additional' => '',
+            );
+
             switch ($type) {
+                case 'extra_workday':
+                    {
+                        $extra_workday = $this->days['workdays'][$date];
+                        $day_info = array(
+                            'type'       => 'workday',
+                            'start_work' => date('Y-m-d H:i', $extra_workday['start_work']),
+                            'end_work'   => date('Y-m-d H:i', $extra_workday['end_work']),
+                            'additional' => $extra_workday['additional'],
+
+                        );
+                        break;
+                    }
                 case 'workday':
                     {
-                        $day_info['type'] = 'workday';
-                        $extra_workdays = $this->extra_days['workdays'][$date];
-                        $day_info['start_work'] = date('Y-m-d H:i', $extra_workdays['start_work']);
-                        $day_info['end_work'] = date('Y-m-d H:i', $extra_workdays['end_work']);
-                        break;
-                    }
-                case 'weekday':
-                    {
-                        $day_info['type'] = 'workday';
                         $day_name_code = date('N', $date);
-                        $day = $this->weekdays[$day_name_code];
+                        $day = $this->days['weekdays'][$day_name_code];
 
-                        $day_info['start_work'] = date('Y-m-d', $date).' '.$day['start_work'];
-                        $day_info['end_work'] = date('Y-m-d', $date).' '.$day['end_work'];
+                        $day_info = array(
+                            'type'       => 'workday',
+                            'start_work' => date('Y-m-d H:i', $date + $day['start_work']),
+                            'end_work'   => date('Y-m-d H:i', $date + $day['end_work']),
+                            'additional' => $day['additional'],
 
+                        );
                         break;
                     }
-                default:
+                case 'extra_weekend':
                     {
-                        $day_info['type'] = 'weekend';
-                        $day_info['start_work'] = date('Y-m-d H:i', $date);
-                        $day_info['end_work'] = date('Y-m-d H:i', $date);
+                        $day_info['additional'] = $this->days['weekend'][$date]['additional'];
+                        break;
+                    }
+                case 'weekend':
+                    {
+                        $day_name_code = date('N', $date);
+
+                        $day_info['additional'] = $this->days['weekdays'][$day_name_code]['additional'];
+                        break;
                     }
             }
+
             $result['weekdays'][$i] = $day_info;
 
             //add day
@@ -716,17 +792,21 @@ class sdShipping extends waShipping
         foreach ($weekdays as $id => $day) {
             if ($saved_weekdays !== null) {
                 $result[$id] = array(
-                    'name'       => $day,
-                    'works'      => ifset($saved_weekdays, $id, 'works', '0'),
-                    'start_work' => ifset($saved_weekdays, $id, 'start_work', '10:00'),
-                    'end_work'   => ifset($saved_weekdays, $id, 'end_work', '19:00'),
+                    'name'        => $day,
+                    'works'       => ifset($saved_weekdays, $id, 'works', '0'),
+                    'start_work'  => ifset($saved_weekdays, $id, 'start_work', '10:00'),
+                    'end_work'    => ifset($saved_weekdays, $id, 'end_work', '19:00'),
+                    'end_process' => ifset($saved_weekdays, $id, 'end_process', '14:00'),
+                    'additional'  => ifset($saved_weekdays, $id, 'additional', ''),
                 );
             } else {
                 $result[$id] = array(
-                    'name'       => $day,
-                    'works'      => ifset($output, $id, '1'),
-                    'start_work' => '10:00',
-                    'end_work'   => '19:00',
+                    'name'        => $day,
+                    'works'       => ifset($output, $id, '1'),
+                    'start_work'  => '10:00',
+                    'end_work'    => '19:00',
+                    'end_process' => '14:00',
+                    'additional'  => '',
                 );
             }
         }
@@ -777,10 +857,13 @@ class sdShipping extends waShipping
         $days = ifset($settings, $key, array());
 
         foreach ($days as $id => $day) {
-            if (($key === 'weekdays' && empty($day['works']))
-                || ($key === 'workdays' && empty($day['date']))) {
+            if ($key === 'workdays' && empty($day['date'])) {
                 unset($days[$id]);
                 continue;
+            }
+
+            if ($key === 'weekdays' && empty($day['works'])) {
+                $days[$id]['works'] = '0';
             }
 
             if (isset($day['date'])) {
@@ -792,6 +875,9 @@ class sdShipping extends waShipping
 
             if (isset($day['end_work'])) {
                 $this->isValidateTimeFormat($day['end_work']);
+            }
+            if (isset($day['end_process'])) {
+                $this->isValidateTimeFormat($day['end_process']);
             }
         }
 
@@ -816,7 +902,7 @@ class sdShipping extends waShipping
 
     protected function isValidateTimeFormat($time)
     {
-        if (!preg_match('/(^[01]?[0-9]|2[0-3])($|:([0-5][0-9]$))/ui', $time)) {
+        if ($time && !preg_match('/(^[01]?[0-9]|2[0-3])($|:([0-5][0-9]$))/ui', $time)) {
             throw new waException($this->_w('Invalid time'));
         } else {
             return true;
