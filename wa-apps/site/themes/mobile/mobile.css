@@ -865,8 +865,55 @@ body.menu-is-shown .hidden-menu-wrapper {
   padding: 0.125rem 0 0.125rem 2rem;
   margin: 1rem 0 0;
   line-height: 1.25rem;
-  background: transparent url("img/icons/switch-on.png") 0 no-repeat;
-  background-size: auto 1.5rem;
+  background: transparent url("img/svg/time-icon.svg") 0 no-repeat;
+  background-size: auto 1.25rem;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper.is-open .s-label-wrapper .s-icon {
+  transform: rotate(180deg) translate(0, -1px);
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper.is-open .s-hidden {
+  display: block;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-hidden {
+  display: none;
+  margin: 15px -15px;
+  padding: 16px 15px;
+  background: rgba(8,9,10,0.93);
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-label-wrapper {
+  cursor: pointer;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-label-wrapper .s-icon {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: transparent url("img/svg/arrow.down.svg") 50% no-repeat;
+  background-size: contain;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.214285714285714em;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper:first-child {
+  margin-top: 0;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-date {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+  color: #888;
+  width: 100px;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value {
+  display: inline-block;
+  vertical-align: top;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value .s-time {
+  color: #fff;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value .s-text {
+  color: #aaa;
 }
 .hidden-menu-wrapper .menu-block-wrapper .search-wrapper {
   margin: 1em 0 0;
