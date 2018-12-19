@@ -257,6 +257,8 @@ class waEvent
             $this->debugLog('Event handling error in '.$class.":\n".$e->getMessage()."\n".$e->getTraceAsString());
         }
 
+        wa()->popActivePlugin();
+
         return $result;
     }
 
