@@ -144,6 +144,8 @@ class worldwideShipping extends waShipping
     {
         return array(
             'zip'     => array('cost' => false),
+            'street'  => array('cost' => false),
+            'city'    => array('cost' => false),
             'country' => array('cost' => true),
         );
     }

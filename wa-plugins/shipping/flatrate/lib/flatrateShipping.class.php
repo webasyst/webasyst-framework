@@ -3,13 +3,13 @@
 /**
  * Flat-rate shipping plugin.
  *
- * @property-read float $cost
+ * @property-read float  $cost
  * @property-read string $currency
  * @property-read string $delivery
- * @property-read bool $prompt_address
+ * @property-read bool   $prompt_address
  * @property-read string $service_type
  * @property-read string $service_name
- * @property-read array $shipping_address
+ * @property-read array  $shipping_address
  *
  */
 class flatrateShipping extends waShipping
@@ -120,7 +120,7 @@ class flatrateShipping extends waShipping
     /**
      * Returns general tracking information (HTML).
      *
-     * @see waShipping::tracking()
+     * @see     waShipping::tracking()
      * @example return _wp('Online shipment tracking: <a href="link">link</a>.');
      * @param string $tracking_id Optional tracking id specified by user.
      * @return string
@@ -152,9 +152,9 @@ class flatrateShipping extends waShipping
     /**
      * Returns HTML code of specified printable form.
      *
-     * @param string $id Printform id as defined in method getPrintForms()
-     * @param waOrder $order Order data object
-     * @param array $params Optional parameters to be passed to printform generation template
+     * @param string  $id     Printform id as defined in method getPrintForms()
+     * @param waOrder $order  Order data object
+     * @param array   $params Optional parameters to be passed to printform generation template
      * @throws waException
      * @return string Printform HTML
      */
@@ -207,7 +207,7 @@ class flatrateShipping extends waShipping
     /**
      * Returns array of shipping address fields which must be requested during checkout.
      *
-     * @see waShipping::requestedAddressFields()
+     * @see     waShipping::requestedAddressFields()
      * @example <pre>return array(
      *     #requested field
      *     'zip'     => array(),
@@ -231,13 +231,31 @@ class flatrateShipping extends waShipping
         $fields = false;
         if ($this->prompt_address) {
             $fields = array();
+
+            $data = array('required' => true);
+
             $shipping_address = $this->shipping_address;
             if (is_array($shipping_address)) {
                 foreach ($shipping_address as $field => $value) {
                     if (!empty($value)) {
-                        $fields[$field] = array('required' => true);
+                        $fields[$field] = array(
+                            'required' => true,
+                            'cost'     => true,
+                        );
                     }
                 }
+            }
+
+            $fields += array(
+                'country' => $data,
+                'region'  => $data,
+                'city'    => $data,
+                'street'  => $data,
+            );
+            if ($this->service_type == self::TYPE_POST) {
+                $fields += array(
+                    'zip' => $data,
+                );
             }
         }
         return $fields;
