@@ -132,6 +132,15 @@ class waSystemConfig
     {
         return $this->getSystemOption($name);
     }
+    
+    public function database($db = null)
+    {
+        if ($db !== null) {
+            self::$system_options['current_db'] = $db;
+        }
+
+        return !empty(self::$system_options['current_db']) ? self::$system_options['current_db'] : !empty(self::$system_options['use_db']) ? self::$system_options['use_db'] : 'default';
+    }    
 
     public function getFactory($name)
     {
