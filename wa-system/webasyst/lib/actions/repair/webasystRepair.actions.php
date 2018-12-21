@@ -42,4 +42,9 @@ class webasystRepairActions extends waActions
             echo "\t".$w.' widgets(s) has been fixed.'.PHP_EOL;
         }
     }
+    
+    public function defaultAction()
+    {
+        print "Available repair actions:\n\t widgets";
+    }
 }
