@@ -57,7 +57,7 @@ class waPlugin
      */
     public function getName()
     {
-        return $this->info['name'];
+        return ifset($this->info, 'name', ucfirst($this->id));
     }
 
     /**
@@ -66,7 +66,7 @@ class waPlugin
      */
     public function getVersion()
     {
-        $version = isset($this->info['version']) ? $this->info['version'] : '0.0.1';
+        $version = ifset($this->info, 'version', '0.0.1');
         if (!empty($this->info['build'])) {
             $version .= '.'.$this->info['build'];
         }
@@ -75,8 +75,8 @@ class waPlugin
 
     protected function checkUpdates()
     {
-        $app_settings_model = new waAppSettingsModel();
-        $time = $app_settings_model->get(array($this->app_id, $this->id), 'update_time');
+        $app_settings_model = self::getSettingsModel();
+        $time = $app_settings_model->get($this->getSettingsKey(), 'update_time');
         if (!$time) {
             try {
                 $this->install();
@@ -92,7 +92,7 @@ class waPlugin
         $is_debug = waSystemConfig::isDebug();
 
         if (!$is_debug) {
-            $cache = new waVarExportCache('updates', -1, $this->app_id.".".$this->id);
+            $cache = new waVarExportCache($this->id.'.updates', -1, $this->app_id);
             if ($cache->isCached() && $cache->get() <= $time) {
                 return;
             }
@@ -126,9 +126,9 @@ class waPlugin
             foreach ($files as $t => $file) {
                 try {
                     if (!$ignore_all) {
-                        $this->includeUpdate($file);
+                        $this->include($file, true);
                         waFiles::delete($cache_database_dir);
-                        $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+                        $app_settings_model->set($this->getSettingsKey(), 'update_time', $t);
                     }
                 } catch (Exception $e) {
                     if ($is_debug) {
@@ -147,16 +147,34 @@ class waPlugin
             if (!isset($t) || !$t) {
                 $t = 1;
             }
-            $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+            $app_settings_model->set($this->getSettingsKey(), 'update_time', $t);
         }
     }
 
     /**
      * @param string $file
+     * @deprecated 1.8.9
      */
     private function includeUpdate($file)
     {
-        include($file);
+        $this->include($file, true);
+    }
+    
+    /**
+     * @param string $include_file
+     * @param bool|array $extract_vars
+     * @return mixed
+     */
+    protected function include($include_file, $extract_vars = false)
+    {
+        if ($extract_vars) {
+            if (!is_array($extract_vars)) {
+                $extract_vars = array();
+            }
+            $extract_vars = array_merge(get_object_vars($this), $extract_vars);
+            extract($extract_vars, EXTR_SKIP);
+        }
+        return include($include_file);
     }
 
     protected function install()
@@ -164,18 +182,14 @@ class waPlugin
 
         $file_db = $this->path.'/lib/config/db.php';
         if (file_exists($file_db)) {
-            $schema = include($file_db);
+            $schema = $this->include($file_db);
             $model = new waModel();
             $model->createSchema($schema);
         }
         // check install.php
         $file = $this->path.'/lib/config/install.php';
         if (file_exists($file)) {
-            $app_id = $this->app_id;
-            /**
-             * @var string $app_id
-             */
-            include($file);
+            $this->include($file, true);
             // clear db scheme cache, see waModel::getMetadata
             try {
                 // remove files
@@ -195,11 +209,19 @@ class waPlugin
         $file = $this->path.'/lib/config/uninstall.php';
         if (file_exists($file)) {
             try {
-                include($file);
+                $this->include($file, true);
 
             } catch (Exception $ex) {
                 if ($force) {
-                    waLog::log(sprintf("Error while uninstall %s at %s: %s", $this->id, $this->app_id, $ex->getMessage(), 'installer.log'));
+                    waLog::log(
+                        sprintf(
+                            'Error while uninstall %s at %s: %s', 
+                            $this->id, 
+                            $this->app_id, 
+                            $ex->getMessage()
+                        ), 
+                        'installer.log'
+                    );
                 } else {
                     throw $ex;
                 }
@@ -208,7 +230,7 @@ class waPlugin
 
         $file_db = $this->path.'/lib/config/db.php';
         if (file_exists($file_db)) {
-            $schema = include($file_db);
+            $schema = $this->include($file_db);
             $model = new waModel();
             foreach ($schema as $table => $fields) {
                 $sql = "DROP TABLE IF EXISTS ".$table;
@@ -216,22 +238,28 @@ class waPlugin
             }
         }
         // Remove plugin settings
-        $app_settings_model = new waAppSettingsModel();
-        $app_settings_model->del($this->app_id.".".$this->id);
+        $app_settings_model = self::getSettingsModel();
+        $app_settings_model->del($this->getSettingsKey());
 
         if (!empty($this->info['rights'])) {
             // Remove rights to plugin
             $contact_rights_model = new waContactRightsModel();
-            $sql = "DELETE FROM ".$contact_rights_model->getTableName()."
-                    WHERE app_id = s:app_id AND (
-                        name = '".$contact_rights_model->escape('plugin.'.$this->id)."' OR
-                        name LIKE '".$contact_rights_model->escape('plugin.'.$this->id).".%'
-                    )";
-            $contact_rights_model->exec($sql, array('app_id' => $this->app_id));
+            $sql = "DELETE FROM ".$contact_rights_model->getTableName()
+                  ." WHERE app_id = s:app_id AND (name = s:name OR name LIKE l:name2)";
+            $contact_rights_model->exec(
+                $sql, 
+                array(
+                    'app_id' => $this->app_id, 
+                    'name' => 'plugin.'.$this->id,
+                    'name2' => 'plugin.'.$this->id.'.%',
+                )
+            );
         }
 
         // Remove cache of the application
-        waFiles::delete(wa()->getAppCachePath('', $this->app_id));
+        $cache_path = wa()->getAppCachePath('', $this->app_id);
+        waFiles::delete($cache_path);
+        waFiles::delete($cache_path.'_'.$this->id);
     }
 
     /**
@@ -250,15 +278,15 @@ class waPlugin
         if ($name) {
             $right .= '.'.$name;
         }
-        return wa()->getUser()->getRights(wa()->getConfig()->getApplication(), $right, $assoc);
+        return wa()->getUser()->getRights($this->app_id, $right, $assoc);
     }
 
     public function rightsConfig(waRightConfig $rights_config)
     {
-        $rights_config->addItem('plugin.'.$this->id, $this->info['name'], 'checkbox');
+        $rights_config->addItem('plugin.'.$this->id, $this->getName());
     }
 
-    protected function getUrl($url, $is_plugin)
+    protected function getUrl($url, $is_plugin = true)
     {
         if ($is_plugin) {
             return 'plugins/'.$this->id.'/'.$url;
@@ -308,7 +336,7 @@ class waPlugin
             /**
              * @var array $route Variable available at routing file
              */
-            return include($file);
+            return $this->include($file, array('route' => $route));
         } else {
             return array();
         }
@@ -362,7 +390,7 @@ class waPlugin
             if ($settings_config) {
                 foreach ($settings_config as $key => $row) {
                     if (!isset($this->settings[$key])) {
-                        $this->settings[$key] = is_array($row) ? (isset($row['value']) ? $row['value'] : null) : $row;
+                        $this->settings[$key] = is_array($row) ? ifset($row['value']) : $row;
                     }
                 }
             }
@@ -370,7 +398,7 @@ class waPlugin
         if ($name === null) {
             return $this->settings;
         } else {
-            return isset($this->settings[$name]) ? $this->settings[$name] : null;
+            return ifset($this->settings[$name]);
         }
     }
 
@@ -383,7 +411,7 @@ class waPlugin
         if (is_null($this->settings_config)) {
             $path = $this->path.'/lib/config/settings.php';
             if (file_exists($path)) {
-                $settings_config = include($path);
+                $settings_config = include($path, true);
                 if (!is_array($settings_config)) {
                     $settings_config = array();
                 }
@@ -401,6 +429,7 @@ class waPlugin
      */
     public function saveSettings($settings = array())
     {
+        $app_settings_model = self::getSettingsModel();
         $settings_config = $this->getSettingsConfig();
         foreach ($settings_config as $name => $row) {
             if (!isset($settings[$name])) {
@@ -409,15 +438,15 @@ class waPlugin
                 } elseif ((ifset($row['control_type']) == waHtmlControl::GROUPBOX) && !empty($row['value'])) {
                     $settings[$name] = array();
                 } elseif (!empty($row['control_type']) || isset($row['value'])) {
-                    $this->settings[$name] = isset($row['value']) ? $row['value'] : null;
-                    self::getSettingsModel()->del($this->getSettingsKey(), $name);
+                    $this->settings[$name] = ifset($row['value']);
+                    $app_settings_model->del($this->getSettingsKey(), $name);
                 }
             }
         }
         foreach ($settings as $name => $value) {
             $this->settings[$name] = $value;
             // save to db
-            self::getSettingsModel()->set($this->getSettingsKey(), $name, is_array($value) ? json_encode($value) : $value);
+            $app_settings_model->set($this->getSettingsKey(), $name, is_array($value) ? json_encode($value) : $value);
         }
     }
 
