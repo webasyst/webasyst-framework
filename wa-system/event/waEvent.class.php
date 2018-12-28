@@ -296,14 +296,14 @@ class waEvent
         if (!is_array(self::$handlers) || !is_array(self::$plugins)) {
             $this->setHandlers();
             $this->setPlugins();
-        }
 
-        // Write to cache unless disabled
-        if (!defined('WA_EVENT_CLEAR_CACHE')) {
-            $cache_export->set(array(
-                'plugins'  => self::$plugins,
-                'handlers' => self::$handlers
-            ));
+            // Write to cache unless disabled
+            if (isset($cache_export)) {
+                $cache_export->set(array(
+                    'plugins'  => self::$plugins,
+                    'handlers' => self::$handlers
+                ));
+            }
         }
     }
 
