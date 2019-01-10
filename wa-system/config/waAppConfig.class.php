@@ -514,13 +514,13 @@ class waAppConfig extends SystemConfig
             $pluginspath = $this->getConfigPath('plugins.php', true);
             if (file_exists($pluginspath)) {
                 $installed_plugins = include($pluginspath);
-                foreach ($installed_plugins as $plugin=>$enabled) {
-                    if($enabled) {
+                foreach ($installed_plugins as $plugin => $enabled) {
+                    if ($enabled) {
                         $enabled_plugins[] = $plugin;
                     }
                 }
-                $all_plugins = array_intersect($all_plugins, $enabled_plugins);
             }
+            $all_plugins = array_intersect($all_plugins, $enabled_plugins);
             foreach ($all_plugins as $plugin_id) {
                 $path = $this->getPluginPath($plugin_id).'/lib/';
                 if (file_exists($path)) {
