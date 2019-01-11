@@ -61,7 +61,7 @@ class webasystBackendHeaderAction extends waViewAction
             'date'          => $date,
             'user'          => $user,
             'header_items'  => $this->getHeaderItems(),
-            'reuqest_uri'   => waRequest::server('REQUEST_URI'),
+            'request_uri'   => waRequest::server('REQUEST_URI'),
             'current_app'   => $current_app,
             'counts'        => $counts,
             'wa_version'    => wa()->getVersion('webasyst'),
