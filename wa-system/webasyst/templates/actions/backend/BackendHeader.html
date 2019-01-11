@@ -25,7 +25,7 @@
             {$_version = null}
         {/if}
 
-        <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($reuqest_uri, $_item_url) !== false} class="selected"{/if}>
+        <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($request_uri, $_item_url) !== false} class="selected"{/if}>
             {* Build app icon count *}
             {$_count = null}
             {if $counts && isset($counts[$_id])}
