@@ -159,12 +159,6 @@ var UserTouch = ( function() {
 
         // Закрываем меню
         $(".hidden-menu-wrapper").on( "click", function(event) {
-            event.preventDefault();
-
-            // var $target = $(event.target),
-            //     menu_class = "menu-block-wrapper",
-            //     is_menu = !!($target.hasClass(menu_class) || $target.closest("." + menu_class).length);
-
             var is_wrapper = (event.target === this);
 
             if (is_wrapper) { hideHiddenMenu(); }
