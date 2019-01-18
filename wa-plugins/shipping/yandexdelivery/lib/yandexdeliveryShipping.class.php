@@ -218,7 +218,7 @@ class yandexdeliveryShipping extends waShipping
         return array(
             'geo_id_to' => $options + array(
                     'value'        => ifset($shipping_params, 'geo_id_to', null),
-                    'title'        => 'Город доставки',
+                    'title'        => 'Населенный пункт доставки',
                     'control_type' => waHtmlControl::SELECT,
                     'description'  => 'Уточните адрес',
 
@@ -293,7 +293,7 @@ class yandexdeliveryShipping extends waShipping
             $data['order_id'] = $order->shipping_data['order_id'];
             $method = 'updateOrder';
         }
-        $weight = $this->getTotalWeight();
+        $weight = number_format($this->getTotalWeight(), 3, '.', '');
         $size = $this->getPackageSize($weight);
 
         $shipping_discount = $this->correctItems();
@@ -309,10 +309,10 @@ class yandexdeliveryShipping extends waShipping
             'order_width'             => $size['width'],       //number Ширина заказа, см (округляется до целого в большую сторону)
             'order_height'            => $size['height'],      //number Высота заказа, см (округляется до целого в большую сторону)
             'order_assessed_value'    => $this->getAssessedPrice($this->insurance),//number Объявленная ценность, руб.
-            'order_delivery_cost'     => round($order->shipping - $shipping_discount),     //number Стоимость доставки, руб.
+            'order_delivery_cost' => number_format($order->shipping - $shipping_discount, 2, '.', ''),     //number Стоимость доставки, руб.
             'is_manual_delivery_cost' => empty($shipping_discount) ? 0 : 1,
 
-            'order_amount_prepaid' => $order->paid_datetime ? $this->getPackageProperty('price') : null,                 //number Сумма предоплаты по заказу, руб. (    300)
+            'order_amount_prepaid' => $order->paid_datetime ? number_format($this->getPackageProperty('price'), 2, '.', '') : null,                 //number Сумма предоплаты по заказу, руб. (    300)
             //'order_total_cost'           => $this->getPackageProperty('price'),
 
             'order_shipment_date' => null,//$order->shipping_data['shipment_date'], //string 03 - 13 (string)-Дата отгрузки заказа 2017
@@ -405,6 +405,9 @@ class yandexdeliveryShipping extends waShipping
                     $rate = -1;
                 }
                 switch ($rate) {
+                    case 20:
+                        $id = 7;
+                        break;
                     case 18:
                         $id = 1;
                         break;
@@ -823,13 +826,13 @@ class yandexdeliveryShipping extends waShipping
             }
             $params = array();
             $params += $this->prepareAddress();
-            $params['weight'] = $this->getTotalWeight();
+            $params['weight'] = number_format($this->getTotalWeight(), 3, '.', '');
             $params += $this->getPackageSize($params['weight']);
 
             $params['to_yd_warehouse'] = $this->yd_warehouse ? 1 : 0;
             $params['assessed_value'] = $this->getAssessedPrice($this->insurance);
-            $params['total_cost'] = round($this->getTotalPrice(), 2);
-            $params['order_cost'] = $params['total_cost'];
+            $params['total_cost'] = number_format($this->getTotalPrice(), 2, '.', '');
+            $params['order_cost'] = number_format($params['total_cost'], 2, '.', '');
             /** @var string $departure_datetime SQL DATETIME */
             $departure_datetime = $this->getPackageProperty('departure_datetime');
             if ($departure_datetime) {
@@ -932,7 +935,7 @@ class yandexdeliveryShipping extends waShipping
         }
 
         if (empty($address['city_to'])) {
-            throw new waException('Не указан город доставки.');
+            throw new waException('Не указан населенный пункт доставки.');
         }
 
         $params = $this->getPackageProperty('shipping_params');
@@ -981,7 +984,7 @@ class yandexdeliveryShipping extends waShipping
             'length' => 10,
         );
 
-        return $data;
+        return array_map('intval', $data);
     }
 
     private function formatRate($service)
@@ -1018,7 +1021,7 @@ class yandexdeliveryShipping extends waShipping
             'id'            => sprintf('%s:%s', $service['delivery']['id'], $service['tariffId']),
             'est_delivery'  => implode(' - ', array_unique($human_delivery_date)),
             'delivery_date' => self::formatDatetime($delivery_date),
-            'rate'          => ifset($service['costWithRules'], $service['cost']),
+            'rate'          => (float)str_replace(',', '.', ifset($service['costWithRules'], $service['cost'])),
             'currency'      => 'RUB',
         );
 
