@@ -76,7 +76,7 @@
                     <div class="s-schedule-wrapper" id="js-schedule-wrapper">
                         <div class="s-visible">
                             <div class="s-label-wrapper js-show-schedule">
-                                <div class="workhours-wrapper">[`Business hours`] <i class="s-icon"></i></div>
+                                <div class="workhours-wrapper">{_wd("shop", "Business hours")} <i class="s-icon"></i></div>
                             </div>
                         </div>
                         <div class="s-hidden">
@@ -88,7 +88,7 @@
                                             {if !empty($_day.work)}
                                                 <div class="s-time">{$_day.start_work|escape} — {$_day.end_work|escape}</div>
                                             {else}
-                                                <div class="s-text">[`day off`]</div>
+                                                <div class="s-text">{_wd("shop", "day off")}</div>
                                             {/if}
                                         </div>
                                     </div>
