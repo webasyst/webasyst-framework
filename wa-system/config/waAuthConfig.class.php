@@ -49,14 +49,20 @@ abstract class waAuthConfig
      */
     public function ensureChannelExists()
     {
-        // for user_password type without confirmation has existed channel is not critical, so skip
-        if ($this->getAuthType() === self::AUTH_TYPE_USER_PASSWORD && !$this->getSignupConfirm()) {
-            return;
-        }
-        $vcm = $this->getVerificationChannelModel();
+        // The essence of logic is
+        // if there is empty array of channels we try use default system email channel by filling this array
+
         $channel_ids = $this->getRawVerificationChannelIds();
-        $channels = $vcm->getChannels($channel_ids);
-        if (!$channels) {
+        $empty_channels = empty($channel_ids);
+
+        $vcm = $this->getVerificationChannelModel();
+
+        if (!$empty_channels) {
+            $channels = $vcm->getChannels($channel_ids);
+            $empty_channels = empty($channels);
+        }
+
+        if ($empty_channels) {
             $channel = $vcm->getDefaultSystemEmailChannel();
             $channel_ids[] = $channel['id'];
             $this->setRawVerificationChannelIds($channel_ids);

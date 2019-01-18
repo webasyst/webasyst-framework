@@ -525,6 +525,9 @@ class waRequest
                 } else {
                     wa()->getStorage()->del($key);
                 }
+            } else {
+                wa()->getStorage()->del($app_id.'/'.$key);
+                wa()->getStorage()->del($key);
             }
         } elseif ((($theme = wa()->getStorage()->get($app_id.'/'.$key)) || ($theme = wa()->getStorage()->get($key))) && waTheme::exists($theme)) {
             return $theme;

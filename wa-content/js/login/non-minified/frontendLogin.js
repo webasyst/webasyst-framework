@@ -153,12 +153,23 @@ var WaFrontendLogin = ( function($) {
 
     /**
      * When onetime password successfully sent to client
+     *
+     * Overridden method
+     * @see Parent
+     *
      * @param data
      */
     Self.prototype.onSentOnetimePassword = function (data) {
         var that = this,
             $wrapper = that.$wrapper;
         data = data || {};
+
+        // Show sent message
+        if (data.used_channel_type === 'email') {
+            $wrapper.find('.wa-onetime-password-transport-message').html(that.locale.sent_by_email || '');
+        } else if (data.used_channel_type === 'sms') {
+            $wrapper.find('.wa-onetime-password-transport-message').html(that.locale.sent_by_sms || '');
+        }
 
         // Format message about timeout
         var $timeout_message = that.formatInfoMessage(data.onetime_password_timeout_message, false, 'timeout');

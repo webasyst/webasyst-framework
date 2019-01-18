@@ -289,10 +289,10 @@ abstract class waBaseLoginAction extends waLoginModuleController
     protected function prepareData($data)
     {
         $data = is_array($data) ? $data : array();
-        $data['login'] = isset($data['login']) && is_scalar($data['login']) ? (string)$data['login'] : '';
-        $data['password'] = isset($data['password']) && is_scalar($data['password']) ? (string)$data['password'] : '';
+        $data['login'] = trim($this->getScalarValue('login', $data));
+        $data['password'] = $this->getScalarValue('password', $data);
+        $data['captcha'] = $this->getScalarValue('captcha', $data);
         $data['remember'] = !empty($data['remember']);
-        $data['captcha'] = isset($data['captcha']) && is_scalar($data['captcha']) ? (string)$data['captcha'] : '';
         return $data;
     }
 
@@ -396,6 +396,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
 
         $details = array(
+            'used_channel_type' => $channel_type,
             'onetime_password_sent_message' => $sent_message,
             'onetime_password_timeout_message' => $this->auth_config->getOnetimePasswordTimeoutMessage(),
             'onetime_password_timeout' => $this->auth_config->getOnetimePasswordTimeout()

@@ -50,9 +50,9 @@ class webasystLoginAction extends waBackendLoginAction
         if (!$redirect || substr($redirect, 0, strlen($backend_url) + 1) == $backend_url.'?') {
             $redirect = $backend_url;
         }
-        
+
         wa()->getUser()->setSettings('webasyst', 'backend_url', $this->getConfig()->getHostUrl() . $backend_url);
-        
+
         $this->redirect(array('url' => $redirect));
     }
 
@@ -75,11 +75,15 @@ class webasystLoginAction extends waBackendLoginAction
      */
     protected function getFormRenderer($options = array())
     {
+        $base_options = wa('webasyst')->getConfig()->getOption('backend_form_renderer_options');
+        if ($base_options && is_array($base_options)) {
+            $options = array_merge($base_options, $options);
+        }
+
         $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
         $is_api_oauth = $request_url === 'api.php/auth';
         $options['is_api_oauth'] = $is_api_oauth;
+
         return parent::getFormRenderer($options);
     }
 }
-
-// EOF

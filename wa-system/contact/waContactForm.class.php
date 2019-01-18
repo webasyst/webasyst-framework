@@ -34,6 +34,7 @@ class waContactForm
      * @param string|array $file path to config file, or array of config options.
      * @param array $options
      * @return self
+     * @throws waException
      */
     public static function loadConfig($file, $options = array())
     {
@@ -45,6 +46,16 @@ class waContactForm
 
     protected static function readConfig($file)
     {
+        if (is_scalar($file)) {
+            if (waConfig::get('is_template')) {
+                throw new waException('waContactForm::readConfig() is not allowed in template context');
+            }
+
+            if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
+                throw new waException('waContactForm::readConfig() allows reading only php configs');
+            }
+        }
+
         if (is_array($file)) {
             $fields_config = $file;
         } else {

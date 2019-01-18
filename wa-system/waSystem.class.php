@@ -685,6 +685,7 @@ class waSystem
         // One-time auth app token?
         if (!strncmp($request_url, 'link.php/', 9)) {
             $token = strtok(substr($request_url, 9), '/?');
+            $token = urldecode($token);
             if ($token) {
                 $app_token_model = new waAppTokensModel();
                 $row = $app_token_model->getById($token);

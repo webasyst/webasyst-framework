@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-12-12 10:59+0300\n"
+"PO-Revision-Date: 2019-01-14 16:25+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5840,3 +5840,9 @@ msgstr "Минимум 3 символа"
 
 msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section."
 msgstr "Не заполнен email-адрес отправителя в разделе «<a href=\"%s\">Настройки email</a>»."
+
+msgid "(sent by email)"
+msgstr "(отправлен по email)"
+
+msgid "(sent in SMS)"
+msgstr "(отправлен в SMS)"

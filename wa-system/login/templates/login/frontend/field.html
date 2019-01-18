@@ -23,7 +23,15 @@
     {/if}
 
     <div class="wa-field wa-field-{$field_id} {$class|default:''}" data-field-id="{$field_id}" style="{$_style}">
-        <div class="wa-name">{$caption}</div>
+        <div class="wa-name">
+            {$caption}
+
+            {* Show extra hint by what transport code has been sent *}
+            {if $is_onetime_password_auth_type && $field_id === 'password' && $is_email_channel_available && $is_sms_channel_available}
+                <span class="wa-onetime-password-transport-message"></span>
+            {/if}
+
+        </div>
         <div class="wa-value">
 
             {$html}

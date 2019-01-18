@@ -9,7 +9,9 @@
 {function render_wrapped field_id='' caption='' html='' class='' style=''}
     {$caption = $caption|escape}
     <div class="field field-{$field_id} {$class|default:''}" data-field-id="{$field_id}" style="{$style|default:''}">
-        <div class="name">{$caption}</div>
+        <div class="name">
+            {$caption}
+        </div>
         <div class="value">
             {$html}
             {render_errors errors=$errors}

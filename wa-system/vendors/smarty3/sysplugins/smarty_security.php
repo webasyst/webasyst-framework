@@ -408,22 +408,6 @@ class Smarty_Security {
         if (substr($filepath, -4) == '.php') {
             throw new SmartyException("file '".basename($filepath)."' not allowed by security setting");
         }
-        $config_path = waConfig::get('wa_path_config');
-
-        $_filepath = realpath($filepath);
-        $directory = dirname($_filepath);
-        while (true) {
-            if ($directory == $config_path) {
-                throw new SmartyException("directory '{$_filepath}' not allowed by security setting");
-                return false;
-            }
-            // abort if we've reached root
-            if (($pos = strrpos($directory, DS)) === false || !isset($directory[1])) {
-                break;
-            }
-            // bubble up one level
-            $directory = substr($directory, 0, $pos);
-        }
     }
 
     /**

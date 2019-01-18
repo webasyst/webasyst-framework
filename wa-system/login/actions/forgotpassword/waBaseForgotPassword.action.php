@@ -29,6 +29,8 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
 
     public function execute()
     {
+        wa()->getResponse()->setTitle(_ws('Password recovery'));
+
         // In one time password mode page is unavailable
         if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
             $this->notFound();
@@ -687,7 +689,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             $data['password'] = $this->getScalarValue('password', $data);
             $data['password_confirm'] = $this->getScalarValue('password_confirm', $data);
         } else {
-            $data['login'] = $this->getScalarValue('login', $data);
+            $data['login'] = trim($this->getScalarValue('login', $data));
         }
         return $data;
     }

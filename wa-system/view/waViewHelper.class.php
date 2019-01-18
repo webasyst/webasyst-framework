@@ -592,14 +592,17 @@ HTML;
 
             if (!$block && strpos($id, '.') !== false) {
                 list($app_id, $id) = explode('.', $id);
-                $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
-                if (file_exists($path)) {
-                    $site_config = include($path);
-                    if (isset($site_config['blocks'][$id])) {
-                        if (!is_array($site_config['blocks'][$id])) {
-                            $block = array('content' => $site_config['blocks'][$id]);
-                        } else {
-                            $block = $site_config['blocks'][$id];
+                if (wa()->appExists($app_id)) {
+
+                    $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+                    if (file_exists($path)) {
+                        $site_config = include($path);
+                        if (isset($site_config['blocks'][$id])) {
+                            if (!is_array($site_config['blocks'][$id])) {
+                                $block = array('content' => $site_config['blocks'][$id]);
+                            } else {
+                                $block = $site_config['blocks'][$id];
+                            }
                         }
                     }
                 }
@@ -1220,8 +1223,20 @@ HTML;
             return array();
         }
 
+        // Before trigger event, temporary turn-off 'is_template' flag, cause some of handlers might call static function that protected from calling by template file
+        $is_template = waConfig::get('is_template');
+        if ($is_template) {
+            waConfig::set('is_template', null);
+        }
+
         // Tabs of 'Team' app should always be on the left
         $event_result = wa()->event(array('contacts', 'profile.tab'), $id);
+
+        // restore is_template flag
+        if ($is_template) {
+            waConfig::get('is_template', $is_template);
+        }
+
         if (!empty($event_result['team'])) {
             $event_result = array(
                 'team' => $event_result['team'],

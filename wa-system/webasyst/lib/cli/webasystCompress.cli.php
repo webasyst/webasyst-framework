@@ -157,16 +157,19 @@ HELP;
                     $compress = $this->test();
                     if ($compress) {
                         $this->trace('Config check OK');
+                    } else {
+                        $this->trace('Config check FAILED');
                     }
                 } else {
                     $this->trace('Config check skipped');
                 }
 
 
-                if ($compress && ('theme' != $this->type) && !in_array($skip, array('test', 'all'), true)) {
+                if ($compress && ('theme' != $this->type)) {
                     $style = $this->getParam('style');
-
-                    if (!in_array('false', $style, true)) {
+                    if (!in_array($skip, array('test', 'all'), true)
+                        && !in_array('false', $style, true)
+                    ) {
                         $count = $this->codeStyle($style);
                         if ($count === false) {
                             $this->trace('Code style check skipped, try to use internal checks');
@@ -183,8 +186,9 @@ HELP;
                         }
 
                     } else {
-                        $this->trace('Code style check skipped');
+                        $this->trace('Code style check disabled');
                     }
+
                 } else {
                     $this->trace('Code style check skipped');
                 }
@@ -671,8 +675,7 @@ HELP;
             default:
                 # 1. Check settings
                 $result = $this->testConfig() && $result;
-                # 1.1 Routing
-                $result = $this->testRouting() && $result;
+                # 1.1 Requirements
                 $result = $this->testRequirements() && $result;
                 # 1.2 themes
                 # 1.3 plugins
@@ -699,16 +702,35 @@ HELP;
         $result = true;
         $extensions = array();
         $requirements = $this->getItemConfig('requirements');
+        $this->trace('Start checking system requirements');
         if ($requirements) {
             foreach ($requirements as $requirement => $requirement_info) {
-                if (preg_match('@^php\.(.+)$@', $requirement, $matches)) {
-                    $extensions[$matches[1]] = ifset($requirement_info['strict']);
+                if ($requirement === 'php') {
+                    if (!empty($requirement_info['strict']) && isset($requirement_info['version'])) {
+                        if (preg_match('@^([<>\=]+)(\d+.+)$@', $requirement_info['version'], $matches)) {
+                            $operator = $matches[1];
+                            $version = trim($matches[2]);
+                        } else {
+                            $operator = '>=';
+                            $version = $requirement_info['version'];
+                        }
+                        waRequest::setParam('PHP_VERSION', compact('version', 'operator'));
+                    }
+                } elseif (preg_match('@^php\.(.+)$@', $requirement, $matches)) {
+                    $extension = $matches[1];
+                    $extensions[$extension] = ifset($requirement_info['strict']);
+                    if (!extension_loaded($extension)) {
+                        $this->tracef('NOTICE: skip strict checking %s functions usage', $extension);
+                    }
                 }
             }
+            //TODO merge plugin requirements with application requirements
             waRequest::setParam('extensions', $extensions);
         } elseif ($requirements === false) {
             $result = false;
+            $this->tracef('Invalid requirements config');
         }
+        $this->tracef("\t%s", $result ? 'PASSED' : 'FAILED');
 
         return $result;
     }
@@ -728,6 +750,7 @@ HELP;
             'frontend',
             'license',
             'critical',
+            'locale',
         );
         switch ($this->type) {
             case 'app':
@@ -787,7 +810,6 @@ HELP;
                                 'external_tracking',
                                 'external',
                                 'backend_custom_fields',
-                                'locale',
                                 'services_by_type',
                                 'type',
                                 'multi_curl',
@@ -799,7 +821,6 @@ HELP;
                             $available,
                             array(
                                 'type',
-                                'locale',
                                 'offline',
                                 'discount',
                             )
@@ -838,8 +859,9 @@ HELP;
                 $this->tracef('WARNING: not found any of %s options at item config', implode(', ', $fields));
                 $valid = false;
             }
+            $valid = $this->testRouting() && $valid;
         } elseif ($this->config === false) {
-            $this->trace('ERROR: Invalid item config');
+            $this->trace('ERROR: Invalid item config. Config full test skipped.');
             $valid = false;
         } else {
             $this->trace('ERROR: Empty item config');
@@ -890,6 +912,8 @@ HELP;
         $uninstall = in_array('lib/config/uninstall.php', $this->files);
         if (($install && !$uninstall) || (!$install && $uninstall)) {
             $this->tracef('NOTICE: only one of install.php & uninstall.php present');
+        } else {
+            $this->trace("\tPassed");
         }
 
         return true;
@@ -929,10 +953,14 @@ HELP;
 
                 if (!$result) {
                     $this->tracef("Valid table names are \"%1\$s\" or \"%1\$s_*\"", $namespace);
+                } else {
+                    $this->trace("\tPassed");
                 }
             } elseif ($deprecated && in_array($deprecated, $this->files)) {
                 $this->tracef("Usage %s file id deprecated, use db.php", $deprecated);
                 $this->tracef("Valid table names are \"%1\$s\" or \"%1\$s_*\"", $namespace);
+            } else {
+                $this->trace("\tPassed (there no database)");
             }
         }
 
@@ -993,10 +1021,24 @@ HELP;
 
             $php_bins = $this->getPhpBinary();
 
-            foreach ($php_bins as $php_bin => $version) {
+            $requirements = waRequest::param('PHP_VERSION');
 
-                $this->trace("\nRun PHP syntax check");
-                $this->tracef("bin path: %s\nPHP Version:\n\t%s\n", $php_bin, $version);
+            foreach ($php_bins as $php_bin => $version) {
+                $version_result = true;
+
+                $this->trace("\nStart checking PHP syntax");
+                if (preg_match('@PHP\s+(\d+(\.\d+)+)(\s|$)@', $version, $matches)) {
+                    $version = $matches[1];
+                }
+                $this->tracef("PHP Version:\t%s\nBinary path:\t%s", $version, $php_bin);
+
+                if (is_array($requirements)) {
+                    if (!version_compare($version, $requirements['version'], $requirements['operator'])) {
+                        $this->tracef("PHP %s file syntax check\t SKIPPED: Requirement NOT satisfied [%s%s%s])", $version, $version, $requirements['operator'], $requirements['version']);
+                        continue;
+                    }
+                }
+
                 $errors = array(
                     'ignored' => 0,
                     'strict'  => 0,
@@ -1025,7 +1067,7 @@ HELP;
                                     $this->tracef("\t%s", trim(str_replace($this->path.'/'.$file, 'file', $output)));
                                 }
                                 if ($strict) {
-                                    $result = false;
+                                    $version_result = false;
                                     ++$errors['strict'];
                                 } else {
                                     ++$errors['ignored'];
@@ -1037,21 +1079,21 @@ HELP;
 
                 foreach ($errors as $type => $count) {
                     if ($count) {
-                        $this->tracef("Found %d %s errors", $count, $type);
+                        $this->tracef("Found %d %s error(s)", $count, $type);
                     }
                 }
 
-                if ($result) {
-                    $this->trace("PHP file syntax check\tPASSED");
-                } else {
-                    $this->trace("PHP file syntax check\tFAILED");
-                }
+                $this->tracef("PHP %s file syntax check\t%s", $version, $version_result ? 'PASSED' : 'FAILED');
+                $result = $result && $version_result;
+
             }
             if (empty($php_bins)) {
-                $this->trace("PHP binary not found, compile check skipped");
+                $this->trace("PHP binary not found, compile check SKIPPED");
+            } elseif (count($php_bins) > 1) {
+                $this->tracef("PHP file syntax check totally %s\n", $result ? 'PASSED' : 'FAILED');
             }
         } else {
-            $this->trace("WARNING: PHP syntax check skipped (proc_open function not available)");
+            $this->trace("WARNING: PHP syntax check SKIPPED (proc_open function not available)");
         }
 
         return $result;
@@ -1398,7 +1440,7 @@ HELP;
 
     /**
      * @param string $format
-     * @param mixed $_ [optional]
+     * @param mixed  $_ [optional]
      */
     protected function tracef($format, $_ = null)
     {
