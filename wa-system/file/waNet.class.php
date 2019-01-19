@@ -49,6 +49,8 @@ class waNet
         'format'              => null,
         'request_format'      => null,
         'required_get_fields' => array(),
+        # callable, format raw response
+        'response_prefilter'  => null,
         'charset'             => 'utf-8',
         'verify'              => true,
         'md5'                 => false,
@@ -65,11 +67,11 @@ class waNet
         # specify custom interface
         'interface'           => null,
         # string with list of expected codes separated comma or space; null to accept any code
-        'expected_http_code'  => 200,
+        'expected_http_code'  => '200',
         'priority'            => array(
-            'curl',
-            'fopen',
-            'socket',
+            self::TRANSPORT_CURL,
+            self::TRANSPORT_SOCKET,
+            self::TRANSPORT_FOPEN,
         ),
         'ssl'                 => array(
             'key'      => '',
@@ -216,7 +218,7 @@ class waNet
     protected function buildRequest(&$url, &$content, &$method)
     {
         $format = ifempty($this->options['request_format'], $this->options['format']);
-        if ($content && in_array($format, array(self::FORMAT_XML, self::FORMAT_XML), true)) {
+        if ($content && in_array($format, array(self::FORMAT_XML, self::FORMAT_JSON))) {
             $method = self::METHOD_POST;
         }
 
@@ -368,6 +370,10 @@ class waNet
      */
     protected function decodeResponse($response)
     {
+        if ($this->options['response_prefilter']) {
+            // Format raw response, usefull for fix uncorrect response.
+            $response = call_user_func($this->options['response_prefilter'], $response);
+        }
         $this->raw_response = $response;
         $this->decoded_response = null;
         switch ($this->options['format']) {
