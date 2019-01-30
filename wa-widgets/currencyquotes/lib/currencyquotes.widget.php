@@ -8,26 +8,40 @@ class currencyquotesWidget extends waWidget
     public function defaultAction()
     {
         $is_today = true;
+        $allow_api = true;
         $nocache = $this->getRequest()->get('nocache');
+        wa()->getStorage()->close();
 
         // Start from tomorrow and look back up to 10 days ago, fetching quotes via cache or API
         for ($days_ago = 0; $days_ago < 10; $days_ago += 1) {
             $today_date = date('Y-m-d', strtotime((1-$days_ago) . ' day'));
-            $today_quotes = $this->getQuotes($today_date, !$nocache);
 
-            // try again and reset nocache flag (so now on take data from cache)
+            // Try to get data from API or cache.
+            // First request is always via API. Other requests prefer cache.
+            $today_quotes = $this->getQuotes($today_date, ($is_today || $nocache) ? 'force' : $allow_api);
+
+            // When fetching data failed it means something's wrong with API.
+            // We reset flags, from now on taking data from cache only.
             if ($nocache && !$today_quotes) {
-                $nocache = false;
-                $today_quotes = $this->getQuotes($today_date, !$nocache);
+                $allow_api = $nocache = false;
+                $today_quotes = $this->getQuotes($today_date, false);
             }
 
             if ($today_quotes) {
 
-                // looking maximum 10 days ago
+                // Defaults in case we can't fetch previous quote to compare to
+                foreach ($today_quotes as &$quote) {
+                    $quote['val'] = round((float) $quote['val'], 4);
+                    $quote['diff_str'] = null;
+                    $quote['diff'] = null;
+                }
+                unset($quote);
+
+                // looking maximum 10 days ago to find previous quote
                 for ($prev_shift = 0; $prev_shift < 9; $prev_shift += 1) {
 
                     $prev_date = date('Y-m-d', strtotime('-' . ($days_ago + $prev_shift) . ' day'));
-                    $prev_quotes = $this->getQuotes($prev_date, !$nocache);
+                    $prev_quotes = $this->getQuotes($prev_date, $nocache || $allow_api);
 
                     foreach ($today_quotes as &$quote) {
                         $prev_quotes[$quote['code']]['val'] = ifset($prev_quotes[$quote['code']]['val'], 0);
@@ -37,13 +51,12 @@ class currencyquotesWidget extends waWidget
                         }
                         $quote['diff'] = $diff;
                         $quote['diff_str'] = $quote['diff'] >= 0 ? '+' . $quote['diff'] : $quote['diff'];
-                        $quote['val'] = round((float) $quote['val'], 4);
                     }
                     unset($quote);
-
-                    break 2;
-
+                    break;
                 }
+
+                break;
             }
             $is_today = false;
         }
@@ -61,25 +74,22 @@ class currencyquotesWidget extends waWidget
      * @param Y-m-d datetime $date
      * @return array
      */
-    public function getQuotes($date, $from_cache = true)
+    public function getQuotes($date, $allow_api = true)
     {
         $cache = $this->getCacheQuotes();
-        if (!isset($cache[$date]) || !$from_cache) {
-
-            $quotes = array();
+        if ($allow_api === 'force' || ($allow_api && empty($cache[$date]))) {
             // make maximum 3 tries for loading quotes
             for ($try = 0, $pause = 1; $try < 3; $try += 1, $pause += 0.5) {
                 $quotes = $this->loadQuotes(date('d/m/Y', strtotime($date)));
                 if (!empty($quotes)) {
+                    $cache[$date] = $quotes;
+                    $this->setCacheQuotes($cache);
                     break;
                 }
                 sleep((int) $pause);
             }
-
-            $cache[$date] = $quotes;
-            $this->setCacheQuotes($cache);
         }
-        return $cache[$date];
+        return ifempty($cache[$date], array());
     }
 
     protected function loadQuotes($date)
@@ -87,24 +97,24 @@ class currencyquotesWidget extends waWidget
         $url = 'http://www.cbr.ru/scripts/XML_daily.asp?date_req=' . $date;
         try {
             $response = $this->load($url);
-            if (!$response) {
-                return array();
-            }
-            $xml = new SimpleXMLElement($response);
-            $quotes = array();
-            foreach ($xml->xpath('Valute') as $quote) {
-                $code = (string) $quote->CharCode;
-                if (in_array($code, $this->currencies)) {
-                    $quotes[$code] = array(
-                        'code' => (string) $code,
-                        'val' => str_replace(',', '.', (string) $quote->Value),
-                    );
+            if ($response) {
+                $quotes = array();
+                $xml = new SimpleXMLElement($response);
+                foreach ($xml->xpath('Valute') as $quote) {
+                    $code = (string) $quote->CharCode;
+                    if (in_array($code, $this->currencies)) {
+                        $quotes[$code] = array(
+                            'code' => (string) $code,
+                            'val' => str_replace(',', '.', (string) $quote->Value),
+                        );
+                    }
                 }
+                return $quotes;
             }
         } catch (Exception $e) {
-            return array();
+            waLog::log('Unable to get data from currencyquotes widget API: '.$e->getMessage());
         }
-        return $quotes;
+        return array();
     }
 
     protected function getParams()
@@ -128,13 +138,19 @@ class currencyquotesWidget extends waWidget
 
     public function getCacheQuotes()
     {
+        // Load cache
         $params = $this->getParams();
         $quotes = array();
-        if (isset($params['quotes'])) {
-            $quotes = json_decode($params['quotes'], true);
+        if (!empty($params['quotes'])) {
+            $quotes = @json_decode($params['quotes'], true);
+            if (!$quotes) {
+                $quotes = array();
+            }
         }
-        $month_ago = strtotime('-1 month');
+
+        // Remove items older than a month
         $changed = false;
+        $month_ago = strtotime('-1 month');
         foreach ($quotes as $dt => $q) {
             if (strtotime($dt) < $month_ago) {
                 $changed = true;
@@ -145,6 +161,7 @@ class currencyquotesWidget extends waWidget
             $params['quotes'] = json_encode($quotes);
             $this->setParams($params);
         }
+
         return $quotes;
     }
 
@@ -164,7 +181,7 @@ class currencyquotesWidget extends waWidget
     {
         if (!extension_loaded('curl')) {
             if (ini_get('allow_url_fopen')) {
-                $default_socket_timeout = @ini_set('default_socket_timeout', 15);
+                $default_socket_timeout = @ini_set('default_socket_timeout', 10);
                 $result = file_get_contents($url);
                 @ini_set('default_socket_timeout', $default_socket_timeout);
             } else {
@@ -181,7 +198,7 @@ class currencyquotesWidget extends waWidget
                 $error .= ": ".curl_errno($ch)." - ".curl_error($ch);
                 throw new waException($error);
             }
-            @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+            @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
             @curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             @curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             @curl_setopt($ch, CURLOPT_TIMEOUT, 15);

@@ -1,0 +1,71 @@
+{* VAR DECLARATION SECTION BEGIN *}
+
+{$include_js = $include_js|default:false}
+{$include_css = $include_css|default:false}
+
+{* VAR DECLARATION SECTION END *}
+
+{* FUNCTION DECLARATION SECTION BEGIN *}
+
+{function include_assets}
+    {if $include_js}
+        <script src="{$wa_url}wa-content/js/login/login-backend-form.min.js?v={$wa->version()}"></script>
+    {/if}
+    {if $include_css}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/if}
+{/function}
+
+{function include_form_js}
+    <script>
+        (function($) {
+            new WaBackendLogin({
+                $wrapper: $("#{$wrapper_id}"),
+                namespace: {$namespace|json_encode},
+                auth_type: {$auth_config.auth_type|json_encode},
+                errors: {$errors|json_encode},
+                messages: {$messages|json_encode},
+                onetime_password_url: {$onetime_password_url|json_encode},
+                locale: {
+                    required: '[s`Field is required`]',
+                    login_required: '[s`Login is required`]',
+                    password_required: '[s`Password is required`]',
+                    captcha_required: '[s`Captcha is required`]'
+                },
+                is_json_mode: {$is_json_mode|default:false|json_encode}
+            });
+        })(jQuery);
+    </script>
+{/function}
+
+{function wrap}
+    {$class_id = 'wa-login-form'}
+    {$wrapper_id = uniqid($class_id)}
+
+    {$classes = [ $class_id ]}
+
+    {if $include_js}
+        {$classes[] = 'js-backend-auth-form'}
+    {/if}
+
+    {$classes = join(' ', $classes)}
+
+    <div class="{$classes}" id="{$wrapper_id}">
+        <h1 class="wa-login-form-title">{$renderer->getTitle()|truncate:20:'...'|escape}</h1>
+        {$html}
+    </div>
+
+    {if $include_js}
+        {include_form_js}
+    {/if}
+
+{/function}
+
+{* FUNCTION DECLARATION SECTION END *}
+
+{* TEMPLATE BODY SECTION BEGIN *}
+
+{include_assets}
+{wrap}
+
+{* TEMPLATE BODY SECTION END *}

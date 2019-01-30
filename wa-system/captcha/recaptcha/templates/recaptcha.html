@@ -1,0 +1,49 @@
+{*
+    Explicit rendering, as well as $.getScript(), are used
+    to allow multiple ReCaptchas on the same page.
+
+    Click to .wa-captcha-refresh is used in templates to programmatically reset WA CAPTCHAs.
+    An invisible element is added here to support the same behaviour.
+*}
+<script>
+    (function() {
+
+        {*
+        if (window.onloadWaRecaptchaCallback) {
+            return;
+        }
+        *}
+
+        window.onloadWaRecaptchaCallback = function() {
+            var sitekey = {$sitekey|default:''|json_encode};
+            if (!window.grecaptcha) return;
+            $('.g-recaptcha:not(.initialized)').each(function() {
+                var wrapper = $(this).addClass('initialized');
+                var widget_id = grecaptcha.render(wrapper[0], { sitekey: sitekey });
+                wrapper.siblings('.wa-captcha-refresh, wa-captcha-img').click(function() {
+                    try {
+                        grecaptcha.reset(widget_id);
+                        $(window).trigger('wa_recaptcha_loaded');
+                    } catch (e) {
+                        console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
+                        console.log(e);
+                    }
+                    return false;
+                });
+            });
+            $(window).trigger('wa_recaptcha_loaded');
+        };
+
+        $(function() {
+            if (window.grecaptcha) {
+                window.onloadWaRecaptchaCallback();
+            } else {
+                $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadWaRecaptchaCallback");
+            }
+        });
+    })();
+</script>
+<div class="{$wrapper_class} wa-recaptcha">
+    <a class="wa-captcha-refresh wa-captcha-img" style="display:none;"></a>
+    <div class="g-recaptcha"></div>
+</div>

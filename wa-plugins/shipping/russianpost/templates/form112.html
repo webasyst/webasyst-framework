@@ -9,16 +9,16 @@ body { padding: 10px; }
 input { font-size: 13px; margin-top: 2px; }
 table td { padding-right: 20px; }
 #img-link {
-	width:auto;
-	outline: none;
-	padding:0;
-	display:inline;
+    width:auto;
+    outline: none;
+    padding:0;
+    display:inline;
 }
 .hint { color: #aaa; font-size: 0.8em; }
 img {
-	border-width:0;
-	padding: 0;
-	margin: 0;
+    border-width:0;
+    padding: 0;
+    margin: 0;
 }
 #load_div {
     background: url('{$wa_url}wa-content/img/loading16.gif') no-repeat;
@@ -26,10 +26,10 @@ img {
     padding-left: 20px;
     padding-top: 0;
 }
-@media print 
+@media print
 {
     body { padding: 0; margin: 0; }
-    .noprint 
+    .noprint
     {
         display:none;
     }
@@ -40,39 +40,39 @@ img {
     function show(node,hide_id,show_id){
     var hide_node;
     if(hide_node = document.getElementById(hide_id)){
-    	hide_node.style.display = 'none';
+        hide_node.style.display = 'none';
     }
     var load_node;
     if(load_node = document.getElementById('load_div')){
-    	load_node.style.display = '';
+        load_node.style.display = '';
     }
     var image_node;
     if(image_node = document.getElementById('image')){
-    	image_node.src = node.href;
-    	image_node.style.display = 'none';
-    	image_node.parentNode.href = node.href;
-    	image_node.parentNode.style.display = 'none';
-    	image_node.onload = function(){
+        image_node.src = node.href;
+        image_node.style.display = 'none';
+        image_node.parentNode.href = node.href;
+        image_node.parentNode.style.display = 'none';
+        image_node.onload = function(){
             load(show_id);
         }
     }
     return false;
     }
-    
+
     function load(show_id){
     var show_node;
     if(show_node = document.getElementById(show_id)){
-    	show_node.style.display = '';
-    
+        show_node.style.display = '';
+
     }
     var image_node;
     if(image_node = document.getElementById('image')){
-    	image_node.style.display = '';
-    	image_node.parentNode.style.display = 'block';
+        image_node.style.display = '';
+        image_node.parentNode.style.display = 'block';
     }
     var load_node;
     if(load_node = document.getElementById('load_div')){
-    	load_node.style.display = 'none';
+        load_node.style.display = 'none';
     }
     }
     //-->
@@ -83,35 +83,54 @@ img {
         <form id="edit_front_form" action="" method="post">
             {$wa->csrf()}
             <table>
-            	<tr>
+                <tr>
                     <td colspan="2"><h2>Форма №112ЭП <span class="hint">Прием переводов в адрес физических и юридических лиц</span></h2></td>
                 </tr>
-            	<tr>
-            		<td>Сумма почтового перевода</td>
-            		<td><label><input type="text" name="rub" value="{$order.rub|escape:'html'}" />руб.</label> <label><input size="2" type="text" name="cop" value="{$order.cop|escape:'html'}" />коп.</label></td>
-            	</tr>
-            	<tr>
-            		<td>Сумма почтового перевода прописью</td>
-            		<td><input size="80" type="text" name="order_amount" value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
-            	</tr>
-            	<tr>
-            		<td>&nbsp;</td>
-            		<td>
-            		  <br>
-            		  <input type="submit" value="Сформировать бланк формы №112ЭП" />
+                <tr>
+                    <td>Сумма почтового перевода</td>
+                    <td><label><input type="text" name="rub" value="{$order.rub|escape:'html'}" />руб.</label> <label><input size="2" type="text" name="cop" value="{$order.cop|escape:'html'}" />коп.</label></td>
+                </tr>
+                <tr>
+                    <td>Сумма почтового перевода прописью</td>
+                    <td><input size="80" type="text" name="order_amount" value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
+                </tr>
+                <tr>
+                    <td>Наложенный платеж</td>
+                    <td><input type="checkbox" name="payment" value="1" checked /></td>
+                </tr>
+ 
+
+                <tr>
+                    <td colspan="2"><strong><br/><br/>Получатель заказа:</strong></td>
+                </tr>
+    
+                <tr>
+                    <td>ФИО</td>
+                    <td><input size="80" type="text" name="billing_name" value="{$order.contact_name|escape:'html'}"/></td>
+                </tr>
+                <tr>
+                    <td>Адрес</td>
+                    <td><input size="80" type="text" name="billing_address" value="{$billing_address|escape}"/></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                      <br>
+                      <input type="submit" value="Сформировать бланк формы №112ЭП" />
                     </td>
-            	</tr>
+                </tr>
             </table>
         </form>
     {else}
+        {if !waRequest::get('mass_print')}
         <form action="" class="noprint">
             <input id="print_button" type="button" value="[`Печать`]" onclick="window.print();return false;"/>
         </form>
-        
+        {/if}
         <div id="load_div" class="noprint" >Формирование бланка...</div>
         <p>
             <a id="img_link" style="display:none;border:0" target="_blank" href="?{$src_front}">
-            	<img width="100%" id="image" src="?{$src_front}" alt="" title="" onload="load('front_div');"/>
+                <img width="100%" id="image" src="?{$src_front}" alt="" title="" onload="load('front_div');"/>
             </a>
         </p>
     {/if}

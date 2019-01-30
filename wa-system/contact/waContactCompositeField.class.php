@@ -45,7 +45,7 @@ class waContactCompositeField extends waContactField
                 }
                 return $data;
             } else {
-                return $this->format($data, $format);
+                return $this->format(ifset($data, 0, array()), $format);
             }
         } else {
             return array();
@@ -328,8 +328,8 @@ class waContactCompositeField extends waContactField
     {
         $result = array();
         $params_subfield = $params;
-        $value = ifset($params['value'], array());
-        $data = ifset($value['data'], array());
+        $value = ifset($params, 'value', array());
+        $data = ifset($value, 'data', array());
         $params_subfield['composite_value'] = $data;
 
         if (!isset($params['id'])) {
@@ -345,7 +345,7 @@ class waContactCompositeField extends waContactField
         foreach ($this->options['fields'] as $field) {
             $params_subfield['id'] = $field->getId();
             $params_subfield['parent'] = $params['id'];
-            $params_subfield['value'] = ifset($data[$field->getId()]);
+            $params_subfield['value'] = ifset($data, $field->getId(), null);
 
             if (!strlen($params_subfield['value'])) {
                 $default_value = $field->getParameter('value');
@@ -384,6 +384,30 @@ class waContactCompositeField extends waContactField
         $params['validation_errors'] = $errors;
         return $this->getHtmlOne($params, $attrs);
     }
-}
 
-// EOF
+    public function isHidden()
+    {
+        $hidden = null;
+        if (isset($this->options['hidden'])) {
+            $hidden = $this->options['hidden'];
+        }
+
+        if ($hidden || ($hidden === null)) {
+            if (!empty($this->options['fields'])) {
+                foreach ($this->options['fields'] as $field) {
+                    /**
+                     * @var waContactField $field
+                     */
+                    $_hidden = $field->isHidden();
+
+                    if (!$_hidden) {
+                        $hidden = false;
+                    } elseif (($hidden === null) && $_hidden) {
+                        $hidden = true;
+                    }
+                }
+            }
+        }
+        return $hidden === null ? false : $hidden;
+    }
+}

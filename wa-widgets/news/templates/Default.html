@@ -30,88 +30,45 @@
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00515151', endColorstr='#515151',GradientType=0 ); /* IE6-9 */
 }
 </style>
-
 {if empty($rss_url)}
-
     <div class="block">
         <h5 class="align-center hint wa-empty-feed">[`Please set up news source in widget settings.`]</h5>
     </div>
-
+{elseif empty($channel.name)}
+    <div class="block">
+        <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed`].</h5>
+    </div>
 {else}
+    <div class="block wa-news-widget" id="{$uniqid}">
+        {foreach $items as $_item}
+        <p class="snw-entry">
+            <a href="{$_item.link}" class="entry-title entry-link" target="_blank">{$_item.title|escape}</a>
+            <span class="entry-datetime hint">{$_item.date|wa_datetime}</span>
+        </p>
+        {/foreach}
 
-<div class="block wa-news-widget" id="{$uniqid}">
-    <p class="snw-entry hidden template">
-        <a href="" class="entry-title entry-link" target="_blank"></a>
-        <span class="entry-datetime hint"></span>
-    </p>
+        {if !empty($channel.link)}
+        <div class="wa-link-to-all-news">
+            <div class="block">
+                <a href="{$channel.link}" target="_blank">[`Show all news`] <i class="icon16 new-window"></i></a>
+            </div>
+        </div>
+        {/if}
+    </div>
+        <script>
+            (function ($) {
+                var is_loaded = (typeof newsWidget !== "undefined"),
+                    js_href = "{$widget_url}js/news.widget.js?{$wa->version()}",
+                    widget = DashboardWidgets["{$widget_id}"],
+                    options = {
+                        widget_id: {$widget_id}
+                    };
 
-    <div class="hidden wa-link-to-all-news"><div class="block">
-        <a href="javascript:void(0)" target="_blank">[`Show all news`] <i class="icon16 new-window"></i></a>
-    </div></div>
-</div>
+                (is_loaded) ? initWidget() : $.getScript(js_href, initWidget);
 
-
-<script>(function() { "use strict";
-    var $wrapper = $('#{$uniqid}');
-    var rss_url = {$rss_url|json_encode};
-    var error_string = "[`Unable to load news feed`]";
-
-    (function() {
-        if (window.google && google.load) {
-            return $.Deferred(function(d) {
-                d.resolve();
-            });
-        } else {
-            return $.ajax({
-                dataType: "script",
-                url: '\/\/www.google.com/jsapi',
-                cache: true
-            });
-        }
-    })().done(function() {
-        google.load("feeds", "1", {
-            callback: function() {
-                var feed = new google.feeds.Feed(rss_url);
-                feed.setNumEntries(15);
-                updateFeed(feed);
-                setInterval(function() {
-                    updateFeed(feed);
-                }, 15*60000);
-            }
-        });
-    });
-
-    function updateFeed(feed) {
-        feed.load(function (data) {
-            data.feed.link && $wrapper.find('.wa-link-to-all-news').show().find('a').attr('href', data.feed.link);
-            $wrapper.children('.snw-entry:not(.template)').remove();
-            if (data.error) {
-                showError(data.error);
-            } else {
-                buildTable(data.feed.entries);
-            }
-        });
-    }
-
-    function buildTable(entries) {
-        var $template = $wrapper.children('.template');
-        var blocks = [];
-        entries.forEach(function(entry) {
-            var $entry = $template.clone().removeClass('hidden template');
-            $entry.find('.entry-datetime').text((new Date(entry.publishedDate)).toLocaleString());
-            $entry.find('.entry-title').text(entry.title);
-            $entry.find('.entry-link').attr('href', entry.link);
-            blocks.push($entry);
-        });
-        $wrapper.append(blocks);
-    }
-
-    function showError(error) {
-        console && console.log(error);
-        var $entry = $wrapper.children('.template').clone().removeClass('hidden template').addClass('errormsg').empty();
-        $entry.append($('<p class="align-center">').text(error_string)).appendTo($wrapper);
-    }
-
-})();</script>
-
+                function initWidget() {
+                    widget.news = new newsWidget(options);
+                }
+            })(jQuery);
+    </script>
 {/if}

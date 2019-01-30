@@ -23,7 +23,7 @@ class waContactTimezoneField extends waContactSelectField
 
         if ($id) {
             if (!isset($this->timezones[$id])) {
-                throw new Exception('Unknown timezone: '.$id);
+                throw new waException('Unknown timezone: '.$id);
             }
             return $this->timezones[$id];
         }

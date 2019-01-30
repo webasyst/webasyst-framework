@@ -402,6 +402,7 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase {
         if (!isset($this->properties['unifunc'])) {
             $this->properties['unifunc'] = 'content_' . str_replace('.', '_', uniqid('', true));
         }
+        $this->properties['unifunc'] = preg_replace('/[^a-zA-Z0-9]+/', '_', $this->properties['unifunc']);
         if (!$this->source->recompiled) {
             $output .= "\$_valid = \$_smarty_tpl->decodeProperties(" . var_export($this->properties, true) . ',' . ($cache ? 'true' : 'false') . "); /*/%%SmartyHeaderCode%%*/?>\n";
             $output .= '<?php if ($_valid && !is_callable(\'' . $this->properties['unifunc'] . '\')) {function ' . $this->properties['unifunc'] . '($_smarty_tpl) {?>';
@@ -475,7 +476,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase {
             }
             $this->cached->valid = $is_valid;
         } else {
-            $this->mustCompile = !$is_valid;        }
+            $this->mustCompile = !$is_valid;
+        }
         // store data in reusable Smarty_Template_Compiled
         if (!$cache) {
             $this->compiled->_properties = $properties;

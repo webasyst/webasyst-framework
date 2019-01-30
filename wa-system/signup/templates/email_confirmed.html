@@ -1,0 +1,24 @@
+<link href="{$wa_url}wa-content/css/signup/signup.css?v={$wa->version()}" rel="stylesheet" type="text/css"/>
+
+{$class_id = 'wa-signup-form-wrapper'}
+{$wrapper_id = uniqid($class_id)}
+
+<div class="{$class_id}" id="{$wrapper_id}">
+    <div class="wa-signup-form-email-confirmed-block">
+
+        {if !empty($show_title)}
+            <h1 class="wa-signup-form-title">[s`Signup completed`]</h1>
+        {/if}
+
+        <p>
+            [s`You have successfully signed up.`]
+        </p>
+
+        <p>
+            <a href="{$app_url}" class="wa-app-url-link">
+                [s`Open website →`]
+            </a>
+        </p>
+
+    </div>
+</div>

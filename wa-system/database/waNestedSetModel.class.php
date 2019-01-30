@@ -484,14 +484,14 @@ class waNestedSetModel extends waModel
 
         // if child item miss parent set parent_id of child to 0
         $sql = "UPDATE {$this->table} c
-                LEFT JOIN {$this->table} p ON c.parent_id = p.id
-                SET c.parent_id = 0
+                LEFT JOIN {$this->table} p ON c.`{$this->parent}` = p.id
+                SET c.`{$this->parent}` = 0
                 WHERE p.id IS NULL";
         $this->exec($sql);
 
         while ($parent_ids) {
             $result = $this->query("SELECT * FROM {$this->table}
-                WHERE parent_id IN (".implode(',', $parent_ids).")".
+                WHERE `{$this->parent}` IN (".implode(',', $parent_ids).")".
                             ($root_id ? " AND {$this->root} = $root_id" : "")."
                 ORDER BY `{$this->left}`");
             $parent_ids = array();

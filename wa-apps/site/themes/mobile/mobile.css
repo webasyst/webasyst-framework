@@ -345,6 +345,9 @@ p {
 p:first-child {
   margin-top: 0;
 }
+figure {
+  margin: 1em 0 0;
+}
 ul,
 ol {
   font: 400 1rem/1rem "Helvetica Neue", "Roboto Condensed", "Roboto", Arial, sans-serif;
@@ -398,6 +401,17 @@ select {
 .tags a {
   color: #008000;
 }
+.s-footer-notice {
+  margin: 1em 0;
+  font-size: 0.8em;
+  line-height: 1.3em;
+  color: #bbb;
+  text-align: center;
+}
+.s-footer-notice a {
+  color: inherit;
+  text-decoration: underline;
+}
 @font-face {
   font-family: 'fontello';
   src: url("font/fontello.eot?44009213");
@@ -439,6 +453,19 @@ select {
 .icon-chat:before {
   content: '\e807';
 }
+.badge {
+  display: inline-block;
+  padding: 2px 4px;
+  margin: 0;
+  box-sizing: border-box;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 2px;
+  line-height: 1.2em;
+  word-wrap: break-word;
+  font-size: 0.8em;
+  background: #ccc;
+  color: #000;
+}
 iframe {
   margin: 1em 0 0;
   width: 100% !important;
@@ -471,6 +498,8 @@ input[type="text"],
 input[type="password"],
 input[type="button"],
 input[type="submit"],
+input[type="email"],
+input[type="search"],
 textarea {
   display: inline-block;
   vertical-align: top;
@@ -492,6 +521,8 @@ input[type="text"].wa-error,
 input[type="password"].wa-error,
 input[type="button"].wa-error,
 input[type="submit"].wa-error,
+input[type="email"].wa-error,
+input[type="search"].wa-error,
 textarea.wa-error,
 .general-button.error,
 button.error,
@@ -499,6 +530,8 @@ input[type="text"].error,
 input[type="password"].error,
 input[type="button"].error,
 input[type="submit"].error,
+input[type="email"].error,
+input[type="search"].error,
 textarea.error {
   border-color: #c03;
 }
@@ -825,12 +858,62 @@ body.menu-is-shown .hidden-menu-wrapper {
   background: transparent url("img/icons/phone.png") 0.2rem 0 no-repeat;
   background-size: auto 1.75rem;
 }
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .phone-wrapper a {
+  text-decoration: none;
+}
 .hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .workhours-wrapper {
   padding: 0.125rem 0 0.125rem 2rem;
   margin: 1rem 0 0;
   line-height: 1.25rem;
-  background: transparent url("img/icons/switch-on.png") 0 no-repeat;
-  background-size: auto 1.5rem;
+  background: transparent url("img/svg/time-icon.svg") 0 no-repeat;
+  background-size: auto 1.25rem;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper.is-open .s-label-wrapper .s-icon {
+  transform: rotate(180deg) translate(0, -1px);
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper.is-open .s-hidden {
+  display: block;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-hidden {
+  display: none;
+  margin: 15px -15px;
+  padding: 16px 15px;
+  background: rgba(8,9,10,0.93);
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-label-wrapper {
+  cursor: pointer;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-label-wrapper .s-icon {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: transparent url("img/svg/arrow.down.svg") 50% no-repeat;
+  background-size: contain;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.214285714285714em;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper:first-child {
+  margin-top: 0;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-date {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+  color: #888;
+  width: 100px;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value {
+  display: inline-block;
+  vertical-align: top;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value .s-time {
+  color: #fff;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value .s-text {
+  color: #aaa;
 }
 .hidden-menu-wrapper .menu-block-wrapper .search-wrapper {
   margin: 1em 0 0;
@@ -871,6 +954,13 @@ body.menu-is-shown .hidden-menu-wrapper {
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper {
   margin: 1em 0 0;
 }
+.hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-item + .nav-list > .nav-item:first-child {
+  border-top: 0;
+}
+.hidden-menu-wrapper .menu-block-wrapper .nav-wrapper ul.nav-list {
+  margin-top: 0;
+  margin-bottom: 0;
+}
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-header {
   margin: 2em 0 0;
   font: normal 0.8em/1.8em "Open Sans", sans-serif;
@@ -881,7 +971,7 @@ body.menu-is-shown .hidden-menu-wrapper {
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-header + .nav-list > .nav-item:first-child {
   border-top: 1px solid #fff;
 }
-.hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list,
+ul.hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list,
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list li,
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list .nav-item {
   margin: 0;
@@ -937,6 +1027,14 @@ body.menu-is-shown .hidden-menu-wrapper {
   font-size: 1em;
   -webkit-border-radius: 50%;
   border-radius: 50%;
+}
+.hidden-menu-wrapper .menu-block-wrapper .full-version-link {
+  margin: 2em 0 0;
+  text-align: center;
+}
+.hidden-menu-wrapper .menu-block-wrapper .full-version-link a {
+  color: #aaa;
+  text-decoration: none;
 }
 /* END MENU STYLES (LEFT CONTROL MENU) */
 /* HEADER STYLES */
@@ -1189,3 +1287,33 @@ body.menu-is-shown .hidden-menu-wrapper {
   display: none;
 }
 /* END HEADER STYLES */
+.s-page-content .wa-form {
+  margin: 0;
+  float: none;
+}
+.s-page-content .wa-form .wa-field {
+  margin: 1em 0 0;
+  padding: 0;
+}
+.s-page-content .wa-form .wa-field:first-child {
+  margin-top: 0;
+}
+.s-page-content .wa-form .wa-field .wa-name,
+.s-page-content .wa-form .wa-field .wa-value {
+  float: none;
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+.s-page-content .wa-form .wa-field .wa-value input[type="text"],
+.s-page-content .wa-form .wa-field .wa-value input[type="email"],
+.s-page-content .wa-form .wa-field .wa-value input[type="password"],
+.s-page-content .wa-form .wa-field .wa-value select,
+.s-page-content .wa-form .wa-field .wa-value textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}

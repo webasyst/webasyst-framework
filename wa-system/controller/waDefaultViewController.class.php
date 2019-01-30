@@ -30,17 +30,21 @@ class waDefaultViewController extends waViewController
         $this->action = $action;
     }
 
-    public function execute()
+    public function getAction()
     {
         if (!$this->action instanceof waViewAction) {
             $class_name = $this->action;
             $this->action = new $class_name();
         }
+        return $this->action;
+    }
 
-        if (!$this->layout && $this->action && $this->action->getLayout()) {
-            $this->setLayout($this->action->getLayout());
+    public function execute()
+    {
+        if (!$this->layout && $this->getAction() && $this->getAction()->getLayout()) {
+            $this->setLayout($this->getAction()->getLayout());
         }
 
-        $this->executeAction($this->action);
+        $this->executeAction($this->getAction());
     }
 }

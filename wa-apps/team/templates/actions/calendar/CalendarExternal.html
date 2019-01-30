@@ -1,0 +1,7 @@
+{if $mode === 'connect'}
+    {include file='./CalendarExternalConnect.inc.html'}
+{elseif $mode === 'info'}
+    {include file='./CalendarExternalInfo.inc.html'}
+{else}
+    {include file='./CalendarExternalEdit.inc.html'}
+{/if}

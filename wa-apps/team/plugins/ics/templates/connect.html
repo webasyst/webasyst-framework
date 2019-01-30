@@ -1,0 +1,45 @@
+{$container_id = uniqid('t-caldav-authorize-block-')}
+
+<div id="{$container_id}" style="margin: 10px 0;">
+    <form method="post" action="{$url}">
+        <div>
+            <p>{_wp('WebCal subscription URL')}:<br>
+            <input type="text" name="url" value="" placeholder="http://example.com/ical/basic.ics" style="min-width: 500px;">
+            <input type="hidden" name="id" value="{$id}">
+            {$wa->csrf()}
+        </div>
+        <div style="margin-top: 10px;">
+            <input type="button" class="button green" value="{_wp('Subscribe')}">
+            {_wp('or')}
+            <a href="javascript:void(0);" data-id="{$id}" class="cancel t-cancel-external-calendar">{_wp('cancel')}</a>
+            <i class="icon16 loading" style="display: none;"></i>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        var container = $('#{$container_id}');
+        var form = container.find('form');
+        var button = form.find('input[type=button]');
+
+        form.submit(function (e) {
+            if (!e.isTrigger) {
+                e.preventDefault();
+                button.trigger('click');
+            }
+        });
+
+        button.click(function () {
+            var loading = form.find('.loading').show();
+            $.post('?plugin=ics&module=backend&action=checkConnection', form.serialize(), function (r) {
+                loading.hide();
+                if (r.status === 'ok') {
+                    form.submit();
+                } else if (!$.isEmptyObject(r.errors)) {
+                    alert(r.errors.message);
+                }
+            });
+        });
+    });
+</script>

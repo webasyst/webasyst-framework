@@ -1,0 +1,34 @@
+<div class="{$wrapper_class}">
+    <p>
+        <img class="wa-captcha-img" src="{$captcha_url}" alt="CAPTCHA" title="{$refresh}">
+        <strong>&rarr;</strong>
+        <input type="text" name="{$input_name}" class="wa-captcha-input{$error_class}" autocomplete="off">
+    </p>
+    <p>
+        <a href="#" class="wa-captcha-refresh">{$refresh}</a>
+    </p>
+    <script type="text/javascript">
+        $(function () {
+            $('div.{$wrapper_class} .wa-captcha-img').on('load', function () {
+                $(window).trigger('wa_captcha_loaded');
+            });
+
+            $('div.{$wrapper_class} .wa-captcha-refresh, div.{$wrapper_class} .wa-captcha-img').click(function () {
+                var $wrapper = $(this).parents('div.{$wrapper_class}'),
+                    $input = $wrapper.find('.wa-captcha-input'),
+                    $img = $wrapper.find('.wa-captcha-img'),
+                    src = $img.attr('src');
+
+                if ($img.length) {
+                    $img.attr('src', src.replace(/\?.*$/, '?rid=' + Math.random()));
+                    $img.one('load', function () {
+                        $(window).trigger('wa_captcha_loaded');
+                        $input.val('').focus();
+                    });
+                }
+
+                return false;
+            });
+        });
+    </script>
+</div>

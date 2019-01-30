@@ -4,21 +4,22 @@ class photosFrontendAlbum
 {
     public static function getLink($album = '')
     {
-        static $wa = null;
-        $wa = $wa ? $wa : wa();
-        $real_domain = $wa->getRouting()->getDomain(null, true, false);
+        static $routing = null;
+        if($routing === null) {
+             $routing = wa()->getRouting();
+        }
+
         if (is_array($album)) {
-            $link = $wa->getRouteUrl('photos/frontend/album', array(
-                'url' => $album['full_url']
-            ), true, $real_domain);
-            return $link ? rtrim($link, '/').'/' : null;
+            $album = $album['full_url'];
         } else {
             $album = (string) $album;
-            $link = $wa->getRouteUrl('photos/frontend/album', array(
-                'url' => $album
-            ), true, $real_domain);
-            return $link ? rtrim($link, '/').'/' : null;
         }
+
+        $link = $routing->getUrl('photos/frontend/album', array(
+            'url' => $album,
+        ), true, $routing->getDomain(null, true, false));
+
+        return $link ? rtrim($link, '/').'/' : null;
     }
 
     public static function escapeFields($album)

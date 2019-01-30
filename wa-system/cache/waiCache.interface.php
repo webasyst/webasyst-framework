@@ -1,5 +1,7 @@
 <?php 
-
+/**
+ * Interface for a simple cache. One object = one cached value.
+ */
 /*
  * This file is part of Webasyst framework.
  *
@@ -15,7 +17,7 @@
 
 interface waiCache
 {
-    public function __construct($key, $ttl = 0, $app_id = null);
+    public function __construct($key, $ttl = -1, $app_id = null);
     public function get();
     public function set($value);
     public function delete();

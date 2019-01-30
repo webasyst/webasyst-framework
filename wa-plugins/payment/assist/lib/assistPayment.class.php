@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * @property-read string $merchant
@@ -14,8 +15,11 @@ class assistPayment extends waPayment
     private $url = array(
         'old'  => 'https://secure.assist.ru/shops/cardpayment.cfm',
         'new'  => 'https://payments%s.paysecure.ru/pay/order.cfm',
-        'test' => 'https://test.paysecure.ru/pay/order.cfm',
+        'test' => 'https://payments.demo.paysecure.ru/pay/order.cfm',
+        'belarus_test'   => 'https://test.paysec.by/pay/order.cfm',
+        'belarus'   => 'https://payments%s.paysec.by/pay/order.cfm',
     );
+
     public function allowedCurrency()
     {
         return true;
@@ -37,9 +41,17 @@ class assistPayment extends waPayment
     private function getEndpointUrl()
     {
         if ($this->sandbox) {
-            $url = $this->url['test'];
+            if ($this->version == 'belarus') {
+                $url = $this->url['belarus_test'];
+            } else {
+                $url = $this->url['test'];
+            }
         } else {
-            $url = sprintf($this->url[$this->version], $this->gate);
+            if (preg_match('@^https?://.*\.(ru|by)@', $this->gate)) {
+                $url = $this->gate;
+            } else {
+                $url = sprintf($this->url[$this->version], $this->gate);
+            }
         }
         return $url;
     }

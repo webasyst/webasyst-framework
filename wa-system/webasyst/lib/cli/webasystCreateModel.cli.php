@@ -67,13 +67,19 @@ HELP;
                 'Incorrect table name: '.$table,
             ));
         }
-        if (!preg_match('~^'.preg_quote($app_id, '~').'_~', $table)) {
-            $table = $app_id.'_'.$table;
+
+        $app_table_prefix = $app_id;
+        if ($app_id == 'webasyst') {
+            $app_table_prefix = 'wa';
+        }
+
+        if ($app_id != 'webasyst' && !preg_match('~^'.preg_quote($app_table_prefix, '~').'_~', $table)) {
+            $table = $app_table_prefix.'_'.$table;
             echo "WARNING: table name must start with an app_id prefix. Going on with '{$table}'.\n";
         }
 
-        $class_name = array($app_id);
-        foreach(explode('_', preg_replace('~^'.preg_quote($app_id, '~').'_~', '', $table)) as $part) {
+        $class_name = array($app_table_prefix);
+        foreach(explode('_', preg_replace('~^'.preg_quote($app_table_prefix, '~').'_~', '', $table)) as $part) {
             $class_name[] = ucfirst($part);
         }
         $class_name = join('', $class_name).'Model';

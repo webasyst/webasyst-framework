@@ -1,4 +1,0 @@
-#RewriteEngine On
-
-#RewriteCond %{REQUEST_URI} wa-.*?\.css$
-#RewriteRule ^(.*)$ css.php [L,QSA]

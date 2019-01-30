@@ -34,7 +34,8 @@ div.wbs-editor blockquote {
 .ui-editor-editablefield .ticket-toolbar {
 	height:40px;
 }
-.ui-editor-toolbar .ui-buttonset, .ui-editor-toolbar .ui-button { //display:inline!important; width:auto; zoom:0;}
+.ui-editor-toolbar .ui-buttonset, .ui-editor-toolbar .ui-button { //display:inline!important; width:auto; zoom:0;
+}
 .ui-editor-toolbar .ui-button-icon-only .ui-button-text {
 	padding:0.4em;
 }

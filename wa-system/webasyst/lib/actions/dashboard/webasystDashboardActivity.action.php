@@ -6,6 +6,12 @@ class webasystDashboardActivityAction extends waViewAction
     {
         wa()->getStorage()->close();
         $filters = waRequest::post();
+        if (!isset($filters['app_id']) || !is_array($filters['app_id'])) {
+            $user_filter = wa()->getUser()->getSettings('webasyst', 'dashboard_activity');
+            if ($user_filter) {
+                $filters['app_id'] = explode(',', $user_filter);
+            }
+        }
         if (waRequest::post('save_filters')) {
             unset($filters['save_filters']);
             wa()->getUser()->setSettings('webasyst', 'dashboard_activity', waRequest::post('app_id'));
@@ -21,15 +27,12 @@ class webasystDashboardActivityAction extends waViewAction
         }
     }
 
-    public function getLogs($filters = array(), &$count = null)
+    public function getLogs($filters = array(), &$count = null, $autoload_more = true)
     {
         $log_model = new waLogModel();
         $apps = wa()->getUser()->getApps();
         if (!isset($filters['app_id']) || !is_array($filters['app_id'])) {
-            $user_filter = wa()->getUser()->getSettings('webasyst', 'dashboard_activity');
-            if ($user_filter) {
-                $filters['app_id'] = explode(',', $user_filter);
-            }
+            unset($filters['app_id']);
         }
         if (!$this->getUser()->isAdmin()) {
             if (!empty($filters['app_id'])) {
@@ -39,6 +42,7 @@ class webasystDashboardActivityAction extends waViewAction
             }
         }
         $rows = $log_model->getLogs($filters);
+        $last_row = end($rows);
         $count = count($rows);
         $apps = wa()->getApps(true);
         $apps_rows = array();
@@ -57,7 +61,9 @@ class webasystDashboardActivityAction extends waViewAction
                     continue;
                 }
             }
+            $row['name'] = $row['contact_name'];
             $contact_name = waContactNameField::formatName($row);
+            unset($row['name']);
             if ($contact_name) {
                 $row['contact_name'] = $contact_name;
             }
@@ -67,6 +73,9 @@ class webasystDashboardActivityAction extends waViewAction
             $row['datetime_group'] = $this->getDatetimeGroup($row['datetime']);
             if (!empty($apps[$row['app_id']])) {
                 $row['app'] = $apps[$row['app_id']];
+                if (empty($apps_rows[$row['app_id']])) {
+                    waLocale::loadByDomain($row['app_id']);
+                }
                 $logs = wa($row['app_id'])->getConfig()->getLogActions(true);
                 $row['action_name'] = ifset($logs[$row['action']]['name'], $row['action']);
                 if (strpos($row['action'], 'del')) {
@@ -88,6 +97,8 @@ class webasystDashboardActivityAction extends waViewAction
             $prev = $row;
             unset($row);
         }
+        unset($row);
+
         foreach ($apps_rows as $app_id => $app_rows) {
             $app_rows = wa($app_id)->getConfig()->explainLogs($app_rows);
             foreach ($app_rows as $row_id => $row) {
@@ -98,6 +109,31 @@ class webasystDashboardActivityAction extends waViewAction
                 }
             }
         }
+
+        // Sometimes all 50 rows are filtered out. Should skip to next 50 then
+        if ($count == 50 && !$rows) {
+            $filters['max_id'] = $last_row['id'];
+            return $this->getLogs($filters, $count, $autoload_more);
+        }
+
+        $rows = array_values($rows);
+        if (!$autoload_more || !$rows) {
+            return $rows;
+        }
+
+        // Load more items if exist
+        while ($count == 50 && count($rows) < 50) {
+            $filters['max_id'] = $last_row['id'];
+            $new_rows = $this->getLogs($filters, $count, false);
+            if (!$new_rows) {
+                break;
+            }
+            $rows = array_merge($rows, $new_rows);
+            $last_row = end($new_rows);
+        }
+
+        $rows = array_slice($rows, 0, 50);
+        $count = max($count, count($rows));
         return $rows;
     }
 

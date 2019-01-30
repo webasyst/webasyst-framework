@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.7.6\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -119,3 +119,39 @@ msgstr "В заказе нет товаров"
 #: //wa-plugins/shipping/flatrate/templates/form.html:20
 msgid "Total amount"
 msgstr "Итого"
+
+msgid "Shipping type"
+msgstr "Тип доставки"
+
+msgid "Select an appropriate type for this shipping method"
+msgstr "Выберите подходящий тип для этого варианта доставки"
+
+msgid "Shipping by post"
+msgstr "Доставка почтой"
+
+msgid "Courier shipping"
+msgstr "Доставка курьером"
+
+msgid "Shipping service name"
+msgstr "Название службы доставки"
+
+msgid "Enter optional shipping service name which will be shown to customers next to this shipping option"
+msgstr "Введите необязательное название службы доставки, которое будет показано покупателю рядом с этим вариантом доставки"
+
+msgid "Shipping area restriction"
+msgstr "Ограничение области доставки"
+
+msgid "Leave all fields empty if this shipping option must be available to customers from any geographical regions"
+msgstr "Оставьте все поля пустыми, если этот вариант доставки должен быть доступен покупателям из любых географических регионов"
+
+msgid "Country"
+msgstr "Страна"
+
+msgid "Region"
+msgstr "Регион"
+
+msgid "Locality names separated by comma"
+msgstr "Населенные пункты, перечисленные через запятую"
+
+msgid "Shipping will be restricted to the selected country"
+msgstr "Доставка будет ограничена выбранной страной"

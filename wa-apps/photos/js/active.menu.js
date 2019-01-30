@@ -16,6 +16,9 @@
             }
             if (options == 'setOption') {
                 var settings = this.data('activeMenuSettings');
+                if (!settings) {
+                    return;
+                }
                 if (typeof ext === 'string') {
                     var o = {};
                     o[ext] = value;
@@ -29,6 +32,9 @@
         if (typeof options == 'string') {
             if (options == 'fire') {
                 var settings = this.data('activeMenuSettings');
+                if (!settings) {
+                    return;
+                }
                 settings['on'+options.substr(0,1).toUpperCase() + options.substr(1)].call(this);
                 return this;
             }
@@ -42,6 +48,9 @@
         }, options || {}));
 
         var settings = this.data('activeMenuSettings');
+        if (!settings) {
+            return;
+        }
 
 
         init.call(this);
@@ -51,7 +60,7 @@
             if (this.data('inited')) {  // has inited already. Don't init again
                 return;
             }
-            this.click(function(e) {
+            this.bind('click.photos-active-menu', function(e) {
                 var item = e.target;
                 var root = self.get(0);
                 while (item.tagName != 'LI') {
@@ -75,7 +84,7 @@
                 if (r !== false) {
                     settings[callback_name](item, e);
                 }
-                return false;
+                e.preventDefault();
             });
             settings.onInit(this);
             this.data('inited', true);

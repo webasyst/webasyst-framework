@@ -3,6 +3,7 @@
 return array(
     'code' => 'PAB',
     'sign' => 'B/.',
+	'iso4217' => '590',
     'sign_position' => null,
     'sign_delim' => null,
     'title' => 'Panamanian balboa',

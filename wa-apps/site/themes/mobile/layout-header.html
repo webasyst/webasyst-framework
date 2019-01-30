@@ -15,14 +15,22 @@
 
     <div class="basket-wrapper">
         {if $wa->shop}
-            {$cart_total = $wa->shop->cart->total()}
-            {$cart_count = $wa->shop->cart->count()}
-            <a class="{if $cart_total}is-active{/if}" href="{$wa->getUrl('shop/frontend/cart')}">
-                {if $cart_total && $cart_count}
-                    <span class="basket-count">{$cart_count}</span>
-                {/if}
-            </a>
+            {$_cart_url = $wa->getUrl('shop/frontend/cart')}
+            {if method_exists($wa->shop, 'checkout')}
+                {$_cart_url = $wa->shop->checkout()->cartUrl()}
+            {/if}
+
+            {$_show_cart = true}
+            {if $wa->globals("hide_cart")}{$_show_cart = false}{/if}
+            {if !empty($_show_cart)}
+                {$cart_total = $wa->shop->cart->total()}
+                {$cart_count = $wa->shop->cart->count()}
+                <a class="{if $cart_total}is-active{/if}" href="{$_cart_url|escape}">
+                    {if $cart_total && $cart_count}
+                        <span class="basket-count">{$cart_count}</span>
+                    {/if}
+                </a>
+            {/if}
         {/if}
     </div>
-
 </header>

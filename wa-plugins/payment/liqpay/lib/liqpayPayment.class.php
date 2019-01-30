@@ -1,28 +1,19 @@
 <?php
+
 /**
+ * Checkout 3.0 & Callback 3.0 support
  *
- * @link http://www.liqpay.ru/
- * @link https://liqpay.com/?do=pages&p=cnb12
+ * @link https://www.liqpay.com/
  *
- * @property string $merchant_id Merchant ID
- * @property string $secret_key Signature
- * @property string $gateway Payment method
- * @property string $order_prefix Invoice number prefix
- * @property boolean $bugfix Добавлять случайное число к номеру счета
- * @property string $customer_phone Customer telephone number
+ * @link https://www.liqpay.com/ru/doc/checkout
+ * @link https://www.liqpay.com/ru/doc/callback
+ *
+ * @property string $public_key Публичный ключ - идентификатор магазина. Получить ключ можно в настройках магазина
+ * @property string $secret_key Приватный ключ
+ * @property boolean $sandbox
  */
 class liqpayPayment extends waPayment
 {
-    /**
-     *
-     * @var SimpleXMLElement
-     */
-    private $xml;
-    /**
-     *
-     * @var string
-     */
-    private $raw_xml;
     private $pattern = '/^(\w[\w\d]+)\.([^_]+)_(.+)$/';
 
     public function payment($payment_form_data, $order_data, $auto_submit = false)
@@ -33,66 +24,32 @@ class liqpayPayment extends waPayment
             throw new waException('Unsupported currency');
         }
 
-        $customer_phone = '';
-        if ($this->customer_phone) {
-            $customer_phone = $order->getContactField($this->customer_phone);
+        $params = array(
+            'version'     => 3,
+            'public_key'  => $this->public_key,
+            'action'      => 'pay',
+            'amount'      => $order->total,
+            'currency'    => $order->currency,
+            'description' => $order->description,
+            'order_id'    => sprintf('%s.%s_%s', $this->app_id, $this->merchant_id, $order->id),
+            'server_url'  => $this->getRelayUrl(),
+            'result_url'  => $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, array('order_id' => $order->id)),
+        );
+
+        if ($this->sandbox) {
+            $params['sandbox'] = 1;
         }
 
-        $description = htmlentities($order->description_en, ENT_QUOTES, 'utf-8');
-        $method = $this->gateway;
-        if (!$method) {
-            $method = 'card, liqpay, delayed';
-        }
-
-        $customer_url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, array('order_id' => $order->id));
-        $result_url = $this->getRelayUrl();
-
-        $suffix = '';
-        if ($this->bugfix) {
-            $suffix = sprintf('_%04d', rand(1000, 9999));
-        }
-
-        $order_id = $this->order_prefix.$order->id.$suffix;
-
-        $amount = str_replace(',', '.', round($order->total, 2));
-        $currency = $order->currency;
-        if ($currency == 'RUB') {
-            $currency = 'RUR';
-        }
-        $order_id = htmlentities(sprintf('%s.%d_%s', $this->app_id, $this->merchant_id, $order_id), ENT_QUOTES, 'utf-8');
-
-        $this->raw_xml = "<request>
-<version>1.2</version>
-<result_url>{$customer_url}</result_url>
-<server_url>{$result_url}</server_url>
-<merchant_id>{$this->getSettings('merchant_id')}</merchant_id>
-<order_id>{$order_id}</order_id>
-<amount>{$amount}</amount>
-<currency>{$currency}</currency>
-<description>{$description}</description>
-<default_phone>{$customer_phone}</default_phone>
-<pay_way>{$method}</pay_way>
-</request>";
-
+        $data = base64_encode(json_encode($params));
         $hidden_fields = array(
-            'operation_xml' => base64_encode($this->raw_xml),
-            'signature'     => $this->getSignature(),
+            'data'      => $data,
+            'signature' => $this->getSignature($data),
         );
         $view = wa()->getView();
         $view->assign('hidden_fields', $hidden_fields);
         $view->assign('form_url', $this->getEndpointUrl());
         $view->assign('auto_submit', $auto_submit);
         return $view->fetch($this->path.'/templates/payment.html');
-    }
-
-    private function getSignature()
-    {
-        return base64_encode(sha1($this->secret_key.$this->raw_xml.$this->secret_key, 1));
-    }
-
-    private function getEndpointUrl()
-    {
-        return 'https://www.liqpay.com/?do=clickNbuy';
     }
 
     public function allowedCurrency()
@@ -108,24 +65,34 @@ class liqpayPayment extends waPayment
 
     protected function callbackInit($request)
     {
-        $this->raw_xml = base64_decode(ifempty($request['operation_xml'], 'PHJlc3BvbnNlLz4='));
-        if ($this->raw_xml && ($this->xml = @simplexml_load_string($this->raw_xml))) {
-            if (preg_match($this->pattern, (string)$this->xml->order_id, $matches)) {
+        $data = json_decode(base64_decode(ifempty($request['data'], 'W10=')), true);
+        if ($data && isset($data['order_id'])) {
+            if (preg_match($this->pattern, $data['order_id'], $matches)) {
                 $this->app_id = $matches[1];
                 $this->merchant_id = $matches[2];
             }
+        } else {
+            $this->app_id = ifset($request['app_id']);
+            $this->merchant_id = ifset($request['merchant_id']);
         }
         return parent::callbackInit($request);
     }
 
     protected function callbackHandler($request)
     {
+        if (!empty($request['result'])) {
+            return array(
+                'redirect' => $this->getAdapter()->getBackUrl()
+            );
+        }
         $signature = ifempty($request['signature']);
-        if (empty($signature) || ($signature != $this->getSignature())) {
+        if (empty($signature) || ($signature != $this->getSignature($request['data']))) {
             throw new waException("Invalid signature");
         }
 
-        $transaction_data = $this->formalizeData($request);
+        $data = json_decode(base64_decode(ifempty($request['data'], 'W10=')), true);
+
+        $transaction_data = $this->formalizeData($data);
         $callback_method = null;
         switch (ifset($transaction_data['state'])) {
             case self::STATE_CAPTURED:
@@ -133,6 +100,9 @@ class liqpayPayment extends waPayment
                 break;
             case self::STATE_DECLINED:
                 $callback_method = self::CALLBACK_DECLINE;
+                break;
+            default:
+                $callback_method = self::CALLBACK_NOTIFY;
                 break;
         }
 
@@ -145,63 +115,102 @@ class liqpayPayment extends waPayment
     protected function formalizeData($transaction_raw_data)
     {
         $transaction_data = parent::formalizeData($transaction_raw_data);
-        $transaction_data['native_id'] = (string)$this->xml->transaction_id;
-        $transaction_data['amount'] = (string)$this->xml->amount;
-        $transaction_data['currency_id'] = (string)$this->xml->currency;
+        $transaction_data['native_id'] = $transaction_raw_data['liqpay_order_id'];
+        $transaction_data['amount'] = $transaction_raw_data['amount'];
+        $transaction_data['currency_id'] = $transaction_raw_data['currency'];
         $order_id = null;
-        if (preg_match($this->pattern, (string)$this->xml->order_id, $matches)) {
+        if (preg_match($this->pattern, $transaction_raw_data['order_id'], $matches)) {
             $order_id = $matches[3];
-        }
-
-        if ($this->bugfix) {
-            $order_id = preg_replace('/_\d{1,4}$/', '', $order_id);
-        }
-
-        if ($this->order_prefix) {
-            $pattern = wa_make_pattern($this->order_prefix, '@');
-            $pattern = "@^{$pattern}(.+)$@";
-            if (preg_match($pattern, $order_id, $matches)) {
-                $order_id = $matches[1];
-            } else {
-                $order_id = null;
-            }
         }
 
         $transaction_data['order_id'] = $order_id;
         $view_data = array();
-        if ((string)$this->xml->transaction_id) {
-            $view_data[] = $this->_w('Transaction number').': '.(string)$this->xml->transaction_id;
-        }
-        if ((string)$this->xml->pay_way) {
-            $view_data[] = $this->_w('Pay way').': '.(string)$this->xml->pay_way;
+
+        if (!empty($transaction_raw_data['transaction_id'])) {
+            $view_data[] = $this->_w('Transaction number').': '.$transaction_raw_data['transaction_id'];
         }
 
-        switch ($status = (string)$this->xml->status) {
+        $status_descriptions = array(
+            'otp_verify'       => 'Требуется OTP подтверждение клиента. OTP пароль отправлен на номер телефона Клиента.',
+            //Для завершения платежа, требуется выполнить otp_verify.
+            '3ds_verify'       => 'Требуется 3DS верификация.',
+            //Для завершения платежа, требуется выполнить 3ds_verify.
+            'cvv_verify'       => 'Требуется ввод CVV карты отправителя.',
+            //Заполните параметр card_cvv и повторите запрос.
+            'sender_verify'    => 'Требуется ввод данных отправителя.',
+            //Заполните параметры sender_first_name, sender_last_name, sender_country_code, sender_city, sender_address, sender_postal_code и повторите запрос.
+            'receiver_verify'  => 'Требуется ввод данных получателя.',
+            //Заполните параметры receiver_first_name, receiver_last_name и повторите запрос.
+            'phone_verify'     => 'Ожидается ввод телефона клиентом',
+            'ivr_verify'       => 'Ожидается подтверждение звонком ivr',
+            'pin_verify'       => 'Ожидается подтверждение pin-code',
+            'captcha_verify'   => 'Ожидается подтверждение captcha',
+            'password_verify'  => 'Ожидается подтверждение пароля приложения Приват24',
+            'senderapp_verify' => 'Ожидается подтверждение в приложении Sender',
+
+            'processing'        => 'Платеж обрабатывается',
+            'prepared'          => 'Платеж создан, ожидается его завершение отправителем',
+            'wait_bitcoin'      => 'Ожидается перевод bitcoin от клиента',
+            'wait_secure'       => 'Платеж на проверке',
+            'wait_accept'       => 'Деньги с клиента списаны, но магазин еще не прошел проверку',
+            'wait_lc'           => 'Аккредитив. Деньги с клиента списаны, ожидается подтверждение доставки товара',
+            'hold_wait'         => 'Сумма успешно заблокирована на счету отправителя',
+            'cash_wait'         => 'Ожидается оплата наличными в ТСО.',
+            'wait_qr'           => 'Ожидается сканировани QR-кода клиентом.',
+            'wait_sender'       => 'Ожидается подтверждение оплаты клиентом в приложении Privat24/Sender.',
+            'wait_card'         => 'Не установлен способ возмещения у получателя',
+            'wait_compensation' => 'Платеж успешный, будет зачислен в ежесуточной проводке',
+            'invoice_wait'      => 'Инвойс создан успешно, ожидается оплата',
+            'wait_reserve'      => 'Средства по платежу зарезервированы для проведения возврата по ранее поданной заявке',
+        );
+        switch ($status = $transaction_raw_data['status']) {
             case 'success': /*покупка совершена*/
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
                 $transaction_data['result'] = 1;
                 break;
             case 'failure': /*покупка отклонена*/
+            case 'error':
                 $transaction_data['state'] = self::STATE_DECLINED;
                 $transaction_data['type'] = self::OPERATION_CANCEL;
                 $transaction_data['result'] = 1;
-                $view_data[] = $this->_w('Transaction declined').": ".(string)$this->xml->code;
+                $reason = '';
+                if ($transaction_raw_data['err_code']) {
+                    $reason = sprintf('%s — %s', $transaction_raw_data['err_code'], ifset($transaction_raw_data['err_description'], $transaction_raw_data['err_code']));
+                }
+
+                $view_data[] = $this->_w('Transaction declined').": ".htmlentities($reason, ENT_NOQUOTES, 'utf-8');
+                break;
                 break;
             case 'wait_secure': /*платеж находится на проверке*/
                 $view_data[] = $this->_w('Transaction requires confirmation');
                 break;
+            case 'sandbox':
+                $view_data[] = 'Тестовый платеж';
+                break;
             default:
-                $view_data[] = sprintf($this->_w("Unknown status %s"), htmlentities($status, ENT_QUOTES, 'utf-8'));
+                $d = ifset($status_descriptions[$status]);
+                if ($d) {
+                    $view_data[] = $d;
+                } else {
+                    $view_data[] = sprintf($this->_w("Unknown status %s"), htmlentities($status, ENT_NOQUOTES, 'utf-8'));
+                }
                 break;
         }
 
-        if ((string)$this->xml->sender_phone) {
-            $view_data[] = $this->_w('Phone number').': '.(string)$this->xml->sender_phone;
-        }
         if ($view_data) {
             $transaction_data['view_data'] = implode("\n", $view_data);
         }
         return $transaction_data;
+    }
+
+    private function getSignature($data)
+    {
+        return base64_encode(sha1($this->secret_key.$data.$this->secret_key, 1));
+    }
+
+    private function getEndpointUrl()
+    {
+        return 'https://www.liqpay.ua/api/3/checkout';
     }
 }

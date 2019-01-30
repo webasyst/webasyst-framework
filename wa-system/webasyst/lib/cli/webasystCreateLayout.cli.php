@@ -5,11 +5,11 @@ class webasystCreateLayoutCli extends waCliController
     public function execute()
     {
         if (!waRequest::param(1) || null !== waRequest::param('help')) {
-            return $this->showHelp();
+            $this->showHelp();
+        } else {
+            list($app_id, $layout) = $this->getParameters();
+            $this->create($app_id, $layout);
         }
-
-        list($app_id, $layout) = $this->getParameters();
-        $this->create($app_id, $layout);
     }
 
     protected function showHelp()
@@ -48,7 +48,7 @@ HELP;
 
     protected function getPhp($app_id, $layout)
     {
-        $class_name = $app_id . ucfirst($layout) . 'Layout';
+        $class_name = $app_id.ucfirst($layout).'Layout';
         $result = "<?php\nclass {$class_name} extends waLayout\n{\n%CLASS_CONTENT%\n}\n";
         $result = str_replace('%CLASS_CONTENT%', "\tpublic function execute()\n\t{\n\t\t// !!! TODO\n\t}", $result);
         $result = str_replace("\t", "    ", $result);
@@ -64,8 +64,8 @@ HELP;
     {$wa->css()}
     <link href="{$wa_app_static_url}css/'.$app_id.'.css?v{$wa->version()}" rel="stylesheet" type="text/css" />
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js" type="text/javascript"></script>
-    <script type="text/javascript" src="{$wa_app_static_url}js/'.$app_id.'.js?{$wa->version()}"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}" type="text/javascript"></script>
+    <script type="text/javascript" src="{$wa_app_static_url}js/'.$app_id.'.js?v{$wa->version()}"></script>
     {$wa->js()}
 </head>
 <body>
@@ -105,4 +105,3 @@ HELP;
         exit;
     }
 }
-

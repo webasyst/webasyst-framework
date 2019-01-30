@@ -121,7 +121,7 @@ jQuery.fn.waEditor = function (options) {
         editor.setOption("minLines", 2);
         editor.setOption("maxLines", 10000);
         editor.setAutoScrollEditorIntoView(true);
-        
+
         if (options['editorOnLoadFocus'])
         {
           editor.focus();
@@ -217,7 +217,15 @@ jQuery.fn.waEditor = function (options) {
             return false;
         });
 
-        if ($.storage && $.storage.get(wa_app + '/editor') == 'html') {
+        var initial_mode = 'wysiwyg';
+        try {
+            if ($.storage && $.storage.get(wa_app + '/editor') == 'html') {
+                initial_mode = 'html';
+            }
+        } catch (e) {
+        }
+
+        if (initial_mode == 'html') {
             wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
             wrapper.find('.html').parent().addClass('selected');
             self.redactor('core.getBox').hide();

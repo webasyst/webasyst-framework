@@ -1,15 +1,14 @@
 <?php
 /**
- * Own profile editor for users who don't have access to Contacts app.
+ * Own profile editor for users who don't have access to Team app.
+ * See also webasystProfilePageAction
  */
 class webasystProfileController extends waViewController
 {
     public function execute()
     {
         $this->setLayout(new webasystProfileLayout());
-
-        waSystem::getInstance('contacts', null, true);
-        $this->executeAction(new contactsContactsInfoAction(array('limited_own_profile' => 1)));
+        $this->executeAction(new webasystProfilePageAction());
     }
 }
 

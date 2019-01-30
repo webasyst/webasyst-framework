@@ -22,7 +22,7 @@ class contactsRightConfig extends waRightConfig
         }
     }
     
-    public function setDefaultRights($contact_id)
+    public function getDefaultRights($contact_id)
     {
         return array(
             'create' => 1,

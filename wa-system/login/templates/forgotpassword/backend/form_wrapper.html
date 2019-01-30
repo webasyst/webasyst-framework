@@ -1,0 +1,46 @@
+{$include_js = $include_js|default:false}
+{$include_css = $include_css|default:false}
+
+{if $include_js}
+    <script type="text/javascript" src="{$wa_url}wa-content/js/login/forgotpassword-backend-form.min.js?v={$wa->version()}"></script>
+{/if}
+
+{$class_id = 'wa-forgotpassword-wrapper'}
+{$wrapper_id = uniqid($class_id)}
+
+{$classes = [ $class_id ]}
+
+{if $include_js}
+    {$classes[] = 'js-backend-auth-form'}
+{/if}
+
+{$classes = join(' ', $classes)}
+
+<div class="{$classes}" id="{$wrapper_id}">
+    {$renderer->renderTitle()}
+    {$html}
+</div>
+
+{if $include_js}
+    {$_locale = [
+        'required' => '[s`Field is required`]',
+        'login_required' => '[s`Login is required`]',
+        'password_required' => '[s`Password can not be empty.`]',
+        'login_page' => '[s`Back to login page`]',
+        'captcha_required' => '[s`Captcha is required`]',
+        'confirmation_code_required' => '[s`Enter a confirmation code to complete the operation.`]'
+    ]}
+
+    <script>
+        ( function($) { "use strict";
+            new WaBackendForgotPassword({
+                $wrapper: $("#{$wrapper_id}"),
+                namespace: {$namespace|json_encode},
+                errors: {$errors|json_encode},
+                messages: {$messages|json_encode},
+                locale: {$_locale|json_encode},
+                is_json_mode: {$is_json_mode|default:false|json_encode}
+            });
+        })(jQuery);
+    </script>
+{/if}

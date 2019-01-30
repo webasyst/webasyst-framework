@@ -108,8 +108,7 @@ class waResponse
         $domain = '',
         $secure = false,
         $http_only = false
-    )
-    {
+    ) {
         if (!$path) {
             $path = waSystem::getInstance()->getRootUrl();
         }
@@ -142,8 +141,8 @@ class waResponse
     /**
      * Sets server response status.
      *
-     * @param  int  $code  Server status code
-
+     * @param  int $code Server status code
+     * @return waResponse  Instance of waResponse class
      */
     public function setStatus($code = 200)
     {
@@ -206,19 +205,24 @@ class waResponse
         foreach ($this->headers as $name => $value) {
             if (is_array($value)) {
                 foreach ($value as $var) {
-                    header($name.': '.$var, false);
+                    $this->header($name.': '.$var, false);
                 }
-            }  else {
-                header($name.': '.$value);
+            } else {
+                $this->header($name.': '.$value);
             }
         }
 
         // Added after all that was not erased
         if ($this->status !== null) {
-            header(waRequest::server('SERVER_PROTOCOL', 'HTTP/1.0').' '.$this->status.' '.self::$statuses[$this->status]);
+            $this->header(waRequest::server('SERVER_PROTOCOL', 'HTTP/1.0').' '.$this->status.' '.self::$statuses[$this->status]);
         }
 
         return $this;
+    }
+
+    protected function header($string, $replace = true, $http_response_code = null)
+    {
+        header($string, $replace, $http_response_code);
     }
 
     /**
@@ -336,10 +340,12 @@ class waResponse
     {
         if ($app_id) {
             $url = wa()->getAppStaticUrl($app_id).$url;
-            $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
-            $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
-            if (waSystemConfig::isDebug()) {
-                $url .= '.'.time();
+            if (false === strpos($url, '?')) {
+                $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
+                $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
+                if (waSystemConfig::isDebug()) {
+                    $url .= '.'.time();
+                }
             }
         // Support external links
         } elseif ((strpos($url, '://') === false) && (strpos($url, '//') !== 0)) {
@@ -447,10 +453,12 @@ $(function () {
     {
         if ($app_id) {
             $url = wa()->getAppStaticUrl($app_id).$url;
-            $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
-            $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
-            if (waSystemConfig::isDebug()) {
-                $url .= '.'.time();
+            if (false === strpos($url, '?')) {
+                $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
+                $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
+                if (waSystemConfig::isDebug()) {
+                    $url .= '.'.time();
+                }
             }
         // Support external links
         } elseif ((strpos($url, '://') === false) && (strpos($url, '//') !== 0)) {

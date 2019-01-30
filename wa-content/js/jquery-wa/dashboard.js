@@ -124,7 +124,7 @@ var DashboardWidget;
             activeClass = "is-editable-mode";
         return $pageWrapper.hasClass(activeClass);
     };
-    
+
     var getDashboardSelect = function() {
         return ( $("#d-dashboards-select") || false )
     };
@@ -341,7 +341,7 @@ var DashboardWidget;
                     that.widget_size = size;
 
                     // Render
-                    that.renderWidget();
+                    that.renderWidget(true);
                 }
 
                 // Снимаем блок
@@ -430,7 +430,7 @@ var DashboardWidget;
 
                 setTimeout( function() {
                     // Перерисовываем виджет
-                    that.renderWidget()
+                    that.renderWidget(true);
                 }, storage.animateTime);
 
                 //console.log("Успешно сохранен");
@@ -612,7 +612,7 @@ var DashboardWidget;
             that.$widget_wrapper = $("#widget-wrapper-" + that.widget_id);
 
             // Functions
-            that.renderWidget();
+            that.renderWidget(true);
 
             // Functions
             widgetBindEvents(that);
@@ -621,25 +621,35 @@ var DashboardWidget;
             toggleEmptyWidgetNotice(true);
         };
 
-        DashboardWidget.prototype.renderWidget = function() {
+        DashboardWidget.prototype.renderWidget = function(force) {
             var that = this,
                 widget_href = that.widget_href + "&id=" + that.widget_id + "&size=" + that.widget_size.width + "x" + that.widget_size.width,
                 $widget = that.$widget;
 
             if ($widget.length) {
 
-                // Clear old HTML
-                $widget.html("");
-
                 // Проставляем класс (класс размера виджета)
                 setWidgetType(that);
 
                 // Загружаем контент
-                $widget.load(widget_href, function() {
-                    // Init Controllers
-                    that.initControlsController();
-                    //
-                    //console.log("Widget #" + that.widget_id + " is Rendered");
+                $.ajax({
+                    url: widget_href,
+                    dataType: 'html',
+                    global: false,
+                    data: {}
+                }).done(function(r) {
+                    $widget.html(r);
+                }).fail(function(xhr, text_status, error) {
+                    if (xhr.responseText && xhr.responseText.indexOf) {
+                        console.log('Error getting widget contents', text_status, error);
+                        if (xhr.responseText.indexOf('waException') >= 0 || xhr.responseText.indexOf('id="Trace"') >= 0) {
+                            $widget.html('<div style="font-size:40%;">'+xhr.responseText+'</div>');
+                            return;
+                        }
+                    }
+                    if (force) {
+                        $widget.html("");
+                    }
                 });
             }
         };
@@ -993,13 +1003,23 @@ var DashboardWidget;
 
             if (drop_delta.left <= border_space) {
 
+                //console.log("Новый виджет", is_new_widget);
+
                 // Отменяем перемещение если дропаем на полоску новой группы справа или слева от таргета.
                 if (!is_new_widget) {
-                    var widget_count = $group.find(".widget-wrapper").length,
-                        widget_group_index = storage.draggedWidget.widget_group_index,
+
+                    var $widget_group = storage.$widget_group,
+                        widget_count = $widget_group.find(".widget-wrapper").length,
+                        widget_group_index = $widget_group.index(),
                         target_group_index = $group.index();
 
-                    if ( (widget_count === 1) && ( (target_group_index === widget_group_index) || (target_group_index - 1 === widget_group_index) ) ) {
+                    var is_solo_widget = (widget_count === 1),
+                        is_before_group = (target_group_index === widget_group_index),
+                        is_next_group = (target_group_index - 1 === widget_group_index);
+
+                        //console.log(storage.draggedWidget, is_solo_widget, target_group_index, widget_group_index, is_next_group);
+
+                    if ( is_solo_widget && ( is_before_group || is_next_group ) ) {
                         return false;
                     }
                 }
@@ -1183,17 +1203,14 @@ var DashboardWidget;
                     }
                 }
 
-            } else {
+            }
 
-                // ситуация 1x1 + 2x1, кинули в сегмент 2
-                if (groupData.widgetsArray.length === 2 && ( group_segment === 2 ) && groupData.widgetsArray[0].widget_size.width === 1) {
 
-                    side = "after";
-                    target = groupData.widgetsArray[0].$widget_wrapper;
-
-                    //console.log("Случай 1х1 + 2х1, кидаем во 2й сегмент");
-                }
-
+            // ситуация 1x1 + 2x1, кинули в сегмент 2
+            if (groupData.widgetsArray.length === 2 && groupData.widgetsArray[0].widget_size.width === 1 && groupData.widgetsArray[1].widget_size.width === 2) {
+                side = "after";
+                target = groupData.widgetsArray[0].$widget_wrapper;
+                //console.log("Случай 1х1 + 2х1, кидаем во 2й сегмент");
             }
 
             dropArea.side = side;
@@ -1250,7 +1267,7 @@ var DashboardWidget;
                 $before_widget_group = storage.$widget_group,
                 new_widget_group_index = parseInt($group.index()),
                 new_widget_sort = parseInt(widget.$widget_wrapper.index()),
-                is_changed = !( ( new_widget_sort === widget.widget_sort ) && (new_widget_group_index === widget.widget_group_index) ),
+                is_changed = !( ( new_widget_sort === widget.widget_sort ) && (new_widget_group_index === storage.$widget_group.index() ) ),
                 is_last_group = storage.getLastGroupIndex(),
                 is_new_group = ( $group.find(".widget-wrapper").length < 2 ),
                 create_new_group = ( is_last_group == new_widget_group_index );
@@ -1269,6 +1286,8 @@ var DashboardWidget;
                     });
                 }
             });
+
+            //console.log(is_changed, $before_widget_group);
 
             // Если позиция виджета изменилась (как виджета внутри блока, так перемещение между блоками)
             if (is_changed) {
@@ -1815,8 +1834,9 @@ var DashboardWidget;
             $("#d-widgets-block").on("dblclick", ".widget-wrapper", function(e) {
                 if (e.altKey && (e.ctrlKey || e.metaKey)) {
                     var id = $(this).data("widget-id");
-                    if (id > 0) {
-                        DashboardWidgets[id] && DashboardWidgets[id].renderWidget();
+                    if (id > 0 && DashboardWidgets[id]) {
+                        DashboardWidgets[id].$widget.html('<div class="block"><i class="icon16 loading"></i></div>');
+                        DashboardWidgets[id].renderWidget(true);
                     }
 
                     // Clear accidental text selection

@@ -1,0 +1,193 @@
+{$container_id = uniqid('t-caldav-authorize-block-')}
+
+{$_services = [
+[
+"id" => "yandex",
+"name" => _wp('Yandex'),
+"icon_uri" => "`$wa_url`wa-apps/team/plugins/caldav/img/yandex.png"
+],
+[
+"id" => "icloud",
+"name" => "iCloud",
+"icon_uri" => "`$wa_url`wa-apps/team/plugins/caldav/img/icloud.png"
+],
+[
+"id" => "yahoo",
+"name" => "Yahoo",
+"icon_uri" => "`$wa_url`wa-apps/team/plugins/caldav/img/yahoo.png"
+],
+[
+"id" => "fruux",
+"name" => "Fruux",
+"icon_uri" => "`$wa_url`wa-apps/team/plugins/caldav/img/fluux.png"
+],
+[
+"id" => "other",
+"name" => _wp('Other')
+]
+]}
+
+<div class="block" id="{$container_id}">
+    <form method="post" action="{$url}">
+        <div class="fields form" style="float: none;">
+            <div class="field">
+                <div class="name">
+                    {_wp('Service')}
+                </div>
+                <div class="value no-shift" style="padding-top: 0;">
+
+                    <ul class="menu-v" style="margin-top: 0;">
+                        {foreach $_services as $_service}
+                            <li>
+                                <label>
+                                    <i class="icon16 kill-wa-style" style="{if !empty($_service.icon_uri)}background-image: url({$_service.icon_uri});{else}visibility: hidden;{/if}"></i>
+                                    <input type="radio" name="type" value="{$_service.id}" {if $_service@first}checked="checked"{/if}>
+                                    {$_service.name|escape}
+                                </label>
+                            </li>
+                        {/foreach}
+                    </ul>
+
+                    <div class="t-other-field" style="display: none; margin: 0 0 2em;">
+                        <p class="hint" style="margin: 0 0 4px;">{_wp('Specify URL to your CalDAV server')}</p>
+                        <input type="text" name="url" value="" disabled="disabled" placeholder="https://calendar.example.com/caldav/">
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">
+                    {_wp('Login')}
+                </div>
+                <div class="value">
+                    <input type="text" name="login" value="">
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">
+                    {_wp('Password')}
+                </div>
+                <div class="value">
+                    <input type="password" name="password" value="">
+                </div>
+            </div>
+            <div class="field buttons">
+                <div class="name"></div>
+                <div class="value">
+                    <input type="hidden" name="id" value="{$id}">
+
+                    <input class="button green" type="button" value="{_wp('Connect')}">
+                    <input class="button green" type="submit" value="{_wp('Connect')}" style="display: none">
+                    {_wp('or')}
+                    <a href="javascript:void(0);" data-id="{$id}" class="cancel t-cancel-external-calendar">{_wp('cancel')}</a>
+
+                    <i class="icon16 loading" style="display: none;"></i>
+                </div>
+            </div>
+            {$wa->csrf()}
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        var container = $('#{$container_id}');
+        var url_selector = container.find('input[name=type]');
+        var url_input = container.find('input[name=url]');
+        var form = container.find('form');
+        var button = form.find('[type=button]');
+        var loading = form.find('.loading');
+
+        url_selector.change(function () {
+            var val = $(this).val();
+            if (val === 'other') {
+                //
+                url_input.attr('disabled', false).closest(".t-other-field").show();
+                //
+                if (!url_input.val().length) {
+                    button.attr('disabled', true);
+                }
+            } else {
+                //
+                url_input.attr('disabled', true).closest(".t-other-field").hide();
+                //
+                button.attr('disabled', false);
+            }
+        });
+
+        url_input.on("change keyup", function() {
+            if (!url_input.val().length) {
+                button.attr('disabled', true);
+            } else {
+                button.attr('disabled', false);
+            }
+        });
+
+        form.submit(function (e) {
+            if (!e.isTrigger) {
+                e.preventDefault();
+                button.trigger('click');
+            }
+        });
+
+        button.click(function () {
+            var val = url_selector.filter(':checked').val();
+            if (!val) {
+                alert("{_wp('Choose server')}");
+                return;
+            }
+
+            loading.show();
+
+            var data = { };
+            $.each(form.serializeArray(), function (i, item) {
+                data[item.name] = item.value;
+            });
+
+            var authorize = function (data) {
+                $.post('?plugin=caldav&module=caldav&module=backend&action=authorize', data, function (r) {
+                    if (r.status == 'ok') {
+                        form.submit();
+                    } else if ($.isPlainObject(r.errors) && !$.isEmptyObject(r.errors)) {
+                        loading.hide();
+                        if (r.errors.code <= 0) {
+                            alert("{_wp('Invalid URL')}");
+                        } else if (r.errors.code == 401) {
+                            alert("{_wp('Specified login or password is invalid')}");
+                        } else {
+                            alert("{_wp('No CalDAV-server on specified URL')}");
+                        }
+                    }
+                });
+            };
+
+            if (val === 'other') {
+                authorize(data);
+                return;
+            }
+
+            var findUrl = function (params, success) {
+                $.get('?plugin=caldav&module=backend&action=url', params,
+                        function (r) {
+                            if (r.status === 'ok') {
+                                if (!r.data.url) {
+                                    findUrl($.extend({ }, params, r.data), success);
+                                } else {
+                                    success($.extend({ }, params, r.data));
+                                }
+                            } else if ($.isPlainObject(r.errors) && !$.isEmptyObject(r.errors)) {
+                                loading.hide();
+                                alert("{_wp('Specified login or password is invalid')}");
+                            }
+                        }
+                );
+            };
+
+            findUrl(data, function (data) {
+                url_input.attr('disabled', false).val(data.url);
+                authorize(data);
+            });
+
+        });
+
+    });
+</script>

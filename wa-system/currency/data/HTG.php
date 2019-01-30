@@ -3,6 +3,7 @@
 return array(
     'code' => 'HTG',
     'sign' => 'G',
+	'iso4217' => '332',
     'sign_position' => null,
     'sign_delim' => null,
     'title' => 'Haitian gourde',

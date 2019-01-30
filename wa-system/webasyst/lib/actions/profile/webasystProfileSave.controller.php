@@ -4,19 +4,37 @@
 class webasystProfileSaveController extends waJsonController
 {
     /** @var waContact */
+    protected $id = null;
     protected $contact;
 
     public function execute()
     {
-        $this->contact = wa()->getUser();
+        $this->contact = $this->getContact();
+        $this->id = $this->contact->getId();
 
-        $data = json_decode(waRequest::post('data'), true);
-        if (!$data || !is_array($data)) {
+        $data = $this->getData();
+        if (!$data) {
             $this->response = array(
                'errors' => array(),
                'data' => array(),
             );
             return;
+        }
+
+        // Validate and save contact if no errors found
+        $this->save($data, $response, $errors);
+
+        $this->response = array(
+           'errors' => $errors,
+           'data' => $response,
+        );
+    }
+
+    protected function getData()
+    {
+        $data = json_decode(waRequest::post('data', '[]', 'string'), true);
+        if (!$data || !is_array($data)) {
+            return null;
         }
 
         // Make sure only allowed fields are saved
@@ -26,38 +44,57 @@ class webasystProfileSaveController extends waJsonController
                 $allowed[$f->getId()] = true;
             }
         }
-        $data = array_intersect_key($data, $allowed);
 
-        $oldLocale = $this->getUser()->getLocale();
+        return array_intersect_key($data, $allowed);
+    }
 
-        // Validate and save contact if no errors found
-        $errors = $this->contact->save($data, true);
-
-        if ($errors) {
-            $response = array();
-        } else {
-            // New data formatted for JS
-            $response['name'] = $this->contact->get('name', 'js');
+    protected function save($data, &$response, &$errors)
+    {
+        // get old data for logging
+        if ($this->id) {
+            $old_data = array();
+            $oldLocale = $this->contact->getLocale();
             foreach ($data as $field_id => $field_value) {
-                if (!isset($errors[$field_id])) {
-                    $response[$field_id] = $this->contact->get($field_id, 'js');
-                }
+                $old_data[$field_id] = $this->contact->get($field_id);
             }
+        }
 
-            $response['top'] = $this->contact->getTopFields();
-            
+        $response = array();
+        $errors = $this->contact->save($data, true);
+        if ($errors) {
+            return;
+        }
+
+        // New data formatted for JS
+        $new_data = array();
+        foreach ($data as $field_id => $field_value) {
+            $response[$field_id] = $this->contact->get($field_id, 'js');
+            $new_data[$field_id] = $this->contact->get($field_id);
+        }
+
+        $response['id'] = $this->contact->getId();
+        $response['top'] = $this->contact->getTopFields();
+        if (!isset($response['name'])) {
+            $response['name'] = $this->contact->get('name', 'js');
         }
 
         // Reload page with new language if user just changed it in own profile
-        if ($oldLocale != $this->contact->getLocale()) {
+        if ($this->contact->getId() == wa()->getUser()->getId() && $oldLocale != $this->contact->getLocale()) {
             $response['reload'] = TRUE;
         }
-        
-        $response['id'] = $this->contact->getId();
 
-        $this->response = array(
-           'errors' => $errors,
-           'data' => $response,
-        );
+        // Log the action
+        if ($this->id) {
+            $diff = array();
+            wa_array_diff_r($old_data, $new_data, $diff);
+            if (!empty($diff)) {
+                $this->logAction('contact_edit', $diff, $this->contact->getId());
+            }
+        }
+    }
+
+    protected function getContact()
+    {
+        return wa()->getUser();
     }
 }

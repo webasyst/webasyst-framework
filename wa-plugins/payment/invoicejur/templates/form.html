@@ -9,20 +9,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Счет {$order.order_id_str|escape}</title>
+    <style>
+        .s-plugin-products-table {
+            border: 1px solid #000;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .s-plugin-products-table td {
+            border: 1px solid #000;
+        }
+    </style>
 </head>
 <body style="padding: 16px; margin: 0; font-family: Verdana, Arial, sans-serif; font-size: 7pt; line-height: 1; color: #000;">
     <table cellpadding="0" cellspacing="0" width="100%" border="0" style="border-collapse: collapse;">
         <tr>
-            <td style="width: 50%; vertical-align: top;">
+            <td colspan="2">
                 <table cellpadding="0" cellspacing="0" border="0" width="100%" align="center" style="border-collapse:collapse;">
                     <tr>
                         <td style="vertical-align: top; padding: 0 0 6px; border-bottom: 1px solid #000;">
-                            Оплата является признанием условий поставщика. цена и срок поставки пересматриваются в случае неоплаты в течение 2-х банковских дней или в случае непоступления денег в течение 7 календарных дней. срок поставки исчисляется с момента поступления денег на расчетный счет поставщика.
+                            Оплата является признанием условий поставщика. Цена и срок поставки пересматриваются в случае отсутствия оплаты в течение 2 банковских дней или поступления денег в течение 7 календарных дней. Срок поставки исчисляется с момента поступления денег на расчетный счет поставщика.
                         </td>
                     </tr>
                 </table>
             </td>
-            <td>&nbsp;</td>
         </tr>
         <tr>
             <td colspan="2" style="border-bottom: 1px solid #000; padding: 10px 0;">
@@ -84,9 +93,9 @@
                         <td>
                             <b>
                                 {if !empty($order.billing_address.address)}
-                                    {$order.billing_address.city|escape}, {$order.billing_address.zip|escape}, {$order.billing_address.street|escape}
+                                    {$order.billing_address.region_name|default:'регион'|escape}, {$order.billing_address.city|escape}, {$order.billing_address.zip|escape}, {$order.billing_address.street|escape}
                                 {else}
-                                    {$order.shipping_address.city|escape}, {$order.shipping_address.zip|escape}, {$order.shipping_address.street|escape}
+                                    {$order.shipping_address.region_name|default:'регион'|escape}, {$order.shipping_address.city|escape}, {$order.shipping_address.zip|escape}, {$order.shipping_address.street|escape}
                                 {/if}
                             </b>
                         </td>
@@ -96,19 +105,19 @@
         </tr>
         <tr>
             <td colspan="2">
-                <table cellspacing=1 cellpadding=4 width="100%" bgcolor=#aaaaaa border=0>
-                    <tr bgcolor=white>
+                <table cellspacing=1 cellpadding=4 class="s-plugin-products-table">
+                    <tr>
                         <td>#</td>
                         <td width="30%">Наименование работ (услуг)</td>
-                        <td>Ед.изм.</td>
+                        <td>Ед. изм.</td>
                         <td>Кол-во</td>
                         <td>Цена</td>
                         <td width="5%" align=right>Сумма</td>
                     </tr>
                     {foreach $order.items as $item}
-                        <tr bgcolor=white>
+                        <tr>
                             <td>{$item@iteration}</td>
-                            <td><b>{$item.name|escape}</b></td>
+                            <td><b>{$item.name}</b></td>
                             <td>шт.</td>
                             <td>{$item.quantity}</td>
                             <td>{$item.price|wa_format_amount:$order.currency:'%2'}</td>
@@ -116,9 +125,11 @@
                         </tr>
                     {/foreach}
                     {if $order.shipping > 0}
-                        <tr bgcolor=white>
+                        <tr>
                             <td>{$item@iteration+1}</td>
-                            <td><b><nobr>Доставка {$order.shipping_name|escape}</nobr></b></td>
+                            <td><b>
+                                    <nobr>Доставка {$order.shipping_name|escape}</nobr>
+                                </b></td>
                             <td>шт.</td>
                             <td>1</td>
                             <td style="white-space: nowrap;">{$order.shipping|wa_format_amount:$order.currency:'%2'}</td>
@@ -126,6 +137,7 @@
                         </tr>
                     {/if}
                 </table>
+
                 <table cellspacing=0 cellpadding=5 width="100%" border=0 style="margin: 10px 0;">
                     <tr bgcolor=white>
                         <td align=right width="90%"><b>ИТОГО:</b></td>
@@ -137,7 +149,7 @@
                             <td align=right width="10%"><b>{$order.discount|wa_format_amount:$order.currency:'%2'}</b></td>
                         </tr>
                     {/if}
-                    {if $order.tax > 0}
+                    {if ($order.tax_included > 0)||($order.tax)}
                         <tr bgcolor=white>
                             <td align=right width="90%">НДС</td>
                             <td align=right width="10%"><b>{$order.tax|wa_format_amount:$order.currency:'%2'}</b></td>

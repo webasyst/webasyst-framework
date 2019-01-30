@@ -83,7 +83,15 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
         $this->view->assign('photo_stream', $result['blocks']['photo_stream']);
 
         // if we are not in album, than $album is null
+        if ($this->album) {
+            $col = new photosCollection("album/" . $this->album['id']);
+            $this->album['count'] = $col->count();
+            $this->album['frontend_link'] = photosFrontendAlbum::getLink($this->album);
+        }
         $this->view->assign('album', $this->album);
+
+        // Open Graph
+        $this->setOGMetas($this->photo, $this->album);
 
         /**
          * Add extra widgets to photo page
@@ -111,6 +119,22 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
             $parent = $this->photo_model->getStackParent($photo);
             $this->hash = photosPhotoModel::getPrivateHash($parent ? $parent : $photo);
         }
+
+        // get albums
+        $album_photos_model = new photosAlbumPhotosModel();
+        $albums = $album_photos_model->getAlbums($photo['id'], null, true);
+        $photo['albums'] = isset($albums[$photo['id']]) ? $albums[$photo['id']] : array();
+
+        photosAlbumCountModel::extendAlbums($photo['albums']);
+
+        /**
+         * Prepare photo data
+         * Extend photo item via plugins data
+         * @event prepare_photo_frontend
+         * @param array $photo photos item
+         * @return void
+         */
+        wa()->event('prepare_photo_frontend', $photo);
         return $photo;
     }
 
@@ -133,5 +157,25 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
             return $album_model->getBreadcrumbs($this->album['id'], false, true);
         }
         return array();
+    }
+
+    private function setOGMetas($photo, $album)
+    {
+        /**
+         * @var waResponse $response
+         */
+        $response = $this->getResponse();
+
+        // for making inline-editable widget
+        $current_url = photosFrontendPhoto::getLink(
+            $photo,
+            $album ? $album : null
+        );
+        $response->setOGMeta('og:url', $current_url);
+        $response->setOGMeta('og:type', 'article');
+        $response->setOGMeta('og:title', $photo['name']);
+        $response->setOGMeta('og:description', $photo['description']);
+        $size = $this->getConfig()->getSize('middle');
+        $response->setOGMeta('og:image', photosPhoto::getPhotoUrl($photo, $size, true));
     }
 }

@@ -30,12 +30,12 @@ class waPageModel extends waModel
 
     public function updateDomain($old_domain, $new_domain)
     {
-        return $this->updateByField(array('domain' => $old_domain), array('domain' => $new_domain));
+        return $this->updateByField(array($this->domain_field => $old_domain), array($this->domain_field => $new_domain));
     }
 
     public function updateRoute($domain, $old_route, $new_route)
     {
-        return $this->updateByField(array('domain' => $domain, 'route' => $old_route), array('route' => $new_route));
+        return $this->updateByField(array($this->domain_field => $domain, 'route' => $old_route), array('route' => $new_route));
     }
 
     public function updateFullUrl($ids, $new_url, $old_url)
@@ -47,7 +47,7 @@ class waPageModel extends waModel
             $old_url .= '/';
         }
         $sql = "UPDATE ".$this->table."
-        SET full_url = CONCAT(s:url, SUBSTR(full_url, ".(strlen($old_url) + 1) ."))
+        SET full_url = CONCAT(s:url, SUBSTR(full_url, ".(mb_strlen($old_url) + 1) ."))
         WHERE id IN (i:ids)";
         return $this->exec($sql, array('ids' => $ids, 'url' => $new_url));
     }
@@ -235,7 +235,7 @@ class waPageModel extends waModel
     public function getPublishedPages($domain, $route)
     {
         $sql = "SELECT id, parent_id, name, title, full_url, url, create_datetime, update_datetime FROM ".$this->table.'
-                    WHERE status = 1 AND domain = s:domain AND route = s:route ORDER BY sort';
+                    WHERE status = 1 AND '.$this->domain_field.' = s:domain AND route = s:route ORDER BY sort';
         return $this->query($sql, array('domain' => $domain, 'route' => $route))->fetchAll('id');
     }
 
@@ -244,5 +244,10 @@ class waPageModel extends waModel
         if ($cache = wa($this->app_id)->getCache()) {
             $cache->deleteGroup('pages');
         }
+    }
+
+    public function getDomainField()
+    {
+        return $this->domain_field;
     }
 }

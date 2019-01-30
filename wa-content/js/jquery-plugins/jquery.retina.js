@@ -112,8 +112,13 @@
                 setTimeout(load, 5);
             } else {
                 if ($.Retina.opts.force_original_dimensions) {
-                    that.el.setAttribute('width', that.el.offsetWidth);
-                    that.el.setAttribute('height', that.el.offsetHeight);
+                    if (that.el.offsetWidth == 0 && that.el.offsetHeight == 0) {
+                        that.el.setAttribute('width', that.el.naturalWidth);
+                        that.el.setAttribute('height', that.el.naturalHeight);
+                    } else {
+                        that.el.setAttribute('width', that.el.offsetWidth);
+                        that.el.setAttribute('height', that.el.offsetHeight);
+                    }
                 }
 
                 var old_src = that.el.src;

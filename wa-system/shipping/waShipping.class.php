@@ -15,8 +15,20 @@
 
 abstract class waShipping extends waSystemPlugin
 {
+    const TYPE_TODOOR = 'todoor';
+    const TYPE_PICKUP = 'pickup';
+    const TYPE_POST = 'post';
+
+    const PAYMENT_TYPE_CASH = 'cash';
+    const PAYMENT_TYPE_PREPAID = 'prepaid';
+    const PAYMENT_TYPE_CARD = 'card';
 
     const PLUGIN_TYPE = 'shipping';
+
+    const STATE_DRAFT = 'draft';
+    const STATE_READY = 'ready';
+    const STATE_CANCELED = 'cancel';
+    const STATE_SHIPPING = 'shipping';
 
     private $address = array();
 
@@ -24,10 +36,7 @@ abstract class waShipping extends waSystemPlugin
 
     private $params = array();
 
-    /**
-     *
-     * @var waAppShipping
-     */
+    /** @var waAppShipping */
     private $app_adapter;
 
     protected $app_id;
@@ -44,6 +53,12 @@ abstract class waShipping extends waSystemPlugin
         if ($this->key) {
             $this->setSettings($this->getAdapter()->getSettings($this->id, $this->key));
         }
+    }
+
+    protected function initControls()
+    {
+        $this->registerControl('DeliveryIntervalControl');
+        parent::initControls();
     }
 
     /**
@@ -66,11 +81,26 @@ abstract class waShipping extends waSystemPlugin
      * @param array [string]string $item['name'] name of package item
      * @param array [string]mixed $item['weight'] weight of package item
      * @param array [string]mixed $item['price'] price of package item
+     * @param array [string]mixed $item['discount'] price of package item
      * @param array [string]mixed $item['quantity'] quantity of package item
+     * @param array [string]mixed $item['length'] length of package item
+     * @param array [string]mixed $item['width'] width of package item
+     * @param array [string]mixed $item['height'] height of package item
      * @return waShipping
      */
     public function addItem($item)
     {
+        $item += array(
+            'id'       => null,
+            'name'     => '',
+            'weight'   => null,
+            'price'    => 0.0,
+            'discount' => 0.0,
+            'quantity' => 1,
+            'length'   => null,
+            'width'    => null,
+            'height'   => null,
+        );
         $this->items[] = $item;
         return $this;
     }
@@ -79,11 +109,15 @@ abstract class waShipping extends waSystemPlugin
      *
      * @param array $items
      * @param array [][string]mixed $items package item
-     * @param array [][string]string $items['id'] ID of package item
-     * @param array [][string]string $items['name'] name of package item
-     * @param array [][string]mixed $items['weight'] weight of package item
-     * @param array [][string]mixed $items['price'] price of package item
-     * @param array [][string]mixed $items['quantity'] quantity of package item
+     * @param array [][string]string $items[]['id'] ID of package item
+     * @param array [][string]string $items[]['sku'] SKU of package item
+     * @param array [][string]string $items[]['name'] name of package item
+     * @param array [][string]mixed $items[]['weight'] weight of package item
+     * @param array [][string]mixed $items[]['price'] price of package item
+     * @param array [][string]mixed $items[]['quantity'] quantity of package item
+     * @param array [][string]mixed $items[]['length'] length of package item
+     * @param array [][string]mixed $items[]['width'] width of package item
+     * @param array [][string]mixed $items[]['height'] height of package item
      * @return waShipping
      */
     public function addItems($items)
@@ -92,6 +126,11 @@ abstract class waShipping extends waSystemPlugin
             $this->addItem($item);
         }
         return $this;
+    }
+
+    public function setParams($params = array())
+    {
+        $this->params = array_merge($this->params, $params);
     }
 
     /**
@@ -110,12 +149,39 @@ abstract class waShipping extends waSystemPlugin
         $this->items = $items;
     }
 
+    /**
+     * Get package param setted via setParams() or getRates
+     * @param string $property
+     * @return mixed|null
+     */
     protected function getPackageProperty($property)
     {
         $property_value = null;
         switch ($property) {
             case 'price':
-                /*TODO use currency code and etc*/
+                if (isset($this->params['total_'.$property])) {
+                    $property_value = $this->params['total_'.$property];
+                } else {
+                    foreach ($this->items as $item) {
+                        $property_value += ($item['price'] - $item['discount']) * $item['quantity'];
+
+                    }
+                }
+                break;
+            case 'raw_price':
+                if (isset($this->params['total_'.$property])) {
+                    $property_value = $this->params['total_'.$property];
+                } else {
+                    foreach ($this->items as $item) {
+                        $property_value += $item['price'] * $item['quantity'];
+                    }
+                }
+                break;
+            case 'items_discount':
+                foreach ($this->items as $item) {
+                    $property_value += empty($item['total_discount']) ? $item['discount'] * $item['quantity'] : $item['total_discount'];
+                }
+                break;
             case 'weight':
                 if (isset($this->params['total_'.$property])) {
                     $property_value = $this->params['total_'.$property];
@@ -125,8 +191,56 @@ abstract class waShipping extends waSystemPlugin
                     }
                 }
                 break;
+            case 'quantity':
+                foreach ($this->items as $item) {
+                    $property_value += $item[$property];
+                }
+                break;
+            case 'departure_datetime':
+                if (isset($this->params[$property])) {
+                    $property_value = $this->params[$property];
+                } else {
+                    // SQL DATETIME format
+                    $property_value = date('Y-m-d H:i:s', time() + 900); // 15 minutes later
+                }
+                break;
+            case 'service':
+            case 'services_by_type':
+            default:
+                if (isset($this->params[$property])) {
+                    $property_value = $this->params[$property];
+                }
         }
         return $property_value;
+    }
+
+    protected function getTotalSize()
+    {
+        $size = array(
+            'height' => $this->getPackageProperty('total_height'),
+            'width'  => $this->getPackageProperty('total_width'),
+            'length' => $this->getPackageProperty('total_length'),
+        );
+        if (in_array(false, $size, true)) {
+            return false;
+        } else {
+            return in_array(0, $size) ? null : $size;
+        }
+    }
+
+    protected function getTotalHeight()
+    {
+        return $this->getPackageProperty('total_height');
+    }
+
+    protected function getTotalWidth()
+    {
+        return $this->getPackageProperty('total_width');
+    }
+
+    protected function getTotalLength()
+    {
+        return $this->getPackageProperty('total_length');
     }
 
     protected function getTotalWeight()
@@ -134,9 +248,22 @@ abstract class waShipping extends waSystemPlugin
         return $this->getPackageProperty('weight');
     }
 
+    /**
+     * Package content price with discount
+     * @return double
+     */
     protected function getTotalPrice()
     {
         return $this->getPackageProperty('price');
+    }
+
+    /**
+     * Package content price before discount
+     * @return double
+     */
+    protected function getTotalRawPrice()
+    {
+        return $this->getPackageProperty('raw_price');
     }
 
     protected function getAddress($field = null)
@@ -160,15 +287,19 @@ abstract class waShipping extends waSystemPlugin
             $match = true;
             foreach ($allowed_address as $field => $value) {
                 if (!empty($value) && !empty($address[$field])) {
-                    $expected = mb_strtolower($address[$field]);
+                    $expected = trim(mb_strtolower($address[$field]));
                     if (is_array($value)) {
-                        if (!in_array($expected, array_map('mb_strtolower', $value))) {
+                        $value = array_map('trim', array_map('mb_strtolower', $value));
+                        if (!in_array($expected, $value)) {
                             $match = false;
                             break;
                         }
-                    } elseif ($expected != mb_strtolower($value)) {
-                        $match = false;
-                        break;
+                    } else {
+                        $value = trim(mb_strtolower($value));
+                        if ($expected != $value) {
+                            $match = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -205,13 +336,16 @@ abstract class waShipping extends waSystemPlugin
      * @return array[string]['currency']string
      * @return array[string]['rate']mixed float or array for min-max
      * @return array[string]['comment']string optional comment
+     * @return array[string]['custom_data']mixed optional custom data for input control
      */
     public function getRates($items = array(), $address = array(), $params = array())
     {
         if (!empty($address)) {
             $this->address = $address;
         }
-        $this->params = array_merge($this->params, $params);
+
+        $this->setParams($params);
+
         try {
             if ($this->isAllowedAddress()) {
                 $rates = $this->addItems($items)->calculate();
@@ -224,11 +358,95 @@ abstract class waShipping extends waSystemPlugin
         return $rates;
     }
 
+    public function setPackageState(waOrder $order, $state, $params = array())
+    {
+        $this->addItems($order->items);
+        $this->setAddress($order->shipping_address);
+        $params['total_price'] = $order->total;
+        $params['total_discount'] = $order->discount;
+        $shipping_data = array();
+        if (isset($params['shipping_data'])) {
+            $shipping_data = $params['shipping_data'];
+            unset($params['shipping_data']);
+            if (!is_array($shipping_data)) {
+                $shipping_data = array();
+            }
+        }
+
+        $this->setParams($params);
+
+        $method_name = sprintf('%sPackage', $state);
+        if (method_exists($this, $method_name)) {
+            return $this->{$method_name}($order, $shipping_data);
+        } else {
+            throw new waException(sprintf("Unknown package state %s", $state));
+        }
+    }
+
+    /**
+     * @param string $state one of waShipping::STATE_*
+     * @param waOrder|null $order
+     * @param array $params
+     * @return array
+     */
+    public function getStateFields($state, waOrder $order = null, $params = array())
+    {
+        $this->addItems($order->items);
+        $this->setAddress($order->shipping_address);
+        $params['total_price'] = $order->total;
+        $this->setParams($params);
+        return array();
+    }
+
+    /**
+     * Set package state into waShipping::STATE_DRAFT
+     * @param waOrder $order
+     * @param array $shipping_data
+     * @return null|string|string[] null, error or shipping data array
+     */
+    protected function draftPackage(waOrder $order, $shipping_data = array())
+    {
+        return null;
+    }
+
+    /**
+     * Set package state into waShipping::STATE_CANCELED
+     * @param waOrder $order
+     * @param array $shipping_data
+     * @return null|string|string[] null, error or shipping data array
+     */
+    protected function cancelPackage(waOrder $order, $shipping_data = array())
+    {
+        return null;
+    }
+
+    /**
+     * Set package state into waShipping::STATE_SHIPPING
+     * @param waOrder $order
+     * @param array $shipping_data
+     * @return null|string|string[] null, error or shipping data array
+     */
+    protected function shippingPackage(waOrder $order, $shipping_data = array())
+    {
+        return null;
+    }
+
+    /**
+     * Set package state into waShipping::STATE_READY
+     * @param waOrder $order
+     * @param array $shipping_data
+     * @return null|string|string[] null, error or shipping data array
+     */
+    protected function readyPackage(waOrder $order, $shipping_data = array())
+    {
+        return null;
+    }
+
     /**
      * @param waOrder $order
      * @return array[string]array
-     * @return array[string]['name']string название печатной формы
-     * @return array[string]['description']string описание печатной формы
+     * @return array[string]['name']string printform's name
+     * @return array[string]['description']string printform's description
      */
     public function getPrintForms(waOrder $order = null)
     {
@@ -241,10 +459,11 @@ abstract class waShipping extends waSystemPlugin
      * @param string $id
      * @param waOrder $order
      * @param array $params
+     * @return string HTML code
      */
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
-
+        return '';
     }
 
     /**
@@ -271,6 +490,11 @@ abstract class waShipping extends waSystemPlugin
      */
     abstract public function allowedWeightUnit();
 
+    public function allowedLinearUnit()
+    {
+        return null;
+    }
+
     /**
      *
      * List of allowed address patterns
@@ -281,9 +505,21 @@ abstract class waShipping extends waSystemPlugin
         return array();
     }
 
+    /**
+     * @return array
+     */
     public function requestedAddressFields()
     {
         return array();
+    }
+
+    /**
+     * @param array $service
+     * @return array
+     */
+    public function requestedAddressFieldsForService($service)
+    {
+        return $this->requestedAddressFields();
     }
 
     public function customFields(waOrder $order)
@@ -291,10 +527,42 @@ abstract class waShipping extends waSystemPlugin
         return array();
     }
 
+    public function customFieldsForService(waOrder $order, $service)
+    {
+        return $this->customFields($order);
+    }
+
+    public function displayCustomFields($fields, $env = null)
+    {
+        return null;
+    }
+
     /**
      *
      */
     abstract protected function calculate();
+
+    /**
+     * @return null|array
+     */
+    public function getPromise()
+    {
+        return null;
+    }
+
+    /**
+     * @param waOrder $order
+     */
+    public function prefetch($order)
+    {
+
+    }
+
+    public function sync()
+    {
+
+    }
+
 
     /**
      *
@@ -406,33 +674,49 @@ abstract class waShipping extends waSystemPlugin
     public static function settingRegionZoneControl($name, $params = array())
     {
         $html = "";
+        /** @var waShipping $plugin */
         $plugin = $params['instance'];
-        /**
-         * @var waShipping $plugin
-         */
-        $params['items']['country']['value'] =
-            !empty($params['value']['country']) ? $params['value']['country'] : '';
-        $params['items']['region']['value'] =
-            !empty($params['value']['region']) ? $params['value']['region'] : '';
+        if (isset($params['translate'])) {
+            $translate = (!empty($params['translate']) && is_callable($params['translate'])) ? $params['translate'] : false;
+        } else {
+            $translate = array($plugin, '_wp');
+        }
+
+
+        $params['items']['country']['value'] = !empty($params['value']['country']) ? $params['value']['country'] : '';
+        $params['items']['region']['value'] = !empty($params['value']['region']) ? $params['value']['region'] : '';
 
         if (isset($params['items']['city'])) {
-            $params['items']['city']['value'] =
-                !empty($params['value']['city']) ? $params['value']['city'] : '';
+            $params['items']['city']['value'] = !empty($params['value']['city']) ? $params['value']['city'] : '';
         }
+
 
         // country section
         $cm = new waCountryModel();
-        $html .= "<div class='country'>";
-        $html .= "<select name='{$name}[country]'><option value=''></option>";
-        foreach ($cm->all() as $country) {
-            $html .= "<option value='{$country['iso3letter']}'".
-                ($params['items']['country']['value'] == $country['iso3letter']
-                    ? " selected='selected'" : ""
-                ).
-                ">{$country['name']}</value>";
+        if ($translate) {
+            $_description = call_user_func($translate, $params['items']['country']['description']);
+        } else {
+            $_description = $params['items']['country']['description'];
         }
-        $html .= "</select><br>";
-        $html .= "<span class='hint'>{$params['items']['country']['description']}</span></div><br>";
+        $html .= <<<HTML
+<div class='country'>
+    <select name='{$name}[country]'>
+        <option value=''></option>
+HTML;
+
+        foreach ($cm->all() as $country) {
+            $country['name'] = htmlentities($country['name'], ENT_NOQUOTES, waHtmlControl::$default_charset);
+            $_selected = ($params['items']['country']['value'] == $country['iso3letter']) ? " selected='selected'" : "";
+            $html .= "<option value='{$country['iso3letter']}'{$_selected}>{$country['name']}</value>";
+        }
+        $html .= <<<HTML
+    </select>
+    <br/>
+    <span class='hint'>{$_description}</span>
+</div>
+<br/>
+HTML;
+
 
         $regions = array();
         if ($params['items']['country']['value']) {
@@ -441,42 +725,60 @@ abstract class waShipping extends waSystemPlugin
         }
 
         // region section
-        $html .= '<div class="region">';
-        $html .= '<i class="icon16 loading" style="display:none; margin-left: -23px;"></i>';
-        $html .= '<div class="empty"'.
-            (!empty($regions) ? 'style="display:none;"' : '').
-            '><p class="small">'.
-            $plugin->_w("Shipping will be restricted to the selected country").
-            "</p>";
-        $html .= "<input name='{$name}[region]' value='' type='hidden'".
-            (!empty($regions) ? 'disabled="disabled"' : '').
-            '></div>';
-        $html .= '<div class="not-empty" '.
-            (empty($regions) ? 'style="display:none;"' : '').">";
-        $html .= "<select name='{$name}[region]'".
-            (empty($regions) ? 'disabled="disabled"' : '').
-            '><option value=""></option>';
+        $html .= <<<HTML
+<div class="region">
+    <i class="icon16 loading" style="display:none; margin-left: -23px;"></i>
+HTML;
+
+
+        $_style =!empty($regions) ? ' style="display:none;"' : '';
+        $_disabled = !empty($regions) ? ' disabled="disabled"' : '';
+
+        $html .= <<<HTML
+    <div class='empty'{$_style}>
+        <p class='small'>{$plugin->_w("Shipping will be restricted to the selected country")}</p>
+        <input name='{$name}[region]' value='' type='hidden'{$_disabled}>
+    </div>
+    <div class='not-empty'{$_style}>
+        <select name='{$name}[region]'{$_disabled}>
+            <option value=''></option>
+HTML;
 
         foreach ($regions as $region) {
-            $html .= "<option value='{$region['code']}'".
-                ($params['items']['region']['value'] == $region['code']
-                    ? ' selected="selected"' : ""
-                ).
-                ">{$region['name']}</option>";
+            $_selected = ($params['items']['region']['value'] == $region['code']) ? ' selected="selected"' : "";
+            $region['name'] = htmlentities($region['name'], ENT_NOQUOTES, waHtmlControl::$default_charset);
+            $html .= "<option value='{$region['code']}'{$_selected}>{$region['name']}</option>";
         }
-        $html .= "</select><br>";
-        $html .= "<span class='hint'>{$params['items']['region']['description']}</span></div><br>";
+        $html .= <<<HTML
+        </select>
+        <br/>
+        <span class='hint'>{$params['items']['region']['description']}</span>
+    </div>
+    <br/>
+HTML;
 
         // city section
         if (isset($params['items']['city'])) {
-            $html .= "<div class='city'>";
-            $html .= "<input name='{$name}[city]' value='".
-                (!empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "")."' type='text'>
-                <br>";
-            $html .= "<span class='hint'>{$params['items']['city']['description']}</span></div>";
+            $_value = !empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "";
+            $_value = htmlentities($_value, ENT_QUOTES, waHtmlControl::$default_charset);
+            if ($translate) {
+                $_description = call_user_func($translate, $params['items']['city']['description']);
+            } else {
+                $_description = $params['items']['city']['description'];
+            }
+            $html .= <<<HTML
+    <div class='city'>
+        <input name='{$name}[city]' value='{$_value}' type='text'>
+        <br>
+        <span class='hint'>{$_description}</span>
+    </div>
+HTML;
         }
 
-        $html .= "</div>";
+        $html .= <<<HTML
+</div>
+HTML;
+
 
         $url = wa()->getAppUrl('webasyst').'?module=backend&action=regions';
 
@@ -559,6 +861,470 @@ HTML;
     }
 
     /**
+     * @since installer 1.5.14
+     * @param $name
+     * @param array $params
+     * @return string
+     */
+    public static function settingDeliveryIntervalControl($name, $params = array())
+    {
+        // container id for interaction with js purpose
+        $wrappers = array(
+            'title'               => '',
+            'title_wrapper'       => '%s',
+            'description_wrapper' => '<br>%s<br>',
+            'description'         => '',
+            'control_wrapper'     => "%s\n%s\n%s\n",
+
+        );
+
+        $params = array_merge($params, $wrappers);
+
+        waHtmlControl::addNamespace($params, $name);
+
+        $html = '<p class="hint">'._ws('This setting must be supported by the app; e.g., Shop-Script ver. 7.2.4.114 or higher.').'</p>';
+
+
+        $interval_params = $params;
+        $interval_params['value'] = ifset($params['value']['interval']);
+        $interval_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
+        $interval_params['title'] = ifset($params['title_interval'], _ws('Request preferred delivery time'));
+        $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'interval', $interval_params);
+        waHtmlControl::makeId($interval_params, 'interval');
+        $html .= ifset($params['control_separator'], '<br/>');
+
+        $date_params = $params;
+        $date_params['value'] = ifset($params['value']['date']);
+        $date_params['title'] = ifset($params['title_date'], _ws('Request preferred delivery date'));
+        $date_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
+        $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'date', $date_params);
+        waHtmlControl::makeId($date_params, 'date');
+        $html .= ifset($params['control_separator'], '<br/>');
+
+        $intervals_params = $params;
+        $intervals_params['value'] = ifempty(
+            $params['value']['intervals'],
+            array(
+                0 => array(
+                    'from'   => 10,
+                    'from_m' => 0,
+                    'to'     => 12,
+                    'to_m'   => 0,
+                    'day'    => array_fill(0, 6, true),
+                ),
+            )
+        );
+
+        $rows = array();
+
+        waHtmlControl::addNamespace($intervals_params, 'intervals');
+
+        foreach ($intervals_params['value'] as $id => $value) {
+            $interval_items_params = $intervals_params;
+            waHtmlControl::addNamespace($interval_items_params, $id);
+
+            $default_params = array(
+                'title' => ifset($params['title_from'], _ws('from')),
+                'class' => 'short',
+                'value' => ifset($value['from']),
+            );
+            $from = waHtmlControl::getControl(waHtmlControl::INPUT, 'from', $default_params + $interval_items_params);
+            if (!empty($params['minutes'])) {
+                $default_params = array(
+                    'title' => '',
+                    'class' => 'short',
+                    'value' => sprintf('%02d', ifset($value['from_m'], 0)),
+                );
+                $from .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'from_m', $default_params + $interval_items_params);
+            }
+
+            $default_params = array(
+                'title' => ifset($params['title_till'], _ws('till')),
+                'class' => 'short',
+                'value' => ifset($value['to']),
+            );
+            $to = waHtmlControl::getControl(waHtmlControl::INPUT, 'to', $default_params + $interval_items_params);
+            if (!empty($params['minutes'])) {
+                $default_params = array(
+                    'title' => '',
+                    'class' => 'short',
+                    'value' => sprintf('%02d', ifset($value['to_m'], 0)),
+                );
+                $to .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'to_m', $default_params + $interval_items_params);
+            }
+
+            $days = array();
+            $days_params = $interval_items_params;
+            waHtmlControl::addNamespace($days_params, 'day');
+            for ($day = 0; $day < 7; $day++) {
+                $default_params = array(
+                    'value' => ifset($value['day'][$day]),
+                );
+                $days[] = waHtmlControl::getControl(waHtmlControl::CHECKBOX, $day, $default_params + $days_params);
+            }
+            $days = implode('</td><td class="js-days">', $days);
+            $rows[] = <<<HTML
+<tr>
+    <td>{$from}</td>
+    <td>{$to}</td>
+    <td class="js-days">{$days}</td>
+    <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete"></i></a></td>
+
+</tr>
+HTML;
+        }
+        $rows = implode("\n", $rows);
+
+        $days = array(
+            'Mon',
+            'Tue',
+            'Wed',
+            'Thu',
+            'Fri',
+            'Sat',
+            'Sun',
+        );
+        foreach ($days as &$day) {
+            $day = _ws($day);
+        }
+        unset($day);
+        $days = implode('</b></th><th class="js-days"><b>', $days);
+
+        $interval_description = htmlentities(ifset($params['description_interval'], _ws('Delivery intervals')), ENT_QUOTES, waHtmlControl::$default_charset);
+        $add_interval = htmlentities(ifset($params['description_interval'], _ws('Add interval')), ENT_QUOTES, waHtmlControl::$default_charset);
+
+        waHtmlControl::makeId($params);
+        $html .= <<<HTML
+<table class="zebra" id="{$params['id']}">
+    <thead>
+    <tr>
+        <th colspan="2">{$interval_description}</th>
+        <th class="js-days"><b>{$days}</b></th>
+        <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+        {$rows}
+    <tfoot>
+    <tr class="white">
+        <td colspan="2"><a class="inline-link add-interval" href="javascript:void(0);"><i class="icon16 add"></i><b><i>{$add_interval}</i></b></a></td>
+        <td colspan="8">&nbsp;</td>
+    </tr>
+    </tfoot>
+</table>
+HTML;
+
+        $html .= <<<HTML
+<script type="text/javascript">
+    $(function () {
+        'use strict';
+        var table = $('#{$params['id']}');
+        var date = $('#{$date_params['id']}');
+        var interval = $('#{$interval_params['id']}');
+
+        interval.change(function (event) {
+            var fast = !event.originalEvent;
+            if (this.checked) {
+                table.show(fast ? null : 400);
+            } else {
+                table.hide(fast ? null : 400);
+            }
+        }).change();
+
+        date.change(function (event) {
+            var fast = !event.originalEvent;
+            if (this.checked) {
+                table.find('.js-days > *').animate({'opacity': '1'}, fast ? null : 300);
+                table.find('.js-days input').attr('disabled', null);
+                if (!this.defaultChecked) {
+                    table.find('.js-days input').attr('checked', true);
+                }
+            } else {
+                table.find('.js-days > *').animate({'opacity': '0'}, fast ? null : 300);
+                table.find('.js-days input').attr('disabled', true);
+            }
+        }).change();
+
+        var set = function (tr, last) {
+            tr.find('input[type="checkbox"]').attr('checked', true);
+            var value = last ? parseInt(last.find('input[name*="[to]"]').val()) : 10;
+            var delta = last ? (24 + value - parseInt(last.find('input[name*="[from]"]').val())) : 2;
+            tr.find('input[name*="[from]"]').val(value % 24).trigger('change');
+            tr.find('input[name*="[to]"]').val((value + delta) % 24).trigger('change');
+        };
+
+        table.on('keyup, change', 'input[name*="[from]"]', function () {
+            var el = $(this);
+            var value = el.val();
+            if (!value) {
+                value = 0;
+            }
+            el.val(Math.max(0, Math.min(23, parseInt(value))));
+        });
+
+        table.on('keyup, change', 'input[name*="[to]"]', function () {
+            var el = $(this);
+            var value = el.val();
+            if (!value) {
+                value = 0;
+            }
+            el.val(Math.max(1, Math.min(23, parseInt(value))));
+        });
+
+        table.on('click', '.add-interval', function () {
+            var last = table.find('tbody > tr:last');
+            var clone = last.clone();
+
+            clone.find('input').each(function () {
+                var input = $(this);
+                // increase index inside input name
+                var name = input.attr('name');
+                input.attr('name', name.replace(/\[intervals\]\[(\d+)\]/, function (str, p1) {
+                    return '[intervals][' + (parseInt(p1, 10) + 1) + ']';
+                }));
+            });
+            set(clone, last);
+
+            last.after(clone);
+
+            return false;
+        });
+
+        table.on('click', '.delete-interval', function () {
+            var el = $(this);
+            if (table.find('tbody > tr').length > 1) {
+                el.parents('tr:first').remove();
+            } else {
+                set(el.parents('tr:first'));
+            }
+            return false;
+        });
+
+    });
+</script>
+HTML;
+        return $html;
+    }
+
+    /**
+     * @since installer 1.5.14
+     * @deprecated use waHtmlControl::DATETIME instead
+     * @param string $name
+     * @param array $params
+     * @return string
+     */
+    public static function settingCustomDeliveryIntervalControl($name, $params = array())
+    {
+        $html = '';
+
+        $wrappers = array(
+            'title'           => '',
+            'title_wrapper'   => '%s',
+            'description'     => '',
+            'control_wrapper' => "%s\n%3\$s\n%2\$s\n",
+
+        );
+
+
+        $params = array_merge($params, $wrappers);
+        $available_days = array();
+        $date_params = $params;
+        $date_format = waDateTime::getFormat('date');
+        if (isset($params['params']['date'])) {
+            $date_params['style'] = "z-index: 100000;";
+
+            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
+            $offset = min(365, max(0, intval(ifset($params, 'params', 'date', 0))));
+            $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
+            $date_params['description'] = _ws('Date');
+            $date_params['value'] = ifset($params, 'value', 'date_str', '');
+            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
+            waHtmlControl::makeId($date_params, $date_name);
+
+            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
+            $date_formatted_params = $params;
+            $date_formatted_params['style'] = "display: none;";
+            $date_formatted_params['value'] = ifset($params, 'value', 'date', '');
+            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
+            waHtmlControl::makeId($date_formatted_params, $date_name);
+
+
+            $date_format_map = array(
+                'PHP' => 'JavaScript',
+                'Y'   => 'yy',
+                'd'   => 'dd',
+                'm'   => 'mm',
+            );
+            $js_date_format = str_replace(array_keys($date_format_map), array_values($date_format_map), $date_format);
+            $locale = wa()->getLocale();
+            $localization = sprintf("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-%s.js", $locale);
+            if (!is_readable($localization)) {
+                $localization = '';
+            }
+
+        }
+
+        $interval_params = $params;
+        if (!empty($params['params']['interval'])) {
+
+            $intervals = ifempty($params['params']['intervals'], array());
+
+            $interval_params['options'] = array();
+            foreach ($intervals as $interval) {
+                if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
+                    $days = ifset($interval['day'], array());
+                    $value = sprintf(
+                        '%d:%02d-%d:%02d',
+                        $interval['from'],
+                        ifset($interval['from_m'], 0),
+                        $interval['to'],
+                        ifset($interval['to_m'], 0)
+                    );
+                    $interval_params['options'][] = array(
+                        'value' => $value,
+                        'title' => $value,
+                        'data'  => array('days' => array_keys($days)),
+                    );
+                    $available_days = array_merge(array_keys($days), $available_days);
+                }
+            }
+
+            $available_days = array_values(array_unique($available_days));
+
+            $interval_name = preg_replace('@([_\w]+)(\]?)$@', '$1.interval$2', $name);
+            if ($interval_params['options']) {
+                $html .= ifset($params['control_separator']);
+
+                $option = array(
+                    'value' => '',
+                    'title' => '',
+                    'data'  => array('days' => $available_days),
+                );
+                array_unshift($interval_params['options'], $option);
+
+                $interval_params['description'] = _ws('Time');
+                $interval_params['value'] = ifset($params['value']['interval']);
+                $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
+                waHtmlControl::makeId($interval_params, $interval_name);
+            } else {
+                $html .= ifset($params['control_separator']);
+                $interval_params['description'] = _ws('Time');
+                $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $interval_name, $interval_params);
+            }
+        }
+
+
+        if (isset($params['params']['date']) && isset($offset)) {
+
+            if (empty($interval_params['id'])) {
+                $interval_params['id'] = '';
+            }
+
+            $available_days = json_encode($available_days);
+            $root_url = wa()->getRootUrl();
+            $html .= <<<HTML
+<script type="text/javascript">
+    $(function () {
+        'use strict';
+        var date_input = $('#{$date_params['id']}');
+        var date_formatted = $('#{$date_formatted_params['id']}');
+        var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
+        var available_days = {$available_days};
+        var init = function () {
+            date_input.datepicker();
+            date_input.datepicker("option", {
+                "dateFormat": '{$js_date_format}',
+                "minDate": {$offset},
+                "onSelect": function (dateText) {
+                    var d = date_input.datepicker('getDate');
+                    date_input.val(dateText);
+                    date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
+                    if (d && interval && interval.length) {
+                        /** @var int day week day (starts from 0) */
+                        var day = (d.getDay() + 6) % 7;
+                        /**
+                         * filter select by days
+                         */
+                        var value = typeof(interval.val()) !== 'undefined';
+                        var matched = null;
+                        interval.find('option').each(function () {
+                            /**
+                             * @this HTMLOptionElement
+                             */
+                            var option = $(this);
+                            var disabled = (option.data('days').indexOf(day) === -1) ? 'disabled' : null;
+                            option.attr('disabled', disabled);
+                            if (disabled) {
+                                if (this.selected) {
+                                    value = false;
+                                }
+                            } else {
+                                matched = this;
+                                if (!value) {
+                                    this.selected = true;
+                                    value = !!this.value;
+                                    if (typeof(interval.highlight) === 'function') {
+                                        interval.highlight();
+                                    }
+                                }
+                            }
+                        });
+
+                        if (value) {
+                            interval.removeClass('error');
+                        } else if (matched) {
+                            matched.selected = true;
+                            interval.removeClass('error');
+                        } else {
+                            interval.addClass('error');
+                        }
+                    }
+
+                },
+                "beforeShowDay": function (date) {
+                    if (interval && interval.length) {
+                        var day = (date.getDay() + 6) % 7;
+                        return [(date_input.data('available_days')||available_days||[]).indexOf(day) !== -1]
+                    } else {
+                        return [true];
+                    }
+                }
+            });
+            $('.ui-datepicker').css({
+                "zIndex": 999999,
+                "display": 'none'
+            });
+        };
+
+        var init_locale = function () {
+            if ('{$localization}' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
+                $.getScript('{$root_url}{$localization}', init);
+            } else {
+                init();
+            }
+        };
+
+        if (typeof(date_input.datepicker) !== 'function') {
+            $("<link/>", {
+                rel: "stylesheet",
+                type: "text/css",
+                href: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
+            }).appendTo("head");
+            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init_locale);
+
+        } else {
+            init_locale();
+        }
+    });
+</script>
+HTML;
+        }
+
+        return $html;
+    }
+
+    /**
      *
      * Get shipping plugin
      * @param string $id
@@ -616,7 +1382,7 @@ HTML;
     /**
      *
      * @throws waException
-     * @return waAppPayment
+     * @return waAppShipping
      */
     final protected function getAdapter()
     {
@@ -644,4 +1410,19 @@ HTML;
         return $this->app_adapter;
     }
 
+    protected static function formatDatetime($data, $format = 'Y-m-d H:i:s')
+    {
+        if (is_array($data)) {
+            foreach ($data as &$item) {
+                $item = self::formatDatetime($item);
+                unset($item);
+            }
+
+        } elseif (is_int($data)) {
+            $data = date($format, $data);
+        } else {
+            $data = date($format, strtotime($data));
+        }
+        return $data;
+    }
 }

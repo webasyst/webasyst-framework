@@ -73,24 +73,32 @@ var DashboardWidget;
         that.$widget_wrapper = $("#widget-wrapper-" + that.widget_id);
 
         // Functions
-        that.renderWidget();
+        that.renderWidget(true);
     };
 
-    DashboardWidget.prototype.renderWidget = function() {
+    DashboardWidget.prototype.renderWidget = function(force) {
         var that = this,
             widget_href = that.widget_href + "&id=" + that.widget_id + "&size=" + that.widget_size.width + "x" + that.widget_size.width,
             $widget = that.$widget;
 
         if ($widget.length) {
 
-            // Clear old HTML
-            $widget.html("");
-
             // Проставляем класс (класс размера виджета)
             setWidgetType(that);
 
             // Загружаем контент
-            $widget.load(widget_href, function() {});
+            $.ajax({
+                url: widget_href,
+                dataType: 'html',
+                global: false,
+                data: {}
+            }).done(function(r) {
+                $widget.html(r);
+            }).fail(function() {
+                if (force) {
+                    $widget.html("");
+                }
+            });
         }
     };
 

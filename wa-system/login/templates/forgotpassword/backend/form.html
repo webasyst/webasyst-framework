@@ -1,0 +1,63 @@
+{include file="./../../helpers.inc.html" inline}
+
+<form action="" method="post">
+
+    <div class="field" data-field-id="login">
+        <div class="name">{$login_caption|default:''|escape}</div>
+        <div class="value">
+
+            {$_errors = $errors.login|default:[]}
+            {$_value = $data.login|default:''}
+
+            <input type="text" name="{$renderer->getInputName('login')}" class="wa-login-text-input"
+                   value="{$_value|escape}"
+                   autocomplete="off"
+                   placeholder="{$login_placeholder|escape}">
+
+            <div class="wa-edit-login-link-wrapper">
+                <a class="wa-edit-login-link" href="javascript:void(0)">[`Change`]</a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="field wa-field-confirmation-code" data-field-id="confirmation_code">
+        <div class="name">
+            [`Code`]
+        </div>
+        <div class="value">
+            <input type="text" name="{$renderer->getInputName('confirmation_code')}"
+                   class="wa-login-text-input" placeholder="{$code_placeholder|escape}">
+
+            <div class="wa-confirmation-code-input-message"></div>
+            <div class="wa-send-again-confirmation-code-link-wrapper" style="display: none">
+                <a href="javascript:void(0);" class="wa-send-again-confirmation-code-link">[`Re-send`]</a>
+                <i class="wa-send-again-confirmation-code-link-loading icon16 loading" style="display: none;"></i>
+            </div>
+
+        </div>
+    </div>
+
+    {$renderer->renderCaptcha()}
+
+    {$renderer->renderMessages()}
+
+    <div class="field wa-field-submit">
+        <div class="value wa-submit">
+
+            {$renderer->renderUncaughtErrors()}
+
+            <input type="submit" value="[s`Password recovery`]" class="button green wa-recovery-button">
+            <input type="submit" value="[`Confirm and change password`]" class="button gray wa-confirm-button">
+
+            <a href="{$login_url}" class="wa-remember-now-link" data-type="login">[s`I remember it now!`]</a>
+        </div>
+    </div>
+
+    <div class="field wa-back-to-login-page-link-wrapper" style="display: none">
+        <a href="{$login_url}" data-type="login">[s`Back to login page`]</a>
+    </div>
+
+    {$renderer->renderCsrf()}
+
+</form>

@@ -9,12 +9,16 @@ class waPluginsActions extends waActions
     public function defaultAction()
     {
         $template = $this->getTemplatePath();
+
+        $installer_available = wa()->appExists('installer') && $this->getUser()->getRights('installer', 'backend');
+        $installer_available = $installer_available && is_readable(wa()->getConfig()->getRootPath().'/wa-installer/lib/config/sources.php');
+
         $this->display(array(
             'plugins_hash' => $this->plugins_hash,
-            'plugins' => $this->getConfig()->getPlugins(),
-            'installer' => $this->getUser()->getRights('installer', 'backend'),
-            'is_ajax' => $this->is_ajax,
-            'shadowed' => $this->shadowed,
+            'plugins'      => $this->getConfig()->getPlugins(),
+            'installer'    => $installer_available,
+            'is_ajax'      => $this->is_ajax,
+            'shadowed'     => $this->shadowed,
         ), $template);
     }
 
@@ -37,9 +41,6 @@ class waPluginsActions extends waActions
             $plugins = $this->getConfig()->getPlugins();
             $plugins_count = count($plugins);
             if (isset($plugins[$plugin_id])) {
-                /**
-                 * @var shopPlugin $plugin
-                 */
                 $plugin = waSystem::getInstance()->getPlugin($plugin_id, true);
                 $namespace = wa()->getApp().'_'.$plugin_id;
 
@@ -83,24 +84,26 @@ class waPluginsActions extends waActions
             throw new waException(_ws("Can't save plugin settings: unknown plugin id"));
         }
         $namespace = $this->getAppId().'_'.$plugin_id;
-        /**
-         * @var shopPlugin $plugin
-         */
         $plugin = waSystem::getInstance()->getPlugin($plugin_id);
         $settings = (array)$this->getRequest()->post($namespace);
-        $files = waRequest::file($namespace);
-        $settings_defenitions = $plugin->getSettings();
-        foreach ($files as $name => $file) {
-            if (isset($settings_defenitions[$name])) {
-                $settings[$name] = $file;
-            }
-        }
         try {
-            $response = $plugin->saveSettings($settings);
+            $files = waRequest::file($namespace);
+            $settings_definitions = $plugin->getSettings();
+            foreach ($files as $name => $file) {
+                if (true
+                    || #TODO use this check in future
+                    (isset($settings_definitions[$name])
+                        && !empty($settings_definitions[$name]['control_type'])
+                        && ($settings_definitions[$name]['control_type'] == waHtmlControl::FILE)
+                    )
+                ) {
+                    $settings[$name] = $file;
+                }
+            }
+            $response = (array)$plugin->saveSettings($settings);
             $response['message'] = _w('Saved');
             $this->displayJson($response);
         } catch (Exception $e) {
-            $this->setError($e->getMessage());
             $this->displayJson(array(), $e->getMessage());
         }
     }

@@ -73,19 +73,29 @@ class waPageAction extends waViewAction
             }
 
             $this->view->assign('page', $page);
+            $this->view->assign('wa_theme_url', $this->getThemeUrl());
+            $page['content'] = $this->renderPage($page);
 
-            try {
-                $this->view->assign('wa_theme_url', $this->getThemeUrl());
-                $page['content'] = $this->view->fetch('string:'.$page['content']);
-            } catch (SmartyCompilerException $e) {
-                $message = preg_replace('/"[a-z0-9]{32,}"/'," of content Site page with id {$page['id']}",$e->getMessage());
-                throw new SmartyCompilerException($message, $e->getCode());
-            }
             if ($this->layout) {
                 $this->layout->assign('page_id', $page['id']);
             }
             $this->view->assign('page', $page);
             $this->setThemeTemplate('page.html');
+        }
+    }
+
+    public function renderPage($page)
+    {
+        try {
+            $result = $this->view->fetch('string:'.$page['content']);
+            if ($result && false !== strpos($result, 'text-')) {
+                // @deprecated
+                $result = '<style>.text-center{text-align:center;}.text-right{text-align:right}.text-justify{text-align:justify;}</style>'.$result;
+            }
+            return $result;
+        } catch (SmartyCompilerException $e) {
+            $message = preg_replace('/"[a-z0-9]{32,}"/'," of content Site page with id {$page['id']}", $e->getMessage());
+            throw new SmartyCompilerException($message, $e->getCode());
         }
     }
 
@@ -102,7 +112,6 @@ class waPageAction extends waViewAction
             throw new SmartyCompilerException($message, $e->getCode());
         }
     }
-
 
     /**
      * @return waPageModel

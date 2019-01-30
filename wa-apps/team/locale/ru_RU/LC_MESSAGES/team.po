@@ -1,0 +1,1529 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: team\n"
+"POT-Creation-Date: 2016-11-14 16:26+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: team\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Team"
+msgstr "Команда"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Change photo"
+msgstr "Изменить фото"
+
+msgid "@"
+msgstr "в"
+
+msgid "Total:"
+msgstr "Всего:"
+
+msgid "Page:"
+msgstr "Страницы:"
+
+msgid "next"
+msgstr "следующия"
+
+msgid "prev"
+msgstr "предыдущая"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "change password"
+msgstr "изменить пароль"
+
+msgid "The same password is used to access personal account and backend."
+msgstr "Для доступа в личный кабинет и в бекенд используется единый пароль."
+
+msgid "New password"
+msgstr "Новый пароль"
+
+msgid "Confirm password"
+msgstr "Подтверждение пароля"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "or"
+msgstr "или"
+
+msgid "cancel"
+msgstr "отменить"
+
+msgid "Access"
+msgstr "Доступ"
+
+msgid "Block contact"
+msgstr "Заблокировать контакт"
+
+msgid "Unblock contact"
+msgstr "Разблокировать"
+
+msgid "Disable this contact?"
+msgstr "Заблокировать этот контакт?"
+
+msgid "Enable this contact?"
+msgstr "Разблокировать этот контакт?"
+
+msgid "Disabled"
+msgstr "Выключен"
+
+msgid "Enabled"
+msgstr "Включен"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "never logged in"
+msgstr "никогда не входил в систему"
+
+msgid "last login:"
+msgstr "последний вход:"
+
+msgid "Customer portal"
+msgstr "Личный кабинет"
+
+msgid "Available"
+msgstr "Доступен"
+
+msgid "Not available"
+msgstr "Недоступен"
+
+msgid "Customer Portal is a part of your site available for registered clients and containing their personal data. To access their customer portals your clients must log in with email and password."
+msgstr "Личный кабинет — это часть вашего сайта, доступная каждому зарегистрированному клиенту и содержащая персональные данные клиента. Для доступа в личный кабинет клиентам потребуется авторизация с помощью email-адреса и пароля."
+
+msgid "Personal portal settings"
+msgstr "Настройка личного кабинета"
+
+msgid "in Site app"
+msgstr "в приложении \"Сайт\""
+
+msgid "Login"
+msgstr "Логин"
+
+msgid "Backend"
+msgstr "Бекенд"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user."
+msgstr "Этот уровень доступа унаследован от групп. Чтобы изменить его, отредактируйте настройки этих групп или измените набор групп для данного пользователя."
+
+msgid "You cannot revoke administrative access level for yourself. Only another Administrator can do this."
+msgstr "Вы не можете аннулировать административный уровень доступа для самого себя. Только другой администратор может это сделать."
+
+msgid "No access"
+msgstr "Нет доступа"
+
+msgid "Limited access"
+msgstr "Ограниченный доступ"
+
+msgid "Confirm access change"
+msgstr "Подтвердите изменение доступа"
+
+msgid "Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user."
+msgstr "Нельзя выбрать «Нет доступа», потому что некоторые права доступа унаследованы от групп. Для лишения прав доступа отредактируйте настройки групп или набор групп для данного пользователя."
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Invitation sent"
+msgstr "Приглашение отправлено"
+
+msgid "expires"
+msgstr "истекает"
+
+msgid "Login name is required to access your account backend."
+msgstr "Логин обязателен для доступа в бекенд."
+
+msgid "E.g., john, agent07, etc."
+msgstr "Пример: john, agent07 и т. д."
+
+msgid "change login"
+msgstr "изменить логин"
+
+msgid "Belongs to groups"
+msgstr "Принадлежит к группам"
+
+msgid "API tokens"
+msgstr "Токены API"
+
+msgid "No API tokens"
+msgstr "Нет API токенов"
+
+msgid "Create data"
+msgstr "Дата создания"
+
+msgid "Client id"
+msgstr "Идентификатор клиента"
+
+msgid "Scope"
+msgstr "Доступ"
+
+msgid "Expires"
+msgstr "Истекает"
+
+msgid "Remove token"
+msgstr "Удалить токен"
+
+msgid "The user will not be able to send API requests using this token."
+msgstr "Пользователь не сможет отправлять запросы API, используя этот токен."
+
+msgid "&lt;no name&gt;"
+msgstr "&lt;без названия&gt;"
+
+msgid "&lt;none&gt;"
+msgstr "&lt;нет&gt;"
+
+msgid "customize groups"
+msgstr "настроить группы"
+
+msgid "Access rights"
+msgstr "Права доступа"
+
+msgid "Backend access rights are customized for every app separately and result from a combination of personal and group access rights."
+msgstr "Права доступа в бекенде настраиваются для каждого приложения отдельно и складываются из прав персональных и унаследованных от групп."
+
+msgid "Edit access"
+msgstr "Редактировать доступ"
+
+msgid "Passwords do not match."
+msgstr "Пароли не совпадают."
+
+msgid "Login is required."
+msgstr "Логин обязателен."
+
+msgid "Loading..."
+msgstr "Загрузка..."
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "ID"
+msgstr ""
+
+msgid "Added"
+msgstr "Добавил"
+
+msgid "Method"
+msgstr "Метод"
+
+msgid "map"
+msgstr "карта"
+
+msgid "other"
+msgstr "другой"
+
+msgid "which?"
+msgstr "какой?"
+
+msgid "delete"
+msgstr "удалить"
+
+msgid "Add another"
+msgstr "Добавить ещё"
+
+msgid "required"
+msgstr "обязательное"
+
+msgid "year"
+msgstr "год"
+
+msgid "Incorrect email address format."
+msgstr "Неправильный формат email-адреса."
+
+msgid "Incorrect URL format."
+msgstr "Неправильный формат URL."
+
+msgid "Must be a number."
+msgstr "Должно быть числом."
+
+msgid "no name"
+msgstr "без имени"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:125
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:170
+msgid "from"
+msgstr "с"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:128
+msgid "Start"
+msgstr "Начало"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:132
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:172
+msgid "to"
+msgstr "по"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:135
+msgid "End"
+msgstr "Окончание"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:144
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:175
+msgid "by day"
+msgstr "по дням"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:145
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:176
+msgid "by month"
+msgstr "по месяцам"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:148
+msgid "Apply"
+msgstr "Применить"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:187
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:25
+msgid "All time"
+msgstr "Всё время"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:188
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html:32
+msgid "Select dates..."
+msgstr "Выбрать даты..."
+
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d день"
+msgstr[1] "%d дня"
+msgstr[2] "%d дней"
+
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] "%d час"
+msgstr[1] "%d часа"
+msgstr[2] "%d часов"
+
+#: /wa-apps/team/templates/actions/profile/ProfileStats.html
+msgid "Last %d day"
+msgid_plural "Last %d days"
+msgstr[0] "Последний %d день"
+msgstr[1] "Последние %d дня"
+msgstr[2] "Последние %d дней"
+
+msgid "This field is required."
+msgstr "Это поле обязательное."
+
+msgid "At least one of these fields must be filled"
+msgstr "Хотя бы одно из этих полей должно быть заполнено"
+
+msgid "Birthday"
+msgstr "День рождения"
+
+#: /wa-apps/team/lib/actions/profile/teamProfileAccess.action.php:114
+msgid "deleted contact_id="
+msgstr "удалён contact_id="
+
+#: /wa-apps/team/lib/config/logs.php:5
+msgid "granted backend access rights"
+msgstr "предоставил права доступа в бекенд"
+
+#: /wa-apps/team/lib/config/logs.php:9
+msgid "revoked backend access rights"
+msgstr "отменил права доступа в бекенд"
+
+#: /wa-apps/team/lib/config/logs.php:13
+msgid "deleted contact"
+msgstr "удалил контакт"
+
+#: /wa-apps/team/lib/config/logs.php:19
+msgid "invited"
+msgstr "пригласил"
+
+#: /wa-apps/team/lib/config/logs.php:23
+msgid "created group"
+msgstr "создал группу"
+
+#: /wa-apps/team/lib/config/logs.php:27
+msgid "changed group"
+msgstr "изменил группу"
+
+#: /wa-apps/team/lib/config/logs.php:37
+msgid "deleted group"
+msgstr "удалил группу"
+
+#: /wa-apps/team/lib/config/logs.php:40
+msgid "created event"
+msgstr "создал событие"
+
+#: /wa-apps/team/lib/config/logs.php:44
+msgid "changed event"
+msgstr "изменил событие"
+
+#: /wa-apps/team/lib/config/logs.php:48
+msgid "deleted event"
+msgstr "удалил событие"
+
+#: /wa-apps/team/lib/config/logs.php:51
+msgid "created calendar"
+msgstr "создал календарь"
+
+#: /wa-apps/team/lib/config/logs.php:55
+msgid "changed calendar"
+msgstr "изменил календарь"
+
+#: /wa-apps/team/lib/config/logs.php:59
+msgid "deleted calendar"
+msgstr "удалил календарь"
+
+#: /wa-apps/team/lib/config/teamConfig.class.php:205
+#: /wa-apps/team/lib/config/teamConfig.class.php:213
+msgid "Contact with id = %s doesn't exist"
+msgstr "Контакт с id = %s не существует"
+
+msgid "All users"
+msgstr "Все пользователи"
+
+msgid "until"
+msgstr "по"
+
+msgid ":status until :till_end_date"
+msgstr ":status до :till_end_date"
+
+msgid ":status from :from_start_date until :until_end_date"
+msgstr ":status с :from_start_date по :until_end_date"
+
+#: /wa-apps/team/templates/actions/group/Group.html:16
+msgid "Manage group"
+msgstr "Изменить группу"
+
+#: /wa-apps/team/templates/actions/group/Group.html:25
+#: /wa-apps/team/templates/actions/users/Users.html:16
+#: /wa-apps/team/templates/actions/users/UsersOnline.html:36
+msgid "Last seen"
+msgstr "Последний визит"
+
+#: /wa-apps/team/templates/actions/group/Group.html:26
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:91
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:95
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:59
+msgid "Name"
+msgstr "Название"
+
+#: /wa-apps/team/templates/actions/users/Users.html:17
+msgid "Name "
+msgstr "Имя"
+
+#: /wa-apps/team/templates/actions/group/Group.html:27
+#: /wa-apps/team/templates/actions/users/Users.html:18
+msgid "Signed up"
+msgstr "Зарегистрирован"
+
+#: /wa-apps/team/templates/actions/group/Group.html:32
+#: /wa-apps/team/templates/actions/users/Users.html:21
+msgid "Sort by"
+msgstr "Сортировка"
+
+#: /wa-apps/team/templates/actions/group/Group.html:80
+msgid "Add group description"
+msgstr "Добавить описание группы"
+
+#: /wa-apps/team/templates/actions/group/Group.html:108
+#: /wa-apps/team/templates/actions/group/GroupManage.html:80
+msgid "No users in this group."
+msgstr "В этой группе нет участников."
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:81
+#: /wa-apps/team/templates/actions/group/GroupManage.html:59
+msgid "Edit group"
+msgstr "Редактировать группу"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:81
+msgid "New group"
+msgstr "Новая группа"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:103
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:107
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:113
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:208
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:210
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:70
+msgid "Description"
+msgstr "Описание"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:115
+msgid "Type"
+msgstr "Тип"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:122
+msgid "Group"
+msgstr "Группа"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:124
+msgid "Group description"
+msgstr "Описание группы"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:128
+msgid "Location "
+msgstr "Офис"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:123
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:84
+msgid "Location"
+msgstr "Место"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:130
+msgid "Location description"
+msgstr "Описание офиса"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:140
+msgid "Icon"
+msgstr "Иконка"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:161
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:164
+msgid "Address"
+msgstr "Адрес"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:167
+msgid "Specified address not found on map"
+msgstr "Указанный адрес не удалось найти на карте"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:186
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:198
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:232
+msgid "Create"
+msgstr "Создать"
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:204
+msgid "Group name is mandatory."
+msgstr "Название группы обязательно."
+
+#: /wa-apps/team/templates/actions/group/GroupEdit.html:205
+msgid "Address is needed"
+msgstr "Необходимо указать адрес"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:26
+#: /wa-apps/team/templates/actions/group/GroupManage.html:28
+msgid "Add to group"
+msgstr "Включить в группу"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:30
+#: /wa-apps/team/templates/actions/group/GroupManage.html:32
+msgid "Remove from group"
+msgstr "Исключить из группы"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:46
+#: /wa-apps/team/templates/actions/group/GroupAccess.html:5
+msgid "Back"
+msgstr "Назад"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:54
+msgid "Manage access"
+msgstr "Управление доступом"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:64
+msgid "Delete group"
+msgstr "Удалить группу"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:74
+msgid "Find and add user"
+msgstr "Найти и добавить пользователя"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:79
+msgid "Users in this group"
+msgstr "Участники группы"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:92
+msgid "Others users"
+msgstr "Другие пользователи"
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:93
+msgid "All users in this group."
+msgstr "Все пользователи в этой группе."
+
+#: /wa-apps/team/templates/actions/group/GroupManage.html:110
+msgid "Already in group"
+msgstr "Уже в группе"
+
+#: /wa-apps/team/templates/actions/group/GroupDeleteConfirm.html:7
+msgid "Delete this group?"
+msgstr "Удалить эту группу?"
+
+#: /wa-apps/team/templates/actions/group/GroupAccess.html:12
+msgid "Access level selected for this group will be applied to all its members."
+msgstr "Уровень доступа, выбранный для этой группы, применится ко всем её участникам."
+
+#: /wa-apps/team/templates/actions/group/GroupAccess.html:12
+msgid "To extend access rights of individual users within the group, edit their personal access settings."
+msgstr "Чтобы повысить уровень доступа для отдельных пользователей в группе, измените их персональные настройки прав."
+
+#: /wa-apps/team/templates/actions/access/Access.html:34
+msgid "me"
+msgstr "я"
+
+#: /wa-apps/team/templates/actions/access/AccessDialog.html:69
+msgid "The app icon will not be shown in the app menu."
+msgstr "Не показывать иконку приложения в главном меню."
+
+#: /wa-apps/team/templates/actions/access/AccessDialog.html:70
+msgid "Full admin access to the app and its data."
+msgstr "Полный доступ к о всем функциям и данным приложения."
+
+#: /wa-apps/team/templates/actions/access/AccessDialog.html:80
+#: /wa-apps/team/templates/actions/settings/Settings.html:108
+msgid "Saving"
+msgstr "Сохранение"
+
+#: /wa-apps/team/templates/actions/settings/Settings.html:6
+#: /wa-apps/team/templates/actions/settings/Settings.html:112
+#: /wa-apps/team/templates/actions/Sidebar.html:134
+msgid "Settings"
+msgstr "Настройки"
+
+#: /wa-apps/team/templates/actions/settings/Settings.html:12
+msgid "Calendars"
+msgstr "Календари"
+
+#: /wa-apps/team/templates/actions/settings/Settings.html:36
+msgid "Add calendar"
+msgstr "Добавить календарь"
+
+#: /wa-apps/team/templates/actions/settings/Settings.html:47
+msgid "User name format"
+msgstr "Формат имени пользователя"
+
+#: /wa-apps/team/templates/actions/users/Users.html:45
+msgid "No users."
+msgstr "Нет пользователей."
+
+#: /wa-apps/team/templates/actions/users/Users.html:51
+#: /wa-apps/team/lib/actions/access/teamAccess.action.php:18
+msgid "Users"
+msgstr "Пользователи"
+
+#: /wa-apps/team/templates/actions/users/UsersSearch.html:14
+msgid "No users found."
+msgstr "Пользователи не найдены."
+
+#: /wa-apps/team/templates/actions/users/UsersInviteform.html:7
+msgid "Invite new user"
+msgstr "Пригласить нового пользователя"
+
+#: /wa-apps/team/templates/actions/users/UsersInviteform.html:15
+#: /wa-apps/team/templates/actions/Welcome.html:8
+msgid "Email"
+msgstr ""
+
+#: /wa-apps/team/templates/actions/users/UsersInviteform.html:21
+msgid "Please specify an email to send user invitation with further instructions."
+msgstr "Укажите email-адрес для отправки пользователю приглашения с инструкциями для входа."
+
+#: /wa-apps/team/templates/actions/users/UsersInviteform.html:24
+msgid "I will enter password on behalf of this user so no invitation will be sent."
+msgstr "Я введу пароль для этого пользователя, чтобы не отправлять ему приглашение."
+
+#: /wa-apps/team/templates/actions/users/UsersInviteform.html:65
+#: /wa-apps/team/templates/actions/Sidebar.html:52
+#: /wa-apps/team/lib/actions/access/teamAccess.action.php:22
+msgid "Groups"
+msgstr "Группы"
+
+#: /wa-apps/team/templates/actions/users/UsersInviteform.html:86
+#: /wa-apps/team/templates/actions/Sidebar.html:75
+msgid "Locations"
+msgstr "Офисы"
+
+#: /wa-apps/team/templates/actions/users/UsersInviteform.html:111
+msgid "Send"
+msgstr "Отправить"
+
+#: /wa-apps/team/templates/actions/users/UsersInactive.html:6
+#: /wa-apps/team/templates/actions/users/UsersInactive.html:21
+#: /wa-apps/team/templates/actions/Sidebar.html:108
+msgid "Inactive users"
+msgstr "Неактивные"
+
+#: /wa-apps/team/templates/actions/users/UsersInactive.html:14
+msgid "No inactive users."
+msgstr "Нет заблокированных пользователей."
+
+#: /wa-apps/team/templates/actions/users/UsersInvited.html:13
+msgid "No invited contacts."
+msgstr "Нет приглашённых контактов."
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:7
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:57
+msgid "Delete contacts"
+msgstr "Удалить контакты"
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:10
+msgid "Contact deletion cannot be undone."
+msgstr "Контакты будут удалены без возможности восстановления."
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:12
+msgid "IMPORTANT NOTE:"
+msgstr "ВНИМАНИЕ:"
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:14
+msgid "All selected contacts have links to other applications."
+msgstr "Все выбранные контакты имеют связи с другими приложениями."
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:20
+msgid "Deletion of these contacts is allowed to an Administrator only."
+msgstr "Удаление таких контактов разрешено только администратору."
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:22
+msgid "After deletion of these contacts, other applications will refer to non-existent contacts."
+msgstr "После удаления этих контактов другие приложения будут ссылаться на несуществующие контакты."
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:59
+msgid "Delete anyway"
+msgstr "Удалить всё равно"
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:66
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:67
+#: /wa-apps/team/templates/actions/schedule/ScheduleSettings.html:133
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "close"
+msgstr "закрыть"
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:44
+msgid "%d link"
+msgid_plural "%d links"
+msgstr[0] "%d ссылка"
+msgstr[1] "%d ссылки"
+msgstr[2] "%d ссылок"
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:16
+msgid "%d of %d selected contacts shown below have links to other applications."
+msgstr "У %d из %d выбранных контактов, показанные ниже, есть связи с другими приложениями."
+
+#: /wa-apps/team/templates/actions/users/UsersPrepareDelete.html:61
+msgid "Delete %d of %d selected"
+msgstr "Удалить %d из %d выбранных"
+
+#: /wa-apps/team/templates/actions/users/UsersInvited.html:6
+#: /wa-apps/team/templates/actions/users/UsersInvited.html:19
+#: /wa-apps/team/templates/actions/Sidebar.html:102
+msgid "Invitations"
+msgstr "Приглашения"
+
+#: /wa-apps/team/templates/actions/users/UsersOnline.html:8
+msgid "Online users"
+msgstr "Пользователи онлайн"
+
+#: /wa-apps/team/templates/actions/users/UsersOnline.html:16
+msgid "No users online."
+msgstr "Нет пользователей онлайн."
+
+#: /wa-apps/team/templates/actions/InviteFrontend.html:5
+msgid "Sign up as a new user"
+msgstr "Зарегистрироваться заново"
+
+#: /wa-apps/team/templates/actions/InviteFrontend.html:19
+msgid "Please specify login and password to create new backend user."
+msgstr "Введите логин и пароль для регистрации нового пользователя бекенда."
+
+#: /wa-apps/team/templates/actions/InviteFrontend.html:34
+msgid "Password (again)"
+msgstr "Пароль (повторно)"
+
+#: /wa-apps/team/templates/actions/InviteFrontend.html:41
+msgid "Save and proceed"
+msgstr "Сохранить и продолжить"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:16
+msgid "New user"
+msgstr "Новый пользователь"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:28
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:83
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:225
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:20
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:126
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:39
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:25
+msgid "Calendar"
+msgstr "Календарь"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:40
+msgid "Search users"
+msgstr "Найти пользователей"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:68
+msgid "No groups here"
+msgstr "Нет групп"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:88
+msgid "No locations here"
+msgstr "Нет офисов"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:97
+msgid "All contacts"
+msgstr "Все контакты"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:128
+msgid "Reports"
+msgstr "Отчёты"
+
+#: /wa-apps/team/templates/actions/Sidebar.html:131
+msgid "Plugins"
+msgstr "Плагины"
+
+#: /wa-apps/team/templates/actions/profile/ProfileActivity.html:101
+msgid "No events for this user yet."
+msgstr "Для этого пользователя ещё нет событий."
+
+#: /wa-apps/team/templates/actions/profile/Profile.html:17
+msgid "Edit user"
+msgstr "Редактировать пользователя"
+
+#: /wa-apps/team/templates/actions/profile/Profile.html:88
+msgid "This user does not belong to any group."
+msgstr "Этот пользователь не включен ни в одну из групп."
+
+#: /wa-apps/team/templates/actions/profile/Profile.html:90
+msgid "Edit groups"
+msgstr "Редактировать группы"
+
+#: /wa-apps/team/templates/actions/profile/Profile.html:134
+msgid "hide"
+msgstr "скрыть"
+
+#: /wa-apps/team/templates/actions/profile/Profile.html:149
+#: /wa-apps/team/templates/actions/schedule/ScheduleSettings.html:37
+msgid "Personal calendar settings"
+msgstr "Персональные настройки календаря"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:5
+msgid "External calendar type"
+msgstr "Тип внешнего календаря"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:18
+msgid "specify settings"
+msgstr "настроить плагин"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:27
+msgid "Continue"
+msgstr "Продолжить"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:37
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:132
+msgid "Load authorize page"
+msgstr "Загрузить страницу авторизации"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:3
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnect.inc.html:4
+msgid "Connect external calendar"
+msgstr "Подключить внешний календарь"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:15
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:261
+msgid "Empty"
+msgstr "Пусто"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:42
+msgid "Inner calendars"
+msgstr "Внутренние календари"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:76
+msgid "External calendars"
+msgstr "Внешние календари"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:78
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalInfo.inc.html:3
+msgid "External calendar"
+msgstr "Внешний календарь"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:100
+msgid "Integration levels"
+msgstr "Уровни интеграции"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:138
+msgid "Connect & import events"
+msgstr "Подключить и импортировать события"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalEdit.inc.html:140
+msgid "Import events"
+msgstr "Импортировать события"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:49
+msgid "Edit calendar"
+msgstr "Редактировать календарь"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:49
+msgid "New calendar"
+msgstr "Новый календарь"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:62
+msgid "Calendar name"
+msgstr "Название календаря"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:69
+msgid "Style"
+msgstr "Стиль"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:91
+msgid "Background color"
+msgstr "Цвет фона"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:97
+msgid "Font color"
+msgstr "Цвет текста"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:123
+msgid "Selected user groups only"
+msgstr "Только отдельные группы пользователей"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:129
+msgid "Select user groups which you want to be able to control events in this calendar:"
+msgstr "Выберите группы пользователей, которым вы хотите предоставить право управлять событиями в этом календаре:"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:137
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:157
+msgid "This group does not have access to Team app."
+msgstr "У этой группы нет доступа к приложению «Команда»."
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:140
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:160
+msgid "Customize group access rights using the <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Manage group</i></b></a> mode."
+msgstr "Настройте права группы в режиме <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Управление группой</i></b></a>."
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:171
+msgid "There are no user groups in your Webasyst installation."
+msgstr "В вашем бекенде Webasyst нет групп пользователей."
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:171
+msgid "Add groups to be able to manage access to calendars."
+msgstr "Создайте группы, чтобы управлять доступом к календарям."
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:181
+msgid "Default status"
+msgstr "Статус по умолчанию"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:186
+msgid "Default label for adding a user status in this calendar"
+msgstr "Метка по умолчанию для создания статуса пользователя в этом календаре"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:222
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:258
+msgid "Field is empty"
+msgstr "Поле необходимо заполнить"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:223
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:259
+msgid "Incorrect date"
+msgstr "Указана некорректная дата"
+
+#: /wa-apps/team/templates/actions/calendar/Calendar.html:224
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:260
+msgid "Incorrect period"
+msgstr "Указан некорректный период"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnect.inc.html:8
+msgid "You need to install any calendar plugin before connecting external calendars."
+msgstr "Для подключения внешних календарей требуется установить соответствующие плагины."
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalDeleteConfirm.html:7
+msgid "Confirm calendar unlinking"
+msgstr "Подтверждение отключения календаря"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalDeleteConfirm.html:13
+msgid "Are you sure to unlink \"%s\"?"
+msgstr "Вы уверены, что хотите отключить «%s»?"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalDeleteConfirm.html:15
+msgid "Are you sure to delete \"%s\"?"
+msgstr "Вы уверены, что хотите удалить «%s»?"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalDeleteConfirm.html:20
+msgid "Also delete all events imported from this calendar"
+msgstr "Также удалить все события, импортированные из этого календаря"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalDeleteConfirm.html:20
+msgid "%d event"
+msgid_plural "%d events"
+msgstr[0] "%d событие"
+msgstr[1] "%d события"
+msgstr[2] "%d событий"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarDeleteConfirm.html:7
+msgid "Delete this calendar?"
+msgstr "Удалить этот календарь?"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarDeleteConfirm.html:12
+msgid "This calendar is empty. No events will be deleted."
+msgstr "Календарь пуст. Ни одно событие не будет удалено."
+
+#: /wa-apps/team/templates/actions/calendar/CalendarDeleteConfirm.html:16
+msgid "%d event in this calendar will be deleted"
+msgid_plural "%d events in this calendar will be deleted"
+msgstr[0] "%d событие в этом календаре будет удалено"
+msgstr[1] "%d события в этом календаре будут удалены"
+msgstr[2] "%d событий в этом календаре будут удалены"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarDeleteConfirm.html:20
+msgid "%d connection to external calendars will be deleted"
+msgid_plural "%d connections to external calendars will be deleted"
+msgstr[0] "%d подключение к внешнему календарю будет удалено"
+msgstr[1] "%d подключения к внешним календарям будут удалены"
+msgstr[2] "%d подключений к внешним календарям будут удалены"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalInfo.inc.html:64
+msgid "unlink calendar"
+msgstr "отключить календарь"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventDeleteConfirm.html:7
+msgid "Delete this event?"
+msgstr "Удалить это событие?"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.inc.html:203
+msgid "more"
+msgstr "ещё"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.inc.html:226
+msgid "days"
+msgstr "дни"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.inc.html:233
+msgid "Data is broken"
+msgstr "Данные повреждены"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleSettings.html:25
+msgid "Not connected"
+msgstr "Не подключен"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleSettings.html:27
+msgid "Configure"
+msgstr "Настроить"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleSettings.html:91
+msgid "unlink"
+msgstr "отключить"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleSettings.html:99
+msgid "No external calendars connected"
+msgstr "Не подключен ни один внешний календарь"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleSettings.html:107
+msgid "Add external calendar"
+msgstr "Добавить внешний календарь"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:23
+msgid "This is your team calendar. Schedule events and user statuses so all your teammates see who is up to on what. Click on a date or drag between dates to add an event."
+msgstr "Это календарь вашей команды. Добавляйте события и устанавливайте статусы пользователей, чтобы все видели, кто что планирует. Щелкните по отдельной дате или выделите сразу целый период, чтобы добавить новое событие."
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:89
+msgid "Previous month"
+msgstr "Предыдущий месяц"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:104
+msgid "Next month"
+msgstr "Следующий месяц"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:83
+msgid "January"
+msgstr "Январь"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:83
+msgid "February"
+msgstr "Февраль"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:83
+msgid "March"
+msgstr "Март"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:83
+msgid "April"
+msgstr "Апрель"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:84
+msgid "May"
+msgstr "Май"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:84
+msgid "June"
+msgstr "Июнь"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:84
+msgid "July"
+msgstr "Июль"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:84
+#: /wa-apps/team/lib/actions/schedule/teamScheduleDay.action.php:21
+msgid "August"
+msgstr "Август"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:84
+msgid "September"
+msgstr "Сентябрь"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:85
+msgid "October"
+msgstr "Октябрь"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:87
+msgid "November"
+msgstr "Ноябрь"
+
+#: /wa-apps/team/templates/actions/schedule/Schedule.html:87
+msgid "December"
+msgstr "Декабрь"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:25
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:103
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:11
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:57
+msgid "Event"
+msgstr "Событие"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:71
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:41
+msgid "User"
+msgstr "Пользователь"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:106
+msgid "Event name"
+msgstr "Название"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:116
+msgid "Type description here"
+msgstr "Добавьте описание события"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:126
+msgid "Event location"
+msgstr "Место"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:147
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:151
+msgid "Event start"
+msgstr "Начало"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:167
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:171
+msgid "Event end"
+msgstr "Окончание"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:180
+msgid "All day"
+msgstr "Весь день"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:193
+msgid "Label"
+msgstr "Маркер"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:202
+msgid "Your label"
+msgstr "Ваш маркер"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:215
+msgid "Preview"
+msgstr "Предварительный просмотр"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventEdit.html:216
+msgid "This is how it will look like all around Webasyst"
+msgstr "Вот как это будет выглядеть в вашем Вебасисте"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:108
+msgid "When"
+msgstr "Когда"
+
+#: /wa-apps/team/templates/actions/schedule/ScheduleEventView.html:135
+msgid "Source"
+msgstr "Источник"
+
+#: /wa-apps/team/templates/actions/Welcome.html:9
+msgid "Minimal access"
+msgstr "Минимальный доступ"
+
+#: /wa-apps/team/templates/actions/Welcome.html:11
+#: /wa-apps/team/lib/classes/teamHelper.class.php:193
+msgid "Full access"
+msgstr "Полный доступ"
+
+#: /wa-apps/team/templates/actions/Welcome.html:12
+msgid "Remove"
+msgstr "Удалить"
+
+#: /wa-apps/team/templates/actions/Welcome.html:19
+msgid "Welcome to the team!"
+msgstr "Добро пожаловать в команду!"
+
+#: /wa-apps/team/templates/actions/Welcome.html:20
+msgid "Webasyst is a great way for teams to work together online and share access to apps and data. Enter your teammates email addresses, and Webasyst will automatically create user accounts and send invitations."
+msgstr "Webasyst — это удобная среда для коллективной работы и обмена рабочей информацией через интернет. Введите email-адреса своих коллег, и Webasyst автоматически создаст для них аккаунты пользователей и отправит им приглашения для входа."
+
+#: /wa-apps/team/templates/actions/Welcome.html:33
+msgid "Add more people"
+msgstr "Добавить больше сотрудников"
+
+#: /wa-apps/team/templates/actions/Welcome.html:39
+msgid "Send invitations"
+msgstr "Отправить приглашения"
+
+#: /wa-apps/team/templates/actions/Welcome.html:41
+msgid "add teammates manually later"
+msgstr "добавить участников позже"
+
+#: /wa-apps/team/templates/actions/Welcome.html:43
+msgid "<em>Full access</em> means the freedom of using all functions available in all installed apps. <em>Minimal access</em> limits the range of available functions only to viewing and editing personal profile in Team app. Later on you will be able to set up personal access rights to individual apps for each user."
+msgstr "<em>Полный доступ</em> — это возможность пользоваться без ограничения всеми функциями всех установленных приложений. <em>Минимальный доступ</em> — этот уровень доступа позволяет лишь просматривать и редактировать собственный профиль в приложении «Команда». Позже вы сможете более гибко настроить доступ для каждого сотрудника к отдельным приложениям."
+
+#: /wa-apps/team/templates/actions/Welcome.html:52
+#: /wa-apps/team/lib/actions/teamWelcomeSave.controller.php:19
+msgid "Invalid email address"
+msgstr "Неверный email-адрес"
+
+#: /wa-apps/team/js/profile.info.js:504
+msgid "Auto"
+msgstr "Авто"
+
+#: /wa-apps/team/lib/config/teamConfig.class.php:170
+msgid "<span class=\"activity-action gray\">added</span> %s <span class=\"activity-action gray\">to group</span> %s"
+msgstr "<span class=\"activity-action gray\">добавил</span> %s <span class=\"activity-action gray\">в группу</span> %s"
+
+#: /wa-apps/team/lib/config/teamConfig.class.php:176
+msgid "<span class=\"activity-action gray\">removed</span> %s <span class=\"activity-action gray\">from group</span> %s"
+msgstr "<span class=\"activity-action gray\">удалил</span> %s <span class=\"activity-action gray\">из группы</span> %s"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:29
+msgid "Can view teammates"
+msgstr "Может видеть участников"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:30
+msgid "Can edit self contact info"
+msgstr "Может редактировать свои данные"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:32
+msgid "Can add users"
+msgstr "Может добавлять пользователей"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:33
+msgid "Can add groups"
+msgstr "Может добавлять группы"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:37
+msgid "View only"
+msgstr "Только просмотр"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:38
+msgid "Edit users data"
+msgstr "Может редактировать данные участников"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:47
+msgid "Can manage users in groups"
+msgstr "Может управлять участниками групп"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:53
+msgid "Can manage groups"
+msgstr "Может управлять группами"
+
+#: /wa-apps/team/lib/config/teamRightConfig.class.php:60
+msgid "Can edit events in calendars"
+msgstr "Может редактировать события в календарях"
+
+#: /wa-apps/team/lib/config/config.php:7
+msgid "Lastname Firstname Middlename"
+msgstr "Фамилия Имя Отчество"
+
+#: /wa-apps/team/lib/config/config.php:11
+msgid "Lastname Firstname"
+msgstr "Фамилия Имя"
+
+#: /wa-apps/team/lib/config/config.php:15
+msgid "Firstname Lastname"
+msgstr "Имя Фамилия"
+
+#: /wa-apps/team/lib/config/config.php:19
+msgid "Firstname Middlename Lastname"
+msgstr "Имя Отчество Фамилия"
+
+#: /wa-apps/team/lib/actions/group/teamGroup.action.php:18
+msgid "Group not found"
+msgstr "Группа не найдена"
+
+#: /wa-apps/team/lib/actions/access/teamAccess.action.php:13
+#: /wa-apps/team/lib/actions/access/teamAccessDialog.action.php:12
+#: /wa-apps/team/lib/actions/access/teamAccessSave.actions.php:13
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalDeleteConfirm.action.php:9
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalDelete.controller.php:9
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalAuthorize.controller.php:42
+msgid "Access denied"
+msgstr "Доступ запрещен"
+
+#: /wa-apps/team/lib/actions/access/teamAccessSave.actions.php:127
+msgid "Password must not be empty."
+msgstr "Необходимо указать пароль."
+
+#: /wa-apps/team/lib/actions/users/teamUsersDelete.controller.php:53
+msgid "%d contact has been deleted"
+msgid_plural "%d contacts have been deleted"
+msgstr[0] "удален %d контакт"
+msgstr[1] "удалены %d контакта"
+msgstr[2] "удалены %d контактов"
+
+#: /wa-apps/team/lib/actions/users/teamUsersPrepareDelete.action.php:33
+msgid "You cannot delete yourself."
+msgstr "Вы не можете удалить себя."
+
+#: /wa-apps/team/lib/actions/users/teamUsersPrepareDelete.action.php:46
+msgid "Only Administrator can delete backend users."
+msgstr "Только администратор может удалять пользователей бекенда."
+
+#: /wa-apps/team/lib/actions/users/teamUsersPrepareDelete.action.php:54
+msgid "You need full access to Team app to be able to delete contacts."
+msgstr "Для удаления контактов необходим полный доступ к приложению «Команда»."
+
+#: /wa-apps/team/lib/actions/users/teamUsersPrepareDelete.action.php:67
+msgid "Only Administrator can delete contacts that have links to other applications."
+msgstr "Только Администратор может удалять контакты, у которых есть связи с другими приложениями."
+
+#: /wa-apps/team/lib/actions/users/teamUsersCreate.controller.php:71
+#: /wa-apps/team/lib/actions/teamInviteFrontend.action.php:36
+msgid "This login is already set for another user"
+msgstr "Указанный логин уже используется другим пользователем"
+
+#: /wa-apps/team/lib/actions/teamWelcomeSave.controller.php:27
+#: /wa-apps/team/lib/classes/teamUsersNewUserController.class.php:49
+msgid "Already in our team!"
+msgstr "Этот пользователь уже в нашей команде!"
+
+#: /wa-apps/team/lib/actions/teamWelcomeSave.controller.php:27
+#: /wa-apps/team/lib/classes/teamUsersNewUserController.class.php:49
+msgid "This contact was banned"
+msgstr "Этот контакт заблокирован"
+
+#: /wa-apps/team/lib/actions/plugins/teamPlugins.actions.php:18
+msgid "Plugin settings page"
+msgstr "Страница настройки плагина"
+
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalDeleteConfirm.action.php:28
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternal.action.php:148
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalAuthorize.controller.php:39
+msgid "External calendar not found"
+msgstr "Внешний календарь не найден"
+
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalSave.controller.php:17
+msgid "Calendar not found"
+msgstr "Календарь не найден"
+
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalSave.controller.php:90
+msgid "Not enabled level of integration"
+msgstr "Выбран недопустимый уровень интеграции"
+
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalAuthorize.controller.php:11
+msgid "Authorize failed"
+msgstr "Авторизация не удалась"
+
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalSave.controller.php:76
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalAuthorize.controller.php:52
+#: /wa-apps/team/lib/actions/calendar/teamCalendarExternalAuthorize.controller.php:65
+msgid "External calendar plugin not found"
+msgstr "Не найден плагин для внешнего календаря"
+
+#: /wa-apps/team/lib/classes/teamUsersNewUserController.class.php:27
+msgid "This does not look like a valid email"
+msgstr "Неверный формат email"
+
+#: /wa-apps/team/lib/classes/teamCalendar.class.php:53
+msgid "All calendars"
+msgstr "Все календари"
+
+#: /wa-apps/team/lib/handlers/contacts.profile.tab.handler.php:31
+msgid "Timeline"
+msgstr "Хронология действий"
+
+#: /wa-apps/team/lib/handlers/contacts.profile.tab.handler.php:52
+msgid "Contact info"
+msgstr "Контактная информация"
+
+#: /wa-apps/team/lib/handlers/contacts.profile.tab.handler.php:61
+#: /wa-apps/team/lib/handlers/contacts.profile.tab.handler.php:76
+msgid "User access"
+msgstr "Доступ"
+
+#: /wa-apps/team/lib/handlers/contacts.profile.tab.handler.php:87
+msgid "Stats"
+msgstr "Статистика"
+
+#: /wa-apps/team/lib/models/teamCalendarExternal.model.php:152
+msgid "Import only"
+msgstr "Только импорт"
+
+#: /wa-apps/team/lib/models/teamCalendarExternal.model.php:153
+msgid "All entries available in an external calendar will be imported into your Webasyst account. No data will be exported from Webasyst to an external calendar."
+msgstr "Все данные будут полностью импортированы из внешнего календаря в ваш Webasyst. Из Webasyst во внешний календарь никакие данные передаваться не будут."
+
+#: /wa-apps/team/lib/models/teamCalendarExternal.model.php:158
+msgid "Import + export of changes and deletions"
+msgstr "Импорт всех данных + экспорт только изменений и удалений"
+
+#: /wa-apps/team/lib/models/teamCalendarExternal.model.php:159
+msgid "All entries available in an external calendar will be imported into your Webasyst account. From Webasyst to an external calendar will be exported only your changes and deletions; newly added entries will not be exported to an external calendar."
+msgstr "Все данные будут полностью импортированы из внешнего календаря в ваш Webasyst. Из Webasyst во внешний календарь будут экспортироваться только изменения и удаления; новые записи не будут экспортироваться во внешний календарь."
+
+#: /wa-apps/team/lib/models/teamCalendarExternal.model.php:164
+msgid "Full data synchronization"
+msgstr "Полный двусторонний обмен данными"
+
+#: /wa-apps/team/lib/models/teamCalendarExternal.model.php:165
+msgid "All entries available in an external calendar will be imported into your Webasyst account. From Webasyst to an external calendar will be exported newly added entries as well as your changes and deletions."
+msgstr "Все данные будут полностью импортированы из внешнего календаря в ваш Webasyst. Из Webasyst во внешний календарь будут экспортироваться вновь добавляемые новые записи, изменения и удаления."
+
+msgid "No users will be deleted."
+msgstr "Пользователи удалены не будут."
+
+msgid "To add a user to %s, either use <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Manage group</i></b></a> mode, or drag a user to this group in the sidebar."
+msgstr "Чтобы добавить пользователя в группу «%s», либо используйте режим «<a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Изменить группу</i></b></a>», либо перетащите пользователя на название группы в боковой панели."
+
+msgid "To add a user to %s, use <a class=\"inline-link\"><b><i><a class=\"js-edit-group\" href=\"%s\">Manage group</a></i></b></a> mode."
+msgstr "Чтобы добавить пользователя в группу %s, используйте режим «<a class=\"inline-link\"><b><i><a class=\"js-edit-group\" href=\"%s\">Изменить группу</a></i></b></a>»."
+
+msgid "show %s weeks"
+msgstr "показать %s недель"
+
+msgid "Use <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Plugins</i></b></a> section to install plugin you need."
+msgstr "Используйте раздел <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Плагины</i></b></a> для установки необходимых плагинов."
+
+msgid "All apps"
+msgstr "Все приложения"
+
+msgid "Vacation"
+msgstr "Отпуск"
+
+msgid "Business"
+msgstr "Командировка"
+
+msgid "Illness"
+msgstr "Больничный"
+
+msgid "Meeting"
+msgstr "Встреча"
+
+msgid "Other"
+msgstr "Другое"
+
+msgid "on vacation"
+msgstr "в отпуске"
+
+msgid "in a business trip"
+msgstr "в командировке"
+
+msgid "sick"
+msgstr "болею"
+
+msgid "at the meeting"
+msgstr "на встрече"
+
+msgid "%s's birthday — %s"
+msgstr "%s отмечает день рождения — %s"
+
+msgid "Access disabled by %1$s, %2$s"
+msgstr "Доступ выключил %1$s, %2$s"
+
+msgid "Remote"
+msgstr "Удаленно"
+
+msgid "Administrators"
+msgstr "Администраторы"
+
+msgid "%s HQ"
+msgstr "%s"
+
+msgid "This is a list of users who are no longer members of your team. You have disabled their access to your Webasyst backend."
+msgstr "Это список пользователей, которые больше не работают в вашей команде. Им отключен доступ в бекенд вашего Вебасиста."
+
+msgid "Access is switched off"
+msgstr "Доступ выключен"
+
+msgid "User invitation has been sent"
+msgstr "Отправлено приглашение войти в команду"
+
+msgid "Open your user profile."
+msgstr "Перейдите в свой профиль пользователя."
+
+msgid "Under the calendar, click <strong>“Personal calendar settings”</strong>."
+msgstr "Под календарём щёлкните по ссылке <strong>«Персональные настройки календаря»</strong>."
+
+msgid "Select <strong>“Add external calendar”</strong>."
+msgstr "Выберите <strong>«Добавить внешний календарь»</strong>."
+
+msgid "Select <strong>“%s”</strong> and confirm your choice."
+msgstr "Выберите <strong>«%s»</strong> и подтвердите свой выбор."
+
+msgid "Complete settings fields using provided hints and save the changes."
+msgstr "Заполните поля настроек, используя подсказки, и сохраните изменения."
+
+msgid "Connect your %s now"
+msgstr "Подключить мой %s сейчас"
+
+msgid "To connect an external calendar:"
+msgstr "Для подключения внешнего календаря:"
+
+msgid "deleted "
+msgstr "удалена"
+
+msgid " deleted"
+msgstr "удален"
+
+msgid "deleted"
+msgstr "удалено"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:3
+msgid "Register application on %s"
+msgstr ""
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:5
+msgid "Connect %s account:"
+msgstr ""
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalDeleteConfirm.html:21
+msgid "Also delete all events imported from this calendar "
+msgstr ""
+
+#: /wa-apps/team/templates/layouts/Default.html:100
+msgid "Check your key first of all <a href=\"{$wa_app_url}settings/\">here</a>"
+msgstr ""
+
+#: /wa-apps/team/templates/layouts/Default.html:101
+msgid "Error"
+msgstr ""
+
+#: /wa-apps/team/templates/layouts/Default.html:102
+msgid "Google map has error, maybe key is invalid"
+msgstr ""
+
+#: /wa-apps/team/lib/actions/schedule/teamScheduleDay.action.php:50
+msgid "Август"
+msgstr ""
+
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:20
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:23
+msgid "- Uninstalled"
+msgstr ""
+
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:24
+msgid "Uninstalled or not existed plugin"
+msgstr ""
+
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:105
+msgid "Plugin not found"
+msgstr ""
+
+msgid "name@company.com"
+msgstr "name@company.ru"

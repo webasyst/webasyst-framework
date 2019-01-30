@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class waReCaptcha extends waAbstractCaptcha
 {
@@ -9,18 +9,26 @@ class waReCaptcha extends waAbstractCaptcha
     );
 
     const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
-    
+
     public function getHtml()
     {
-        $html = <<<HTML
-<div class="wa-captcha wa-recaptcha">
-    <script src='https://www.google.com/recaptcha/api.js' async></script>
-    <div class="g-recaptcha" data-sitekey="{$this->options['sitekey']}"></div>
-</div>
-HTML;
-        return $html;
+        $wrapper_class = ifempty($this->options, 'wrapper_class', 'wa-captcha');
+        $sitekey = ifset($this->options['sitekey']);
+        $invisible = ifset($this->options['invisible']);
+
+        $view = wa('webasyst')->getView();
+        $view->assign(array(
+            'wrapper_class' => $wrapper_class,
+            'sitekey'       => $sitekey,
+        ));
+
+        $template = wa()->getConfig()->getRootPath() .'/wa-system/captcha/recaptcha/templates/recaptcha.html';
+        if ($invisible) {
+            $template = wa()->getConfig()->getRootPath() .'/wa-system/captcha/recaptcha/templates/recaptcha_invisible.html';
+        }
+        return $view->fetch($template);
     }
-    
+
     public function isValid($code = null, &$error = '')
     {
         if ($code === null) {

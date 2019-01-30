@@ -27,11 +27,12 @@ class waFiles
     }
 
     /**
-     * Creates a new file or directory.
+     * Creates specified directory, or parent directory for specified file.
      *
-     * @param string $path Path for the new file or directory
-     * @param bool $is_dir Flag requiring to create a directory rather than a file. By default (false), a file is created.
-     * @return string|bool Specified $path value on success, or false on failure
+     * @param string $path Path to a file or a directory.
+     * @param bool $is_dir Flag explicitly denoting that path to a directory is specified.
+     *      With false (default choice), method attempts to "guess" whether $path contains a path to a file or a directory.
+     * @return string|bool Specified $path value on success, or false on failure.
      */
     public static function create($path, $is_dir = false)
     {
@@ -88,7 +89,7 @@ class waFiles
                                 }
                                 self::copy($source, $destination, $skip_pattern);
                             } else {
-                                throw new Exception("Not found {$source_path}/{$path}");
+                                throw new waException("Not found {$source_path}/{$path}");
                             }
                         }
                     }
@@ -108,7 +109,7 @@ class waFiles
                 if (file_exists($source_path) && file_exists($target_path) && (filesize($source_path) === 0)) {
                     /*It's ok - it's windows*/
                 } else {
-                    throw new Exception(sprintf(_ws("Error copying file from %s to %s"), $source_path, $target_path));
+                    throw new waException(sprintf(_ws("Error copying file from %s to %s"), $source_path, $target_path));
                 }
             }
         }
@@ -351,30 +352,72 @@ class waFiles
      */
     public static function convert($file, $from, $to = 'UTF-8', $target = null)
     {
-        if ($src = fopen($file, 'rb')) {
-            $filter = sprintf('convert.iconv.%s/%s//IGNORE', $from, $to);
-            if (!@stream_filter_prepend($src, $filter)) {
-                throw new waException("error while register file filter");
-            }
-            if ($target === null) {
-                $extension = pathinfo($file, PATHINFO_EXTENSION);
-                if ($extension) {
-                    $extension = '.'.$extension;
-                }
-                $target = preg_replace('@\.[^\.]+$@', '', $file).'_'.$to.$extension;
-            }
-            if ($dst = fopen($target, 'wb')) {
-                stream_copy_to_stream($src, $dst);
-                fclose($src);
-                fclose($dst);
-            } else {
-                fclose($src);
-                throw new waException("Error while convert file encoding");
-            }
-            return $target;
-        } else {
+        // Open source
+        $src = @fopen($file, 'rb');
+        if (!$src) {
             return false;
         }
+
+        // Set up stream filter for source
+        $filter = sprintf('convert.iconv.%s/%s//IGNORE', $from, $to);
+        if (!@stream_filter_prepend($src, $filter)) {
+            fclose($src);
+            throw new waException("error while register file filter");
+        }
+
+        // default destination filename
+        if ($target === null) {
+            $extension = pathinfo($file, PATHINFO_EXTENSION);
+            if ($extension) {
+                $extension = '.'.$extension;
+            }
+            $target = preg_replace('@\.[^\.]+$@', '', $file).'_'.$to.$extension;
+        }
+
+        // Make sure destination exists for realpath() to work
+        if (!file_exists($target)) {
+            if (!@touch($target)) {
+                fclose($src);
+                return false;
+            }
+        }
+
+        // Make sure we don't overwrite $file if it's the same as $target
+        $file = realpath($file);
+        $target = realpath($target);
+        if (!$target) {
+            fclose($src);
+            return false;
+        }
+        $tmp_target = $target;
+        if ($target === $file) {
+            $tmp_target = tempnam(dirname($target), basename($target));
+            $perms = @octdec(substr(decoct(fileperms($file)), 3));
+            if ($perms) {
+                @chmod($tmp_target, $perms);
+            }
+        }
+
+        // Open destination
+        $dst = @fopen($tmp_target, 'wb');
+        if (!$dst) {
+            fclose($src);
+            return false;
+        }
+
+        // Copy from source to destination
+        stream_copy_to_stream($src, $dst);
+        fclose($src);
+        fclose($dst);
+
+        // Move to real destination if $file was the same as $target
+        if ($target !== $tmp_target) {
+            if (!waFiles::move($tmp_target, $target)) {
+                return false;
+            }
+        }
+
+        return $target;
     }
 
     private static function curlInit($url, $curl_options = array())
@@ -383,11 +426,11 @@ class waFiles
         if (extension_loaded('curl') && function_exists('curl_init')) {
 
             if (!($ch = curl_init())) {
-                throw new Exception(("Error init curl"));
+                throw new waException(("Error init curl"));
             }
 
             if (curl_errno($ch) != 0) {
-                throw new Exception(sprintf("Error init curl %d: %s", curl_errno($ch), curl_error($ch)));
+                throw new waException(sprintf("Error init curl %d: %s", curl_errno($ch), curl_error($ch)));
             }
 
             $curl_default_options = array(
@@ -448,7 +491,7 @@ class waFiles
             $size = fwrite(self::$fp, $chunk);
             self::$size += $size;
         } else {
-            throw new Exception('Invalid write stream');
+            throw new waException('Invalid write stream');
         }
         return $size;
     }
@@ -551,19 +594,33 @@ class waFiles
             }
             @ini_set('async_send', 1);
             wa()->getStorage()->close();
+            $file_size = filesize($file);
 
             if ($attach !== null) {
                 $send_as = str_replace('"', '\"', is_string($attach) ? $attach : basename($file));
                 $send_as = preg_replace('~[\n\r]+~', ' ', $send_as);
 
-                $x_accel_redirect = waSystemConfig::systemOption('x_accel_redirect');
 
-                $file_size = filesize($file);
+
+                /**
+                 * @see https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/
+                 * @todo fix encoding workaround
+                 */
+                $x_accel_redirect = waSystemConfig::systemOption('x_accel_redirect');
+                if (!empty($x_accel_redirect)) {
+                    $base_path = wa()->getConfig()->getRootPath();
+                    if (strpos($file, $base_path) !== 0) {
+                        $x_accel_redirect = false;
+                    }
+                } else {
+                    $base_path = null;
+                }
+
                 $response->setStatus(200);
                 if (empty($x_accel_redirect)) {
                     $from = $to = false;
-
-                    if ($http_range = waRequest::server('HTTP_RANGE')) {
+                    $http_range = waRequest::server('HTTP_RANGE');
+                    if (!empty($http_range)) {
                         // multi range support incomplete
                         list($dimension, $range) = explode("=", $http_range, 2);
                         $ranges = explode(',', $range);
@@ -614,7 +671,9 @@ class waFiles
                         }
                     }
 
-                    $response->addHeader("Cache-Control", "no-cache, must-revalidate");
+                    if (!$response->getHeader("Cache-Control")) {
+                        $response->addHeader("Cache-Control", "no-cache, must-revalidate");
+                    }
                     $response->addHeader("Content-type", "{$file_type}");
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\"");
                     $response->addHeader("Last-Modified", filemtime($file));
@@ -630,8 +689,7 @@ class waFiles
                     $response->sendHeaders();
                     $response = null;
 
-                    //TODO: adjust chunk size
-                    $chunk = 1048576; //1M
+                    $chunk = 131072; //128KB
                     while (!feof($fp) && $chunk && (connection_status() == 0)) {
                         if ($to) {
                             $chunk = min(1 + $to - @ftell($fp), $chunk);
@@ -644,20 +702,26 @@ class waFiles
 
                     @fclose($fp);
                 } else {
+
+                    $path = wa()->getRootUrl().substr($file, strlen($base_path));
+                    $path = preg_replace('@([/\\\\]+)@', '/', $path);
+
                     $response->addHeader("Content-type", $file_type);
                     //RFC 6266
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\"");
                     $response->addHeader("Accept-Ranges", "bytes");
                     $response->addHeader("Content-Length", $file_size);
                     $response->addHeader("Expires", "0");
-                    $response->addHeader("Cache-Control", "no-cache, must-revalidate", false);
+                    if (!$response->getHeader("Cache-Control")) {
+                        $response->addHeader("Cache-Control", "no-cache, must-revalidate");
+                    }
                     $response->addHeader("Pragma", "public");
                     $response->addHeader("Connection", "close");
                     if ($md5) {
                         $response->addHeader("Content-MD5", $md5);
                     }
 
-                    $response->addHeader("X-Accel-Redirect", $file);
+                    $response->addHeader("X-Accel-Redirect", $path);
                     $response->sendHeaders();
                     $response = null;
                     //@future
@@ -665,6 +729,7 @@ class waFiles
                 }
             } else {
                 $response->addHeader("Content-type", $file_type);
+                $response->addHeader("Content-Length", $file_size);
                 $response->addHeader("Last-Modified", filemtime($file));
                 if ($md5) {
                     $response->addHeader("Content-MD5", $md5);

@@ -1,0 +1,62 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: team/plugins/ics\n"
+"POT-Creation-Date: 2016-11-30 10:00+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: team/plugins/ics\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "WebCal subscription URL"
+msgstr "Адрес подписки WebCal"
+
+msgid "Calendar"
+msgstr "Календарь"
+
+msgid "or"
+msgstr "или"
+
+msgid "cancel"
+msgstr "отменить"
+
+msgid "Subscribe"
+msgstr "Подписаться"
+
+msgid "Import events from file"
+msgstr "Импортировать календарь из файла"
+
+msgid "Choose .ics file"
+msgstr "Укажите файл .ics"
+
+msgid "Import"
+msgstr "Импортировать"
+
+msgid "URL is empty string"
+msgstr "Указан пустой адрес"
+
+msgid "URL scheme is unknown"
+msgstr "Указана неизвестная URI-схема"
+
+msgid "URL host is empty"
+msgstr "Не указан хост в адресе"
+
+msgid "Can't download by current URL"
+msgstr "Получить календарь по указанному адресу не удалось"
+
+msgid "No iCalendar found on specified URL"
+msgstr "По указанному адресу нет календаря, соответствующего стандарту iCalendar"
+
+msgid "Imported from file"
+msgstr "Импортирован из файла"
+
+msgid "RFC 5545 iCalendar specification support for events import via WebCal subscriptions (iCal URL) and uploading local .ics files"
+msgstr "Поддержка стандарта iCalendar (RFC 5545) для импорта календарей через подписку на WebCal-ресурсы, а также из файлов .ics"

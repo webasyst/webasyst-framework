@@ -1,0 +1,156 @@
+{strip}
+
+{$module = waRequest::param('module')}
+{$action = waRequest::param('action')}
+{$_is_admin = $wa->user()->isAdmin($wa->app())}
+{$_has_rights = teamHelper::hasRights()}
+{$_can_sort = ( $_is_admin || $_has_rights)}
+
+<div class="t-sidebar-block" id="t-sidebar">
+
+    {* main nav *}
+    <div class="block">
+        <ul class="menu-v with-icons">
+            {if teamHelper::hasRights('add_users')}
+                <li class="bottom-padded top-padded">
+                    <a class="bold js-no-highlight" href="javascript:void(0)" id="t-new-user-link"><i class="icon16 add"></i>[`New user`]</a>
+                </li>
+            {/if}
+            <li class="{if $module == 'users' && !$action}selected{/if}" id="all-users-sidebar-link">
+                <span class="count js-count">{$all_count}</span>
+                <a href="{$wa_app_url}"><i class="icon16 contact"></i>[`All users`]</a>
+            </li>
+            <li class="{if $module == 'users' && $action == 'online'}selected{/if}">
+                <span class="count">{$online_count}</span>
+                <a href="{$wa_app_url}online/"><i class="icon16 status-green"></i>[`Online`]</a>
+            </li>
+            <li class="{if $module == "calendar"}selected{/if}">
+                <a href="{$wa_app_url}calendar/"><i class="icon16 calendar"></i>[`Calendar`]</a>
+            </li>
+
+            <!-- plugin hook: 'backend_sidebar.top_li' -->
+            {* @event backend_sidebar.%plugin_id%.top_li *}
+            {foreach $backend_sidebar as $_}{ifset($_.top_li)}{/foreach}
+        </ul>
+    </div>
+
+    {* search *}
+    <div class="block">
+        <form class="t-search-form">
+            <input class="t-search-field" type="text" placeholder="[`Search users`]">
+            <input class="t-search-submit" type="submit" value="">
+        </form>
+    </div>
+
+    <!-- plugin hook: 'backend_sidebar.section' -->
+    {* @event backend_sidebar.%plugin_id%.section *}
+    {if !empty($backend_sidebar)}{foreach $backend_sidebar as $_}{ifset($_.section)}{/foreach}{/if}
+
+    {* groups *}
+    <div class="block js-drop-block">
+        {if teamHelper::hasRights('add_groups')}<a href="javascript:void(0);" class="count js-add-user-group"><i class="icon16 add"></i></a>{/if}
+        <h5 class="heading top-padded"><b>[`Groups`]</b></h5>
+        {if $groups}
+            <ul class="menu-v with-icons collapsible t-groups-list">
+                {foreach $groups as $_g}
+                    {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_g.id`")}
+
+                    <li class="{if $_can_add}js-drop-place{/if}" data-group-id="{$_g.id}">
+                        <span class="count js-count">{$_g.cnt}</span>
+                        <a href="{$wa_app_url}group/{$_g.id}/">
+                            <i class="icon16 {if $_g.icon}{$_g.icon}{else}user{/if}"></i>
+                            {$_g.name|escape}
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        {else}
+            <p class="hint align-center" style="margin: .5em 0 0;">[`No groups here`]</p>
+        {/if}
+    </div>
+
+    {* locations *}
+    <div class="block js-drop-block">
+        {if teamHelper::hasRights('add_groups')}<a href="javascript:void(0);" class="count js-add-user-location"><i class="icon16 add"></i></a>{/if}
+        <h5 class="heading top-padded"><b>[`Locations`]</b></h5>
+        {if $locations}
+            <ul class="menu-v collapsible t-locations-list">
+                {foreach $locations as $_l}
+                    {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_l.id`")}
+
+                    <li class="{if $_can_add}js-drop-place{/if}" data-group-id="{$_l.id}">
+                        <span class="count js-count">{$_l.cnt}</span>
+                        <a href="{$wa_app_url}group/{$_l.id}/">{$_l.name|escape}</a>
+                    </li>
+                {/foreach}
+            </ul>
+        {else}
+            <p class="hint align-center" style="margin: .5em 0 0;">[`No locations here`]</p>
+        {/if}
+    </div>
+
+    {* user status *}
+    <div class="block">
+        <ul class="menu-v with-icons">
+            {* <li>
+                <span class="count js-count">≈25300</span>
+                <a href="javascript:void(0);"><i class="icon16 contact"></i>[`All contacts`]</a>
+            </li> *}
+            {if $invited_count}
+                <li>
+                    <span class="count js-count">{$invited_count}</span>
+                    <a href="{$wa_app_url}invited/"><i class="icon16 status-yellow-tiny"></i>[`Invitations`]</a>
+                </li>
+            {/if}
+            {if $inactive_count}
+                <li>
+                    <span class="count js-count">{$inactive_count}</span>
+                    <a href="{$wa_app_url}inactive/"><i class="icon16 status-gray-tiny"></i>[`Inactive users`]</a>
+                </li>
+            {/if}
+
+            <!-- plugin hook: 'backend_sidebar.bottom_li' -->
+            {* @event backend_sidebar.%plugin_id%.bottom_li *}
+            {foreach $backend_sidebar as $_}{ifset($_.bottom_li)}{/foreach}
+        </ul>
+    </div>
+
+    {if teamHelper::hasRights()}
+        <div class="hr"></div>
+        <div class="block">
+            <ul class="menu-v with-icons">
+                {if $wa->user()->isAdmin('webasyst')}
+                    <li>
+                        <a href="{$wa_app_url}access/"><i class="icon16 access"></i>[`Access`]</a>
+                    </li>
+                    <li>
+                        <a href="{$wa_app_url}api-tokens/"><i class="icon16 tags"></i>[`API tokens`]</a>
+                    </li>
+                {/if}
+                {* <li>
+                    <a href="javascript:void(0);"><i class="icon16 reports"></i>[`Reports`]</a>
+                </li> *}
+                <li{if $module=='plugins'} class="selected"{/if}>
+                    <a href="{$wa_app_url}plugins/#/"><i class="icon16 plugins"></i>[`Plugins`]</a>
+                </li>
+                <li>
+                    <a href="{$wa_app_url}settings/"><i class="icon16 settings"></i>[`Settings`]</a>
+                </li>
+            </ul>
+        </div>
+    {/if}
+
+    {* Initialization of the internal content of the sidebar *}
+    <script>
+        ( function($) {
+            $.team.sidebar = new Sidebar({
+                $wrapper: $("#t-sidebar"),
+                app_url: {$wa_app_url|json_encode},
+                can_sort: {if $_can_sort}true{else}false{/if}
+            });
+        })(jQuery);
+    </script>
+
+</div>
+
+{/strip}

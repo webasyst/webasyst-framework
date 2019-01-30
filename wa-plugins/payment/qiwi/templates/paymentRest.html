@@ -1,10 +1,14 @@
 {if !empty($form_url)}
-<form class="qiwi-form" action="{$form_url}" method="POST" target="_top">
+<form class="qiwi-form" action="{$form_url}" method="GET" target="_top">
     <div class="pay-button">
         <input type="submit" value="Оплатить на сайте QIWI{*[`Proceed to QIWI secure website to make payment`]*}" />
         <div class="qiwi-error" style="color: red; margin-left: 2em; display: inline-block; ">{foreach $messages as $message}{$message|escape|nl2br}{if !$message@last}<br/>{/if}{/foreach}</div>
     </div>
-
+    {if !empty($get_params)}
+        {foreach $get_params as $n=>$v}
+            <input type="hidden" name="{$n}" value="{$v}" / >
+        {/foreach}
+    {/if}
 </form>
 {else}
 <form id="paymentForm" class="qiwi-form" action="" method="POST" onsubmit="return checkqiwiform()" target="_top">

@@ -1,0 +1,110 @@
+{* FUNCTIONS DECLARATION SECTION BEGIN *}
+
+{function render_errors errors=[]}
+    {foreach $errors as $error}
+        <em class="wa-error-msg">{$error}</em>
+    {/foreach}
+{/function}
+
+{function render_wrapped field_id='' caption='' html='' class='' style=''}
+    {$caption = $caption|escape}
+    <div class="field field-{$field_id} {$class|default:''}" data-field-id="{$field_id}" style="{$style|default:''}">
+        <div class="name">
+            {$caption}
+        </div>
+        <div class="value">
+            {$html}
+            {render_errors errors=$errors}
+        </div>
+    </div>
+{/function}
+
+{function render_field_html field=[] params=[]}
+
+    {$attrs = []}
+
+    {$classes = ['wa-login-text-input']}
+    {foreach $params.classes|default:[] as $clz}
+        {$classes[] = $clz|escape}
+    {/foreach}
+    {if $errors}
+        {$classes[] = 'wa-error'}
+    {/if}
+    {$classes = join(' ', $classes)}
+
+    {$attrs[] = "class=\"`$classes`\""}
+
+    {$_placeholder = $params.placeholder|default:''}
+    {$_placeholder = $_placeholder|escape}
+
+    {if strlen($_placeholder) > 0}
+        {$attrs[] = "placeholder=\"`$_placeholder`\""}
+    {/if}
+
+    {if $params.disabled|default:false}
+        {$attrs[] = 'disabled="disabled"'}
+    {/if}
+    {$attrs = join(' ', $attrs)}
+
+    {$field->getHtml($params, $attrs)}
+{/function}
+
+
+{function render_field field=[] field_wrap_params=[]}{strip}
+
+    {$_field_id = $field->getId()}
+    {$_params = $params}
+
+    {capture assign="_html"}
+        {render_field_html field=$field params=$params}
+    {/capture}
+
+    {$_style = ''}
+
+    {if $is_onetime_password_auth_type}
+
+        {if $_field_id === 'password'}
+
+            {$_style = 'display: none;'}
+
+            {capture assign="_link_html_password"}
+                <div class="wa-request-onetime-password-link-wrapper" style="display: none;">
+                    <a href="{$onetime_password_url}" class="wa-request-onetime-password-link">[`Re-send`]</a>
+                    <i class="icon16 loading wa-request-onetime-password-link-loading" style="margin-top: 0px; margin-left: 2px; display: none"></i>
+                </div>
+            {/capture}
+
+            {$_html = $_html|cat:$_link_html_password}
+
+        {elseif $_field_id === 'login'}
+
+            {capture assign="_link_html_login"}
+                <a class="wa-change-login-link" href="javascript:void(0);" style="display: none;">[`Change`]</a>
+            {/capture}
+
+            {$_html = $_html|cat:$_link_html_login}
+
+        {/if}
+
+    {/if}
+
+    {if !$is_hidden}
+        {render_wrapped
+            field_id=$_field_id
+            caption=$_params.caption|default:''
+            html=$_html
+            ext=$_params.ext|default:''
+            style=$_style}
+    {else}
+        {$_html}
+    {/if}
+
+{/strip}{/function}
+
+{* FUNCTIONS DECLARATION SECTION END *}
+
+{* TEMPLATE BODY SECTION BEGIN *}
+
+{render_field field=$field}
+
+{* TEMPLATE BODY SECTION END *}

@@ -12,7 +12,8 @@
  * @package wa-system
  * @subpackage request
  */
-class waRequestFileIterator extends waRequestFile implements Iterator,Countable,ArrayAccess
+
+class waRequestFileIterator extends waRequestFile implements Iterator, Countable, ArrayAccess
 {
     protected $currentIndex = 0;
     protected $indexes = array();
@@ -24,15 +25,19 @@ class waRequestFileIterator extends waRequestFile implements Iterator,Countable,
     {
         if (!isset($_FILES[$input_name])) {
             parent::__construct(null);// no uploaded files
-        } else if (!is_array($_FILES[$input_name]['name'])) {
+        } elseif (!is_array($_FILES[$input_name]['name'])) {
             parent::__construct($_FILES[$input_name]); // one uploaded file
             $this->files[] = &$this;
+            $this->indexes[] = 0;
         } else {
             // Several files with the same input name
             $init = false;
-            foreach($_FILES[$input_name]['name'] as $i=>$name){
+            foreach ($_FILES[$input_name]['name'] as $i => $name) {
+                if (is_array($name)) {
+                    continue; // deep nested file arrays are not supported by this iterator
+                }
                 $this->indexes[] = $i;
-                if($init){
+                if ($init) {
                     $this->files[] = new waRequestFile(array(
                         'name' => $_FILES[$input_name]['name'][$i],
                         'type' => $_FILES[$input_name]['type'][$i],
@@ -40,7 +45,7 @@ class waRequestFileIterator extends waRequestFile implements Iterator,Countable,
                         'tmp_name' => $_FILES[$input_name]['tmp_name'][$i],
                         'error' => $_FILES[$input_name]['error'][$i],
                     ));
-                }else{
+                } else {
                     $init = true;
                     parent::__construct(array(
                         'name' => $_FILES[$input_name]['name'][$i],
@@ -93,33 +98,36 @@ class waRequestFileIterator extends waRequestFile implements Iterator,Countable,
     }
 
     /**
-     * @param offset
+     * @param string $offset
+     * @return bool
      */
     public function offsetExists($offset)
     {
-        return array_key_exists($offset,$this->indexes);
+        return array_key_exists($offset, $this->indexes);
     }
 
     /**
-     * @param offset
+     * @param mixed $offset
+     * @return mixed
      */
     public function offsetGet($offset)
     {
-        return $this->files[array_search($offset,$this->indexes)];
+        return $this->files[array_search($offset, $this->indexes)];
     }
 
     /**
-     * @param offset
-     * @param value
+     * @param mixed $offset
+     * @param mixed $value
+     * @throws waException
      */
     public function offsetSet($offset, $value)
     {
         if ($value instanceof waRequestFile) {
-            $index = array_search($offset,$this->indexes);
-            if($index === false){
+            $index = array_search($offset, $this->indexes);
+            if ($index === false) {
                 $this->indexes[] = $offset;
                 $this->files[] = $value;
-            }else{
+            } else {
                 $this->files[$index] = $value;
             }
         } else {
@@ -128,16 +136,14 @@ class waRequestFileIterator extends waRequestFile implements Iterator,Countable,
     }
 
     /**
-     * @param offset
+     * @param string $offset
      */
     public function offsetUnset($offset)
     {
-        $index = array_search($offset,$this->indexes);
+        $index = array_search($offset, $this->indexes);
         if ($index !== false) {
             unset($this->files[$index]);
             unset($this->indexes[$index]);
         }
     }
 }
-
-// EOF

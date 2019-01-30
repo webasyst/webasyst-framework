@@ -14,21 +14,21 @@
         {$rss=$wa->blog->rssUrl()}
         {if $rss}<link rel="alternate" type="application/rss+xml" title="[s`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
     {/if}
-    
+
     <!-- css -->
     <link href="{$wa_theme_url}clear.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
     {if $wa->shop && $wa->shop->currency() == 'RUB'}<link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
-    
+
     <!-- js -->
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="{$wa_theme_url}clear.js?v{$wa_theme_version}"></script>
     {$wa->js()} {* links active plugins JS *}
-    
+
     {include file="`$wa_active_theme_path`/head.html" inline}
-    
+
     {$wa->head()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
-    
+
     <!--[if lt IE 9]>
     <script>
     document.createElement('header');
@@ -42,12 +42,12 @@
     document.createElement('menu');
     </script>
     <![endif]-->
-        
+
 </head>
 <body id="{$wa_app}">
     <div id="header">
         <div class="container" role="navigation">
-        
+
             {if $wa->shop}
                 <!-- display shopping cart info in case Shop-Script is installed -->
                 {$cart_total = $wa->shop->cart->total()}
@@ -59,7 +59,7 @@
                      </a>
                  </div>
             {/if}
-            
+
             {if $wa->isAuthEnabled()}
                 <!-- auth & sign up links -->
                 <div class="float-right nowrap auth">
@@ -78,24 +78,24 @@
                     </ul>
                 </div>
             {/if}
-            
+
             <!-- search form (app dependent) -->
             <div class="search">
                 {include file="`$wa_active_theme_path`/searchform.html" inline}
-            </div>    
-                                        
+            </div>
+
             <!-- main website sections -->
             <ul class="menu-h">
                 {foreach $wa->apps() as $a}
                     <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
                 {/foreach}
             </ul>
-            
+
             <div class="clear-both"></div>
-            
+
         </div>
     </div>
-    
+
     <div id="main">
         <div class="container">
             <!-- TITLE -->
@@ -109,7 +109,7 @@
             <div class="clear-both"></div>
         </div>
     </div>
-    
+
     <!-- FOOTER -->
     <div id="footer">
         <div class="container">
@@ -124,6 +124,11 @@
                 </ul>
               </div>
             -->
+
+            {if !empty($theme_settings.footer_notice)}
+                <div style="clear: both"></div>
+                <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
+            {/if}
         </div>
     </div>
 </body>

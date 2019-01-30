@@ -14,15 +14,18 @@ AddDefaultCharset utf-8
     # Uncomment the following line, if you are having trouble
     #RewriteBase /
 
-    RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|gif|png)$ [or]
-    RewriteCond %{REQUEST_URI} apple-touch-icon\.png$
+    RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|gif|png|svg|ttf|eot|otf|woff|woff2)$ [or]
+    RewriteCond %{REQUEST_URI} apple-touch-icon\.png$ [or]
+    RewriteCond %{REQUEST_METHOD} ^(POST|PUT|COPY|MOVE|DELETE|PROPFIND|OPTIONS|MKCOL)$ [or]
+    RewriteCond %{HTTP:Translate} ^.+$ [or]
+    RewriteCond %{HTTP_USER_AGENT} ^(DavClnt|litmus|gvfs|davfs|wdfs|WebDAV|cadaver|Cyberduck)
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php [L,QSA]
 </ifModule>
 
 <ifModule mod_headers.c>
-    <FilesMatch "\.(jpg|jpeg|png|gif|js|css)$">
-	Header set Cache-Control "max-age=3153600, public"
+    <FilesMatch "\.(jpg|jpeg|png|gif|js|css|svg|ttf|eot|otf|woff|woff2)$">
+        Header set Cache-Control "max-age=3153600, public"
     </FilesMatch>
 </ifModule>

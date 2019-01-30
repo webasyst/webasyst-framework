@@ -10,6 +10,7 @@ class photosCollection
     protected $where;
     protected $order_by = 'p.upload_datetime DESC,p.id';
     protected $joins;
+    protected $join_index = array();
 
     protected $options = array(
     //'check_rights' => false
@@ -207,7 +208,7 @@ class photosCollection
              * @param array[string]boolean $params['add']
              * @param array[string]array $params['options']
              */
-            wa()->event('extra_prepare_collection', $params);
+            wa('photos')->event('extra_prepare_collection', $params);
 
             if ($this->prepared) {
                 return;
@@ -696,7 +697,7 @@ class photosCollection
         //$sql .= $this->getGroupBy();
         $sql .= $this->getOrderBy();
         $sql .= " LIMIT ".($offset ? $offset.',' : '').(int)$limit;
-
+        //header('X-PHOTOS-COLLECTION-SQL: ' . str_replace("\n", "", $sql));
         $data = $this->getModel()->query($sql)->fetchAll('id');
         if (!$data) {
             return array();
@@ -970,5 +971,64 @@ class photosCollection
     public function setCheckRights($check_rights)
     {
         $this->check_rights = $check_rights;
+    }
+
+    public function addJoin($table, $on = null, $where = null, $options = array())
+    {
+        $type = '';
+        if (is_array($table)) {
+            if (isset($table['on'])) {
+                $on = $table['on'];
+            }
+            if (isset($table['where'])) {
+                $where = $table['where'];
+            }
+            if (isset($table['type'])) {
+                $type = $table['type'];
+            }
+            $table = $table['table'];
+        }
+
+        $alias = $this->getTableAlias($table);
+
+        if (!isset($this->join_index[$alias])) {
+            $this->join_index[$alias] = 1;
+        } else {
+            $this->join_index[$alias]++;
+        }
+        $alias .= $this->join_index[$alias];
+
+        $join = array(
+            'table' => $table,
+            'alias' => $alias,
+            'type' => $type
+        );
+        if (!empty($options['force_index'])) {
+            $join['force_index'] = $options['force_index'];
+        }
+        if ($on) {
+            $join['on'] = str_replace(':table', $alias, $on);
+        }
+        $this->joins[] = $join;
+        if ($where) {
+            $this->addWhere(str_replace(':table', $alias, $where));
+        }
+        return $alias;
+    }
+
+    protected function getTableAlias($table)
+    {
+        $t = explode('_', $table);
+        $alias = '';
+        foreach ($t as $tp) {
+            if ($tp == 'hub') {
+                continue;
+            }
+            $alias .= substr($tp, 0, 1);
+        }
+        if (!$alias) {
+            $alias = $table;
+        }
+        return $alias;
     }
 }

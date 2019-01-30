@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Почта России: Форма №7-п</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        body, table {
+            font-family: 'Helvetica', Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        body {
+            padding: 10px;
+        }
+
+        input {
+            font-size: 13px;
+            margin-top: 2px;
+        }
+
+        table td {
+            padding-right: 20px;
+        }
+
+        .hint {
+            color: #aaa;
+            font-size: 0.8em;
+        }
+
+        img {
+            border-width: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        #load_div {
+            background: url('{$wa_url}wa-content/img/loading16.gif') no-repeat;
+            height: 16px;
+            padding-left: 20px;
+            padding-top: 0;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .noprint {
+                display: none;
+            }
+        }
+    </style>
+    <script type="text/javascript">
+        function load() {
+            var image_node;
+            if (image_node = document.getElementById('image')) {
+                image_node.style.display = '';
+                image_node.parentNode.style.display = 'block';
+            }
+            var load_node;
+            if (load_node = document.getElementById('load_div')) {
+                load_node.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+{if $editable}
+    <form id="edit_front_form" action="" method="post">
+        {$wa->csrf()}
+        <table>
+            <tr>
+                <td colspan="2">
+                    <h2>Форма №7-п <span class="hint">Бланк адресного ярлыка для посылок и бандеролей</span></h2>
+                </td>
+            </tr>
+
+            <tr>
+                <td>С объявленной ценностью</td>
+                <td><input name="order_price_checked" type="checkbox" checked="checked"></td>
+            </tr>
+
+            <tr>
+                <td>Сумма объявленной ценности (цифрами)</td>
+                <td><input name="order_price_d" type="text" value="{$order.total|floor|wa_format_amount:$order.currency:'%0'}"></td>
+            </tr>
+            <tr>
+                <td>Сумма объявленной ценности</td>
+                <td><input name="order_price" type="text" size="80" value="{$order.total|floor|wa_format_amount:$order.currency:'%.W'}"></td>
+            </tr>
+
+            <tr>
+                <td>С наложенным платежом</td>
+                <td><input name="order_amount_checked" type="checkbox" checked="checked"></td>
+            </tr>
+
+            <tr>
+                <td>Сумма наложенного платежа (цифрами)</td>
+                <td><input name="order_amount_d" type="text" value="{$order.total|wa_format_amount:$order.currency:'%2'}"></td>
+            </tr>
+            <tr>
+                <td>Сумма наложенного платежа</td>
+                <td><input name="order_amount" type="text" size="80" value="{$order.total|wa_format_amount:$order.currency:'%.W'}"></td>
+            </tr>
+
+            <tr>
+                <td>С описью</td>
+                <td><input name="inventory" type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>Уведомление</td>
+                <td>
+                    <label><input type="radio" value="simple" name="notify_type" checked>С простым уведомлением</label><br/>
+                    <label><input type="radio" value="paid" name="notify_type">С заказным уведомлением</label><br/>
+                    <label><input type="radio" value="none" name="notify_type">Без уведомлений</label>
+                </td>
+            </tr>
+            <tr>
+                <td>Отправить СМС-уведомление о прибытии в отделение (10 рублей/сообщение)</td>
+                <td><input name="arrival_notice" type="checkbox"></td>
+            </tr>
+            <tr>
+                <td>Отправить СМС-уведомление о вручении (10 рублей/сообщение)</td>
+                <td><input name="shipping_sms" type="checkbox"></td>
+            </tr>
+
+            <tr>
+                <td colspan="2"><h3><span class="hint">Получатель заказа</span></h3></td>
+            </tr>
+
+            <tr>
+                <td>ФИО</td>
+                <td><input name="shipping_name" type="text" value="{$shipping_name|escape}"></td>
+            </tr>
+
+            <tr>
+                <td>Адрес</td>
+                <td><input name="shipping_address" type="text" size="64" value="{$shipping_address|escape}"></td>
+            </tr>
+
+            <tr>
+                <td>Почтовый индекс</td>
+                <td><input name="shipping_zip" type="text" size="6" value="{$order.shipping_address.zip|escape}"></td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td><input type="submit" value="Сформировать бланк формы №7-п"/></td>
+            </tr>
+        </table>
+    </form>
+{else}
+    {if !waRequest::get('mass_print')}
+    <form action="" class="noprint">
+        <input id="print_button" type="button" value="Печать" onclick="window.print();return false;"/>
+    </form>
+    {/if}
+    <div id="load_div" class="noprint">Формирование бланка...</div>
+    <p>
+        <a id="img_link" style="display:none;border:0" target="_blank" href="?{$src}">
+            <img width="100%" id="image" src="?{$src}" alt="" title="" onload="load();"/>
+        </a>
+    </p>
+{/if}
+</body>
+</html>

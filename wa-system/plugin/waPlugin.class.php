@@ -21,6 +21,9 @@ class waPlugin
      */
     protected $settings_config;
 
+    /**
+     * @var mixed[string] App defined settings list
+     */
     protected $common_settings_config = array();
 
 
@@ -38,11 +41,29 @@ class waPlugin
         $this->checkUpdates();
     }
 
+    /**
+     * Returns plugin ID.
+     * @return string
+     * @since 1.8.2
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Returns localized plugin name.
+     * @return string
+     */
     public function getName()
     {
         return $this->info['name'];
     }
 
+    /**
+     * Returns plugin's version number.
+     * @return string
+     */
     public function getVersion()
     {
         $version = isset($this->info['version']) ? $this->info['version'] : '0.0.1';
@@ -71,7 +92,7 @@ class waPlugin
         $is_debug = waSystemConfig::isDebug();
 
         if (!$is_debug) {
-            $cache = new waVarExportCache('updates', 0, $this->app_id.".".$this->id);
+            $cache = new waVarExportCache('updates', -1, $this->app_id.".".$this->id);
             if ($cache->isCached() && $cache->get() <= $time) {
                 return;
             }
@@ -93,7 +114,7 @@ class waPlugin
                 }
             }
             ksort($files);
-            if (!$is_debug) {
+            if (!$is_debug && !empty($cache)) {
                 // get last time
                 if ($files) {
                     $keys = array_keys($files);
@@ -151,6 +172,9 @@ class waPlugin
         $file = $this->path.'/lib/config/install.php';
         if (file_exists($file)) {
             $app_id = $this->app_id;
+            /**
+             * @var string $app_id
+             */
             include($file);
             // clear db scheme cache, see waModel::getMetadata
             try {
@@ -165,12 +189,21 @@ class waPlugin
         }
     }
 
-    public function uninstall()
+    public function uninstall($force = false)
     {
         // check uninstall.php
         $file = $this->path.'/lib/config/uninstall.php';
         if (file_exists($file)) {
-            include($file);
+            try {
+                include($file);
+
+            } catch (Exception $ex) {
+                if ($force) {
+                    waLog::log(sprintf("Error while uninstall %s at %s: %s", $this->id, $this->app_id, $ex->getMessage(), 'installer.log'));
+                } else {
+                    throw $ex;
+                }
+            }
         }
 
         $file_db = $this->path.'/lib/config/db.php';
@@ -181,7 +214,7 @@ class waPlugin
                 $sql = "DROP TABLE IF EXISTS ".$table;
                 $model->exec($sql);
             }
-        } 
+        }
         // Remove plugin settings
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->del($this->app_id.".".$this->id);
@@ -197,11 +230,15 @@ class waPlugin
             $contact_rights_model->exec($sql, array('app_id' => $this->app_id));
         }
 
-        // Remove cache of the appliaction
+        // Remove cache of the application
         waFiles::delete(wa()->getAppCachePath('', $this->app_id));
     }
 
-
+    /**
+     * Returns URL of plugin's root directory.
+     * @param bool $absolute Whether abolsute URL must be returned.
+     * @return string
+     */
     public function getPluginStaticUrl($absolute = false)
     {
         return wa()->getAppStaticUrl($this->app_id, $absolute).'plugins/'.$this->id.'/';
@@ -230,13 +267,37 @@ class waPlugin
         }
     }
 
+    /**
+     * Adds a JavaScript file URL to the array returned by {$wa->js()}.
+     * @param string $url JavaScript file URL, relative or absolute, depending on $is_plugin parameter value.
+     * @param bool $is_plugin Whether a relative or absolute file URL must be conitained in $url parameter.
+     * @return null
+     */
     protected function addJs($url, $is_plugin = true)
     {
+        if (false === strpos($url, '?')) {
+            $url .= '?'.$this->getVersion();
+            if (waSystemConfig::isDebug()) {
+                $url .= '.'.time();
+            }
+        }
         waSystem::getInstance()->getResponse()->addJs($this->getUrl($url, $is_plugin), $this->app_id);
     }
 
+    /**
+     * Adds a CSS file URL to the array returned by {$wa->css()}.
+     * @param string $url CSS file URL, relative or absolute, depending on $is_plugin parameter value.
+     * @param bool $is_plugin Whether a relative or absolute file URL must be conitained in $url parameter.
+     * @return null
+     */
     protected function addCss($url, $is_plugin = true)
     {
+        if (false === strpos($url, '?')) {
+            $url .= '?'.$this->getVersion();
+            if (waSystemConfig::isDebug()) {
+                $url .= '.'.time();
+            }
+        }
         waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin), $this->app_id);
     }
 
@@ -244,9 +305,12 @@ class waPlugin
     {
         $file = $this->path.'/lib/config/routing.php';
         if (file_exists($file)) {
+            /**
+             * @var array $route Variable available at routing file
+             */
             return include($file);
         } else {
-            return;
+            return array();
         }
     }
 
@@ -276,8 +340,9 @@ class waPlugin
     }
 
     /**
-     * @param null $name
-     * @return array|mixed|null|string
+     * Returns plugin's settings values.
+     * @param string|null $name Optional key to return one setting's value. If empty, all settings' values are returned.
+     * @return mixed
      */
     public function getSettings($name = null)
     {
@@ -293,7 +358,8 @@ class waPlugin
                 }
             }
             #merge user settings from database with raw default settings
-            if ($settings_config = $this->getSettingsConfig()) {
+            $settings_config = $this->getSettingsConfig();
+            if ($settings_config) {
                 foreach ($settings_config as $key => $row) {
                     if (!isset($this->settings[$key])) {
                         $this->settings[$key] = is_array($row) ? (isset($row['value']) ? $row['value'] : null) : $row;
@@ -331,6 +397,7 @@ class waPlugin
 
     /**
      * @param mixed [string] $settings Array of settings key=>value
+     * @return void|array
      */
     public function saveSettings($settings = array())
     {
@@ -370,4 +437,3 @@ class waPlugin
         return array($this->app_id, $this->id);
     }
 }
-

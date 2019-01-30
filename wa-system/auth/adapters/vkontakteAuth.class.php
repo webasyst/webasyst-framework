@@ -22,8 +22,8 @@ class vkontakteAuth extends waOAuth2Adapter
     public function getControls()
     {
         return array(
-            'app_id' => 'ID приложения',
-            'app_secret' => 'Защищенный ключ'
+            'app_id'     => _ws('VK app ID'),
+            'app_secret' => _ws('VK app secret'),
         );
     }
 
@@ -33,46 +33,47 @@ class vkontakteAuth extends waOAuth2Adapter
         $response = $this->get($url, $status);
         if (!$response) {
             waLog::log($this->getId(). ':'. $status. ': '."Can't get access token from VK", 'auth.log');
-            throw new waException("Can't get access token from VK", $status ? $status : 500);
+            throw new waAuthException("Can't get access token from VK", $status ? $status : 500);
         }
         $response = json_decode($response, true);
         if (isset($response['error']) && !isset($response['access_token'])) {
             waLog::log($this->getId(). ':'. $status. ': '.$response['error']." (".$response['error_description'].')', 'auth.log');
-            throw new waException($response['error']." (".$response['error_description'].')', $status ? $status : 500);
+            throw new waAuthException($response['error']." (".$response['error_description'].')', $status ? $status : 500);
         }
         return $response;
     }
 
     public function getUserData($token)
     {
-        $url = self::API_URL."users.get?uid={$token['user_id']}&fields=contacts,sex,bdate,timezone,photo_medium&access_token={$token['access_token']}";
+        $url = self::API_URL."users.get?fields=contacts,sex,bdate,photo_medium&access_token={$token['access_token']}&v=".self::API_VERSION;
         $response = $this->get($url, $status);
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
                 waLog::log($this->getId(). ':'. $status. ': Error '.$response['error']['error_code']." (".$response['error']['error_msg'].')', 'auth.log');
-                throw new waException($response['error']['error_msg'], $response['error']['error_code']);
+                throw new waAuthException($response['error']['error_msg'], $response['error']['error_code']);
             }
-            $response = $response['response'][0];
+            $response = ifset($response['response'][0]);
             if ($response) {
                 $data = array(
-                    'source' => 'vkontakte',
-                    'source_id' => $response['uid'],
-                    'url' => "http://vk.com/id".$response['uid'],
-                    'name' => $response['first_name']." ".$response['last_name'],
-                    'firstname' => $response['first_name'],
-                    'lastname' => $response['last_name'],
-                    'photo_url' => $response['photo_medium']
+                    'source'                  => 'vkontakte',
+                    'source_id'               => $response['id'],
+                    'socialnetwork.vkontakte' => $response['id'],
+                    'url'                     => "http://vk.com/id".$response['id'],
+                    'name'                    => trim(ifset($response['first_name'], '')." ".ifset($response['last_name'], '')),
+                    'firstname'               => ifset($response['first_name'], ''),
+                    'lastname'                => ifset($response['last_name'], ''),
+                    'photo_url'               => ifset($response['photo_medium'], '')
                 );
                 if (!empty($token['email'])) {
                     $data['email'] = $token['email'];
                 }
-                if ($response['home_phone']) {
+                if (!empty($response['home_phone'])) {
                     $data['phone.home'] = $response['home_phone'];
                 }
-                if ($response['sex']) {
+                if (!empty($response['sex'])) {
                     $data['sex'] = $response['sex'] == 2 ? 'm' : 'f';
                 }
-                if ($response['bdate']) {
+                if (!empty($response['bdate'])) {
                     $b = explode('.', $response['bdate']);
                     if (count($b) == 3) {
                         $data['birthday'] = $b[2].'-'.$b[1].'-'.$b[0];
@@ -82,7 +83,7 @@ class vkontakteAuth extends waOAuth2Adapter
             }
         }
         waLog::log($this->getId(). ':'. $status. ': '."Can't get user info from VK API", 'auth.log');
-        throw new waException("Can't get user info from VK API", $status ? $status : 500);
+        throw new waAuthException("Can't get user info from VK API", $status ? $status : 500);
     }
 
     public function getName()

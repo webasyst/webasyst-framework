@@ -139,7 +139,7 @@ class weatherWidget extends waWidget
      */
     protected function loadWeather($city)
     {
-        $url = 'http://api.openweathermap.org/data/2.5/weather?q='.urlencode($city).'&units=imperial';
+        $url = 'http://api.openweathermap.org/data/2.5/weather?q='.urlencode($city).'&units=imperial&APPID=e4316f7f92cf085f40ee95a98908e8d6';
         $response = $this->load($url);
         if (!$response) {
             return array();

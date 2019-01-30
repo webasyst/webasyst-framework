@@ -62,6 +62,7 @@ class twocheckoutPayment extends waPayment implements waIPayment
             'ship_country'        => $order->shipping_address['country_name'],
             'c_prod'              => "ShopScript5 order",
             'id_type'             => 2,
+            'currency_code'       => $order->currency,
         );
         if ($this->demo) {
             $form['demo'] = 'Y';

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xml:base="{$wa->domainUrl()}">
   <channel>
     <title>{$info.title|escape}</title>
     <link>{$info.link|escape}</link>
@@ -27,7 +27,7 @@
                     <p>{$p.description}</p>
                 {/if}
             {/if}
-            <p><img src="{$p.thumb_big.url}" alt="{$p.name|escape}"></p>
+            <p><img src="{$wa->domainUrl()}{$p.thumb_big.url}" alt="{$p.name|escape}"></p>
           {/foreach}
       {/if}
 

@@ -3,6 +3,7 @@
 return array(
     'code' => 'LVL',
     'sign' => 'Ls',
+	'iso4217' => '428',
     'sign_position' => 0,
     'sign_delim' => ' ',
     'title' => 'Latvian lats',

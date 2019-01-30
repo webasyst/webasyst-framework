@@ -3,13 +3,13 @@
         <h4 class="heading">{$theme.name}</h4>
         {if $theme_usages && $route_url}
         <div class="block">
-            <p class="hint" style="margin-bottom: 0;"><i class="icon10 exclamation"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $theme_usages), $route_url)}</p>
+            <p class="hint" style="margin-bottom: 0;"><i class="icon10 exclamation"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $theme_usages_decoded), $route_url_decoded)}</p>
         </div>
         {/if}
         <ul class="menu-v with-icons wa-theme wa-theme-templates">
             {foreach $theme_files as $f_id => $f}
             <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
-                <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape}"{if !empty($f.parent_exists)} title="[s`parent theme file`]"{/if}>
+                <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}"{if !empty($f.parent_exists)} title="[s`parent theme file`]"{/if}>
                 <i class="icon16 {if !empty($f.parent_exists)}link{else}script{if substr($f_id, -4)=='.css'}-css{elseif substr($f_id, -3)=='.js'}-js{/if}{/if}"></i>{$f_id|escape|truncate:25:'...':false:true}
                 </a>
             </li>
@@ -21,7 +21,7 @@
 </div>
 <div class="content left200px bordered-left blank">
 <div class="wa-design-editor">
-    <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape}&action=save">
+    <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape:'url'}&action=save">
         <div class="block wa-design-gray-toolbar">
             {if $file.id}
             <div class="float-right">
@@ -35,7 +35,7 @@
                                     if (!d.length) {
                                         d = $('<div id="wa-design-view-original-dialog"></div>').appendTo('body');
                                     }
-                                    var url = $(this).attr('href') + '&theme_id={$theme_id}&file={$file.id}';
+                                    var url = $(this).attr('href') + '&theme_id={$theme_id}&file={$file.id|escape:'url'}';
                                     d.waDialog({
                                         url: url,
                                         buttons: '<input type="button" class="button cancel" value="[s`Close`]"> <input type="submit" class="button yellow float-right" value="[s`Roll back my file to the original version`]">',
@@ -184,51 +184,7 @@
         </div>
         {if $options.save_panel}
         <div class="wa-design-save-panel block bordered-top">
-            <div class="wa-dropdown">
-                <div class="wa-drop-link">
-                    <a class="inline-link" id="wa-editor-help-link" href="#">
-                        <i class="icon16 cheatsheet"></i><b><i>[s`Cheat sheet`]</i></b>
-                        <i class="icon10 uarr no-overhanging"></i>
-                    </a>
-                    <div id="wa-editor-help" class="wa-dropdown-block"></div>
-                    <script type="text/javascript">
-                        $("#wa-editor-help-link").click(function () {
-                            if ($("#wa-editor-help").is(":visible")) {
-                                $("#wa-editor-help").hide();
-                                return false;
-                            }
-                            $("#wa-editor-help").load('?module=pages&action=help', "app={$wa->app()}&file={if $file}{$file.id}{/if}", function () {
-                                $(this).show();
-                                var f = function (e) {
-                                    if ($(e.target).attr('id') == 'wa-editor-help' || $(e.target).parents('#wa-editor-help').length) {
-                                        $(document).one('click', f);
-                                    } else {
-                                        $("#wa-editor-help").hide();
-                                    }
-                                };
-                                $(document).one('click', f);
-                            });
-                            return false;
-                        });
-
-                        $("#wa-editor-help").on('click', "div.fields a.inline-link", function () {
-                            var el = $(this).find('i');
-                            if (el.children('b').length) {
-                                el = el.children('b');
-                            }
-                            if ($(".el-rte").length && $(".el-rte").is(':visible')) {
-                                try {
-                                    $("#wa-design-content").elrte()[0].elrte.selection.insertHtml(el.text());
-                                } catch (e) {}
-                            } else {
-                                wa_editor.insert(el.text());
-                            }
-                            return false;
-                        });
-                    </script>
-                </div>
-            </div>
-
+            {$wa->getCheatSheetButton(['data' => ["app" =>{$wa->app()}, "index" =>{$file.id|escape:'url'|default:""}]])}
             <input id="wa-design-button" type="submit" class="button green" value="[s`Save`]" />
             <em class="hint">Ctrl + S</em>
             <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
@@ -241,7 +197,6 @@
 </div>
 <script>
     $(document).ready(function () {
-
         $(".wa-theme-templates").on('click', 'a', function () {
             if (!waDesignConfirm()) return false;
             $("#wa-design-sidebar li.selected").removeClass('selected');

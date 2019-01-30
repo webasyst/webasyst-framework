@@ -6,9 +6,17 @@
  * - Human-readable like print_r() for nested structures.
  * - Distinguishable like var_export() for plain values.
  * - Handles self-references correctly like print_r().
- * - Adds <pre> and escapes all output with htmlspecialchars(), unless in CLI mode.
+ * - Output is a valid PHP code, if input only contains arrays and no self-references.
+ * - Escapes all output with htmlspecialchars(), unless in CLI mode.
+ * - Adds <pre>, file and line called from.
  * - Shows both protected and private fields of objects.
  * - Skips huge objects like waSystem or Smarty in nested structures.
+ * - Accepts any number of arguments.
+ *
+ * @see wa_dumpc() - does not call exit
+ * @see wa_dump_helper() - no exit, no <pre>, no 'called from' message, optionally escapes
+ * @see waLog::dump() - dumps to log file
+ * @see waException::dump() - throws exception with dumped data
  */
 function wa_dump()
 {
@@ -17,7 +25,10 @@ function wa_dump()
     exit;
 }
 
-/** Same as wa_dump(), but does not call exit. */
+/**
+ * Same as wa_dump(), but does not call exit.
+ * Unless called from template, returns its first argument.
+ */
 function wa_dumpc()
 {
     if (php_sapi_name() != 'cli') {
@@ -29,20 +40,32 @@ function wa_dumpc()
     // Show where we've been called from
     if(function_exists('debug_backtrace')) {
         echo "dumped from ";
+
+        $root_path = realpath(dirname(__FILE__).'/../..');
+        $root_path = str_replace('\\', '/', $root_path);
+        $root_path = preg_quote($root_path, '~');
         foreach(debug_backtrace() as $row) {
             if (ifset($row['file']) == __FILE__ || (empty($row['file']) && ifset($row['function']) == 'wa_dumpc')) {
                 continue;
+            }
+            if (!empty($row['file'])) {
+                $row['file'] = str_replace('\\', '/', $row['file']);
+                $row['file'] = preg_replace("~^{$root_path}/?~", '$1', $row['file']);
             }
             echo ifset($row['file'], '???'), ' line #', ifset($row['line'], '???'), ":\n";
             break;
         }
     }
 
-    foreach(func_get_args() as $v) {
+    $args = func_get_args();
+    foreach($args as $v) {
         echo "\n".wa_dump_helper($v)."\n";
     }
     if (php_sapi_name() != 'cli') {
         echo "</pre>\n";
+    }
+    if (class_exists('waConfig') && !waConfig::get('is_template')) {
+        return reset($args);
     }
 }
 
@@ -61,7 +84,7 @@ function wa_print_r()
  * Helper to chain constructor calls.
  * When argument is an object, return it. Otherwise, throw waException.
  */
-function wao($o)
+function &wao($o)
 {
     if (!$o || !is_object($o)) {
         throw new waException('Argument is not an object.');
@@ -69,7 +92,7 @@ function wao($o)
     return $o;
 }
 
-/** Wrapper around create_function() that caches functions it creates to avoid memory leaks when used in a loop. */
+/** Wrapper around create_function that caches functions it creates to avoid memory leaks when used in a loop. */
 function wa_lambda($args, $body)
 {
     if (!isset($body)) {
@@ -77,22 +100,65 @@ function wa_lambda($args, $body)
     }
 
     static $fn = array();
-    $hash = $args.md5($args.$body).md5($body);
+    $hash = md5($args.$body);
     if(!isset($fn[$hash])) {
-        $fn[$hash] = create_function($args, $body);
+        /*      Uncomment with the minimum version 5.6
+        $f = 'return function('.$args.') {'.$body.'};';
+        $fn[$hash] = eval($f);*/
+
+        $i = count($fn);
+        do {
+            $fn_name = 'wa_lambda_'.$i;
+            $i++;
+        } while (function_exists($fn_name));
+
+        $f = 'function '.$fn_name. '('.$args.') {'.$body.'};';
+        eval($f);
+        $fn[$hash] = $fn_name;
+
     }
     return $fn[$hash];
+
 }
 
 /**
  * Return value of $var or $def when $var is unset.
  * Use of this function does not produce a notice for undefined vars and array indexes,
  * but has a side-effect of creating var or index with NULL value.
+ *
+ * To avoid side-effect if creating keys in array, use alternative syntax:
+ *   ifset($arr, $key1, $key2, ..., $def)
+ * is the same as:
+ *   ifset($arr[$key1][$key2]..., $def)
+ * but does not create a NULL value in array.
+ * Also, it will not trigger warnings if $arr is an ArrayAccess object.
+ *
+ * Note that alternative syntax makes the $def parameter required.
  */
-function ifset(&$var, $def=null)
+function &ifset(&$var, $def=null)
 {
-    if (isset($var)) {
-        return $var;
+    if (func_num_args() > 2) {
+        $keys = func_get_args();
+        $def = array_pop($keys);
+        $arr = array_shift($keys);
+    } else {
+        $keys = array();
+        $arr = $var;
+    }
+
+    while($keys) {
+        $key = array_shift($keys);
+        if (is_object($arr) && !$arr instanceof ArrayAccess) {
+            return $def;
+        } else if (!isset($arr[$key])) {
+            return $def;
+        } else {
+            $arr = $arr[$key];
+        }
+    }
+
+    if (isset($arr)) {
+        return $arr;
     }
     return $def;
 }
@@ -101,12 +167,53 @@ function ifset(&$var, $def=null)
  * Return value of $var or $def when $var is empty.
  * Use of this function does not produce a notice for undefined vars and array indexes,
  * but has a side-effect of creating var or index with NULL value.
+ *
+ * To avoid side-effect if creating keys in array, use alternative syntax:
+ *   ifempty($arr, $key1, $key2, ..., $def)
+ * is the same as
+ *   ifempty($arr[$key1][$key2]..., $def)
+ * but does not create a NULL value in array.
+ * Also, it will not trigger warnings if $arr is an ArrayAccess object.
+ *
+ * Note that alternative syntax makes the $def parameter required.
  */
-function ifempty(&$var, $def=null)
+function &ifempty(&$var, $def=null)
 {
-    if (empty($var)) {
-        return $def;
+    if (func_num_args() > 2) {
+        $keys = func_get_args();
+        $def = array_pop($keys);
+        $arr = array_shift($keys);
+    } else {
+        $keys = array();
+        $arr = $var;
     }
+
+    while($keys) {
+        $key = array_shift($keys);
+        if (is_object($arr) && !$arr instanceof ArrayAccess) {
+            return $def;
+        } else if (empty($arr[$key])) {
+            return $def;
+        } else {
+            $arr = $arr[$key];
+        }
+    }
+
+    if (!empty($arr)) {
+        return $arr;
+    }
+    return $def;
+}
+
+/**
+ * Returns its argument by reference.
+ * Useful to pass function return into ifset() or ifempty()
+ * which otherwise would trigger a notice:
+ * Strict standards: Only variables should be passed by reference
+ * @since 1.8.2
+ */
+function &ref($var)
+{
     return $var;
 }
 
@@ -119,6 +226,15 @@ function wa_is_int($val)
     // check against objects to avoid nasty object to int convertion errors
     if (!is_numeric($val)) {
         return false;
+    }
+    // Test for very large integers
+    if (function_exists('ctype_digit')) {
+        $val = (string) $val;
+        if (ctype_digit($val)) {
+            return true;
+        } else if ($val && $val{0} == '-' && ctype_digit(substr($val, 1))) {
+            return true;
+        }
     }
     // typecast trick works fine for anything else except boolean true
     return ($val !== true) && ((string)(int) $val) === ((string) $val);
@@ -135,7 +251,7 @@ function int_ok($val)
 }
 
 /**
- * Helper function for wa_print_r() / wa_dump()
+ * Helper function for wa_dump()
  */
 function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
 {
@@ -148,11 +264,29 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
         return '** Too big level of nesting **';
     }
 
+    $htmlspecialchars_mode = ENT_NOQUOTES;
+    if (defined('ENT_SUBSTITUTE')) {
+        $htmlspecialchars_mode |= ENT_SUBSTITUTE;
+    } else if (defined('ENT_IGNORE')) {
+        $htmlspecialchars_mode |= ENT_IGNORE;
+    }
+
     // Simple types
-    if (!is_array($value) && !is_object($value)) {
+    if (is_resource($value)) {
+        return print_r($value, 1).' ('.get_resource_type($value).')';
+    } else if (is_float($value)) {
+        $result = print_r($value, 1);
+        if (false === strpos($result, '.') && false === strpos($result, ',')) {
+            $result .= '.0';
+        }
+        return $result;
+    } else if (!is_array($value) && !is_object($value)) {
         $result = var_export($value, true);
         if (!$cli) {
-            $result = htmlspecialchars($result);
+            $result = htmlspecialchars($result, $htmlspecialchars_mode, 'utf-8');
+            if (!strlen($result)) {
+                $result = '&lt;encoding problems&gt;';
+            }
         }
         return $result;
     }
@@ -201,15 +335,15 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
         $value_to_iterate = (array) $value;
 
         if ($value_to_iterate) {
-            $str .= $br.'{';
+            $str .= ' {';
         } else {
             return $str.' {}';
         }
 
     } else {
-        $str = 'Array';
+        $str = 'array';
         if ($value) {
-            $str .= $br.'(';
+            $str .= '(';
         } else {
             return $str.'()';
         }
@@ -217,11 +351,19 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     }
 
     $level_arr[] = &$value;
-    foreach($value_to_iterate as $key => &$val) {
-        if (!$cli) {
-            $key = htmlspecialchars($key);
+    $keys = array_keys($value_to_iterate);
+    if (class_exists('waConfig') && waConfig::get('wa_dump_sort_keys')) {
+        sort($keys);
+    }
+    foreach($keys as $key) {
+        if (is_array($value)) {
+            $escaped_key = wa_dump_helper($key);
+        } else if (!$cli) {
+            $escaped_key = htmlspecialchars($key, $htmlspecialchars_mode, 'utf-8');
+        } else {
+            $escaped_key = $key;
         }
-        $str .= $br."  ".$key.' => '.wa_dump_helper($val, $level_arr, $cli);
+        $str .= $br."  ".$escaped_key.' => '.wa_dump_helper($value_to_iterate[$key], $level_arr, $cli).(is_array($value) ? ',' : '');
     }
     array_pop($level_arr);
 

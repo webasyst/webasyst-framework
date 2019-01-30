@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.1">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.2.1">
     <name locale="en_US">Mobile</name>
     <name locale="ru_RU">Mobile</name>
     <description locale="en_US">Theme for mobile devices</description>
@@ -71,7 +71,7 @@
         <setting var="logo" control_type="image">
             <value></value>
             <filename>img/logo.*</filename>
-            <name locale="en_US">Off-screen menu logo</name>
+            <name locale="en_US">Slide-out menu logo</name>
             <name locale="ru_RU">Логотип в боковой панели</name>
             <description locale="en_US">PNG with alpha channel. Logo is displayed in the slide-out menu.</description>
             <description locale="ru_RU">PNG с прозрачностью. Логотип отображается в боковой панели.</description>
@@ -90,6 +90,20 @@
                     <name locale="en_US">Paginated lists (1 2 3 4 ...)</name>
                 </option>
             </options>
+        </setting>
+        <setting var="show_full_site_link" control_type="checkbox">
+            <value>1</value>
+            <name locale="ru_RU">Отображать ссылку на полную версию сайта</name>
+            <name locale="en_US">Display a link to the full version of the site</name>
+            <description locale="ru_RU">Ссылку показывается в боковой панели.
+            </description>
+            <description locale="en_US">The link will be displayed in the bottom of the slide-out menu.
+            </description>
+        </setting>
+        <setting var="footer_notice" control_type="text">
+            <value></value>
+            <name locale="en_US">Footer notice</name>
+            <name locale="ru_RU">Уведомление в подвале сайта</name>
         </setting>
     </settings>
     <locales>
@@ -116,6 +130,14 @@
         <locale>
             <msgid>Information</msgid>
             <msgstr locale="ru_RU">Информация</msgstr>
+        </locale>
+        <locale>
+            <msgid>Hub</msgid>
+            <msgstr locale="ru_RU">Хаб</msgstr>
+        </locale>
+        <locale>
+            <msgid>Desktop version</msgid>
+            <msgstr locale="ru_RU">Полная версия</msgstr>
         </locale>
     </locales>
 </theme>

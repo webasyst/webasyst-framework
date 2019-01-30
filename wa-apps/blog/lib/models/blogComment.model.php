@@ -440,4 +440,43 @@ class blogCommentModel extends waNestedSetModel
         }
         return $comments;
     }
+
+    /**
+     * Delete or restore comments. Processing the entire comment tree.
+     * @param int $comment_id
+     * @param string $status
+     * @return bool
+     * @throws waException
+     */
+    public function changeStatus($comment_id, $status)
+    {
+        $comment = $this->getById($comment_id);
+        if (!$comment) {
+            return false;
+        }
+        if ($status == $comment['status']) {
+            return true;
+        }
+        if ($status != self::STATUS_DELETED && $status != self::STATUS_PUBLISHED) {
+            return false;
+        }
+
+        if (isset($comment['blog_id'])) {
+            $this->query("UPDATE {$this->table} SET status='{$status}' WHERE `{$this->left}` >= i:left AND `{$this->right}` <= i:right AND `blog_id` = i:blog_id",
+                array(
+                    'left'     => $comment['left'],
+                    'right'    => $comment['right'],
+                    'blog_id' => $comment['blog_id'],
+                ));
+
+            // Write to wa_log
+            class_exists('waLogModel') || wa('webasyst');
+            $log_model = new waLogModel();
+            $log_model->add($status == self::STATUS_DELETED ? 'comment_delete' : 'comment_restore', $comment_id);
+
+        }
+
+        return true;
+    }
+
 }

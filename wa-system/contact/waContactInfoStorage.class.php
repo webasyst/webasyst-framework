@@ -25,7 +25,7 @@ class waContactInfoStorage extends waContactStorage
         }
         return $this->model;
     }
-    
+
     public function load(waContact $contact, $fields = null)
     {
         $this->getModel();
@@ -46,6 +46,11 @@ class waContactInfoStorage extends waContactStorage
         if ($contact->getId()) {
             return $this->model->updateById($contact->getId(), $fields);
         } else {
+            // Avoid SQL strict mode complains about
+            // `name` field not having a default value.
+            if (!isset($fields['name'])) {
+                $fields['name'] = '';
+            }
             return $this->model->insert($fields);
         }
     }
@@ -136,7 +141,7 @@ class waContactInfoStorage extends waContactStorage
                 FROM wa_contact
                 WHERE `$field` IN (:values)".
                     ($excludeIds ? " AND id NOT IN (:excludeIds) " : ' ').
-                "GROUP BY f";
+                "GROUP BY f, id";
         $this->getModel();
         $r = $this->model->query($sql, array('values' => $values, 'excludeIds' => $excludeIds));
         return $r->fetchAll('f', true);

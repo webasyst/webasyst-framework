@@ -349,7 +349,7 @@
                 d.find('div:first').waDialog({
                     onLoad: function() {
                         var select = d.find('select[name=size]');
-                        select.val(size);
+                        size && select.val(size);
                         select.change(function() {
                             var size = $(this).val();
                             context_parameters.size = size;
@@ -665,7 +665,7 @@
         },
         onInit: function(container) {
             container.find('[data-action="hide-name"] :checkbox').prop('checked', $.storage.get('photos/list/hide_name',false));
-            $('#photo-list.p-descriptions :text,#photo-list.p-descriptions textarea').live('change, keyup',function(){
+            var handler = function(){
                 var changed = [],matches;
                 $('#photo-list.p-descriptions :text,#photo-list.p-descriptions textarea').each(function(){
                     if ( (this.defaultValue != this.value) && (matches = $(this).attr('name').match(/^photo\[(\d+)\]\[(\w+)\]$/)) ){
@@ -696,7 +696,9 @@
                     $('#save-menu-block input.button').removeClass('green').addClass('yellow');
                     counter.show();
                 }
-            });
+            };
+            $('#p-content').on('change.photos-save-menu', '#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea', handler);
+            $('#p-content').on('keyup.photos-save-menu', '#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea', handler);
             //change data handler
         }
     });

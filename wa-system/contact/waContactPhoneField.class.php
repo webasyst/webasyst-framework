@@ -22,6 +22,28 @@ class waContactPhoneField extends waContactStringField
         $this->options['formats']['value'] = new waContactPhoneFormatter();
         $this->options['formats']['html'] = new waContactPhoneTopFormatter();
         $this->options['formats']['top'] = new waContactPhoneTopFormatter();
+        if (!isset($this->options['validators'])) {
+            $this->options['validators'] = new waPhoneNumberValidator($this->options, array('required' => _ws('This field is required')));
+        }
+    }
+
+    public static function cleanPhoneNumber($value)
+    {
+        $value = is_scalar($value) ? (string)$value : '';
+        $value = trim($value);
+        if (strlen($value) > 0) {
+            $value = str_replace(str_split('+-()'), '', $value);
+            $value = preg_replace('/(\d)\s+(\d)/i', '$1$2', $value);
+        }
+        return $value;
+    }
+
+    public static function isPhoneEquals($phone1, $phone2)
+    {
+        if (!is_scalar($phone1) || !is_scalar($phone2)) {
+            return false;
+        }
+        return self::cleanPhoneNumber($phone1) === self::cleanPhoneNumber($phone2);
     }
 
     protected function setValue($value)
@@ -55,8 +77,10 @@ class waContactPhoneField extends waContactStringField
     public function format($data, $format = null)
     {
         $data = parent::format($data, $format);
-
-        if ($format && in_array('html', explode(',', $format))) {
+        if ($format && !is_array($format)) {
+            $format = explode(',', $format);
+        }
+        if ($format && in_array('html', $format)) {
             if ($this->isMulti()) {
                 if (is_array($data)) {
                     $result = htmlspecialchars($data['value']);
@@ -77,6 +101,79 @@ class waContactPhoneField extends waContactStringField
         }
         return $data;
     }
+
+
+    public function validate($data, $contact_id=null)
+    {
+        $errors = parent::validate($data, $contact_id);
+        if ($errors) {
+            return $errors;
+        }
+
+        if ($this->isMulti()) {
+            if (!empty($data[0])  && $contact_id) {
+                $value = $this->format($data[0], 'value');
+                $phone_exists = $this->phoneExistsAmongAuthorizedContacts($value, $contact_id);
+                if ($phone_exists) {
+                    $errors[0] = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
+                }
+            }
+        } else {
+            $value = $this->format($data, 'value');
+            $phone_exists = $this->phoneExistsAmongAuthorizedContacts($value, $contact_id);
+            if ($phone_exists) {
+                $errors = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
+            }
+        }
+        return $errors;
+    }
+
+    /**
+     * Helper method
+     * Checks that suggested phone value for current contact ALREADY exists among all default phones of authorized contacts
+     * Authorize contact is contact with password != 0
+     * @param string $suggested_phone_value
+     * @param id|null $contact_id
+     * @return bool
+     */
+    protected function phoneExistsAmongAuthorizedContacts($suggested_phone_value, $contact_id = null)
+    {
+        $suggested_phone_value = is_scalar($suggested_phone_value) ? (string)$suggested_phone_value : '';
+        if (strlen($suggested_phone_value) <= 0) {
+            // phone is empty - not go further - it's doesn't matter
+            return false;
+        }
+
+        $contact_model = new waContactModel();
+
+        $contact = null;
+        if ($contact_id > 0) {
+            $contact = $contact_model->getById($contact_id);
+            $is_authorized = $contact && $contact['password'];
+            if (!$is_authorized) {
+                // not authorized contact (or not exists) - not go further - it's doesn't matter
+                return false;
+            }
+        }
+
+        $data_model = new waContactDataModel();
+
+        // update phone for existing contact case - check if value has changed
+        if ($contact) {
+            $old_value_row = $data_model->getPhone($contact_id);
+            if ($old_value_row && waContactPhoneField::isPhoneEquals($suggested_phone_value, $old_value_row['value'])) {
+                // phone has not changed - so not go further - it's doesn't matter
+                return false;
+            }
+
+            $contact_id = $contact['id'];
+        }
+
+        // check suggested phone value for current contact ALREADY exists among all default phones of authorized contacts
+        $other_contact_id = $data_model->getContactWithPasswordByPhone($suggested_phone_value, $contact_id);
+        return $other_contact_id > 0;
+    }
+
 }
 
 class waContactPhoneFormatter extends waContactFieldFormatter

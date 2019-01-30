@@ -69,6 +69,12 @@ class blogPost
         $route = false;
         if (!isset($params['blog_url']) || ($params['blog_url'] !== false)) {
             switch ($type) {
+                case 'realtime_preview':
+                    $params = array(
+                        'blog_url' => ifset($params, 'blog_url', ''),
+                    );
+                    $route = 'blog/frontend/previewTemplate';
+                    break;
                 case 'comment':
                     $route = 'blog/frontend/comment';
                     break;

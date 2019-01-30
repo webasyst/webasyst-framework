@@ -56,6 +56,8 @@ class blogPostGetPostUrlController extends waJsonController
         $post['album_link_type'] = 'blog';
         $other_links = blogPostModel::getPureUrls($post);
         $this->response['link'] = array_shift($other_links);
+        $this->response['other_preview_links'] = blogPost::getUrl($post, 'realtime_preview');
+        $this->response['preview_link'] = array_shift($this->response['other_preview_links']);
 
         if (!$this->response['link']) {
             $this->response['is_private_blog'] = true;

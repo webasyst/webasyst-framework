@@ -79,6 +79,17 @@ class photosFrontendLoadPhotoController extends waJsonController
             $parent = $this->photo_model->getStackParent($photo);
             $this->hash = photosPhotoModel::getPrivateHash($parent ? $parent : $photo);
         }
+        
+        photosAlbumCountModel::extendAlbums($photo['albums']);
+
+        /**
+         * Prepare photo data
+         * Extend photo item via plugins data
+         * @event prepare_photo_frontend
+         * @param array $photo photos item
+         * @return void
+         */
+        wa()->event('prepare_photo_frontend', $photo);
         return $photo;
     }
 

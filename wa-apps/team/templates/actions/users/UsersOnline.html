@@ -1,0 +1,64 @@
+{strip}
+
+{$_is_admin = $wa->user()->isAdmin($wa->app())}
+
+<div class="t-users-page is-online-page" id="t-users-page">
+    {* HEADER *}
+    <header class="t-content-header">
+        <h1>[`Online users`]</h1>
+    </header>
+
+    {* CONTENT *}
+    <div class="t-content-body">
+        {if !empty($online)}
+            {include file="./Users.inc.html" contacts=$online}
+        {else}
+            <p class="t-description">[`No users online.`]</p>
+        {/if}
+
+        {if !empty($offline)}
+            <h5 class="t-header heading">[`Offline`]</h5>
+
+            <ul class="menu-v t-offline-list">
+                {foreach $offline as $user}
+                    <li class="t-user-wrapper">
+
+                        <div class="t-user-block">
+                            <div class="t-layout">
+                                <div class="t-column left">
+                                    <span class="t-userpic-wrapper">
+                                        <img class="userpic t-userpic" src="{$user.photo_url_32}">
+                                    </span>
+                                </div>
+                                <div class="t-column center">
+                                    <h5 class="t-name">{waUser::getNameAndStatus($user)}</h5>
+                                    <span class="t-online-date">
+                                        [`Last seen`]
+                                        &nbsp;
+                                        {if empty($user.last_datetime)}
+                                            —
+                                        {else}
+                                            {$user.last_datetime_formatted}
+                                        {/if}
+                                    </span>
+                                </div>
+                            </div>
+                            <a class="t-link" href="{$wa_app_url}u/{urlencode($user.login|escape)}/" title="{$user.name|escape}"></a>
+                        </div>
+
+                    </li>
+                {/foreach}
+            </ul>
+        {/if}
+    </div>
+
+    {* JS *}
+    <script>
+        ( function($) {
+            $.team.setTitle("[`Online`]");
+            $.team.sidebar.updateCount("{$wa_app_url}online/", {count($online)});
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

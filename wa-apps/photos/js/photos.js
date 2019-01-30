@@ -1,8 +1,10 @@
 (function ($) {
     $.storage = new $.store();
     $.photos = {
+        namespace: '.photos',
         load_from_hash: 0,
         hash: '',
+        raw_hash: '',
         options: {},
         shift_next: false,      // signal that shift to next or prev photo
         anchor: '',             // we use hash (#) for RIA interface therefore browser-anchor mechanism doesn't work. Make own
@@ -84,6 +86,7 @@
                 hash = window.location.hash;
             }
             hash = hash.replace(/^[^#]*#\/*/, ''); /* fix syntax highlight*/
+            $.photos.raw_hash = hash;
             if (hash) {
                 hash = hash.split('/');
                 if (hash[0]) {
@@ -337,13 +340,13 @@
 
         pluginsAction: function(params) {
             $.photos.initClearance();
-
-            if ($('#wa-plugins-container').length) {
-                $.plugins.dispatch(params);
-            } else {
+            $('#p-sidebar li.selected').removeClass('selected');
+            $('#p-sidebar #sidebar-plugins').addClass('selected');
+            if (!$('#wa-plugins-container').length) {
                 $.photos.load("?module=plugins");
+            } else {
+                $.plugins.dispatch('#/plugins/' + params);
             }
-
         },
 
         photoAction: function (id) {
@@ -411,13 +414,19 @@
                 //XXX use event instead or etc
                 options.hide_name = $.storage.get('photos/list/hide_name',false);
             }
-            target.append(tmpl($.photos.list_template, {
-                photos: $.photos.photo_stream_cache.slice(offset, offset += chunk),
+
+            var chunk = $.photos.photo_stream_cache.slice(offset, offset += chunk);
+            var tmpl_prams = {
+                photos: chunk,
                 hash: $.photos.hash,
                 last_login_time: $.photos.options.last_login_time,
                 options:options,
-                selected: !!$('#selector-menu').find('[data-action=select-photos]').data('checked')
-            }));
+                selected: !!$('#selector-menu').find('[data-action=select-photos]').data('checked'),
+                view: ($.photos.list_template || '').replace('template-photo-', '')
+            };
+            target.append(tmpl($.photos.list_template, tmpl_prams));
+
+            $('#content').trigger('photos_list_chunk_render', [tmpl_prams]);
 
             if(offset < length) {
                 setTimeout(function() {
@@ -887,12 +896,21 @@
             });
         },
 
-        loadNewPhoto: function(id)
+        loadNewPhoto: function method(id)
         {
             $.photos.initClearance();
             $.photos.widget.loupe.init();
-            $.post('?module=photo&action=load', { id: id, hash: $.photos.hash },
+
+            method.xhr_map = method.xhr_map || {};
+            if (method.xhr_map[id]) {
+                method.xhr_map[id].abort();
+            }
+
+            method.xhr_map[id] = $.post('?module=photo&action=load', { id: id, hash: $.photos.hash },
                 function(r) {
+
+                    method.xhr_map[id] = null;
+
                     var data = r.data,
                         photo = data.photo;
                     $.photos.renderViewPhoto(data);
@@ -921,9 +939,21 @@
                 exif = data.exif,
                 stack = data.stack,
                 albums = data.albums,
+                album = data.album,
                 hooks = data.hooks,
                 frontend_link_template = data.frontend_link_template,
-                photo_stream = data.photo_stream;
+                photo_stream = data.photo_stream,
+                in_collection = photo_stream.in_collection;
+
+            var not_in_dynamic_album = false;
+            if (album && !in_collection) {
+                if (album.type == Album.TYPE_STATIC) {
+                    $.photos.goToHash('album/' + album.id + '/');
+                    return;
+                } else {
+                    not_in_dynamic_album = true;
+                }
+            }
 
             $.photos.setTitle(photo.name_not_escaped);
             $('#content').html(tmpl('template-p-block'));
@@ -954,7 +984,15 @@
             } else {
                 $.photos.scrollTop();
             }
-            $.photos.setNextPhotoLink();
+
+            $('#p-warning-not-in-album').hide();
+            if (not_in_dynamic_album) {
+                $('#p-warning-not-in-album').show();
+                $.photos.setNextPhotoLink($.photos.photo_stream_cache.getCurrent());
+            } else {
+                $.photos.setNextPhotoLink();
+            }
+
         },
 
         loadPhotoCompletly: function(photo)
@@ -976,6 +1014,9 @@
              * @hook
              */
             $.photos.hooks_manager.trigger('beforeLoadPhoto', photo);
+
+            $('#p-warning-not-in-album').hide();
+
             $.photos.setNextPhotoLink();
             $.photos.updatePhotoName(photo.name);
             $.photos.updatePhotoDescription(photo.description);
@@ -1014,7 +1055,28 @@
                 function (r) {
                     if (r.status == 'ok') {
                         var data = r.data,
-                            photo = data.photo;
+                            album = data.album,
+                            photo = data.photo,
+                            photo_stream = data.photo_stream,
+                            in_collection = photo_stream.in_collection;
+
+                        var not_in_dynamic_album = false;
+                        if (album && !in_collection) {
+                            if (album.type == Album.TYPE_STATIC) {
+                                $.photos.goToHash('album/' + album.id + '/');
+                                return;
+                            } else {
+                                not_in_dynamic_album = true;
+                            }
+                        }
+
+                        if (not_in_dynamic_album) {
+                            $('#p-warning-not-in-album').show();
+                            $.photos.setNextPhotoLink($.photos.photo_stream_cache.getCurrent());
+                        } else {
+                            $.photos.setNextPhotoLink();
+                        }
+
                         photo = $.photos.photo_stream_cache.updateById(photo.id, photo);
                         data.photo = photo;
                         $.photos.updateViewPhoto(data, is_preloaded);
@@ -1437,30 +1499,15 @@
             }
 
             tags_input.data('current_value', tags_input.val());
-            try {
-                tags_input.tagsInput({
-                    autocomplete_url: '?module=tag&action=list',
-                    height: 120,
-                    width: 150,
-                    defaultText: default_text
-                });
-            } catch (e) {
-                ;
-            }
-            $('#photo-save-tags').click(function() {
-                var input = $('#photo-tags_tag');
-                if (input.length && (input.val() != default_text)) {
-                    input.trigger($.Event("keypress",{
-                        which:13
-                    }));
-                }
+
+            var onUserChange = function () {
                 if (tags_input.data('current_value') === tags_input.val()) {
                     return;
                 }
                 tags_input.data('current_value', tags_input.val());
                 $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saving')).fadeIn('slow');
                 $.photos.assignTags({
-                    photo_id: $.photos.photo_stream_cache.getCurrent().id,
+                    photo_id: $.photos.getPhotoId(),
                     tags: $('#photo-tags').val(),
                     fn: function() {
                         $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saved')).fadeOut('slow');
@@ -1469,8 +1516,27 @@
                         alert($_("You don't have sufficient access rights"));
                     }
                 });
+            };
 
-            });
+            try {
+                tags_input.tagsInput({
+                    autocomplete_url: '?module=tag&action=list',
+                    height: 120,
+                    width: 150,
+                    defaultText: default_text,
+                    onChange: function () {
+                        // this event calls every time list of tags is changed, event by importTags, so don't use it for ajax!
+                    },
+                    onAddTag: function () {
+                        onUserChange();
+                    },
+                    onRemoveTag: function () {
+                        onUserChange();
+                    }
+                });
+            } catch (e) {
+                ;
+            }
         },
 
         initPhotoContentControlWidget: function(data) {
@@ -1774,6 +1840,7 @@
                 if (typeof tags === 'object' && tags) {
                     tags = $.photos.joinObject(tags, ',');
                 }
+                //#
                 tags_input.importTags(tags);
             }
         },
@@ -1938,10 +2005,10 @@
             return proper_thumb;
         },
 
-        setNextPhotoLink: function() {
+        setNextPhotoLink: function(next) {
             // set a-link to next
             var a = $('#photo').parents('a:first');
-            var next = $.photos.photo_stream_cache.getNext();
+            next = next ? next : $.photos.photo_stream_cache.getNext();
             if (next) {
                 a.attr('title', $_('Next →'));
                 a.attr('href', '#' + $.photos.hash + '/photo/' + next.id + '/');
@@ -3408,14 +3475,19 @@ $(function () {
     })();
 
     // Highlight photos when selected
-    $("#photo-list li input").live('change', function () {
-        if (this.checked) {
-            $(this).closest('li').addClass('selected');
-        } else {
-            $(this).closest('li').removeClass('selected');
-        }
-        $('#share-menu-block, #organize-menu-block').trigger('recount');
-    });
+    $('#content')
+        .off($.photos.namespace + '-photo-list-select-checkbox')
+        .on('change' + $.photos.namespace + '-photo-list-select-checkbox',
+            ':checkbox[name="photo_id[]"]',
+            function () {
+                if (this.checked) {
+                    $(this).closest('li').addClass('selected');
+                } else {
+                    $(this).closest('li').removeClass('selected');
+                }
+                $('#share-menu-block, #organize-menu-block').trigger('recount');
+            }
+        );
 
     // Hide arrows over the photo if there are nowhere to go in its direction
     $.photos.hooks_manager.bind('afterLoadPhoto', function() {

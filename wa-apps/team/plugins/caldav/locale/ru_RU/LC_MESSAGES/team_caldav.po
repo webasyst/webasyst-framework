@@ -1,0 +1,59 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: team/plugins/caldav\n"
+"POT-Creation-Date: 2016-11-30 10:00+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: team/plugins/caldav\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "No CalDAV-server on specified URL"
+msgstr "По указанному адресу отсутствует сервер CalDAV"
+
+msgid "Specified login or password is invalid"
+msgstr "Неверный логин или пароль"
+
+msgid "Invalid URL"
+msgstr "Указан неверный URL"
+
+msgid "Connect"
+msgstr "Подключить"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Login"
+msgstr "Логин"
+
+msgid "Service"
+msgstr "Сервис"
+
+msgid "Specify URL to your CalDAV server"
+msgstr "Укажите адрес вашего сервера CalDAV"
+
+msgid "iCloud, Yandex, Yahoo!, Fruux calendars and any CalDAV server integration"
+msgstr "Интеграция с календарями iCloud, Yandex, Yahoo!, Fruux, а также с любыми серверами CalDAV"
+
+msgid "CalDAV client"
+msgstr "Клиент CalDAV"
+
+msgid "Yandex"
+msgstr "Яндекс"
+
+msgid "Other"
+msgstr "Другое"
+
+msgid "cancel"
+msgstr "отмена"
+
+msgid "or"
+msgstr "или"

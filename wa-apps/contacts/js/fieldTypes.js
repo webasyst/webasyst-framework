@@ -1580,10 +1580,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                 wrapper.append($('<div class="address-subfield"></div>').append(element));
                 if (sf.fieldData.type !== 'Hidden') {
                     //$.wa.defaultInputValue(element.find('input.val'), sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
-                    element.find('input.val').attr(
-                        'placeholder',
-                        sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : '')
-                    );
+                    var placeholder_text = sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : '');
+                    element.find('input.val,textarea.val').attr('placeholder', placeholder_text).attr('title', placeholder_text);
                 }
             }
             return wrapper;

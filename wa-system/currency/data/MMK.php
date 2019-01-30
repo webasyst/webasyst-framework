@@ -3,6 +3,7 @@
 return array(
     'code' => 'MMK',
     'sign' => 'K',
+	'iso4217' => '104',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Burmese kyat',

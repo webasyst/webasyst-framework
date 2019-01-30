@@ -57,5 +57,16 @@ class photosDialogAlbumSettingsAction extends waViewAction
         $this->view->assign('rights', $rights);
         $this->view->assign('groups', $groups);
         $this->view->assign('cloud', $cloud);
+
+        /**
+         * Extend album settings
+         * Add extra html to album settings dialog
+         * @event backend_album_settings
+         * @params array[string]string $params['id'] Album id
+         * @return array[string][string]string $return[%plugin_id%]['top'] Insert html to the top of dialog (just after title)
+         * @return array[string][string]string $return[%plugin_id%]['bottom'] Insert html to the bottom of dialog (right before buttons)
+         */
+        $params = array('id' => $id);
+        $this->view->assign('backend_album_settings', wa()->event('backend_album_settings', $params));
     }
 }

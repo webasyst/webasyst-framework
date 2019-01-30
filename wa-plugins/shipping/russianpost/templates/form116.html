@@ -9,16 +9,16 @@ body { padding: 10px; }
 input { font-size: 13px; margin-top: 2px; }
 table td { padding-right: 20px; }
 #img-link {
-	width:auto;
-	outline: none;
-	padding:0;
-	display:inline;
+    width:auto;
+    outline: none;
+    padding:0;
+    display:inline;
 }
 .hint { color: #aaa; font-size: 0.8em; }
 img {
-	border-width:0;
-	padding: 0;
-	margin: 0;
+    border-width:0;
+    padding: 0;
+    margin: 0;
 }
 #load_div {
     background: url('{$wa_url}wa-content/img/loading16.gif') no-repeat;
@@ -37,40 +37,17 @@ img {
 </style>
 <script type="text/javascript">{literal}
 <!--
-function show(node,hide_id,show_id){
-	var hide_node;
-	if(hide_node = document.getElementById(hide_id)){
-		hide_node.style.display = 'none';
-	}
-	var load_node;
-	if(load_node = document.getElementById('load_div')){
-		load_node.style.display = '';
-	}
-	var image_node;
-	if(image_node = document.getElementById('image')){
-		image_node.src = node.href;
-		image_node.style.display = 'none';
-	image_node.parentNode.href = node.href;
-	image_node.parentNode.style.display = 'none';
-		image_node.onload = function(){load(show_id);}
-	}
-	return false;
-}
 
-function load(show_id){
-	var show_node;
-	if(show_node = document.getElementById(show_id)){
-		show_node.style.display = '';
-	}
-	var image_node;
-	if(image_node = document.getElementById('image')){
-		image_node.style.display = '';
-	image_node.parentNode.style.display = 'block';
-	}
-	var load_node;
-	if(load_node = document.getElementById('load_div')){
-		load_node.style.display = 'none';
-	}
+function load(){
+    var image_node;
+    if(image_node = document.getElementById('image')){
+        image_node.style.display = '';
+        image_node.parentNode.style.display = 'block';
+    }
+    var load_node;
+    if(load_node = document.getElementById('load_div')){
+        load_node.style.display = 'none';
+    }
 }
 //-->{/literal}
 </script>
@@ -80,71 +57,90 @@ function load(show_id){
 <form id="edit_front_form" action="" method="post">
 {$wa->csrf()}
 <table>
-	<tr><td colspan="2"><h2>Форма №116 <span class="hint">Сопроводительный адрес к посылке</span></h2></td></tr>
-	<tr>
-		<td>Сумма объявленной ценности</td>
-		<td><input size="80" type="text" name="order_price"
-			value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
-	</tr>
-	<tr>
-		<td>Сумма наложенного платежа</td>
-		<td><input size="80" type="text" name="order_amount"
-			value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
-	</tr>
-	<tr>
-		<td>Сумма объявленной ценности (цифрами)</td>
-		<td><input type="text" name="order_price_d"
-			value="{$order.total|wa_format_amount:$order.currency}" /></td>
-	</tr>
-	<tr>
-		<td>Сумма наложенного платежа (цифрами)</td>
-		<td><input type="text" name="order_amount_d"
-			value="{$order.total|wa_format_amount:$order.currency}" /></td>
-	</tr>
-	<tr>
-		<td>Получатель заказа</td>
-		<td><input size="80" type="text" name="shipping_name"
-			value="{$order.contact_name|escape:'html'}" /></td>
-	</tr>
-	<tr>
-		<td>Адрес (строка 1)</td>
-		<td><input size="80" type="text" name="shipping_address_1"
-			value="{$address.0|escape:'html'}" /></td>
-	</tr>
-	<tr>
-		<td>Адрес (строка 2)</td>
-		<td><input size="80" type="text" name="shipping_address_2"
-			value="{$address.1|escape:'html'}" /></td>
-	</tr>
-	<tr>
-		<td>Почтовый индекс</td>
-		<td><input type="text" name="shipping_zip"
-			value="{$order.shipping_address.zip|escape:'html'}" /></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><br><input type="submit" value="Сформировать бланк формы №116" /></td>
-	</tr>
+    <tr><td colspan="2"><h2>Форма №116 <span class="hint">Сопроводительный адрес к посылке</span></h2></td></tr>
+
+    <tr>
+        <td>Сумма объявленной ценности (цифрами)</td>
+        <td><input type="text" name="order_price_d"
+            value="{$order.total|wa_format_amount:$order.currency}" /></td>
+    </tr>
+    <tr>
+        <td>Сумма наложенного платежа (цифрами)</td>
+        <td><input type="text" name="order_amount_d"
+            value="{$order.total|wa_format_amount:$order.currency}" /></td>
+    </tr>
+
+    <tr>
+        <td colspan="2"><strong><br/><br/>Получатель заказа:</strong></td>
+    </tr>
+
+    <tr>
+        <td>ФИО</td>
+        <td><input size="80" type="text" name="shipping_name"
+            value="{$order.contact_name|escape:'html'}" /></td>
+    </tr>
+    <tr>
+        <td>Адрес</td>
+        <td><input size="80" type="text" name="shipping_address"
+            value="{$address|escape:'html'}" /></td>
+    </tr>
+    <tr>
+        <td>Почтовый индекс</td>
+        <td><input type="text" name="shipping_zip"
+            value="{$order.shipping_address.zip|escape:'html'}" /></td>
+    </tr>
+
+    <tr>
+        <td colspan="2"><strong><br/><br/>Отправитель (магазин):</strong></td>
+    </tr>
+
+    <tr>
+        <td>Документ</td>
+        <td><input type="text" name="document" value="{$settings.document|default:''|escape}" placeholder="паспорт"></td>
+    </tr>
+    <tr>
+        <td>Серия документа</td>
+        <td><input type="text" name="document_series" value="{$settings.document_series|default:''|escape}"></td>
+    </tr>
+    <tr>
+        <td>Номер документа</td>
+        <td><input type="text" name="document_number" value="{$settings.document_number|default:''|escape}"></td>
+    </tr>
+    <tr>
+        <td>Дата выдачи документа</td>
+        <td>
+            <input type="text" name="document_issued_day" value="{$settings.document_issued_day|escape}" placeholder="дд" size="2">
+            /
+            <input type="text" name="document_issued_month" value="{$settings.document_issued_month|escape}" placeholder="мм" size="2">
+            /
+            <input type="text" name="document_issued_year" value="{$settings.document_issued_year|escape}" placeholder="гг" size="2">
+        </td>
+    </tr>
+    <tr>
+        <td>Кем выдан документ</td>
+        <td><input type="text" name="document_issued" value="{$settings.document_issued|escape}"></td>
+    </tr>
+    <tr>
+        <td colspan="2">Эти данные также можно отредактировать в настройках плагина Почта России.</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><br><input type="submit" value="Сформировать бланк формы №116" /></td>
+    </tr>
 </table>
 </form>
 {else}
+{if !waRequest::get('mass_print')}
 <form action="" class="noprint">
     <input id="print_button" type="button" src="{$wa_url}wa-plugins/shipping/russianpost/img/printer-icon.gif" value="Печать" onclick="window.print();return false;"/>
-</form> {*relative path from frontend*}
-<div id="front_div" class="noprint" style="display:none;"><span
-	style="background-color: #ffc" class="noprint">Лицевая сторона формы №116</span> &nbsp;&nbsp; <a href="?{$src_back}" title=""
-	class="noprint" onclick="return show(this,'front_div','back_div');">Оборот формы №116</a>
-</div>
+</form>
+{/if}
 
-<div id="back_div" class="noprint" style="display:none;"><a
-	id="edit_front_link" href="?{$src_front}"
-	title="" class="noprint"
-	onclick="return show(this,'back_div','front_div');">Лицевая сторона формы №116</a> &nbsp;&nbsp; <span style="background-color: #ffc" class="noprint">Оборот формы №116</span></div>
 
 <div id="load_div" class="noprint">Формирование бланка...</div>
 <p>
 <a href="?{$src_front}" target="_blank" title="" style="display:none;border:0" >
-<img width="100%" id="image" src="?{$src_front}" alt=""	title="" onload="load('front_div');" />
+<img width="100%" id="image" src="?{$src_front}" alt=""    title="" onload="load();" />
 </a>
 </p>
 {/if}

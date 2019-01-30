@@ -491,16 +491,6 @@
             return false;
         },
 
-        clearLastView: function() {
-            this.lastView = {
-                title: null,
-                hash: null,
-                sort: null,
-                order: null,
-                offset: null
-            };
-        },
-
         /** Empty form to create a new contact. */
         contactsAddAction: function (params) {
             this.setBlock('contacts-info');
@@ -569,9 +559,15 @@
             if (!params[5]) {
                 p.view = 'list';
             }
-            var hash = this.cleanHash('#/contacts/search/'+filters);
+            var hash = filters;
             $.wa.controller.setBlock('contacts-list', null, ['search-actions']);
-            this.loadGrid(p, hash.substr(1), null, {
+
+            var escaped_hash = hash || '';
+            if (escaped_hash.indexOf('/') >= 0) {
+                escaped_hash = escaped_hash.replace('/', '\\/');
+            }
+
+            this.loadGrid(p, '/contacts/search/' + (escaped_hash ? escaped_hash + '/' : ''), null, {
                 afterLoad: function(data) {
                     $.wa.controller.hideLoading();
                     if (options && options.search) {
@@ -1439,7 +1435,7 @@
         /** Gracefully reload sidebar. */
         reloadSidebar: function() {
             $.post("?module=backend&action=sidebar", null, function (response) {
-                var sb = $("#wa-app .sidebar");
+                var sb = $("#c-sidebar");
                 sb.css('height', sb.height()+'px') // prevents blinking in some browsers
                   .html(response)
                   .css('height', '');

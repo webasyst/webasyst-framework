@@ -52,9 +52,15 @@ class photosPhotoRenderHelper
 
     /**
      * Url of next photo page
-     * @var string
+     * @var string|null
      */
     private $next_photo_url = null;
+
+    /**
+     * Url of prev photo page
+     * @var string|null
+     */
+    private $prev_photo_url = null;
 
 
     private $rendered_blocks = array();
@@ -81,9 +87,10 @@ class photosPhotoRenderHelper
         if ($need_photo_stream) {
             $this->rendered_blocks['photo_stream'] = $this->renderPhotoStream();
         }
+
         // addition fields for photo here
         $this->photo['next_photo_url'] = $this->next_photo_url;
-
+        $this->photo['prev_photo_url'] = $this->prev_photo_url;
         $this->rendered_blocks['stack_nav'] = $this->renderStackNavigationPanel();
         $this->rendered_blocks['albums'] = $this->renderAlbums();
         $this->rendered_blocks['tags'] = $this->renderTags();
@@ -165,7 +172,8 @@ class photosPhotoRenderHelper
 
     private function _formPhotoStream($photo)
     {
-        $middle_pos = round(wa()->getConfig()->getOption('photos_per_page')/2);
+        $photos_per_page = wa()->getConfig()->getOption('photos_per_page');
+        $middle_pos = round($photos_per_page/2);
         $middle_pos = max(10, $middle_pos);
         $padding_count = 2;
 
@@ -204,8 +212,8 @@ class photosPhotoRenderHelper
         $right_bound = min($right_bound, $total_count - 1);
         $count = $right_bound - $left_bound + 1;
 
-        $contain = false;
         $photo_stream = $collection->getPhotos('*,thumb,thumb_crop,tags', $left_bound, $count);
+        $photo_stream = photosCollection::extendPhotos($photo_stream);
         foreach ($photo_stream as &$item) {
             $item['thumb_custom'] = array(
                 'url' => photosPhoto::getPhotoUrlTemplate($item)
@@ -213,17 +221,19 @@ class photosPhotoRenderHelper
             $item['full_url'] = photosFrontendPhoto::getLink(array(
                 'url' => $item['url']
             ), $this->album ? $this->album : $this->hash, false);
-            if (!$contain && $item['id'] == $photo['id']) {
-                $next = current($photo_stream);
-                if ($next) {
-                    $this->next_photo_url = photosFrontendPhoto::getLink($next, $this->album ? $this->album : $this->hash, false);
-                }
-                $contain = true;
-            }
         }
         unset($item);
-        if (!$contain) {
+
+        $frame = $this->foundFrame($photo_stream, $photo);
+        if (!$frame) {
             throw new waException(_w('Page not found', 404));
+        }
+
+        if ($frame['prev']) {
+            $this->prev_photo_url = photosFrontendPhoto::getLink($frame['prev'], $this->album ? $this->album : $this->hash, false);
+        }
+        if ($frame['next']) {
+            $this->next_photo_url = photosFrontendPhoto::getLink($frame['next'], $this->album ? $this->album : $this->hash, false);
         }
 
         // padding with null head of list if need
@@ -241,6 +251,45 @@ class photosPhotoRenderHelper
             );
         }
         return $photo_stream;
+    }
+
+    /**
+     * Found photo in stream, and prev photo and next photo
+     * @param $photo_stream
+     * @param $photo
+     * @return array
+     */
+    private function foundFrame($photo_stream, $photo)
+    {
+        list($prev, $next, $current) = array(null, null, null);
+
+        $found = false;
+
+        $photo_stream = array_values($photo_stream);
+        $n = count($photo_stream);
+
+        for ($i = 0; $i < $n; $i += 1) {
+            $current = $photo_stream[$i];
+            $next = null;
+            if ($i + 1 < $n) {
+                $next = $photo_stream[$i + 1];
+            }
+            if ($current['id'] == $photo['id']) {
+                $found = true;
+                break;
+            }
+            $prev = $current;
+        }
+
+        if (!$found) {
+            return null;
+        }
+
+        return array(
+            'prev' => $prev,
+            'next' => $next,
+            'current' => $current
+        );
     }
 
     private function renderPhotoStream()

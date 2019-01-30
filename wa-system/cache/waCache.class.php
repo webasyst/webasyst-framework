@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Interface for a key/value storage such as Memcached.
+ * See waSystem->getCache(), waSystemConfig->getCache()
+ */
 class waCache
 {
     /**

@@ -80,7 +80,11 @@ class waContactStringField extends waContactField
         }
 
         $value = isset($params['value']) ? $params['value'] : '';
-        return '<textarea '.$attrs.' name="'.$this->getHTMLName($params).'">'.htmlspecialchars($value).'</textarea>';
+        $name = $this->getName(null, true);
+        if (!empty($params['placeholder'])) {
+            $attrs .= ' placeholder="'.$name.'"';
+        }
+        return '<textarea '.$attrs.' name="'.$this->getHTMLName($params).'" title="'.$name.'">'.htmlspecialchars($value).'</textarea>';
     }
 }
 

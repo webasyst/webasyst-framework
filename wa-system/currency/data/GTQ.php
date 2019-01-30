@@ -3,6 +3,7 @@
 return array(
     'code' => 'GTQ',
     'sign' => 'Q',
+	'iso4217' => '320',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Guatemalan quetzal',

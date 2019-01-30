@@ -4,6 +4,11 @@ class waContactEmailsModel extends waModel
 {
     protected $table = "wa_contact_emails";
 
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_UNCONFIRMED = 'unconfirmed';
+    const STATUS_UNAVAILABLE = 'unavailable';
+    const STATUS_UNKNOWN = 'unknown';
+
     public function getData($ids, $fields = null)
     {
         $sql = "SELECT * FROM ".$this->table."
@@ -39,6 +44,11 @@ class waContactEmailsModel extends waModel
         return $this->query($sql, array('id' => $contact_id))->fetchAll();
     }
 
+    public function getEmail($contact_id, $sort = 0)
+    {
+        return $this->getByField(array('contact_id' => $contact_id, 'sort' => $sort));
+    }
+
     public function delete($email_id)
     {
         $row = $this->getById($email_id);
@@ -56,6 +66,45 @@ class waContactEmailsModel extends waModel
                 WHERE email LIKE ('".$this->escape($email, 'like')."')
                 ORDER BY sort LIMIT 1";
         return $this->query($sql)->fetchField();
+    }
+
+    /**
+     * Get first contact with password by this email
+     * @param string $email Must be valid email
+     * @param int|int[]|null $exclude_ids contact ids that excluded from searching
+     * @return null|int
+     */
+    public function getContactWithPassword($email, $exclude_ids = array())
+    {
+        $email = is_scalar($email) ? (string)$email : '';
+        if (strlen($email) <= 0) {
+            return null;
+        }
+
+        $validator = new waEmailValidator();
+        if (!$validator->isValid($email)) {
+            return null;
+        }
+
+        $exclude_ids = waUtils::toIntArray($exclude_ids);
+        $exclude_ids = waUtils::dropNotPositive($exclude_ids);
+
+        $where = array(
+            "e.email LIKE s:email",
+            "e.sort = 0",
+            "c.password != ''"
+        );
+
+        if ($exclude_ids) {
+            $where[] = "c.id NOT IN (:ids)";
+        }
+
+        $where = join(" AND ", $where);
+
+        $sql = "SELECT c.id FROM ".$this->table." e JOIN wa_contact c ON e.contact_id = c.id
+                WHERE {$where}
+                LIMIT 1";
+        return $this->query($sql, array('email' => $email, 'ids' => $exclude_ids))->fetchField();
     }
 
     public function getContactIdsByEmails($emails)
@@ -77,14 +126,6 @@ class waContactEmailsModel extends waModel
             $contact_id = $this->getContactIdByEmail($email);
         }
         return  $contact_id;
-    }
-
-    public function getContactWithPassword($email)
-    {
-        $sql = "SELECT c.id FROM ".$this->table." e JOIN wa_contact c ON e.contact_id = c.id
-                WHERE e.email LIKE '".$this->escape($email, 'like')."' AND e.sort = 0 AND c.password != ''
-                LIMIT 1";
-        return $this->query($sql)->fetchField();
     }
 
     public function getMainContactMyEmail($email)

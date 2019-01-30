@@ -3,6 +3,7 @@
 return array(
     'code' => 'TTD',
     'sign' => '$',
+	'iso4217' => '780',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Trinidad and Tobago dollar',

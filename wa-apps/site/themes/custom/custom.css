@@ -8,7 +8,7 @@
  * @copyright 2012 Webasyst LLC
  * @package Webasyst
  */
- 
+
 /* Reset
 -------- */
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, /* ol, ul, li, */ fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, credentials, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; }
@@ -26,7 +26,7 @@ a:hover { color: red !important; }
 input[type="button"]::-moz-focus-inner { border: 0; }
 input[type="submit"]::-moz-focus-inner { border: 0; }
 a img { border: 0; }
-p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote { margin-bottom: 20px; }
+p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote, figure { margin-bottom: 20px; }
 h1, h2, h3 { font-weight: normal; }
 h1 { font-size: 2.4em; }
 h1 a { text-decoration:none; }
@@ -38,7 +38,7 @@ h6 { font-size: 1em; }
 h1, h2, h3, h4, h5, h6 { line-height:1.2em; margin-bottom:.3em; }
 ul, ol { padding-top:0; }
 ol { list-style: decimal; }
-input, textarea, select { margin:0; } 
+input, textarea, select { margin:0; }
 input, textarea { font-size: 1em; color: #000; font-family: Helvetica, Arial, sans-serif; }
 input[type="button"]:focus { outline:none; outline-offset:-2px; }
 fieldset { border:1px solid #bbb; padding:10px; position:relative; background:#e9e9e9; margin-bottom:10px; }
@@ -48,7 +48,8 @@ border:1px solid #bbb; //border:none
 fieldset p label { width:98%; }
 fieldset p input[type="text"] { width:98%; }
 fieldset p select { width:99%; }
-blockquote { color: #555; font-size:0.9em; padding:20px; background: #f3f3f3; border-left: 2px solid #ccc; }
+pre {margin-top: 16px; font-size: 90%; line-height: 24px; color: rgba(0,0,0,.75); background: rgba(0,0,0,.03); padding: 16px 20px;word-wrap: normal;}
+blockquote { color: rgba(0,0,0,.6); font-size:0.9em; font-style: italic; border-left: 1px solid rgba(0,0,0,.1);padding-left: 24px; background: #eee; }
 blockquote cite { font-size: 0.9em; }
 hr { background-color: #ccc; height: 1px; border: 0; }
 
@@ -98,7 +99,7 @@ hr { background-color: #ccc; height: 1px; border: 0; }
 #header { margin-bottom: 30px; margin-top: -25px; }
 #header h2 { float: left; text-transform: uppercase; margin-top: 25px; }
 #header h2 a { color: #000; text-decoration: none; }
-#header a:hover { color: #c00 !important; } 
+#header a:hover { color: #c00 !important; }
 #header ul#wa-apps { margin: 20px -10px 0 0; padding: 0; float: right; }
 #header ul#wa-apps li { float: left; text-transform: uppercase; list-style: none; margin: 0; padding: 3px 0; }
 #header ul#wa-apps li a { display: block; padding: 7px 10px 5px; margin-right: 10px; color: #333; font-weight: bold; text-decoration: none; }
@@ -208,7 +209,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 .wa-form .wa-field .wa-value .errormsg { margin-left: 0; }
 .wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
 .wa-form .wa-field .wa-value p label { display: block; margin: 0; }
-.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; } 
+.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; }
 .wa-form .wa-field .wa-value p span { color: #777; font-size: 0.9em; display: block; }
 .wa-form .wa-field .wa-value p i.icon16 { float: left; left: -20px; margin-top: 2px; position: absolute; }
 .wa-form .wa-field .wa-value p input { display: block; margin-bottom: 2px; }
@@ -254,7 +255,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 ========= */
 
 @media screen and (min-width: 760px) and (max-width: 1024px) {
-    
+
 }
 
 /* MOBILE
@@ -264,15 +265,15 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 
     body { font-size: 15px; -webkit-text-size-adjust: 100%; }
     h1 { font-weight: bold; }
-    
+
     .mobile-only { display: block; }
     .non-mobile-only { display: none; }
-    
+
     .block { padding: 10px 0; }
     .float-left { float: none; }
     .float-right { float: none; }
     .top-padded { padding-top: 10px; }
-    
+
     .custom-margins { margin: 0; }
     .container { min-width: 0; padding: 15px; }
     .sidebar { padding-top: 0 !important; }
@@ -281,26 +282,26 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
     .content.left { margin-left: 0; }
     .content.right { margin-right: 0; }
     .content img { max-width: 100%; height: auto !important; }
-    
+
     #header { margin-top: -18px; margin-bottom: 20px; }
     #header ul#wa-apps { margin-left: -7px; }
     #header ul#wa-apps li a { padding-left: 7px; padding-right: 7px; }
-    
+
     #header div#cart a { float: none !important; width: auto !important; }
     #header div#cart.fixed { right: 0; left: 0; margin: 0; }
     #header div#cart.fixed a { margin: 0; width: auto; padding-top: 15px !important; }
-    
+
     #footer { padding-bottom: 30px; }
     #footer .container { margin: 0 15px; }
     #footer #copyright { padding-left: 0; }
     #footer #sub-links { margin-left: 0; margin-top: 30px; }
     #footer #sub-links ul li { float: none; margin-bottom: 5px; }
-    
+
     .hero, .hero.superhero { margin: 0 -15px 20px -15px; padding: 15px; }
-    
+
     #page { margin: 0 0 20px; }
     .content.right #page { margin-right: 0; }
-    
+
     i.icon16 { margin-top: 0; vertical-align: middle; }
 
 }
@@ -312,3 +313,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 
 
 }
+
+/* FOOTER NOTICE */
+.s-footer-notice { margin: 1em 0; font-size: .9em; line-height: 1.3em; text-align: center; }
+.s-footer-notice a { color: inherit; text-decoration: underline; }

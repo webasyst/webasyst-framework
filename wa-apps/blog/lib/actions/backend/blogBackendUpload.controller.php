@@ -28,6 +28,7 @@ class blogBackendUploadController extends waController
         $this->getStorage()->close();
 
         foreach ($this->getIterableFiles() as $file) {
+            $file->transliterateFilename();
             if ($file->error_code != UPLOAD_ERR_OK) {
                 $errors[] = $file->error;
             } else {
@@ -89,13 +90,13 @@ class blogBackendUploadController extends waController
         // Currently this controller is only used for Redactor file uploads
         // to upload one file at a time. Redactor expects a specific response,
         // so we don't even bother for now with all other files. They are never there.
-        //if (waRequest::get('filelink')) {
-            if ($errors) {
-                echo json_encode(array('error' => $errors));
-            } else {
-                echo json_encode(array('filelink' => $uploaded[0]['url']));
-            }
-        //} else ...
+        if ($errors) {
+            echo json_encode(array('error' => $errors));
+        } elseif (waRequest::get('filelink')) {  // redactor
+            echo json_encode(array('filelink' => $uploaded[0]['url']));
+        } elseif (waRequest::get('r') === '2') { // redactor 2
+            echo json_encode(array('url' => $uploaded[0]['url']));
+        }
     }
 
 }

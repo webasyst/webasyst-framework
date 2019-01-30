@@ -1,30 +1,59 @@
 <?php
-
+/**
+ * Common interface for system plugins: shipping and payment.
+ *
+ * System plugins are quite different from application plugins. System plugins
+ * implement common functionality for all apps to use if apps are designed to do so.
+ *
+ * Unlike application plugins, for each system plugin there might be several copies
+ * of a plugin with separate sets of settings.
+ *
+ * System plugins do not store their own settings. Instead, they use app adapter
+ * to save and load key-value pairs. Plugin copies are distuingished by a unique $key
+ * passed to a plugin constructor.
+ *
+ * System plugins and applications communicate via an adapter class that belongs to an app.
+ * See: waAppShipping and waAppPayment (both inherit from waiPluginApp);
+ * waShipping->getAdapter() and waPayment->getAdapter().
+ */
 abstract class waSystemPlugin
 {
 
-    private $settings = null;
-    private $config;
-    protected $path;
-
     /**
-     *
+     * key=>value settings from adapter storage.
+     * See $this->getSettings().
+     * @var array
+     */
+    private $settings = null;
+    /**
+     * Cache for settings.php
+     * @var array
+     */
+    private $config;
+    /**
+     * Path to plugin directory (no trailing slash).
+     * @var string
+     */
+    protected $path;
+    /**
      * Plugin class id
      * @var string
      */
     protected $id;
+    /**
+     * Identifier to pass to app adapter to save and load data
+     * @var int
+     */
     protected $key;
     /**
-     *
      * Plugin type (shipping, payment etc.)
      * @var string
      */
     protected $type;
 
     /**
+     * Should not be called directly. Use `waShipping::factory()` and `waPayment::factory()` instead.
      *
-     * Enter description here ...
-     * @param waiPluginSettings $model
      * @param string $key
      * @throws waException
      */
@@ -38,15 +67,18 @@ abstract class waSystemPlugin
     }
 
     /**
-     * Список доступных плагинов
-     * @param $options array
-     * @return array
+     * List of available plugins of given type.
+     *
+     * @param array $options    reserved for future use
+     * @param string $type      'shipping' or 'payment'
+     * @return array            plugin class id => plugin info: see waSystemPlugin::info()
      */
     public static function enumerate($options = array(), $type = null)
     {
         $plugins = array();
         foreach (waFiles::listdir(self::getPath($type)) as $id) {
-            if ($info = self::info($id, $options = array(), $type)) {
+            $info = self::info($id, $options, $type);
+            if ($info) {
                 $plugins[$id] = $info;
             }
         }
@@ -74,6 +106,8 @@ abstract class waSystemPlugin
      *
      * Get plugin description
      * @param string $id
+     * @param array $options
+     *
      * @return array[string]string
      * @return array['name']string
      * @return array['description']string
@@ -89,7 +123,10 @@ abstract class waSystemPlugin
         $config_path = $base_path.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'plugin.php';
 
         $plugin = null;
-        if ($config_path && file_exists($config_path) && ($config = include($config_path))) {
+        if ($base_path && file_exists($base_path)
+            && $config_path && file_exists($config_path)
+            && ($config = include($config_path))
+        ) {
             $default = array(
                 'name'        => preg_replace('@[A-Z]@', ' $1', $id),
                 'description' => '',
@@ -154,8 +191,8 @@ abstract class waSystemPlugin
     }
 
     /**
-     *
-     * Получение списка настраиваемых значений модуля доставки
+     * @param string $name
+     * @return array plugin settings as key => value
      */
     public function getSettings($name = null)
     {
@@ -170,7 +207,8 @@ abstract class waSystemPlugin
     }
 
     /**
-     *
+     * Populate $this->settings by copying $settings there, then load all missing values
+     * with defaults from settings.php config file.
      * @param array $settings
      */
     protected function setSettings($settings = array())
@@ -184,7 +222,7 @@ abstract class waSystemPlugin
                     if (isset($default['value'])) {
                         $value = $default['value'];
                         if (!empty($default['control_type']) && ($default['control_type'] == waHtmlControl::INPUT)) {
-                                $value = $this->_w($value);
+                            $value = $this->_w($value);
                         }
                     }
                     $this->settings[$key] = $value;
@@ -194,8 +232,7 @@ abstract class waSystemPlugin
     }
 
     /**
-     *
-     * @return string
+     * @return string plugin class id
      */
     final public function getId()
     {
@@ -203,9 +240,10 @@ abstract class waSystemPlugin
     }
 
     /**
+     * Return plugin property, described in plugin.php config
      *
-     * Return plugin property, described at plugin config
      * @param string $property
+     * @return mixed
      */
     final public function getProperties($property = null)
     {
@@ -215,14 +253,13 @@ abstract class waSystemPlugin
         return isset($property) ? (isset($this->properties[$property]) ? $this->properties[$property] : false) : $this->properties;
     }
 
-    /**
-     * @return string
-     */
+    /** @return string */
     final public function getName()
     {
         return $this->getProperties('name');
     }
 
+    /** @return string */
     final public function getDescription()
     {
         return $this->getProperties('description');
@@ -243,11 +280,21 @@ abstract class waSystemPlugin
         return $this->getSettings($name) !== null;
     }
 
+    /**
+     * Localization for system plugins.
+     * Just like the _w(), translates a single string
+     * or selects translation option based on number.
+     *
+     * @param string $msgid1
+     * @param string $msgid2
+     * @param int $n
+     * @param bool $sprintf
+     * @return string
+     */
     public function _w($string)
     {
         $args = func_get_args();
         return self::__w($args, $this->type, $this->id, $this->path);
-
     }
 
     private static function __w($string, $type, $id, $path)
@@ -263,7 +310,6 @@ abstract class waSystemPlugin
 
         $args = (array)$string;
         if ($domains[$domain]) {
-
             array_unshift($args, $domain);
             $string = call_user_func_array('_wd', $args);
         } else {
@@ -273,11 +319,14 @@ abstract class waSystemPlugin
     }
 
     /**
+     * Helper to properly instantiate a system plugin. Should never be used directly,
+     * see `waShipping::factory()` and `waPayment::factory()` instead.
      *
-     * Get shipping plugin
-     * @param string $id
-     * @param waiPluginSettings $adapter
-     * @return waShipping
+     * @param string $id            plugin class id
+     * @param int $key              application-defined unique identifier to distuinguish between plugin entities
+     * @param string $type          plugin type (i.e. shipping or payment)
+     * @return waSystemPlugin
+     * @throws waException
      */
     public static function factory($id, $key = null, $type = null)
     {
@@ -306,15 +355,20 @@ abstract class waSystemPlugin
         return $plugin;
     }
 
+    /**
+     * Override this to set up custom controls used in settings.php config.
+     * See $this->registerControl().
+     */
     protected function initControls()
     {
     }
 
     /**
-     * Register user input control
+     * Register user input control. See waHtmlControl::registerControl().
+     *
      * @param string $type
      * @param callback $callback
-     * @return waShipping Current object
+     * @return self Current object
      */
     protected function registerControl($type, $callback = null)
     {
@@ -326,8 +380,8 @@ abstract class waSystemPlugin
     }
 
     /**
+     * Used by application to draw plugin settongs page.
      *
-     * Получение массива элементов настроек
      * @param array [string]mixed $params
      * @param array [string]string $params['namespace']
      * @param array [string]string $params['value']'
@@ -373,19 +427,25 @@ abstract class waSystemPlugin
     private function config()
     {
         if ($this->config === null) {
-            $path = $this->path.'/lib/config/settings.php';
-            if (file_exists($path)) {
-                $this->config = include($path);
+            if ($this->path) {
+                $path = $this->path.'/lib/config/settings.php';
+                if (file_exists($path)) {
+                    $this->config = include($path);
 
-                foreach ($this->config as & $config) {
-                    if (isset($config['title'])) {
-                        $config['title'] = $this->_w($config['title']);
-                    }
-                    if (isset($config['description'])) {
-                        $config['description'] = $this->_w($config['description']);
+                    if (is_array($this->config)) {
+                        foreach ($this->config as & $config) {
+                            if (isset($config['title'])) {
+                                $config['title'] = $this->_w($config['title']);
+                            }
+                            if (isset($config['description'])) {
+                                $config['description'] = $this->_w($config['description']);
+                            }
+                        }
+                        unset($config);
+                    } else {
+                        $this->config = array();
                     }
                 }
-                unset($config);
             }
             if (!is_array($this->config)) {
                 $this->config = array();
@@ -395,16 +455,16 @@ abstract class waSystemPlugin
     }
 
     /**
-     *
-     * Инициализация значений настроек модуля доставки
+     * @param array $settings
+     * @return array
      */
-
     public function saveSettings($settings = array())
     {
+        // Validate and prepare defualt values for checkboxes etc.
         $settings_config = $this->config();
         foreach ($settings_config as $name => $row) {
             if (!isset($settings[$name])) {
-                switch (preg_replace('@\s.*$@','',ifset($row['control_type']))) {
+                switch (preg_replace('@\s.*$@', '', ifset($row['control_type']))) {
                     case waHtmlControl::CHECKBOX:
                         $settings[$name] = false;
                         break;
@@ -417,6 +477,7 @@ abstract class waSystemPlugin
                 }
             } else {
                 switch (ifset($row['control_type'])) {
+                    // Check if file is uploaded properly
                     case waHtmlControl::FILE:
                         $file = waRequest::file($name);
                         break;
@@ -424,10 +485,22 @@ abstract class waSystemPlugin
             }
         }
 
+        // Save settings via app adapter
+        $adapter = $this->getAdapter();
         foreach ($settings as $name => $value) {
             $this->settings[$name] = $value;
-            $this->getAdapter()->setSettings($this->id, $this->key, $name, $value);
+            $adapter->setSettings($this->id, $this->key, $name, $value);
         }
         return $settings;
     }
+
+
+    /**
+     * Helper to retrieve app adapter.
+     * See waShipping and waPayment for actual implementation.
+     *
+     * @throws waException
+     * @return waAppPayment
+     */
+    abstract protected function getAdapter();
 }

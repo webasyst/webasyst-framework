@@ -69,7 +69,6 @@ class blogBlogModel extends blogItemModel
                 $item['link'] = blogBlog::getUrl($item, true);
             }
 
-
             if (!empty($extend_options['escape'])) {
                 $item['name'] = htmlspecialchars($item['name'], ENT_QUOTES, 'utf-8');
                 $item['link'] = htmlspecialchars($item['link'], ENT_QUOTES, 'utf-8');

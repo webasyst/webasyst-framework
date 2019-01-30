@@ -1,15 +1,16 @@
 <?php
-class webasystCreateSystemPluginCli extends waCliController
+
+class webasystCreateSystempluginCli extends webasystCreateCliController
 {
-    public function execute()
+    protected $plugin_id;
+    protected $type;
+
+    protected $template_id = 'wapattern';
+    protected $template_path;
+
+    public function showHelp()
     {
-        $type = waRequest::param(0);
-        $types = array('sms', 'payment', 'shipping');
-        $id = waRequest::param(1);
-        $params = waRequest::param();
-        $pattern = '/^[a-z][a-z0-9]*$/';
-        if (empty($type) || empty($params) || isset($params['help']) || !in_array($type, $types) || !preg_match($pattern, $id)) {
-            $help = <<<HELP
+        $help = <<<HELP
 Usage: php wa.php createSystemPlugin type plugin_id [parameters]
     type - Plugin type: shipping, payment, or sms
     plugin_id - Plugin id (string in lower case) 
@@ -18,92 +19,141 @@ Optional parameters:
     -version (Plugin version; e.g., 1.0.0)
     -vendor (Numerical vendor id)
     -settings (Supports user settings)
+    
+    -prototype (plugin id which will be used as prototype, by default it 'wapattern')
 Example: php wa.php createSystemPlugin shipping myshipping -name 'My shipping' -version 1.0.0 -vendor 123456
 HELP;
-            print $help."\n";
-        } else {
-            $plugin_path = wa()->getConfig()->getPath('plugins').'/'.$type.'/'.$id;
-            $this->create($type, $id, $plugin_path, $params);
-        }
+        print $help."\n";
+        parent::showHelp();
     }
 
-    protected function create($type, $id, $path, $params = array())
+
+    protected function init()
     {
-        $template_id = 'wapattern';
-        $template_path = wa()->getConfig()->getPath('plugins').'/'.$type.'/'.$template_id.'/';
+        $init = parent::init();
 
-        if (!file_exists($path)) {
-            try {
-                $path .= '/';
-                mkdir($path);
-                // lib
-                mkdir($path.'lib');
-                waFiles::protect($path.'lib');
-                $plugin_class = null;
+        $this->type = waRequest::param(0);
+        $this->app_id = 'webasyst';
+        $this->plugin_id = waRequest::param(1);
 
-                mkdir($path.'lib/classes');
-                // config
-                mkdir($path.'lib/config');
-                // app description
-                $plugin = array(
-                    'name'        => empty($params['name']) ? ucfirst($id) : $params['name'],
-                    'description' => '',
-                    'icon'        => 'img/'.$id.'.png',
-                    'version'     => empty($params['version']) ? '1.0.0' : $params['version'],
-                    'vendor'      => empty($params['vendor']) ? '' : $params['vendor'],
-                );
+        $template_id = waRequest::param('prototype');
+        if ($template_id) {
+            $this->template_id = $template_id;
+        }
 
-                waUtils::varExportToFile($plugin, $path.'lib/config/plugin.php');
+        return $init && !empty($this->plugin_id);
+    }
 
-                switch ($type) {
-                    case 'payment':
-                        #settings
-                        if (isset($params['settings'])) {
-                            waUtils::varExportToFile(array(), $path.'lib/config/settings.php');
-                        }
 
-                        #plugin class
-                        $template_class_path = $template_path.'lib/'.$template_id.ucfirst($type).'.class.php';
-                        $class_path = $path.'lib/'.$id.ucfirst($type).'.class.php';
-                        $template = file_get_contents($template_class_path);
-                        waFiles::write($class_path, str_replace($template_id, $id, $template));
+    protected function initPath()
+    {
+        parent::initPath();
 
-                        #plugin template
-                        mkdir($path.'templates');
-                        waFiles::protect($path.'templates');
-                        waFiles::copy($template_path.'templates/payment.html', $path.'templates/payment.html');
-                        break;
-                    case 'shipping':
-                        #settings
-                        if (isset($params['settings'])) {
-                            waUtils::varExportToFile(array(), $path.'lib/config/settings.php');
-                        }
+        $plugins_path = wa()->getConfig()->getPath('plugins').'/'.$this->type.'/';
 
-                        #plugin class
-                        $template_class_path = $template_path.'lib/'.$template_id.ucfirst($type).'.class.php';
-                        $class_path = $path.'lib/'.$id.ucfirst($type).'.class.php';
-                        $template = file_get_contents($template_class_path);
-                        waFiles::write($class_path, str_replace($template_id, $id, $template));
-
-                        break;
-                    default:
-                        throw new waException(sprintf("Plugin type \"%s\" not supported yet.\n", $type));
-                        break;
-                }
-
-                print("Plugin with id \"{$id}\" created!\n");
-            } catch (waException $ex) {
-                print("Plugin with id \"{$id}\" was NOT created.\n");
-                if (waSystemConfig::isDebug()) {
-                    echo $ex;
-                } else {
-                    print "Error:".$ex->getMessage()."\n";
-                }
-                waFiles::delete($path);
-            }
-        } else {
-            print("Plugin with id \"{$id}\" already exists.\n");
+        $this->path = $plugins_path.$this->plugin_id.'/';
+        $this->template_path = $plugins_path.$this->template_id.'/';
+        if (!file_exists($this->template_path)) {
+            throw new waException(sprintf('Not found prototype plugin %s, check -prototype option', $this->template_id));
         }
     }
 
+
+    protected function verifyParams($params = array())
+    {
+        $errors = parent::verifyParams($params);
+
+        if (!preg_match('@^[a-z][a-z0-9]+$@', $this->plugin_id)) {
+            $errors[] = "Invalid plugin ID";
+        }
+        $types = array('sms', 'payment', 'shipping');
+        if (!in_array($this->type, $types)) {
+            $errors[] = "Invalid plugin type";
+        }
+        return $errors;
+    }
+
+
+    protected function showReport($data = array())
+    {
+        echo <<<REPORT
+Plugin with id "$this->plugin_id" created!
+
+REPORT;
+    }
+
+    protected function createClass($file)
+    {
+        $pattern = sprintf('@\b%s@', $this->plugin_id);
+        $name = $this->template_path.preg_replace($pattern, $this->template_id, $file);
+        if (file_exists($name)) {
+            $file = file_get_contents($name);
+        } else {
+            $file = '<?php';
+            switch ($this->type) {
+                case 'sms':
+                    break;
+                case 'shipping':
+                    break;
+                case 'payment':
+                    break;
+            }
+        }
+
+        return str_replace($this->template_id, $this->plugin_id, $file);
+    }
+
+    protected function createConfig()
+    {
+        return array(
+            'name'        => empty($params['name']) ? ucfirst($this->plugin_id) : $params['name'],
+            'description' => '',
+            'icon'        => 'img/'.$this->plugin_id.'.png',
+            'version'     => empty($params['version']) ? $this->getDefaults('version') : $params['version'],
+            'vendor'      => empty($params['vendor']) ? $this->getDefaults('vendor') : $params['vendor'],
+        );
+    }
+
+    protected function create($params = array())
+    {
+        $config = $this->createConfig();
+
+        $structure = array(
+            'lib/classes',
+            'lib/vendors',
+            'lib/config/plugin.php' => $config,
+            //TODO add plugin's images
+        );
+
+        $files = array(
+            'lib/'.$this->plugin_id.ucfirst($this->type).'.class.php',
+        );
+
+        switch ($this->type) {
+            case 'payment':
+                #settings
+                if (isset($params['settings'])) {
+                    $structure['lib/config/settings.php'] = array();
+                }
+                $structure['templates/payment.html'] = 'templates/payment.html';
+                break;
+            case 'shipping':
+                #settings
+                if (isset($params['settings'])) {
+                    $structure['lib/config/settings.php'] = array();
+                }
+                break;
+            case 'sms':
+                break;
+        }
+
+        foreach ($files as $file) {
+            $structure[$file] = $this->createClass($file);
+        }
+
+        $this->createStructure($structure);
+        $this->protect(array('lib', 'lib/config'));
+
+        return $config;
+    }
 }

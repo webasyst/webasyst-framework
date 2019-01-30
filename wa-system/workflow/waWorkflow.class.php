@@ -53,7 +53,7 @@ class waWorkflow
      */
     public function getName()
     {
-        return $this->name;
+        return waLocale::fromArray($this->name);
     }
 
     /**

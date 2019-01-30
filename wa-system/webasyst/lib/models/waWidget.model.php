@@ -138,7 +138,10 @@ class waWidgetModel extends waModel
             'block' => $block,
             'sort' => $sort,
         ));
-        return 1;
+        return array(
+            'block' => $block,
+            'sort' => $sort
+        );
     }
 
     public function getByApp($app_id)

@@ -1,0 +1,65 @@
+.s-schedule-wrapper.is-open .s-label-wrapper .s-icon {
+  -webkit-transform: rotate(180deg) translate(0, -1px);
+  -moz-transform: rotate(180deg) translate(0, -1px);
+  -o-transform: rotate(180deg) translate(0, -1px);
+  -ms-transform: rotate(180deg) translate(0, -1px);
+  transform: rotate(180deg) translate(0, -1px);
+}
+.s-schedule-wrapper.is-open .s-hidden {
+  display: block;
+}
+.s-schedule-wrapper .s-hidden {
+  text-align: left;
+  display: none;
+  margin: 15px 0;
+  padding: 15px;
+  background: rgba(8,9,10,0.93);
+}
+.s-schedule-wrapper .s-label-wrapper {
+  cursor: pointer;
+  color: #bbb;
+}
+.s-schedule-wrapper .s-label-wrapper .workhours-wrapper {
+  display: inline-block;
+  padding: 0.125rem 0 0.125rem 1.25rem;
+  margin: 0;
+  line-height: 1.25rem;
+  background: transparent url("../img/svg/time-icon.svg") 0 no-repeat;
+  -webkit-background-size: auto 1rem;
+  -moz-background-size: auto 1rem;
+  background-size: auto 1rem;
+}
+.s-schedule-wrapper .s-label-wrapper .s-icon {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: transparent url("../img/svg/arrow.down.svg") 50% no-repeat;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  background-size: contain;
+}
+.s-schedule-wrapper .s-days-wrapper .s-day-wrapper {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.214285714285714em;
+}
+.s-schedule-wrapper .s-days-wrapper .s-day-wrapper:first-child {
+  margin-top: 0;
+}
+.s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-date {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 10px;
+  color: #888;
+  width: 100px;
+}
+.s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value {
+  display: inline-block;
+  vertical-align: top;
+}
+.s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value .s-time {
+  color: #fff;
+}
+.s-schedule-wrapper .s-days-wrapper .s-day-wrapper .s-value .s-text {
+  color: #aaa;
+}

@@ -3,6 +3,7 @@
 return array(
     'code' => 'GYD',
     'sign' => '$',
+	'iso4217' => '328',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Guyanese dollar',

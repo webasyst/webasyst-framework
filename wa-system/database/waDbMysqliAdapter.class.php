@@ -14,7 +14,7 @@
  */
 class waDbMysqliAdapter extends waDbAdapter
 {
-    
+
     const RESULT_ASSOC = 1;
     const RESULT_NUM = 2;
     const RESULT_BOTH = 3;
@@ -23,7 +23,7 @@ class waDbMysqliAdapter extends waDbAdapter
      * @var mysqli
      */
     protected $handler;
-        
+
     public function connect($settings)
     {
         $host = $settings['host'];
@@ -32,7 +32,7 @@ class waDbMysqliAdapter extends waDbAdapter
         if ($handler->connect_error) {
             throw new waDbException($handler->connect_error, $handler->connect_errno);
         }
-        
+
         $charset = isset($settings['charset']) ? $settings['charset'] : 'utf8';
         @$handler->set_charset($charset);
         if (isset($settings['sql_mode'])) {
@@ -47,32 +47,44 @@ class waDbMysqliAdapter extends waDbAdapter
     {
         return $this->handler->select_db($database);
     }
-    
+
     /**
      * Performs a query on the database and return a result object or false
-     * 
+     *
      * @param string $query - SQL-query
      * @return mysqli_result
      */
     public function query($query)
     {
-        $r =  $this->handler->query($query);
-        // check error MySQL server has gone away
-        if (!$r && $this->handler->errno == 2006 && $this->handler->ping()) {
-            return $this->handler->query($query);
-        } elseif (!$r && $this->handler->errno == 1104) {
-            // try set sql_big_selects
-            $this->handler->query('SET SQL_BIG_SELECTS=1');
-            return $this->handler->query($query);
+        $r = @$this->handler->query($query);
+        if (!$r) {
+            switch ($this->handler->errno) {
+                case 2006:
+                    // check error MySQL server has gone away
+                    $ping = $this->handler->ping();
+                    if (!$ping && $this->settings) {
+                        $this->close();
+                        sleep(1);
+                        $this->handler = $this->connect($this->settings);
+                        $ping = $this->handler->ping();
+                    }
+                    $r = $ping ? @$this->handler->query($query) : false;
+                    break;
+                case 1104:
+                    // try set sql_big_selects
+                    $this->handler->query('SET SQL_BIG_SELECTS=1');
+                    $r = @$this->handler->query($query);
+                    break;
+            }
         }
         return $r;
     }
-    
+
     public function close()
     {
         return $this->handler->close();
     }
-    
+
     public function num_rows($result)
     {
         return $result->num_rows;
@@ -95,7 +107,7 @@ class waDbMysqliAdapter extends waDbAdapter
     public function data_seek($result, $offset)
     {
         return $result->data_seek($offset);
-    }    
+    }
 
     /**
      * @param mysqli_result $result
@@ -114,18 +126,18 @@ class waDbMysqliAdapter extends waDbAdapter
     public function fetch_assoc($result)
     {
         return $result->fetch_assoc();
-    }    
-    
+    }
+
     public function insert_id()
     {
         return $this->handler->insert_id;
     }
-    
+
     public function affected_rows()
     {
         return $this->handler->affected_rows;
-    }    
-    
+    }
+
     public function escape($string)
     {
         return $this->handler->real_escape_string($string);
@@ -138,17 +150,17 @@ class waDbMysqliAdapter extends waDbAdapter
         }
         return true;
     }
-    
+
     public function error()
     {
         return $this->handler->error;
     }
-    
+
     public function errorCode()
     {
         return $this->handler->errno;
     }
-    
+
     public function schema($table, $keys = false)
     {
         $res = $this->query("DESCRIBE ".$table);
@@ -270,7 +282,6 @@ class waDbMysqliAdapter extends waDbAdapter
             $sql .= ", ".implode(",\n", $keys);
         }
         $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8";
-        $this->query($sql);
         if (!$this->query($sql)) {
             $this->exception();
         }
@@ -280,5 +291,5 @@ class waDbMysqliAdapter extends waDbAdapter
     {
         throw new waDbException($this->error(), $this->errorCode());
     }
-    
+
 }

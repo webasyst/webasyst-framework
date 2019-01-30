@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage contact
  */
-abstract class waContactStorage 
+abstract class waContactStorage
 {
 
     /**
@@ -36,7 +36,7 @@ abstract class waContactStorage
         } else {
             $all_fields = $fields;
         }
-        
+
         $result = array();
         $load_fields = array();
         foreach ($all_fields as $field_id) {
@@ -49,33 +49,34 @@ abstract class waContactStorage
                 $load_fields[] = $field_id;
             }
         }
-                
+
         if ((!$fields || $load_fields) && $contact->getId()) {
-            if ($load_result = $this->load($contact, $load_fields)) {
+            $load_result = $this->load($contact, $load_fields);
+            if ($load_result) {
+                $contact->setCache($load_result);
                 $result = $load_result + $result;
             }
-            $contact->setCache($result);
         }
-                
+
         if (!is_array($fields)) {
-            return $result[$fields];    
+            return $result[$fields];
         } else {
-            return $result;    
+            return $result;
         }
     }
-    
+
     abstract protected function load(waContact $contact, $fields = null);
-    
+
     public function set(waContact $contact, $fields)
     {
         // Load data from database
         $this->get($contact, array_keys($fields), true);
-        
+
         foreach ($fields as $field_id => $value) {
             if (($old_value = $contact->getCache($field_id, true)) === $value ||
                 ($old_value === null && $value === "")) {
                 unset($fields[$field_id]);
-            } 
+            }
             if (is_array($old_value) && is_array($value)) {
                 if (count($old_value) > count($value)) {
                     $fields[$field_id][] = null;
@@ -89,7 +90,7 @@ abstract class waContactStorage
         }
         return $result;
     }
-    
+
     /**
      * Get related with storage model
      * @return waModel
@@ -97,7 +98,7 @@ abstract class waContactStorage
     abstract public function getModel();
 
     abstract protected function save(waContact $contact, $fields);
-    
+
     /**
      * Delete all data for specified fields.
      * @param string|array $fields list of fields to remove
@@ -111,7 +112,7 @@ abstract class waContactStorage
      * @return int
      */
     abstract public function duplNum($field);
-    
+
     /**
      * For each [key => value] pair in $values search db for value in $field
      * among all contacts except $excludeIds. (Note that $values could contain dublicates

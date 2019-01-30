@@ -8,12 +8,12 @@ class sitePersonalProfileAction extends waViewAction
 
         $fields = array();
         $default_fields = array(
-            'firstname' => true,
-            'lastname' => true,
+            'firstname'  => true,
+            'lastname'   => true,
             'middlename' => true,
-            'email' => true,
-            'phone' => true,
-            'password' => true,
+            'email'      => true,
+            'phone'      => true,
+            'password'   => true,
         );
 
         $auth_config = wa()->getAuthConfig($domain);

@@ -176,7 +176,7 @@ class blogHelper
         unset($c);
 
         // Add data as 'user' key to each row in $rows
-        $app_static_url = wa()->getAppStaticUrl();
+        $root_url = wa()->getRootUrl();
         foreach ($rows as &$row) {
             $row['user'] = array();
             $id = $row['contact_id'] = max(0, intval($row['contact_id']));
@@ -197,7 +197,11 @@ class blogHelper
                 }
                 if (isset($row['auth_provider'])) {
                     if ($row['auth_provider'] && ($row['auth_provider'] != blogCommentModel::AUTH_GUEST)) {
-                        $row['user']['photo_url'] = "{$app_static_url}img/{$row['auth_provider']}.png";
+                        if ($row['auth_provider'] == blogCommentModel::AUTH_USER) {
+                            $row['user']['photo_url'] = "{$root_url}wa-content/img/users/user.png";
+                        } else {
+                            $row['user']['photo_url'] = "{$root_url}wa-content/img/auth/{$row['auth_provider']}.png";
+                        }
                         foreach ($photo_fields as $field) {
                             $row['user'][$field] = & $row['user']['photo_url'];
                         }

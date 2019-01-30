@@ -7,6 +7,16 @@ return array(
             'city'    => ''
         ),
     ),
+    'contact_fields'=>array(
+        'value' => array(
+            'city'   => 'city',
+            'street' => 'street',
+            'zip'    => 'zip'
+        ),
+    ),
+    'required_fields' => array(
+        'value' => false,
+    ),
     'rate_by'          => array(
         'value' => 'weight',
     ),
@@ -24,14 +34,20 @@ return array(
     'delivery_time'    => array(
         'value' => '+1 day',
         'title' => /*_wp*/('Estimated delivery time'),
-        'description' => /*_wp*/('Average order transit time. Estimated delivery date will be calculated automatically and shown to customer.'),
+        'description' => /*_wp*/('Average order transit time. Estimated delivery date will be calculated automatically and shown to customer.<br><br>'),
         'control_type' => waHtmlControl::RADIOGROUP,
         'options' => array(
             '+3 hour' => /*_wp*/('Same day'),
             '+1 day'  => /*_wp*/('Next day'),
+            '+1 day, +2 day'  => /*_wp*/('1-2 days'),
             '+2 day, +3 day' => /*_wp*/('2-3 days'),
             '+1 week' => /*_wp*/('1 week'),
             ''        => /*_wp*/('Undefined')
         ),
+    ),
+    'customer_interval'=>array(
+        'title'=>/*_wp*/('Preferred delivery time'),
+        'control_type'=>'DeliveryIntervalControl',
+        'minutes'=>true,
     ),
 );

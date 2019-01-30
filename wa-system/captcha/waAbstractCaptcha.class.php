@@ -23,7 +23,7 @@ abstract class waAbstractCaptcha
      */
     public function __construct($options = array())
     {
-        $this->options = $options + $this->options;
+        $this->options = ifempty($options, array()) + $this->options;
         foreach ($this->required as $k) {
             if (!isset($this->options[$k])) {
                 throw new waException('Option '.$k.' is required');
@@ -49,4 +49,14 @@ abstract class waAbstractCaptcha
      * @abstract
      */
     abstract public function display();
+
+    /**
+     * @param null|string $key
+     * @param mixed $default
+     * @return array|mixed|null
+     */
+    public function getOption($key = null, $default = null)
+    {
+        return ($key) ? ifset($this->options, $key, $default) : $this->options;
+    }
 } 

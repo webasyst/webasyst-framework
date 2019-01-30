@@ -1,0 +1,59 @@
+{strip}
+
+<link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" rel="stylesheet">
+<script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js"></script>
+
+{capture assign=_invite_template}
+    <div class="t-invite-item">
+        <input class="t-field" type="text" name="email" value="" placeholder="[`Email`]">
+        <span class="t-notice">[`Minimal access`]</span>
+        <input type="checkbox" name="access" value="" placeholder="[`Access`]">
+        <span class="t-notice">[`Full access`]</span>
+        <a class="t-remove inline-link js-remove-invite" href="javascript:void(0);"><i class="icon16 delete"></i><b><i>[`Remove`]</i></b></a>
+    </div>
+{/capture}
+
+<div class="t-welcome-page" id="t-welcome-page">
+
+    <div class="t-content-body">
+        <h1>[`Welcome to the team!`]</h1>
+        <p>[`Webasyst is a great way for teams to work together online and share access to apps and data. Enter your teammates email addresses, and Webasyst will automatically create user accounts and send invitations.`]
+        </p>
+
+        <div class="t-invite-wrapper" id="t-invite-wrapper" style="margin-top: 2em;">
+            <ul class="t-invite-list">
+                {for $i = 1 to 3}
+                    <li>{$_invite_template}</li>
+                {/for}
+            </ul>
+            <div class="t-invite-template" style="display: none;">
+                {$_invite_template}
+            </div>
+            <div class="t-actions">
+                <a class="t-add-invite inline-link js-add-invite" href="javascript:void(0);"><i class="icon16 add"></i><b><i>[`Add more people`]</i></b></a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="t-footer-wrapper">
+        <input class="button blue js-send-invites" type="submit" value="[`Send invitations`]">
+        <span style="margin: 0 4px;">[`or`]</span>
+        <a class="js-skip-page" href="{$wa_app_url}">[`add teammates manually later`]</a>
+
+        <p class="gray">[`<em>Full access</em> means the freedom of using all functions available in all installed apps. <em>Minimal access</em> limits the range of available functions only to viewing and editing personal profile in Team app. Later on you will be able to set up personal access rights to individual apps for each user.`]</p>
+        
+    </footer>
+
+    <script>
+        ( function($) {
+            new WelcomePage({
+                $wrapper: $("#t-welcome-page"),
+                locales: {
+                    incorrect: "[`Invalid email address`]"
+                }
+            });
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

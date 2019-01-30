@@ -135,12 +135,11 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
      */
     private function _assertValidAddress($address)
     {
-        if (!preg_match('/^' . $this->getGrammar()->getDefinition('addr-spec') . '$/D',
-            $address))
+        if (!Swift_Validate::email($address))
         {
             throw new Swift_RfcComplianceException(
-                'Address set in PathHeader does not comply with addr-spec of RFC 2822.'
-                );
+                'Address in mailbox given [' . $address . '] is not a valid Email address (RFC 2822)'
+            );
         }
     }
 }

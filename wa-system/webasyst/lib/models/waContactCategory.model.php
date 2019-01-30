@@ -61,10 +61,10 @@ class waContactCategoryModel extends waModel
         $where = '';
         if ($id) {
             $ids = array_map('intval', (array) $id);
-            if ($ids) {
+            if (!$ids) {
                 return;
             }
-            $where = "cc.id IN (".implode(',', $ids).")";
+            $where = "WHERE cc.id IN (".implode(',', $ids).")";
         }
         $sql = "UPDATE `wa_contact_category` cc JOIN (
                 SELECT cc.id, COUNT(*) AS count FROM `wa_contact_category` cc

@@ -8,7 +8,9 @@
  * @copyright 2015 Webasyst LLC
  * @package Webasyst
  */
- 
+
+@import "./css/sidebar.css";
+
 /* Reset
 -------- */
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, /* ol, ul, li, */ fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, credentials, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; }
@@ -26,7 +28,7 @@ a:hover { color: #f55 !important; }
 input[type="button"]::-moz-focus-inner { border: 0; }
 input[type="submit"]::-moz-focus-inner { border: 0; }
 a img { border: 0; }
-p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote { margin-bottom: 20px; }
+p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote, figure { margin-bottom: 20px; }
 h1 { font-size: 2.0em; margin-bottom: 13px; }
 h1 a { text-decoration:none; }
 h2 { font-size: 1.65em; }
@@ -38,14 +40,15 @@ h1, h2, h3, h4, h5, h6 { line-height:1.3em; }
 ul, ol { padding-top:0; }
 ol { list-style: decimal; }
 p { color: #444; line-height: 1.5em; }
-input, textarea, select { margin:0; } 
+input, textarea, select { margin:0; }
 input, textarea { font-size: 1em; color: #000; }
 input[type="button"]:focus { outline:none; outline-offset:-2px; }
 fieldset { border:1px solid #bbb; padding:10px; position:relative; background:#e9e9e9; margin-bottom:10px; }
 fieldset p label { width:98%; }
 fieldset p input[type="text"] { width:98%; }
 fieldset p select { width:99%; }
-blockquote { color: #555; font-size:0.9em; padding:20px; background: #f3f3f3; border-left: 2px solid #ccc; }
+pre {margin-top: 16px; font-size: 90%; line-height: 24px; color: rgba(0,0,0,.75); background: rgba(0,0,0,.03); padding: 16px 20px;word-wrap: normal;}
+blockquote { color: rgba(0,0,0,.6); font-size:0.9em; font-style: italic; border-left: 1px solid rgba(0,0,0,.1);padding-left: 24px; background: #eee; }
 blockquote cite { font-size: 0.9em; }
 hr { background-color: #ccc; height: 1px; border: 0; }
 input::-webkit-input-placeholder { color: #ccc; }
@@ -133,7 +136,7 @@ ul.menu-h li.selected a { color: #000; text-decoration: none; }
 .wa-form .wa-field .wa-value .errormsg { margin-left: 0; }
 .wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
 .wa-form .wa-field .wa-value p label { display: block; margin: 0; }
-.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; } 
+.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; }
 .wa-form .wa-field .wa-value p span { color: #777; font-size: 0.9em; display: block; }
 .wa-form .wa-field .wa-value p i.icon16 { float: left; left: -20px; margin-top: 2px; position: absolute; }
 .wa-form .wa-field .wa-value p input { display: block; margin-bottom: 2px; }
@@ -428,8 +431,8 @@ body#hub #main { border-color: #f85; }
 
     body { -webkit-text-size-adjust: 100%; }
     .container { padding: 25px; }
-        
-    #tablet-toggle-sidebar { display: block; }    
+
+    #tablet-toggle-sidebar { display: block; }
 
     #sidebar { width: 30px; }
     #sidebar .block,
@@ -438,7 +441,7 @@ body#hub #main { border-color: #f85; }
     #sidebar .auth { display: none; }
     #sidebar .auth { width: 240px;}
     #main { margin-left: 30px; }
-    
+
     #sidebar.visible { width: 230px; padding-left: 30px; }
     #sidebar.visible .block,
     #sidebar.visible .title,
@@ -459,20 +462,20 @@ body#hub #main { border-color: #f85; }
     h2.title { font-size: 1.5em; }
     h3.title { font-size: 1.3em; }
     p { max-width: 100% !important; }
-    
+
     .mobile-only { display: block; }
     .non-mobile-only { display: none; }
-    
+
     .block { padding: 10px 0; }
     .top-padded { padding-top: 10px; }
-    
+
     .container { min-width: 0; padding: 10px; }
     .sidebar { padding-top: 0 !important; }
     .sidebar.left { width: 100% !important; float: none !important; clear: both !important; }
     .sidebar.right { width: 100% !important; float: none !important; clear: both !important; }
     .content.left { margin-left: 0 !important; clear: both !important; }
     .content.right { margin-right: 0 !important; clear: both !important; }
-    
+
     .content { overflow-x: hidden; }
     .content img { max-width: 100%; height: auto !important; }
 
@@ -484,27 +487,27 @@ body#hub #main { border-color: #f85; }
     #sidebar .auth ul.menu-h { margin: 0 auto; }
     #sidebar ul.menu-h li a { padding: 5px 20px 10px; }
     #sidebar #fixed-nav-sidebar { max-width: 100%; }
-    
+
     #main { margin: 0; overflow: visible; min-height: auto; }
     /* background: #fff; margin-left: 230px; line-height: 1.5em; border-top: 5px solid #ddd; padding-bottom: 20px; min-height: 100%; overflow: hidden; */
-    
+
     #footer { padding-bottom: 10px; font-size: 0.8em; }
     #footer .container { margin: 0; }
     #footer #copyright { padding-left: 0; }
     #footer #sub-links { margin-left: 0; margin-top: 30px; }
     #footer #sub-links ul li { float: none; margin-bottom: 5px; }
     #footer #poweredby .dots { padding-top: 0; background-position: 0 1px; margin-left: 3px; }
-    
+
     .app-navigation { padding: 5px 15px 10px; position: relative; text-align: center; }
     .app-navigation ul.menu-h li a { padding: 15px 10px 15px 0; }
     .app-navigation .float-right { float: none; /* override for mobile devices */ }
 
     .page { margin-right: 0; }
-    
+
     i.icon16 { margin-top: 0; vertical-align: middle; }
-    
+
     .comment-form-fields label { float: left; }
-    
+
     .wa-form .wa-field .wa-name { float: none; padding-bottom: 0; }
     .wa-form .wa-field .wa-value { margin-left: 0; }
     .wa-form .wa-field .wa-value p span { display: block; }
@@ -514,7 +517,7 @@ body#hub #main { border-color: #f85; }
     .wa-auth-adapters p { width: 80%; }
     .wa-captcha input.wa-captcha-input { width: 100px; }
     .errormsg { margin-left: 0; }
-    
+
     .sub-links li { font-size: 110%; margin-bottom: 5px; }
 
 }
@@ -526,10 +529,14 @@ body#hub #main { border-color: #f85; }
 @media screen and (min-width: 1300px) {
 
     .container { padding: 30px; }
-    
+
     #sidebar { width: 270px; }
     #sidebar .auth { width: 250px; }
-    
+
     #main { margin-left: 270px; }
 
 }
+
+/* FOOTER NOTICE */
+.s-footer-notice { margin: 1em 0; font-size: .9em; line-height: 1.3em; color: #bbb; text-align: center; }
+.s-footer-notice a { color: inherit; text-decoration: underline; }

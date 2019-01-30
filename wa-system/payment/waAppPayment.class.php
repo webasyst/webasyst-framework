@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage payment
  */
-abstract class waAppPayment
+abstract class waAppPayment implements waiPluginApp
 {
     const URL_SUCCESS = 'success';
     const URL_DECLINE = 'decline';
@@ -28,7 +28,7 @@ abstract class waAppPayment
     protected $merchant_id;
     protected $app_id;
 
-    final function __construct()
+    final public function __construct()
     {
         $this->init();
     }
@@ -51,31 +51,13 @@ abstract class waAppPayment
 
     /**
      *
-     * @param $plugin_id string
-     * @param $key string
-     * @return array
-     */
-    abstract public function getSettings($plugin_id, $key);
-
-    /**
-     *
-     * @param $plugin_id string
-     * @param $key string
-     * @param $name
-     * @param $value
-     * @internal param array $settings key-value
-     * @return array
-     */
-    abstract public function setSettings($plugin_id, $key, $name, $value);
-
-    /**
-     *
      * Callback method handler for plugin
      * @param string $method one of Confirmation, Payment
+     * @param mixed $_ [optional] params, passed to apps
      * @throws waException
      * @return mixed
      */
-    public final function execCallbackHandler($method)
+    final public function execCallbackHandler($method, $_ = null)
     {
         $args = func_get_args();
         array_shift($args);
@@ -155,6 +137,20 @@ abstract class waAppPayment
     {
         $plugin = waPayment::factory($module_id, $merchant_id, $this);
         return call_user_func_array(array($plugin, $transaction), $params);
+    }
+
+    /**
+     * @param $name string
+     * @return mixed
+     */
+    public function getAppProperties($name = null)
+    {
+        $info = wa()->getAppInfo($this->app_id);
+        $properties = ifset($info['payment_plugins']);
+        if (!is_array($properties)) {
+            $properties = array();
+        }
+        return $name ? ifset($properties[$name]) : $properties;
     }
 
     /**

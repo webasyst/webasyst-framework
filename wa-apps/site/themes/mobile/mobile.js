@@ -158,14 +158,10 @@ var UserTouch = ( function() {
         });
 
         // Закрываем меню
-        $(".hidden-menu-wrapper").on( "click", function() {
-            hideHiddenMenu();
-            return false;
-        });
+        $(".hidden-menu-wrapper").on( "click", function(event) {
+            var is_wrapper = (event.target === this);
 
-        // Блокируем всплытие кликов у меню-контейнера
-        $(".menu-block-wrapper").on( "click", function(event) {
-            event.stopPropagation();
+            if (is_wrapper) { hideHiddenMenu(); }
         });
 
         // Клик по ссылке в меню
@@ -293,64 +289,6 @@ var UserTouch = ( function() {
 
 })(jQuery);
 
-// Comments JS
-( function($) {
-
-    var bindEvents = function() {
-
-        // Проверка на наличие формы на странице
-        var $commentForm = $(".comment-form-wrapper");
-        if ( $commentForm.length ) {
-            var $submitButton = $commentForm.find(".comment-submit input[type='submit']"),
-                $textarea = $commentForm.find(".comment-form-fields textarea");
-
-            // Блокировка отправки сообщения с пустым полем
-            $submitButton.on("click", function() {
-                if ( !$textarea.val() ) {
-                    $textarea
-                        .attr("placeholder", "Введите ваш комментарий")
-                        .focus()
-                    ;
-                    return false;
-                }
-            });
-        }
-
-        // Клик по "оставить ответ к комментарию"
-        $(".reply-comment-link").on( "click", function() {
-            var commentID = $(this).closest(".comment-item").data("comment-id");
-
-            if (commentID) {
-                setParentCommentID(commentID);
-            }
-        });
-    };
-
-    // Проставляет ID коммента, к которому оставят ответ
-    var setParentCommentID = function(commentID) {
-        var $commentForm = $(".comment-form-wrapper"),
-            $input = $commentForm.find("input[name=parent]"),
-            $textarea = $commentForm.find(".comment-form-fields textarea");
-
-        // Проставляем в поле ID
-        if ($input) {
-            $input.val(commentID);
-        }
-
-        // Скролим окно до поля
-        var $textareaAnchorTop = $textarea.offset().top;
-        $("body").scrollTop($textareaAnchorTop);
-
-        // Делаем фокус
-        $textarea.focus();
-    };
-
-    $(document).ready(function() {
-        bindEvents();
-    });
-
-})(jQuery);
-
 // Cash Type Change JS
 ( function($) {
 
@@ -369,33 +307,4 @@ var UserTouch = ( function() {
         bindEvents();
     });
 
-})(jQuery);
-
-// Show Catalog Filter JS
-( function($) {
-    var bindEvents = function() {
-        $(".show-filter-content-link").on( "click", function() {
-            toggleFilterContent( $(this) );
-            return false;
-        });
-    };
-
-    var toggleFilterContent = function($link) {
-        var $wrapper = $link.closest(".catalog-filter-wrapper"),
-            activeClass = "is-shown";
-
-        // Change Link Text
-        if ($wrapper.hasClass(activeClass)) {
-            $link.text( $link.data("hide-text") )
-        } else {
-            $link.text( $link.data("show-text") )
-        }
-
-        // Toggle Content
-        $wrapper.toggleClass(activeClass);
-    };
-
-    $(document).ready( function() {
-        bindEvents();
-    });
 })(jQuery);

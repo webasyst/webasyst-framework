@@ -16,6 +16,13 @@ class siteDesignActions extends waDesignActions
         'is_ajax' => true
     );
 
+    public function __construct()
+    {
+        if (!$this->getRights('design')) {
+            throw new waRightsException("Access denied");
+        }
+    }
+
     protected function getRoutes($all = false)
     {
         if ($all) {

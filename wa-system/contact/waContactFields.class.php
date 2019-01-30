@@ -247,6 +247,9 @@ class waContactFields
      */
     public static function createField($field)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         if (!($field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }
@@ -267,6 +270,9 @@ class waContactFields
      */
     public static function deleteField($id)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         self::ensureStaticVars();
         if (is_object($id) && $id instanceof waContactField) {
             $id = $id->getId();
@@ -331,6 +337,9 @@ class waContactFields
      */
     public static function updateField($field)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         if (! ( $field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }
@@ -353,20 +362,23 @@ class waContactFields
         foreach ($fields as $k => $v) {
             /** @var waContactField $v */
             if ($v->getId() == $id) {
-                $fields[$k] = $field;
-                $changed = true;
-                break;
+                if ($changed) {
+                    unset($fields[$k]);
+                } else {
+                    $fields[$k] = $field;
+                    $changed = true;
+                }
             }
         }
         if (!$changed) {
             $fields[] = $field;
         }
-        foreach ($fields as $field) {
-            if ($field instanceof waContactField) {
-                $field->prepareVarExport();
+        foreach ($fields as $fld) {
+            if ($fld instanceof waContactField) {
+                $fld->prepareVarExport();
             }
         }
-        waUtils::varExportToFile($fields, $file, true);
+        waUtils::varExportToFile(array_values($fields), $file, true);
 
         // Update static vars
         self::$fieldStatus[$id] = false;
@@ -396,6 +408,9 @@ class waContactFields
      */
     public static function enableField($field, $type, $position=null)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         if (!($field instanceof waContactField)) {
             $field = self::get($field, 'all');
         }
@@ -478,6 +493,9 @@ class waContactFields
      * @throws waException
      */
     public static function disableField($id, $type, $delete = false) {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         self::ensureStaticVars();
         if (is_object($id) && $id instanceof waContactField) {
             $id = $id->getId();
@@ -541,6 +559,38 @@ class waContactFields
             return null;
         }
         return self::$fieldStatus[$id];
+    }
+
+    public static function getTypes()
+    {
+        static $types;
+
+        if ($types === null) {
+            $types = array(
+                'NameSubfield'  => _ws('Text (input)'),
+                'Email'         => _ws('Text (input)'),
+                'Address'       => _ws('Address'),
+                'Branch'        => _ws('Selectable (radio)'),
+                'Text'          => _ws('Text (textarea)'),
+                'String'        => _ws('Text (input)'),
+                'Select'        => _ws('Select '),
+                'Phone'         => _ws('Text (input)'),
+                'IM'            => _ws('Text (input)'),
+                'Url'           => _ws('Text (input)'),
+                'SocialNetwork' => _ws('Text (input)'),
+                'Date'          => _ws('Date'),
+                'Birthday'      => _ws('Date'),
+                'Composite'     => _ws('Composite field group'),
+                'Checkbox'      => _ws('Checkbox'),
+                'Number'        => _ws('Number'),
+                'Region'        => _ws('Region'),
+                'Country'       => _ws('Country'),
+                'Hidden'        => _ws('Hidden field'),
+                'Name'          => _ws('Full name'),
+            );
+        }
+
+        return $types;
     }
 
     /**

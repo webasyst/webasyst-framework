@@ -1,6 +1,12 @@
 #wa { background: #fff; }
 #wa-app { clear: none; }
 
+#wa-app {overflow:inherit;display:table;width:100%;table-layout:fixed}
+#wa-app:before,#wa-app:after {display:none}
+#wa-app #p-sidebar {float:none;display:table-cell;vertical-align:top;margin:0}
+#wa-app #content {float:none;display:table-cell;margin:0;padding:0}
+#wa-app #content > .content {margin-left: 0 !important;}
+
 /* Layout
 --------- */
 
@@ -19,6 +25,11 @@
 #p-sidebar .dr a .count .add { display: none; }
 #p-sidebar .dr a:hover .count .add { display: block; }
 img.p-app16x16icon-menu-v { width: 16px; height: 16px; position: absolute; left: 2px; }
+
+/* fixed sidebar styles */
+.p-sidebar-wrapper .p-sidebar-block { position:relative; }
+.p-sidebar-wrapper .p-sidebar-block.fixed-to-top { position:fixed;left:0;top:0; }
+.p-sidebar-wrapper .p-sidebar-block.fixed-to-bottom { position:fixed;left:0;bottom:0; }
 
 #p-toolbar { padding-top: 70px; font-size: 0.9em; line-height: 1.2em; }
 #p-toolbar.p-fixed { position: fixed; padding-top: 0; top: 0; right: 0; }
@@ -41,7 +52,7 @@ img.p-app16x16icon-menu-v { width: 16px; height: 16px; position: absolute; left:
 .p-image-corner .maximize,
 .p-image-corner .minimize { width: 32px; height: 32px; }
 .p-image .photo-loupe-wrapper { overflow: hidden; }
-.p-image.p-one-photo img { max-width: 100%; position: relative; }
+.p-image.p-one-photo img { max-width: 100%; position: relative; height: auto !important; }
 .p-description { line-height: 1.3em; margin-top: 0.5em; }
 .p-description textarea { margin-bottom: 5px; }
 .p-image.p-one-photo.p-image-maximized .p-image-nav { display: none; }
@@ -248,26 +259,29 @@ select#upload-album-id { position: absolute /* to handle long album names */;}
 
 table.p-rate-distribution td { padding: 2px 15px 2px 0; }
 
+#p-warning-not-in-album { padding: 10px 5px; background: #ffb0a8; font-size: 0.95em; }
+#p-warning-not-in-album .icon16 { margin-top: -2px; }
+
 
 /* TABLET
 ========= */
 
-@media screen and (max-width: 1024px) { 
+@media screen and (max-width: 1024px) {
 
     /* landscape + portrait */
-    
+
     #p-sidebar { width: 170px !important; }
-    .content { margin-left: 170px !important; }  
+    .content { margin-left: 170px !important; }
     #p-sidebar-width-control { display: none !important; }
     ul.thumbs.p-albums.li250px li { width: 240px; }
     ul#photo-list.thumbs.li250px li { width: 200px; margin-right: 5px; }
 
 }
 
-@media screen and (max-width: 768px) { 
+@media screen and (max-width: 768px) {
 
     /* portrait */
-    
+
     #p-block { padding: 5px !important; }
     ul#photo-list.thumbs.li250px li {margin-right: 0; }
 

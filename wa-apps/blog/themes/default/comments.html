@@ -110,7 +110,7 @@ $(document).ready(function() {
                     <div class="tab" data-provider="{$adapter->getId()}" {if $current_auth_source != $adapter->getId()}style="display:none"{/if}>
                         <p>
                             <label for="name">[`Your name`]</label>
-                            <strong><img src="{$adapter->getIcon()}" class="userpic" />{$current_auth.name}</strong>
+                            <strong><img src="{$adapter->getIcon()}" class="userpic" />{$current_auth.name|default:''|escape}</strong>
                             <a href="{$wa_app_url}logout">[`log out`]</a>
                         </p>
                     </div>

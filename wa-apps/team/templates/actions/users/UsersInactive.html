@@ -1,0 +1,53 @@
+{strip}
+
+<div class="t-users-page" id="t-users-page">
+    {* HEADER *}
+    <header class="t-content-header">
+        <h1>[`Inactive users`]</h1>
+    </header>
+
+    {* CONTENT *}
+    <div class="t-content-body">
+        <div class="t-info-notice-wrapper" style="display: none;">
+            <p>[`This is a list of users who are no longer members of your team. You have disabled their access to your Webasyst backend.`]</p>
+            <span class="t-info-notice-toggle">&times;</span>
+        </div>
+
+        {if !empty($contacts)}
+            {include file="./Users.inc.html" contacts=$contacts}
+        {else}
+            <p class="t-description">[`No inactive users.`]</p>
+        {/if}
+    </div>
+
+    {* JS *}
+    <script>
+        ( function($) {
+            $.team.setTitle('[`Inactive users`]');
+            $.team.sidebar.updateCount('{$wa_app_url}inactive/', {count($contacts)});
+
+            function initInfoBlock() {
+                var $info_block = $("#t-users-page .t-info-notice-wrapper"),
+                    storage = new $.store(),
+                    key = "team/inactive_users_notice_hide";
+
+                if (storage.get(key)) {
+                    $info_block.hide();
+                } else {
+                    $info_block.show();
+                }
+
+                $info_block.find(".t-info-notice-toggle").on("click", function () {
+                    storage.set(key, 1);
+                    $info_block.hide();
+                });
+            }
+
+            initInfoBlock();
+
+        })(jQuery);
+
+    </script>
+</div>
+
+{/strip}

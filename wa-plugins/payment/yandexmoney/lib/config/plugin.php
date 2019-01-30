@@ -1,9 +1,11 @@
 <?php
 return array(
-    'name'        => 'Яндекс.Деньги',
-    'description' => 'Платежная система «<a href="http://money.yandex.ru">Яндекс.Деньги</a>»',
+    'name'        => 'Яндекс.Касса',
+    'description' => '',
     'icon'        => 'img/yandexmoney16.png',
     'logo'        => 'img/yandexmoney.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.1.0',
+    'version'     => '1.4.0',
+    'offline'     => true,
+    'discount'    => false,
 );

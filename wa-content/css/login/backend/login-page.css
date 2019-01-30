@@ -1,0 +1,368 @@
+#wa-login.wa-backend-login-page {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  min-width: auto;
+  min-height: 100%;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+}
+#wa-login.wa-backend-login-page .dialog {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 0 1rem;
+}
+#wa-login.wa-backend-login-page .dialog .dialog-window {
+  position: relative;
+  top: auto;
+  bottom: auto;
+  left: auto;
+  right: auto;
+  display: block;
+  width: 500px;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  padding: 0;
+  margin: 0 auto;
+}
+#wa-login.wa-backend-login-page .dialog .dialog-window .dialog-content-indent {
+  padding-bottom: 0;
+}
+#wa-login.wa-backend-login-page .dialog .dialog-window .dialog-buttons {
+  position: relative;
+}
+#wa-login.wa-backend-login-page .dialog .dialog-window .dialog-buttons > *:first-child {
+  margin-top: 0;
+}
+#wa-login.wa-backend-login-page h1 {
+  max-height: none;
+}
+#wa-login.wa-backend-login-page p.i-error {
+  margin: 6px 0 10px;
+  color: #f00;
+}
+#wa-login.wa-backend-login-page .wa-error-msg {
+  font-size: 0.9em;
+  color: #f00;
+  display: block;
+  font-weight: bold;
+}
+#wa-login.wa-backend-login-page .wa-login-form-title {
+  margin: 0 0 2rem;
+}
+#wa-login.wa-backend-login-page .wa-recaptcha {
+  min-height: 78px;
+}
+#wa-login.wa-backend-login-page .wa-info-messages {
+  margin: 2rem 0 0;
+}
+#wa-login.wa-backend-login-page .wa-info-messages .wa-info-text,
+#wa-login.wa-backend-login-page .wa-info-messages .wa-info-msg {
+  display: block;
+  margin: 1em 0;
+}
+#wa-login.wa-backend-login-page .wa-info-messages .wa-info-text:first-child,
+#wa-login.wa-backend-login-page .wa-info-messages .wa-info-msg:first-child {
+  margin-top: 0;
+}
+#wa-login.wa-backend-login-page .wa-captcha {
+  padding: 8px 0 10px;
+}
+#wa-login.wa-backend-login-page .wa-captcha p {
+  margin: 0;
+}
+#wa-login.wa-backend-login-page .wa-captcha p img {
+  float: left !important;
+  margin-right: 5px;
+  margin-top: -8px;
+}
+#wa-login.wa-backend-login-page .wa-captcha strong {
+  font-size: 1.3em;
+}
+#wa-login.wa-backend-login-page .wa-captcha .wa-captcha-refresh {
+  font-size: 0.9em;
+  text-decoration: underline;
+  color: #aaa;
+}
+#wa-login.wa-backend-login-page .wa-captcha .wa-captcha-input {
+  min-width: 100px !important;
+  width: 100px !important;
+  display: inline !important;
+  font-size: 1.3em;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#wa-login.wa-backend-login-page .wa-captcha .errormsg {
+  display: inline-block;
+  margin-left: 10px;
+}
+#wa-login.wa-backend-login-page .field {
+  margin: 20px 0 0;
+  padding: 0;
+}
+#wa-login.wa-backend-login-page .field:first-child {
+  margin-top: 0;
+}
+#wa-login.wa-backend-login-page .field .value input {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#wa-login.wa-backend-login-page .field .value .wa-error {
+  border: 2px solid #f00;
+}
+#wa-login.wa-backend-login-page .field .wa-info-msg {
+  display: block;
+  margin-top: 12px;
+}
+#wa-login.wa-backend-login-page .field.wa-buttons {
+  margin: 30px 0 0;
+}
+#wa-login.wa-backend-login-page .field .wa-info-messages {
+  margin-bottom: 20px;
+}
+#wa-login.wa-backend-login-page .field .wa-info-messages .wa-info-msg {
+  display: block;
+  margin-top: 4px;
+}
+@media screen and (max-width: 760px) {
+  #wa-login.wa-backend-login-page .wa-captcha-field {
+    margin-top: 20px;
+  }
+  #wa-login.wa-backend-login-page .wa-captcha-field .wa-captcha-input {
+    font-size: 1.3em;
+  }
+  #wa-login.wa-backend-login-page .field {
+    margin: 6px 0;
+  }
+  #wa-login.wa-backend-login-page .field .name {
+    width: 100%;
+    margin-left: 0;
+    padding-top: 6px;
+  }
+  #wa-login.wa-backend-login-page .field .value {
+    width: 100%;
+    margin-left: 0;
+  }
+  #wa-login.wa-backend-login-page .field .value input[type=text],
+  #wa-login.wa-backend-login-page .field .value input[type=password] {
+    width: 100%;
+  }
+}
+#wa-login.wa-backend-login-page .wa-login-form .is-template {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-login-form .wa-uncaught-errors {
+  margin-bottom: 20px;
+}
+#wa-login.wa-backend-login-page .wa-login-form .wa-uncaught-errors .wa-error-msg {
+  font-weight: bold;
+}
+#wa-login.wa-backend-login-page .wa-login-form .wa-onetime-password-wrapper {
+  display: block;
+  margin: 10px 0;
+}
+#wa-login.wa-backend-login-page .wa-login-form .wa-change-login-link {
+  margin-top: 12px;
+  display: inline-block;
+}
+#wa-login.wa-backend-login-page .wa-login-form .wa-request-onetime-password-link {
+  margin-top: 12px;
+  display: inline-block;
+}
+#wa-login.wa-backend-login-page .wa-set-password-form .wa-info-messages .wa-info-text {
+  display: block;
+  margin: 10px 0;
+}
+#wa-login.wa-backend-login-page .wa-set-password-form .wa-uncaught-errors {
+  margin-bottom: 20px;
+}
+#wa-login.wa-backend-login-page .wa-set-password-form .wa-is-hidden {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-set-password-form .wa-onetime-password-wrapper {
+  display: block;
+  margin: 10px 0;
+}
+#wa-login.wa-backend-login-page .wa-set-password-form .wa-login-text-input {
+  font-size: 2em;
+  width: 300px;
+  font-weight: bold;
+}
+@media screen and (min-width: 761px) {
+  #wa-login.wa-backend-login-page .wa-set-password-form .field .name {
+    width: 130px;
+    margin: 0;
+    padding: 0;
+    min-height: 38px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: box;
+    display: flex;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -o-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+  }
+  #wa-login.wa-backend-login-page .wa-set-password-form .field .value {
+    margin-left: 150px;
+  }
+  #wa-login.wa-backend-login-page .wa-set-password-form .field .value input[type="text"],
+  #wa-login.wa-backend-login-page .wa-set-password-form .field .value input[type="password"] {
+    min-width: 0;
+    max-width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper .field .name {
+  margin-bottom: 0.5em;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper .wa-field-submit .wa-submit {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -webkit-box-lines: multiple;
+  -moz-box-lines: multiple;
+  -o-box-lines: multiple;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -o-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper .wa-edit-login-link-wrapper,
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper .wa-send-again-confirmation-code-link-wrapper {
+  margin-top: 10px;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper input[readonly] {
+  pointer-events: none;
+  background-color: #eee;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-field-submit .wa-submit .wa-confirm-button {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-uncaught-errors {
+  margin-bottom: 20px;
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -o-box-flex: 1;
+  box-flex: 1;
+  -webkit-flex: 0 0 100%;
+  -ms-flex: 0 0 100%;
+  flex: 0 0 100%;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-is-hidden {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-onetime-password-wrapper {
+  display: block;
+  margin: 10px 0;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-back-to-login-page-link-wrapper {
+  margin: 40px 0 30px 0;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-field-confirmation-code {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper:not(.wa-with-confirmation-code) .wa-edit-login-link-wrapper {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper.wa-with-confirmation-code .wa-field-submit .wa-submit .wa-recovery-button {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper.wa-with-confirmation-code .wa-field-submit .wa-remember-now-link {
+  display: none;
+}
+#wa-login.wa-backend-login-page .wa-forgotpassword-wrapper.wa-with-confirmation-code .wa-info-messages {
+  margin-left: 105px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input::-webkit-input-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:-moz-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input::-moz-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:-ms-input-placeholder {
+  font-size: 16px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus::-webkit-input-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus:-moz-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus::-moz-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-input:focus:-ms-input-placeholder {
+  color: #fff;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code {
+  margin-top: 0.5em;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-img-wrapper {
+  display: inline-block;
+  width: 120px;
+  height: 45px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  margin: 3px 0 0 5px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh {
+  color: #aaa;
+  font-size: 12px;
+  width: 65px;
+  line-height: 14px;
+  -webkit-transition: all 200ms linear;
+  -moz-transition: all 200ms linear;
+  -o-transition: all 200ms linear;
+  -ms-transition: all 200ms linear;
+  transition: all 200ms linear;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh:hover {
+  color: #555;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh .wa-captcha-refresh-icon {
+  display: table-cell;
+  background-image: url("../../../img/captcha-shape-gray.svg");
+  background-repeat: no-repeat;
+  width: 10.7px;
+  height: 9px;
+  padding-right: 6px;
+}
+#wa-login.wa-backend-login-page .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh .wa-captcha-refresh-text {
+  display: table-cell;
+  width: 65px;
+}
+@media screen and (max-width: 500px) {
+  #wa-login.wa-backend-login-page .dialog .dialog-window {
+    width: 100%;
+  }
+}

@@ -37,12 +37,14 @@ return array(
         'options'      => array(
             array('title' => 'старая (http://www.assist.ru/files/manual_new.pdf)', 'value' => 'old'),
             array('title' => 'новая (http://www.assist.ru/files/TechNEW.doc)', 'value' => 'new'),
+            array('title' => 'для Беларуси', 'value' => 'belarus'),
         ),
     ),
     'gate'          => array(
         'value'        => '',
         'title'        => 'Домен',
-        'description'  => 'Введите число из домена подключения (https://payments<u><strong>123</strong></u>.paysecure.ru).<br>Используется только для новой версии подключения.',
+        'description'  => 'Введите число из домена подключения (<i>https://payments<u><strong>123</strong></u>.paysecure.ru</i> или '
+            .'<i>https://payments<u><strong>123</strong></u>.paysec.by</i>).<br>Используется только для новой версии подключения и версии подключения для Беларуси.',
         'control_type' => waHtmlControl::INPUT,
     ),
 );

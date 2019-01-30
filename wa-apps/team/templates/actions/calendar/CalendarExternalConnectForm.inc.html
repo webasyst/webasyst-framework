@@ -1,0 +1,176 @@
+<div class="t-block t-connect-info-block" style="display: none; margin: 20px 0;">
+    <div style="margin-left: -0.25em; padding-bottom: 10px;">
+        <i class="icon16 yes"></i><span class="f-text" style="text-decoration: line-through;">[`Register application on %s`]</span>
+    </div>
+    <div><span class="f-text">2. [`Connect %s account:`]</span></div>
+</div>
+
+<form>
+    <div class="fields form">
+        <div class="field">
+            <div class="name">
+                [`External calendar type`]
+            </div>
+            {foreach $plugins as $plugin}
+                <div class="value t-external-calendar-item-wrapper">
+                    <label>
+                        <i class="icon16 kill-wa-style" style="background-image: url({$plugin.icon16_url});"></i>
+                        <input type="radio" name="id" value="{$plugin.id}"
+                               {if empty($plugin['enabled'])}disabled="disabled"{/if}
+                                {if !empty($plugin['checked'])}checked="checked"{/if}>
+                        <span class="t-external-calendar-name">
+                            {$plugin.name|escape}
+                        </span>
+                        {if $plugin.required_settings|default:false}
+                            <a href="{$wa_app_url}plugins/#/{$plugin.id}/" class="small">[`specify settings`]</a>
+                        {/if}
+                    </label>
+                </div>
+            {/foreach}
+        </div>
+        <div class="field t-buttons-block">
+            <div class="name"></div>
+            <div class="value">
+                <input class="button green" type="submit" value="[`Continue`]" disabled="disabled"> [`or`]
+                <a href="javascript:void(0);" {if $calendar} data-id="{$calendar.id}" {/if} class="cancel t-cancel-external-calendar">[`cancel`]</a>
+                <i class="icon16 loading t-buttons-loading" style="display: none"></i>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="t-authorize-block" style="display: none; margin: 10px 0;">
+    <i class="icon16 loading"></i>
+    [`Load authorize page`]...
+</div>
+
+<script>
+    $(function () {
+        var container = $('#{$container_id}');
+
+        var submitButtonDisable = function () {
+            container.find('[type=submit]').attr('disabled', false);
+        };
+
+        var enabled_count = 0;
+        container.find('[name=id]').each(function () {
+            var $input = $(this);
+            if (!$input.attr('disabled')) {
+                enabled_count += 1;
+            }
+        });
+
+        if (enabled_count <= 1) {
+            container.find('[name=id]').not(':disabled').attr('checked', true);
+        }
+
+        var storage = new $.store();
+        var refer = storage.get("team/plugins/refer");
+        if (refer) {
+            storage.del("team/plugins/refer");
+            refer = refer.replace('"', '').replace('"', '');
+            var plugins = {$plugins|json_encode};
+            var plugin = plugins[refer];
+            if (plugin) {
+                container.find('[name=id][value="' + refer + '"]').attr('checked', true);
+                if (storage.get("team/plugins/refer_has_settings")) {
+                    storage.del("team/plugins/refer_has_settings");
+                    var provider_name = plugin.name;
+                    $('.t-connect-info-block', container).show().find('.f-text').each(function () {
+                        var txt_block = $(this),
+                                txt = txt_block.text() || '';
+                        txt_block.text(txt.replace('%s', provider_name));
+                    });
+                }
+            }
+        }
+
+        var checked_and_enabled = null;
+        container.find('[name=id]').each(function () {
+            var $input = $(this);
+            if (!$input.attr('disabled') && $input.attr('checked')) {
+                checked_and_enabled = $input.val();
+                return false;
+            }
+        });
+
+        if (checked_and_enabled) {
+            submitButtonDisable();
+        } else {
+            container.find('[name=id]').one('change', function () {
+                submitButtonDisable();
+            });
+        }
+
+
+        container.find('form').submit(function (e) {
+            var form = $(this);
+
+            e.preventDefault();
+
+            var type = container.find('[name=id]:checked').val();
+            if (!type) {
+                return;
+            }
+
+            container.find('[name=id]').attr('disabled', true);
+
+            var authorize = function (id) {
+                $('.t-buttons-block', form).hide();
+                $('.t-authorize-block', container).show();
+
+                $.get('?module=calendarExternal&action=authorize&id=' + id, function(response) {
+                    if ($.isPlainObject(response) && $.isArray(response.errors) && response.errors.length) {
+                        var msg = response.errors[0].msg || response.errors[0].title || 'Authorize failed';
+                        alert(msg);
+                    } else {
+                        $('.t-authorize-block').html(response);
+                    }
+                }).error(function(r) {
+                    $('.t-authorize-block').html(r.responseText);
+                });
+            };
+
+            {if !$calendar}
+            container.find('.loading').show();
+            $.post('?module=calendarExternal&action=save',
+                    {
+                        type: type
+                    },
+                    function (r) {
+                        if (r && r.data && r.data.calendar) {
+                            authorize(r.data.calendar.id);
+                        }
+                    }
+            ).always(function () {
+                container.find('.loading').hide();
+            });
+            {else}
+            authorize({$calendar.id});
+            {/if}
+        });
+
+
+        {if !empty($auth_error)}
+            alert({$auth_error|json_encode});
+        {/if}
+
+        container.on('click', '.t-cancel-external-calendar', function (e) {
+            var link = $(this);
+            var loading = container.find('.t-buttons-loading').show();
+            if (!link.data('id')) {
+                location.href = '{$wa_app_url}u/{urlencode($wa->user('login'))}/info/';
+                return;
+            }
+
+            $.post('?module=calendarExternal&action=delete', { id: link.data('id') })
+                    .done(function () {
+                        location.href = '{$wa_app_url}u/{urlencode($wa->user('login'))}/info/';
+                    })
+                    .always(function () {
+                        loading.hide();
+                    });
+        });
+
+    });
+</script>

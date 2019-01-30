@@ -1,0 +1,42 @@
+<a href="javascript:void(0)" class="t-ics-add-import-form-toggle" id="t-ics-add-import-form-toggle">
+    <i class="icon16 add"></i>{_wp('Import events from file')}
+</a>
+
+<script>
+    ( function($) {
+        var is_locked = false;
+
+        $("#t-ics-add-import-form-toggle").on("click", function(event) {
+            event.preventDefault();
+            var $link = $(this),
+                $dialog = $link.closest(".t-dialog-wrapper");
+
+            if (!is_locked) {
+                is_locked = true;
+                var href = $.team.app_url + "?plugin=ics&module=import&action=dialog";
+
+                $.get(href, function(html) {
+                    var pluginDialog = new TeamDialog({
+                        html: html,
+                        onOpen: function () {
+                            $dialog.hide();
+                        },
+                        onClose: function() {
+                            if ($.contains(document, $dialog[0])) {
+                                $dialog.show();
+                            }
+                        }
+                    });
+
+                    pluginDialog.$wrapper.on("formSaved", function() {
+                        $dialog.data("teamDialog").refresh();
+                        $.team.calendar.reload();
+                    });
+
+                }).always( function() {
+                    is_locked = false;
+                });
+            }
+        });
+    })(jQuery);
+</script>

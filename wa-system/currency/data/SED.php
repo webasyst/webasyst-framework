@@ -3,6 +3,7 @@
 return array(
     'code' => 'SED',
     'sign' => 'د.إ',
+    'iso4217' => '',
     'sign_position' => null,
     'sign_delim' => null,
     'title' => 'United Arab Emirates dirham',

@@ -72,6 +72,11 @@ class contactsContactsMergeController extends waJsonController
         }
         $master_data = $contacts_data[$master_id];
         unset($contacts_data[$master_id]);
+
+        if (!$master_data) {
+            throw new waException('No contacts merge with.');
+        }
+
         $master = new waContact($master_id);
 
         $result = array(
@@ -92,14 +97,21 @@ class contactsContactsMergeController extends waJsonController
         $check_duplicates = array();    // field_id => true
         $update_photo = null;               // if need to update photo here it is file paths
 
-        // merge loop
+        // check is user loop
         foreach ($contacts_data as $id => $info) {
             if ($info['is_user'] > 0) {
                 $result['users']++;
                 unset($contacts_data[$id]);
                 continue;
             }
+        }
 
+        if (!$contacts_data) {
+            return $result;
+        }
+
+        // merge loop
+        foreach ($contacts_data as $id => $info) {
             foreach ($data_fields as $f => $field) {
                 if (!empty($info[$f])) {
                     if ($field->isMulti()) {

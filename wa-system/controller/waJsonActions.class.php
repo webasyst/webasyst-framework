@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of Webasyst framework.
@@ -21,14 +21,13 @@ abstract class waJsonActions extends waController
 
     protected function preExecute()
     {
-        $this->getResponse()->addHeader('Content-type', 'application/json');
+
     }
 
     protected function execute($action)
     {
         $method = $action.'Action';
         if (method_exists($this, $method)) {
-            $this->action = $action;
             $this->$method();
         }else{
             throw new waException(sprintf("Invalid action or missed method at %s for action %s",get_class($this),$action));
@@ -40,24 +39,26 @@ abstract class waJsonActions extends waController
 
     }
 
-
     public function run($params = null)
     {
         $action = $params;
         if (!$action) {
             $action = 'default';
         }
+        $this->action = $action;
         $this->preExecute();
-        $this->execute($action);
+        $this->execute($this->action);
         $this->postExecute();
 
         if ($this->action == $action) {
+            if (waRequest::isXMLHttpRequest()) {
+                $this->getResponse()->addHeader('Content-type', 'application/json');
+            }
             $this->getResponse()->sendHeaders();
             if (!$this->errors) {
-                $data = array('status' => 'ok', 'data' => $this->response);
-                echo json_encode($data);
+                echo waUtils::jsonEncode(array('status' => 'ok', 'data' => $this->response));
             } else {
-                echo json_encode(array('status' => 'fail', 'errors' => $this->errors));
+                echo waUtils::jsonEncode(array('status' => 'fail', 'errors' => $this->errors));
             }
         }
 

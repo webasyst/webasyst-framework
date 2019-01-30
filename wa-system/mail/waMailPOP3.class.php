@@ -30,6 +30,7 @@ class waMailPOP3
         foreach ($options as $k => $v) {
             $this->options[$k] = $v;
         }
+
         $this->server = ($this->getOption('ssl') ? 'ssl://' : '').$this->getOption('server');
         $this->port = $this->getOption('port');
         $this->user = $this->getOption('user');
@@ -48,14 +49,37 @@ class waMailPOP3
 
     public function connect()
     {
+        // extra options for stream context
+        $stream_context_options = $this->getOption('stream_context_options');
+
         // try open socket
         if ($this->getOption('tls')) {
-            $this->handler = @stream_socket_client('tcp://'.$this->server.':'.$this->port, $errno, $errstr, $this->getOption('timeout', 10));
+
+            $remote_socket = 'tcp://' . $this->server . ':' . $this->port;
+            $timeout = $this->getOption('timeout', 10);
+
+            if ($stream_context_options) {
+                $stream_context = stream_context_create($stream_context_options);
+                $this->handler = stream_socket_client($remote_socket, $errno,$errstr, $timeout, STREAM_CLIENT_CONNECT, $stream_context);
+            } else {
+                $this->handler = @stream_socket_client($remote_socket, $errno,$errstr, $timeout);
+            }
             if ($this->handler) {
                 stream_socket_enable_crypto($this->handler, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
             }
+
         } else {
-            $this->handler = @fsockopen($this->server, $this->port, $errno, $errstr, $this->getOption('timeout', 10));
+
+            $timeout = $this->getOption('timeout', 10);
+
+            if ($stream_context_options) {
+                $remote_socket = $this->server . ':' . $this->port;
+                $stream_context = stream_context_create($stream_context_options);
+                $this->handler = @stream_socket_client($remote_socket, $errno, $errstr, $timeout, STREAM_CLIENT_CONNECT, $stream_context);
+            } else {
+                $this->handler = @fsockopen($this->server, $this->port, $errno, $errstr, $timeout);
+            }
+
         }
         if ($this->handler) {
             // read welcome
@@ -63,7 +87,13 @@ class waMailPOP3
             // auth
             $this->auth();
         } else {
-            throw new waException($errstr, $errno);
+            if (!preg_match('//u', $errstr)) {
+                $tmp = @iconv('windows-1251', 'utf-8//ignore', $errstr);
+                if ($tmp) {
+                    $errstr = $tmp;
+                }
+            }
+            throw new waException($errstr.' ('.$errno.')', $errno);
         }
     }
 

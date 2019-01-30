@@ -37,28 +37,30 @@ class waSessionStorage extends waStorage
         // initialize parent
         parent::init($options);
 
-        if (isset($this->options['session_name'])) {
-            session_name($this->options['session_name']);
-        }
+        if (!headers_sent()) {
+            if (isset($this->options['session_name'])) {
+                session_name($this->options['session_name']);
+            }
 
-        if (!(bool)ini_get('session.use_cookies') && $session_id = $this->options['session_id'])    {
-            session_id($session_id);
-        }
+            if (!(bool)ini_get('session.use_cookies') && $session_id = $this->options['session_id'])    {
+                session_id($session_id);
+            }
 
-        $lifetime = $this->options['session_cookie_lifetime'];
-        $path     = $this->options['session_cookie_path'];
-        $domain   = $this->options['session_cookie_domain'];
-        $secure   = $this->options['session_cookie_secure'];
-        $http_only = $this->options['session_cookie_httponly'];
-        session_set_cookie_params($lifetime, $path, $domain, $secure, $http_only);
+            $lifetime = $this->options['session_cookie_lifetime'];
+            $path     = $this->options['session_cookie_path'];
+            $domain   = $this->options['session_cookie_domain'];
+            $secure   = $this->options['session_cookie_secure'];
+            $http_only = $this->options['session_cookie_httponly'];
+            session_set_cookie_params($lifetime, $path, $domain, $secure, $http_only);
 
-        if (null !== $this->options['session_cache_limiter']) {
-            session_cache_limiter($this->options['session_cache_limiter']);
-        }
+            if (null !== $this->options['session_cache_limiter']) {
+                session_cache_limiter($this->options['session_cache_limiter']);
+            }
 
-        if ($this->options['auto_start']) {
-            if (isset($_COOKIE[session_name()])) {
-                $this->open();
+            if ($this->options['auto_start']) {
+                if (isset($_COOKIE[session_name()])) {
+                    $this->open();
+                }
             }
         }
     }
@@ -69,11 +71,6 @@ class waSessionStorage extends waStorage
             session_start();
             self::$started = true;
         }
-    }
-
-    public function get($key)
-    {
-        return $this->read($key);
     }
 
     public function getAll()
@@ -89,11 +86,6 @@ class waSessionStorage extends waStorage
         return null;
     }
 
-    public function del($key)
-    {
-        $this->remove($key);
-    }
-
     public function remove($key)
     {
         if (!self::$started) {
@@ -105,11 +97,6 @@ class waSessionStorage extends waStorage
             unset($_SESSION[$key]);
         }
         return $data;
-    }
-
-    public function set($key, $data)
-    {
-        $this->write($key, $data);
     }
 
     /**
@@ -149,8 +136,8 @@ class waSessionStorage extends waStorage
     public function destroy()
     {
         self::$started = false;
-        session_unset();      
-        session_destroy();
+        session_unset();
+        @session_destroy();
     }
 
     public function __destruct()

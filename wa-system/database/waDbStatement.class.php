@@ -168,12 +168,9 @@ final class waDbStatement
     private function checkParams()
     {
         if(count($this->places_map) > count($this->binded_params)) {
-            $error = "Bad params: \n" .
-                     "Placeholder's params: \n" .
-                     var_export($this->places_map, true) . "\n" .
-                     "Bind params: \n" .
-                     var_export($this->binded_params, true) . "\n";
-            throw new waException($error);
+            $error = "Insufficient params: ".wa_dump_helper($this->binded_params).
+                    "\nfor query:\n" . $this->query;
+            throw new waDbException($error);
         }
         return true;
     }

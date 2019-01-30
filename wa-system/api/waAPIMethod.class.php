@@ -23,7 +23,8 @@ class waAPIMethod
             // check request method
             $request_method = strtoupper(waRequest::method());
             if ((is_array($this->method) && !in_array($request_method, $this->method)) ||
-                (!is_array($this->method) && $request_method != $this->method)) {
+                (!is_array($this->method) && $request_method != $this->method)
+            ) {
                 throw new waAPIException('invalid_request', 'Method '.$request_method.' not allowed', 405);
             }
         }

@@ -1,0 +1,53 @@
+.t-content-header
+    .dropdown
+        &.right
+            .menu-v
+                left auto
+                right 0
+
+        .menu-v
+            margin-top 2px
+            width: 200px
+            max-height 500px
+            overflow auto
+            word-break: break-word;
+
+    .t-date-filter
+        display inline-block
+        vertical-align top
+
+        .t-arrow
+        select
+            display inline-block
+            vertical-align top
+            margin 0 4px
+
+        .t-arrow
+            $icon_w = 8px
+            $icon_h = 5px
+
+            position relative
+            width 20px
+            height 20px
+            cursor pointer
+
+            &:after
+                content ""
+                position absolute
+                top 50%
+                left 50%
+                width 0
+                height 0
+                margin (-($icon_h)) 0 0
+                border solid transparent
+                border-width $icon_h $icon_w
+
+            &.left
+                &:after
+                    margin-left (-1.5 * $icon_w)
+                    border-right-color #7c878c
+
+            &.right
+                &:after
+                    margin-left (-0.5 * $icon_w)
+                    border-left-color #7c878c

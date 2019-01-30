@@ -1,0 +1,407 @@
+.wa-login-form-wrapper input[type="text"],
+.wa-login-form-wrapper input[type="email"],
+.wa-login-form-wrapper input[type="password"] {
+  width: 210px;
+  max-width: 100%;
+  padding: 0.25em 0.25em;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 1.142857142857143em;
+  line-height: 1.125em;
+  border: 1px solid #cfcfcf;
+  margin-right: 16px;
+}
+.wa-login-form-wrapper input.wa-onetime-password {
+  width: 80px;
+  min-width: 80px;
+  display: inline-block;
+}
+.wa-login-form-wrapper select {
+  max-width: 100%;
+  height: 2em;
+}
+.wa-login-form-wrapper select option[disabled] {
+  color: #aaa;
+  background: #f0f0f0;
+  font-weight: normal;
+}
+.wa-login-form-wrapper textarea {
+  display: block;
+  width: 100%;
+  padding: 0.25em 0.25em;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 1.142857142857143em;
+  line-height: 1.125em;
+  min-height: 1.75em;
+  height: 5.125em;
+  resize: vertical;
+}
+.wa-login-form-wrapper input.wa-error,
+.wa-login-form-wrapper select.wa-error,
+.wa-login-form-wrapper textarea.wa-error {
+  border-color: #f00;
+  color: #f00;
+}
+.wa-login-form-wrapper input,
+.wa-login-form-wrapper select,
+.wa-login-form-wrapper textarea {
+  -webkit-transition: border-color 200ms linear;
+  -moz-transition: border-color 200ms linear;
+  -o-transition: border-color 200ms linear;
+  -ms-transition: border-color 200ms linear;
+  transition: border-color 200ms linear;
+  border-color: #cfcfcf;
+  outline: 0;
+}
+.wa-login-form-wrapper input:hover,
+.wa-login-form-wrapper select:hover,
+.wa-login-form-wrapper textarea:hover {
+  border-color: #888;
+}
+.wa-login-form-wrapper input:focus,
+.wa-login-form-wrapper select:focus,
+.wa-login-form-wrapper textarea:focus {
+  border-color: #006bd8;
+}
+.wa-login-form-wrapper input::-webkit-input-placeholder,
+.wa-login-form-wrapper select::-webkit-input-placeholder,
+.wa-login-form-wrapper textarea::-webkit-input-placeholder {
+  color: #aaa;
+}
+.wa-login-form-wrapper input:-moz-placeholder,
+.wa-login-form-wrapper select:-moz-placeholder,
+.wa-login-form-wrapper textarea:-moz-placeholder {
+  color: #aaa;
+}
+.wa-login-form-wrapper input::-moz-placeholder,
+.wa-login-form-wrapper select::-moz-placeholder,
+.wa-login-form-wrapper textarea::-moz-placeholder {
+  color: #aaa;
+}
+.wa-login-form-wrapper input:-ms-input-placeholder,
+.wa-login-form-wrapper select:-ms-input-placeholder,
+.wa-login-form-wrapper textarea:-ms-input-placeholder {
+  color: #aaa;
+}
+.wa-login-form-wrapper .wa-error-msg {
+  display: block;
+  margin: 0.666666666666667em 0 0;
+  color: #d02d14;
+  font-size: 0.857142857142857em;
+  font-style: normal;
+  line-height: 1.166666666666667em;
+}
+.wa-login-form-wrapper .wa-error-msg:first-child {
+  margin-top: 0;
+}
+.wa-login-form-wrapper .wa-field {
+  margin: 1.071428571428571em 0 0;
+}
+.wa-login-form-wrapper .wa-field:first-child {
+  margin-top: 0;
+}
+.wa-login-form-wrapper .wa-field .wa-name {
+  display: block;
+  margin-bottom: 0.5em;
+  font-size: 0.857142857142857em;
+  line-height: 1.166666666666667em;
+  color: #888;
+}
+.wa-login-form-wrapper .wa-field .wa-value {
+  margin: 0;
+}
+.wa-login-form-wrapper .wa-adapters-section {
+  margin: 0 0 2.142857142857143em;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-section-header {
+  margin: 0 0 1.071428571428571em;
+  font-size: 0.857142857142857em;
+  line-height: 1.166666666666667em;
+  color: #888;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-section-divider {
+  margin: 2.142857142857143em 0 0;
+  font-size: 0.857142857142857em;
+  line-height: 1.166666666666667em;
+  color: #bbb;
+  overflow: hidden;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-section-divider .wa-text {
+  position: relative;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-section-divider .wa-text:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-left: 10px;
+  width: 230px;
+  height: 1px;
+  background: #efefef;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-adapters-list {
+  margin: 0;
+  padding: 0;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-adapters-list li {
+  display: inline-block;
+  vertical-align: top;
+  width: 2.142857142857143em;
+  margin: 0 1.071428571428571em 0 0;
+  padding: 0;
+  list-style: none;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-adapters-list li:last-child {
+  margin-right: 0;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-adapters-list li a {
+  display: inline-block;
+  vertical-align: top;
+}
+.wa-login-form-wrapper .wa-adapters-section .wa-adapters-list li img {
+  width: 100%;
+  vertical-align: top;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input::-webkit-input-placeholder {
+  font-size: 16px;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input:-moz-placeholder {
+  font-size: 16px;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input::-moz-placeholder {
+  font-size: 16px;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input:-ms-input-placeholder {
+  font-size: 16px;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input:focus::-webkit-input-placeholder {
+  color: #fff;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input:focus:-moz-placeholder {
+  color: #fff;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input:focus::-moz-placeholder {
+  color: #fff;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-input:focus:-ms-input-placeholder {
+  color: #fff;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-code {
+  margin-top: 0.5em;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-code .wa-captcha-img-wrapper {
+  display: inline-block;
+  width: 120px;
+  height: 45px;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  margin: 3px 0 0 5px;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh {
+  color: #aaa;
+  font-size: 12px;
+  width: 65px;
+  line-height: 14px;
+  -webkit-transition: all 200ms linear;
+  -moz-transition: all 200ms linear;
+  -o-transition: all 200ms linear;
+  -ms-transition: all 200ms linear;
+  transition: all 200ms linear;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh:hover {
+  color: #555;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh .wa-captcha-refresh-icon {
+  display: table-cell;
+  background-image: url("../../../img/captcha-shape-gray.svg");
+  background-repeat: no-repeat;
+  width: 10.7px;
+  height: 9px;
+  padding-right: 6px;
+}
+.wa-login-form-wrapper .wa-captcha-section .wa-captcha-code .wa-captcha-refresh-wrapper .wa-captcha-refresh .wa-captcha-refresh-text {
+  display: table-cell;
+  width: 65px;
+}
+.wa-login-form-wrapper .wa-login-form-title {
+  margin: 0 0 34px 0;
+}
+.wa-login-form-wrapper .wa-form-sub-title {
+  margin: 15px 0 30px 0;
+}
+.wa-login-form-wrapper a.wa-is-disabled {
+  color: #808080;
+}
+.wa-login-form-wrapper input[readonly] {
+  pointer-events: none;
+  background-color: #eee;
+}
+.wa-login-form-wrapper .wa-is-hidden {
+  display: none;
+}
+.wa-login-form-wrapper .wa-info-messages {
+  margin: 0 0 1.071428571428571em;
+}
+.wa-login-form-wrapper .wa-login-form-fields {
+  margin: 0;
+}
+.wa-login-form-wrapper .wa-login-form-fields .wa-login-forgotpassword-url {
+  margin-right: 16px;
+  display: inline-block;
+}
+.wa-login-form-wrapper .wa-login-form-actions {
+  margin: 1.071428571428571em 0 0;
+}
+.wa-login-form-wrapper .wa-login-form-actions .wa-uncaught-errors {
+  margin-bottom: 1.071428571428571em;
+}
+.wa-login-form-wrapper .wa-login-form-actions .wa-signup-url {
+  margin-top: 2.142857142857143em;
+}
+.wa-login-form-wrapper .wa-field.wa-separator {
+  height: 10px;
+}
+.wa-login-form-wrapper .wa-field.wa-required .wa-name:after {
+  content: " *";
+  color: #faa;
+}
+.wa-login-form-wrapper .wa-field .wa-value label {
+  display: block;
+}
+.wa-login-form-wrapper .wa-field .wa-value p {
+  position: relative;
+  margin: 1.071428571428571em 0 0;
+}
+.wa-login-form-wrapper .wa-field .wa-value p:first-child {
+  margin-top: 0;
+}
+.wa-login-form-wrapper .wa-field .wa-value p label {
+  display: block;
+  margin: 0;
+}
+.wa-login-form-wrapper .wa-field .wa-value p span {
+  color: #777;
+  font-size: 0.9em;
+  display: block;
+}
+.wa-login-form-wrapper .wa-field .wa-value p i.icon16 {
+  display: inline-block;
+  position: absolute;
+  top: 2px;
+  left: -20px;
+}
+.wa-login-form-wrapper .wa-field .wa-value p input {
+  display: block;
+  margin-bottom: 2px;
+}
+.wa-login-form-wrapper .wa-field .wa-value p input[type="radio"],
+.wa-login-form-wrapper .wa-field .wa-value p input[type="checkbox"] {
+  display: inline;
+}
+.wa-login-form-wrapper .wa-field .wa-value p .field .wa-required span:after {
+  content: " *";
+  color: #faa;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-field input[type=text] {
+  display: inline-block;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-field-onetime-password .wa-value input[type=text] {
+  width: 80px;
+  min-width: 80px;
+  display: inline-block;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-field-onetime-password .wa-value .wa-onetime-password-input-message {
+  display: inline-block;
+  font-size: 14px;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link-wrapper {
+  display: inline-block;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link-wrapper .wa-send-onetime-password-edit-link {
+  display: inline-block;
+  text-decoration: none;
+  color: #777;
+  font-size: 14px;
+  opacity: 0.7;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+  filter: alpha(opacity=70);
+  -webkit-transition: opacity 200ms linear;
+  -moz-transition: opacity 200ms linear;
+  -o-transition: opacity 200ms linear;
+  -ms-transition: opacity 200ms linear;
+  transition: opacity 200ms linear;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link-wrapper .wa-send-onetime-password-edit-link:hover {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-onetime-password-edit-link-wrapper .wa-send-onetime-password-edit-link .wa-send-onetime-password-edit-icon {
+  display: inline-block;
+  background-image: url("../../../img/edit-gray.svg");
+  background-repeat: no-repeat;
+  width: 12px;
+  height: 11px;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-again-onetime-password-link-wrapper {
+  display: inline-block;
+  font-size: 14px;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-again-onetime-password-link {
+  display: inline-block;
+}
+.wa-login-form-wrapper.wa-is-onetime-password-auth-type .wa-send-again-onetime-password-link-loading {
+  display: inline-block;
+  float: none;
+  position: static;
+  margin-top: 2px;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper {
+  display: inline-block;
+  margin-left: 16px;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper .wa-edit-login-link {
+  display: inline-block;
+  text-decoration: none;
+  color: #777;
+  font-size: 14px;
+  opacity: 0.7;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+  filter: alpha(opacity=70);
+  -webkit-transition: opacity 200ms linear;
+  -moz-transition: opacity 200ms linear;
+  -o-transition: opacity 200ms linear;
+  -ms-transition: opacity 200ms linear;
+  transition: opacity 200ms linear;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper .wa-edit-login-link:hover {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-edit-login-link-wrapper .wa-edit-login-link .wa-edit-login-link-icon {
+  display: inline-block;
+  background-image: url("../../../img/edit-gray.svg");
+  background-repeat: no-repeat;
+  width: 12px;
+  height: 11px;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value input[type=text] {
+  width: 80px;
+  min-width: 80px;
+  display: inline-block;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value .wa-confirmation-code-input-message {
+  display: inline-block;
+}
+.wa-login-form-wrapper.wa-is-need-confirm .wa-field-confirmation-code .wa-value .wa-send-again-confirmation-code-link-wrapper {
+  display: inline-block;
+}
+.wa-login-form-wrapper .wa-loading {
+  margin: 12px 0 0 10px;
+}

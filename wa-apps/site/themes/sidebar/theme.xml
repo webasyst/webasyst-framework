@@ -1,80 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="sidebar" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.0.2">
-  <name locale="en_US">Sidebar 2.0</name>
-  <name locale="ru_RU">Sidebar 2.0</name>
-  <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
-  <files>
-    <file path="index.html" custom="0">
-		<description locale="en_US">Core layout of the Sidebar theme family</description>
-		<description locale="ru_RU">Основной макет тем дизайна семейства Sidebar</description>
-    </file>
-    <file path="sidebar.css" custom="0">
-		<description locale="en_US">Core CSS of the Sidebar theme family</description>
-		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна Sidebar</description>
-    </file>
-    <file path="sidebar.js" custom="0">
-		<description locale="en_US">JS</description>
-		<description locale="ru_RU">JS</description>
-    </file>
-	<file path="main.html" custom="0">
-		<description locale="en_US">Main layout for the Site app content</description>
-		<description locale="ru_RU">Основной вывод приложения «Сайт»</description>
-	</file>
-	<file path="head.html" custom="0">
-		<description locale="en_US">Site app's &lt;head&gt; instructions</description>
-		<description locale="ru_RU">Блок &lt;head&gt; приложения «Сайт»</description>
-	</file>
-	<file path="footer.html" custom="0">
-		<description locale="en_US">App specific footer content</description>
-		<description locale="ru_RU">Содержимое футера приложения</description>
-    </file>
-    <file path="page.html" custom="0">
-		<description locale="en_US">Static page content and navigation</description>
-		<description locale="ru_RU">Содержимое открытой страницы и навигация по страницам</description>
-    </file>
-    <file path="login.html" custom="0">
-		<description locale="en_US">Login page</description>
-		<description locale="ru_RU">Страница входа для пользователей</description>
-	</file>
-    <file path="signup.html" custom="0">
-        <description locale="en_US">Sign up page</description>
-        <description locale="ru_RU">Страница регистрации пользователей</description>
-    </file>
-    <file path="forgotpassword.html" custom="0">
-        <description locale="en_US">Forgot password page</description>
-        <description locale="ru_RU">Страница сброса пароля</description>
-    </file>
-    <file path="error.html" custom="0">
-		<description locale="en_US">404 and other errors</description>
-		<description locale="ru_RU">404 и другие ошибки</description>
-    </file>
-    <file path="my.profile.html">
-        <description locale="en_US">My profile: contact info editing form</description>
-        <description locale="ru_RU">Мой профиль: редактирование контактной информации</description>
-    </file>
-     <file path="my.nav.html">
-        <description locale="en_US">My profile navigation</description>
-        <description locale="ru_RU">Навигационное меню внутри личного кабинета</description>
-    </file>
-    <file path="nav.sidebar.html" custom="0">
-        <description locale="en_US">Internal app navigation tree</description>
-        <description locale="ru_RU">Внутренняя навигация приложения</description>
-    </file>
-  </files>
-  <about locale="en_US">
-<![CDATA[
+<theme id="sidebar" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.0.9">
+    <name locale="en_US">Sidebar 2.0</name>
+    <name locale="ru_RU">Sidebar 2.0</name>
+    <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
+    <files>
+        <file path="index.html" custom="0">
+            <description locale="en_US">Core layout of the Sidebar theme family</description>
+            <description locale="ru_RU">Основной макет тем дизайна семейства Sidebar</description>
+        </file>
+        <file path="sidebar.css" custom="0">
+            <description locale="en_US">Core CSS of the Sidebar theme family</description>
+            <description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна Sidebar</description>
+        </file>
+        <file path="sidebar.js" custom="0">
+            <description locale="en_US">JS</description>
+            <description locale="ru_RU">JS</description>
+        </file>
+        <file path="main.html" custom="0">
+            <description locale="en_US">Main layout for the Site app content</description>
+            <description locale="ru_RU">Основной вывод приложения «Сайт»</description>
+        </file>
+        <file path="head.html" custom="0">
+            <description locale="en_US">Site app's &lt;head&gt; instructions</description>
+            <description locale="ru_RU">Блок &lt;head&gt; приложения «Сайт»</description>
+        </file>
+        <file path="footer.html" custom="0">
+            <description locale="en_US">App specific footer content</description>
+            <description locale="ru_RU">Содержимое футера приложения</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Static page content and navigation</description>
+            <description locale="ru_RU">Содержимое открытой страницы и навигация по страницам</description>
+        </file>
+        <file path="login.html" custom="0">
+            <description locale="en_US">Login page</description>
+            <description locale="ru_RU">Страница входа для пользователей</description>
+        </file>
+        <file path="signup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+            <description locale="ru_RU">Страница регистрации пользователей</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+            <description locale="ru_RU">Страница сброса пароля</description>
+        </file>
+        <file path="error.html" custom="0">
+            <description locale="en_US">404 and other errors</description>
+            <description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+        <file path="my.profile.html">
+            <description locale="en_US">My profile: contact info editing form</description>
+            <description locale="ru_RU">Мой профиль: редактирование контактной информации</description>
+        </file>
+        <file path="my.nav.html">
+            <description locale="en_US">My profile navigation</description>
+            <description locale="ru_RU">Навигационное меню внутри личного кабинета</description>
+        </file>
+        <file path="nav.sidebar.html" custom="0">
+            <description locale="en_US">Internal app navigation tree</description>
+            <description locale="ru_RU">Внутренняя навигация приложения</description>
+        </file>
+    </files>
+    <about locale="en_US">
+        <![CDATA[
 <p><b>Sidebar 2.0</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Sidebar (i.e. this) theme for the Site application. All Sidebar design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.</p>
 <p>Sidebar design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
 ]]>
-  </about>
-  <about locale="ru_RU">
-<![CDATA[
+    </about>
+    <about locale="ru_RU">
+        <![CDATA[
 <p><b>Sidebar 2.0</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Sidebar для приложения «Сайт» (данная тема). Все темы дизайна Sidebar для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
 <p>Темы дизайна семейства Sidebar оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
 ]]>
-  </about>
-  <settings>
+    </about>
+    <settings>
         <setting var="logo" control_type="image">
             <value></value>
             <filename>img/logo.*</filename>
@@ -86,5 +86,10 @@
             <name locale="en_US">Automatically unfold sidebar navigation tree</name>
             <name locale="ru_RU">Автоматически разворачивать дерево навигации в боковой панели</name>
         </setting>
-  </settings>
+        <setting var="footer_notice" control_type="text">
+            <value></value>
+            <name locale="en_US">Footer notice</name>
+            <name locale="ru_RU">Уведомление в подвале сайта</name>
+        </setting>
+    </settings>
 </theme>

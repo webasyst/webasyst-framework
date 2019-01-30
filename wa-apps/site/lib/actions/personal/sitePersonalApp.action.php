@@ -14,7 +14,9 @@ class sitePersonalAppAction extends sitePersonalAction
 
         if ($routes) {
             $event_params = array('app_id' => $app_id, 'domain' => $domain, 'routes' => $routes);
+            $this->setLocale($app_id);
             $result = wa($app_id)->event(array($app_id, 'personal.settings'), $event_params);
+            $this->setLocale('site');
             if (!empty($result[$app_id])) {
                 $this->view->assign('personal_settings', $result[$app_id]);
             }
@@ -33,5 +35,13 @@ class sitePersonalAppAction extends sitePersonalAction
         $this->view->assign('settled', $routes ? true: false);
         $this->view->assign('enabled', !isset($domain_config['personal'][$app_id]) || $domain_config['personal'][$app_id]);
         $this->template = wa()->getAppPath($this->getTemplate(), 'site');
+    }
+
+    public function setLocale($app_id)
+    {
+        $locale = waLocale::getLocale();
+        waLocale::loadByDomain($app_id, $locale);
+        $locale_path = wa()->getAppPath('locale', $app_id);
+        waLocale::load($locale, $locale_path, $app_id);
     }
 }

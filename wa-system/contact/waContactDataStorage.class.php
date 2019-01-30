@@ -110,8 +110,14 @@ class waContactDataStorage extends waContactStorage
                         continue;
                     }
                     if (is_array($value_info) && (isset($value_info['data']) || $f instanceof waContactCompositeField)) {
-                        $v = isset($value_info['data']) ? $value_info['data'] : (isset($value_info['value']) ? $value_info['value'] : array());
                         $ext = isset($value_info['ext']) ? $value_info['ext'] : '';
+                        $v = isset($value_info['data']) ? $value_info['data'] : (isset($value_info['value']) ? $value_info['value'] : array());
+                        foreach($f->getParameter('fields') as $sf) {
+                            $sf_id = $sf->getId();
+                            if (!array_key_exists($sf_id, $v)) {
+                                $v[$sf_id] = '';
+                            }
+                        }
                         foreach ($v as $subfield => $subvalue) {
                             if (!strlen($subvalue)) {
                                     $sql = "DELETE FROM ".$this->getModel()->getTableName()."
@@ -128,9 +134,11 @@ class waContactDataStorage extends waContactStorage
                         if (is_array($value_info)) {
                             $v = $value_info['value'];
                             $ext = isset($value_info['ext']) ? $value_info['ext'] : '';
+                            $status = isset($value_info['status']) ? $value_info['status'] : null;
                         } else {
                             $v = $value_info;
                             $ext = '';
+                            $status = null;
                         }
                         if (!strlen($v)) {
                             $sql = "DELETE FROM ".$this->getModel()->getTableName()."
@@ -141,7 +149,8 @@ class waContactDataStorage extends waContactStorage
                         }
                         $data[$field][$sort] = array(
                             'value' => $v,
-                            'ext' => $ext
+                            'ext' => $ext,
+                            'status' => $status
                         );
                     }
                     $sort++;
@@ -156,12 +165,15 @@ class waContactDataStorage extends waContactStorage
 
         if ($data) {
 
-            // float with ',' convert to string with '.'
-
+            $max_length = $this->getMaxValueLength();
             foreach ($data as $f => &$f_rows) {
                 foreach ($f_rows as $s => &$row) {
                     if (isset($row['value']) && is_float($row['value'])) {
+                        // float with ',' convert to string with '.'
                         $row['value'] = str_replace(',', '.', ('' . $row['value']));
+                    }
+                    if(mb_strlen($row['value']) > $max_length) {
+                        $row['value'] = mb_substr($row['value'], 0, $max_length);
                     }
                 }
                 unset($row);
@@ -173,6 +185,7 @@ class waContactDataStorage extends waContactStorage
                 'contact_id' => $contact->getId(),
                 'field' => array_keys($data)
             ), true);
+
             foreach ($rows as $row) {
                 if (isset($data[$row['field']][$row['sort']])) {
                     $this->getModel()->updateById($row['id'], $data[$row['field']][$row['sort']]);
@@ -182,20 +195,42 @@ class waContactDataStorage extends waContactStorage
             $insert = array();
             foreach ($data as $f => $f_rows) {
                 foreach ($f_rows as $s => $row) {
-                    $insert[] = $contact->getId().
-                        ", '".$this->getModel()->escape($f)."', '".
-                        $this->getModel()->escape($row['ext'])."', '".
-                        $this->getModel()->escape($row['value'])."', ".(int)$s;
+                    $insert_row = array(
+                        $contact->getId(),
+                        "'" . $this->getModel()->escape($f) . "'",
+                        "'" . $this->getModel()->escape($row['ext']) . "'" ,
+                        "'" . $this->getModel()->escape($row['value']) . "'",
+                        (int)$s,
+                        isset($row['status']) ?
+                            ("'" . $this->getModel()->escape($row['status']) . "'")
+                            : 'NULL'
+                    );
+                    $insert_row = join(", ", $insert_row);
+                    $insert[] = $insert_row;
                 }
             }
             // insert new records
             if ($insert) {
-                $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, field, ext, value, sort)
+                $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, field, ext, value, sort, status)
                         VALUES (".implode("), (", $insert).")";
                 return $this->getModel()->exec($sql);
             }
         }
         return true;
+    }
+
+    protected function getMaxValueLength()
+    {
+        // Determine max string length
+        // (some people change wa_contact_data value type to TEXT and suffer degraded performance)
+        $field_schema = ifset(ref($this->getModel()->getMetadata()), 'value', array());
+        $field_type = strtolower(ifset($field_schema, 'type', ''));
+        if ($field_type === 'varchar') {
+            return ifset($field_schema, 'params', 255);
+        } else if ($field_type === 'text') {
+            return 65535;
+        }
+        return 255;
     }
 
     public function deleteAll($fields, $type=null) {
@@ -278,11 +313,9 @@ class waContactDataStorage extends waContactStorage
                 WHERE field=:field
                     AND value IN (:values)".
                     ($excludeIds ? " AND contact_id NOT IN (:excludeIds) " : '').
-                "GROUP BY value";
+                "GROUP BY value, contact_id";
 
         $r = $this->getModel()->query($sql, array('field' => $field, 'values' => $values, 'excludeIds' => $excludeIds));
         return $r->fetchAll('value', true);
     }
 }
-
-// EOF

@@ -1,6 +1,13 @@
 <script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v={$wa->version()}"></script>
 
 <div class="sidebar right200px" id="p-toolbar">
+
+    <!-- begin plugin hook: backend_photos_toolbar.top -->
+    {foreach $backend_photos_toolbar as $plugin_id => $item}
+        {if !empty($item.top)}{$item.top}{/if}
+    {/foreach}
+    <!-- end plugin hook: backend_photos_toolbar.top -->
+
     <div class="block" id="share-menu-block">
         <h6 class="heading">
             <span class="count indicator" style="display:none"></span>
@@ -18,6 +25,20 @@
               <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
             </li>
             {/if}
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.share_menu)}
+                    {if is_array($item.share_menu)}
+                        {foreach $item.share_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.share_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.share_menu -->
+
         </ul>
     </div>
     <div class="block" id="organize-menu-block">
@@ -36,6 +57,20 @@
             <!-- plugin hook: backend_toolbar_list_organize_selected_link -->
             <li data-action='manage-access' class="top-padded"><a href="#"><i class="icon16 lock"></i>[`Manage access`]</a></li>
             <li data-action='delete-photos'><a href="#"><i class="icon16 delete"></i>[`Delete photos`]</a></li>
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.organize_menu)}
+                    {if is_array($item.organize_menu)}
+                        {foreach $item.organize_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.organize_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.organize_menu -->
+
         </ul>
     </div>
     <div class="block" id="save-menu-block" style="display: none;">
@@ -49,6 +84,20 @@
                 <input id="save-menu-hide-name" type="checkbox" value="1">
                 <label for="save-menu-hide-name">[`Hide photos name`]</label>
             </li>
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.save_menu)}
+                    {if is_array($item.save_menu)}
+                        {foreach $item.save_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.save_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.save_menu -->
+
         </ul>
     </div>
     <div class="block" id="selector-menu-block" style="display: none;">
@@ -60,13 +109,48 @@
                     </i></b>
                 </a>
             </li>
+
+            {foreach $backend_photos_toolbar as $plugin_id => $item}
+                {if !empty($item.selector_menu)}
+                    {if is_array($item.selector_menu)}
+                        {foreach $item.selector_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.selector_menu}
+                    {/if}
+                {/if}
+            {/foreach}
+            <!-- plugin hook: backend_photos_toolbar.selector_menu -->
+
         </ul>
     </div>
     <div class="block" id="hint-menu-block" style="display:none;">
         <p class="p-sort-order-error-disclaimer upload_datetime" style="display:none;">[`Photos in this list are sorted <strong>by upload time</strong>. Sort order cannot be set manually here.`]</p>
         <p class="p-sort-order-error-disclaimer rate" style="display:none;">[`Photos in this list are sorted <strong>by rating</strong>. Sort order cannot be set manually here.`]</p>
         <p class="p-sort-order-error-disclaimer sort" style="display:none;">[`You do not have sufficient access rights to alter photos sort order in this list.`]</p>
+
+        {foreach $backend_photos_toolbar as $plugin_id => $item}
+            {if !empty($item.hint_menu)}
+                {if is_array($item.hint_menu)}
+                    {foreach $item.hint_menu as $menu_item}
+                        {$menu_item}
+                    {/foreach}
+                {else}
+                    {$item.hint_menu}
+                {/if}
+            {/if}
+        {/foreach}
+        <!-- plugin hook: backend_photos_toolbar.hint_menu -->
+
     </div>
+
+    <!-- begin plugin hook: backend_photos_toolbar.bottom -->
+    {foreach $backend_photos_toolbar as $plugin_id => $item}
+        {if !empty($item.bottom)}{$item.bottom}{/if}
+    {/foreach}
+    <!-- end plugin hook: backend_photos_toolbar.bottom -->
+
 </div>
 
 <div class="content left{$sidebar_width}px right200px" id="p-content">
@@ -286,12 +370,22 @@
             <div class="p-stack layer3"></div>{% } %}
             <a href="#{%#o.hash%}/photo/{%#p.id%}/">
                 <div class="p-image-corner top left">
+                    {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
+                    {% for (var plugin in p.hooks.top_left) { %}
+                        {%# p.hooks.top_left[plugin] %}
+                    {% } %}
                     {% if (p.status <= 0) { %}
-                    <i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>
+                        <i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>
                     {% } %}
                 </div>
                 <div class="p-image-corner top right">
-                    {% if (p.stack_count > 0) { %}<span class="indicator">{%#p.stack_count%}</span>{% } %}
+                    {/literal}{* @event prepare_photos_backend[top_right][%plugin_id%]  *}{literal}
+                    {% for (var plugin in p.hooks.top_right) { %}
+                        {%# p.hooks.top_right[plugin] %}
+                    {% } %}
+                    {% if (p.stack_count > 0) { %}
+                        <span class="indicator">{%#p.stack_count%}</span>
+                    {% } %}
                 </div>
                 <img src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" />
             </a>
@@ -313,6 +407,11 @@
                 <div class="small p-description">{%#p.description%}</div>
             {% } %}
         </div>
+
+        {/literal}{* @event prepare_photos_backend[thumb][%plugin_id%]  *}{literal}
+        {% for (var plugin in p.hooks.thumb) { %}
+            {%# p.hooks.thumb[plugin].replace(/\{%[#=]{1}\s*o.([\w_]+)%\s*\}/g,function(string,match){ return o[match];}) %}
+        {% } %}
 
     </li>
     {% } %}

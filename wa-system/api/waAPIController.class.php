@@ -1,13 +1,13 @@
 <?php
 
-class waAPIController 
+class waAPIController
 {
 
     /**
      * Format of the response - xml or json, by default JSON
      */
     protected $format = 'JSON';
-    
+
     protected $known_formats = array('XML', 'JSON');
 
 
@@ -16,7 +16,7 @@ class waAPIController
         if ($code) {
             wa()->getResponse()->setStatus($code);
         }
-        if($this->format == 'XML'){
+        if ($this->format == 'XML') {
             wa()->getResponse()->addHeader('Content-type', 'text/xml; charset=utf-8');
         } elseif ($this->format == 'JSON') {
             $callback = (string)waRequest::get('callback', false);
@@ -24,7 +24,7 @@ class waAPIController
             if ($callback) {
                 wa()->getResponse()->setStatus(200);
                 wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
-                echo $callback .'(';
+                echo $callback.'(';
             } else {
                 wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
             }
@@ -38,16 +38,44 @@ class waAPIController
 
     public function dispatch()
     {
-        $request_url = rtrim(wa()->getConfig()->getRequestUrl(true, true), '/');
+        // Make sure API is enabled
+        if (wa('webasyst')->getConfig()->getOption('disable_api')) {
+            $msg = wa('webasyst')->getConfig()->getOption('disable_api_message');
+            throw new waAPIException('disabled', ifempty($msg, 'API is disabled'), 404);
+        }
+
+        // Redirect to HTTPS if set up in domain params
+        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
+            $domain = wa()->getRouting()->getDomain(null, true);
+            $url = 'https://'.wa()->getRouting()->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
+            wa()->getResponse()->redirect($url, 301);
+            return;
+        }
+
+        $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
         if ($request_url === 'api.php/auth') {
             $user = wa()->getUser();
-            if (!$user->isAuth()) {
+            if (waRequest::post('cancel')) {
+                $url = waRequest::get('redirect_uri', '', 'string');
+                if (waRequest::get('response_type', 'code', 'string') == 'token') {
+                    wa()->getResponse()->redirect($url.'#error=access_denied');
+                } else {
+                    if ($url) {
+                        wa()->getResponse()->redirect($url.(strpos($url, '?') === false ? '?' : '&').'error=access_denied');
+                    } else {
+                        throw new waAPIException('access_denied', "You've denied access to ".htmlspecialchars(waRequest::get('client_name')), 403);
+                    }
+                }
+            } else if (!$user->isAuth()) {
                 wa()->getFrontController()->execute(null, 'login');
             } else {
                 wa()->getFrontController()->execute(null, 'api', 'auth');
             }
         } elseif ($request_url == 'api.php/token') {
             wa()->getFrontController()->execute(null, 'api', 'token');
+        } elseif ($request_url == 'api.php/revoke') {
+            $this->checkToken();
+            wa()->getFrontController()->execute(null, 'api', 'revoke');
         } elseif ($request_url === 'api.php') {
             $this->execute(waRequest::get('app'), waRequest::get('method'));
         } else {
@@ -58,11 +86,10 @@ class waAPIController
                 $parts = explode('.', $parts[1], 2);
                 $this->execute($parts[0], $parts[1]);
             } else {
-                throw new waAPIException('invalid_request');
+                throw new waAPIException('invalid_request', 'Malformed request or server misconfiguration. Request URL: '.htmlspecialchars($request_url), 400);
             }
         }
     }
-
 
 
     protected function execute($app, $method_name)
@@ -71,7 +98,7 @@ class waAPIController
             $format = strtoupper($format);
             if (!in_array($format, array('JSON', 'XML'))) {
                 $this->response(array(
-                    'error' => 'invalid_request',
+                    'error'             => 'invalid_request',
                     'error_description' => 'Invalid response format: '.$format
                 ));
                 return;
@@ -84,6 +111,9 @@ class waAPIController
         // check app access
         if (!waSystem::getInstance()->appExists($app)) {
             throw new waAPIException('invalid_request', 'Application '.$app.' not exists');
+        }
+        if (wa()->getUser()->getRights($app, 'backend') <= 0) {
+            throw new waAPIException('access_denied', 403);
         }
 
         // check scope
@@ -120,7 +150,7 @@ class waAPIController
                     throw new waAPIException('invalid_token', 'Access token has expired', 401);
                 }
                 // auth user
-                wa()->setUser(new waUser($data['contact_id']));
+                wa()->setUser(new waApiAuthUser($data['contact_id']));
                 return $data;
             }
             throw new waAPIException('invalid_token', 'Invalid access token', 401);

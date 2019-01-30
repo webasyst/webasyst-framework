@@ -30,6 +30,15 @@ class waSMS
         }
     }
 
+    public static function adapterExists($from = null)
+    {
+        try {
+            $sms = new self();
+            return !!$sms->getAdapter($from);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * @param string $from
@@ -59,7 +68,13 @@ class waSMS
         }
 
         $class_name = $options['adapter'].'SMS';
-        require_once(wa()->getConfig()->getPath('plugins').'/sms/'.$options['adapter'].'/lib/'.$class_name.'.class.php');
+        $path = wa()->getConfig()->getPath('plugins').'/sms/'.$options['adapter'].'/lib/'.$class_name.'.class.php';
+        if (file_exists($path)) {
+            include_once($path);
+        }
+        if (!class_exists($class_name)) {
+            throw new waException('Unable to initialize SMS adapter '.$options['adapter']);
+        }
         return new $class_name($options);
     }
 }

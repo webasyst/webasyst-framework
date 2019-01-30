@@ -35,14 +35,17 @@ class webasystCreateAppCli extends webasystCreateCliController
             "lib/",
             "lib/actions/backend/",
             "lib/actions/backend/{$this->app_id}Backend.action.php" => $this->getActionCode(),
-            // "lib/layouts/{$this->app_id}Default.layout.php"         => $this->getLayoutCode(),
             "templates/actions/backend/Backend.html"                => $this->getDefaultTemplate(),
-            //'templates/layouts/Default.html'                  => $this->getLayoutTemplate(),
             "lib/classes/",
             "lib/models/",
             "lib/config/",
             "locale/"
         );
+
+        if (!empty($params['layout'])) {
+            $structure["lib/layouts/{$this->app_id}Default.layout.php"] = $this->getLayoutCode();
+            $structure['templates/layouts/Default.html'] = $this->getLayoutTemplate();
+        }
 
         $features = array_map('trim', preg_split('@[,\s]+@', ifset($params['features'], $this->getDefaults('features'))));
         // api
@@ -91,12 +94,14 @@ class webasystCreateAppCli extends webasystCreateCliController
             ));
 
             if (!empty($app['themes'])) {
-                $structure = array_merge($structure, array(
-                    'themes/.htaccess'          => '
+                $htaccess = <<<HTACCESS
 <FilesMatch "\.(php\d*|html?|xml)$">
     Deny from all
 </FilesMatch>
-',
+HTACCESS;
+
+                $structure = array_merge($structure, array(
+                    'themes/.htaccess'          => $htaccess,
                     'themes/default/index.html' => $this->getFrontendTemplate(),
                     'themes/default/css/default.css',
                 ));
@@ -261,10 +266,10 @@ PHP;
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
     {$wa->css()}
-    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/%app_id%.css">
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/%app_id%.css?v{$wa->version()}">
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
-    <script type="text/javascript" src="{$wa_app_static_url}js/%app_id%.js"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
+    <script type="text/javascript" src="{$wa_app_static_url}js/%app_id%.js?v{$wa->version()}"></script>
 
 </head>
 <body>
@@ -319,7 +324,7 @@ PHP;
 {$wa->css()}
 <link rel="stylesheet" type="text/css" href="{$wa_app_static_url}css/%app_id%.css?v{$wa->version()}" media="screen" />
 <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
 </head>
 <body id="{$wa_app}"><div id="wa">
     {$wa->header()}

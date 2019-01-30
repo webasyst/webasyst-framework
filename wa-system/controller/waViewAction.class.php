@@ -69,17 +69,7 @@ abstract class waViewAction extends waController
 
     protected function getThemeUrl()
     {
-        if (wa()->getEnv() == 'frontend') {
-            $domain = wa()->getRouting()->getDomain(null, true);
-            $domain_config_path = wa()->getConfig()->getConfigPath('domains/' . $domain . '.php', true, 'site');
-            if (file_exists($domain_config_path)) {
-                $domain_config = include($domain_config_path);
-                if (!empty($domain_config['cdn'])) {
-                    return rtrim($domain_config['cdn'], '/').$this->getTheme()->getUrl();
-                }
-            }
-        }
-        return $this->getTheme()->getUrl();
+        return wa()->getCdn($this->getTheme()->getUrl());
     }
 
     /**
@@ -122,34 +112,34 @@ abstract class waViewAction extends waController
         $this->template = $template;
     }
 
-    protected function getTemplate()
+    protected function resoluteTemplatePath($template)
     {
-        $plugin_root = $this->getPluginRoot();
-
-        // Use template set up by a subclass, if any
-        if ($this->template === null) {
-            // figure it out by a class name by default
-            $prefix = waSystem::getInstance()->getConfig()->getPrefix();
-            $template = substr(get_class($this), strlen($prefix), -6);
-
-            if ($plugin_root) {
-                $template = preg_replace("~^.*Plugin~", '', $template);
-            }
-        } else {
-            // If path contains / or : then it's a full path to template
-            if (strpbrk($this->template, '/:') !== false) {
-                return $this->template;
-            }
-
-            // otherwise it's a template name and we need to figure out its directory
-            $template = $this->template;
+        // If path contains / or : then it's a full path to template
+        if (strpbrk($template, '/:') !== false) {
+            return $template;
         }
-
+        $plugin_root = $this->getPluginRoot();
         // Path inside /templates dir is determined by template name prefix
         $match = array();
         preg_match("/^[A-Z]?[^A-Z]*/", $template, $match);
         $template = 'actions/'.strtolower($match[0])."/".$template.$this->view->getPostfix();
         return $plugin_root.'templates/'.$template;
+    }
+
+    protected function getTemplate()
+    {
+        $template = $this->template;
+        // Use template set up by a subclass, if any
+        if ($template === null) {
+            // figure it out by a class name by default
+            $prefix = waSystem::getInstance()->getConfig()->getPrefix();
+            $template = substr(get_class($this), strlen($prefix), -6);
+            $plugin_root = $this->getPluginRoot();
+            if ($plugin_root) {
+                $template = preg_replace("~^.*Plugin~", '', $template);
+            }
+        }
+        return $this->resoluteTemplatePath($template);
     }
 
     protected function isCached()
@@ -166,11 +156,13 @@ abstract class waViewAction extends waController
             if (!$this->cache_time && $this->cache_id) {
                 $this->view->clearCache($this->getTemplate(), $this->cache_id);
             }
+            $this->preExecute();
             $this->execute();
+            $this->afterExecute();
             $result = $this->view->fetch($this->getTemplate(), $this->cache_id);
             if ($clear_assign) {
                 $this->view->clearAllAssign();
-            }            
+            }
             return $result;
         }
     }

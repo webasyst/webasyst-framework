@@ -23,6 +23,7 @@ class waContactConditionalField extends waContactField
         $tmp = $this->getOptions();
         $info['parent_options'] = reset($tmp);
         $info['parent_field'] = key($tmp);
+        $info['hide_unmatched'] = $this->getParameter('hide_unmatched') && !$this->isRequired() ? true : false;
         return $info;
     }
 

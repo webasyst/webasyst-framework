@@ -1,0 +1,61 @@
+
+.payonline-printform-receipt {
+    max-width: 600px;
+    padding: 0;
+    font-family: Courier, Arial, sans-serif;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper {
+    word-wrap: break-word;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .field-group {
+    margin: 2em 0 0;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .field-group:first-child {
+    margin-top: 0;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .upper {
+    text-transform: uppercase;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .bold {
+    font-weight: bold;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .right {
+    text-align: right;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .c-field-wrapper {
+    margin: 1em 0 0;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .c-field-wrapper:first-child {
+    margin-top: 0;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .c-items-list {
+    margin: 0;
+    padding: 0;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .c-items-list > li {
+    margin: 2em 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .c-items-list > li:first-child {
+    margin-top: 0;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .c-items-list > li > .line {
+    margin-top: 6px;
+}
+
+.payonline-printform-receipt .c-receipt-wrapper .c-items-list > li > .line:first-child {
+    margin-top: 0;
+}

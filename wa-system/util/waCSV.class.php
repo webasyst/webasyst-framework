@@ -2,8 +2,6 @@
 
 class waCSV
 {
-    const MAX_FIELDS_COUNT = 100;
-
     protected $file = false;
     protected $handler;
 
@@ -89,19 +87,19 @@ class waCSV
     public function upload($name)
     {
         if (!isset($_FILES[$name]) || $_FILES[$name]['error']) {
-            throw new Exception(_("Error uploading file"));
+            throw new waException(_("Error uploading file"));
         }
 
         $file_info = explode(".", $_FILES[$name]['name']);
         if (!in_array(strtolower(end($file_info)), $this->extensions)) {
-            throw new Exception(_("Unknown extension *.").end($file_info));
+            throw new waException(_("Unknown extension *.").end($file_info));
         }
 
         $file = uniqid("csv").".csv";
         if (move_uploaded_file($_FILES[$name]['tmp_name'], $this->getPath($file))) {
             $this->file = $this->getPath($file);
         } else {
-            throw new Exception(_('Error moving file'));
+            throw new waException(_('Error moving file'));
         }
         return $file;
     }
@@ -118,7 +116,7 @@ class waCSV
         if (file_put_contents($this->getPath($file), $content)) {
             $this->file = $this->getPath($file);
         } else {
-            throw new Exception(_('Error moving file'));
+            throw new waException(_('Error moving file'));
         }
         return $file;
     }
@@ -136,11 +134,11 @@ class waCSV
     public function getInfo()
     {
         if (!$this->file || !file_exists($this->file)) {
-            throw new Exception(_('File does not exist'));
+            throw new waException(_('File does not exist'));
         }
         $h = fopen($this->file, "r");
         if (!$h) {
-            throw new Exception(_("Error open file"));
+            throw new waException(_("Error open file"));
         }
         // Read the first string
         $string = fgets($h, $this->length);
@@ -179,10 +177,6 @@ class waCSV
                 }
                 $n++;
             }
-        }
-
-        if ($fields_count > self::MAX_FIELDS_COUNT) {
-            throw new waException(sprintf(_("Number of columns can not exceed %s"), self::MAX_FIELDS_COUNT));
         }
 
         if ($k = $fields_count - count($fields)) {
@@ -254,7 +248,7 @@ class waCSV
         if (!$this->handler) {
             $this->handler = fopen($this->file, "r");
             if (!$this->handler) {
-                throw new Exception(_("Error open file"));
+                throw new waException(_("Error open file"));
             }
             if (!$this->first_line) {
                 $fields = $this->encodeArray(fgetcsv($this->handler, $this->length, $this->delimiter));

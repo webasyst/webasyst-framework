@@ -35,23 +35,22 @@ class contactsShopBackend_customers_listHandler extends waEventHandler
             if (strpos($hash, 'search/') === 0) {
                 $url .= str_replace('search/', 'search/shop_customers\\\/', $hash);
                 return array(
-                    'top_li' => '<input type="button" onclick="location.href=\''.$url.'\'" value="'._wp('Open in Contacts').'">',
+                    'top_li' => '<input type="button" onclick="location.href=\''.$url.'\'" value="'._wd('contacts', 'Open in Contacts').'">',
                 );
             } else if (preg_match('/^([a-z_0-9]*)\//', $hash, $match)) {
                 $url .= str_replace($match[1] . '/', "search/shop_customers\\\/{$match[1]}=", $hash);
                 return array(
-                    'top_li' => '<input type="button" onclick="location.href=\''.$url.'\'" value="'._wp('Open in Contacts').'">',
+                    'top_li' => '<input type="button" onclick="location.href=\''.$url.'\'" value="'._wd('contacts', 'Open in Contacts').'">',
                 );
             } else {
                 $url .= 'search/shop_customers\\\/' . $hash;
                 return array(
-                    'top_li' => '<input type="button" onclick="location.href=\''.$url.'\'" value="'._wp('Open in Contacts').'">',
+                    'top_li' => '<input type="button" onclick="location.href=\''.$url.'\'" value="'._wd('contacts', 'Open in Contacts').'">',
                 );
             }
         }
 
         return null;
-
     }
 
 }

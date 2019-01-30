@@ -53,36 +53,81 @@ class waContactEmailField extends waContactStringField
     public function validate($data, $contact_id=null)
     {
         $errors = parent::validate($data, $contact_id);
-        $email_model = new waContactEmailsModel();
-        $contact_model = new waContactModel();
+        if ($errors) {
+            return $errors;
+        }
+
         if ($this->isMulti()) {
             if (!empty($data[0]) && $contact_id) {
-                $c = $contact_model->getById($contact_id);
-                if (!$c['password']) {
-                    return $errors;
-                }
                 $value = $this->format($data[0], 'value');
-                $id = $email_model->getContactWithPassword($value);
-                if ($id && $id != $contact_id) {
-                    $errors[0] = sprintf(_ws('User with the same %s is already registered'), 'email');
+                $email_exists = $this->emailExistsAmongAuthorizedContacts($value, $contact_id);
+                if ($email_exists) {
+                    $errors[0] = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Email'));
                 }
             }
         } else {
             $value = $this->format($data, 'value');
-            if ($value) {
-                if ($contact_id) {
-                    $c = $contact_model->getById($contact_id);
-                    if (!$c['password']) {
-                        return $errors;
-                    }
-                }
-                $id = $email_model->getContactWithPassword($value);
-                if ($id && $id != $contact_id) {
-                    $errors = sprintf(_ws('User with the same %s is already registered'), 'email');
-                }
+            $email_exists = $this->emailExistsAmongAuthorizedContacts($value, $contact_id);
+            if ($email_exists) {
+                $errors = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Email'));
             }
         }
         return $errors;
+    }
+
+
+    /**
+     * Helper method
+     * Checks that suggested email value for current contact ALREADY exists among all default emails of authorized contacts
+     * Authorize contact is contact with password != 0
+     * @param string $suggested_email_value
+     * @param id|null $contact_id
+     * @return bool
+     */
+    protected function emailExistsAmongAuthorizedContacts($suggested_email_value, $contact_id = null)
+    {
+        $suggested_email_value = is_scalar($suggested_email_value) ? (string)$suggested_email_value : '';
+        if (strlen($suggested_email_value) <= 0) {
+            // email is empty - not go further - it's doesn't matter
+            return false;
+        }
+
+        $contact_model = new waContactModel();
+
+        $contact = null;
+        if ($contact_id > 0) {
+            $contact = $contact_model->getById($contact_id);
+            $is_authorized = $contact && $contact['password'];
+            if (!$is_authorized) {
+                // not authorized contact (or not exists) - not go further - it's doesn't matter
+                return false;
+            }
+        }
+
+        $email_model = new waContactEmailsModel();
+
+        // update email for existing contact case - check if value has changed
+        if ($contact) {
+            $old_value_row = $email_model->getEmail($contact_id);
+            if ($old_value_row && $this->areStringsEqual($suggested_email_value, $old_value_row['email'])) {
+                // email has not changed - so not go further - it's doesn't matter
+                return false;
+            }
+
+            $contact_id = $contact['id'];
+        }
+
+        // check suggested email value for current contact ALREADY exists among all default emails of authorized contacts
+        $other_contact_id = $email_model->getContactWithPassword($suggested_email_value, $contact_id);
+        return $other_contact_id > 0;
+    }
+
+    protected function areStringsEqual($email_1, $email_2)
+    {
+        if (!is_scalar($email_1) || !is_scalar($email_2)) {
+            return false;
+        }
+        return trim((string) $email_1) === trim((string) $email_2);
     }
 }
 

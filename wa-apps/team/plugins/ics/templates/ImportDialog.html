@@ -1,0 +1,87 @@
+{$_calendars = []}
+{foreach $inner_calendars as $_c}
+    {if !empty($_c.can_edit)}
+        {$_calendars[] = $_c}
+    {/if}
+{/foreach}
+{$_selected_calendar = reset($_calendars)}
+{if empty($_selected_calendar)}
+    {$_selected_calendar = [
+        "id" => "",
+        "name" => "{_wp('Empty')}",
+        "bg_color" => "#f0f0f0"
+    ]}
+{/if}
+
+<div class="t-dialog-wrapper is-full-screen t-ics-import-dialog" id="t-ics-import-dialog">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <iframe id="t_ics_iframe_import" style="display: none" name="t_ics_iframe_import"></iframe>
+        <form method="post" action="?plugin=ics&module=backend&action=import" enctype="multipart/form-data" target="t_ics_iframe_import">
+            <div class="t-ics-import-form">
+                <header class="t-dialog-header">
+                    <h1>{_wp('Import events from file')}</h1>
+                </header>
+                <div class="t-dialog-content">
+                    <div class="fields">
+                        <div class="field">
+                            <div class="name">
+                                {_wp('Choose .ics file')}
+                            </div>
+                            <div class="value">
+                                <input type="file" name="file" value="{_wp('Import from file')}">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                {_wp('Calendar')}
+                            </div>
+                            <div class="value">
+
+                                <ul class="menu-h dropdown t-calendar-toggle">
+                                    <li>
+                                        <a class="t-selected-item inline-link" href="javascript:void(0);">
+                                            <i class="icon16 userpic20 {if !empty($_selected_calendar.icon_class)}{$_selected_calendar.icon_class}{/if}" style="{if !empty($_selected_calendar.bg_color)}background: {$_selected_calendar.bg_color};{/if}{if !empty($_selected_calendar.font_color)}color: {$_selected_calendar.font_color};{/if}"></i>
+                                            <b><i>{$_selected_calendar.name|escape}</i></b>
+                                        </a>
+                                        {if !empty($_calendars)}
+                                            <ul class="menu-v with-icons">
+                                                {foreach $_calendars as $_c}
+                                                    <li class="{if $_c.id == $_selected_calendar.id}selected{/if}" data-calendar-id="{$_c.id}">
+                                                        <a href="javascript:void(0);">
+                                                            <i class="icon16 userpic20 {if !empty($_c.icon_class)}{$_c.icon_class}{/if}" style="{if !empty($_c.bg_color)}background: {$_c.bg_color};{/if}{if !empty($_c.font_color)}color: {$_c.font_color};{/if}"></i>
+                                                            <b><i>{$_c.name|escape}</i></b>
+                                                        </a>
+                                                    </li>
+                                                {/foreach}
+                                            </ul>
+                                        {/if}
+                                        <input name="inner_calendar_id" value="{$_selected_calendar.id}" type="hidden">
+                                    </li>
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <footer class="t-dialog-footer">
+                    <div class="t-actions">
+                        <div class="t-layout">
+                            <div class="t-column left">
+                                {$wa->csrf()}
+                                <input type="hidden" name="contact_id" value="{$wa->user('id')}">
+                                <input class="button green" type="submit" value="{_wp('Import')}"> {_wp('or')}
+                                <a href="javascript:void(0)" class="cancel js-close-dialog">{_wp('cancel')}</a>
+                                <i class="icon16 loading" style="display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        {include file="../js/ics.js" inline}
+    </script>
+</div>

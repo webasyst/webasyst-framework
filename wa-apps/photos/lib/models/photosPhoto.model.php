@@ -781,6 +781,17 @@ class photosPhotoModel extends waModel
             foreach($paths as $path) {
                 waFiles::delete($path);
             }
+
+            /**
+             * Make extra workup
+             * @event photo_rotate
+             */
+            $params = array(
+                'id' => $id,
+                'result' => $result
+            );
+            wa()->event('photo_rotate', $params);
+
         } catch(Exception $e) {
             foreach($paths as $path) {
                 waFiles::delete($path);

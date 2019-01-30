@@ -1,5 +1,7 @@
 <div id="page" role="main">
-    <h1>[s`Login`]</h1>
-    {$wa->authAdapters()}
-    {$wa->loginForm($error, empty($without_form))}
+    {$wa->loginForm($error, [
+        'show_title'          => true,
+        'show_sub_title'      => true,
+        'show_oauth_adapters' => true
+    ])}
 </div>

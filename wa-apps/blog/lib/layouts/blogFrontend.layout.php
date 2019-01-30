@@ -7,8 +7,14 @@ class blogFrontendLayout extends waLayout
 
         $this->getResponse()->addJs("js/jquery.pageless2.js?v=".wa()->getVersion(), true);
         $this->view->assign('site_theme_url', wa()->getDataUrl('themes', true, 'site').'/'.waRequest::param('theme', 'default').'/');
-        $this->view->assign('action', $action = waRequest::param('action', 'default'));
+
+        $action = (string)waRequest::param('action');
+        if (strlen($action) <= 0) {
+            $action = 'default';
+        }
         waRequest::setParam('action', $action);
+
+        $this->view->assign('action', $action);
         $params = waRequest::param();
         $fields = array('nav_before', 'footer', 'head', 'sidebar');
         /**

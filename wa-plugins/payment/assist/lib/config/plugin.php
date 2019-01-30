@@ -5,7 +5,7 @@ return array(
     'icon'        => 'img/assist16.png',
     'logo'        => 'img/assist.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.0.0',
+    'version'     => '1.1.1',
     'locale'      => array('ru_RU', ),
     'type'        => waPayment::TYPE_ONLINE,
 );

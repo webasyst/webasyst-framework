@@ -1,7 +1,7 @@
 <script src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.iframe-transport.js"></script>
 <script src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js"></script>
 <script type="text/javascript">
-    document.title = '[`Files`] — ' + {json_encode($domain)};
+    document.title = '[`Files`] — ' + {json_encode(waIdna::dec($domain))};
 </script>
 
 <div class="sidebar left250px s-internal-sidebar">
@@ -42,9 +42,10 @@
 						<li><a id="s-folder-rename" href="#"><i class="icon16 edit"></i>[`Rename`]</a></li>
 						<li><a id="s-folder-move" href="#"><i class="icon16 move"></i>[`Move to folder`]</a></li>
 						<li><a id="s-folder-delete" href="#"><i class="icon16 delete"></i>[`Delete`]</a></li>
-					</ul>				
+					</ul>
 				</li>
 			</ul>
+            <span class="hint">[`Files uploaded here are accessible to all website visitors without authorization. Do not upload private files.`]</span>
 		</div>
 		<table id="s-files-grid" class="zebra s-filelist">
 		<tr>
@@ -161,11 +162,18 @@
 </div>
 
 <script type="text/javascript">
-	$("#s-files-tree").append($.wa.site.getTreeHTML({json_encode($dirs)}, "s-folderlist"));
+	$("#s-files-tree").append($.wa.site.getTreeHTML({json_encode($dirs)}, "s-folderlist", '', {json_encode($sub_dirs_decoded)}));
 
     $('#s-input-file').fileupload({
+        add: function(e, data) {
+			if (data.files[0]['size'] > {waRequest::getUploadMaxFilesize()}) {
+				alert('{sprintf('[`Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file.`]', {waRequest::getUploadMaxFilesize()})}')
+            } else {
+                data.submit();
+            }
+		},
         dataType: 'json',
-        start: function () {
+        start: function (e, data) {
 	        $("#s-upload-dialog div.loading").show();
 	        $("#s-upload-dialog input[type=submit]").attr('disabled', 'disabled');
         },
@@ -324,33 +332,35 @@
 	});		
 	
 	$("#s-folder-delete").click(function () {
-		$("#s-delete-dialog").waDialog({
-			content: '<h1>[`Delete folder`]</h1><p>[`Folder will be deleted without the ability to recover.`]</p>',
-			disableButtonsOnSubmit: true,
-			onSubmit: function () {
-				$.post('?module=files&action=delete', { path: $.wa.site.filesPath()}, function (response) {
-					if (response.status == 'ok') {
-						$("#s-delete-dialog").hide();
-						var li = $("#s-files-tree li.selected");
-						if (li.prev().length) {
-							var hash = li.prev().find('a').attr('href');
-						} else if (li.next().length) {
-							var hash = li.next().find('a').attr('href');
-						} else if (li.parents('li').length) {
-							var hash = li.parents('li').find('a').attr('href');
-							li.parents('li').children('i').remove();
-						} else {
-							var hash = '#/files/';
-						}
-						li.remove();
-						$.wa.setHash(hash);
-					} else if (response.status == 'fail') {
-						alert(response.errors);
-						$("#s-delete-dialog input[type=submit]").removeAttr('disabled');
-					}
-				}, "json");
-			}
-		});
+	    if ($.wa.site.filesPath()) {
+            $("#s-delete-dialog").waDialog({
+                content: '<h1>[`Delete folder`]</h1><p>[`Folder will be deleted without the ability to recover.`]</p>',
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    $.post('?module=files&action=delete', { path: $.wa.site.filesPath()}, function (response) {
+                        if (response.status == 'ok') {
+                            $("#s-delete-dialog").hide();
+                            var li = $("#s-files-tree li.selected");
+                            if (li.prev().length) {
+                                var hash = li.prev().find('a').attr('href');
+                            } else if (li.next().length) {
+                                var hash = li.next().find('a').attr('href');
+                            } else if (li.parents('li').length) {
+                                var hash = li.parents('li').find('a').attr('href');
+                                li.parents('li').children('i').remove();
+                            } else {
+                                var hash = '#/files/';
+                            }
+                            li.remove();
+                            $.wa.setHash(hash);
+                        } else if (response.status == 'fail') {
+                            alert(response.errors);
+                            $("#s-delete-dialog input[type=submit]").removeAttr('disabled');
+                        }
+                    }, "json");
+                }
+            });
+        }
 		return false;
 	});
 	

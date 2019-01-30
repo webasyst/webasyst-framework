@@ -1,3 +1,4 @@
+<div class="block double-padded">
 <h1>
     {implode(', ', $items)}
     <span class="hint">{$app.name}</span>
@@ -12,7 +13,7 @@
 
     <div class="s-ibutton-checkbox">
         <ul class="menu-h">
-            <li><span id="s-personal-app-disabled-label" class="gray">[`Disabled`]</span></li>
+            <li><span id="s-personal-app-disabled-label" class="gray">[`authorization disabled`]</span></li>
             <li>
                 <input type="checkbox" id="s-personal-app-status" class="ibutton" {if $enabled}checked{/if}>
             </li>
@@ -84,3 +85,4 @@
     </script>
 
 {/if}
+</div>

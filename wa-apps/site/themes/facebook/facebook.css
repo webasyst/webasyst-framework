@@ -8,7 +8,7 @@
  * @copyright 2013 Webasyst LLC
  * @package Webasyst
  */
- 
+
 /* Reset
 -------- */
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, /* ol, ul, li, */ fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, credentials, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; }
@@ -26,7 +26,7 @@ a:hover { text-decoration: underline !important; }
 input[type="button"]::-moz-focus-inner { border: 0; }
 input[type="submit"]::-moz-focus-inner { border: 0; }
 a img { border: 0; }
-p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote { margin-bottom: 15px; }
+p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote, figure { margin-bottom: 15px; }
 h3, h4, h5, h6 { color: #45688E; }
 h1 { font-size: 1.5em; line-height: 1em; }
 h1 a { text-decoration:none; }
@@ -37,7 +37,7 @@ h5 { font-size: 1em; }
 h6 { font-size: 1em; }
 ul, ol { padding-top:0; }
 ol { list-style: decimal; }
-input, textarea, select { margin:0; } 
+input, textarea, select { margin:0; }
 input, textarea { font-size: 1em; color: #000; }
 input[type="button"]:focus { outline:none; outline-offset:-2px; }
 fieldset { border:1px solid #bbb; padding:10px; position:relative; background:#e9e9e9; margin-bottom:10px; }
@@ -165,7 +165,7 @@ ul.menu-h.dropdown li:hover .inner { left: auto; right: -3px; }
 .wa-form .wa-field .wa-value .errormsg { margin-left: 0; }
 .wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
 .wa-form .wa-field .wa-value p label { display: block; margin: 0; }
-.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; } 
+.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; }
 .wa-form .wa-field .wa-value p span { color: #777; font-size: 0.9em; display: block; }
 .wa-form .wa-field .wa-value p i.icon16 { float: left; left: -20px; margin-top: 2px; position: absolute; }
 .wa-form .wa-field .wa-value p input { display: block; margin-bottom: 2px; }
@@ -334,3 +334,7 @@ background: #657aa8;
 box-shadow: 0 1px 1px #bbb inset;
 }
 .facebook-button.large { margin: -5px 3px 0; }
+
+/* FOOTER NOTICE */
+.s-footer-notice { margin: 1em 0; font-size: .9em; line-height: 1.3em; color: #bbb; text-align: center; }
+.s-footer-notice a { color: inherit; text-decoration: underline; }

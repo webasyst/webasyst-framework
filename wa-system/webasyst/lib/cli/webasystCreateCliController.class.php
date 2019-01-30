@@ -13,14 +13,19 @@ abstract class webasystCreateCliController extends waCliController
         if (!$this->init() || isset($params['help'])) {
             $this->showHelp();
         } else {
-            $this->initPath();
             $errors = $this->verifyParams($params);
             if ($errors) {
                 print "ERROR:\n";
                 print implode("\n", $errors);
             } else {
-                $config = $this->create($params);
-                print $this->showReport($config)."\n";
+                try {
+                    $this->initPath();
+                    $config = $this->create($params);
+                    print $this->showReport($config)."\n";
+                } catch (waException $ex) {
+                    print sprintf("ERROR:\n%s\n\n", $ex->getMessage());
+                    $this->showHelp();
+                }
             }
         }
     }
@@ -33,6 +38,20 @@ Hint: use wa-config/developer.php to setup common defaults e.g. vendor, version
 
 HELP;
 
+    }
+
+    /**
+     * @return string
+     */
+    protected function getAction()
+    {
+        if (preg_match('/^webasyst(\w+)Cli$/', __CLASS__, $matches)) {
+            $callback = wa_lambda('$m', 'return strtolower($m[1]);');
+            $action = preg_replace_callback('/^([\w]{1})/', $callback, $matches[1]);
+        } else {
+            $action = '';
+        }
+        return $action;
     }
 
     protected function init()
@@ -50,8 +69,13 @@ HELP;
     {
         $errors = array();
         if (!preg_match('@^[a-z][a-z0-9]+$@', $this->app_id)) {
-            $errors[] = "Invalid app ID";
+            $errors['app_id'] = "Invalid app ID";
         }
+
+        if (!empty($params['version']) && !preg_match('@^[\d]+(\.\d+)*$@', $params['version'])) {
+            $errors['version'] = 'Invalid version format';
+        }
+
         return $errors;
     }
 
@@ -90,6 +114,9 @@ HELP;
         return $errors;
     }
 
+    /**
+     * @param $paths
+     */
     protected function createStructure($paths)
     {
         foreach ($paths as $path => $content) {
@@ -133,8 +160,9 @@ HELP;
                 $default = array();
             }
             $default += array(
-                'version' => '0.1',
+                'version' => '0.0.1',
                 'vendor'  => '--',
+                'author'  => isset($default['vendor']) ? $default['vendor'] : '',
             );
         }
         return $field == null ? $default : (isset($default[$field]) ? $default[$field] : null);
