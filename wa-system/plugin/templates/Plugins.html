@@ -63,9 +63,7 @@
 <script type="text/javascript">
 (function ($) {
 
-    var $_ = window.$_ || function() {
-        return arguments[0] || '';
-    };
+    var plugins_title = {_w('Plugins')|json_encode};
 
     $.plugins = {
         options: {
@@ -223,7 +221,7 @@
                         if (self.path.plugin) {
                             document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
                         } else {
-                            document.title = $_('Plugins') + self.options.title_suffix;
+                            document.title = plugins_title + self.options.title_suffix;
                         }
 
                         self.$menu.find('li.selected').removeClass('selected');

@@ -1,0 +1,22 @@
+{if !empty($breadcrumbs)}
+    <div class="breadcrumbs"itemprop="breadcrumb">
+        {foreach $breadcrumbs as $breadcrumb}
+            <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+        {/foreach}
+    </div>
+{/if}
+
+<h1 itemprop="name">{$page.name}</h1>
+
+{$subpages = $wa->site->pages($page.id)}
+{if $subpages}
+    <ul class="sub-links">
+        {foreach $subpages as $p}
+            <li><a href="{$p.url}">{$p.name}</a></li>
+        {/foreach}
+    </ul>
+{/if}
+
+<div id="page" role="main" itemprop="description">
+    {$page.content}
+</div>

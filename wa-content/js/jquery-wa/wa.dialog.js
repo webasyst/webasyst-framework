@@ -212,7 +212,7 @@ jQuery.fn.waDialog = function (options) {
         });
     }
     return d;
-}
+};
 
 jQuery(window).resize(function () {
     jQuery(".dialog:visible").trigger('wa-resize');

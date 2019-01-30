@@ -28,9 +28,9 @@ class webasystLoginLayout extends waLayout
         $is_stock = 'stock:' === substr($background, 0, 6);
         $stretch = $is_stock || $app_settings_model->get('webasyst', 'auth_form_background_stretch', true);
         if ($is_stock) {
-            $background = 'wa-content/img/backgrounds/'.substr($background, 6);
+            $background = wa_url().'wa-content/img/backgrounds/'.substr($background, 6);
         } else {
-            $background = 'wa-data/public/webasyst/'.$background;
+            $background = wa()->getDataUrl(null, true, 'webasyst').'/'.$background;
         }
         return array($background, $stretch);
     }

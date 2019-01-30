@@ -173,7 +173,7 @@
 
           {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
             {foreach $post.link item=link}
-              <a target="_blank" href="{$link}" class="underline">{$link}</a>
+              <a target="_blank" href="{$link}" class="underline">{waIdna::dec($link)}</a>
             {/foreach}
           {else}
             {if $post.comment_new_count > 0}
@@ -270,7 +270,7 @@
   </div>
 {else}
   <div class="block b-post b-empty-list {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
-    {if $stream.all_posts}
+    {if $stream.all_posts && empty($posts) && empty($text)}
 
         <div class="b-welcome">
             <h1>[`Welcome to your new blog!`]</h1>

@@ -14,7 +14,7 @@ jQuery.fn.waEditor2 = function () {
         var options = getOptions(args[0]);
 
         // ace
-        var editor = initAce($textarea, options);
+        var ace_editor = initAce($textarea, options);
         updateLastWysiwygCode($textarea.val());
 
         // redactor
@@ -35,17 +35,26 @@ jQuery.fn.waEditor2 = function () {
 
         // Tab header: switch to code source editor (ace)
         var $wrapper = $textarea.closest('.wa-editor-core-wrapper');
+
+        /* Upload image without switch to WYSIWYG */
+        if (options.upload_img_dialog) {
+            initAceImageUploader($(options.upload_img_dialog), $wrapper, ace_editor);
+        }
+
+        // Tab header: switch to HTML (Ace)
         $wrapper.find('.html').click(function () {
             if ($(this).parent().hasClass('selected')) {
                 return false;
             }
-            if ($.storage) {
-                $.storage.set(wa_app + '/editor', 'html');
+
+            if (window.wa_app) {
+                localStorage.setItem(wa_app + '/editor', 'html');
             }
+
             $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
             $(this).parent().addClass('selected');
             $textarea.redactor('core.box').hide();
-            var p = editor.getCursorPosition();
+            var p = ace_editor.getCursorPosition();
             $textarea.redactor('core.editor').find("img[data-src!='']").each(function () {
                 $(this).attr('src', $(this).attr('data-src'));
                 $(this).removeAttr('data-src');
@@ -56,14 +65,17 @@ jQuery.fn.waEditor2 = function () {
             // Otherwise keep the old code, without WYSIWYG's re-formatting.
             var new_code = $textarea.redactor('code.get');
             if (new_code !== $textarea.data('last_wysiwyg_code')) {
-                editor.setValue(new_code);
+                new_code = $textarea.redactor('clean.onSync',
+                    $textarea.redactor('clean.onSet', new_code)
+                );
+                ace_editor.setValue(new_code);
             } else {
-                editor.setValue(getSourceCode(new_code));
+                ace_editor.setValue(getSourceCode(new_code));
             }
 
             $wrapper.find('.ace').show();
-            editor.focus();
-            editor.navigateTo(p.row, p.column);
+            ace_editor.focus();
+            ace_editor.navigateTo(p.row, p.column);
             return false;
         });
 
@@ -72,33 +84,87 @@ jQuery.fn.waEditor2 = function () {
             if ($(this).parent().hasClass('selected')) {
                 return false
             }
-            if ($.storage) {
-                $.storage.set(wa_app + '/editor', 'wysiwyg');
+            // Make sure code does not contain Smarty tags
+            var source_val = ace_editor.getValue();
+            if (options.smarty_wysiwyg_msg && !isWysiwygAllowed(source_val)) {
+                alert(options.smarty_wysiwyg_msg);
+                return false;
             }
-            $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
-            $(this).parent().addClass('selected');
-            $textarea.redactor('code.set', editor.getValue());
+
+            // Warn user if code is going to be modified by WYSIWYG layout logic
+            if ($.trim(source_val) && options.modification_wysiwyg_msg) {
+                var source_wysiwyg_cleaned = $textarea.redactor('clean.onSync',
+                    $textarea.redactor('clean.onSet', source_val)
+                );
+
+                if (source_wysiwyg_cleaned !== source_val) {
+                    if ('string' === typeof options.modification_wysiwyg_msg) {
+                        if (!confirm(options.modification_wysiwyg_msg)) {
+                            return false;
+                        } else {
+                            // Only show this dialog once per page
+                            options.modification_wysiwyg_msg = null;
+                        }
+                    } else {
+                        // Dialog
+                        options.modification_wysiwyg_msg.waDialog({
+                            onSubmit: function (d) {
+                                // Only show this dialog once per page
+                                options.modification_wysiwyg_msg = null;
+                                d.trigger('close');
+                                $wrapper.find('.wysiwyg').trigger('click');
+                                return false;
+                            }
+                        });
+                        return false;
+                    }
+                }
+            }
+
+            // Remember WYSIWIG tab as default when editor is started
+            if (window.wa_app) {
+                localStorage.setItem(wa_app + '/editor', 'wysiwyg');
+            }
+
+            // Load code into WYSIWYG
+            $textarea.redactor('code.set', source_val);
             $textarea.redactor('core.editor').find('img[src*="$wa_url"]').each(function () {
+                // Replace specific allowed Smarty var in img src
                 var s = decodeURIComponent($(this).attr('src'));
                 $(this).attr('data-src', s);
                 $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
             });
-            $textarea.redactor('observe.load');
-            $textarea.redactor('focus.start');
+            $textarea.redactor('observe.images');
+            $textarea.redactor('observe.links');
+
+            // Update tab selection
+            $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
+            $(this).parent().addClass('selected');
+
+            // Show/hide tab content
             $wrapper.find('.ace').hide();
             $textarea.redactor('core.box').show();
-            updateLastWysiwygCode(editor.getValue());
+
+            updateLastWysiwygCode(source_val);
+            $textarea.redactor('focus.start');
             return false;
         });
 
-        if ($.storage && $.storage.get(wa_app + '/editor') == 'html') {
+        if (window.wa_app && (options.smarty_wysiwyg_msg && !isWysiwygAllowed($textarea.val())) || (localStorage.getItem(wa_app + '/editor') && localStorage.getItem(wa_app + '/editor') == 'html')) {
             $wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
             $wrapper.find('.html').parent().addClass('selected');
             $textarea.redactor('core.box').hide();
             $wrapper.find('.ace').show();
+            setTimeout(function() {
+                // Workaround problem when Ace instance is not editable
+                // upon initial load
+                ace_editor.blur();
+            }, 50);
             if (options['focus']) {
-                editor.focus();
-                editor.navigateTo(0, 0);
+                setTimeout(function() {
+                    ace_editor.focus();
+                    ace_editor.navigateTo(0, 0);
+                }, 100);
             }
         } else {
             $wrapper.find('.ace').hide();
@@ -137,11 +203,17 @@ jQuery.fn.waEditor2 = function () {
                 case 'sync':
                     if ($wrapper.find('.wysiwyg').parent().hasClass('selected')) {
                         $textarea.redactor('code.sync');
+                        var new_code = $textarea.redactor('code.get');
+                        if (new_code !== $textarea.data('last_wysiwyg_code')) {
+                            new_code = $textarea.redactor('clean.onSync',
+                                $textarea.redactor('clean.onSet', new_code)
+                            );
+                            $textarea.val(new_code);
+                        }
                     } else {
                         $textarea.val($textarea.data('ace').getValue());
                     }
                     return;
-
                 case 'insert':
                     if ($wrapper.find('.wysiwyg').parent().hasClass('selected')) {
                         $textarea.redactor('insert.html', args[1]);
@@ -168,15 +240,21 @@ jQuery.fn.waEditor2 = function () {
             focus: true,
             deniedTags: false,
             minHeight: 300,
+            linkify: false,
             source: false,
             paragraphy: false,
             replaceDivs: false,
             toolbarFixed: true,
-            replaceTags: false,
+            replaceTags: {
+                'b': 'strong',
+                'i': 'em',
+                'strike': 'del'
+            },
             removeNewlines: false,
             removeComments: false,
             imagePosition: true,
             imageResizable: true,
+            imageFloatMargin: '1.5em',
             buttons: ['format', /*'inline',*/ 'bold', 'italic', 'underline', 'deleted', 'lists',
                 /*'outdent', 'indent',*/ 'image', 'video', 'table', 'link', 'alignment',
                 'horizontalrule',  'fontcolor', 'fontsize', 'fontfamily'],
@@ -222,6 +300,12 @@ jQuery.fn.waEditor2 = function () {
                     html = options.callbacks.syncBefore(html);
                 }
                 this.$textarea.val(html);
+            },
+            syncClean: function (html) {
+                // Unescape '->' in smarty tags
+                return html.replace(/\{[a-z\$'"_\(!+\-][^\}]*\}/gi, function (match) {
+                    return match.replace(/-&gt;/g, '->');
+                });
             }
         }, (options.callbacks || {}));
 
@@ -243,12 +327,14 @@ jQuery.fn.waEditor2 = function () {
             var div = $textarea.closest('.wa-editor-core-wrapper').find('.ace').children('div');
         }
         var editor = ace.edit(div.get(0));
+        editor.commands.removeCommand('find');
         ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
         editor.setTheme("ace/theme/eclipse");
         var session = editor.getSession();
         session.setMode("ace/mode/css");
         session.setMode("ace/mode/javascript");
         session.setMode("ace/mode/smarty");
+        editor.$blockScrolling = Infinity;
         session.setUseWrapMode(true);
         editor.renderer.setShowGutter(false);
         editor.setShowPrintMargin(false);
@@ -313,6 +399,71 @@ jQuery.fn.waEditor2 = function () {
             return decodeURIComponent(matches[1]);
         }
         return '';
+    }
+
+    function isWysiwygAllowed(source) {
+        // WYSIWYG Redactor is not available if code contains Smarty tags,
+        // other than a simple {$var->method()|escape} declarations
+        source = source.replace(/\{\$[a-z_][^\}]*\}/gi, '');
+        return !source.match(/\{[a-z\$'"_\(!+\-]/i);
+    }
+
+    function initAceImageUploader($dialog_wrapper, $wrapper, ace_editor) {
+
+        // move the icon of the dialog for loading the images into the Ace tab
+        var $uploader_button = $wrapper.find('.wa-editor-upload-img');
+        $uploader_button.removeClass('hidden').appendTo($wrapper.find('.ace'));
+
+        $uploader_button.click(function () {
+            if (!$.fn.fileupload) {
+                console.log('waEditor2 ERROR: jQuery fileupload plugins is required, but missing.');
+                return;
+            }
+
+            $dialog_wrapper.waDialog();
+            return false;
+        });
+        $uploader_button.one('click', function () {
+            if (!$.fn.fileupload) {
+                return;
+            }
+
+            // same template as used by WYSIWYG
+            var img_template = "\n"+'<figure><img src="%url%"></figure>'+"\n";
+            $dialog_wrapper.find('input:file').fileupload({
+                dataType: 'json',
+                start: function () {
+                    $dialog_wrapper.find("div.loading").show();
+                    $dialog_wrapper.find("input[type=submit]").attr('disabled', 'disabled');
+                },
+                done: function (e, data) {
+                    if (data.result.error) {
+                        $('<div style="text-align: center"><p>' + data.result.error + '</p></div>').waDialog({
+                            'buttons': '<input type="submit" value="'+ options.locales.close +'" class="button red" />',
+                            'height': '100px',
+                            'width': '550px',
+                            onSubmit: function (d) {
+                                d.trigger('close');
+                                return false;
+                            }
+                        });
+                        return false;
+                    }
+                    var img_html = img_template.replace("%url%", data.result.url);
+                    // Add img in textarea
+                    ace_editor.insert(img_html);
+                    ace_editor.clearSelection();
+                    ace_editor.focus();
+                },
+
+                stop: function () {
+                    $dialog_wrapper.hide();
+                    $dialog_wrapper.find("div.loading").hide();
+                    $dialog_wrapper.find("input[type=submit]").removeAttr('disabled');
+                }
+            });
+            return false;
+        });
     }
 };
 if (!jQuery.fn.waEditor) {

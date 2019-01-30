@@ -9,7 +9,7 @@ class siteDomainsSaveController extends waJsonController
             $this->errors = sprintf(_w("Incorrect domain URL: %s"), waRequest::post('name', '', 'string'));
             return;
         }
-
+        $name = trim($name);
         $domain_model = new siteDomainModel();
         $data = array();
         if (!preg_match('!^[a-z0-9/\._-]+$!i', $name)) {

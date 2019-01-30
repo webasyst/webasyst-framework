@@ -64,7 +64,7 @@ class waRouting
         return $this->route;
     }
 
-    protected function formatRoutes($routes, $is_app = false)
+    protected function formatRoutes($routes, $app_id = false)
     {
         $result = array();
         $routes[] = false;
@@ -77,7 +77,7 @@ class waRouting
             if (!is_array($r)) {
                 $r_parts = explode('/', $r);
                 $r = array('url' => $r_id);
-                if ($is_app) {
+                if ($app_id) {
                     $r['module'] = $r_parts[0];
                     if (isset($r_parts[1])) {
                         $r['action'] = $r_parts[1];
@@ -92,6 +92,9 @@ class waRouting
                 $r['url'] = $r_id;
             } else {
                 $key = true;
+            }
+            if ($app_id && empty($r['app'])) {
+                $r['app'] = $app_id;
             }
             if ($key) {
                 $result[$r_id] = $r;
@@ -289,7 +292,7 @@ class waRouting
     protected function getAppRoutes($app, $route = array(), $dispatch = false)
     {
         $routes = waSystem::getInstance($app, null, $dispatch)->getConfig()->getRouting($route, $dispatch);
-        $routes = $this->formatRoutes($routes, true);
+        $routes = $this->formatRoutes($routes, $app);
         if ($dispatch && wa($app)->getConfig()->getInfo('pages') && $app != 'site') {
             $page_routes = $this->getPageRoutes($app, $route);
             if ($page_routes) {
@@ -297,6 +300,35 @@ class waRouting
             }
         }
         return $routes;
+    }
+
+    public function getRuleForUrl($routes, $url) {
+        $result = null;
+        foreach ($routes as $r) {
+            if ($this->route && isset($this->route['module']) &&
+                (!isset($r['module']) || $r['module'] != $this->route['module'])) {
+                continue;
+            }
+            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), ifset($r, 'url', ''));
+            $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
+            if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
+                $offset = 0;
+                foreach ($match as $m) {
+                    if ($m[2][0]) {
+                        $p = $m[2][0];
+                    } else {
+                        $p = '.*?';
+                    }
+                    $pattern = substr($pattern, 0, $offset + $m[0][1]).'('.$p.')'.substr($pattern, $offset + $m[0][1] + strlen($m[0][0]));
+                    $offset = $offset + strlen($p) + 2 - strlen($m[0][0]);
+                }
+            }
+            if (preg_match('!^'.$pattern.'$!ui', $url, $match)) {
+                $result = $r;
+                break;
+            }
+        }
+        return $result;
     }
 
     protected function dispatchRoutes($routes, $url)
@@ -308,7 +340,7 @@ class waRouting
                 continue;
             }
             $vars = array();
-            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), $r['url']);
+            $pattern = str_replace(array(' ', '.', '('), array('\s', '\.', '(?:'), ifset($r, 'url', ''));
             $pattern = preg_replace('/(^|[^\.])\*/ui', '$1.*?', $pattern);
             if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $pattern, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                 $offset = 0;
@@ -324,7 +356,7 @@ class waRouting
                 }
             }
             if (preg_match('!^'.$pattern.'$!ui', $url, $match)) {
-                if (isset($r['redirect'])) {
+                if (isset($r['redirect']) && empty($r['disabled'])) {
                     $p = str_replace('.*?', '(.*?)', $pattern);
                     if ($p != $pattern) {
                         preg_match('!^'.$p.'$!ui', $url, $m);
@@ -335,7 +367,26 @@ class waRouting
                             }
                         }
                     }
-                    wa()->getResponse()->redirect($r['redirect'], 301);
+                    wa()->getResponse()->redirect($r['redirect'], 302);
+                } elseif (isset($r['static_content'])) {
+                    $response = wa()->getResponse();
+                    switch (ifset($r['static_content_type'])){
+                        case 'text/plain':
+                            $response->addHeader('Content-Type', 'text/plain; charset=utf-8');
+                            break;
+                        case 'text/html':
+                            $response->addHeader('Content-Type', 'text/html; charset=utf-8');
+                            break;
+                        default:
+                            if ($type = waFiles::getMimeType($r['url'])) {
+                                $response->addHeader('Content-Type', $type);
+                            }
+
+                            break;
+                    }
+                    $response->sendHeaders();
+                    print $r['static_content'];
+                    exit;
                 }
                 if ($vars) {
                     array_shift($match);
@@ -512,7 +563,9 @@ class waRouting
         if ($domain) {
             $result = self::getDomainUrl($domain, $absolute).'/'.$result;
             if ($absolute) {
-                if (parse_url('http://'.$domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
+                if (!empty($route['ssl_all'])) {
+                    $https = true;
+                } elseif (parse_url('http://'.$domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
                     $https = waRequest::isHttps();
                 } else {
                     $https = false;
@@ -552,6 +605,37 @@ class waRouting
             return $host.$result;
         } else {
             return $result;
+        }
+    }
+
+    public static function getDomainConfig($name=null, $domain=null)
+    {
+        static $domain_configs = array();
+
+        if ($domain === null) {
+            $domain = wa()->getRouting()->getDomain(null, true);
+        }
+        if (!$domain || false !== strpos($domain, '..')) {
+            return $name === null ? array() : null;
+        }
+
+        if (!isset($domain_configs[$domain])) {
+            $domain = waIdna::enc($domain);
+        }
+        if (!isset($domain_configs[$domain])) {
+            $domain_configs[$domain] = array();
+            $domain_config_path = wa()->getConfig()->getConfigPath('domains/' . $domain . '.php', true, 'site');
+            if (file_exists($domain_config_path)) {
+                $domain_configs[$domain] = include($domain_config_path);
+            }
+        }
+
+        if ($name === null) {
+            return $domain_configs[$domain];
+        } else if (isset($domain_configs[$domain][$name])) {
+            return $domain_configs[$domain][$name];
+        } else {
+            return null;
         }
     }
 }

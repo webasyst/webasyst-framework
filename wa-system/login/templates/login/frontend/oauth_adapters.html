@@ -1,0 +1,39 @@
+{strip}
+
+    {* SOCIAL ACCOUNTS *}
+    {$auth_adapters = $wa->authAdapters(true)}
+    {if $auth_adapters}
+        <section class="wa-adapters-section">
+            {$linked_adapters = []}
+            {$other_adapters = []}
+            {foreach $auth_adapters as $a}
+                {if $wa->user("{$a->getId()}_id")}
+                    {$linked_adapters[] = $a}
+                {else}
+                    {$other_adapters[] = $a}
+                {/if}
+            {/foreach}
+            {if $other_adapters}
+                <div class="wa-section-header">[`Via social media`]</div>
+
+                <ul class="wa-adapters-list">
+                    {foreach $other_adapters as $a}
+                        {$_id = $a->getId()}
+                        {$_name = $a->getName()}
+
+                        <li>
+                            <a href="{$a->getUrl()}" title="{$_name|escape}" data-id="{$_id|escape}">
+                                <img alt="{$_name|escape}" src="{$a->getIcon()}"/>
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+
+                <div class="wa-section-divider">
+                    <span class="wa-text">[`or`]</span>
+                </div>
+            {/if}
+        </section>
+    {/if}
+
+{/strip}

@@ -12,26 +12,31 @@
  * @package wa-system
  * @subpackage locale
  */
-class waLocalePHPAdapter
+class waLocalePHPAdapter implements waiLocaleAdapter
 {
+    /**
+     * Array of domains and adapter objects and the paths to the po files
+     * @var array
+     */
+    protected static $loaded_domains = array();
     protected static $locale;
     protected static $domain;
     protected static $cache = array();
 
     public function load($locale, $locale_path, $domain, $textdomain = true)
     {
-        $file = $locale_path.'/'.$locale.'/LC_MESSAGES/'.$domain.'.po';
+        $locale_file = $this->buildLocaleFile($locale_path, $locale, $domain);
         $cache_file = waSystem::getInstance()->getConfig()->getPath('cache').'/apps/'.$domain.'/locale/'.$locale.'.php';
 
         if (isset(self::$cache[$locale][$domain])) {
 
-        } elseif (!file_exists($file)) {
+        } elseif (!file_exists($locale_file)) {
             self::$cache[$locale][$domain] = array();
-        } elseif (file_exists($cache_file) && filemtime($cache_file) > filemtime($file)) {
+        } elseif (file_exists($cache_file) && filemtime($cache_file) > filemtime($locale_file)) {
             self::$cache[$locale][$domain] = include($cache_file);
         } else {
-            if (file_exists($file)) {
-                $gettext = new waGettext($file);
+            if (file_exists($locale_file)) {
+                $gettext = new waGettext($locale_file);
                 self::$cache[$locale][$domain] = $gettext->read();
             } else {
                 self::$cache[$locale][$domain] = array();
@@ -42,7 +47,7 @@ class waLocalePHPAdapter
         }
 
         if (isset(self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']) && self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']) {
-            self::$cache[$locale][$domain]['meta']['f'] = create_function('$n', self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']);
+            self::$cache[$locale][$domain]['meta']['f'] = wa_lambda('$n', self::$cache[$locale][$domain]['meta']['Plural-Forms']['plural']);
         }
 
         if ($textdomain) {
@@ -52,6 +57,10 @@ class waLocalePHPAdapter
 
         if (!self::$locale) {
             self::$locale = $locale;
+        }
+
+        if (file_exists($locale_file)) {
+            self::$loaded_domains[$domain][$locale] = $locale_file;
         }
     }
 
@@ -101,5 +110,31 @@ class waLocalePHPAdapter
             }
         }
         return $n == 1 ? $msgid1 : $msgid2;
+    }
+
+    /**
+     * @param string $domain
+     * @param string $locale
+     * @param string $locale_path
+     * @return bool
+     */
+    public function isLoaded($locale, $locale_path, $domain)
+    {
+        $locale_file = $this->buildLocaleFile($locale_path, $locale, $domain);
+        if (ifset(self::$loaded_domains[$domain][$locale]) == $locale_file) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param string $locale_path
+     * @param string $locale
+     * @param string $domain
+     * @return string
+     */
+    protected function buildLocaleFile($locale_path, $locale, $domain)
+    {
+        return $locale_path.'/'.$locale.'/LC_MESSAGES/'.$domain.'.po';
     }
 }

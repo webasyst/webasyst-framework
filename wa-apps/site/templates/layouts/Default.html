@@ -5,60 +5,68 @@
 <title>{$wa->appName()} — {$wa->accountName()}</title>
 {$wa->css()}
 <link href="{$wa_app_static_url}css/site.css?v{$wa->version()}" rel="stylesheet" type="text/css" />
+<link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" rel="stylesheet">
 
 <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
 <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-<script src="{$wa_app_static_url}js/site.min.js"v{$wa->version()} type="text/javascript"></script>
+<script src="{$wa_app_static_url}js/site.min.js?v{$wa->version()}" type="text/javascript"></script>
 
 <script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
-<script src="{$wa_url}wa-content/js/jquery-wa/editor.js?v{$wa->version(true)}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/editor2.js?v{$wa->version(true)}"></script>
+<script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js?v{$wa->version(true)}"></script>
 
 <script type="text/javascript" src="?action=loc&amp;v{$wa->version()}"></script>
 </head>
 <body>
 <div id="wa"{if substr($domains[$domain_id].style, 0, 1) == '.'}style="background:url({$wa_url}wa-data/public/site/background/{$domain_id}{$domains[$domain_id].style})"{else} class="s-{$domains[$domain_id].style}"{/if}>
 
-	{$wa->header()}
-	<div id="wa-app">
-		<div class="sidebar left200px s-sidebar">
-			{include file="templates/layouts/Sidebar.html"}
-		</div>
-		<div class="content left200px">
-			<div id="s-content" class="shadowed s-content">
-				<div class="block triple-padded">
-				  [`Loading`]...
-				  <i class="icon16 loading"></i>
-		        </div>
-			</div>
-		</div>
-	</div>
+    {$wa->header()}
+    <div id="wa-app">
+        <div class="sidebar left200px s-sidebar">
+            {include file="templates/layouts/Sidebar.html"}
+        </div>
+        <div class="content left200px">
+            <div id="s-content" class="shadowed s-content">
+                <div class="block triple-padded">
+                  [`Loading`]...
+                  <i class="icon16 loading"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div id="s-save-panel" style="display:none" class="s-bottom-fixed-bar" >
-		<div class="s-bottom-fixed-bar-content-offset">
-			<div class="s-dropdown">
-				<div class="s-drop-link">
-					<a class="inline-link" id="s-helper-link" href="#">
-						<i class="icon16 cheatsheet"></i><b><i>[`Cheat sheet`]</i></b>
-						<i class="icon10 uarr no-overhanging"></i>
-					</a>
-					<div id="s-helper" class="s-dropdown-block"></div>
-				</div>
-			</div>
-			<div class="block">
-				<input id="s-editor-save-button" type="button" class="button green" value="[`Save`]">
-				<em class="hint">Ctrl + S</em>
-				<span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
-			</div>
-		</div>
-	</div>
-	<script type="text/javascript">
-	$.wa.site.init({
-        domain: {$domain_id}, static_url: "{$wa_app_static_url}",
-        wa_url: "{$wa_url}", root_url: "{$domain_root_url}",
-        domain_url: "{$domain_url|escape}"
-    });
-    var wa_url = "{$wa_url}";
-	</script>
+    <div id="s-save-panel" style="display:none" class="s-bottom-fixed-bar" >
+        <div class="s-bottom-fixed-bar-content-offset">
+            <script>
+                (function() { "use strict";
+                    var cheat_sheet_name = 'webasyst';
+                    $(document).on('wa_cheatsheet_init.'+cheat_sheet_name, function() {
+                        $("#wa-editor-help-link-" + cheat_sheet_name).click(function () {
+                            $.cheatsheet[cheat_sheet_name].data = $.wa.site.helper;
+                        });
+                    });
+                })();
+            </script>
+            {$wa->getCheatSheetButton()}
+            <div class="block">
+                <input id="s-editor-save-button" type="button" class="button green" value="[`Save`]">
+                <em class="hint">Ctrl + S</em>
+                <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $.wa.site.init({
+            domain: {$domain_id},
+            static_url: "{$wa_app_static_url}",
+            wa_url: "{$wa_url}",
+            root_url: "{$domain_root_url}",
+            domain_url: "{$domain_url|escape}",
+            domain_protocol: {json_encode($domain_protocol)},
+            mirror: {json_encode($mirror)}
+        });
+        var wa_url = "{$wa_url}";
+    </script>
 </div>
 </body>
 </html>

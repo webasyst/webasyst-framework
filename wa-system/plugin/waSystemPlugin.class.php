@@ -106,6 +106,8 @@ abstract class waSystemPlugin
      *
      * Get plugin description
      * @param string $id
+     * @param array $options
+     *
      * @return array[string]string
      * @return array['name']string
      * @return array['description']string
@@ -189,6 +191,7 @@ abstract class waSystemPlugin
     }
 
     /**
+     * @param string $name
      * @return array plugin settings as key => value
      */
     public function getSettings($name = null)
@@ -323,6 +326,7 @@ abstract class waSystemPlugin
      * @param int $key              application-defined unique identifier to distuinguish between plugin entities
      * @param string $type          plugin type (i.e. shipping or payment)
      * @return waSystemPlugin
+     * @throws waException
      */
     public static function factory($id, $key = null, $type = null)
     {
@@ -428,15 +432,19 @@ abstract class waSystemPlugin
                 if (file_exists($path)) {
                     $this->config = include($path);
 
-                    foreach ($this->config as & $config) {
-                        if (isset($config['title'])) {
-                            $config['title'] = $this->_w($config['title']);
+                    if (is_array($this->config)) {
+                        foreach ($this->config as & $config) {
+                            if (isset($config['title'])) {
+                                $config['title'] = $this->_w($config['title']);
+                            }
+                            if (isset($config['description'])) {
+                                $config['description'] = $this->_w($config['description']);
+                            }
                         }
-                        if (isset($config['description'])) {
-                            $config['description'] = $this->_w($config['description']);
-                        }
+                        unset($config);
+                    } else {
+                        $this->config = array();
                     }
-                    unset($config);
                 }
             }
             if (!is_array($this->config)) {

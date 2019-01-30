@@ -339,6 +339,10 @@ SQL;
                         if (!isset($this->sql_params[$properties])) {
                             $this->sql_params[$properties] = $values;
                         } else {
+                            if (!is_array($this->sql_params[$properties])) {
+                                $this->sql_params[$properties] = array($this->sql_params[$properties]);
+                            }
+
                             $this->sql_params[$properties] = array_merge($this->sql_params[$properties], $values);
                         }
                     }
@@ -938,7 +942,7 @@ SQL;
                 $url_validator = new blogSlugValidator();
             }
 
-            $url_validator->setSubject(blogSlugValidator::SUBJECT_POST);
+            $url_validator->setSubject(_w('post','posts', 1));
 
             if (!$url_validator->isValid($data['url'])) {
 

@@ -40,4 +40,19 @@ abstract class waStorage
     abstract public function remove($key);
 
     abstract public function write($key, $data);
+
+    public function get($key)
+    {
+        return $this->read($key);
+    }
+
+    public function del($key)
+    {
+        $this->remove($key);
+    }
+
+    public function set($key, $data)
+    {
+        $this->write($key, $data);
+    }
 }

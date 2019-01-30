@@ -24,32 +24,39 @@ class siteRoutingSaveController extends waJsonController
         // new route
         if (!strlen($route_id)) {
             $route = $this->getRoute();
+            if (!empty($route['url'])) {
+                $route['url'] = urldecode($route['url']);
+            }
             if (!empty($route['app'])) {
-                if (!$route['url']) {
-                    $route['url'] = '*';
-                }
                 $route_id = $this->getRouteId($routes[$domain]);
-                if ($route['url'] == '*') {
-                    $routes[$domain][$route_id] = $route;
-                    $this->response['add'] = 'bottom';
-                } else {
-                    if (strpos($route['url'], '*') === false) {
-                        if (substr($route['url'], -1) == '/') {
-                            $route['url'] .= '*';
-                        } elseif (substr($route['url'], -1) != '*' && strpos(substr($route['url'], -5), '.') === false) {
-                            $route['url'] .= '/*';
-                        }
-                    }
+
+                if ($route['app'] === ':text') {
                     $routes[$domain] = array($route_id => $route) + $routes[$domain];
                     $this->response['add'] = 'top';
+                } else {
+                    if (!$route['url']) {
+                        $route['url'] = '*';
+                    }
+
+                    if ($route['url'] == '*') {
+                        $routes[$domain][$route_id] = $route;
+                        $this->response['add'] = 'bottom';
+                    } else {
+                        if (strpos($route['url'], '*') === false) {
+                            if (substr($route['url'], -1) == '/') {
+                                $route['url'] .= '*';
+                            } elseif (substr($route['url'], -1) != '*' && strpos(substr($route['url'], -5), '.') === false) {
+                                $route['url'] .= '/*';
+                            }
+                        }
+                        $routes[$domain] = array($route_id => $route) + $routes[$domain];
+                        $this->response['add'] = 'top';
+                    }
+
+                    // add robots
+                    $robots = new siteRobots($domain);
+                    $robots->add($route['app'], $route['url']);
                 }
-                // save
-                waUtils::varExportToFile($routes, $path);
-                // add robots
-                $robots = new siteRobots($domain);
-                $robots->add($route['app'], $route['url']);
-                // log
-                $this->logAction('route_add', $domain.'/'.$route['url']);
             } elseif (isset($route['redirect'])) {
                 if ($route['url'] && substr($route['url'], -1) != '*' && substr($route['url'], -1) != '/' && strpos(substr($route['url'], -5), '.') === false) {
                     $route['url'] .= '/';
@@ -67,25 +74,39 @@ class siteRoutingSaveController extends waJsonController
                 $route_id = $this->getRouteId($routes[$domain]);
                 $routes[$domain] = array($route_id => $route) + $routes[$domain];
                 $this->response['add'] = 'top';
-                // save
-                waUtils::varExportToFile($routes, $path);
-                // log
-                $this->logAction('route_add', $domain.'/'.$route['url']);
             }
+
+            // Save new route
+            $params = array(
+                'domain' => $domain,
+                'route'  => &$route,
+            );
+            wa('site')->event('route_save.before', $params);
+            $routes[$domain][$route_id] = $route;
+            waUtils::varExportToFile($routes, $path);
+            wa('site')->event('route_save.after', $params);
+
+            // log
+            $this->logAction('route_add', $domain.'/'.$route['url']);
 
             $html = '<tr id="route-'.$route_id.'">
                         <td class="s-url">
-                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">'.$domain.'/</span><span class="s-editable-url" style="color:#000">'.htmlspecialchars($route['url']).'</span>
+                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">'.waIdna::dec($domain).'/</span><span class="s-editable-url" style="color:#000">'.htmlspecialchars($route['url']).'</span>
                         </td>
                         <td class="s-app'.(!empty($route['private']) ? ' gray' : '').'">';
-                            $root_url = wa()->getRootUrl();
-                            if (!empty($route['app'])) {
-                                $app = wa()->getAppInfo($route['app']);
-                                $html .= '<img src="'.$root_url.$app['icon'][24].'" class="s-app24x24icon-menu-v" alt="">'.$app['name'];
-                            } else {
-                                $html .= '<img src="'.$root_url.'wa-apps/site/img/arrow.png" class="s-app24x24icon-menu-v" alt="">
+            $root_url = wa()->getRootUrl();
+            if (!empty($route['app'])) {
+                if ($route['app'] == ':text') {
+                    $html .= '<img src="'.$root_url.'wa-apps/site/img/script-code.png?v=1" class="s-app24x24icon-menu-v" alt="">
+                                <span class="text">'.htmlspecialchars(substr($route['static_content'], 0, 32)).(strlen($route['static_content'])>32?'...':'').'</span>';
+                } else {
+                    $app = wa()->getAppInfo($route['app']);
+                    $html .= '<img src="'.$root_url.$app['icon'][24].'" class="s-app24x24icon-menu-v" alt="">'.$app['name'];
+                }
+            } else {
+                $html .= '<img src="'.$root_url.'wa-apps/site/img/arrow.png" class="s-app24x24icon-menu-v" alt="">
                                 <span class="redirect">'.htmlspecialchars($route['redirect']).'</span>';
-                            }
+            }
             $html .= '</td>
                         <td class="s-actions align-right">
                             <a href="#" class="s-route-action s-route-settings" title="'._w('Settings').'"><i class="icon16 settings"></i></a>
@@ -98,7 +119,9 @@ class siteRoutingSaveController extends waJsonController
             }
             $old = $routes[$domain][$route_id];
             $new = $this->getRoute($old);
-
+            if (!empty($new['url'])) {
+                $new['url'] = urldecode($new['url']);
+            }
             if (waRequest::post('correct_url') && strpos($new['url'], '*') === false) {
                 if (!$new['url']) {
                     $new['url'] = '*';
@@ -129,9 +152,10 @@ class siteRoutingSaveController extends waJsonController
                     if (isset($r['app']) && $r_id != $route_id && $r['url'] == $new['url']) {
                         $old_app = $r['app'] ? wa()->getAppInfo($r['app']) : array();
                         $old_app = ifset($old_app['name']);
-                        $new_app = $new['app'] ? wa()->getAppInfo($new['app']) : array();
+                        $new_app = ifset($new['app']) ? wa()->getAppInfo($new['app']) : array();
                         $new_app = ifset($new_app['name']);
-                        $this->response['confirm'] = sprintf(_w('The URL %s is already used by %s app. If you proceed, this will replace %s app with %s app on this URL.'), $new['url'], $old_app, $old_app, $new_app);
+                        $this->response['confirm'] = sprintf(_w('The URL %s is already used by %s app. If you proceed, this will replace %s app with %s app on this URL.'),
+                            $new['url'], $old_app, $old_app, $new_app);
                         $this->response['replace'] = $r_id;
                         return;
                     }
@@ -139,14 +163,24 @@ class siteRoutingSaveController extends waJsonController
                 $routes[$domain][$route_id] = $new;
             }
 
-            // save
+            $params = array(
+                'domain' => $domain,
+                'route'  => &$new,
+            );
+
+            wa('site')->event('route_save.before', $params);
+            $routes[$domain][$route_id] = $new;
             waUtils::varExportToFile($routes, $path);
+            wa('site')->event('route_save.after', $params);
 
             $this->response['url'] = $routes[$domain][$route_id]['url'];
             $this->response['private'] = !empty($routes[$domain][$route_id]['private']);
 
             if (isset($routes[$domain][$route_id]['redirect'])) {
                 $this->response['redirect'] = $routes[$domain][$route_id]['redirect'];
+                $this->response['disabled'] = (ifset($routes[$domain][$route_id]['disabled']) > 0 ) ? true : false;
+            } elseif (isset($routes[$domain][$route_id]['text'])) {
+                $this->response['text'] = $routes[$domain][$route_id]['text'];
             }
 
             if (!isset($routes[$domain][$route_id]['redirect']) && $routes[$domain][$route_id]['url'] != $old['url']) {
@@ -161,6 +195,10 @@ class siteRoutingSaveController extends waJsonController
             $this->logAction('route_edit', $domain.'/'.$routes[$domain][$route_id]['url']);
         }
 
+        //Delete cache problem domains
+        $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');
+        $cache_domain->delete();
+        $this->response['routing_errors'] = siteHelper::getRoutingErrorsInfo();
     }
 
     protected function getRouteId($routes)
@@ -210,6 +248,11 @@ class siteRoutingSaveController extends waJsonController
                     $app_settings_model = new waAppSettingsModel();
                     $name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
                 }
+            } elseif ($app_id == ':text') {
+                $params += array(
+                    'static_content'      => '',
+                    'static_content_type' => '',
+                );
             } else {
                 $app = wa()->getAppInfo($app_id);
                 $name = $app['name'];

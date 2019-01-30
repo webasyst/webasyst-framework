@@ -60,6 +60,19 @@ class waRequestFile
         $this->setData($data['name'], $data['type'], $data['size'], $data['tmp_name'], $data['error']);
     }
 
+    public function transliterateFilename()
+    {
+        if (empty($this->data)) {
+            return;
+        }
+        $filename = $this->data['name'];
+        $filename = preg_replace('/\s+/u', '-', $filename);
+        $filename = waLocale::transliterate($filename);
+        $filename = preg_replace('/[^a-zA-Z0-9._-]+/', '', $filename);
+        $filename = strtolower($filename);
+        $this->data['name'] = $filename;
+    }
+
     public function uploaded()
     {
         return ($this->data !== null) && !$this->data['error'];
@@ -179,12 +192,13 @@ class waRequestFile
                 throw new waException('No such file ($tmp_name): '.$tmp_name);
             }
         }
+
         $this->data = array(
-            'name' => $name,
-            'type' => $type,
-            'size' => $size,
+            'name'     => $name,
+            'type'     => $type,
+            'size'     => $size,
             'tmp_name' => $tmp_name,
-            'error' => $error,
+            'error'    => $error,
         );
     }
 

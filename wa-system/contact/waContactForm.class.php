@@ -34,6 +34,7 @@ class waContactForm
      * @param string|array $file path to config file, or array of config options.
      * @param array $options
      * @return self
+     * @throws waException
      */
     public static function loadConfig($file, $options = array())
     {
@@ -45,6 +46,16 @@ class waContactForm
 
     protected static function readConfig($file)
     {
+        if (is_scalar($file)) {
+            if (waConfig::get('is_template')) {
+                throw new waException('waContactForm::readConfig() is not allowed in template context');
+            }
+
+            if (pathinfo($file, PATHINFO_EXTENSION) !== 'php') {
+                throw new waException('waContactForm::readConfig() allows reading only php configs');
+            }
+        }
+
         if (is_array($file)) {
             $fields_config = $file;
         } else {
@@ -371,17 +382,6 @@ class waContactForm
         foreach ($this->fields() as $fid => $f) {
             /** @var waContactField $f */
 
-            // Fake password confirmation field
-            if ($fid === 'password_confirm') {
-                continue;
-            }
-
-            // Hidden field
-            if ($f->isHidden()) {
-                $result .= $this->html($fid, true);
-                continue;
-            }
-
             // Upload contact photo
             if ($fid === 'photo') {
                 $result .= '<div class="' . $class_field . ' ' . ($class_field.'-'.$f->getId()) . '"><div class="' . $class_name . '">' .
@@ -398,6 +398,17 @@ class waContactForm
                 $result .= "\n" . '<p><input type="file" name="' . $fid . '_file"></p>';
                 $result .= $this->html($fid, true);
                 $result .= "\n</div></div>";
+                continue;
+            }
+
+            // Fake password confirmation field
+            if ($fid === 'password_confirm') {
+                continue;
+            }
+
+            // Hidden field
+            if ($f->isHidden()) {
+                $result .= $this->html($fid, true);
                 continue;
             }
 

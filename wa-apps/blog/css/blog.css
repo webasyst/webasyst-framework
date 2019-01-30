@@ -3,7 +3,7 @@
 #wa-app > .sidebar { padding-top: 18px; }
 .b-sidebar { position: relative; }
 .b-sidebar.fixed-to-top { position: fixed; top: 0;}
-.b-sidebar.fixed-to-bottom { position: fixed; bottom: 0; }
+.b-sidebar.fixed-to-bottom { position: fixed; bottom: 0; margin-bottom: 55px}
 .b-sidebar ul.menu-v li a strong.small.highlighted,
 .b-sidebar ul.menu-v li a:hover strong.small.highlighted { color: #000; }
 .b-sidebar ul.menu-v li a i.icon10.lock-bw { margin-top: 2px; }
@@ -137,7 +137,7 @@ i.b-post-save-indicator { margin-top: 8px; }
 .b-post-editor .redactor-toolbar { z-index: 90 !important; } /* wa-dialog has z-index 99 */
 
 .el-rte .toolbar ul li.wa_post_cut { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAWtJREFUeNqcUk1Kw0AUfpMMSbBIFnVTj6AIbgXX/oDdiBcQutALCC5CCgHPILjwAMWFdNELuC2uXHiCbmIxtbRNm2Sc79UUTFw0Pvh4k7zv++a9mRHtdrtJRA2qHgPf97sySZLtIAjuq6o9z7tClmmaklKKsW4IIQg6NlgsFiLLssoG0LGBHoENgHXDMAyCjtfaqdLuCPCh425ad6Gif8bDbV3I0eiTHr1GaQQpJUO3yiiOcBkM9KpORhiGTIjj+BfQ5vF1n3OxBj50bDYcfvDuuBbANE1yHId3Rw0Z3/ifc8BHjTsdjycrg7z1/fPeqt2ds2fOr08nNJ1OeQ0+dMxXSq6cESD1O0dk2zbtNnv01j3ltvE/5ywfn1wa2LbLc+aHCCLgui6hNpvNKIqi0jWixga12hafqmVZJVK/c8AGxRr40LHBfPT+cnFTPyzf8uQHf8WcoCPaIzzHDY1NDbPCG8JhfOkuJ98CDADjd/TkDTgrUQAAAABJRU5ErkJggg==) 50% 50% no-repeat; }
-.redactor-toolbar li a.re-wa_post_cut { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAlQTFRFAAAA////AAAAc8aDcQAAAAJ0Uk5TAAB2k804AAAASklEQVQI12NYBQYMMEo0NDQUQaHKdYEgwyo2EGRYwQqEjAwLWBJYEhgYGkIYQJA1EQQZWMGSDGCFqxiiwBoZslANC0WxQRQPDwwA4JZHKcHWuIEAAAAASUVORK5CYII=) 50% 50% no-repeat; background-size: 12px; }
+.redactor-toolbar li a i.re-wa-post-cut { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAlQTFRFAAAA////AAAAc8aDcQAAAAJ0Uk5TAAB2k804AAAASklEQVQI12NYBQYMMEo0NDQUQaHKdYEgwyo2EGRYwQqEjAwLWBJYEhgYGkIYQJA1EQQZWMGSDGCFqxiiwBoZslANC0WxQRQPDwwA4JZHKcHWuIEAAAAASUVORK5CYII=) 50% 50% no-repeat; background-size: 12px; width: 17px; height: 16px; display: block; }
 
 .b-elrte-wa-split-vertical { color: #aaa; }
 

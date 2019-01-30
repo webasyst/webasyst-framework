@@ -561,6 +561,38 @@ class waContactFields
         return self::$fieldStatus[$id];
     }
 
+    public static function getTypes()
+    {
+        static $types;
+
+        if ($types === null) {
+            $types = array(
+                'NameSubfield'  => _ws('Text (input)'),
+                'Email'         => _ws('Text (input)'),
+                'Address'       => _ws('Address'),
+                'Branch'        => _ws('Selectable (radio)'),
+                'Text'          => _ws('Text (textarea)'),
+                'String'        => _ws('Text (input)'),
+                'Select'        => _ws('Select '),
+                'Phone'         => _ws('Text (input)'),
+                'IM'            => _ws('Text (input)'),
+                'Url'           => _ws('Text (input)'),
+                'SocialNetwork' => _ws('Text (input)'),
+                'Date'          => _ws('Date'),
+                'Birthday'      => _ws('Date'),
+                'Composite'     => _ws('Composite field group'),
+                'Checkbox'      => _ws('Checkbox'),
+                'Number'        => _ws('Number'),
+                'Region'        => _ws('Region'),
+                'Country'       => _ws('Country'),
+                'Hidden'        => _ws('Hidden field'),
+                'Name'          => _ws('Full name'),
+            );
+        }
+
+        return $types;
+    }
+
     /**
      * Get field parameters to be saved in *_fields_order.php
      * @param waContactField $field

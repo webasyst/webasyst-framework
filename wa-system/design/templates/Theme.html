@@ -1,91 +1,329 @@
-<div class="block double-padded blank wa-theme" id="wa-theme-{$theme.id}">
+<script src="{$wa_url}wa-content/js/jquery-wa/design/theme.settings.js?v{$wa->version()}"></script>
+<link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design/theme.settings.css?{$wa->version()}">
+{function name="_renderThemeSetting" _setting_var=_setting_var _setting=[]}
+{$_h_level = $_setting.level}
+{strip}
+    {* GROUP DIVIDER *}
+    {if $_setting.control_type == 'group_divider'}
+        {$_global_divider = $_setting.level == 1}
+        {$_not_empty_global_divider = $_global_divider && !empty($_setting.items)}
+        <div class="field-group{if !empty($_setting.invisible)} invisible-setting{/if}"{if $_setting.level > 1} style="margin-left: {$_setting.level * 10}px"{/if}>
+            <div class="wa-theme-setting-divider js-theme-setting-divider"
+                 data-divider-id="{$_setting_var}"
+                 data-divider-level="{$_setting.level}">
 
+                {* Group divider expand/collapse *}
+                {if $_setting.level == 1}
+                    <div class="wa-theme-expand-icon-wrapper">
+                        {if !empty($_setting.items)}
+                            <i class="icon16 rarr js-divider-expand" title="[s`Expand`]"></i>
+                        {/if}
+                    </div>
+                {/if}
+
+                {* Group divider name *}
+                <h{$_h_level} class="wa-theme-setting-divider-name js-divider-name js-search-item{if $_not_empty_global_divider} js-divider-expand{/if}"
+                        data-name="{$_setting.name|escape}" data-search="{strip_tags($_setting.name)}">
+                    <span class="{if $_setting.var === waTheme::OBSOLETE_SETTINGS_DIVIDER}gray {/if}js-search-item-name">{$_setting.name}</span>
+                </h{$_h_level}>
+
+                {* Group divider tooltip *}
+                {if !empty($_setting.tooltip)}
+                    <div class="wa-tooltip">
+                        <i class="icon10 info divider-tooltip-{$_setting.level}"></i>
+                        <div class="wa-tooltip-content">
+                            {$_setting.tooltip}
+                        </div>
+                    </div>
+                {/if}
+
+                {* A link that allows you to open all group settings in search mode *}
+                {if $_not_empty_global_divider}
+                    <span class="hint wa-theme-group-all-settings js-group-all-settings" style="display: none;">[s`Show all group’s settings`] <i class="icon10 darr"></i></span>
+                {/if}
+
+                {* Group divider settings *}
+                {if !empty($_setting.items)}
+                    <div class="wa-theme-settings-group js-settings-group"{if $_global_divider} style="display: none;"{/if} data-divider-level="{$_setting.level}">
+                        {foreach $_setting.items as $_var => $_item}
+                            {_renderThemeSetting _setting_var=$_var _setting=$_item}
+                        {/foreach}
+                    </div>
+                {/if}
+            </div>
+        </div>
+
+    {* PARAGRAPH *}
+    {elseif $_setting.control_type == 'paragraph'}
+        <div class="js-search-item" data-search="">
+            <div class="wa-theme-paragraph hint">{$_setting.name}</div>
+        </div>
+
+    {* SETTING *}
+    {else}
+        <div class="field{if !empty($_setting.invisible)} invisible-setting{/if} js-search-item" data-name="{$_setting.name|escape}" data-search="{strip_tags($_setting.name)}">
+            <div class="name">
+                <span class="js-search-item-name">{$_setting.name}</span>
+                {if !empty($_setting.tooltip)}
+                    <div class="wa-tooltip">
+                        <i class="icon10 info"></i>
+                        <div class="wa-tooltip-content">
+                            {$_setting.tooltip}
+                        </div>
+                    </div>
+                {/if}
+            </div>
+            <div class="value{if in_array($_setting.control_type, ['select', 'radio', 'checkbox', 'file'])} no-shift{/if}">
+
+                {* SELECT *}
+                {if $_setting.control_type == 'select'}
+                    <select name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">
+                        {html_options options=$_setting.options selected=ifset($_setting.value)}
+                    </select>
+                    {if !empty($_setting.description)}
+                        <div class="hint">{$_setting.description}</div>
+                    {/if}
+
+                {* RADIO *}
+                {elseif $_setting.control_type == 'radio'}
+                    {foreach $_setting.options as $v => $o}
+                        <label>
+                            <input {if ifset($_setting.value)==$v}checked{/if} type="radio" value="{$v}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" > {$o.name}
+                            {if !empty($o.description)}
+                                <p class="hint">{$o.description}</p>
+                            {/if}
+                        </label>
+                    {/foreach}
+
+                {* COLOR *}
+                {elseif $_setting.control_type == 'color'}
+                    <input class="color" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
+                    {if !empty($_setting.description)}
+                        <div class="hint">{$_setting.description}</div>
+                    {/if}
+
+                {* CHECKBOX *}
+                {elseif $_setting.control_type == 'checkbox'}
+                    <input type="hidden" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="">
+                    <input type="checkbox" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" {if $_setting.value}checked{/if} value="1">
+                    {if !empty($_setting.description)}
+                        <div class="hint">{$_setting.description}</div>
+                    {/if}
+
+                {* IMAGE SELECT *}
+                {elseif $_setting.control_type == 'image_select'}
+                    <ul class="wa-theme-image-select">
+                        {if !empty($_setting.parent)}
+                            {$_url = $theme.parent_theme->getUrl()}
+                        {else}
+                            {$_url = $theme->getUrl()}
+                        {/if}
+                        {foreach $_setting.options as $k => $v}
+                            <li{if $_setting.value == $k} class="selected"{/if} data-value="{$k}"><a href="#" class="transparent-sprite"><img src="{$_url}{$k}"></a></li>
+                        {/foreach}
+                    </ul>
+                    <input type="hidden" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value}">
+                    {if !empty($_setting.description)}
+                        <div class="hint">{$_setting.description}</div>
+                    {/if}
+
+                {* IMAGE *}
+                {elseif $_setting.control_type == 'image'}
+                    <input type="hidden" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{ifset($_setting.value)}">
+                    <input type="file" name="{if !empty($_setting.parent)}parent_{/if}image[{$_setting_var}]">
+                    {if !empty($_setting.value)}
+                        {if !empty($_setting.parent)}
+                            {$_url = $theme.parent_theme->getUrl()}
+                        {else}
+                            {$_url = $theme->getUrl()}
+                        {/if}
+                        <div class="image"><br>
+                            <img class="transparent-sprite" src="{$_url}{$_setting.value}">
+                            <br>
+                            <a class="small delete-image" href="#">[s`Delete`]</a>
+                        </div>
+                    {/if}
+                    {if !empty($_setting.description)}
+                        <div class="hint">{$_setting.description}</div>
+                    {/if}
+
+                {* OTHER *}
+                {else}
+                    <div>
+                        {if !$_setting.value || strlen($_setting.value) <= 50}
+                            <input class="flexible" id="flex-settings-{$_setting_var}" type="text" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]" value="{$_setting.value|escape}">
+                        {else}
+                            <textarea class="flexible" id="flex-settings-{$_setting_var}" name="{if !empty($_setting.parent)}parent_{/if}settings[{$_setting_var}]">{$_setting.value|escape}</textarea>
+                        {/if}
+                    </div>
+                    {if !empty($_setting.description)}
+                        <div class="hint">{$_setting.description}</div>
+                    {/if}
+                {/if}
+            </div>
+        </div>
+    {/if}
+{/strip}
+{/function}
+{$id = uniqid("wa-theme-id`$theme.id`")}
+<div class="block double-padded blank wa-theme" id="{$id}">
+
+    {* Theme name *}
     <h1 class="wa-theme-name">
         {sprintf('[s`%s design theme`]', $theme.name|escape)}
-        <span class="hint">{$theme.version}</span>
+        <span class="hint">
+            {$theme.version}
+            <span style="font-size: smaller;" title="[s`Theme ID`]">({$theme.id|escape})</span>
+        </span>
     </h1>
 
-    <!-- THEME ACTIONS -->
-    <div class="sidebar right250px">
+    {* THEME ACTIONS *}
+    <div class="wa-theme-sidebar sidebar right250px">
 
-        <!-- theme update -->
+        {* Theme help *}
+        {if !empty($support) || !empty($instruction)}
+            <div class="block wa-theme-help">
+                <div class="heading bold"><span class="wa-theme-help-icon"></span>[s`Help`]</div>
+                <ul>
+                    {if !empty($instruction)}
+                        <li>
+                            <a href="{$instruction|escape}" target="_blank" class="no-underline">[s`Design theme user manual`]</a> <i class="icon10 new-window"></i>
+                        </li>
+                    {/if}
+                    {if !empty($support)}
+                        <li>
+                            <a href="{$support|escape}" target="_blank" class="no-underline">[s`User support`]</a> <i class="icon10 new-window"></i>
+                        </li>
+                    {/if}
+                </ul>
+            </div>
+        {/if}
+
+        {* Theme update *}
         {if $theme.type == waTheme::ORIGINAL}
 
-            <!-- original theme version from /wa-apps/ -->
+            {if $theme_routes && !empty($theme_warning_requirements)}
+                <div class="block double-padded wa-theme-actions wa-theme-warning">
+                    <ul class="menu-v">
+                        {foreach $theme_warning_requirements as $requirement}
+                            <li>{$requirement.warning|escape}</li>
+                        {/foreach}
+                    </ul>
+                </div>
+            {/if}
+
+            {* Original theme version from /wa-apps/ *}
             <div class="block double-padded wa-theme-actions wa-theme-latest">
                 <ul class="menu-v with-icons">
-
                     <li>
-
                         <b><i class="icon16 yes"></i>{sprintf('[s`Original version <strong>%s</strong>`]', $theme.version)}</b>
                         <span class="hint"><br>[s`No customizations have been made to theme settings and template files.`]</span>
                     </li>
-
                 </ul>
             </div>
 
         {elseif $theme.type == waTheme::OVERRIDDEN}
 
             {if $theme.version == $theme_original_version}
-                {if !$theme.parent_theme || $theme.parent_theme.version == $theme_parent_original_version}
-                <!-- modified, but still the latest version -->
-                <div class="block double-padded wa-theme-actions wa-theme-latest">
-                    <ul class="menu-v with-icons">
-
-                        <li>
-                            <b><i class="icon16 yes"></i>{sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}</b>
-                            <span class="hint"><br>{sprintf('[s`Your customized version of %s theme is up to date.`]', $theme.name|escape)}</span>
-                        </li>
-
-                    </ul>
-                </div>
+                {if !$theme.parent_theme || $theme.parent_theme.type == waTheme::ORIGINAL || $theme.parent_theme.version == $theme_parent_original_version}
+                    {* Modified, but still the latest version *}
+                    <div class="block double-padded wa-theme-actions wa-theme-latest">
+                        <ul class="menu-v with-icons">
+                            <li>
+                                <b><i class="icon16 yes"></i>{sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}</b>
+                                <span class="hint"><br>{sprintf('[s`Your customized version of %s theme is up to date.`]', $theme.name|escape)}</span>
+                            </li>
+                        </ul>
+                    </div>
                 {else}
-                <!-- update is available -->
-                <div class="block double-padded wa-theme-actions wa-theme-update-available">
-                    <ul class="menu-v with-icons">
+                    {* Update is not available *}
+                    {if !empty($theme_parent_warning_requirements)}
+                        <div class="block double-padded wa-theme-actions wa-theme-warning">
+                            <strong>[s`Update not available`]</strong>
+                            <ul class="menu-v">
+                                {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
+                                    <li>
+                                        {$requirement.warning}
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        </div>
 
-                        <li>
-                            <a class="theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 update"></i>[s`Update is available`]</a>
-                            <span class="hint"><br>[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</span>
-                        </li>
-
-                    </ul>
-                </div>
+                    {* Update is available *}
+                    {elseif $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN && $theme.parent_theme.version != $theme_parent_original_version}
+                        <div class="block double-padded wa-theme-actions wa-theme-update-available">
+                            <ul class="menu-v with-icons">
+                                <li>
+                                    <a class="theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 update"></i>[s`Update is available`]</a>
+                                    <span class="hint"><br>[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</span>
+                                </li>
+                            </ul>
+                        </div>
+                    {/if}
                 {/if}
             {else}
-            <!-- update is available -->
-            <div class="block double-padded wa-theme-actions wa-theme-update-available">
-                <ul class="menu-v with-icons">
+                {* Update is not available *}
+                {if $theme.version != $theme_original_version && !empty($theme_warning_requirements)}
+                    <div class="block double-padded wa-theme-actions wa-theme-warning">
+                        <strong>[s`Update not available`]</strong>
+                        <ul class="menu-v">
+                            {foreach $theme_warning_requirements as $requirement}
+                                <li>
+                                    {$requirement.warning}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </div>
 
-                    <li>
-                        <a class="theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 update"></i>{sprintf('[s`Update to version %s is available`]', $theme_original_version)}</a>
-                        <span class="hint"><br>[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</span>
-                    </li>
+                {* Update is not available *}
+                {elseif $theme.version != $theme_original_version && !empty($theme_original_warning_requirements)}
+                    <div class="block double-padded wa-theme-actions wa-theme-warning">
+                        <strong>[s`Update not available`]</strong>
+                        <ul class="menu-v">
+                            {foreach $theme_original_warning_requirements as $requirement}
+                                <li>
+                                    {$requirement.warning}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </div>
 
-                </ul>
-            </div>
+                {* Update is available *}
+                {elseif $theme.version != $theme_original_version}
+                    <div class="block double-padded wa-theme-actions wa-theme-update-available">
+                        <ul class="menu-v with-icons">
+                            <li>
+                                <a class="theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 update"></i>{sprintf('[s`Update to version %s is available`]', $theme_original_version)}</a>
+                                <span class="hint"><br>[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</span>
+                            </li>
+                        </ul>
+                    </div>
+                {/if}
             {/if}
 
         {else}
 
-            <!-- no original theme with same ID -->
+            {* No original (eg. cloned) theme with same ID *}
             <div class="block double-padded wa-theme-actions wa-theme-orphan">
                 <ul class="menu-v with-icons">
-
                     <li>
                         <b><i class="icon16 split"></i>{$theme.id}</b>
                         <span class="hint"><br>{sprintf('[s`This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>).`]', $theme.id)}</span>
-
                     </li>
-
                 </ul>
             </div>
 
         {/if}
 
-        <!-- misc actions -->
-        <div class="block double-padded wa-theme-actions">
+        {* Misc actions *}
+        <div class="block  wa-theme-actions">
             <ul class="menu-v with-icons">
+                {if !empty($settings.items)}
+                    {* Export theme settings *}
+                    <li><a href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}"><i class="icon16 import"></i>[s`Export theme settings`]</a></li>
+                    {* Import theme settings *}
+                    <li><a class="js-import-theme-settings" href="#"><i class="icon16 export"></i>[s`Import theme settings`]</a></li>
+                {/if}
                 {if count($theme->related_themes)>1}
                     <li><a class="theme-download" href="#"><i class="icon16 download"></i>[s`Download theme backup`]</a></li>
 
@@ -94,168 +332,42 @@
                 {/if}
                 <li><a class="theme-copy" href="#" data-related="{if count($theme->related_themes)>1}1{else}0{/if}"><i class="icon16 split"></i>[s`Clone theme`]</a></li>
                 <li><a class="theme-rename" href="#"><i class="icon16 edit"></i>[s`Rename theme`]</a></li>
-                <li><i class="icon16 link"></i>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not set`]{/if}</strong>  <a class="theme-parent inline" href="#">[s`Change`]</a></li>
-                <li class="top-padded">
-                    <a class="theme-reset{if $theme.type neq waTheme::OVERRIDDEN} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $theme.type neq waTheme::OVERRIDDEN} onClick="window.alert('[s`You did not apply customizations to this theme yet, and thus there is nothing to revert.`]');"{/if}><i class="icon16 broom"></i>[s`Revert theme to original`]</a>
-                    {if $theme.type neq waTheme::OVERRIDDEN}
-                        <span class="hint">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now.`]</span>
-                    {else}
-                        <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
-                    {/if}
+                <li class="gray">
+                    <i class="icon16 link"></i>[s`Parent theme`]:<br>
+                    <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong>.
+                    <a class="theme-parent inline-link" href="javascript:void(0);"><b><i>{if $theme.parent_theme_id}[s`Change theme`]{else}[s`Select`]{/if}</i></b></a>
+                    <div class="hint">[s`You can change the theme in settlement settings.`]</div>
                 </li>
+                {if empty($theme_warning_requirements) && empty($theme_original_warning_requirements)}
+                    <li class="top-padded">
+                        <a class="theme-reset{if $theme.type neq waTheme::OVERRIDDEN} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $theme.type neq waTheme::OVERRIDDEN} onClick="window.alert('[s`You did not apply customizations to this theme yet, and thus there is nothing to revert.`]');"{/if}><i class="icon16 broom"></i>[s`Revert theme to original`]</a>
+                        {if $theme.type neq waTheme::OVERRIDDEN}
+                            <span class="hint">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now.`]</span>
+                        {else}
+                            <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
+                        {/if}
+                    </li>
+                {/if}
                 <li class="top-padded">
                     <a class="theme-delete{if $theme.system} disabled{/if}" href="#" title="[s`This will permanently delete theme without the ability to recover. Are you sure?`]"><i class="icon16 delete"></i>[s`Delete theme`]</a>
                     {if $theme.system}<span class="hint">[s`Default theme cannot be deleted`]</span>{/if}
                 </li>
             </ul>
         </div>
-    </div>
 
-    <div class="content right250px">
-
-        {if !$theme_routes}
-
-            <!-- THEME IS NOT IN USE -->
-
-            {if $wa->get('just_installed')}
-                <p class="bold successmsg"><i class="icon16 yes"></i>{sprintf(_ws('%s design theme has been successfully installed. Start using this theme by clicking the button below.'), $theme.name|escape)}</p>
-            {else}
-                <p>
-                    {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
-                </p>
-            {/if}
-
-            {if $cover}
-            <p>
-                <img src="{$cover}" class="wa-theme-cover" />
-            </p>
-            {/if}
-
-            <p style="line-height: 2.2em;">
-                <a id="theme-start-using" href="#" class="button green">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
-                {if !empty($preview_url)}
-                [s`or`]
-                <span class="nowrap"><a class="wa-theme-preview" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
-                {/if}
-            </p>
-        {else}
-
-
-            <!-- THEME SETTINGS FORM -->
-
-            {if $settings}
-
-                <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
-                <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
-
-                <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
-                <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
-                    {$wa->csrf()}
-                    <br>
-                    <div class="fields form">
-                        {foreach $settings as $s_var => $s}
-                        {if $s.control_type == 'group_divider'}
-                        <h5 class="heading clear-both"><br>{$s.name}<br><br></h5>
-                        {else}
-                        <div class="field">
-                            <div class="name">{$s.name}</div>
-                            <div class="value{if in_array($s.control_type, ['select', 'radio', 'checkbox', 'file'])} no-shift{/if}">
-                                {if $s.control_type == 'select'}
-                                    <select name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">
-                                        {html_options options=$s.options selected=ifset($s.value)}
-                                    </select>
-                                    {if !empty($s.description)}
-                                    <div class="hint">{$s.description}</div>
-                                    {/if}
-                                {elseif $s.control_type == 'radio'}
-                                {foreach $s.options as $v => $o}
-                                    <label>
-                                        <input {if ifset($s.value)==$v}checked{/if} type="radio" value="{$v}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" > {$o.name}
-                                        {if !empty($o.description)}
-                                        <p class="hint">{$o.description}</p>
-                                        {/if}
-                                    </label>
-                                {/foreach}
-                                {elseif $s.control_type == 'color'}
-                                    <input class="color" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
-                                    {if !empty($s.description)}
-                                    <div class="hint">{$s.description}</div>
-                                    {/if}
-                                {elseif $s.control_type == 'checkbox'}
-                                    <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="">
-                                    <input type="checkbox" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" {if $s.value}checked{/if} value="1">
-                                    {if !empty($s.description)}
-                                    <div class="hint">{$s.description}</div>
-                                    {/if}
-                                {elseif $s.control_type == 'image_select'}
-                                    <ul class="wa-theme-image-select">
-                                        {if !empty($s.parent)}
-                                            {$_url = $theme.parent_theme->getUrl()}
-                                        {else}
-                                            {$_url = $theme->getUrl()}
-                                        {/if}
-                                        {foreach $s.options as $k => $v}
-                                            <li{if $s.value == $k} class="selected"{/if} data-value="{$k}"><a href="#"><img src="{$_url}{$k}"></a></li>
-                                        {/foreach}
-                                    </ul>
-                                    <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
-                                    {if !empty($s.description)}
-                                    <div class="hint">{$s.description}</div>
-                                    {/if}
-                                {elseif $s.control_type == 'image'}
-                                    <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{ifset($s.value)}">
-                                    <input type="file" name="{if !empty($s.parent)}parent_{/if}image[{$s_var}]">
-                                    {if !empty($s.value)}
-                                        {if !empty($s.parent)}
-                                        {$_url = $theme.parent_theme->getUrl()}
-                                        {else}
-                                        {$_url = $theme->getUrl()}
-                                        {/if}
-                                        <div class="image"><br>
-                                            <img src="{$_url}{$s.value}?v{time()}">
-                                            <br>
-                                            <a class="small delete-image" href="#">[s`Delete`]</a>
-                                        </div>
-                                    {/if}
-                                    {if !empty($s.description)}
-                                        <div class="hint">{$s.description}</div>
-                                    {/if}
-                                {else}
-                                    <div>
-                                    {if !$s.value || strlen($s.value) <= 50}
-                                    <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
-                                    {else}
-                                    <textarea class="flexible" id="flex-settings-{$s@index}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">{$s.value|escape}</textarea>
-                                    {/if}
-                                    </div>
-                                    {if !empty($s.description)}
-                                    <div class="hint">{$s.description}</div>
-                                    {/if}
-                                {/if}
-                            </div>
-                        </div>
-                        {/if}
-                        {/foreach}
-
-                        <div class="wa-design-save-panel block bordered-top">
-                            <input type="submit" class="button green" value="[s`Save`]">
-                            <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
-                            <span id="theme-settings-error" class="errormsg" style="display: inline"></span></div>
-                    </div>
-                </form>
-            {else}
-                <p>
-                    <br>
-                    <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
-                </p>
-            {/if}
-
-        {/if}
-
-        <!-- THEME USAGE -->
-        <div class="fields" style="width: 100%">
+        {* Theme usage *}
+        <div class="block wa-theme-usage fields">
 
             {if count($theme_routes)}<h4 class="heading">[s`Theme usage`]</h4>{/if}
+
+            <div class="field">
+                <div class="name">
+                    [s`Theme ID`]
+                </div>
+                <div class="value">
+                    {$theme.id|escape}
+                </div>
+            </div>
 
             <div class="field">
                 <div class="name">
@@ -296,660 +408,198 @@
                         </div>
                     {/foreach}
 
-                    {if count($theme_routes) > 1}
-                        <div class="value">
-                            <p class="gray small">
-                                <i class="icon10 exclamation"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
-                            </p>
-                        </div>
-                    {/if}
-
                 </div>
             {/if}
 
+            {if count($theme_routes) > 1}
+                <p class="gray small">
+                    <i class="icon10 exclamation"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
+                </p>
+            {/if}
+
         </div>
-
-        {if trim($theme.about)}
-            <!-- ABOUT -->
-            <h4 class="heading">[s`About this theme`]</h4>
-            {$theme.about}
-        {/if}
-
-        {if !empty($theme.thumbs)}
-            <!-- THUMB SIZES -->
-            <h4 class="heading">[s`Thumbnails`]</h4>
-            <p>[s`This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-fly thumbnail generation is allowed, thumbnails will be generated automatically.`]</p>
-            <ul class="bold" style="line-height: 1.5em;">
-                {foreach $theme.thumbs as $t}
-                    <li>{$t}</li>
-                {/foreach}
-            </ul>
-        {/if}
-
-        <div class="clear-both"></div>
-
     </div>
 
-</div>
-
-
-<div class="width500px height400px" id="wa-theme-update-dialog"></div>
-
-
-<div class="dialog width500px height200px" id="wa-theme-reset-dialog">
-    <div class="dialog-background"> </div>
-    <div class="dialog-window">
-        <form>
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>[s`Revert to original`]</h1>
-                    <p><i class="icon10 exclamation"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
-
-                    {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
+    <div class="wa-theme-content content right250px">
+        {* Theme navigation *}
+        {if $theme_routes && !empty($settings.items)}
+            <div class="wa-theme-navigation js-theme-navigation">
+                {* Expand/collapse all groups *}
+                <div class="wa-theme-expand-collapse">
+                    <a href="javascript:void(0);" class="inline-link js-expand-collapse-all">
+                        <div class="wa-theme-expand-icon-wrapper">
+                            <i class="icon16"></i>
+                        </div>
+                        <b><i class="js-action-text"></i></b>
+                    </a>
+                </div>
+                {* Search settings *}
+                <div class="wa-theme-search-settings">
+                    <input type="search" class="wa-theme-search-input js-search-setting" autocomplete="off" placeholder="[s`Find setting`]" />
+                </div>
+                {* Hidden settings *}
+                <div class="wa-theme-hidden-settings js-hidden-settings-wrapper" style="display: none;">
                     <label>
-                        <input type="checkbox" name="parent" value="1"> {sprintf("[s`Drop all customizations and revert parent theme <strong>%s</strong> to the original version too`]", $theme.parent_theme_id)}
+                        <input type="checkbox" class="js-show-invisible-settings" />
+                        [s`Show hidden settings`]
                     </label>
-                    {/if}
                 </div>
-                <div class="clear"></div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <input type="hidden" name="theme" value="{$theme.id}">
-                    <input type="submit" class="button red" value="[s`Revert to original`]">
-                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<div class="dialog width600px height300px" id="wa-theme-start-using-dialog">
-    <div class="dialog-background"> </div>
-    <div class="dialog-window">
-        <form>
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>{$theme.name}</h1>
-                    <p>{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
-
-                    <div class="fields width100px form">
-                        <div class="field">
-                            <div class="name">[s`Existing route`]</div>
-                            {foreach $routes as $r}
-                                <div class="value no-shift">
-                                    <label>
-                                        <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
-                                        {$r._domain}/{$r.url}
-                                        <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
-                                    </label>
-                                </div>
-                            {foreachelse}
-                                <div class="value gray">
-                                    {sprintf('[s`There are no routes for %s app on this site yet.`]', $app.name)}
-                                </div>
-                            {/foreach}
-                        </div>
-                        <div class="field">
-                            <div class="name">[s`New route`]</div>
-                            <div class="value">
-                                <input name="route" id="create-new-route-choice" value="new" type="radio"{if !count($routes)} checked{/if}>
-
-                                {if count($domains) == 1}
-                                    <input name="domain" type="hidden" value="{current($domains)}">
-                                {current($domains)}/{else}
-                                    <select name="domain" class="create-new-route-control">
-                                        {foreach $domains as $d}
-                                        <option value="{$d}">{str_replace('www.','',$d)|truncate:23:'...':false:true}</option>
-                                        {/foreach}
-                                    </select>/
-                                {/if}
-                                <input type="text" name="url" value="" placeholder="*" class="short create-new-route-control">
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <div class="value">
-                                <label>
-                                    <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
-                                    [s`Apply this theme for mobile devices only`]
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <input type="hidden" name="theme" value="{$theme.id}">
-                    <input type="submit" class="button green" value="{sprintf("[s`Start using %s theme`]", $theme.name)}">
-                    [s`or`] <a href="#" class="cancel">[s`cancel`]</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-
-<div class="dialog height250px" id="wa-theme-name-dialog">
-    <div class="dialog-background"> </div>
-    <div class="dialog-window">
-        <form>
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>[s`Rename theme`]</h1>
-                    <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
-                    <div class="fields form">
-                        <div class="field">
-                            <div class="name">
-                                [s`Theme name`]
-                            </div>
-                            <div class="value">
-                                <input type="text" id="wa-theme-rename-name" name="name" value="{$theme.name|escape}" >
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="name">
-                                [s`Theme ID`]
-                            </div>
-                            <div class="value">
-                                {$path}/<input type="text" id="wa-theme-rename-id" name="id" value="{$theme.id}"  class="bold">
-                            </div>
-                            <div class="value">
-                                <p class="small"><i class="icon10 exclamation"></i> [s`IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error.`]</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <input type="submit" class="button green" value="[s`Save`]">
-                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="dialog height200px" id="wa-theme-copy-dialog">
-    <div class="dialog-background"> </div>
-    <div class="dialog-window">
-        <form>
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>[s`Clone theme`]</h1>
-                    <div class="fields form">
-                        <div class="field">
-                            <div class="name">
-                                [s`Theme name`]
-                            </div>
-                            <div class="value">
-                                <input type="text" id="wa-theme-copy-name" name="name" value="{$theme.name|escape} 1" >
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="name">
-                                [s`Theme ID`]
-                            </div>
-                            <div class="value">
-                                <input type="text" id="wa-theme-copy-id" name="id" value="{$theme.id}1"  class="bold">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="name">
-                                [s`Themes to clone`]
-                            </div>
-                            <div class="value no-shift">
-                                <label><strong><input name="related" type="radio" value="1" checked="checked">&nbsp;{'[`All %s themes (recommended)`]'|sprintf:$theme.name|escape}</strong></label>
-                            </div>
-                            <div class="value no-shift">
-                                <label><input name="related" type="radio" value="0">&nbsp;{'[`Only %s theme for this app (%s)`]'|sprintf:$theme.name:ifempty($apps[$theme.app]['name'],$theme.app)|escape}</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <input type="submit" class="button green" value="[s`Clone theme`]">
-                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="dialog height300px" id="wa-theme-download-dialog">
-    <div class="dialog-background"> </div>
-    <div class="dialog-window">
-        <form>
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>{$theme.name|escape}</h1>
-                    <ul class="menu-v with-icons">
-                        {foreach $theme.related_themes as $related_theme_id => $related_theme}
-                            <li{if ($theme.app_id==$related_theme.app_id)||($theme.parent_theme_id==$related_theme_id)} class="bold"{/if}><a href="?module=design&amp;action=themeDownload&amp;theme={$related_theme.id}&amp;app_id={$related_theme.app_id}"><i class="icon16 download"></i>{sprintf('[s`%s theme (version %s) for %s app`]',$related_theme.name,$related_theme.version,ifempty($apps[$related_theme.app_id]['name'],$related_theme.app))|escape} <span class="hint nowrap">.tar.gz</span></a></li>
+                {if !empty($global_group_divideres)}
+                    <div class="wa-theme-anchors js-anchors">
+                        {foreach $global_group_divideres as $_divider_id => $_divider_name}
+                            <a href="javascript:void(0);" class="wa-setting-anchor inline-link js-anchor-item" data-divider-id="{$_divider_id|escape}"><b><i>{strip_tags($_divider_name)}</i></b></a>
                         {/foreach}
+                        {if trim($theme.about)}
+                            <a href="javascript:void(0);" class="wa-other-anchor inline-link js-other-anchor-item" data-other-id="theme-about"><b><i>[s`About this theme`]</i></b></a>
+                        {/if}
+                        {if !empty($theme.thumbs)}
+                            <a href="javascript:void(0);" class="wa-other-anchor inline-link js-other-anchor-item" data-other-id="theme-thumb"><b><i>[s`Images thumbnails`]</i></b></a>
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+        {/if}
 
+        {if !$theme_routes}
+
+            {* THEME IS NOT IN USE *}
+            {if $wa->get('just_installed')}
+                <p class="bold successmsg"><i class="icon16 yes"></i>{sprintf(_ws('%s design theme has been successfully installed. Start using this theme by clicking the button below.'), $theme.name|escape)}</p>
+            {else}
+                <p>
+                    {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
+                </p>
+            {/if}
+
+            {if $cover}
+                <p>
+                    <img src="{$cover}" class="wa-theme-cover" />
+                </p>
+            {/if}
+
+            {if !empty($theme_warning_requirements)}
+                <ul>
+                    {foreach $theme_warning_requirements as $requirement}
+                        <li><b>{$requirement.warning}</b></li>
+                    {/foreach}
+                </ul>
+            {elseif !empty($theme_original_warning_requirements)}
+                <ul>
+                    {foreach $theme_original_warning_requirements as $requirement}
+                        <li><b>{$requirement.warning}</b></li>
+                    {/foreach}
+                </ul>
+            {elseif !empty($theme_parent_warning_requirements)}
+                <ul>
+                    {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
+                        <li><b>{$requirement.warning}</b></li>
+                    {/foreach}
+                </ul>
+            {else}
+                <p style="line-height: 2.2em;">
+                    <a id="theme-start-using" href="#" class="button green">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
+                    {if !empty($preview_url)}
+                        [s`or`]
+                        <span class="nowrap"><a class="wa-theme-preview" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
+                    {/if}
+                </p>
+            {/if}
+        {else}
+
+        {* THEME SETTINGS FORM *}
+
+        {if !empty($settings.items)}
+
+        <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
+        <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
+
+        <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
+        <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
+            {$wa->csrf()}
+            <br>
+            <div class="wa-theme-search-min-symbol bold js-search-min-symbol" style="display: none;">[s`Minimum 3 characters`]</div>
+            <div class="wa-theme-search-result js-search-result" style="display: none;">[s`Search results:`]</div>
+            <div class="wa-theme-search-no-result js-search-no-result" style="display: none;">[s`No settings found`]</div>
+
+            <div class="wa-theme-settings-list fields form js-settings-list">
+                {foreach $settings.items as $s_var => $setting}
+                    {_renderThemeSetting _setting_var=$s_var _setting=$setting}
+                {/foreach}
+
+            <div class="wa-design-save-panel block bordered-top">
+                <input type="submit" class="button green js-submit" value="[s`Save`]">
+                <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
+                <span id="theme-settings-error" class="errormsg" style="display: inline"></span>
+            </div>
+    </div>
+    </form>
+    {else}
+    <p>
+        <br>
+        <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
+    </p>
+    {/if}
+
+    {/if}
+
+    <div class="wa-theme-other">
+        {* Theme about *}
+        {if trim($theme.about)}
+            <div class="wa-theme-other-data js-theme-other-data" data-id="theme-about">
+                <h4 class="label js-other-label"><i class="icon16 rarr"></i>[s`About this theme`]</h4>
+                <div class="content js-other-content" style="display: none;">
+                    {$theme.about}
+                </div>
+            </div>
+        {/if}
+
+        {* Theme thumbs *}
+        {if !empty($theme.thumbs)}
+            <div class="wa-theme-other-data js-theme-other-data" data-id="theme-thumb">
+                <h4 class="label js-other-label"><i class="icon16 rarr"></i>[s`Images thumbnails`]</h4>
+                <div class="content js-other-content" style="display: none;">
+                    <p>[s`This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-fly thumbnail generation is allowed, thumbnails will be generated automatically.`]</p>
+                    <ul class="bold" style="line-height: 1.5em;">
+                        {foreach $theme.thumbs as $t}
+                            <li>{$t}</li>
+                        {/foreach}
                     </ul>
                 </div>
-                <div class="clear"></div>
             </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <a href="#/design/themes/" class="cancel button">[s`Close`]</a>
-                </div>
-            </div>
-        </form>
+        {/if}
     </div>
+
+    <div class="clear-both"></div>
+
 </div>
 
+    {* Include dialogs *}
+    {include file='./ThemeDialogs.inc.html' inline}
 
-<div class="dialog width600px height250px" id="wa-theme-parent-dialog">
-    <div class="dialog-background"> </div>
-    <div class="dialog-window">
-        <form>
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>[s`Parent theme`]</h1>
-                    <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
-                    <div class="fields form">
-                        <div class="field">
-                            <div class="name">
-                                [s`Change parent theme`]
-                            </div>
-                            <div class="value">
-                                <input type="hidden" name="id" value="{$theme.id}">
-                                <select name="parent_theme_id">
-                                    <option value=""{if !$theme.parent_theme_id} selected="selected"{/if}>[s`Not set`]</option>
-                                {foreach $parent_themes as $app_id => $info}
-                                    <optgroup label="{$info.name|escape}" title="{$app_id}">
-                                        {foreach $info.themes as $parent_theme_id => $theme_name}
-                                            {$parent_theme_id = "`$app_id`:`$parent_theme_id`"}
-                                            <option value="{$parent_theme_id}" title="{$parent_theme_id}"{if $parent_theme_id eq $theme.parent_theme_id} selected="selected"{else if ($parent_theme_id eq "`$theme.app_id`:`$theme.id`") || ($parent_theme_id eq $theme.id)} disabled="disabled"{/if}>{$theme_name|escape} ({$parent_theme_id})</option>
-                                        {/foreach}
-                                    </optgroup>
-                                {/foreach}
-                                </select>
-                            </div>
-                            <div class="value">
-                                <p class="small"><i class="icon10 exclamation"></i>[s`IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme.`]</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="clear"></div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <input type="submit" class="button green" value="[s`Save`]">
-                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
-                </div>
-            </div>
-        </form>
-    </div>
 </div>
 
-<script type="text/javascript">
-    var theme_id = "{$theme.id}";
-    $(".theme-rename").on('click', function () {
-        $("#wa-theme-name-dialog").waDialog({
-            disableButtonsOnSubmit: true,
-            onSubmit: function () {
-                $.post("?module=design&action=themeRename", {
-                    theme: theme_id, id: $("#wa-theme-rename-id").val(), name: $("#wa-theme-rename-name").val()
-                }, function (response) {
-                    $("#wa-theme-name-dialog").hide();
-                    if (response.status == 'ok') {
-                        if(response.data.redirect) {
-                            location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
-                            location.reload();
-                        } else {
-                            location.reload();
-                        }
-                    } else {
-                        alert(response.errors);
-                    }
-                }, "json");
-                return false;
-            }
+{$_locale = [
+    'will_be_lost' => '[s`All customizations you’ve made to this file will be lost!`]',
+    'update_notice' => mb_strtoupper('[s`All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?`]'),
+    'expand_all' => '[s`Expand all`]',
+    'collapse_all' => '[s`Collapse all`]',
+    'expand' => '[s`Collapse`]',
+    'collapse' => '[s`Collapse`]'
+]}
+<script>
+    (function ($) {
+        new WAThemeSettings({
+            $wrapper: $("#{$id}"),
+            theme_id: {$theme.id|json_encode},
+            design_url: {$design_url|json_encode},
+            locale: {$_locale|json_encode}
         });
-        return false;
-    });
-    $(".theme-download").on('click', function () {
-        $("#wa-theme-download-dialog").waDialog();
-        return false;
-    });
-
-    $('#theme-settings').submit(function () {
-        $("#theme-settings-iframe").one('load', function () {
-            var response = $.parseJSON($(this).contents().find('body').html());
-            if (response.status == 'ok') {
-                $("#theme-settings-error").hide().empty();
-                $("#theme-settings-message").fadeIn('slow', function () { $(this).fadeOut('slow');});
-                waDesignLoad();
-            } else {
-                $("#theme-settings-error").html(response.errors ? response.errors : response);
-                $("#theme-settings-error").fadeIn("slow");
-            }
-        });
-    });
-
-    $(function () {
-
-        $('a.delete-image').click(function () {
-            $(this).closest('div.value').find("input:hidden").val('');
-            $(this).parent().remove();
-            return false;
-        });
-
-        $('.wa-theme-image-select a').click(function () {
-            var li = $(this).parent();
-            var ul = li.parent();
-            ul.find('li.selected').removeClass('selected');
-            li.addClass('selected');
-            ul.next('input').val(li.data('value'));
-            return false;
-        });
-        var input2textarea = function(input) {
-            var p = input.parent();
-            var rm = false;
-            if (!p.length) {
-                p = $('<div></div>');
-                p.append(input);
-                rm = true;
-            }
-            var val = input.val();
-
-            var html = p.html();
-            html = html.replace(/value(\s*?=\s*?['"][\s\S]*?['"])*/, '');
-            html = html.replace(/type\s*?=\s*?['"]text['"]/, '');
-            html = html.replace('input', 'textarea');
-            html = html.replace(/(\/\s*?>|>)/, '>' + val  + '</textarea>');
-
-            if (rm) {
-                p.remove();
-            }
-
-            return $(html);
-
-        };
-
-        var textarea2input = function(textarea) {
-            var p = textarea.parent();
-            var rm = false;
-            if (!p.length) {
-                p = $('<div></div>');
-                p.append(textarea);
-                rm = true;
-            }
-            var val = textarea.val();
-
-            var html = p.html();
-            html = html.replace('textarea', 'input type="text" value="' + val + '"');
-            html = html.replace('</textarea>', '');
-
-            if (rm) {
-                p.remove();
-            }
-
-            return $(html);
-        };
-    $('.flexible').each(function () {
-        var timeout = 250;
-        var threshold = 50;
-        var height = 45;
-        var timer_id = null;
-        var field = $(this);
-
-        var onFocus = function() {
-            this.selectionStart = this.selectionEnd = this.value.length;
-        };
-        var handler = function() {
-            if (timer_id) {
-                clearTimeout(timer_id);
-                timer_id = null;
-            }
-            timer_id = setTimeout(function() {
-                var val = field.val();
-                if (val.length > threshold && field.is('input')) {
-                    var textarea = input2textarea(field);
-                    textarea.css('height', height);
-                    field.replaceWith(textarea);
-                    field = textarea;
-                    field.focus();
-                } else if (val.length <= threshold && field.is('textarea')) {
-                    var input = textarea2input(field);
-                    input.css('height', '');
-                    field.replaceWith(input);
-                    field = input;
-                    field.focus();
-                }
-            }, timeout);
-        };
-
-        var p = field.parent();
-        p.off('keydown', '#' + field.attr('id')).
-          on('keydown',  '#' + field.attr('id'), handler);
-        p.off('focus',   '#' + field.attr('id')).
-          on('focus',    '#' + field.attr('id'), onFocus);
-
-        // initial shot
-        //handler();
-
-    });
-
-    });
-
-    $(".theme-update").on('click', function () {
-        if (!$(this).hasClass('disabled'))  {
-            $('#wa-theme-update-dialog').waDialog({
-                url: '?module=design&action=themeUpdate&theme={$theme.id}',
-                disableButtonsOnSubmit: true,
-                onLoad: function () {
-                    $(this).on('change', 'label.bold input:checkbox', function () {
-                        var l = $(this).parent();
-                        if ($(this).is(':checked')) {
-                            if (!l.find('span.hint').length) {
-                                l.append('<span class="hint"> [s`All customizations you’ve made to this file will be lost!`]</span>');
-                            }
-                        } else {
-                            l.find('span.hint').remove();
-                        }
-                    });
-
-                },
-                onSubmit: function () {
-                    if (confirm({json_encode(mb_strtoupper('[s`All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?`]'))})) {
-                        var data = $(this).serialize();
-                        $.post("?module=design&action=themeUpdate&theme={$theme.id}", data, function (response) {
-                            if (response.status == 'ok') {
-                                location.reload();
-                            } else {
-                                alert(response.errors);
-                            }
-                        }, "json");
-                    } else {
-                        $(this).find(':submit').removeAttr('disabled');
-                    }
-                    return false;
-                }
-            });
-        }
-        return false;
-    });
-
-    $(".theme-parent").on('click', function () {
-        $("#wa-theme-parent-dialog").waDialog({
-            disableButtonsOnSubmit: true,
-            onSubmit: function () {
-                var data = $(this).serialize();
-                $.post("?module=design&action=themeParent", data, function (response) {
-                    $("#wa-theme-parent-dialog").hide();
-                    if (response.status == 'ok') {
-                        location.reload();
-                    } else {
-                        alert(response.errors);
-                    }
-                }, "json");
-                return false;
-            }
-        });
-        return false;
-    });
-
-    $(".theme-copy").on('click', function () {
-        var themeCopy = function (related,options) {
-            var params = {
-                theme: theme_id,
-                related: related,
-                options:options
-            };
-            $.post("?module=design&action=themeCopy", params, function (response) {
-                $("#wa-theme-copy-dialog").hide();
-                if (response.status == 'ok') {
-                    if (response.data.redirect) {
-                        location.href = location.href.replace(/#.*$/, '') + response.data.redirect;
-                        location.reload();
-                    } else {
-                        location.reload(true);
-                    }
-                } else {
-                    alert(response.errors);
-                }
-            }, "json");
-        };
-        if ($(this).data('related')) {
-            $("#wa-theme-copy-dialog").waDialog({
-                disableButtonsOnSubmit: true,
-                onSubmit: function () {
-                    var $form = $(this);
-                    var options = {
-                        id:$form.find("#wa-theme-copy-id").val(),
-                        name:$form.find("#wa-theme-copy-name").val()
-                    };
-                    themeCopy($form.find(':input:checked').val(),options);
-                    return false;
-                }
-            });
-        } else {
-            themeCopy(false,null);
-        }
-        return false;
-    });
-
-    $(".theme-reset").on('click', function () {
-        if (!$(this).hasClass('disabled'))  {
-            $('#wa-theme-reset-dialog').waDialog({
-                disableButtonsOnSubmit: true,
-                onSubmit: function () {
-                    $.post("?module=design&action=themeReset", $(this).serialize(), function (response) {
-                        if (response.status == 'ok') {
-                            if(response.data.redirect) {
-                                location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
-                                location.reload();
-                            } else {
-                                location.reload();
-                            }
-                        } else {
-                            alert(response.errors);
-                        }
-                    }, "json");
-                    return false;
-                }
-            });
-        }
-        return false;
-    });
-
-    $("#theme-start-using").on('click', function () {
-        if (!$(this).hasClass('disabled'))  {
-            $('#wa-theme-start-using-dialog').waDialog({
-                disableButtonsOnSubmit: true,
-                onSubmit: function () {
-                    $.post("?module=design&action=themeUse", $(this).serialize(), function (response) {
-                        if (response.status == 'ok') {
-                            location.href = '{$design_url}theme=' + response.data.theme + '&domain=' + response.data.domain + '&route=' + response.data.route;
-                            location.reload();
-                        } else {
-                            alert(response.errors);
-                        }
-                    }, "json");
-                    return false;
-                }
-            });
-        }
-        return false;
-    });
-
-
-    $(".theme-delete").on('click', function () {
-        if (!$(this).hasClass('disabled') && confirm($(this).attr('title'))) {
-            $.post("?module=design&action=themeDelete", { theme: theme_id}, function (response) {
-                if (response.status == 'ok') {
-                    if(response.data.theme_id) {
-                        $('#wa-theme-block-' + response.data.theme_id).remove();
-                        $('#wa-theme-list-' + response.data.theme_id).remove();
-                    }
-                    $('#wa-theme-list a').each(function () {
-                        if ($(this).attr('href').indexOf('theme=' + theme_id) != -1) {
-                            $(this).parent().remove();
-                        }
-                    })
-                    location.href = $('#wa-theme-list li:first a').attr('href');
-                } else {
-                    alert(response.errors);
-                }
-            }, "json");
-
-        }
-        return false;
-
-    });
-    var url = $('#wa-theme-routing-url');
-    if(url.length) {
-        $('#wa-theme-{$theme.id} .js-theme-routing-url').removeClass('js-theme-routing-url').wrap('<a href="'+url.attr('href')+'"></a>');
-    }
-
-    // colorpickers
-    $('.color').each(function() {
-        var input = $(this);
-        var replacer = $('<span class="color-replacer">' +
-            '<i class="icon16 color" style="background: #'+input.val().substr(1)+'"></i>' +
-            '</span>').insertAfter(input);
-        var picker = $('<div style="display:none;" class="color-picker"></div>').
-            insertAfter(replacer);
-        var farbtastic = $.farbtastic(picker, function(color) {
-            replacer.find('i').css('background', color);
-            input.val(color);
-        });
-        farbtastic.setColor('#'+input.val());
-        replacer.click(function() {
-            picker.slideToggle(200);
-            return false;
-        });
-
-        var timer_id;
-        input.unbind('keydown').bind('keydown', function() {
-            if (timer_id) {
-                clearTimeout(timer_id);
-            }
-            timer_id = setTimeout(function() {
-                farbtastic.setColor(input.val());
-            }, 250);
-        });
-
-    });
-
-    $('.create-new-route-control').focus(function(){
-        $('#create-new-route-choice').attr('checked', 'checked');
-    });
-
+    })(jQuery);
 </script>
+
+<div class="wa-design-scroll-action" id="wa-design-scroll-top">
+    <div class="icon-wrapper">
+        <div class="icon-to-top"></div>
+    </div>
+    [s`Scroll up`]
+</div>

@@ -16,12 +16,15 @@ class waLazyDisplay
     public function __toString()
     {
         $old_app = wa()->getApp();
+        $is_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
         try {
             wa($this->app_id, 1);
             $result = (string) $this->obj->display(false);
         } catch (Exception $e) {
             $result = (string) $e;
         }
+        waConfig::set('is_template', $is_template);
         wa($old_app, 1);
         return $result;
     }

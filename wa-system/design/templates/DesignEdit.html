@@ -184,51 +184,7 @@
         </div>
         {if $options.save_panel}
         <div class="wa-design-save-panel block bordered-top">
-            <div class="wa-dropdown">
-                <div class="wa-drop-link">
-                    <a class="inline-link" id="wa-editor-help-link" href="#">
-                        <i class="icon16 cheatsheet"></i><b><i>[s`Cheat sheet`]</i></b>
-                        <i class="icon10 uarr no-overhanging"></i>
-                    </a>
-                    <div id="wa-editor-help" class="wa-dropdown-block"></div>
-                    <script type="text/javascript">
-                        $("#wa-editor-help-link").click(function () {
-                            if ($("#wa-editor-help").is(":visible")) {
-                                $("#wa-editor-help").hide();
-                                return false;
-                            }
-                            $("#wa-editor-help").load('?module=pages&action=help', "app={$wa->app()}&file={if $file}{$file.id|escape:'url'}{/if}", function () {
-                                $(this).show();
-                                var f = function (e) {
-                                    if ($(e.target).attr('id') == 'wa-editor-help' || $(e.target).parents('#wa-editor-help').length) {
-                                        $(document).one('click', f);
-                                    } else {
-                                        $("#wa-editor-help").hide();
-                                    }
-                                };
-                                $(document).one('click', f);
-                            });
-                            return false;
-                        });
-
-                        $("#wa-editor-help").on('click', "div.fields a.inline-link", function () {
-                            var el = $(this).find('i');
-                            if (el.children('b').length) {
-                                el = el.children('b');
-                            }
-                            if ($(".el-rte").length && $(".el-rte").is(':visible')) {
-                                try {
-                                    $("#wa-design-content").elrte()[0].elrte.selection.insertHtml(el.text());
-                                } catch (e) {}
-                            } else {
-                                wa_editor.insert(el.text());
-                            }
-                            return false;
-                        });
-                    </script>
-                </div>
-            </div>
-
+            {$wa->getCheatSheetButton(['data' => ["app" =>{$wa->app()}, "index" =>{$file.id|escape:'url'|default:""}]])}
             <input id="wa-design-button" type="submit" class="button green" value="[s`Save`]" />
             <em class="hint">Ctrl + S</em>
             <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
@@ -241,7 +197,6 @@
 </div>
 <script>
     $(document).ready(function () {
-
         $(".wa-theme-templates").on('click', 'a', function () {
             if (!waDesignConfirm()) return false;
             $("#wa-design-sidebar li.selected").removeClass('selected');

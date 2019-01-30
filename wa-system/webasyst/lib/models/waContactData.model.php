@@ -4,6 +4,11 @@ class waContactDataModel extends waModel
 {
     protected $table = "wa_contact_data";
 
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_UNCONFIRMED = 'unconfirmed';
+    const STATUS_UNAVAILABLE = 'unavailable';
+    const STATUS_UNKNOWN = NULL;
+
 
     /**
      * @param array|int $ids
@@ -60,6 +65,54 @@ class waContactDataModel extends waModel
                 return array();
             }
         }
+    }
+
+    /**
+     * Get first contact with password by this phone
+     * @param string $phone
+     * @param int|int[]|null $exclude_ids contact ids that excluded from searching
+     * @return null|int
+     */
+    public function getContactWithPasswordByPhone($phone, $exclude_ids = array())
+    {
+        $phone = is_scalar($phone) ? $phone : '';
+        if (strlen($phone) <= 0) {
+            return null;
+        }
+
+        $phone = waContactPhoneField::cleanPhoneNumber($phone);
+        if (strlen($phone) <= 0) {
+            return null;
+        }
+
+        $validator = new waPhoneNumberValidator();
+        if (!$validator->isValid($phone)) {
+            return null;
+        }
+
+        $exclude_ids = waUtils::toIntArray($exclude_ids);
+        $exclude_ids = waUtils::dropNotPositive($exclude_ids);
+
+        $where = array(
+            "d.field = 'phone'",
+            "d.value = :phone",
+            "d.sort = 0",
+            "c.password != ''"
+        );
+
+        if ($exclude_ids) {
+            $where[] = "c.id NOT IN (:ids)";
+        }
+
+        $where = join(" AND ", $where);
+
+        $sql = "SELECT c.id 
+                  FROM `{$this->table}` d 
+                  JOIN wa_contact c ON d.contact_id = c.id
+                WHERE {$where}
+                LIMIT 1";
+
+        return $this->query($sql, array('phone' => $phone, 'ids' => $exclude_ids))->fetchField();
     }
 
     public function getByContact($id)
@@ -149,6 +202,47 @@ class waContactDataModel extends waModel
                 ORDER BY n DESC
                 LIMIT i:limit";
         return $this->query($sql, array('field' => $field, 'limit'=> $limit))->fetchAll('value', true);
+    }
+
+    public function getContactIdByPhone($phone)
+    {
+        $phone = waContactPhoneField::cleanPhoneNumber($phone);
+        if (strlen($phone) <= 0) {
+            return false;
+        }
+        return $this->getContactIdByFieldValue('phone', $phone);
+    }
+
+    public function getPhones($contact_id)
+    {
+        $sql = "SELECT `values`, ext, status FROM ".$this->table." WHERE contact_id = i:id AND `field` = 'phone' ORDER BY sort";
+        return $this->query($sql, array('id' => $contact_id))->fetchAll();
+    }
+
+    public function getPhone($contact_id, $sort = 0)
+    {
+        return $this->getByField(array('contact_id' => $contact_id, 'field' => 'phone', 'sort' => $sort));
+    }
+
+    public function updateContactPhoneStatus($contact_id, $phone, $status)
+    {
+        $this->updateByField(array(
+            'contact_id' => $contact_id,
+            'field' => 'phone',
+            'value' => $phone
+        ), array(
+            'status' => $status
+        ));
+    }
+
+    protected function getContactIdByFieldValue($field_id, $value)
+    {
+        $sql = "SELECT contact_id FROM ".$this->table."
+                WHERE
+                    `field` = :field_id AND
+                    `value` LIKE ('".$this->escape($value, 'like')."')
+                ORDER BY sort LIMIT 1";
+        return $this->query($sql, array('field_id' => $field_id))->fetchField();
     }
 }
 

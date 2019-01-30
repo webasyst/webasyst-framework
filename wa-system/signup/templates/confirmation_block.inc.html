@@ -1,0 +1,30 @@
+{**
+  * HELPER FUNC
+  * FORMAT INPUT NAME BY TAKING INTO ACCOUNT NAMESPACE OF DATA
+  *}
+{function input_name field_id=''}{$namespace}[{$field_id}]{/function}
+
+<div class="wa-signup-form-confirmation-block" style="display: none;">
+
+    <div class="wa-confirmation-code-sent-message"></div>
+
+    <div class="wa-field wa-field-confirmation-code" data-is-required="1" data-field-id="confirmation_code">
+        <div class="wa-name">
+            [`Confirmation code`]
+        </div>
+        <div class="wa-value">
+            <input name="{input_name field_id='confirmation_code'}" type="text">
+            <div class="wa-confirmation-code-input-message"></div>
+            <div class="wa-send-again-confirmation-code-link-wrapper" style="display: none">
+                <a href="javascript:void(0);" class="wa-send-again-confirmation-code-link">[`Re-send`]</a>
+                <i class="wa-send-again-confirmation-code-link-loading icon16 loading" style="display: none;"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="wa-confirm-signup-button-wrapper">
+        <button class="wa-confirm-signup-button">[`Confirm signup`]</button>
+        <i class="wa-confirm-signup-button-icon icon16 loading" style="display: none;"></i>
+    </div>
+
+</div>

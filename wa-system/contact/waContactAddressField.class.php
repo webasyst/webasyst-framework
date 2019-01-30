@@ -182,11 +182,11 @@ class waContactAddressForMapFormatter extends waContactFieldFormatter
 /** Format address on one line. */
 class waContactAddressOneLineFormatter extends waContactFieldFormatter
 {
-    public function format($data, $format = null)
+    public function format($data)
     {
         $adr = waContactFields::get('address');
         $for_map = $adr->format($data, 'forMap');
-        $parts = $this->getParts($data, $format);
+        $parts = $this->getParts($data);
         $data['value'] = implode(', ', $parts['parts']);
         if ($data['value'] && $parts['pic'] && (!isset($this->options['image']) || $this->options['image'])) {
             $data['value'] = $parts['pic'].' '.$data['value'];

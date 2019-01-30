@@ -276,7 +276,7 @@ class waSystemConfig
 
     public function init()
     {
-        $file_path = $this->root_path.'/wa-config/config.php';
+        $file_path = $this->getPath('config').'/config.php';
         if (file_exists($file_path)) {
             $config = include($file_path);
             foreach ($config as $name => $value) {
@@ -342,7 +342,11 @@ class waSystemConfig
     {
         $path = $this->getPath('config', $file);
         if (file_exists($path)) {
-            return include($path);
+            $result = include($path);
+            if ($result === 1) {
+                return $default;
+            }
+            return $result;
         } else {
             return $default;
         }
@@ -358,7 +362,8 @@ class waSystemConfig
             waFiles::create($path);
             return $path;
         } else {
-            return $this->getPath('apps').'/'.$app.'/lib/config/'.$name;
+            $path_name = ($app == 'webasyst') ? 'system' : 'apps';
+            return $this->getPath($path_name).'/'.$app.'/lib/config/'.$name;
         }
     }
 
@@ -367,6 +372,39 @@ class waSystemConfig
         return $this->getConfigFile('routing');
     }
 
+    public function getSms()
+    {
+        return $this->getConfigFile('sms');
+    }
+
+    public function setSms($data)
+    {
+        if (waConfig::get('is_template')) {
+            return false;
+        }
+        $path = $this->getPath('config', 'sms');
+        if (waUtils::varExportToFile($data, $path)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function getMail()
+    {
+        return $this->getConfigFile('mail');
+    }
+
+    public function setMail($data)
+    {
+        if (waConfig::get('is_template')) {
+            return false;
+        }
+        $path = $this->getPath('config', 'mail');
+        if (waUtils::varExportToFile($data, $path)) {
+            return true;
+        }
+        return false;
+    }
 
     public function getAuth()
     {
@@ -375,6 +413,18 @@ class waSystemConfig
             return $cache->get();
         } else {
             $data = $this->getConfigFile('auth');
+            $cache->set($data);
+            return $data;
+        }
+    }
+
+    public function getBackendAuth()
+    {
+        $cache = new waRuntimeCache('wa-config/backend_auth');
+        if ($cache->isCached()) {
+            return $cache->get();
+        } else {
+            $data = $this->getConfigFile('backend_auth');
             $cache->set($data);
             return $data;
         }
@@ -394,6 +444,19 @@ class waSystemConfig
         return false;
     }
 
+    public function setBackendAuth($data)
+    {
+        if (waConfig::get('is_template')) {
+            return false;
+        }
+        $path = $this->getPath('config', 'backend_auth');
+        if (waUtils::varExportToFile($data, $path)) {
+            $cache = new waRuntimeCache('wa-config/backend_auth');
+            $cache->set($data);
+            return true;
+        }
+        return false;
+    }
 
     public function getRootPath()
     {

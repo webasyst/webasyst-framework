@@ -1,4 +1,16 @@
 <?php
+/*
+ * This file is part of Webasyst framework.
+ *
+ * Licensed under the terms of the GNU Lesser General Public License (LGPL).
+ * http://www.webasyst.com/framework/license/
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2017 Webasyst LLC
+ * @package wa-system
+ * @subpackage files
+ */
 
 /**
  * Class waNet
@@ -44,12 +56,16 @@ class waNet
         'authorization'       => false,
         'login'               => null,
         'password'            => null,
+        # proxy settings
         'proxy_host'          => null,
         'proxy_port'          => null,
         'proxy_user'          => null,
         'proxy_password'      => null,
         'proxy_auth'          => 'basic',
-        'expected_http_code'  => 200, // null to accept any code
+        # specify custom interface
+        'interface'           => null,
+        # string with list of expected codes separated comma or space; null to accept any code
+        'expected_http_code'  => 200,
         'priority'            => array(
             'curl',
             'fopen',
@@ -62,6 +78,8 @@ class waNet
         ),
     );
 
+    private static $master_options = array();
+
     protected $raw_response;
     protected $decoded_response;
 
@@ -69,21 +87,45 @@ class waNet
 
     private $ch;
 
+    private static $mh;
+    /** @var waNet[] */
+    private static $instances = array();
+
     /**
      * waNet constructor.
-     * @param array $options
+     * @param array $options key => value format
      * @param array $custom_headers key => value format
      */
     public function __construct($options = array(), $custom_headers = array())
     {
         $this->user_agent = sprintf('Webasyst-Framework/%s', wa()->getVersion('webasyst'));
-        //TODO read proxy settings from generic config
 
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $this->options['verify'] = false;
         }
-        $this->options = array_merge($this->options, $options);
+
+        $this->options = array_merge(
+            $this->options,
+            $this->getDefaultOptions(),
+            $options,
+            self::$master_options
+        );
+
         $this->request_headers = array_merge($this->request_headers, $custom_headers);
+    }
+
+    private function getDefaultOptions()
+    {
+        $config = wa()->getConfigPath().'/net.php';
+        $options = array();
+        if (file_exists($config)) {
+            $options = include($config);
+        }
+        if (!is_array($options)) {
+            $options = array();
+        }
+
+        return $options;
     }
 
     /**
@@ -96,6 +138,7 @@ class waNet
         if ($user_agent != null) {
             $this->user_agent = $user_agent;
         }
+
         return $current_user_agent;
     }
 
@@ -114,10 +157,11 @@ class waNet
      * @param $url
      * @param array|string|SimpleXMLElement|DOMDocument $content Parameter type relate to request format (xml/json/etc)
      * @param string $method
-     * @return string|array|SimpleXMLElement Type related to response for response format (json/xml/etc)
+     * @param callable $callback
+     * @return string|array|SimpleXMLElement|waNet Type related to response for response format (json/xml/etc). Self return for promises
      * @throws waException
      */
-    public function query($url, $content = array(), $method = self::METHOD_GET)
+    public function query($url, $content = array(), $method = self::METHOD_GET, $callback = null)
     {
         $transport = $this->getTransport($url);
 
@@ -126,7 +170,7 @@ class waNet
 
         switch ($transport) {
             case self::TRANSPORT_CURL:
-                $response = $this->runCurl($url, $content, $method);
+                $response = $this->runCurl($url, $content, $method, array(), $callback);
                 break;
             case self::TRANSPORT_FOPEN:
                 $response = $this->runStreamContext($url, $content, $method);
@@ -139,15 +183,29 @@ class waNet
                 break;
         }
 
+        if ($response instanceof self) {
+            return $response;
+        } else {
+
+            $this->onQueryComplete($response);
+
+            return $this->getResponse();
+        }
+    }
+
+    protected function onQueryComplete($response)
+    {
         $this->decodeResponse($response);
 
         if ($this->options['expected_http_code'] !== null) {
-            if (empty($this->response_header['http_code']) || ($this->response_header['http_code'] != $this->options['expected_http_code'])) {
+            $expected = $this->options['expected_http_code'];
+            if (!is_array($expected)) {
+                $expected = preg_split('@[,:;.\s]+@', $this->options['expected_http_code']);
+            }
+            if (empty($this->response_header['http_code']) || !in_array($this->response_header['http_code'], $expected)) {
                 throw new waException($response, $this->response_header['http_code']);
             }
         }
-
-        return $this->getResponse();
     }
 
     /**
@@ -230,6 +288,7 @@ class waNet
             foreach ($this->request_headers as $header => $value) {
                 $headers[] = sprintf('%s: %s', $header, $value);
             }
+
             return $headers;
         }
     }
@@ -299,6 +358,7 @@ class waNet
         if (!empty($this->options['md5'])) {
             $this->request_headers['Content-MD5'] = base64_encode(md5($content, true));
         }
+
         return $content;
     }
 
@@ -312,44 +372,14 @@ class waNet
         $this->decoded_response = null;
         switch ($this->options['format']) {
             case self::FORMAT_JSON:
-                $this->decoded_response = @json_decode($this->raw_response, true);
-                if (function_exists('json_last_error')) {
-                    if (JSON_ERROR_NONE !== json_last_error()) {
-                        if (function_exists('json_last_error_msg')) {
-                            $message = json_last_error_msg();
-                        } else {
-                            $message = json_last_error();
-                            $codes = array(
-                                'JSON_ERROR_DEPTH'            => 'The maximum stack depth has been exceeded',
-                                'JSON_ERROR_STATE_MISMATCH'   => 'Invalid or malformed JSON',
-                                'JSON_ERROR_CTRL_CHAR'        => 'Control character error, possibly incorrectly encoded',
-                                'JSON_ERROR_SYNTAX'           => 'Syntax error',
-                                'JSON_ERROR_UTF8'             => 'Malformed UTF-8 characters, possibly incorrectly encoded',//PHP 5.3.3
-                                'JSON_ERROR_RECURSION'        => 'One or more recursive references in the value to be encoded',//PHP 5.5.0
-                                'JSON_ERROR_INF_OR_NAN'       => 'One or more NAN or INF values in the value to be encoded',//PHP 5.5.0
-                                'JSON_ERROR_UNSUPPORTED_TYPE' => 'A value of a type that cannot be encoded was given',//PHP 5.5.0
-                            );
-
-                            foreach ($codes as $code => $_message) {
-                                if (defined($code) && (constant($code) == $message)) {
-                                    $message = $_message;
-                                    break;
-                                }
-                            }
-
-                        }
-                        throw new waException('Error while decode JSON response: '.$message);
-                    }
-                } else {
-                    if ($this->decoded_response === null) {
-                        throw new waException('Error while decode JSON response');
-                    }
-                }
+                $this->decoded_response = waUtils::jsonDecode($this->raw_response, true);
                 break;
             case self::FORMAT_XML:
+                $xml_options = LIBXML_NOCDATA | LIBXML_NOENT | LIBXML_NONET;
                 libxml_use_internal_errors(true);
+                libxml_disable_entity_loader(false);
                 libxml_clear_errors();
-                $this->decoded_response = @simplexml_load_string($this->raw_response);
+                $this->decoded_response = @simplexml_load_string($this->raw_response, null, $xml_options);
 
                 if ($this->decoded_response === false) {
                     if ($error = libxml_get_last_error()) {
@@ -387,8 +417,10 @@ class waNet
                 return $this->response_header[$header];
             }
             $header = str_replace('-', '_', strtolower($header));
+
             return ifset($this->response_header[$header]);
         }
+
         return $this->response_header;
     }
 
@@ -453,11 +485,20 @@ class waNet
         return false;
     }
 
-    private function runCurl($url, $params, $method, $curl_options = array())
+    private function runCurl($url, $params, $method, $curl_options = array(), $callback = null)
     {
         $this->getCurl($url, $params, $method, $curl_options);
-        $response = @curl_exec($this->ch);
+        if (!empty($callback) && is_callable($callback) && !empty(self::$namespace) && !empty(self::$mh[self::$namespace])) {
+            return $this->addMultiCurl($callback);
+        } else {
+            $response = @curl_exec($this->ch);
 
+            return $this->handleCurlResponse($response);
+        }
+    }
+
+    private function handleCurlResponse($response)
+    {
         if (empty($response)) {
             $error_no = curl_errno($this->ch);
             $error_str = curl_error($this->ch);
@@ -469,6 +510,83 @@ class waNet
         }
 
         return $body;
+    }
+
+    protected function onMultiQueryComplete($callback)
+    {
+        $content = curl_multi_getcontent($this->ch);
+        try {
+            $body = $this->handleCurlResponse($content);
+            curl_multi_remove_handle(self::$mh[self::$namespace], $this->ch);
+            $this->onQueryComplete($body);
+
+            $response = $this->getResponse();
+            call_user_func_array($callback, array($this, $response));
+        } catch (waException $ex) {
+            call_user_func_array($callback, array($this, $ex));
+        }
+    }
+
+    private static $namespace = null;
+
+    private function addMultiCurl($callback)
+    {
+        $id = curl_multi_add_handle(self::$mh[self::$namespace], $this->ch);
+        self::$instances[self::$namespace][$id] = array(
+            'instance' => $this,
+            'callback' => $callback,
+        );
+
+        return $this;
+    }
+
+
+    public static function multiQuery($namespace = null, $options = array())
+    {
+        if ($options) {
+            self::$master_options = $options;
+        }
+
+        if ($namespace && !isset(self::$mh[$namespace])) {
+            if (empty(self::$mh[$namespace]) && function_exists('curl_multi_init')) {
+                self::$mh[$namespace] = curl_multi_init();
+                if (!isset(self::$instances[$namespace])) {
+                    self::$instances[$namespace] = array();
+                }
+                self::$namespace = $namespace;
+            }
+        } elseif ((($namespace === null) || (self::$namespace === $namespace)) && isset(self::$mh[self::$namespace])) {
+            $namespace = self::$namespace;
+            if (self::$instances[$namespace]) {
+                $active = null;
+
+                do {
+                    $mrc = curl_multi_exec(self::$mh[$namespace], $active);
+                } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+
+                while ($active && $mrc == CURLM_OK) {
+                    if (curl_multi_select(self::$mh[$namespace]) == -1) {
+                        usleep(100);
+                    }
+
+                    do {
+                        $mrc = curl_multi_exec(self::$mh[$namespace], $active);
+                    } while ($mrc == CURLM_CALL_MULTI_PERFORM);
+                }
+
+                foreach (self::$instances[$namespace] as $id => $data) {
+                    $instance = $data['instance'];
+                    /** @var waNet $instance */
+                    $instance->onMultiQueryComplete($data['callback']);
+                }
+                self::$instances = array();
+            }
+
+            unset(self::$instances[$namespace]);
+
+            curl_multi_close(self::$mh[$namespace]);
+            unset(self::$mh[$namespace]);
+        }
     }
 
     private function getCurl($url, $content, $method, $curl_options = array())
@@ -494,6 +612,10 @@ class waNet
                     CURLOPT_DNS_CACHE_TIMEOUT => 3600,
                     CURLOPT_USERAGENT         => $this->user_agent,
                 );
+
+                if (isset($this->options['interface'])) {
+                    $curl_default_options[CURLOPT_INTERFACE] = $this->options['interface'];
+                }
 
                 if ($this->options['verify']) {
 
@@ -595,6 +717,10 @@ class waNet
                 if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
                     $curl_options[CURLOPT_FOLLOWLOCATION] = true;
                 }
+
+                if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
+                    $curl_options[CURLOPT_FOLLOWLOCATION] = true;
+                }
             }
 
             $curl_options[CURLOPT_URL] = $url;
@@ -645,6 +771,7 @@ class waNet
                 throw new waException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
             }
         }
+
         return $response;
     }
 
@@ -785,6 +912,7 @@ class waNet
             list($header, $body) = explode("\r\n\r\n", $response, 2);
             $this->parseHeader(preg_split('@[\r\n]+@', $header));
         }
+
         return $body;
     }
 
@@ -824,6 +952,7 @@ class waNet
                 $url .= '?'.http_build_query($get);
             }
         }
+
         return $post;
     }
 
@@ -836,6 +965,7 @@ class waNet
         ) {
             $hint = strip_tags($error['message']);
         }
+
         return $hint;
     }
 
@@ -851,6 +981,10 @@ class waNet
         }
     }
 
+    /**
+     * @since PHP 5.6.0
+     * @return array
+     */
     public function __debugInfo()
     {
         return array(

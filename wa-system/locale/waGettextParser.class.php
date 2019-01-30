@@ -242,12 +242,12 @@ class waGettextParser
                     }
                     flock($fh, LOCK_EX);
                     foreach ($this->words as $msg_id => $info) {
-                        // Ищем вхождения текущей фразы
+                        // Looking for current phrase matches
                         if (isset($strings[$msg_id])) {
                             ++$exists_counter;
                             continue;
                         }
-                        // Если не нашли - записываем
+                        // If not found, save
                         foreach ((array)$info['lines'] as $line) {
                             fputs($fh, "\n#: ".$line);
                         }

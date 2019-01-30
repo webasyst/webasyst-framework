@@ -60,7 +60,9 @@
       {/if}
     {/foreach}
 
+
     <!-- FOLLOW -->
+    {if empty($realtime_preview)}
     <aside class="connect">
         {if !empty($theme_settings.facebook_likebox_code)}
             <div class="likebox">
@@ -83,7 +85,7 @@
         </div>
         *}
     </aside>
-    
+    {/if}
 </nav>
 
 <div class="content with-sidebar" itemscope itemtype="http://schema.org/WebPage">

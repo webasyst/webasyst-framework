@@ -9,6 +9,12 @@
  * @property-read int $valid_until
  * @property-read string $customer_lang
  * @property-read bool $receipt
+ *
+ * @property-read int $payment_subject_type_product
+ * @property-read int $payment_subject_type_service
+ * @property-read int $payment_subject_type_shipping
+ * @property-read int $payment_method_type
+ *
  * @version 1.6
  * @link https://www.payonlinesystem.ru/
  */
@@ -317,7 +323,14 @@ class payonlinePayment extends waPayment implements waIPayment
 
                 if (ifset($response['status']['code']) == -1) {
                     $transaction_data = $this->saveFiscalData($transaction_data, $response);
-                    $this->execAppCallback(self::CALLBACK_NOTIFY, $transaction_data);
+                    $app_data = $this->execAppCallback(self::CALLBACK_NOTIFY, $transaction_data);
+                } else {
+                    $log = sprintf(
+                        "Error occurred during create fiscal document.\nData: %s\nResponse: %s\n",
+                        var_export($body, true),
+                        var_export($response, true)
+                    );
+                    self::log($this->id, $log);
                 }
 
             } catch (waException $ex) {
@@ -492,6 +505,7 @@ class payonlinePayment extends waPayment implements waIPayment
                     'quantity' => 1,
                     'price'    => $order->shipping,
                     'tax_rate' => $order->shipping_tax_rate,
+                    'type'     => 'shipping',
                 );
                 $data['goods'][] = $this->formatFiscalItem($item);
             }
@@ -509,11 +523,26 @@ class payonlinePayment extends waPayment implements waIPayment
     {
         $item['amount'] = ifset($item['price'], 0.0) - ifset($item['discount'], 0.0);
 
+        switch (ifset($item['type'])) {
+            case 'shipping':
+                $item['payment_subject_type'] = $this->payment_subject_type_shipping;
+                break;
+            case 'service':
+                $item['payment_subject_type'] = $this->payment_subject_type_service;
+                break;
+            case 'product':
+            default:
+                $item['payment_subject_type'] = $this->payment_subject_type_product;
+                break;
+        }
+
         return array(
-            'description' => mb_substr($item['name'], 0, 128),
-            'quantity'    => $item['quantity'], //decimal 8.3
-            'amount'      => number_format($item['amount'], 2, '.', ''), //decimal 8.2
-            'tax'         => $this->getTaxId($item),
+            'description'         => mb_substr($item['name'], 0, 128),
+            'quantity'            => $item['quantity'], //decimal 8.3
+            'amount'              => number_format($item['amount'], 2, '.', ''), //decimal 8.2
+            'tax'                 => $this->getTaxId($item),
+            'paymentMethodType'   => $this->payment_method_type,
+            'paymentSubjectType ' => $item['payment_subject_type'],
         );
     }
 
@@ -553,6 +582,13 @@ class payonlinePayment extends waPayment implements waIPayment
                         $tax = 'vat18';
                     } else {
                         $tax = 'vat118';
+                    }
+                    break;
+                case 20:
+                    if ($tax_included) {
+                        $tax = 'vat20';
+                    } else {
+                        $tax = 'vat120';
                     }
                     break;
                 default:

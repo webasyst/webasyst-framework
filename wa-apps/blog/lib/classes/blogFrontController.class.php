@@ -25,11 +25,16 @@ class blogFrontController extends waFrontController
                 }
 
                 $blog_url = waRequest::param('blog_url', '', waRequest::TYPE_STRING_TRIM);
-                $main_page = false;
+
+                $main_page = true;
+                //Check other page params
+                if (isset($params['year']) || isset($params['post_url']) || $action == 'rss') {
+                    $main_page = false;
+                }
+
                 if ($params['blog_url_type'] > 0) {
                     if ($blog = $blog_model->getByField(array('id' => $params['blog_url_type'], 'status' => blogBlogModel::STATUS_PUBLIC))) {
                         $blogs[] = $blog;
-                        $main_page = true;
                     }
                 } elseif (strlen($blog_url)) {
                     if ($blog = $blog_model->getBySlug($blog_url, true, array('id', 'name', 'url'))) {
@@ -37,13 +42,6 @@ class blogFrontController extends waFrontController
                     }
                 } else {
                     $blogs = blogHelper::getAvailable();
-                    if (!isset($params['post_url'])) {
-
-                        if ((count($blogs) > 1) || ($params['blog_url_type'] == 0)) {
-                            $main_page = true;
-                        }
-                    }
-
                 }
 
                 if ($blogs) {

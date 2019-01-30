@@ -83,7 +83,9 @@ class waSystem
                  */
                 $system = self::$instances[self::$current];
                 $locale = $set_current ? $system->getLocale() : null;
-                $config = SystemConfig::getAppConfig($name, $system->getEnv(), $system->config->getRootPath(), $locale);
+                if (self::$apps === null || !empty(self::$apps[$name])) {
+                    $config = SystemConfig::getAppConfig($name, $system->getEnv(), $system->config->getRootPath(), $locale);
+                }
             }
             if ($config) {
                 self::$instances[$name] = new self($config);
@@ -167,11 +169,48 @@ class waSystem
 
     /**
      * @param array $options
-     * @return waCaptcha
+     * @return waAbstractCaptcha
      */
     public function getCaptcha($options = array())
     {
         return $this->getFactory('captcha', 'waCaptcha', $options);
+    }
+
+    /**
+     * @param null|waDomainAuthConfig|string $domain_config
+     * @param array $options
+     * @return waSignupForm
+     */
+    public function getSignupForm($domain_config = null, $options = array())
+    {
+        return $this->getFactory('signup_form', 'waSignupForm', $options, $domain_config);
+    }
+
+    /**
+     * @param array $options
+     * @return waFrontendLoginForm
+     */
+    public function getLoginForm($options = array())
+    {
+        return $this->getFactory('login_form', 'waFrontendLoginForm', $options);
+    }
+
+    /**
+     * @param array $options
+     * @return waFrontendForgotPasswordForm
+     */
+    public function getForgotPasswordForm($options = array())
+    {
+        return $this->getFactory('forgotpassword_form', 'waFrontendForgotPasswordForm', $options);
+    }
+
+    /**
+     * @param array $options
+     * @return waFrontendSetPasswordForm
+     */
+    public function getSetPasswordForm($options = array())
+    {
+        return $this->getFactory('setpassword_form', 'waFrontendSetPasswordForm', $options);
     }
 
     /**
@@ -341,6 +380,14 @@ class waSystem
         return $result;
     }
 
+    /**
+     * @var null|string $url
+     * @return waCdn
+     */
+    public function getCdn($url = null)
+    {
+        return new waCdn($url);
+    }
 
     /**
      * Returns auth adapter.
@@ -383,8 +430,11 @@ class waSystem
 
     public function getAuthAdapters($domain = null)
     {
-        $config = $this->getAuthConfig($domain);
         $result = array();
+        $config = $this->getAuthConfig($domain);
+        if (!isset($config['used_auth_methods']) || !in_array('social', $config['used_auth_methods'])) {
+            return $result;
+        }
         if (!empty($config['adapters'])) {
             foreach ($config['adapters'] as $provider => $params) {
                 if ($params) {
@@ -405,6 +455,11 @@ class waSystem
             return array();
         }
         return $config[$domain];
+    }
+
+    public function getBackendAuthConfig()
+    {
+        return $this->getConfig()->getBackendAuth();
     }
 
 
@@ -504,6 +559,14 @@ class waSystem
 
     private function dispatchBackend($request_url)
     {
+        // Redirect to HTTPS if set up in domain params
+        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
+            $domain = $this->getRouting()->getDomain(null, true);
+            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
+            $this->getResponse()->redirect($url, 301);
+            return;
+        }
+
         // Publicly available dashboard?
         $url = explode("/", $request_url);
         if (ifset($url[1]) == 'dashboard') {
@@ -571,6 +634,25 @@ class waSystem
             throw new waException("Page not found", 404);
         }
 
+        // Payment callback?
+        if (!strncmp($request_url, 'payments.php/', 13)) {
+            $url = substr($request_url, 13);
+            if (preg_match('~^([a-z0-9_]+)~i', $url, $m) && !empty($m[1])) {
+                $module_id = $m[1];
+                waRequest::setParam('module_id', $module_id);
+                wa('webasyst', 1)->getFrontController()->execute(null, 'payments');
+            }
+            return;
+        }
+
+        // Redirect to HTTPS if set up in domain params
+        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
+            $domain = $this->getRouting()->getDomain(null, true);
+            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
+            $this->getResponse()->redirect($url, 301);
+            return;
+        }
+
         // Captcha?
         if (preg_match('/^([a-z0-9_]+)?\/?captcha\.php$/i', $request_url, $m)) {
             $app_id = isset($m[1]) ? $m[1] : 'webasyst';
@@ -600,17 +682,10 @@ class waSystem
             return;
         }
 
-        // Payment callback?
-        if (!strncmp($request_url, 'payments.php/', 13)) {
-            $url = substr($request_url, 13);
-            waRequest::setParam('module_id', strtok($url, '/?'));
-            wa('webasyst', 1)->getFrontController()->execute(null, 'payments');
-            return;
-        }
-
         // One-time auth app token?
         if (!strncmp($request_url, 'link.php/', 9)) {
             $token = strtok(substr($request_url, 9), '/?');
+            $token = urldecode($token);
             if ($token) {
                 $app_token_model = new waAppTokensModel();
                 $row = $app_token_model->getById($token);
@@ -635,6 +710,14 @@ class waSystem
             return;
         }
 
+        // Redirect to HTTPS if set up in routing params
+        if (!waRequest::isHttps() && waRequest::param('ssl_all')) {
+            $domain = $this->getRouting()->getDomain(null, true);
+            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
+            $this->getResponse()->redirect($url, 301);
+            return;
+        }
+
         // Active application determined by the routing
         $app = waRequest::param('app', null, 'string');
         if (!$app) {
@@ -655,16 +738,29 @@ class waSystem
                 }
                 $log_model = new waLogModel();
                 $log_model->insert(array(
-                    'app_id' => $app,
+                    'app_id'     => $app,
                     'contact_id' => $contact_id,
-                    'datetime' => date("Y-m-d H:i:s"),
-                    'params' => 'frontend',
-                    'action' => 'logout',
+                    'datetime'   => date("Y-m-d H:i:s"),
+                    'params'     => 'frontend',
+                    'action'     => 'logout',
                 ));
             } else {
+                // We destroy session even if user is not logged in.
+                // This clears session-based pseudo-auth for many apps.
+                wa()->getStorage()->destroy();
+                // Do not allow custom URL in this case
+                // because of redirection-based phishing attacks
                 $logout_url = null;
             }
 
+            // Make sure redirect is to the same domain
+            if (!empty($logout_url)) {
+                $domain = $this->getRouting()->getDomain(null, true);
+                $next_domain = @parse_url($logout_url, PHP_URL_HOST);
+                if ($next_domain && $domain !== $next_domain) {
+                    $logout_url = null;
+                }
+            }
             // make redirect after logout
             if (empty($logout_url)) {
                 $logout_url = $this->config->getRequestUrl(false, true);
@@ -723,7 +819,7 @@ class waSystem
         // Load system
         waSystem::getInstance('webasyst');
 
-        if (!wa()->appExists($app)) {
+        if (!$this->appExists($app)) {
             throw new waException("App ".$app." not found", 404);
         }
         // Load app
@@ -948,6 +1044,11 @@ class waSystem
         return $dir;
     }
 
+    /**
+     * @param bool $system
+     * @return array|mixed
+     * @throws waException
+     */
     public function getApps($system = false)
     {
         if (self::$apps === null) {
@@ -957,19 +1058,15 @@ class waSystem
                 self::$apps = array();
                 throw new waException('File wa-config/apps.php not found.', 600);
             }
-            if (!file_exists($file) || filemtime($file) < filemtime($this->getConfig()->getPath('config', 'apps')) || waSystemConfig::isDebug()) {
+            if (!file_exists($file) || filemtime($file) < filemtime($this->getConfig()->getPath('config', 'apps'))) {
                 waFiles::create($this->getConfig()->getPath('cache').'/config');
                 $all_apps = include($this->getConfig()->getPath('config', 'apps'));
                 $all_apps['webasyst'] = true;
                 self::$apps = array();
                 foreach ($all_apps as $app => $enabled) {
                     if ($enabled) {
-                        waLocale::loadByDomain($app, $locale);
                         $app_config = $this->getAppPath('lib/config/app.php', $app);
                         if (!file_exists($app_config)) {
-                            if (false && SystemConfig::isDebug()) {
-                                throw new waException("Config not found. Create config by path ".$app_config);
-                            }
                             continue;
                         }
                         $app_info = include($app_config);
@@ -984,6 +1081,7 @@ class waSystem
                             }
                         }
                         $app_info['id'] = $app;
+                        waLocale::loadByDomain($app, $locale);
                         $app_info['name'] = _wd($app, $app_info['name']);
                         if (isset($app_info['icon'])) {
                             if (is_array($app_info['icon'])) {
@@ -1013,6 +1111,32 @@ class waSystem
                             if (!isset($app_info['icon'][16])) {
                                 $app_info['icon'][16] = $app_info['icon'][24];
                             }
+                        }
+                        // WA Header app items
+                        if (isset($app_info['header_items'])) {
+                            foreach ($app_info['header_items'] as $item_id => &$params) {
+                                if (isset($params['name'])) {
+                                    $params['name'] = _wd($app, $params['name']);
+                                }
+                                $path_to_app = ($app == 'webasyst') ? 'wa-content' : 'wa-apps/'.$app;
+                                if (isset($params['icon'])) {
+                                    if (is_array($params['icon'])) {
+                                        foreach ($params['icon'] as $size => $url) {
+                                            $params['icon'][$size] = $path_to_app.'/'.$url;
+                                        }
+                                    } else {
+                                        $params['icon'] = array(
+                                            48 => $path_to_app.'/'.$params['icon'],
+                                        );
+                                    }
+                                }
+                                if (isset($params['img'])) {
+                                    $params['img'] = $path_to_app.'/'.$params['img'];
+                                } elseif (isset($params['icon'][48])) {
+                                    $params['img'] = $params['icon'][48];
+                                }
+                            }
+                            unset($params);
                         }
                         self::$apps[$app] = array(
                             'id' => $app,
@@ -1134,15 +1258,15 @@ class waSystem
      * Returns URL corresponding to specified combination of app's module and action based on the contents of
      * configuration file routing.php of specified app.
      *
-     * @param string  $path      App, module, and action IDs separated by slash /
-     * @param array   $params    Associative array of the following optional parameters:
+     * @param string     $path      App, module, and action IDs separated by slash /
+     * @param array|bool $params    Associative array of the following optional parameters:
      *     - 'domain': domain name specified for one of existing websites
      *     - 'module': module id
      *     - 'action': action id
      *     - dynamic URL parameters described in app configuration file routing.php for specified module and action;
      *         e.g., 'category_url' is such a dynamic parameter in the following routing configuration entry:
      *         'category/<category_url>/' => 'frontend/category',
-     * @param  bool    $absolute  Flag requiring to return an absolute URL instead of a relative one.
+     * @param  bool  $absolute  Flag requiring to return an absolute URL instead of a relative one.
      * @param string $domain
      * @param string $route
      * @return string
@@ -1373,237 +1497,26 @@ class waSystem
     /**
      * Trigger event with given $name from current active application.
      *
-     * @param  string    $name        Event name.
-     * @param  mixed     $params      Parameters passed to event handlers.
-     * @param  string[]  $array_keys  Array of expected template items for UI events.
+     * @param  string $name Event name.
+     * @param  mixed $params Parameters passed to event handlers.
+     * @param  string[] $array_keys Array of expected template items for UI events.
      * @return  array  app_id or plugin_id => data returned from handler (unless null is returned)
      */
     public function event($name, &$params = null, $array_keys = null)
     {
-        $plugins = null;
-        $result = array();
-        $event_system = $this;
         if (is_array($name)) {
             $event_app_id = $name[0];
             $name = $name[1];
-            if ($this->appExists($event_app_id)) {
-                $event_system = self::getInstance($event_app_id);
-            } else {
-                $event_system = self::getInstance('webasyst');
-                $plugins = array();
-            }
         } else {
             $event_app_id = $this->getConfig()->getApplication();
         }
 
-        // Super event hook in wa-config/SystemConfig is called for all events
-        if (method_exists($event_system->getConfig(), 'eventHook')) {
-            $r = $event_system->getConfig()->eventHook($event_app_id, $name, $params);
-            if (is_array($r)) {
-                return $r;
-            }
-        }
+        $options = array(
+            'array_keys' => $array_keys
+        );
 
-        // Make sure active app stays the same after the event
-        $old_app = self::getApp();
-
-        // Load event handlers list from apps
-        if (!isset(self::$handlers['apps'])) {
-            self::$handlers['apps'] = array();
-            $cache_file = $this->config->getPath('cache', 'config/handlers');
-            if (!waSystemConfig::isDebug() && file_exists($cache_file)) {
-                self::$handlers['apps'] = include($cache_file);
-            }
-            if (!self::$handlers['apps'] || !is_array(self::$handlers['apps'])) {
-                $apps = $this->getApps();
-                $path = $this->getConfig()->getPath('apps');
-                foreach ($apps as $app_id => $app_info) {
-                    $files = waFiles::listdir($path.'/'.$app_id.'/lib/handlers/');
-                    foreach ($files as $file) {
-                        if (substr($file, -12) == '.handler.php') {
-                            $file = explode('.', substr($file, 0, -12), 2);
-                            self::$handlers['apps'][$file[0]][$file[1]][] = $app_id;
-                        }
-                    }
-                }
-                if (!waSystemConfig::isDebug()) {
-                    waUtils::varExportToFile(self::$handlers['apps'], $cache_file);
-                }
-            }
-        }
-
-        // Load event handlers list from plugins
-        if (!isset(self::$handlers['plugins'][$event_app_id])) {
-            if ($plugins === null) {
-                $plugins = $event_system->getConfig()->getPlugins();
-            }
-            self::$handlers['plugins'][$event_app_id] = array();
-            foreach ($plugins as $plugin_id => $plugin) {
-                if (!empty($plugin['handlers'])) {
-                    foreach ($plugin['handlers'] as $handler_event => $handler_method) {
-                        if (!is_array($handler_method)) {
-                            if ($handler_event && $handler_event{0} != '/') {
-                                self::$handlers['plugins'][$event_app_id][$handler_event][$plugin_id] = $handler_method;
-                            } else {
-                                // Allows plugins to ask for all events based on regex match, e.g. '/backend_.*/'
-                                self::$handlers['plugins'][$event_app_id]['*'][$plugin_id][$handler_event] = $handler_method;
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-
-        // Trigger event handlers of apps
-        if (isset(self::$handlers['apps'][$event_app_id][$name])) {
-            $path = $this->getConfig()->getPath('apps');
-            foreach (self::$handlers['apps'][$event_app_id][$name] as $app_id) {
-                $file_path = $path.'/'.$app_id.'/lib/handlers/'.$event_app_id.".".$name.".handler.php";
-                if (!file_exists($file_path)) {
-                    continue;
-                }
-                wa($app_id);
-                include_once($file_path);
-                $class_name = $name;
-                if (strpos($name, '.') !== false) {
-                    $class_name = strtok($class_name, '.').ucfirst(strtok(''));
-                }
-                $class_name = $app_id.ucfirst($event_app_id).ucfirst($class_name)."Handler";
-                if (!class_exists($class_name)) {
-                    if (waSystemConfig::isDebug()) {
-                        waLog::log('Event handler class does not exist: '.$class_name);
-                    }
-                    continue;
-                }
-
-                /**
-                 * @var $handler waEventHandler
-                 */
-                self::pushActivePlugin(null, $app_id);
-                try {
-                    $handler = new $class_name();
-                    $r = $handler->execute($params);
-                    if ($r !== null) {
-                        $result[$app_id] = $r;
-                    }
-                } catch (Exception $e) {
-                    waLog::log('Event handling error in '.$file_path.': '.$e->getMessage());
-                }
-                self::popActivePlugin();
-            }
-        }
-
-        //
-        // Trigger event handlers of plugins
-        //
-
-        // Each plugin can only be called once per event.
-        // (Except several regex-based wildcard matches when
-        // there are no higher-priority handlers defined for the event.)
-        $plugins_called = array();
-
-        // Try plugin handlers: literal match first, then wildcards.
-        $aliases = array($name);
-        if (strpos($name, '.') !== false) {
-            $aliases[] = preg_replace('@\.[^\.]+$@', '.*', $name);
-        }
-        $aliases[] = '*';
-        foreach ($aliases as $alias) {
-            if (!isset(self::$handlers['plugins'][$event_app_id][$alias])) {
-                continue;
-            }
-            if ($plugins === null) {
-                $plugins = $event_system->getConfig()->getPlugins();
-            }
-            foreach (self::$handlers['plugins'][$event_app_id][$alias] as $plugin_id => $methods) {
-                if (!isset($plugins[$plugin_id]) || !empty($plugins_called[$plugin_id])) {
-                    continue;
-                }
-                $plugins_called[$plugin_id] = true;
-                $class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
-                if (!class_exists($class_name)) {
-                    if (waSystemConfig::isDebug()) {
-                        waLog::log('Event handler class does not exist: '.$class_name);
-                    }
-                    continue;
-                }
-
-                // Make sure there is at least one plugin method that passes a regex test.
-                // This optimizes away expensive waLocale::load() call for wildcard-based handlers.
-                // (There may be several methods when plugin subscribed for several regex wildcards.)
-                if (!is_array($methods)) {
-                    $methods = array('' => $methods);
-                }
-                foreach($methods as $regex => $method) {
-                    if ($regex != '' && !preg_match($regex, $name)) {
-                        unset($methods[$regex]);
-                    }
-                }
-                if (!$methods) {
-                    continue;
-                }
-
-                // Activate _wp() for current plugin
-                self::pushActivePlugin($plugin_id, $event_app_id);
-
-                // Load plugin locale
-                $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
-                if (is_dir($locale_path)) {
-                    waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
-                }
-
-                // Call plugin handler methods that match the event.
-                try {
-                    $class = new $class_name($plugins[$plugin_id]);
-                    foreach($methods as $regex => $method) {
-                        if (!method_exists($class, $method)) {
-                            if (waSystemConfig::isDebug()) {
-                                waLog::log('Event handler method does not exist: '.$class_name.'->'.$method.'()');
-                            }
-                            continue;
-                        }
-                        if ($name == $alias) {
-                            $r = $class->$method($params);
-                        } else {
-                            $r = $class->$method($params, $name);
-                        }
-                        if ($r !== null) {
-                            if ($array_keys && is_array($r)) {
-                                foreach ($array_keys as $k) {
-                                    if (!isset($r[$k])) {
-                                        $r[$k] = '';
-                                    }
-                                }
-                            }
-                            $result[$plugin_id.'-plugin'] = $r;
-
-                            // Only one result can be returned per event per plugin.
-                            // So we ignore all other methods matched by regex wildcard
-                            // after we get a result.
-                            break;
-                        }
-                    }
-                } catch (Exception $e) {
-                    waLog::log('Event handling error in '.$class_name.":\n".$e->getMessage()."\n".$e->getTraceAsString());
-                }
-
-                // Deactivate _wp() for current plugin
-                self::popActivePlugin();
-            }
-        }
-
-        wa($old_app, 1);
-
-        // Super event hook in wa-config/SystemConfig is called for all events
-        if (method_exists($event_system->getConfig(), 'eventHookAfter')) {
-            $r = $event_system->getConfig()->eventHookAfter($event_app_id, $name, $params, $result);
-            if (is_array($r)) {
-                return $r;
-            }
-        }
-
-        return $result;
+        $event_class = new waEvent($event_app_id, $name, $options);
+        return $event_class->run($params);
     }
 
     /**

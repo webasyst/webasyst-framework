@@ -158,14 +158,10 @@ var UserTouch = ( function() {
         });
 
         // Закрываем меню
-        $(".hidden-menu-wrapper").on( "click", function() {
-            hideHiddenMenu();
-            return false;
-        });
+        $(".hidden-menu-wrapper").on( "click", function(event) {
+            var is_wrapper = (event.target === this);
 
-        // Блокируем всплытие кликов у меню-контейнера
-        $(".menu-block-wrapper").on( "click", function(event) {
-            event.stopPropagation();
+            if (is_wrapper) { hideHiddenMenu(); }
         });
 
         // Клик по ссылке в меню

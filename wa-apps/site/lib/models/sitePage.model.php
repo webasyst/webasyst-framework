@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class sitePageModel extends waPageModel
 {
@@ -11,7 +11,7 @@ class sitePageModel extends waPageModel
     {
         $sql = "SELECT * FROM ".$this->table."
                 WHERE domain_id = i:domain_id AND route = s:route AND full_url = s:url";
-        return $this->query($sql, array('domain_id' => $domain_id, 'route' => $route, 'url' => $url))->fetch();
+        return $this->query($sql, array('domain_id' => $domain_id, 'route' => $route, 'url' => $url))->fetchAssoc();
     }
 
     public function updateDomain($old_domain, $new_domain)

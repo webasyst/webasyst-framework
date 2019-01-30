@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -83,6 +83,9 @@ msgstr "Загрузка..."
 msgid "Upload"
 msgstr "Загрузить"
 
+msgid "Upload image"
+msgstr "Загрузить изображение"
+
 #: /wa-apps/site/templates/layouts/Default.html:63
 msgid "Save"
 msgstr "Сохранить"
@@ -139,6 +142,9 @@ msgstr "Изменить URL"
 msgid "Delete rule"
 msgstr "Удалить правило"
 
+msgid "Comment"
+msgstr "Комментарий"
+
 #: /wa-apps/site/templates/layouts/Sidebar.html:39
 msgid "http://www.webasyst.com/framework/docs/site/structure/"
 msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
@@ -150,6 +156,12 @@ msgstr "Помощь"
 #: /wa-apps/site/templates/actions/settings/Settings.html:64
 msgid "Site URL"
 msgstr "Адрес сайта"
+
+msgid "May be displayed on websites and in email notifications."
+msgstr "Может отображаться на страницах сайтов и в email-уведомлениях."
+
+msgid "May be used on websites and in email notifications."
+msgstr "Может использоваться на страницах сайтов и в email-уведомлениях."
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:67
 msgid "A valid URL pointing to this Webasyst installation."
@@ -556,7 +568,7 @@ msgstr "Возвращает значение глобальной переме�
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:19
 msgid "Assigns a new value to a global variable."
-msgstr "Присваивает новое значение глобальной пемеренной"
+msgstr "Присваивает новое значение глобальной переменной"
 
 msgid "Assigns a new title."
 msgstr "Устанавливает новый заголовок."
@@ -567,7 +579,7 @@ msgstr "Возвращает значение GET-параметра (анало
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:21
 msgid "Based on current session data, returns <em>true</em> or <em>false</em> depending on whether a multi-touch mobile device is used. If no session variable indicates the requested website version (mobile or desktop), User Agent information is used."
-msgstr "Возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип версии сайта (мобильный или стандартный), отсутствует, то используется информация из заголовков User Agent"
+msgstr "Возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип версии сайта (мобильный или стандартный), отсутствует, то используется информация из заголовков User-Agent"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:23
 msgid "Returns POST parameter value (same as $_POST[\"<em>key</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified POST parameter is not found."
@@ -591,7 +603,7 @@ msgstr "Возвращает массив с данными авторизова
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:28
 msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
-msgstr "Возвращает информацию User Agent по указанному параметру <em>key</em>:"
+msgstr "Возвращает информацию User-Agent по указанному параметру <em>key</em>:"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:30
 msgid "— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;"
@@ -599,7 +611,7 @@ msgstr "— <em>\"isMobile\"</em>: основываясь на содержим�
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:31
 msgid "— not specified: returns entire User Agent string;"
-msgstr "— не указано: возвращает всю строку User Agent"
+msgstr "— не указано: возвращает всю строку User-Agent"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:69
 msgid "Displays a simple variable (non array/object)"
@@ -766,8 +778,8 @@ msgid "Enable sign up and login forms for this site"
 msgstr "Включить формы регистрации и входа для этого сайта"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:152
-msgid "Select the app that will handle authorization forms:"
-msgstr "Выберите приложение, которое будет отвечать за функциональность форм регистрации и авторизации пользователей на этом сайте:"
+msgid "Select a site section where visitors will sign up and log into their personal accounts."
+msgstr "Выберите раздел сайта, в котором посетители будут регистрироваться и входить в личный кабинет."
 
 msgid "Enable captcha for signup form"
 msgstr "Требовать ввод капчи (captcha) в форме регистрации"
@@ -833,8 +845,8 @@ msgid "Third-party authorization"
 msgstr "Авторизация через внешние сервисы"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:194
-msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"http://www.webasyst.com/framework/docs/dev/auth-adapters/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
-msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"http://www.webasyst.ru/developers/docs/auth/auth-adapters/\" target=\"_blank\">Документация по настройке</a> <i class=\"icon10 new-window\"></i>"
+msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
+msgstr "Позволяет посетителям вашего сайта быстро зарегистрироваться или авторизоваться через аккаунты в популярных сторонних сервисах, например, через «Фейсбук» или «Твиттер». <a href=\"https://support.webasyst.ru/5554/third-party-auth-setup/\" target=\"_blank\">Документация по настройке</a> <i class=\"icon10 new-window\"></i>"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:224
 msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
@@ -911,7 +923,7 @@ msgstr "Регистрация завершена успешно."
 #: /wa-apps/site/themes/default/sidebar.html:4
 #: /wa-apps/site/templates/actions/blocks/Blocks.html:41
 msgid "Revert to original"
-msgstr "Восстановить из оргинала"
+msgstr "Восстановить из оригинала"
 
 #: /wa-apps/site/templates/actions/blocks/Blocks.html:194
 msgid "This will reset all customizations you applied to this block. Are you sure?"
@@ -983,7 +995,7 @@ msgstr "Структура сайта"
 
 #: /wa-apps/site/templates/actions/routing/Routing.html:33
 msgid "Site structure is defined by routing rules. Each rule sets which app should run by which URL (web address). Similar to how folders are used to organize files on a computer, routing rules are used to create a website powered by multiple apps."
-msgstr "Структура сайта определяется правилами маршрутизации. Каждое правило указывает по какому адресу какое приложение работает. По аналогии с тем, как папки используются для организации файлов на компьютере, правила маршрутизации используются для распределения приложений по разделам сайта."
+msgstr "Структура сайта определяется правилами маршрутизации. Каждое правило указывает, по какому адресу работает каждое приложение. По аналогии с тем, как папки используются для организации файлов на компьютере, правила маршрутизации используются для распределения приложений по разделам сайта."
 
 #: /wa-apps/site/templates/actions/routing/RoutingEdit.html:10
 msgid "Back"
@@ -1112,9 +1124,15 @@ msgstr "отредактировал правило маршрутизации"
 msgid "deleted routing rule"
 msgstr "удалил правило маршрутизации"
 
+msgid "Personal account sections"
+msgstr "Разделы личного кабинета"
+
 #: /wa-apps/site/templates/actions/personal/Personal.html:37
-msgid "Personal account structure is defined by the list of installed Webasyst apps linked in the current website frontend."
-msgstr "Структура личного кабинета определяется списком установленных и подключенных на данном сайте приложений Webasyst."
+msgid "Sections are determined by connected applications."
+msgstr "Разделы определяются подключенными приложениями."
+
+msgid "Read <a href=\"https://support.webasyst.com/29298/site-auth-settings/\" target=\"_blank\">user manual</a>."
+msgstr "Смотрите <a href=\"https://support.webasyst.ru/29281/site-auth-settings/\" target=\"_blank\">инструкцию</a>."
 
 #: /wa-apps/site/templates/actions/personal/Personal.html:41
 msgid "Auth & Sign Up settings"
@@ -1133,10 +1151,16 @@ msgstr "Настроить маршрутизацию"
 msgid "Disabled"
 msgstr "Выключена"
 
+msgid "Redirect disabled"
+msgstr "Выключено"
+
 #: /wa-apps/site/templates/actions/personal/PersonalApp.html:19
 #: /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
 msgid "Enabled"
 msgstr "Включена"
+
+msgid "Redirect enabled"
+msgstr "Включено"
 
 #: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
 msgid "%s personal account URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
@@ -1319,12 +1343,12 @@ msgid "Enable CDN (Content Delivery Network) support for this site by entering C
 msgstr "Введите адрес CDN (Content Delivery Network), чтобы включить его автоматическую поддержку для этого сайта."
 
 #: /wa-apps/site/templates/actions/personal/PersonalSettings.html:73
-msgid "Allow \"Remember me\" option in authorization form"
-msgstr "Можно включить «Запомнить меня» в форме авторизации"
+msgid "Allow “Remember me” option in authorization form on the website"
+msgstr "Можно включить «Запомнить меня» в форме авторизации на сайте"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:34
 msgid "Alias (mirror site) for"
-msgstr "Зеркало (алиас) сайта"
+msgstr "Зеркало сайта"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:85
 msgid "This is a mirror site (alias) for <strong>%s</strong>."
@@ -1336,3 +1360,459 @@ msgstr "Указанный email-адрес уже используется."
 
 msgid "Design"
 msgstr "Дизайн"
+
+msgid "Select a language to translate text strings in website frontend."
+msgstr "Выберите язык для перевода текстовых строк на страницах сайта."
+
+msgid "If “Auto” option is selected, website language will be determined by user browser settings."
+msgstr "Если выбран вариант «Авто», язык сайта будет определен на основании настроек браузера пользователя."
+
+msgid "Files uploaded here are accessible to all website visitors without authorization. Do not upload private files."
+msgstr "Загруженные здесь файлы доступны всем посетителям сайта без авторизации. Не загружайте личные файлы."
+
+msgid "Security"
+msgstr "Безопасность"
+
+msgid "Redirect to HTTPS"
+msgstr "Перенаправлять на HTTPS"
+
+msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement."
+msgstr "Перенаправлять посетителей сайта с обычного HTTP- на безопасное HTTPS-подключение в пределах этого поселения."
+
+msgid "This option will work only if an SSL certificate is installed for your domain name."
+msgstr "Эта настройка будет работать, только если для вашего доменного имени установлен SSL-сертификат."
+
+msgid "To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href=\"%s#/settings/\">common site settings</a>."
+msgstr "Чтобы включить перенаправление на HTTPS для <em>всех</em> поселений сайта, измените этот параметр в <a href=\"%s#/settings/\">общих настройках сайта</a>."
+
+msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection."
+msgstr "Перенаправлять посетителей сайта с обычного HTTP- на безопасное HTTPS-подключение."
+
+msgid "To activate this option, <a>log in via HTTPS</a>."
+msgstr "Чтобы активировать эту настройку, <a>войдите через HTTPS</a>."
+
+msgid "<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?"
+msgstr "<b>Редактор WYSIWYG может изменить ваш HTML-код.</b><br><br>Это необходимо для правильного форматирования текста. Код Smarty может быть сломан, и устаревшие HTML-теги могут быть заменены на современные.<br><br>Вы действительно хотите переключиться на WYSIWYG-редактор?"
+
+msgid "Switch"
+msgstr "Переключиться"
+
+msgid "Select Webasyst default captcha or Google reCAPTCHA"
+msgstr "Выбрать стандартную капчу Webasyst или Google reCAPTCHA"
+
+msgid "You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS."
+msgstr "Включение перенаправления недоступно, потому что ваш веб-сервер не позволяет отличать подключение через HTTP от HTTPS."
+
+msgid "Settings have been saved"
+msgstr "Настройки сохранены"
+
+msgid "Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file."
+msgstr "Слишком большой файл. Либо установите ограничение на размер загружаемых файлов в конфигурации PHP выше %s байтов, либо попробуйте загрузить файл меньшего размера."
+
+msgid "General settings"
+msgstr "Общие настройки"
+
+msgid "Email address for notifications"
+msgstr "Email-адрес для уведомлений"
+
+msgid "Main account administrative email where system notification will be sent."
+msgstr "Основной электронный адрес администратора, на который будут отправляться системные уведомления."
+
+msgid "Sender email address"
+msgstr "Email-адрес отправителя"
+
+msgid "Reply-To address for system email notifications sent by Webasyst."
+msgstr "Этот электронный адрес будет указан в качестве обратного адреса в системных email-уведомлениях, отправляемых Вебасистом."
+
+msgid "Email settings"
+msgstr "Настройки email"
+
+msgid "Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>."
+msgstr "Введите <strong>email-адрес</strong>, чтобы настроить транспорт отдельно <em>для одного адреса отправителя</em>.<br>Введите <strong>доменное имя</strong>, чтобы настроить транспорт <em>для всех адресов отправителя на этом домене</em>."
+
+msgid "Select how email messages must be sent by default from your Webasyst."
+msgstr "Выберите, каким способом должны по умолчанию отправляться email-сообщения из вашего Вебасиста."
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section."
+msgstr "Если вы используете разные адреса отправителей в отдельных приложениях, то для них можно настроить дополнительные правила отправки сообщений. Для всех остальных адресов будет использоваться способ отправки, выбранный в секции «По умолчанию»."
+
+msgid "Email transport"
+msgstr "Email транспорт"
+
+msgid "Transport"
+msgstr "Транспорт"
+
+msgid "Email or domain"
+msgstr "Email или домен"
+
+msgid "php mail() function"
+msgstr "PHP-функция mail()"
+
+msgid "Debug mailer"
+msgstr "Тестовый отправитель"
+
+msgid "When this option is selected messages are sent by the default transport specified in the Webasyst framework configuration."
+msgstr "При выборе этого варианта рассылки будут отправляться транспортом по умолчанию, указанным в конфигурации фреймворка Вебасист."
+
+msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
+msgstr "Некоторые хостинг-провайдеры позволяют отправлять электронные сообщения только этим транспортом. Если имеется необходимость ввести дополнительные параметры, их можно указать в текстовом поле при выборе варианта «PHP-функция mail()». По умолчанию используется параметр -f%s."
+
+msgid "This is a default command for sending email in UNIX-like operating systems. You can edit it to use a different command for sending messages if you are an experienced server administrator."
+msgstr "Это стандартная команда для отправки email-сообщений на UNIX-хостингах. Ее можно изменить на другую системную команду для отправки сообщений, если вы самостоятельно администрируете работу сервера."
+
+msgid "A special server for sending email messages. You can send email via any SMTP server for which you have connection credentials: host, port, user name, and password. It may belong either to your web-hosting company or to a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
+msgstr "Специальный сервер, предназначенный для отправки электронной почты. Сообщения можно отправлять через любой SMTP-сервер, для подключения к которому у вас есть его адрес, номер порта, имя пользователя (логин) и пароль. Это может быть SMTP-сервер вашего хостинг-провайдера или публичного почтового сервиса: Mail.ru, Gmail и т. п."
+
+msgid "Options"
+msgstr "Параметры"
+
+msgid "Command"
+msgstr "Команда"
+
+msgid "Encryption"
+msgstr "Шифрование"
+
+msgid "None"
+msgstr "Нет"
+
+msgid "You need to install openssl php extention to use DKIM"
+msgstr "Вам необходимо установить расширение openssl php для использования DKIM"
+
+msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
+msgstr "Для использования DKIM вам потребуется PHP версии 5.3 или выше. Текущая версия:"
+
+msgid "Extension openssl is not installed"
+msgstr "Расширение openssl не установлено"
+
+msgid "Failed to create DKIM signature"
+msgstr "Не удалось сгенерировать DKIM ключ"
+
+msgid "Enter an email address in “Sender” field to use DKIM."
+msgstr "Для использования DKIM введите email-адрес в поле «Отправитель»."
+
+msgid "Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address."
+msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом оправителя."
+
+msgid "Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name"
+msgstr "Добавьте новую <b>TXT-запись</b> с данным публичным ключом DKIM в DNS-зону домена"
+
+msgid "Host "
+msgstr "Хост"
+
+msgid "Domain"
+msgstr "Домен"
+
+msgid "Record type"
+msgstr "Тип записи"
+
+msgid "Value"
+msgstr "Значение"
+
+msgid "Add email sending rule"
+msgstr "Добавить правило отправки email"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Maps settings"
+msgstr "Настройки карт"
+
+msgid "Select an online map service to display maps."
+msgstr "Выберите картографический сервис для отображения онлайн-карт."
+
+msgid "Map service"
+msgstr "Сервис карт"
+
+msgid "No map services available"
+msgstr "Нет доступных сервисов карт"
+
+msgid "Captcha"
+msgstr "Капча"
+
+msgid "Captcha settings"
+msgstr "Настройки капчи"
+
+msgid "Select a type of captcha to be used on your websites."
+msgstr "Выберите тип капчи, которая будет использоваться на ваших сайтах."
+
+msgid "Captcha type"
+msgstr "Тип капчи"
+
+msgid "Invisible mode"
+msgstr "Невидимый режим"
+
+msgid "Get site key and secret for your website"
+msgstr "Получить значения для своего сайта"
+
+msgid "You have no rules set up for %s app."
+msgid_plural "You have no rules set up for %s apps."
+msgstr[0] "Нет правил для приложения «%s»."
+msgstr[1] "Нет правил для приложений «%s»."
+msgstr[2] "Нет правил для приложений «%s»."
+
+msgid "Some rules of %s app are incorrect."
+msgid_plural "Some rules of %s apps are incorrect."
+msgstr[0] "Некоторые правила приложения «%s» настроены неправильно."
+msgstr[1] "Некоторые правила приложений «%s» настроены неправильно."
+msgstr[2] "Некоторые правила приложений «%s» настроены неправильно."
+
+msgid "”, “"
+msgstr "», «"
+
+msgid "Site structure error notifications"
+msgstr "Уведомления об ошибках в структуре сайта"
+
+msgid "Show error notifications in site structure settings."
+msgstr "Показывать уведомления об ошибках в настройках структуры сайта."
+
+msgid "Site settings"
+msgstr "Настройки сайта"
+
+msgid "System settings"
+msgstr "Системные настройки"
+
+msgid "Website address"
+msgstr "Адрес сайта"
+
+msgid "Your website, blog or company URL (will be displayed as a link below the company name in the top left corner)."
+msgstr "Адрес вашего сайта или блога (будет отображаться в виде ссылки под названием компании в левом верхнем углу)."
+
+msgid "Locale of software available for installation in Installer"
+msgstr "Язык программных продуктов, доступных для установки в «Инсталлере»"
+
+msgid "Allow “Remember me” option in Webasyst backend authorization form"
+msgstr "Можно включить «Запомнить меня» при входе в бекенд Вебасиста"
+
+msgid "Auto-login"
+msgstr "Автоматическая авторизация"
+
+msgid "Login only"
+msgstr "Только логин"
+
+msgid "Login or email"
+msgstr "Логин или email"
+
+msgid "Authorization form background image"
+msgstr "Фон формы авторизации"
+
+msgid "Stretch to fill entire screen"
+msgstr "Растянуть изображение на весь экран"
+
+msgid "Localization engine"
+msgstr "Механизм локализации"
+
+msgid "Gettext (recommended)"
+msgstr "Gettext (рекомендуется)"
+
+msgid "Delete authorization form background image?"
+msgstr "Удалить фоновое изображение формы авторизации?"
+
+msgid "For developers"
+msgstr "Для разработчика"
+
+msgid "Developer mode"
+msgstr "Режим отладки (debug mode)"
+
+msgid "Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development."
+msgstr "Режим отладки отключает кеширование и включает подробный вывод сообщений об ошибках. Рекомендуется при разработке приложений."
+
+msgid "Clear cache"
+msgstr "Очистить кеш"
+
+msgid "CDN address"
+msgstr "Адрес CDN"
+
+msgid "Custom text"
+msgstr "Произвольный текст"
+
+msgid "Text to be returned at specified URL"
+msgstr "Текст, который должен быть доступен по указанному URL"
+
+msgid "Content type"
+msgstr "Тип содержимого"
+
+msgid "file"
+msgstr "файл"
+
+msgid "Port"
+msgstr "Порт"
+
+msgid "This rule is disabled because it is placed below a more general rule. Move this rule higher in the list to enable it."
+msgstr "Это правило отключено, потому что оно находится ниже более общего правила. Перенесите правило выше, чтобы включить его."
+
+msgid "Delete route"
+msgstr "Удалить правило"
+
+msgid "You are about to delete the only routing rule set up for <b>%s</b> app."
+msgstr "Вы удаляете единственное настроенное правило маршрутизации для приложения «<b>%s</b>»."
+
+msgid "This will limit its functionality. Delete the rule?"
+msgstr "Это ограничит его функциональность. Удалить правило?"
+
+msgid "Deleting this site will also delete routing rules set up for installed apps. This will limit their functionality. Delete the site?"
+msgstr "Вместе с сайтом будут удалены правила маршрутизации для установленных приложений. Это ограничит их функциональность. Удалить сайт?"
+
+msgid "Deleting this site will also delete routing rules set up for <b>%s</b> app. This will limit its functionality.</p><p>Upon site deletion, set up routing rules for this app in the structure settings of remaining sites to continue using all functions."
+msgid_plural "Deleting this site will also delete routing rules set up for <b>%s</b> apps. This will limit their functionality.</p><p>Upon site deletion, set up routing rules for these apps in the structure settings of remaining sites to continue using all functions."
+msgstr[0] "При удалении сайта будут удалены правила маршрутизации для приложения <b>«%s»</b>. Это может ограничить его функциональность.</p><p>После удаления сайта добавьте правила маршрутизации для этого приложения в структуре оставшихся сайтов, чтобы продолжить пользоваться всеми возможностями."
+msgstr[1] "При удалении сайта будут удалены правила маршрутизации для приложений <b>«%s»</b>. Это может ограничить их функциональность.</p><p>После удаления сайта добавьте правила маршрутизации для этих приложений в структуре оставшихся сайтов, чтобы продолжить пользоваться всеми возможностями."
+msgstr[2] "При удалении сайта будут удалены правила маршрутизации для приложений <b>«%s»</b>. Это может ограничить их функциональность.</p><p>После удаления сайта добавьте правила маршрутизации для этих приложений в структуре оставшихся сайтов, чтобы продолжить пользоваться всеми возможностями."
+
+msgid "”</b>, <b>“"
+msgstr "»</b>, <b>«"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Login and signup settings"
+msgstr "Настройки входа и регистрации"
+
+msgid "Login and signup settings for %s"
+msgstr "Настройки входа и регистрации на %s"
+
+msgid "User personal area"
+msgstr "Личный кабинет пользователя"
+
+msgid "Site section for login and signup"
+msgstr "Раздел сайта для авторизации и регистрации"
+
+msgid "Select app"
+msgstr "Выберите приложение"
+
+msgid "Ways of login and registration"
+msgstr "Способы входа и регистрации"
+
+msgid "Social networks (additional authorization option)"
+msgstr "Социальные сети (дополнительный способ входа)"
+
+msgid "Signup form"
+msgstr "Форма регистрации"
+
+msgid "Login form"
+msgstr "Форма входа"
+
+msgid "Fields"
+msgstr "Поля"
+
+msgid "Site key"
+msgstr "Ключ"
+
+msgid "Secret key"
+msgstr "Секретный ключ"
+
+msgid "authorization enabled"
+msgstr "включен"
+
+msgid "authorization disabled"
+msgstr "выключен"
+
+msgid "Set up how website visitors will log in and sign up on your website."
+msgstr "Настройте, как посетители будут входить и регистрироваться на сайте."
+
+msgid "Login & signup forms"
+msgstr "Формы входа и регистрации"
+
+msgid "Set up fields website visitors will need to complete in login and signup forms."
+msgstr "Настройте поля форм входа и регистрации, которые будут заполнять посетители сайта."
+
+msgid "A signup confirmation link or code will be sent in a notification."
+msgstr "Ссылка или код для подтверждения регистрации будут отправлены в уведомлении."
+
+msgid "Wait for specified number of seconds before sending next one-time password"
+msgstr "Период ожидания в секундах перед отправкой следующего одноразового кода"
+
+msgid "Confirm signup"
+msgstr "Подтверждать регистрацию"
+
+msgid "Passwords type"
+msgstr "Система паролей"
+
+msgid "Successful signup notification"
+msgstr "Уведомление о завершении регистрации"
+
+msgid "Send successful signup notifications to users"
+msgstr "Отправлять пользователям уведомление о завершении регистрации"
+
+msgid "Select a group of notification templates to be used for sending login, signup, and password recovery notifications."
+msgstr "Выберите группу шаблонов уведомлений для отправки уведомлений при входе, регистрации и смене пароля."
+
+msgid "Edit email notification templates in <a href=\"%s\">Settings</a> app"
+msgstr "Изменяйте шаблоны email-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."
+
+msgid "Edit SMS notification templates in <a href=\"%s\">Settings</a> app"
+msgstr "Изменяйте шаблоны SMS-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."
+
+msgid "User notifications"
+msgstr "Уведомления пользователей"
+
+msgid "Notification templates"
+msgstr "Шаблоны уведомлений"
+
+msgid "Priority over email notifications"
+msgstr "Приоритет над email-уведомлениями"
+
+msgid "Prefer SMS over email for sending notifications. In case of SMS sending failure, email will be sent as a replacement."
+msgstr "Приоритет SMS над email при отправке уведомлений. В случае сбоя в отправке SMS будет отправлено email-уведомление."
+
+msgid "A user must enter characters shown in an image"
+msgstr "Пользователь должен ввести символы с изображения"
+
+msgid "“Remember me” option"
+msgstr "Флажок «Запомнить меня»"
+
+msgid "Email or phone"
+msgstr "Email или телефон"
+
+msgid "Cannot disable both authorization options “Email” &amp; “Phone”"
+msgstr "Нельзя отключать оба способа авторизации «Email» и «Телефон»"
+
+msgid "Keep at least one of these two basic authorization option enabled for website visitors to be able to log into their accounts."
+msgstr "Оставьте включенным хотя бы один из этих двух основных способов авторизации, чтобы посетители сайта могли входить в личный кабинет."
+
+msgid "Authorization with an email address is used by default."
+msgstr "По умолчанию используется авторизация с помощью email-адреса."
+
+msgid "Services"
+msgstr "Сервисы"
+
+msgid "Invisible captcha will be used"
+msgstr "Будет использована невидимая капча"
+
+msgid "Authorization type"
+msgstr "Тип авторизации"
+
+msgid "Require captcha input"
+msgstr "Требовать ли ввод капчи"
+
+msgid "Login field placeholder"
+msgstr "Плейсхолдер в поле логина"
+
+msgid "Communication channel selection"
+msgstr "Выбор канала связи"
+
+msgid "Login, signup, and personal account"
+msgstr "Вход, регистрация и личный кабинет"
+
+msgid "Delete this site alias? It will <strong>not</strong> delete any data of the main site."
+msgstr "Удалить этот сайт-зеркало? Никакие данные основного сайта <strong>не&nbsp;будут</strong> удалены."
+
+msgid "Waiting period in seconds before sending next verification code:"
+msgstr "Интервал в секундах перед отправкой следующего кода подтверждения:"
+
+msgid "Verification code re-sending"
+msgstr "Повторная отправка кода подтверждения"
+
+msgid "Add SMS notification templates in <a href=\"%s\">Settings</a> app."
+msgstr "Добавьте шаблоны SMS-уведомлений в приложении «<a href=\"%s\">Настройки</a>»."
+
+msgid "Authorization by login name"
+msgstr "Вход по имени пользователя"
+
+msgid "Enable to allow backend users to log in on the website with their login names. Only login names different from phone numbers, i.e. containing characters other than digits, are supported."
+msgstr "Включите, чтобы пользователи бекенда могли входить на сайт со своими логинами. Поддерживаются имена пользователей, отличающиеся от телефонных номеров, т. е. состоящие не только из цифр."
+
+msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section of Settings app."
+msgstr "Не заполнен email-адрес отправителя в разделе «<a href=\"%s\">Настройки email</a>» приложения «Настройки»."

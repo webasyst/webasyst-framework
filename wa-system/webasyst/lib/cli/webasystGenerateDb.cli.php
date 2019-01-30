@@ -56,7 +56,7 @@ class webasystGenerateDbCli extends waCliController
     private function printHelp()
     {
         if (preg_match('/^webasyst(\w+)Cli$/', __CLASS__, $matches)) {
-            $callback = create_function('$m', 'return strtolower($m[1]);');
+            $callback = wa_lambda('$m', 'return strtolower($m[1]);');
             $action = preg_replace_callback('/^([\w]{1})/', $callback, $matches[1]);
         } else {
             $action = '';
@@ -290,7 +290,10 @@ HELP;
                     $fields = ifset($compare['r']['FIELDS']);
                     $keys = ifset($compare['r']['KEYS']);
                     if (is_array($fields) || is_array($keys)) {
-                        $n = max(count($fields), count($keys));
+                        $n = max(
+                            is_array($fields) ? count($fields) : 0,
+                            is_array($keys) ? count($keys) : 0
+                        );
                         for ($i = 0; $i < $n; $i++) {
                             $this->printLine(
                                 $format,
@@ -298,8 +301,8 @@ HELP;
                                 $i ? ' ' : $compare['s'],
                                 $i ? '' : $t,
                                 $i ? '' : $compare['c'],
-                                ifset($fields[$i]),
-                                ifset($keys[$i])
+                                is_array($fields) ? ifset($fields[$i]) : '',
+                                is_array($keys) ? ifset($keys[$i]) : ''
                             );
                         }
                     } else {

@@ -20,7 +20,7 @@ class blogViewHelper extends waAppViewHelper
 
     public function rssUrl()
     {
-        return $this->wa->getRouteUrl('blog/frontend/rss', array(), true);
+        return wa()->getRouteUrl('blog/frontend/rss', array(), true, wa()->getRouting()->getDomain());
     }
 
     public function blogs()
@@ -173,7 +173,7 @@ class blogViewHelper extends waAppViewHelper
         <p>
             <input type="text" name="title"/><br/>
             <textarea name="text" cols="60" rows="20"></textarea><br/>
-            {$this->wa->getView()->getHelper()->csrf()}
+            {$this->wa()->getView()->getHelper()->csrf()}
             <input type="submit" value="{$submit}"/>
         </p>
         </form>

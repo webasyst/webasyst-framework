@@ -20,13 +20,6 @@ var ElasticBlock = ( function($) {
         that.initClass();
     };
 
-    ElasticBlock.prototype.log = function( string ) {
-        var that = this;
-        if (that.debug) {
-            console.log( string );
-        }
-    };
-
     ElasticBlock.prototype.initClass = function() {
         var that = this;
 
@@ -42,7 +35,7 @@ var ElasticBlock = ( function($) {
         // VARS
         var display_width = Math.floor( $window.width() ),
             display_height = Math.floor( $window.height() ),
-            content_height = Math.floor( that.$content.outerHeight() ),
+            wrapper_o = $wrapper.offset(),
             block_top = $block.offset().top,
             wrapper_margin_top = 0,
             set_force = true;
@@ -59,87 +52,14 @@ var ElasticBlock = ( function($) {
             .on("scroll", setScrollWatcher)
             .on("resize", setResizeWatcher);
 
-        function setScrollWatcher() {
-            if ($.contains(document, $block[0])) {
-                onScroll();
-            } else {
-                unsetScrollWatcher();
-            }
-        }
+        var $clone = $("<div />").hide();
+        $clone.insertAfter($block);
 
-        function setResizeWatcher() {
-            if ($.contains(document, $block[0])) {
-                onResize();
-            } else {
-                unsetResizeWatcher();
-            }
-        }
-
-        function unsetScrollWatcher() {
-            $window.off("scroll", setScrollWatcher);
-        }
-
-        function unsetResizeWatcher() {
-            $window.off("scroll", setResizeWatcher);
-        }
-
-        function setTop( top ) {
-            that.log("Manual top scroll position");
-
-            $block
-                .css("top", top)
-                .width(block_width)
-                .removeClass(top_fix_class)
-                .removeClass(bottom_fix_class);
-
-            is_top_set = true;
-            is_fixed_to_top = is_fixed_to_bottom = is_fixed_top_set = false;
-        }
-
-        function setFixTop( top ) {
-            that.log("Fixed to top scroll position");
-
-            $block
-                .removeAttr("style")
-                .width(block_width)
-                .removeClass(bottom_fix_class)
-                .addClass(top_fix_class);
-
-            if (top) {
-                is_fixed_top_set = true;
-                $block.css("top", top);
-            }
-
-            is_top_set = is_fixed_to_bottom = false;
-            is_fixed_to_top = true;
-        }
-
-        function setFixBottom() {
-            that.log("Fixed to bottom scroll position");
-
-            $block
-                .removeAttr("style")
-                .width(block_width)
-                .removeClass(top_fix_class)
-                .addClass(bottom_fix_class);
-
-            is_top_set = is_fixed_to_top = is_fixed_top_set = false;
-            is_fixed_to_bottom = true;
-        }
-
-        function setDefault() {
-            that.log("Default scroll position");
-
-            $block
-                .removeAttr("style")
-                .removeClass(bottom_fix_class)
-                .removeClass(top_fix_class);
-
-            is_top_set = is_fixed_to_top = is_fixed_to_bottom = is_fixed_top_set = false;
-        }
+        // EVENTS
 
         function onScroll() {
-            var block_height = Math.floor( $block.outerHeight() ),
+            var content_height = Math.floor( that.$content.outerHeight() ),
+                block_height = Math.floor( $block.outerHeight() ),
                 wrapper_height = Math.floor( $wrapper.height() ),
                 scroll_top = $window.scrollTop(),
                 dynamic_block_top = Math.floor( $block.offset().top ),
@@ -156,8 +76,6 @@ var ElasticBlock = ( function($) {
                     setForceTop(scroll_top, block_height);
                 } else {
                     setDefault();
-                    // unsetScrollWatcher();
-                    // unsetResizeWatcher();
                 }
             } else {
 
@@ -218,15 +136,25 @@ var ElasticBlock = ( function($) {
                         // If the lower end
                     } else if (is_bottom_of_block) {
                         // If the direction of scrolling up
-                        if (direction > 0) {
-                            if (!is_top_set || is_fixed_to_top || is_fixed_to_bottom) {
-                                setTop( dynamic_block_top - block_top );
-                            }
 
-                            // If the direction of scrolling down
+                        var bottom_end = (wrapper_o.top + wrapper_height),
+                            under_bottom_end = ( bottom_end < scroll_top + display_height );
+
+                        if (under_bottom_end) {
+                            if (!is_top_set || is_fixed_to_top || is_fixed_to_bottom) {
+                                setTop(wrapper_height - block_height);
+                            }
                         } else {
-                            if (is_top_set || is_fixed_to_top || !is_fixed_to_bottom) {
-                                setFixBottom();
+                            if (direction > 0) {
+                                if (!is_top_set || is_fixed_to_top || is_fixed_to_bottom) {
+                                    setTop( dynamic_block_top - block_top );
+                                }
+
+                                // If the direction of scrolling down
+                            } else {
+                                if (is_top_set || is_fixed_to_top || !is_fixed_to_bottom) {
+                                    setFixBottom();
+                                }
                             }
                         }
                         // In all other cases
@@ -241,6 +169,102 @@ var ElasticBlock = ( function($) {
 
             // Save New Data
             scroll_value = scroll_top;
+        }
+
+        function onResize() {
+            display_width = Math.floor( $window.width() );
+            display_height = Math.floor( $window.height() );
+            setDefault();
+            $window.trigger("scroll");
+        }
+
+        function setScrollWatcher() {
+            if ($.contains(document, $block[0])) {
+                onScroll();
+            } else {
+                unsetScrollWatcher();
+            }
+        }
+
+        function unsetScrollWatcher() {
+            $window.off("scroll", setScrollWatcher);
+        }
+
+        function setResizeWatcher() {
+            if ($.contains(document, $block[0])) {
+                onResize();
+            } else {
+                unsetResizeWatcher();
+            }
+        }
+
+        function unsetResizeWatcher() {
+            $window.off("scroll", setResizeWatcher);
+        }
+
+        // RENDER
+
+        function setTop( top ) {
+            that.log("Manual top scroll position");
+
+            $clone.height(0).hide();
+
+            $block
+                .css("top", top)
+                .width(block_width)
+                .removeClass(top_fix_class)
+                .removeClass(bottom_fix_class);
+
+            is_top_set = true;
+            is_fixed_to_top = is_fixed_to_bottom = is_fixed_top_set = false;
+        }
+
+        function setFixTop( top ) {
+            that.log("Fixed to top scroll position");
+
+            $clone.height($block.outerHeight()).show();
+
+            $block
+                .removeAttr("style")
+                .width(block_width)
+                .removeClass(bottom_fix_class)
+                .addClass(top_fix_class);
+
+            if (top) {
+                is_fixed_top_set = true;
+                $block.css("top", top);
+            }
+
+            is_top_set = is_fixed_to_bottom = false;
+            is_fixed_to_top = true;
+        }
+
+        function setFixBottom() {
+            that.log("Fixed to bottom scroll position");
+
+            $clone.height($block.outerHeight()).show();
+
+            $block
+                .removeAttr("style")
+                .width(block_width)
+                .removeClass(top_fix_class)
+                .addClass(bottom_fix_class);
+
+            is_top_set = is_fixed_to_top = is_fixed_top_set = false;
+            is_fixed_to_bottom = true;
+        }
+
+        function setDefault() {
+            that.log("Default scroll position");
+
+            $clone.height(0).hide();
+
+            $block
+                .removeAttr("style")
+                .removeClass(bottom_fix_class)
+                .removeClass(top_fix_class);
+
+            is_top_set = is_fixed_to_top = is_fixed_to_bottom = is_fixed_top_set = false;
         }
 
         function setForceTop(scroll_top, block_height) {
@@ -262,11 +286,12 @@ var ElasticBlock = ( function($) {
             }
         }
 
-        function onResize() {
-            display_width = Math.floor( $window.width() );
-            display_height = Math.floor( $window.height() );
-            setDefault();
-            $window.trigger("scroll");
+    };
+
+    ElasticBlock.prototype.log = function( string ) {
+        var that = this;
+        if (that.debug) {
+            console.log( string );
         }
     };
 

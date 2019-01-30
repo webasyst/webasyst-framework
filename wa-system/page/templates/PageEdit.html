@@ -25,12 +25,12 @@
             <div class="wa-page-urls small">
                 {if $page}
                     {if !empty($url)}
-                        <a href="{$url}{$page.url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">{$url_decoded|escape}{$page.url}</a>
-                        <a href="{$url}{$page.url}?preview={$preview_hash}" target="_blank"><i class="icon10 new-window"></i></a>
+                        <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" target="_blank">{$url_decoded|escape}{$page.url}</a>
+                        <a href="{$url}{$page.url}{if !$page.status}?preview={$preview_hash}{/if}" target="_blank"><i class="icon10 new-window"></i></a>
                     {elseif $page.domain and $page.route !== null}
                         {$page_route=waRouting::clearUrl($page.route)}
-                        <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
-                        <a href="http://{$page.domain}/{$page_route}{$page.full_url}?preview={$preview_hash}"><i class="icon10 new-window"></i></a>
+                        <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
+                        <a href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}"><i class="icon10 new-window"></i></a>
                     {else}
                     [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
                     {/if}
@@ -156,7 +156,7 @@
                         <div class="value">
                             <textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
 {/foreach}{/if}</textarea><br />
-                            <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`http://www.webasyst.com/framework/docs/site/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
+                            <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
                         </div>
                     </div>
                 </div>
@@ -170,31 +170,71 @@
             <li><a class="html" href="#">HTML</a></li>
         </ul>
         <div style="clear:both">
+            <div class="wa-editor-upload-img hidden" title="[s`Upload image`]">
+                <i class="icon16 image"></i>
+            </div>
             <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
             {$wa->csrf()}
         </div>
     </div>
+
     {if $options.save_panel}
     <div class="wa-page-save-panel block bordered-top">
-        <div class="wa-dropdown">
-            <div class="wa-drop-link">
-                <a class="inline-link" id="wa-editor-help-link" href="#">
-                    <i class="icon16 cheatsheet"></i><b><i>[s`Cheat sheet`]</i></b>
-                    <i class="icon10 uarr no-overhanging"></i>
-                </a>
-                <div id="wa-editor-help" class="wa-dropdown-block"></div>
-            </div>
-        </div>
-
+        {$wa->getCheatSheetButton(["app" => {$wa->app()}, 'page_id' => {$page.id|default:''}])}
         <input id="wa-page-button" type="submit" class="button green" value="[s`Save`]" />
         <em class="hint">Ctrl + S</em>
         <span id="wa-editor-status" style="margin-left: 25px; display: none"></span>
-
     </div>
     {/if}
 {$wa->csrf()}
 </form>
 <div class="clear"></div>
+</div>
+
+<div class="dialog" id="s-upload-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window" style="height: 225px; min-height: 225px; width: 450px; min-width: 450px">
+        <form id="s-upload-form" method="post" action="?module=pages&action=uploadimage&r=2" enctype="multipart/form-data">
+            {$wa->csrf()}
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h2>[s`Upload image`]</h2>
+                    <div id="redactor-droparea" style="text-align: center;">
+                        <input id="s-input-file" type="file" name="file" multiple>
+                        <input type="hidden" name="path" id="s-upload-path" value="" />
+                        <div class="loading" style="display:none; margin-top: 10px">
+                            <i class="icon16 loading"></i> [s`Uploading...`]
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Upload`]">
+                    [`or`] <a href="#" class="inline-link cancel"><b><i>[s`cancel`]</i></b></a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dialog" id="s-switch-editor">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window" style="height: 140px; min-height: 140px; width: 530px; min-width: 530px">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    [`<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?`]
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[`Switch`]" />
+                    [`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script type="text/javascript">$(function () { "use strict";
@@ -223,7 +263,7 @@
                         location.href = prev.addClass('selected').find('a').attr('href');
                         li.remove();
                     } else {
-                        next = li.nextAll('.dr:first');
+                        var next = li.nextAll('.dr:first');
                         if (next.length > 0) {
                             location.href = next.addClass('selected').find('a').attr('href');
                             li.remove();
@@ -246,45 +286,19 @@
         }
     });
 
-    // Open template vars help
-    $("#wa-editor-help-link").click(function () {
-        if ($("#wa-editor-help").is(":visible")) {
-            $("#wa-editor-help").hide();
-            return false;
-        }
-        $("#wa-editor-help").load('?module=pages&action=help', "app={$wa->app()}&id={if $page}{$page.id}{/if}", function () {
-            $(this).show();
-            var f = function (e) {
-                if ($(e.target).attr('id') == 'wa-editor-help' || $(e.target).parents('#wa-editor-help').length) {
-                    $(document).one('click', f);
-                } else {
-                    $("#wa-editor-help").hide();
-                }
-            };
-            $(document).one('click', f);
-        });
-        return false;
-    });
-
-    // Insert template var into test when user clicks a row in vars help
-    $("#wa-editor-help").on('click', "div.fields a.inline-link", function () {
-        var el = $(this).find('i');
-        if (el.children('b').length) {
-            el = el.children('b');
-        }
-        $.wa_editor_ready.then(function(method) {
-            $('#wa-page-content')[method]('insert', el.text());
-        });
-        return false;
-    });
-
     // Initialize editor when JS is loaded
     $.wa_editor_ready.then(function(method) {
         $('#wa-page-content')[method]({
-            lang: "{$lang}",
+            lang: $.Redactor.opts.langs["{$lang}"] ? "{$lang}" : 'en',
+            smarty_wysiwyg_msg: {_ws('WYSIWYG editor is disabled because page source contains Smarty code tags.')|json_encode},
+            modification_wysiwyg_msg: $('#s-switch-editor'),
             saveButton: '#wa-page-button',
+            upload_img_dialog: '#s-upload-dialog',
             uploadFields: {
                 '_csrf': "{waRequest::cookie('_csrf', '')}"
+            },
+            locales: {
+                'close': "[`Close`]"
             }
         });
     });
@@ -426,8 +440,14 @@
                     var page_url = 'http://{waIdna::dec($page.domain)}/{$page_route}' + p.full_url;
                     {/if}
 
+                    if ($('#wa-page-v').is(':checked')) {
+                        var page_attr_url = page_url;
+                    } else {
+                        var page_attr_url = page_url + '?preview={$preview_hash}';
+                    }
+
                     if ($(".wa-page-urls a").length) {
-                        $(".wa-page-urls a").attr('href', page_url + '?preview={$preview_hash}');
+                        $(".wa-page-urls a").attr('href', page_attr_url);
                         $(".wa-page-urls a:first").html(page_url);
                     }
                 } else if (response.status == 'fail') {

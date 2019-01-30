@@ -67,11 +67,12 @@ class Smarty_Security {
         'waSystem',
         'waContactFields',
         'waConfig',
-        'waUtils',
+        'waUtils::varExportToFile',
         'waHtmlControl',
         'waLog',
         'waRequest::file',
         'waDbConnector',
+        'waEvent',
     );
     /**
      * This is an array of disabled PHP functions.
@@ -91,6 +92,7 @@ class Smarty_Security {
         'array_intersect_uassoc', 'array_intersect_ukey', 'extract', 'parse_str',
         'array_uintersect', 'array_walk', 'array_walk_recursive', 'pfsockopen', 'fsockopen',
         'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply', 'iptcembed',
+        'forward_static_call', 'forward_static_call_array', 'get_defined_functions',
         'dom_import_simplexml', 'simplexml_load_string', 'show_source', 'php_strip_whitespace', 'get_meta_tags',
         'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init',
         'debug_backtrace', 'mail', 'mb_send_mail', 'set', 'php_uname',
@@ -120,7 +122,7 @@ class Smarty_Security {
         '~^stream~i',
         '~^ini_~i',
         '~^xmlrpc_~i',
-        '~^mb_ereg_~i',
+        '~^mb_ereg~i',
     );
     /**
      * This is an array of trusted PHP modifiers.
@@ -230,6 +232,7 @@ class Smarty_Security {
      */
     public function isTrustedPhpFunction($function_name, $compiler)
     {
+        $function_name = strtolower($function_name);
         $unsafe = in_array($function_name, $this->php_functions);
         if (!$unsafe) {
             foreach($this->php_function_masks as $mask) {
@@ -258,21 +261,40 @@ class Smarty_Security {
      */
     public function isTrustedStaticClass($class_name, $compiler, $method = false)
     {
+        $allowed = true;
+        $orig_method = $method;
         $orig_class_name = $class_name;
         $class_name = strtolower($class_name);
         $method = substr(strtolower($method), 0, strpos($method, '('));
-        if (in_array($class_name, $this->static_classes) || in_array($class_name.'::'.$method, $this->static_classes)
-            || substr($class_name, 0, 7) == 'smarty_') {
-            $compiler->trigger_template_error("access to static class '{$orig_class_name}' not allowed by security setting");
-            return false;
+
+        // Prohibited static classes
+        if (in_array($class_name, $this->static_classes) || in_array($class_name.'::'.$method, $this->static_classes)) {
+            $allowed = false;
+        }
+        // Smarty internals
+        if ($allowed && substr($class_name, 0, 7) == 'smarty_') {
+            $allowed = false;
         }
 
-        if ($method == 'getactive' || $method == 'getappconfig' || $method == 'setdebug' || $method == 'systemoption') {
-            $compiler->trigger_template_error("access to static class '{$orig_class_name}' not allowed by security setting");
-            return false;
+        // Prohibited methods
+        if ($allowed && ($method == 'getactive' || $method == 'getappconfig' || $method == 'setdebug' || $method == 'systemoption' || $method == '__set_state')) {
+            $allowed = false;
+        }
+        if ($allowed && $method == 'getinstance' && $class_name != 'shopdimension') {
+            $allowed = false;
+        }
+        // Prohibited method masks
+        if ($allowed && (false !== strpos($method, 'model') || false !== strpos($method, 'factory'))) {
+            $allowed = false;
+        }
+        if ($allowed && false !== strpos($method, 'getplugin') && $method != 'getplugininfo') {
+            $allowed = false;
         }
 
-        return true;
+        if (!$allowed) {
+            $compiler->trigger_template_error("access to static method '{$orig_class_name}::{$orig_method}' not allowed by security setting");
+        }
+        return $allowed;
     }
 
 
@@ -385,22 +407,6 @@ class Smarty_Security {
     {
         if (substr($filepath, -4) == '.php') {
             throw new SmartyException("file '".basename($filepath)."' not allowed by security setting");
-        }
-        $config_path = waConfig::get('wa_path_config');
-
-        $_filepath = realpath($filepath);
-        $directory = dirname($_filepath);
-        while (true) {
-            if ($directory == $config_path) {
-                throw new SmartyException("directory '{$_filepath}' not allowed by security setting");
-                return false;
-            }
-            // abort if we've reached root
-            if (($pos = strrpos($directory, DS)) === false || !isset($directory[1])) {
-                break;
-            }
-            // bubble up one level
-            $directory = substr($directory, 0, $pos);
         }
     }
 

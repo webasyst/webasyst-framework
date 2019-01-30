@@ -590,12 +590,14 @@ window.ProfileAccessTab = function(o) { "use strict";
         password = o.password, // true/false
         contact_id = o.contact_id,
         wa_app_url = o.wa_app_url,
+        url_change_api_token = o.url_change_api_token,
         loc = o.loc;
 
     initGroupsChecklist();
     initFormCreateUser();
     initFormChangeLogin();
     initFormChangePassword();
+    initApiTokensEditor();
     if (!o.is_own_profile) {
         initToggleBan(o.wa_url, o.wa_framework_version);
     }
@@ -607,6 +609,43 @@ window.ProfileAccessTab = function(o) { "use strict";
         is_frame: true
     });
     return;
+
+    function initApiTokensEditor() {
+        var $wrapper = $('#tc-api-tokens-filed'),
+            $list_table = $wrapper.find('.js-api-tokens-list'),
+            is_locked = false;
+
+        $wrapper.on('click', '.js-remove-api-token', function (e) {
+            e.preventDefault();
+            var $token_item = $(this).parents('.js-token-item'),
+                $icon = $token_item.find('.icon16'),
+                token_id = $token_item.data('token'),
+                data = {action: 'remove', token_id: token_id};
+
+            if (!is_locked && token_id && confirm(loc['remove_ask'])) {
+                is_locked = true;
+
+                $icon.removeClass('no').addClass('loading');
+
+                $.post(url_change_api_token, data, function(res) {
+                    if (res.status && res.status === 'ok') {
+                        // Remove tr from tokens list
+                        $token_item.remove();
+                        // Remove the entire list if it is empty
+                        if ($list_table.find('.js-token-item').length === 0) {
+                            $wrapper.remove();
+                        }
+                    } else {
+                        is_locked = false;
+                        $icon.removeClass('loading').addClass('no');
+                    }
+                }).always( function() {
+                    is_locked = false;
+                    $icon.removeClass('loading').addClass('no');
+                });
+            }
+        });
+    }
 
     function initGroupsChecklist() {//{{{
         var $form = $('#form-customize-groups');

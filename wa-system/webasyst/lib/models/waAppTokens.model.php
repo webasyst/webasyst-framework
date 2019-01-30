@@ -41,6 +41,12 @@ class waAppTokensModel extends waModel
         if (is_array($token)) {
             $token = $token['token'];
         }
+
+        // some of symbols - '(', ')', '~' should be encoded
+        // see https://tools.ietf.org/html/rfc3986#section-2
+
+        $token = urlencode($token);
+
         return wa()->getRootUrl(true).'link.php/'.$token.'/';
     }
 }

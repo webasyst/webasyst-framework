@@ -15,6 +15,9 @@
 			<div class="dialog-background"></div>
 			<div class="dialog-window">
 				<form method="post" action="">
+
+				{$errors = $errors|default:[]}
+
 				<div class="dialog-content">
 					<div class="dialog-content-indent">					
 												
@@ -30,7 +33,7 @@
 						  <div class="field-group">
 							<div class="field">
 								<div class="name">
-									<strong>[`Login name`]</strong>
+									<strong>[`Login name`] *</strong>
 								</div>
 								<div class="value">
 									<input type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->request('login')}" autocomplete="off" />
@@ -39,7 +42,7 @@
 							</div>
 							<div class="field">
 								<div class="name">
-									<strong>[`Password`]</strong>
+									<strong>[`Password`] *</strong>
 								</div>
 								<div class="value">
 									<input type="password" name="password" class="large{if !empty($errors.password)} error{/if}" />
@@ -48,7 +51,7 @@
 							</div>
 							<div class="field">
 								<div class="name">
-									<strong>[`Confirm password`]</strong>
+									<strong>[`Confirm password`] *</strong>
 								</div>
 								<div class="value">
 									<input type="password" name="password_confirm" class="large{if !empty($errors.password)} error{/if}" />
@@ -75,7 +78,7 @@
                             </div>						  
 							<div class="field">
 								<div class="name">
-									[`Email`]
+									[`Email`] *
 								</div>
 								<div class="value">
 									<input type="text" {if !empty($errors.email)}class="error"{/if} name="email" value="{$wa->request('email')}" />

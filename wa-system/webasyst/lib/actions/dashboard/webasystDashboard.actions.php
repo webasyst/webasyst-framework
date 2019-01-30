@@ -210,10 +210,10 @@ class webasystDashboardActions extends waActions
         $dashboard_url .= "/dashboard/{$dashboard['hash']}/";
 
         $this->display(array(
-            'dashboard' => $dashboard,
+            'dashboard'     => $dashboard,
             'dashboard_url' => $dashboard_url,
-            'header_date' => _ws(waDateTime::date('l')).', '.trim(str_replace(date('Y'), '', waDateTime::format('humandate')), ' ,/'),
-            'widgets' => $widgets,
+            'header_date'   => _ws(waDateTime::date('l')).', '.trim(str_replace(date('Y'), '', waDateTime::format('humandate')), ' ,/'),
+            'widgets'       => $widgets,
         ));
     }
 
@@ -252,6 +252,48 @@ class webasystDashboardActions extends waActions
         }
 
         $this->displayJson($dashboard_model->getById($id));
+    }
+
+    public function dashboardFixSortAction()
+    {
+        $dashboard_id = waRequest::request('dashboard_id', 0, 'int');
+        if (!$dashboard_id) {
+            return;
+        }
+
+        $sql = "SELECT *
+            FROM  `wa_widget`
+            WHERE  `dashboard_id` = ?
+            ORDER BY `block`, `sort`";
+        $widget_model = new waWidgetModel();
+        $widgets = $widget_model->query($sql, $dashboard_id)->fetchAll('id');
+
+        $block_occupied = 4; // out of 4
+        $block = -1;
+        $sort = -1;
+        $update = array();
+        foreach($widgets as $w) {
+            $widget_size = array_product(explode('x', $w['size']));
+            if ($block_occupied + $widget_size > 4) {
+                $block_occupied = 0;
+                $sort = -1;
+                $block++;
+            }
+            $sort++;
+            $block_occupied += $widget_size;
+            if ($w['block'] != $block || $w['sort'] != $sort) {
+                $update[$w['id']] = array(
+                    'block' => $block,
+                    'sort' => $sort,
+                );
+            }
+        }
+
+        foreach($update as $w_id => $data) {
+            $widget_model->updateById($w_id, $data);
+        }
+
+        $this->displayJson('ok');
     }
 
     public static function generateHash()

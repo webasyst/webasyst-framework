@@ -8,6 +8,7 @@ return array(
     'calendar/'          => 'schedule/',
     'calendar/external/' => 'calendar/external',
     'access/'            => 'access/',
+    'api-tokens/'        => 'apitokens/',
     'group/<id>/manage/' => 'group/manage',
     'group/<id>/access/' => 'group/access',
     'group/<id>/'        => 'group/',

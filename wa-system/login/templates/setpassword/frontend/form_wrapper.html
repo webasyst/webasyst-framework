@@ -1,0 +1,178 @@
+{$include_js = $include_js|default:false}
+{$include_css = $include_css|default:false}
+
+{* If you need to load css, but don't need js, we will load css here. If js also need to be loaded, then we will do it asynchronously below. *}
+{if $include_css && !$include_js}
+    <link href="{$wa_url}wa-content/css/login/frontend/set-password.css?v={$wa->version()}" rel="stylesheet" type="text/css"/>
+{/if}
+
+{$class_id = 'wa-set-password-form-wrapper'}
+{$wrapper_id = uniqid($class_id)}
+
+<div class="{$class_id}" id="{$wrapper_id}">
+
+    {$html}
+
+</div>
+
+{if $include_js}
+
+    {$_locale = [
+        'password_required' => '[s`Password can not be empty.`]',
+        'not_match' => '[s`Passwords do not match`]',
+        'captcha_required' => '[s`Captcha is required`]'
+    ]}
+
+    {* Resources *}
+    {$_resources = [
+        [
+            'id'   => "wa-content-setpassword-frontend-form-js",
+            'type' => "js",
+            'uri'  => "`$wa_url`wa-content/js/login/setpassword-frontend-form.min.js?v=`$wa->version()`"
+        ]
+    ]}
+
+
+    {if $include_css}
+
+        {$_resources[] = [
+            'id'   => "wa-content-setpassword-frontend-form-css",
+            'type' => "css",
+            'uri'  => "`$wa_url`wa-content/css/login/frontend/set-password.css?v=`$wa->version()`"
+        ]}
+
+    {/if}
+
+    <script>
+        ( function($) { "use strict";
+            load({$_resources|json_encode}).then(init);
+
+            function load(sources) {
+                var deferred = $.Deferred();
+
+                loader(sources).then( function() {
+                    deferred.resolve();
+                }, function(bad_sources) {
+                    if (console && console.error) {
+                        console.error("Error loading resource", bad_sources);
+                    }
+                    deferred.reject(bad_sources);
+                });
+
+                return deferred.promise();
+
+                function loader(sources) {
+                    var deferred = $.Deferred(),
+                        counter = sources.length;
+
+                    var bad_sources = [];
+
+                    $.each(sources, function(i, source) {
+                        switch (source.type) {
+                            case "css":
+                                loadCSS(source).then(onLoad, onError);
+                                break;
+                            case "js":
+                                loadJS(source).then(onLoad, onError);
+                                break;
+                        }
+                    });
+
+                    return deferred.promise();
+
+                    function loadCSS(source) {
+                        var deferred = $.Deferred(),
+                            promise = deferred.promise();
+
+                        var $link = $("#" + source.id);
+                        if ($link.length) {
+                            promise = $link.data("promise");
+
+                        } else {
+                            $link = $("<link />", {
+                                id: source.id,
+                                rel: "stylesheet"
+                            }).appendTo("head")
+                                .data("promise", promise);
+
+                            $link
+                                .on("load", function() {
+                                    deferred.resolve(source);
+                                }).on("error", function() {
+                                deferred.reject(source);
+                            });
+
+                            $link.attr("href", source.uri);
+                        }
+
+                        return promise;
+                    }
+
+                    function loadJS(source) {
+                        var deferred = $.Deferred(),
+                            promise = deferred.promise();
+
+                        var $script = $("#" + source.id);
+                        if ($script.length) {
+                            promise = $script.data("promise");
+
+                        } else {
+                            var script = document.createElement("script");
+                            document.getElementsByTagName("head")[0].appendChild(script);
+
+                            $script = $(script)
+                                .attr("id", source.id)
+                                .data("promise", promise);
+
+                            $script
+                                .on("load", function() {
+                                    deferred.resolve(source);
+                                }).on("error", function() {
+                                deferred.reject(source);
+                            });
+
+                            $script.attr("src", source.uri);
+                        }
+
+                        return promise;
+                    }
+
+                    function onLoad(source) {
+                        counter -= 1;
+                        watcher();
+                    }
+
+                    function onError(source) {
+                        bad_sources.push(source);
+                        counter -= 1;
+                        watcher();
+                    }
+
+                    function watcher() {
+                        if (counter === 0) {
+                            if (!bad_sources.length) {
+                                deferred.resolve();
+                            } else {
+                                deferred.reject(bad_sources);
+                            }
+                        }
+                    }
+                }
+            }
+
+            function init() {
+                new WaFrontendSetPassword({
+                    $wrapper: $("#{$wrapper_id}"),
+                    namespace: {$namespace|json_encode},
+                    errors: {$errors|json_encode},
+                    messages: {$messages|json_encode},
+                    locale: {$_locale|json_encode},
+                    is_json_mode: {$is_json_mode|default:false|json_encode},
+                    need_redirects: {$need_redirects|default:false|json_encode},
+                    hash: {$hash|default:''|json_encode}
+                });
+            }
+
+        })(jQuery);
+    </script>
+{/if}

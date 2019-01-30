@@ -159,9 +159,8 @@ class waContact implements ArrayAccess
             $retina = (wa()->getEnv() == 'backend');
         }
 
-        $dir = self::getPhotoDir($id, false);
-
         if ($ts) {
+            $dir = self::getPhotoDir($id, false);
             if ($size != 'original' && $retina) {
                 $size .= '@2x';
             }
@@ -304,6 +303,16 @@ class waContact implements ArrayAccess
 
         if ($field_id === 'id') {
             return $this->getId();
+        }
+
+        // Do not allow to read password hash from Smarty templates.
+        // But we still allow to check _existance_ of password.
+        if (waConfig::get('is_template') && $field_id == 'password') {
+            $result = waContactFields::getStorage()->get($this, 'password');
+            if ($result) {
+                return self::getPasswordHash(mt_rand().uniqid('fakehash', true).mt_rand());
+            }
+            return '';
         }
 
         // Try to use field object
@@ -468,15 +477,6 @@ class waContact implements ArrayAccess
             return isset($value[0]) ? $value[0] : ($field instanceof waContactCompositeField ? array() : '');
         }
         return $value;
-    }
-
-    /**
-     * Returns code for the user
-     * @return string
-     */
-    public function getCode()
-    {
-        return substr($this['password'], 0, 6).$this->id.substr($this['password'], -6);
     }
 
     /**
@@ -787,6 +787,7 @@ class waContact implements ArrayAccess
                 $data['create_contact_id'],
                 $data['create_app_id'],
                 $data['create_method'],
+                $data['create_domain'],
                 $data['is_company']
             );
         }
@@ -795,6 +796,8 @@ class waContact implements ArrayAccess
                 $data['login'],
                 $data['is_user']
             );
+        } else {
+            unset($data['create_domain']);
         }
         if (waConfig::get('is_template')) {
             unset(
@@ -993,7 +996,7 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Returns the properties of a cointact relating to specified app.
+     * Returns the properties of a contact relating to specified app.
      *
      * @param string|null $app_id App id
      * @param string|null $name Id of the contact property associated with the specified app which must be returned. If
@@ -1268,6 +1271,23 @@ class waContact implements ArrayAccess
     }
 
     /**
+     * @param int $len
+     * @return string
+     */
+    public static function generatePassword($len = 11)
+    {
+        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789!@#$%^&*-_.?';
+        $alphabet = str_split($alphabet, 1);
+        shuffle($alphabet);
+        $password = array();
+        for ($i = 0; $i < $len; $i++) {
+            $key = array_rand($alphabet);
+            $password[] = $alphabet[$key];
+        }
+        return join('', $password);
+    }
+
+    /**
      * Adds contact to a category.
      *
      * @param int|string $category_id Category's simple numeric or system string key (app_id)
@@ -1419,5 +1439,3 @@ class waContact implements ArrayAccess
         return $event;
     }
 }
-
-// EOF

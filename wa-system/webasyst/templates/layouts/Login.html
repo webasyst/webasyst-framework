@@ -2,60 +2,61 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{$wa->accountName()}</title>
+    <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
+
     {if $env == 'backend'}<meta name="robots" content="noindex, nofollow"/>{/if}
+
     {$wa->css()}
-    <style type="text/css">
-        .dialog.newpassword .dialog-window {
-            width: 615px;
-            min-width: 615px;
-        }
-        #wa-login .newpassword h1 { margin-top: 10px}
-        #wa-login .newpassword .field .name { width: auto}
-        #wa-login .newpassword .field .value { margin-left: 250px; margin-bottom: 5px}
-        #wa-login p.i-error { margin: 6px 0 10px; color: red }
-    </style>
-    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js?{$wa->version(true)}" type="text/javascript"></script>
+
+    <link href="{$wa_url}wa-content/css/login/backend/login-page.css" rel="stylesheet">
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version(true)}"></script>
+    <script>$.wa.determineTimezone({$wa_url|json_encode});</script>
 </head>
 <body>
-<div id="wa-login"{if $background} style="background-image: url('{$wa_url}{$background}'); {if !$stretch} background-size: auto;{/if}"{/if}>
-    <div class="dialog{if !empty($dialog_class)} {$dialog_class}{/if} width500px height300px{if !empty($error)} error{/if}" id="wa-login-dialog">
-        <div class="dialog-background"></div>
-        <div class="dialog-window"{if !empty($dialog_style)} style="{$dialog_style}"{/if}>
-        <div class="dialog-content">
-            <div class="dialog-content-indent">
-                {$content}
+
+{$_styles = []}
+{if !empty($background)}
+    {$_styles[] = "background-image: url('`$background`');"}
+    {if empty($stretch)}
+        {$_styles[] = "background-size: auto;"}
+    {/if}
+{/if}
+
+{$_classes = []}
+{if !empty($dialog_class)}
+    {$_classes[] = $dialog_class}
+{/if}
+{if !empty($error)}
+    {$_classes[] = "error"}
+{/if}
+
+<div class="wa-backend-login-page" id="wa-login" style="{$_styles|join:" "}">
+    <div class="dialog {$_classes|join:" "}" id="js-dialog-wrapper">
+        <div class="dialog-window" style="overflow: visible;">
+            <div class="dialog-content">
+                <div class="dialog-content-indent">{$content}</div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="wa-poweredby">
+                    <a href="http://www.webasyst.com/" title="Webasyst">
+                        <span class="wa-dots"></span>
+                    </a>
+                </div>
             </div>
         </div>
-        <div class="dialog-buttons">
-            <div class="wa-poweredby">
-                <a href="http://www.webasyst.com/" title="Webasyst">
-                    <span class="wa-dots"></span>
-                </a>
-            </div>
-        </div>
+        <script>
+            ( function($) {
+                var $dialog = $('#js-dialog-wrapper'),
+                    $form_wrapper = $dialog.find('.js-backend-auth-form'),
+                    form = $form_wrapper.data('WaAuthForm');
+                if (form && typeof form.setFocus === "function") {
+                    form.setFocus();
+                }
+            })(jQuery);
+        </script>
     </div>
 </div>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('#wa-login-dialog').waDialog({ 'esc': false });
-        var $login_input = $('#wa-login-input').focus();
-        if (!$login_input.length) {
-            var input = $('input:text')[0] || $('input:password')[0];
-            if (input) {
-                input.focus();
-            }
-        } else if ($login_input.val()) {
-            $login_input.closest('.dialog-content-indent').find('input[type="password"]').focus();
-        }
-    });
-</script>
-
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version(true)}"></script>
-<script>
-$.wa.determineTimezone({$wa_url|json_encode});
-</script>
 
 </body>
 </html>

@@ -15,6 +15,13 @@
 
 abstract class waShipping extends waSystemPlugin
 {
+    const TYPE_TODOOR = 'todoor';
+    const TYPE_PICKUP = 'pickup';
+    const TYPE_POST = 'post';
+
+    const PAYMENT_TYPE_CASH = 'cash';
+    const PAYMENT_TYPE_PREPAID = 'prepaid';
+    const PAYMENT_TYPE_CARD = 'card';
 
     const PLUGIN_TYPE = 'shipping';
 
@@ -29,10 +36,7 @@ abstract class waShipping extends waSystemPlugin
 
     private $params = array();
 
-    /**
-     *
-     * @var waAppShipping
-     */
+    /** @var waAppShipping */
     private $app_adapter;
 
     protected $app_id;
@@ -145,6 +149,11 @@ abstract class waShipping extends waSystemPlugin
         $this->items = $items;
     }
 
+    /**
+     * Get package param setted via setParams() or getRates
+     * @param string $property
+     * @return mixed|null
+     */
     protected function getPackageProperty($property)
     {
         $property_value = null;
@@ -187,12 +196,51 @@ abstract class waShipping extends waSystemPlugin
                     $property_value += $item[$property];
                 }
                 break;
+            case 'departure_datetime':
+                if (isset($this->params[$property])) {
+                    $property_value = $this->params[$property];
+                } else {
+                    // SQL DATETIME format
+                    $property_value = date('Y-m-d H:i:s', time() + 900); // 15 minutes later
+                }
+                break;
+            case 'service':
+            case 'services_by_type':
             default:
                 if (isset($this->params[$property])) {
                     $property_value = $this->params[$property];
                 }
         }
         return $property_value;
+    }
+
+    protected function getTotalSize()
+    {
+        $size = array(
+            'height' => $this->getPackageProperty('total_height'),
+            'width'  => $this->getPackageProperty('total_width'),
+            'length' => $this->getPackageProperty('total_length'),
+        );
+        if (in_array(false, $size, true)) {
+            return false;
+        } else {
+            return in_array(0, $size) ? null : $size;
+        }
+    }
+
+    protected function getTotalHeight()
+    {
+        return $this->getPackageProperty('total_height');
+    }
+
+    protected function getTotalWidth()
+    {
+        return $this->getPackageProperty('total_width');
+    }
+
+    protected function getTotalLength()
+    {
+        return $this->getPackageProperty('total_length');
     }
 
     protected function getTotalWeight()
@@ -288,6 +336,7 @@ abstract class waShipping extends waSystemPlugin
      * @return array[string]['currency']string
      * @return array[string]['rate']mixed float or array for min-max
      * @return array[string]['comment']string optional comment
+     * @return array[string]['custom_data']mixed optional custom data for input control
      */
     public function getRates($items = array(), $address = array(), $params = array())
     {
@@ -456,14 +505,31 @@ abstract class waShipping extends waSystemPlugin
         return array();
     }
 
+    /**
+     * @return array
+     */
     public function requestedAddressFields()
     {
         return array();
     }
 
+    /**
+     * @param array $service
+     * @return array
+     */
+    public function requestedAddressFieldsForService($service)
+    {
+        return $this->requestedAddressFields();
+    }
+
     public function customFields(waOrder $order)
     {
         return array();
+    }
+
+    public function customFieldsForService(waOrder $order, $service)
+    {
+        return $this->customFields($order);
     }
 
     public function displayCustomFields($fields, $env = null)
@@ -475,6 +541,28 @@ abstract class waShipping extends waSystemPlugin
      *
      */
     abstract protected function calculate();
+
+    /**
+     * @return null|array
+     */
+    public function getPromise()
+    {
+        return null;
+    }
+
+    /**
+     * @param waOrder $order
+     */
+    public function prefetch($order)
+    {
+
+    }
+
+    public function sync()
+    {
+
+    }
+
 
     /**
      *
@@ -586,33 +674,49 @@ abstract class waShipping extends waSystemPlugin
     public static function settingRegionZoneControl($name, $params = array())
     {
         $html = "";
+        /** @var waShipping $plugin */
         $plugin = $params['instance'];
-        /**
-         * @var waShipping $plugin
-         */
-        $params['items']['country']['value'] =
-            !empty($params['value']['country']) ? $params['value']['country'] : '';
-        $params['items']['region']['value'] =
-            !empty($params['value']['region']) ? $params['value']['region'] : '';
+        if (isset($params['translate'])) {
+            $translate = (!empty($params['translate']) && is_callable($params['translate'])) ? $params['translate'] : false;
+        } else {
+            $translate = array($plugin, '_wp');
+        }
+
+
+        $params['items']['country']['value'] = !empty($params['value']['country']) ? $params['value']['country'] : '';
+        $params['items']['region']['value'] = !empty($params['value']['region']) ? $params['value']['region'] : '';
 
         if (isset($params['items']['city'])) {
-            $params['items']['city']['value'] =
-                !empty($params['value']['city']) ? $params['value']['city'] : '';
+            $params['items']['city']['value'] = !empty($params['value']['city']) ? $params['value']['city'] : '';
         }
+
 
         // country section
         $cm = new waCountryModel();
-        $html .= "<div class='country'>";
-        $html .= "<select name='{$name}[country]'><option value=''></option>";
-        foreach ($cm->all() as $country) {
-            $html .= "<option value='{$country['iso3letter']}'".
-                ($params['items']['country']['value'] == $country['iso3letter']
-                    ? " selected='selected'" : ""
-                ).
-                ">{$country['name']}</value>";
+        if ($translate) {
+            $_description = call_user_func($translate, $params['items']['country']['description']);
+        } else {
+            $_description = $params['items']['country']['description'];
         }
-        $html .= "</select><br>";
-        $html .= "<span class='hint'>{$params['items']['country']['description']}</span></div><br>";
+        $html .= <<<HTML
+<div class='country'>
+    <select name='{$name}[country]'>
+        <option value=''></option>
+HTML;
+
+        foreach ($cm->all() as $country) {
+            $country['name'] = htmlentities($country['name'], ENT_NOQUOTES, waHtmlControl::$default_charset);
+            $_selected = ($params['items']['country']['value'] == $country['iso3letter']) ? " selected='selected'" : "";
+            $html .= "<option value='{$country['iso3letter']}'{$_selected}>{$country['name']}</value>";
+        }
+        $html .= <<<HTML
+    </select>
+    <br/>
+    <span class='hint'>{$_description}</span>
+</div>
+<br/>
+HTML;
+
 
         $regions = array();
         if ($params['items']['country']['value']) {
@@ -621,42 +725,60 @@ abstract class waShipping extends waSystemPlugin
         }
 
         // region section
-        $html .= '<div class="region">';
-        $html .= '<i class="icon16 loading" style="display:none; margin-left: -23px;"></i>';
-        $html .= '<div class="empty"'.
-            (!empty($regions) ? 'style="display:none;"' : '').
-            '><p class="small">'.
-            $plugin->_w("Shipping will be restricted to the selected country").
-            "</p>";
-        $html .= "<input name='{$name}[region]' value='' type='hidden'".
-            (!empty($regions) ? 'disabled="disabled"' : '').
-            '></div>';
-        $html .= '<div class="not-empty" '.
-            (empty($regions) ? 'style="display:none;"' : '').">";
-        $html .= "<select name='{$name}[region]'".
-            (empty($regions) ? 'disabled="disabled"' : '').
-            '><option value=""></option>';
+        $html .= <<<HTML
+<div class="region">
+    <i class="icon16 loading" style="display:none; margin-left: -23px;"></i>
+HTML;
+
+
+        $_style =!empty($regions) ? ' style="display:none;"' : '';
+        $_disabled = !empty($regions) ? ' disabled="disabled"' : '';
+
+        $html .= <<<HTML
+    <div class='empty'{$_style}>
+        <p class='small'>{$plugin->_w("Shipping will be restricted to the selected country")}</p>
+        <input name='{$name}[region]' value='' type='hidden'{$_disabled}>
+    </div>
+    <div class='not-empty'{$_style}>
+        <select name='{$name}[region]'{$_disabled}>
+            <option value=''></option>
+HTML;
 
         foreach ($regions as $region) {
-            $html .= "<option value='{$region['code']}'".
-                ($params['items']['region']['value'] == $region['code']
-                    ? ' selected="selected"' : ""
-                ).
-                ">{$region['name']}</option>";
+            $_selected = ($params['items']['region']['value'] == $region['code']) ? ' selected="selected"' : "";
+            $region['name'] = htmlentities($region['name'], ENT_NOQUOTES, waHtmlControl::$default_charset);
+            $html .= "<option value='{$region['code']}'{$_selected}>{$region['name']}</option>";
         }
-        $html .= "</select><br>";
-        $html .= "<span class='hint'>{$params['items']['region']['description']}</span></div><br>";
+        $html .= <<<HTML
+        </select>
+        <br/>
+        <span class='hint'>{$params['items']['region']['description']}</span>
+    </div>
+    <br/>
+HTML;
 
         // city section
         if (isset($params['items']['city'])) {
-            $html .= "<div class='city'>";
-            $html .= "<input name='{$name}[city]' value='".
-                (!empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "")."' type='text'>
-                <br>";
-            $html .= "<span class='hint'>{$params['items']['city']['description']}</span></div>";
+            $_value = !empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "";
+            $_value = htmlentities($_value, ENT_QUOTES, waHtmlControl::$default_charset);
+            if ($translate) {
+                $_description = call_user_func($translate, $params['items']['city']['description']);
+            } else {
+                $_description = $params['items']['city']['description'];
+            }
+            $html .= <<<HTML
+    <div class='city'>
+        <input name='{$name}[city]' value='{$_value}' type='text'>
+        <br>
+        <span class='hint'>{$_description}</span>
+    </div>
+HTML;
         }
 
-        $html .= "</div>";
+        $html .= <<<HTML
+</div>
+HTML;
+
 
         $url = wa()->getAppUrl('webasyst').'?module=backend&action=regions';
 
@@ -987,6 +1109,7 @@ HTML;
 
     /**
      * @since installer 1.5.14
+     * @deprecated use waHtmlControl::DATETIME instead
      * @param string $name
      * @param array $params
      * @return string
@@ -1012,17 +1135,17 @@ HTML;
             $date_params['style'] = "z-index: 100000;";
 
             $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
-            $offset = min(365, max(0, intval(ifset($params['params']['date'], 0))));
+            $offset = min(365, max(0, intval(ifset($params, 'params', 'date', 0))));
             $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
             $date_params['description'] = _ws('Date');
-            $date_params['value'] = ifset($params['value']['date_str']);
+            $date_params['value'] = ifset($params, 'value', 'date_str', '');
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
             waHtmlControl::makeId($date_params, $date_name);
 
             $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
             $date_formatted_params = $params;
             $date_formatted_params['style'] = "display: none;";
-            $date_formatted_params['value']=ifset($params['value']['date']);
+            $date_formatted_params['value'] = ifset($params, 'value', 'date', '');
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
             waHtmlControl::makeId($date_formatted_params, $date_name);
 
@@ -1118,6 +1241,7 @@ HTML;
                     date_input.val(dateText);
                     date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
                     if (d && interval && interval.length) {
+                        /** @var int day week day (starts from 0) */
                         var day = (d.getDay() + 6) % 7;
                         /**
                          * filter select by days
@@ -1125,6 +1249,9 @@ HTML;
                         var value = typeof(interval.val()) !== 'undefined';
                         var matched = null;
                         interval.find('option').each(function () {
+                            /**
+                             * @this HTMLOptionElement
+                             */
                             var option = $(this);
                             var disabled = (option.data('days').indexOf(day) === -1) ? 'disabled' : null;
                             option.attr('disabled', disabled);
@@ -1165,13 +1292,13 @@ HTML;
                 }
             });
             $('.ui-datepicker').css({
-                "zIndex":999999,
-                "display":'none'
+                "zIndex": 999999,
+                "display": 'none'
             });
         };
 
         var init_locale = function () {
-            if ('$localization' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
+            if ('{$localization}' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
                 $.getScript('{$root_url}{$localization}', init);
             } else {
                 init();
@@ -1281,5 +1408,21 @@ HTML;
         }
 
         return $this->app_adapter;
+    }
+
+    protected static function formatDatetime($data, $format = 'Y-m-d H:i:s')
+    {
+        if (is_array($data)) {
+            foreach ($data as &$item) {
+                $item = self::formatDatetime($item);
+                unset($item);
+            }
+
+        } elseif (is_int($data)) {
+            $data = date($format, $data);
+        } else {
+            $data = date($format, strtotime($data));
+        }
+        return $data;
     }
 }

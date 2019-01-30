@@ -233,13 +233,13 @@ class waContactBirthdayLocalFormatter extends waContactFieldFormatter
             }
         }
         if ($data['data']['month']) {
-            $value .= "-".($data['data']['month'] < 10 ? "0" : "").$data['data']['month'];
+            $value .= "-".($data['data']['month'] < 10 ? "0" : "").((int)$data['data']['month']);
             $date["f"] = $data['data']['month'];
         } else {
             $value .= "-01";
         }
         if ($data['data']['day']) {
-            $value .= "-".($data['data']['day'] < 10 ? "0" : "").$data['data']['day'];
+            $value .= "-".($data['data']['day'] < 10 ? "0" : "").((int)$data['data']['day']);
             $date["j"] = $data['data']['day'];
         } else {
             $value .= "-01";
@@ -255,7 +255,11 @@ class waContactBirthdayLocalFormatter extends waContactFieldFormatter
         $format = implode(" ", $format);
         $format = preg_replace("/[^yfj]$/i", "", $format);
 
-        $date_time = new DateTime($value);
+        try {
+            $date_time = new DateTime($value);
+        } catch (Exception $e) {
+            return '';
+        }
 
         // hack to insert month name in lower case
         if (strpos($format, 'f') !== false) {

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.2">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.6">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
     <description locale="ru_RU">Семейство адаптивных тем дизайна для всех базовых приложений Webasyst</description>
+    <support locale="en_US">https://support.webasyst.com</support>
+    <support locale="ru_RU">https://support.webasyst.ru</support>
     <files>
         <file path="index.html" custom="0">
     		<description locale="en_US">Core layout of Default 3.0 theme family</description>
@@ -104,131 +106,131 @@
             <name locale="en_US">Fonts and Colors</name>
             <name locale="ru_RU">Шрифты и цвета</name>
         </setting>
-        <setting var="font_family" control_type="select">
-            <value>font_family_google_fira</value>
-            <name locale="ru_RU">Семейство шрифтов</name>
-            <name locale="en_US">Font family</name>
-            <options>
-                <option value="">
-                    <name locale="ru_RU">Helvetica (Arial)</name>
-                    <name locale="en_US">Helvetica (Arial)</name>
-                </option>
-                <option value="font_family_trebuchet">
-                    <name locale="ru_RU">Trebuchet MS</name>
-                    <name locale="en_US">Trebuchet MS</name>
-                </option>
-                <option value="font_family_verdana">
-                    <name locale="ru_RU">Verdana</name>
-                    <name locale="en_US">Verdana</name>
-                </option>
-                <option value="font_family_georgia">
-                    <name locale="ru_RU">Georgia</name>
-                    <name locale="en_US">Georgia</name>
-                </option>
-                <option value="font_family_google_fira">
-                    <name locale="ru_RU">Fira Sans (Google Fonts)</name>
-                    <name locale="en_US">Fira Sans (Google Fonts)</name>
-                </option>
-                <option value="font_family_google_opensans">
-                    <name locale="ru_RU">Open Sans (Google Fonts)</name>
-                    <name locale="en_US">Open Sans (Google Fonts)</name>
-                </option>
-                <option value="font_family_google_ptsans">
-                    <name locale="ru_RU">PT Sans (Google Fonts)</name>
-                    <name locale="en_US">PT Sans (Google Fonts)</name>
-                </option>
-                <option value="font_family_google_ptserif">
-                    <name locale="ru_RU">PT Serif (Google Fonts)</name>
-                    <name locale="en_US">PT Serif (Google Fonts)</name>
-                </option>
-                <option value="font_family_google_ptsansandserif">
-                    <name locale="ru_RU">PT Sans + PT Serif (Google Fonts)</name>
-                    <name locale="en_US">PT Sans + PT Serif (Google Fonts)</name>
-                </option>
-                <option value="font_family_google_roboto">
-                    <name locale="ru_RU">Roboto (Google Fonts)</name>
-                    <name locale="en_US">Roboto (Google Fonts)</name>
-                </option>
-                <option value="font_family_google_lora">
-                    <name locale="ru_RU">Lora (Google Fonts)</name>
-                    <name locale="en_US">Lora (Google Fonts)</name>
-                </option>
-                <option value="font_family_google_ubuntu">
-                    <name locale="ru_RU">Ubuntu (Google Fonts)</name>
-                    <name locale="en_US">Ubuntu (Google Fonts)</name>
-                </option>
+            <setting var="font_family" control_type="select">
+                <value>font_family_google_fira</value>
+                <name locale="ru_RU">Семейство шрифтов</name>
+                <name locale="en_US">Font family</name>
+                <options>
+                    <option value="">
+                        <name locale="ru_RU">Helvetica (Arial)</name>
+                        <name locale="en_US">Helvetica (Arial)</name>
+                    </option>
+                    <option value="font_family_trebuchet">
+                        <name locale="ru_RU">Trebuchet MS</name>
+                        <name locale="en_US">Trebuchet MS</name>
+                    </option>
+                    <option value="font_family_verdana">
+                        <name locale="ru_RU">Verdana</name>
+                        <name locale="en_US">Verdana</name>
+                    </option>
+                    <option value="font_family_georgia">
+                        <name locale="ru_RU">Georgia</name>
+                        <name locale="en_US">Georgia</name>
+                    </option>
+                    <option value="font_family_google_fira">
+                        <name locale="ru_RU">Fira Sans (Google Fonts)</name>
+                        <name locale="en_US">Fira Sans (Google Fonts)</name>
+                    </option>
+                    <option value="font_family_google_opensans">
+                        <name locale="ru_RU">Open Sans (Google Fonts)</name>
+                        <name locale="en_US">Open Sans (Google Fonts)</name>
+                    </option>
+                    <option value="font_family_google_ptsans">
+                        <name locale="ru_RU">PT Sans (Google Fonts)</name>
+                        <name locale="en_US">PT Sans (Google Fonts)</name>
+                    </option>
+                    <option value="font_family_google_ptserif">
+                        <name locale="ru_RU">PT Serif (Google Fonts)</name>
+                        <name locale="en_US">PT Serif (Google Fonts)</name>
+                    </option>
+                    <option value="font_family_google_ptsansandserif">
+                        <name locale="ru_RU">PT Sans + PT Serif (Google Fonts)</name>
+                        <name locale="en_US">PT Sans + PT Serif (Google Fonts)</name>
+                    </option>
+                    <option value="font_family_google_roboto">
+                        <name locale="ru_RU">Roboto (Google Fonts)</name>
+                        <name locale="en_US">Roboto (Google Fonts)</name>
+                    </option>
+                    <option value="font_family_google_lora">
+                        <name locale="ru_RU">Lora (Google Fonts)</name>
+                        <name locale="en_US">Lora (Google Fonts)</name>
+                    </option>
+                    <option value="font_family_google_ubuntu">
+                        <name locale="ru_RU">Ubuntu (Google Fonts)</name>
+                        <name locale="en_US">Ubuntu (Google Fonts)</name>
+                    </option>
 
-            </options>
-        </setting>
-        <setting var="font_size" control_type="select">
-            <value></value>
-            <name locale="ru_RU">Размер шрифта</name>
-            <name locale="en_US">Font size</name>
-            <options>
-                <option value="font_size_12">
-                    <name locale="ru_RU">12px</name>
-                    <name locale="en_US">12px</name>
-                </option>
-                <option value="font_size_13">
-                    <name locale="ru_RU">13px</name>
-                    <name locale="en_US">13px</name>
-                </option>
-                <option value="">
-                    <name locale="ru_RU">14px</name>
-                    <name locale="en_US">14px</name>
-                </option>
-                <option value="font_size_15">
-                    <name locale="ru_RU">15px</name>
-                    <name locale="en_US">15px</name>
-                </option>
-                <option value="font_size_16">
-                    <name locale="ru_RU">16px</name>
-                    <name locale="en_US">16px</name>
-                </option>
-            </options>
-        </setting>
-        <setting var="color_text" control_type="color">
-            <value>#000000</value>
-            <name locale="ru_RU">Цвет текста</name>
-            <name locale="en_US">Text color</name>
-            <description locale="ru_RU">Цвет по умолчанию: черный #000000</description>
-            <description locale="en_US">Default color: black #000000</description>
-        </setting>
-        <setting var="color_links" control_type="color">
-            <value>#006bd8</value>
-            <name locale="ru_RU">Цвет ссылок</name>
-            <name locale="en_US">Link color</name>
-            <description locale="ru_RU">Цвет по умолчанию: голубой #006bd8</description>
-            <description locale="en_US">Default color: blue #006bd8</description>
-        </setting>
-        <setting var="color_links_hover" control_type="color">
-            <value>#ff0000</value>
-            <name locale="ru_RU">Цвет ссылок при наведении курсора :hover</name>
-            <name locale="en_US">Hover link color</name>
-            <description locale="ru_RU">Цвет по умолчанию: красный #ff0000</description>
-            <description locale="en_US">Default color: red #ff0000</description>
-        </setting>
-        <setting var="color_links_visited" control_type="color">
-            <value>#8855cc</value>
-            <name locale="ru_RU">Цвет посещенных ссылок :visited</name>
-            <name locale="en_US">Visited link color</name>
-            <description locale="ru_RU">Цвет по умолчанию: фиолетовый #8855cc</description>
-            <description locale="en_US">Default color: purple #8855cc</description>
-        </setting>
-        <setting var="color_hint" control_type="color">
-            <value>#aaaaaa</value>
-            <name locale="ru_RU">Цвет вспомогательных текстов и ссылок</name>
-            <name locale="en_US">Hints and aux links color</name>
-            <description locale="ru_RU">Цвет по умолчанию: серый #aaaaaa</description>
-            <description locale="en_US">Default color: gray #aaaaaa</description>
-        </setting>
-        <setting var="style_custom" control_type="text">
-            <value>                                                                          </value>
-            <name locale="ru_RU">Свой CSS</name>
-            <name locale="en_US">Custom CSS</name>
-            <description locale="ru_RU"><![CDATA[Введенный CSS-код будет помещен в &lt;style&gt;...&lt;/style&gt; внутри блока &lt;head&gt; на каждой странице сайта]]></description>
-            <description locale="en_US"><![CDATA[This CSS code will be added within &lt;style&gt;...&lt;/style&gt; on every site page’s &lt;head&gt; block]]></description>
-        </setting>
+                </options>
+            </setting>
+            <setting var="font_size" control_type="select">
+                <value></value>
+                <name locale="ru_RU">Размер шрифта</name>
+                <name locale="en_US">Font size</name>
+                <options>
+                    <option value="font_size_12">
+                        <name locale="ru_RU">12px</name>
+                        <name locale="en_US">12px</name>
+                    </option>
+                    <option value="font_size_13">
+                        <name locale="ru_RU">13px</name>
+                        <name locale="en_US">13px</name>
+                    </option>
+                    <option value="">
+                        <name locale="ru_RU">14px</name>
+                        <name locale="en_US">14px</name>
+                    </option>
+                    <option value="font_size_15">
+                        <name locale="ru_RU">15px</name>
+                        <name locale="en_US">15px</name>
+                    </option>
+                    <option value="font_size_16">
+                        <name locale="ru_RU">16px</name>
+                        <name locale="en_US">16px</name>
+                    </option>
+                </options>
+            </setting>
+            <setting var="color_text" control_type="color">
+                <value>#000000</value>
+                <name locale="ru_RU">Цвет текста</name>
+                <name locale="en_US">Text color</name>
+                <description locale="ru_RU">Цвет по умолчанию: черный #000000</description>
+                <description locale="en_US">Default color: black #000000</description>
+            </setting>
+            <setting var="color_links" control_type="color">
+                <value>#006bd8</value>
+                <name locale="ru_RU">Цвет ссылок</name>
+                <name locale="en_US">Link color</name>
+                <description locale="ru_RU">Цвет по умолчанию: голубой #006bd8</description>
+                <description locale="en_US">Default color: blue #006bd8</description>
+            </setting>
+            <setting var="color_links_hover" control_type="color">
+                <value>#ff0000</value>
+                <name locale="ru_RU">Цвет ссылок при наведении курсора :hover</name>
+                <name locale="en_US">Hover link color</name>
+                <description locale="ru_RU">Цвет по умолчанию: красный #ff0000</description>
+                <description locale="en_US">Default color: red #ff0000</description>
+            </setting>
+            <setting var="color_links_visited" control_type="color">
+                <value>#8855cc</value>
+                <name locale="ru_RU">Цвет посещенных ссылок :visited</name>
+                <name locale="en_US">Visited link color</name>
+                <description locale="ru_RU">Цвет по умолчанию: фиолетовый #8855cc</description>
+                <description locale="en_US">Default color: purple #8855cc</description>
+            </setting>
+            <setting var="color_hint" control_type="color">
+                <value>#aaaaaa</value>
+                <name locale="ru_RU">Цвет вспомогательных текстов и ссылок</name>
+                <name locale="en_US">Hints and aux links color</name>
+                <description locale="ru_RU">Цвет по умолчанию: серый #aaaaaa</description>
+                <description locale="en_US">Default color: gray #aaaaaa</description>
+            </setting>
+            <setting var="style_custom" control_type="text">
+                <value>                                                                          </value>
+                <name locale="ru_RU">Свой CSS</name>
+                <name locale="en_US">Custom CSS</name>
+                <description locale="ru_RU"><![CDATA[Введенный CSS-код будет помещен в &lt;style&gt;...&lt;/style&gt; внутри блока &lt;head&gt; на каждой странице сайта]]></description>
+                <description locale="en_US"><![CDATA[This CSS code will be added within &lt;style&gt;...&lt;/style&gt; on every site page’s &lt;head&gt; block]]></description>
+            </setting>
 
 
         <setting var="divider_header" control_type="group_divider">
@@ -236,109 +238,109 @@
             <name locale="en_US">Header</name>
             <name locale="ru_RU">«Шапка» сайта</name>
         </setting>
-        <setting var="logo" control_type="image">
-            <value></value>
-            <filename>img/logo.*</filename>
-            <name locale="en_US">Logo</name>
-            <name locale="ru_RU">Логотип</name>
-        </setting>
-        <setting var="header_links" control_type="select">
-            <value>wa-apps</value>
-            <name locale="ru_RU">Ссылки в верхнем меню</name>
-            <name locale="en_US">Header links</name>
-            <description locale="ru_RU">Ссылки верхнего меню навигации могут определяться либо основной структурой сайта (меню {$wa->apps()} настраивается в приложении «Сайт» в разделе «Настройки»), либо информационным страницами выбранного приложения</description>
-            <description locale="en_US">Top header menu links will be displayed according to the site core structure (as defined in the Site app > Settings > {$wa->apps()}) or the list of selected app info pages</description>
-            <options>
-                <option value="wa-apps">
-                    <name locale="ru_RU">Приложение «Сайт» > Настройки > {$wa->apps()}</name>
-                    <name locale="en_US">Site app > Settings > {$wa->apps()}</name>
-                </option>
-                <option value="site-pages">
-                    <name locale="ru_RU">Страницы приложения «Сайт»</name>
-                    <name locale="en_US">Site app pages</name>
-                </option>
-                <option value="shop-pages">
-                    <name locale="ru_RU">Страницы приложения «Магазин»</name>
-                    <name locale="en_US">Shop app pages</name>
-                </option>
-                <option value="blog-pages">
-                    <name locale="ru_RU">Страницы приложения «Блог»</name>
-                    <name locale="en_US">Blog app pages</name>
-                </option>
-                <option value="photos-pages">
-                    <name locale="ru_RU">Страницы приложения «Фото»</name>
-                    <name locale="en_US">Photos app pages</name>
-                </option>
-                <option value="hub-pages">
-                    <name locale="ru_RU">Страницы приложения «Хаб»</name>
-                    <name locale="en_US">Hub app pages</name>
-                </option>
-                <option value="none">
-                    <name locale="ru_RU">Не показывать</name>
-                    <name locale="en_US">None</name>
-                </option>
-            </options>
-        </setting>
-        <setting var="header_sitename" control_type="checkbox">
-            <value>1</value>
-            <name locale="en_US">Header site name</name>
-            <name locale="ru_RU">Название сайта в верхнем меню</name>
-            <description locale="ru_RU">Выключите, если не хотите, чтобы название сайта показывалось в верхнем меню разделов сайта. Если загружен логотип сайта, то эта настройка действовать не будет (логотип будет показан в любом случае).</description>
-            <description locale="en_US">Disable to hide site name from the header navigation menu. If logo is uploaded, this setting will have no effect (the logo will be displayed instead of the site name).</description>
-        </setting>
-        <setting var="header_scheme" control_type="image_select">
-            <value>img/themesettings/whiteandgray.png</value>
-            <name locale="ru_RU">Цвет фона верхнего меню</name>
-            <name locale="en_US">Header background color</name>
-            <options>
-                <option value="img/themesettings/black.png"></option>
-                <option value="img/themesettings/whiteandgray.png"></option>
-                <option value="img/themesettings/white.png"></option>
-            </options>
-        </setting>
-        <setting var="header_customcolor" control_type="color">
-            <value></value>
-            <name locale="ru_RU">Другой цвет фона верхнего меню</name>
-            <name locale="en_US">Header custom background color</name>
-        </setting>
-        <setting var="header_customcolor_links" control_type="color">
-            <value></value>
-            <name locale="ru_RU">Другой цвет ссылок верхнего меню</name>
-            <name locale="en_US">Header custom link color</name>
-        </setting>
-        <setting var="color_scheme" control_type="image_select">
-            <value>img/themesettings/white.png</value>
-            <name locale="ru_RU">Цветовая схема основного меню</name>
-            <name locale="en_US">Subheader color scheme</name>
-            <options>
-                <option value="img/themesettings/green.png"></option>
-                <option value="img/themesettings/blue.png"></option>
-                <option value="img/themesettings/red.png"></option>
-                <option value="img/themesettings/yellow.png"></option>
-                <option value="img/themesettings/purple.png"></option>
-                <option value="img/themesettings/gray.png"></option>
-                <option value="img/themesettings/pink.png"></option>
-                <option value="img/themesettings/cyan.png"></option>
-                <option value="img/themesettings/lime.png"></option>
-                <option value="img/themesettings/white.png"></option>
-            </options>
-        </setting>
-        <setting var="color_custom" control_type="color">
-            <value></value>
-            <name locale="ru_RU">Другой цвет фона основного меню</name>
-            <name locale="en_US">Subheader custom background color</name>
-        </setting>
-        <setting var="color_custom_links" control_type="color">
-            <value></value>
-            <name locale="ru_RU">Другой цвет ссылок основного меню</name>
-            <name locale="en_US">Subheader custom link color</name>
-        </setting>
-        <setting var="header_custom_image" control_type="image">
-            <value></value>
-            <filename>img/header.*</filename>
-            <name locale="ru_RU">Свое фоновое изображение в основном меню</name>
-            <name locale="en_US">Subheader custom image</name>
-        </setting>
+            <setting var="logo" control_type="image">
+                <value></value>
+                <filename>img/logo.*</filename>
+                <name locale="en_US">Logo</name>
+                <name locale="ru_RU">Логотип</name>
+            </setting>
+            <setting var="header_links" control_type="select">
+                <value>wa-apps</value>
+                <name locale="ru_RU">Ссылки в верхнем меню</name>
+                <name locale="en_US">Header links</name>
+                <description locale="ru_RU">Ссылки верхнего меню навигации могут определяться либо основной структурой сайта (меню {$wa->apps()} настраивается в приложении «Сайт» в разделе «Настройки»), либо информационным страницами выбранного приложения</description>
+                <description locale="en_US">Top header menu links will be displayed according to the site core structure (as defined in the Site app > Settings > {$wa->apps()}) or the list of selected app info pages</description>
+                <options>
+                    <option value="wa-apps">
+                        <name locale="ru_RU">Приложение «Сайт» > Настройки > {$wa->apps()}</name>
+                        <name locale="en_US">Site app > Settings > {$wa->apps()}</name>
+                    </option>
+                    <option value="site-pages">
+                        <name locale="ru_RU">Страницы приложения «Сайт»</name>
+                        <name locale="en_US">Site app pages</name>
+                    </option>
+                    <option value="shop-pages">
+                        <name locale="ru_RU">Страницы приложения «Магазин»</name>
+                        <name locale="en_US">Shop app pages</name>
+                    </option>
+                    <option value="blog-pages">
+                        <name locale="ru_RU">Страницы приложения «Блог»</name>
+                        <name locale="en_US">Blog app pages</name>
+                    </option>
+                    <option value="photos-pages">
+                        <name locale="ru_RU">Страницы приложения «Фото»</name>
+                        <name locale="en_US">Photos app pages</name>
+                    </option>
+                    <option value="hub-pages">
+                        <name locale="ru_RU">Страницы приложения «Хаб»</name>
+                        <name locale="en_US">Hub app pages</name>
+                    </option>
+                    <option value="none">
+                        <name locale="ru_RU">Не показывать</name>
+                        <name locale="en_US">None</name>
+                    </option>
+                </options>
+            </setting>
+            <setting var="header_sitename" control_type="checkbox">
+                <value>1</value>
+                <name locale="en_US">Header site name</name>
+                <name locale="ru_RU">Название сайта в верхнем меню</name>
+                <description locale="ru_RU">Выключите, если не хотите, чтобы название сайта показывалось в верхнем меню разделов сайта. Если загружен логотип сайта, то эта настройка действовать не будет (логотип будет показан в любом случае).</description>
+                <description locale="en_US">Disable to hide site name from the header navigation menu. If logo is uploaded, this setting will have no effect (the logo will be displayed instead of the site name).</description>
+            </setting>
+            <setting var="header_scheme" control_type="image_select">
+                <value>img/themesettings/whiteandgray.png</value>
+                <name locale="ru_RU">Цвет фона верхнего меню</name>
+                <name locale="en_US">Header background color</name>
+                <options>
+                    <option value="img/themesettings/black.png"></option>
+                    <option value="img/themesettings/whiteandgray.png"></option>
+                    <option value="img/themesettings/white.png"></option>
+                </options>
+            </setting>
+            <setting var="header_customcolor" control_type="color">
+                <value></value>
+                <name locale="ru_RU">Другой цвет фона верхнего меню</name>
+                <name locale="en_US">Header custom background color</name>
+            </setting>
+            <setting var="header_customcolor_links" control_type="color">
+                <value></value>
+                <name locale="ru_RU">Другой цвет ссылок верхнего меню</name>
+                <name locale="en_US">Header custom link color</name>
+            </setting>
+            <setting var="color_scheme" control_type="image_select">
+                <value>img/themesettings/white.png</value>
+                <name locale="ru_RU">Цветовая схема основного меню</name>
+                <name locale="en_US">Subheader color scheme</name>
+                <options>
+                    <option value="img/themesettings/green.png"></option>
+                    <option value="img/themesettings/blue.png"></option>
+                    <option value="img/themesettings/red.png"></option>
+                    <option value="img/themesettings/yellow.png"></option>
+                    <option value="img/themesettings/purple.png"></option>
+                    <option value="img/themesettings/gray.png"></option>
+                    <option value="img/themesettings/pink.png"></option>
+                    <option value="img/themesettings/cyan.png"></option>
+                    <option value="img/themesettings/lime.png"></option>
+                    <option value="img/themesettings/white.png"></option>
+                </options>
+            </setting>
+            <setting var="color_custom" control_type="color">
+                <value></value>
+                <name locale="ru_RU">Другой цвет фона основного меню</name>
+                <name locale="en_US">Subheader custom background color</name>
+            </setting>
+            <setting var="color_custom_links" control_type="color">
+                <value></value>
+                <name locale="ru_RU">Другой цвет ссылок основного меню</name>
+                <name locale="en_US">Subheader custom link color</name>
+            </setting>
+            <setting var="header_custom_image" control_type="image">
+                <value></value>
+                <filename>img/header.*</filename>
+                <name locale="ru_RU">Свое фоновое изображение в основном меню</name>
+                <name locale="en_US">Subheader custom image</name>
+            </setting>
 
 
         <setting var="divider_footer" control_type="group_divider">
@@ -346,109 +348,160 @@
             <name locale="en_US">Footer</name>
             <name locale="ru_RU">«Подвал» сайта</name>
         </setting>
-        <setting var="footer_links" control_type="checkbox">
-            <value>1</value>
-            <name locale="ru_RU">Ссылки в «подвале» сайта</name>
-            <name locale="en_US">Footer links</name>
-            <description locale="ru_RU"><![CDATA[В подвале будут показаны ссылки на ваши страницы в соцсетях, а также ссылки на основные разделы вашего сайта (разделы автоматически определяются набором установленных приложений Webasyst). При необходимости отредактировать ссылки в подвале сайта вы можете в шаблоне дизайна index.html в блоке &lt;!-- FOOTER --&gt;.]]></description>
-            <description locale="en_US"><![CDATA[Enable this option to display links to your company’s social network resources and links to core site sections (according to Webasyst apps installed in your account). When needed, edit footer links in the index.html template file under the &lt;!-- FOOTER --&gt; section.]]></description>
-        </setting>
-        <setting var="footer_note" control_type="text">
-            <value locale="en_US">Delivering awesomeness since 2015. All rights reserved.</value>
-            <value locale="ru_RU">При использовании материалов с сайта обязательно указание прямой ссылки на источник.</value>
-            <name locale="en_US">Footer custom text note</name>
-            <name locale="ru_RU">Дополнительный текст в «подвале» сайта</name>
-            <description locale="ru_RU">Дополнительная подсказка посетителям вашего сайта (и поисковым системам).</description>
-            <description locale="en_US">Add a disclaimer or a hint to your site visitors (and search engines too).</description>
-        </setting>
-        <setting var="footer_notice" control_type="text">
-            <value></value>
-            <name locale="en_US">Footer notice</name>
-            <name locale="ru_RU">Уведомление в подвале сайта</name>
-        </setting>
-        <setting var="facebook" control_type="text">
-            <value locale="en_US">https://www.facebook.com/Webasyst</value>
-            <value locale="ru_RU">https://www.facebook.com/Webasyst.RU</value>
-            <name locale="en_US">Facebook page URL</name>
-            <name locale="ru_RU">Адрес страницы в Фейсбуке</name>
-        </setting>
-        <setting var="twitter" control_type="text">
-            <value locale="en_US">https://twitter.com/webasyst</value>
-            <value locale="ru_RU">https://twitter.com/webasyst_ru</value>
-            <name locale="en_US">Twitter URL</name>
-            <name locale="ru_RU">Адрес в Твиттере</name>
-        </setting>
-        <setting var="vk" control_type="text">
-            <value locale="en_US"></value>
-            <value locale="ru_RU">https://vk.com/webasyst_ru</value>
-            <name locale="en_US">VK.com page URL</name>
-            <name locale="ru_RU">Адрес страницы или группы во Вконтакте</name>
-        </setting>
-        <setting var="instagram" control_type="text">
-            <value>#</value>
-            <name locale="en_US">Instagram feed URL</name>
-            <name locale="ru_RU">Адрес в Инстаграме</name>
-        </setting>
-        <setting var="youtube" control_type="text">
-            <value>#</value>
-            <name locale="en_US">Youtube channel URL</name>
-            <name locale="ru_RU">Адрес канала YouTube</name>
-        </setting>
+            <setting var="footer_links" control_type="checkbox">
+                <value>1</value>
+                <name locale="ru_RU">Ссылки в «подвале» сайта</name>
+                <name locale="en_US">Footer links</name>
+                <description locale="ru_RU"><![CDATA[В подвале будут показаны ссылки на ваши страницы в соцсетях, а также ссылки на основные разделы вашего сайта (разделы автоматически определяются набором установленных приложений Webasyst). При необходимости отредактировать ссылки в подвале сайта вы можете в шаблоне дизайна index.html в блоке &lt;!-- FOOTER --&gt;.]]></description>
+                <description locale="en_US"><![CDATA[Enable this option to display links to your company’s social network resources and links to core site sections (according to Webasyst apps installed in your account). When needed, edit footer links in the index.html template file under the &lt;!-- FOOTER --&gt; section.]]></description>
+            </setting>
+            <setting var="footer_note" control_type="text">
+                <value locale="en_US">Delivering awesomeness since 2015. All rights reserved.</value>
+                <value locale="ru_RU">При использовании материалов с сайта обязательно указание прямой ссылки на источник.</value>
+                <name locale="en_US">Footer custom text note</name>
+                <name locale="ru_RU">Дополнительный текст в «подвале» сайта</name>
+                <description locale="ru_RU">Дополнительная подсказка посетителям вашего сайта (и поисковым системам).</description>
+                <description locale="en_US">Add a disclaimer or a hint to your site visitors (and search engines too).</description>
+            </setting>
+            <setting var="footer_notice" control_type="text">
+                <value></value>
+                <name locale="en_US">Footer notice</name>
+                <name locale="ru_RU">Уведомление в подвале сайта</name>
+            </setting>
+
+
+            <setting var="divider_social_links" control_type="group_divider">
+                <value>divider_footer/divider_social_links</value>
+                <name locale="en_US">Links to social networks</name>
+                <name locale="ru_RU">Ссылки на соц. сети</name>
+            </setting>
+                <setting var="facebook" control_type="text">
+                    <value locale="en_US">https://www.facebook.com/Webasyst</value>
+                    <value locale="ru_RU">https://www.facebook.com/Webasyst.RU</value>
+                    <name locale="en_US">Facebook page URL</name>
+                    <name locale="ru_RU">Адрес страницы в Фейсбуке</name>
+                </setting>
+                <setting var="twitter" control_type="text">
+                    <value locale="en_US">https://twitter.com/webasyst</value>
+                    <value locale="ru_RU">https://twitter.com/webasyst_ru</value>
+                    <name locale="en_US">Twitter URL</name>
+                    <name locale="ru_RU">Адрес в Твиттере</name>
+                </setting>
+                <setting var="vk" control_type="text">
+                    <value locale="en_US"></value>
+                    <value locale="ru_RU">https://vk.com/webasyst_ru</value>
+                    <name locale="en_US">VK.com page URL</name>
+                    <name locale="ru_RU">Адрес страницы или группы во Вконтакте</name>
+                </setting>
+                <setting var="instagram" control_type="text">
+                    <value>https://instagram.com/webasyst.ru</value>
+                    <name locale="en_US">Instagram feed URL</name>
+                    <name locale="ru_RU">Адрес в Инстаграме</name>
+                </setting>
+                <setting var="youtube" control_type="text">
+                    <value>https://www.youtube.com/user/webasyst</value>
+                    <name locale="en_US">Youtube channel URL</name>
+                    <name locale="ru_RU">Адрес канала YouTube</name>
+                </setting>
 
         <setting var="divider_social" control_type="group_divider">
             <value></value>
             <name locale="en_US">Social widgets</name>
             <name locale="ru_RU">Виджеты соцсетей</name>
         </setting>
-        <setting var="facebook_likebox_code" control_type="text">
-            <value locale="en_US"><![CDATA[<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=167596066655267";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+            <setting var="facebook_likebox_code" control_type="text">
+                <value locale="en_US"><![CDATA[
+    <div id="fb-root"></div>
+    <script>
+        setTimeout(function () {
+            (function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s);
+                js.id = id;
+                js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.12&appId=157158478329004&autoLogAppEvents=1';
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        }, 100)
+    </script>
+    <div class="fb-page" data-href="https://www.facebook.com/Webasyst" data-tabs="timeline" data-width="200" data-height="300" data-small-header="false"
+         data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+        <blockquote cite="https://www.facebook.com/Webasyst" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Webasyst">Webasyst</a></blockquote>
+    </div>
+    ]]></value>
+                <value locale="ru_RU"><![CDATA[
+    <div id="fb-root"></div>
+    <script>
+        setTimeout(function () {
+            (function (d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s);
+                js.id = id;
+                js.src = 'https://connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.12&appId=157158478329004&autoLogAppEvents=1';
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+        }, 100)
+    </script>
+    <div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-tabs="timeline" data-width="200" data-height="300" data-small-header="false"
+         data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
+        <blockquote cite="https://www.facebook.com/Webasyst.RU" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Webasyst.RU">Webasyst</a></blockquote>
+    </div>
+    ]]></value>
+                <name locale="en_US">Facebook Page Plugin code</name>
+                <name locale="ru_RU">Виджет Фейсбука</name>
+                <description locale="en_US">Embed your Facebook page badge code here. Code can be obtained on Facebook website: https://developers.facebook.com/docs/plugins/page-plugin</description>
+                <description locale="ru_RU">Поместите в это поле код виджета вашей страницы на Фейсбуке. Код можно получить в Фейсбуке на странице https://developers.facebook.com/docs/plugins/page-plugin</description>
+            </setting>
+            <setting var="twitter_timeline_code" control_type="text">
+                <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="625947505319124993">Tweets by @webasyst</a>
+            <script>
+                setTimeout(function () {
+                    !function (d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                        if (!d.getElementById(id)) {
+                            js = d.createElement(s);
+                            js.id = id;
+                            js.src = p + "://platform.twitter.com/widgets.js";
+                            fjs.parentNode.insertBefore(js, fjs);
+                        }
+                    }(document, "script", "twitter-wjs");
 
-<div class="fb-page" data-href="https://www.facebook.com/Webasyst" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst"><a href="https://www.facebook.com/Webasyst">Webasyst</a></blockquote></div></div>]]></value>
-            <value locale="ru_RU"><![CDATA[<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=167596066655267";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
+                }, 100)
+            </script>]]></value>
+                <value locale="ru_RU"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst_ru" data-widget-id="624283167772528641">Tweets by @webasyst_ru</a>
+            <script>
+                setTimeout(function () {
+                    !function (d, s, id) {
+                        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+                        if (!d.getElementById(id)) {
+                            js = d.createElement(s);
+                            js.id = id;
+                            js.src = p + "://platform.twitter.com/widgets.js";
+                            fjs.parentNode.insertBefore(js, fjs);
+                        }
+                    }(document, "script", "twitter-wjs");
+                }, 100)
+            </script>]]></value>
+                <name locale="en_US">Twitter Timeline code</name>
+                <name locale="ru_RU">Виджет Твиттера</name>
+                <description locale="en_US">Embed your Twitter Timeline code here. Code can be obtained on Twitter website: https://twitter.com/settings/widgets</description>
+                <description locale="ru_RU">Поместите в это поле код ленты Твиттера. Код можно получить на сайте Твиттера: https://twitter.com/settings/widgets</description>
+            </setting>
+            <setting var="vk_widget_code" control_type="text">
+                <value locale="en_US"></value>
+                <value locale="ru_RU"><![CDATA[<script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
 
-<div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst.RU"><a href="https://www.facebook.com/Webasyst.RU">Webasyst RU</a></blockquote></div></div>]]></value>
-            <name locale="en_US">Facebook Page Plugin code</name>
-            <name locale="ru_RU">Виджет Фейсбука</name>
-            <description locale="en_US">Embed your Facebook page badge code here. Code can be obtained on Facebook website: https://developers.facebook.com/docs/plugins/page-plugin</description>
-            <description locale="ru_RU">Поместите в это поле код виджета вашей страницы на Фейсбуке. Код можно получить в Фейсбуке на странице https://developers.facebook.com/docs/plugins/page-plugin</description>
-        </setting>
-        <setting var="twitter_timeline_code" control_type="text">
-            <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="625947505319124993">Tweets by @webasyst</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
-            <value locale="ru_RU"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst_ru" data-widget-id="624283167772528641">Tweets by @webasyst_ru</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
-            <name locale="en_US">Twitter Timeline code</name>
-            <name locale="ru_RU">Виджет Твиттера</name>
-            <description locale="en_US">Embed your Twitter Timeline code here. Code can be obtained on Twitter website: https://twitter.com/settings/widgets</description>
-            <description locale="ru_RU">Поместите в это поле код ленты Твиттера. Код можно получить на сайте Твиттера: https://twitter.com/settings/widgets</description>
-        </setting>
-        <setting var="vk_widget_code" control_type="text">
-            <value locale="en_US"></value>
-            <value locale="ru_RU"><![CDATA[<script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
-
-<!-- VK Widget -->
-<div id="vk_groups"></div>
-<script type="text/javascript">
-VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FFFFFF', color2: '2B587A', color3: '5B7FA6'}, 21415010);
-</script>]]></value>
-            <name locale="en_US">VK Page Widget code</name>
-            <name locale="ru_RU">Виджет Вконтакте</name>
-            <description locale="en_US">Embed your VK community widget code here. Code can be obtained on VK website: http://vk.com/dev/Community</description>
-            <description locale="ru_RU">Поместите в это поле код виджета вашего сообщества во Вконтакте. Код можно получить на сайте соцсети http://vk.com/dev/Community</description>
-        </setting>
+    <!-- VK Widget -->
+    <div id="vk_groups"></div>
+    <script type="text/javascript">
+    setTimeout(function (){ VK.Widgets.Group("vk_groups", { mode: 2, width: "{$width}", height: "{$height}" }, 21415010) }, 0);
+    </script>]]></value>
+                <name locale="en_US">VK Page Widget code</name>
+                <name locale="ru_RU">Виджет Вконтакте</name>
+                <description locale="en_US">Embed your VK community widget code here. Code can be obtained on VK website: http://vk.com/dev/Community</description>
+                <description locale="ru_RU">Поместите в это поле код виджета вашего сообщества во Вконтакте. Код можно получить на сайте соцсети http://vk.com/dev/Community</description>
+            </setting>
     </settings>
     <locales>
         <locale>
@@ -462,6 +515,10 @@ VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FF
         <locale>
             <msgid>Or follow us on Facebook and Twitter</msgid>
             <msgstr locale="ru_RU">Или подписывайтесь в соцсетях</msgstr>
+        </locale>
+        <locale>
+            <msgid>Settings have been saved</msgid>
+            <msgstr locale="ru_RU">Настройки сохранены</msgstr>
         </locale>
     </locales>
 </theme>

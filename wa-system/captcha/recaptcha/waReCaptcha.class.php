@@ -12,51 +12,21 @@ class waReCaptcha extends waAbstractCaptcha
 
     public function getHtml()
     {
-        $sitekey = json_encode($this->options['sitekey']);
+        $wrapper_class = ifempty($this->options, 'wrapper_class', 'wa-captcha');
+        $sitekey = ifset($this->options['sitekey']);
+        $invisible = ifset($this->options['invisible']);
 
-        // Explicit rendering, as well as $.getScript(), are used
-        // to allow multiple ReCaptchas on the same page.
+        $view = wa('webasyst')->getView();
+        $view->assign(array(
+            'wrapper_class' => $wrapper_class,
+            'sitekey'       => $sitekey,
+        ));
 
-        // Click to .wa-captcha-refresh is used in templates to programmatically reset WA CAPTCHAs.
-        // An invisible element is added here to support the same behaviour.
-
-        return <<<HTML
-<script>(function() {
-    if (window.onloadWaRecaptchaCallback) {
-        return;
-    }
-
-    window.onloadWaRecaptchaCallback = function() {
-        var sitekey = {$sitekey};
-        if (!window.grecaptcha) return;
-        $('.g-recaptcha:not(.initialized)').each(function() {
-            var wrapper = $(this).addClass('initialized');
-            var widget_id = grecaptcha.render(wrapper[0], { sitekey: sitekey });
-            wrapper.siblings('.wa-captcha-refresh').click(function() {
-                try {
-                    grecaptcha.reset(widget_id);
-                } catch (e) {
-                    console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
-                    console.log(e);
-                }
-                return false;
-            });
-        });
-    };
-
-    $(function() {
-        if (window.grecaptcha) {
-            window.onloadWaRecaptchaCallback();
-        } else {
-            $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadWaRecaptchaCallback");
+        $template = wa()->getConfig()->getRootPath() .'/wa-system/captcha/recaptcha/templates/recaptcha.html';
+        if ($invisible) {
+            $template = wa()->getConfig()->getRootPath() .'/wa-system/captcha/recaptcha/templates/recaptcha_invisible.html';
         }
-    });
-})();</script>
-<div class="wa-captcha wa-recaptcha">
-    <a class="wa-captcha-refresh" style="display:none;"></a>
-    <div class="g-recaptcha"></div>
-</div>
-HTML;
+        return $view->fetch($template);
     }
 
     public function isValid($code = null, &$error = '')

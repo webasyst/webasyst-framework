@@ -3,6 +3,7 @@
 class teamConfig extends waAppConfig
 {
     const CALENDAR_DAYS = 34;
+    const ROWS_PER_PAGE = 30;
 
     // see also a hack in teamFrontController->dispatch()
     public function getRouting($route = array())

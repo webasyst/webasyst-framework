@@ -47,6 +47,10 @@ msgstr ""
 msgid "2-3 days"
 msgstr ""
 
+#: //wa-plugins/shipping/courier/lib/config/settings.php
+msgid "1-2 days"
+msgstr ""
+
 #: //wa-plugins/shipping/courier/lib/config/settings.php:30
 msgid "1 week"
 msgstr ""

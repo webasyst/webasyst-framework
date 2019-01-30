@@ -17,7 +17,7 @@
 
             // Set up CSRF
             $(document).ajaxSend(function(event, xhr, settings) {
-                if (settings.type != 'POST') {
+                if (settings.crossDomain || (settings.type||'').toUpperCase() !== 'POST') {
                     return;
                 }
 

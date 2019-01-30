@@ -27,6 +27,10 @@ class waVarExportCache extends waFileCache
         return $result;
     }
 
+    /**
+     * @param $file
+     * @return mixed|null
+     */
     protected function readFromFile($file)
     {
         if (file_exists($file)) {
@@ -34,11 +38,17 @@ class waVarExportCache extends waFileCache
                 $this->delete();
                 return null;
             } else {
-                if (!filesize($file)) {
+                if (!@filesize($file)) {
                     $this->delete();
                     return null;
                 }
-                $r = @include($file);
+                try {
+                    $r = @include($file);
+                } catch (Error $error) {
+                    $this->delete();
+                    return null;
+                }
+
                 // check cache
                 if ($r === false || $r === null) {
                     $this->delete();

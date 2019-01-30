@@ -121,7 +121,8 @@ class waCurrency
      *     - Precision (number of digits after decimal separator) expressed as an arbitrary integer value. If not
      *       specified, then 2 decimal digits are displayed by default.
      *     - Display type (as a number; e.g., "123456", or in words; e.g., 'one hundred and twenty-three thousand four hundred
-     *       and fifty-six"). To use the numerical format, specify i; for verbal format, use w; to omit amount altogether, use !.
+     *       and fifty-six"). To use the numerical format, specify i; for verbal format, use w; to omit amount altogether, use !;
+     *       to format into short string with K or M modifiers, use k; to cut off trailing zeroes, use t.
      *       The verbal expression of a number contains its integer part only, the decimal part is ignored. If the display type is
      *       not specified, then the numerical format is used by default.
      *     - Currency sign or name. To add it to the formatted amount value, specify one of the following identifiers in
@@ -152,7 +153,7 @@ class waCurrency
         self::$format_data['locale'] = $locale;
         self::$format_data['locale']['id'] = $locale_id;
         self::$format_data['currency'] = $currency;
-        $pattern = '/%([0-9]?\.?[0-9]?)([iw!k]*)({[n|f|c|s|h][0-9]?})?/i';
+        $pattern = '/%([0-9]?\.?[0-9]?)([iw!kt]*)({[n|f|c|s|h][0-9]?})?/i';
         $result = preg_replace_callback($pattern, array('self', 'replaceCallback'), $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
@@ -205,7 +206,7 @@ class waCurrency
             if ($precision === '.') {
                 $frac_only_exists = false;
             }
-            $precision = $locale['frac_digits'];
+            $precision = ifset($locale, 'frac_digits', 2);
         }
 
         //
@@ -250,7 +251,20 @@ class waCurrency
                     if ($frac_only_exists && ($n == (int) $n) && $precision_arr[0] === '') {
                         $precision = 0;
                     }
-                    $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
+                    $result = number_format($n, $precision, ifset($locale, 'decimal_point', '.'), ifset($locale, 'thousands_sep', ''));
+                }
+            }
+
+            // Cut off trailing zeros after decimal separator
+            if (false !== strpos($format_lower, 't')) {
+                if (false !== strpos($result, ifset($locale, 'decimal_point', '.'))) {
+                    $result = rtrim($result, '0');
+                    $result = rtrim($result, ifset($locale, 'decimal_point', '.'));
+                } else if ($precision_arr[0] === '' && !empty($precision_arr[1])) {
+                    $result = rtrim($result, '0');
+                    if ($result === '') {
+                        $result = '0';
+                    }
                 }
             }
         }

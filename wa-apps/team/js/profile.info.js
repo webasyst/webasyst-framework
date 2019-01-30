@@ -1675,9 +1675,30 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                         stepMonths: 2,
                         numberOfMonths: 2
                     });
+
                     if (that.fieldValue) {
                         $input_text.datepicker('setDate', that.fieldValue);
                     }
+
+                    // clearing hidden input on text input clearing
+
+                    (function (onChange) {
+                        var timer = null;
+                        $input_text.keydown(function () {
+                            timer && clearTimeout(timer);
+                            timer = setTimeout(function () {
+                                onChange();
+                            }, 250);
+                        });
+                        $input_text.change(onChange);
+                    })(function () {
+                        if ($.trim($input_text.val()).length <= 0) {
+                            $input_text.datepicker('setDate', null);
+                            that.fieldValue = null;
+                        }
+                    });
+
+
                 }));
             }
 

@@ -10,6 +10,18 @@
         init: function () {
             this.fields = this.form.find(".js-yandexmoney-integration-type");
             this.guide = this.form.find(":input[readonly=readonly]:first").parents("div.field-group");
+            var registered = true;
+
+            this.form.find(':input[name$="\[ShopID\]"], :input[name$="\[scid\]"], :input[name$="\[shopPassword\]"]').each(function () {
+                /** @this HTMLInputElement */
+                if (('' + this.value).length === 0) {
+                    registered = false;
+                }
+            });
+
+            if (registered) {
+                this.form.find('.js-yandexmoney-registration-link').hide();
+            }
         },
         changeIntegrationType: function (event, element) {
             if (element.attr("checked")) {
@@ -88,7 +100,11 @@
             var fast = !event.originalEvent;
             var fields = [
                 this.form.find(':input[name$="\[taxSystem\]"]:first').parents('div.field:first'),
-                this.form.find(':input[name$="\[taxes\]"]:first').parents('div.field:first')
+                this.form.find(':input[name$="\[taxes\]"]:first').parents('div.field:first'),
+                this.form.find(':input[name$="\[payment_subject_type_product\]"]:first').parents('div.field:first'),
+                this.form.find(':input[name$="\[payment_subject_type_service\]"]:first').parents('div.field:first'),
+                this.form.find(':input[name$="\[payment_subject_type_shipping\]"]:first').parents('div.field:first'),
+                this.form.find(':input[name$="\[payment_method_type\]"]:first').parents('div.field:first')
             ];
             if (element.attr("checked")) {
                 this.show(fields, fast);

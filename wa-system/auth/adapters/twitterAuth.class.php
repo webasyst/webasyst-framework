@@ -177,7 +177,7 @@ class twitterAuth extends waAuthAdapter
 
             $response = $this->oauth("oauth/request_token", array('oauth_callback' => $this->getCallbackUrl()));
             if (!isset($response['oauth_token']) || !isset($response['oauth_token_secret'])) {
-                throw new waException('Unable to complete OAuth: no token returned from Twitter');
+                throw new waAuthException('Unable to complete OAuth: no token returned from Twitter');
             }
 
             $storage->set('oauth_token', $response['oauth_token']);
@@ -189,7 +189,7 @@ class twitterAuth extends waAuthAdapter
         }
         else {
             if ( waRequest::get('oauth_token') != $storage->get('oauth_token' ) ) {
-                throw new waException(_w("Old token"));
+                throw new waAuthException(_w("Old token"));
             }
 
             // get access token
@@ -211,7 +211,7 @@ class twitterAuth extends waAuthAdapter
             $data = array(
                 'source' => 'twitter',
                 'source_id' => $response['id_str'],
-                'url' => "http://twitter.com/#!/".$response['screen_name'],
+                'url' => "https://twitter.com/".$response['screen_name'],
                 'name' => $response['name'],
                 'about' => $response['description'],
                 'photo_url' => $response['profile_image_url']

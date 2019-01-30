@@ -68,4 +68,15 @@ abstract class waAppShipping implements waiPluginApp
         }
         return $name ? ifset($properties[$name]) : $properties;
     }
+
+    /**
+     * @return array string[string] array of available units with their names
+     */
+    public function getAvailableLinearUnits()
+    {
+        return array(
+            'm'  => 'm',
+            'ft' => 'ft',
+        );
+    }
 }

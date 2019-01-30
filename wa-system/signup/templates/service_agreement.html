@@ -1,0 +1,13 @@
+<div class="wa-field wa-field-terms-accepted">
+    <div class="wa-value">
+        <label>
+            {if $type == 'checkbox'}
+                <input type="checkbox" name="data[terms_accepted]" value="1" {if $checked}checked="checked"{/if}>
+            {/if}
+            {$text}
+            {foreach $errors as $error}
+                <em class="wa-error-msg">{$error}</em>
+            {/foreach}
+        </label>
+    </div>
+</div>

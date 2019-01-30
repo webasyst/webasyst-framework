@@ -295,7 +295,7 @@
             background: #fcd630 linear-gradient(to bottom, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.3) 100%);
         }
         .s-live-setting-wrapper .submit-button:active { background: #f3cd27; text-shadow: none; box-shadow: none; }
-
+        .s-save-message { display:none;color:#6db639;margin-top: 15px; margin-bottom: 15px; }
         .s-live-setting-wrapper select {
             width: 100%;
             padding: 10px 7px;
@@ -355,6 +355,7 @@
         <div class="theme-settings-wrapper">
             <div class="s-live-setting-header">[s`Appearance`]</div>
             <form action="" method="post">
+                {$wa->csrf()}
                 {foreach from=$settings key=name item=setting}
                     {$show_setting = false}
                     {$settings_array = [
@@ -423,6 +424,7 @@
                 {/foreach}
 
                 <div class="buttons-wrapper">
+                    <div class="s-save-message">[`Settings have been saved`]</div>
                     <a class="submit-button" href="javascript:void(0);" id="save-config-settings-button">[`Save`]</a>
                     <i id="submit-animation" class="icon16 loading"></i>
                 </div>
@@ -608,7 +610,8 @@
 
             var saveConfigSettings = function( $form, href ) {
                 var $deferred = $.Deferred(),
-                    $button_wrapper = $form.find(".buttons-wrapper");
+                    $button_wrapper = $form.find(".buttons-wrapper"),
+                    $save_message = $form.find(".s-save-message");
 
                 // Loading Animation
                 animationIconToggle($button_wrapper);
@@ -621,8 +624,13 @@
                     // Remove animation
                     animationIconToggle($button_wrapper);
 
-                    // Hide
-                    $("#show-settings-link").trigger("click");
+                    $save_message.show();
+                    setTimeout( function() {
+                        $save_message.hide();
+                        // Hide
+                        $("#show-settings-link").trigger("click");
+                    }, 3000);
+
                 });
 
             };

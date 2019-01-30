@@ -85,14 +85,14 @@ class waModel
     public function getMetadata()
     {
         if ($this->table && !$this->fields) {
-            $runtime_cache = new waRuntimeCache('db/'.$this->table);
+            $runtime_cache = new waRuntimeCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
             if ($this->fields = $runtime_cache->get()) {
                 return $this->fields;
             }
             if (SystemConfig::isDebug()) {
                 $this->fields = $this->getFields();
             } else {
-                $cache = new waSystemCache('db/'.$this->table);
+                $cache = new waSystemCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
                 if (!($this->fields = $cache->get())) {
                     $this->fields = $this->getFields();
                     $cache->set($this->fields);
@@ -101,6 +101,20 @@ class waModel
             $runtime_cache->set($this->fields);
         }
         return $this->fields;
+    }
+
+    /**
+     * Update and return description of table columns (like getMetadata()), bypassing all caches.
+     * @return array
+     */
+    public function clearMetadataCache()
+    {
+        $runtime_cache = new waRuntimeCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
+        $runtime_cache->delete();
+        $cache = new waSystemCache('db/'.$this->type.'/'.$this->table, -1, 'webasyst');
+        $cache->delete();
+        $this->fields = null;
+        return $this->getMetadata();
     }
 
     /**
@@ -282,7 +296,7 @@ class waModel
         }
         $waDbQueryAnalyzer = new waDbQueryAnalyzer($sql);
         switch ($waDbQueryAnalyzer->getQueryType()) {
-            case 'update': case 'replace': case 'delete': case 'insert': $this->cleanCache();
+            case 'update': case 'replace': case 'delete': case 'drop': case 'insert': $this->cleanCache();
         }
 
         if (func_num_args() > 2) {
@@ -346,7 +360,7 @@ class waModel
     /**
      * Updates table record with specified value of model's id field value.
      *
-     * @param string $id The value of model's id field, which is searched for across all table records to replace
+     * @param string|int $id The value of model's id field, which is searched for across all table records to replace
      *     values of fields specified in $data parameter in the found record.
      * @param array $data Associative array of new values for specified fields of the found record.
      * @param string $options Optional key words for SQL query UPDATE: LOW_PRIORITY or IGNORE.
@@ -453,6 +467,11 @@ class waModel
 
     protected function getFieldValue($field, $value)
     {
+        if (!isset($this->fields[$field])) {
+            // Make sure it's not the cache problem. Someone might have added
+            // a new column to the table, but forgot to clear cache.
+            $this->clearMetadataCache();
+        }
         if (!isset($this->fields[$field])) {
             throw new waException(sprintf('Unknown field %s', $field));
         }
@@ -606,6 +625,7 @@ class waModel
      * );</pre>
      *
      * @return resource|bool Returns true if there are no data to be inserted.
+     * @throws waException
      */
     public function multipleInsert($data)
     {
@@ -736,7 +756,7 @@ class waModel
      *
      * @param mixed $data
      * @param string $type - int|like
-     * @return string
+     * @return string|array
      */
     public function escape($data, $type = null)
     {
@@ -818,15 +838,34 @@ class waModel
 
     /**
      * Returns data from table records containing specified values of specified fields.
-     * Method accepts 2 modes of passing parameters: for one value and for multiple values.
+     * Supports 2 modes of passing parameters: to search records by one or by multiple fields.
      *
-     * @param string|array $field (one field) Field name
-     *     (multiple fields) or associative array with field names as keys
-     * @param mixed|array|bool $value (one field) Field value or array of values
-     *     (multiple fields) or Boolean flag requiring to return data from all found records. By default (false),
-     *     only first found record is returned.
-     * @param bool $all (one field) Boolean flag requiring to return data of all found records.
-     * @param int|bool $limit (one field) Number of records to be returned. By default (false) this limitation is disabled.
+     * @param string|array $field
+     * @param mixed|array|bool $value
+     * @param bool|string|int $all
+     * @param bool $limit
+     * @return array|null
+     * @throws waException
+     *
+     * One field mode:
+     *
+     * @param string Field name.
+     * @param mixed|array Field value or zero-based array of values.
+     * @param bool|string Boolean flag requiring to return data of all found records
+     *     or name of field whose values in all found entries must be used as keys of result array.
+     *     If false is provided, method returns values only from the first found table record.
+     * @param int|bool Maximum number of records to be returned if all records are requested.
+     *     By default (false) no limitation is applied.
+     *
+     * Multiple fields mode:
+     *
+     * @param array Associative array of field values with field names as keys.
+     * @param bool Boolean flag requiring to return data of all found records
+     *     or name of field whose values in all found entries must be used as keys of result array.
+     *     If false is provided, method returns values only from the first found table record.
+     * @param int|bool Maximum number of records to be returned if all records are requested.
+     *     By default (false) no limitation is applied.
+     *
      * @return array|null
      */
     public function getByField($field, $value = null, $all = false, $limit = false)
@@ -895,6 +934,11 @@ class waModel
         // Single field, multiple values?
         if (is_array($value)) {
             if (!isset($this->fields[$field])) {
+                // Make sure it's not the cache problem. Someone might have added
+                // a new column to the table, but forgot to clear cache.
+                $this->clearMetadataCache();
+            }
+            if (!isset($this->fields[$field])) {
                 throw new waException(sprintf(_ws('Unknown field %s'), $field));
             }
             if ($value) {
@@ -912,9 +956,11 @@ class waModel
     /**
      * Returns the number of records with the value of the specified field matching the specified value.
      *
-     * @param string $field Name of field to be checked
+     * @param string|array $field Name of field to be checked
      * @param string $value Value to be checked in the specified field of all table records
      * @return int
+     *
+     * @throws waException
      */
     public function countByField($field, $value = null)
     {
@@ -969,7 +1015,7 @@ class waModel
     /**
      * Prepare query and returns object of waDbStatement
      *
-     * @param string $sql - запрос
+     * @param string $sql query
      * @return waDbStatement
      */
     public function prepare($sql)

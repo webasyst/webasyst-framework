@@ -5,16 +5,15 @@ return array(
         'value'        => '',
         'placeholder'  => '',
         'control_type' => waHtmlControl::INPUT,
-        'title'        => 'Логин для API Почта России',
-        'description'  => 'Чтобы получить логин, необходимо зарегистрироваться на сайте <a href="https://tracking.pochta.ru/" target="_blank">Почты Россиии<i class="icon16 new-window"></i></a>.<br/><br/>',
+        'title'        => 'Логин для API «Почты России»',
     ),
     'api_password' => array(
         'value'        => '',
         'placeholder'  => '',
         'control_type' => waHtmlControl::INPUT,
-        'title'        => 'Пароль для API Почта России',
+        'title'        => 'Пароль для API «Почты России»',
         'description'  => <<<HTML
-Чтобы получить пароль, необходимо зарегистрироваться на сайте <a href="https://tracking.pochta.ru/" target="_blank">https://tracking.pochta.ru/</a>. <a href="https://tracking.pochta.ru/support/faq/how_to_get_access" target="_blank">Как получить доступ</a><br/><br/><br/>
+Чтобы получить логин и пароль, необходимо зарегистрироваться на сайте «<a href="https://tracking.pochta.ru/" target="_blank">Почты России</a>». <a href="https://tracking.pochta.ru/support/faq/how_to_get_access" target="_blank">Как получить доступ</a>.<br/><br/><br/>
 HTML
         ,
     ),
@@ -23,154 +22,212 @@ HTML
 
     'region'           => array(
         'value'        => array(
-            '22' => array('zone' => 3, 'avia_only' => false), /*Алтайский край*/
-            '28' => array('zone' => 4, 'avia_only' => false), /*Амурская область*/
-            '29' => array('zone' => 2, 'avia_only' => false), /*Архангельская область*/
-            '30' => array('zone' => 2, 'avia_only' => false), /*Астраханская область*/
-            '31' => array('zone' => 2, 'avia_only' => false), /*Белгородская область*/
-            '32' => array('zone' => 1, 'avia_only' => false), /*Брянская область*/
-            '33' => array('zone' => 1, 'avia_only' => false), /*Владимирская область*/
-            '34' => array('zone' => 2, 'avia_only' => false), /*Волгоградская область*/
-            '35' => array('zone' => 1, 'avia_only' => false), /*Вологодская область*/
-            '36' => array('zone' => 1, 'avia_only' => false), /*Воронежская область*/
-            '79' => array('zone' => 5, 'avia_only' => false), /*Еврейская автономная область*/
-            '75' => array('zone' => 4, 'avia_only' => false), /*Забайкальский край*/
-            '37' => array('zone' => 1, 'avia_only' => false), /*Ивановская область*/
-            '38' => array('zone' => 4, 'avia_only' => false), /*Иркутская область*/
-            '07' => array('zone' => 2, 'avia_only' => false), /*Кабардино-Балкарская республика*/
-            '39' => array('zone' => 2, 'avia_only' => false), /*Калининградская область*/
-            '40' => array('zone' => 1, 'avia_only' => false), /*Калужская область*/
-            '41' => array('zone' => 5, 'avia_only' => false), /*Камчатский край*/
-            '09' => array('zone' => 2, 'avia_only' => false), /*Карачаево-Черкесская республика*/
-            '42' => array('zone' => 3, 'avia_only' => false), /*Кемеровская область*/
-            '43' => array('zone' => 2, 'avia_only' => false), /*Кировская область*/
-            '44' => array('zone' => 1, 'avia_only' => false), /*Костромская область*/
-            '23' => array('zone' => 2, 'avia_only' => false), /*Краснодарский край*/
-            '24' => array('zone' => 3, 'avia_only' => false), /*Красноярский край*/
-            '91' => array('zone' => 3, 'avia_only' => false), /*Крым республика*/
-            '45' => array('zone' => 3, 'avia_only' => false), /*Курганская область*/
-            '46' => array('zone' => 1, 'avia_only' => false), /*Курская область*/
-            '47' => array('zone' => 2, 'avia_only' => false), /*Ленинградская область*/
-            '48' => array('zone' => 1, 'avia_only' => false), /*Липецкая область*/
-            '49' => array('zone' => 5, 'avia_only' => true), /*Магаданская область*/
-            '77' => array('zone' => 1, 'avia_only' => false), /*Москва*/
-            '50' => array('zone' => 1, 'avia_only' => false), /*Московская область*/
-            '51' => array('zone' => 2, 'avia_only' => false), /*Мурманская область*/
-            '83' => array('zone' => 3, 'avia_only' => true), /*Ненецкий автономный округ*/
-            '52' => array('zone' => 1, 'avia_only' => false), /*Нижегородская область*/
-            '53' => array('zone' => 2, 'avia_only' => false), /*Новгородская область*/
-            '54' => array('zone' => 3, 'avia_only' => false), /*Новосибирская область*/
-            '55' => array('zone' => 3, 'avia_only' => false), /*Омская область*/
-            '56' => array('zone' => 2, 'avia_only' => false), /*Оренбургская область*/
-            '57' => array('zone' => 1, 'avia_only' => false), /*Орловская область*/
-            '58' => array('zone' => 2, 'avia_only' => false), /*Пензенская область*/
-            '59' => array('zone' => 2, 'avia_only' => false), /*Пермский край*/
-            '25' => array('zone' => 5, 'avia_only' => false), /*Приморский край*/
-            '60' => array('zone' => 2, 'avia_only' => false), /*Псковская область*/
-            '01' => array('zone' => 2, 'avia_only' => false), /*Республика Адыгея*/
-            '04' => array('zone' => 3, 'avia_only' => false), /*Республика Алтай*/
-            '02' => array('zone' => 2, 'avia_only' => false), /*Республика Башкортостан*/
-            '03' => array('zone' => 4, 'avia_only' => false), /*Республика Бурятия*/
-            '05' => array('zone' => 3, 'avia_only' => false), /*Республика Дагестан*/
-            '06' => array('zone' => 2, 'avia_only' => false), /*Республика Ингушетия*/
-            '08' => array('zone' => 2, 'avia_only' => false), /*Республика Калмыкия*/
-            '10' => array('zone' => 2, 'avia_only' => false), /*Республика Карелия*/
-            '11' => array('zone' => 2, 'avia_only' => false), /*Республика Коми*/
-            '12' => array('zone' => 2, 'avia_only' => false), /*Республика Марий Эл*/
-            '13' => array('zone' => 2, 'avia_only' => false), /*Республика Мордовия*/
-            '14' => array('zone' => 4, 'avia_only' => false), /*Республика Саха (Якутия)*/
-            '15' => array('zone' => 2, 'avia_only' => false), /*Республика Северная Осетия-Алания*/
-            '16' => array('zone' => 2, 'avia_only' => false), /*Республика Татарстан*/
-            '17' => array('zone' => 3, 'avia_only' => false), /*Республика Тыва*/
-            '19' => array('zone' => 3, 'avia_only' => false), /*Республика Хакасия*/
-            '61' => array('zone' => 2, 'avia_only' => false), /*Ростовская область*/
-            '62' => array('zone' => 1, 'avia_only' => false), /*Рязанская область*/
-            '63' => array('zone' => 2, 'avia_only' => false), /*Самарская область*/
-            '78' => array('zone' => 2, 'avia_only' => false), /*Санкт-Петербург*/
-            '64' => array('zone' => 2, 'avia_only' => false), /*Саратовская область*/
-            '65' => array('zone' => 5, 'avia_only' => false), /*Сахалинская область*/
-            '66' => array('zone' => 2, 'avia_only' => false), /*Свердловская область*/
-            '92' => array('zone' => 3, 'avia_only' => false), /*Севастополь*/
-            '67' => array('zone' => 1, 'avia_only' => false), /*Смоленская область*/
-            '26' => array('zone' => 2, 'avia_only' => false), /*Ставропольский край*/
-            '68' => array('zone' => 1, 'avia_only' => false), /*Тамбовская область*/
-            '69' => array('zone' => 1, 'avia_only' => false), /*Тверская область*/
-            '70' => array('zone' => 3, 'avia_only' => false), /*Томская область*/
-            '71' => array('zone' => 1, 'avia_only' => false), /*Тульская область*/
-            '72' => array('zone' => 3, 'avia_only' => false), /*Тюменская область*/
-            '18' => array('zone' => 2, 'avia_only' => false), /*Удмуртская республика*/
-            '73' => array('zone' => 2, 'avia_only' => false), /*Ульяновская область*/
-            '27' => array('zone' => 5, 'avia_only' => false), /*Хабаровский край*/
-            '86' => array('zone' => 3, 'avia_only' => false), /*Ханты-Мансийский автономный округ - Югра*/
-            '74' => array('zone' => 2, 'avia_only' => false), /*Челябинская область*/
-            '20' => array('zone' => 2, 'avia_only' => false), /*Чеченская республика*/
-            '21' => array('zone' => 2, 'avia_only' => false), /*Чувашская республика*/
-            '87' => array('zone' => 5, 'avia_only' => true), /*Чукотский автономный округ*/
-            '89' => array('zone' => 3, 'avia_only' => false), /*Ямало-Ненецкий автономный округ*/
-            '76' => array('zone' => 1, 'avia_only' => false), /*Ярославская область*/
+            '22' => array('zone' => 3), /*Алтайский край*/
+            '28' => array('zone' => 4), /*Амурская область*/
+            '29' => array('zone' => 2), /*Архангельская область*/
+            '30' => array('zone' => 2), /*Астраханская область*/
+            '31' => array('zone' => 2), /*Белгородская область*/
+            '32' => array('zone' => 1), /*Брянская область*/
+            '33' => array('zone' => 1), /*Владимирская область*/
+            '34' => array('zone' => 2), /*Волгоградская область*/
+            '35' => array('zone' => 1), /*Вологодская область*/
+            '36' => array('zone' => 1), /*Воронежская область*/
+            '79' => array('zone' => 5), /*Еврейская автономная область*/
+            '75' => array('zone' => 4), /*Забайкальский край*/
+            '37' => array('zone' => 1), /*Ивановская область*/
+            '38' => array('zone' => 4), /*Иркутская область*/
+            '07' => array('zone' => 2), /*Кабардино-Балкарская республика*/
+            '39' => array('zone' => 2), /*Калининградская область*/
+            '40' => array('zone' => 1), /*Калужская область*/
+            '41' => array('zone' => 5), /*Камчатский край*/
+            '09' => array('zone' => 2), /*Карачаево-Черкесская республика*/
+            '42' => array('zone' => 3), /*Кемеровская область*/
+            '43' => array('zone' => 2), /*Кировская область*/
+            '44' => array('zone' => 1), /*Костромская область*/
+            '23' => array('zone' => 2), /*Краснодарский край*/
+            '24' => array('zone' => 3), /*Красноярский край*/
+            '91' => array('zone' => 3), /*Крым республика*/
+            '45' => array('zone' => 3), /*Курганская область*/
+            '46' => array('zone' => 1), /*Курская область*/
+            '47' => array('zone' => 2), /*Ленинградская область*/
+            '48' => array('zone' => 1), /*Липецкая область*/
+            '49' => array('zone' => 5), /*Магаданская область*/
+            '77' => array('zone' => 1), /*Москва*/
+            '50' => array('zone' => 1), /*Московская область*/
+            '51' => array('zone' => 2), /*Мурманская область*/
+            '83' => array('zone' => 3), /*Ненецкий автономный округ*/
+            '52' => array('zone' => 1), /*Нижегородская область*/
+            '53' => array('zone' => 2), /*Новгородская область*/
+            '54' => array('zone' => 3), /*Новосибирская область*/
+            '55' => array('zone' => 3), /*Омская область*/
+            '56' => array('zone' => 2), /*Оренбургская область*/
+            '57' => array('zone' => 1), /*Орловская область*/
+            '58' => array('zone' => 2), /*Пензенская область*/
+            '59' => array('zone' => 2), /*Пермский край*/
+            '25' => array('zone' => 5), /*Приморский край*/
+            '60' => array('zone' => 2), /*Псковская область*/
+            '01' => array('zone' => 2), /*Республика Адыгея*/
+            '04' => array('zone' => 3), /*Республика Алтай*/
+            '02' => array('zone' => 2), /*Республика Башкортостан*/
+            '03' => array('zone' => 4), /*Республика Бурятия*/
+            '05' => array('zone' => 3), /*Республика Дагестан*/
+            '06' => array('zone' => 2), /*Республика Ингушетия*/
+            '08' => array('zone' => 2), /*Республика Калмыкия*/
+            '10' => array('zone' => 2), /*Республика Карелия*/
+            '11' => array('zone' => 2), /*Республика Коми*/
+            '12' => array('zone' => 2), /*Республика Марий Эл*/
+            '13' => array('zone' => 2), /*Республика Мордовия*/
+            '14' => array('zone' => 4), /*Республика Саха (Якутия)*/
+            '15' => array('zone' => 2), /*Республика Северная Осетия-Алания*/
+            '16' => array('zone' => 2), /*Республика Татарстан*/
+            '17' => array('zone' => 3), /*Республика Тыва*/
+            '19' => array('zone' => 3), /*Республика Хакасия*/
+            '61' => array('zone' => 2), /*Ростовская область*/
+            '62' => array('zone' => 1), /*Рязанская область*/
+            '63' => array('zone' => 2), /*Самарская область*/
+            '78' => array('zone' => 2), /*Санкт-Петербург*/
+            '64' => array('zone' => 2), /*Саратовская область*/
+            '65' => array('zone' => 5), /*Сахалинская область*/
+            '66' => array('zone' => 2), /*Свердловская область*/
+            '92' => array('zone' => 3), /*Севастополь*/
+            '67' => array('zone' => 1), /*Смоленская область*/
+            '26' => array('zone' => 2), /*Ставропольский край*/
+            '68' => array('zone' => 1), /*Тамбовская область*/
+            '69' => array('zone' => 1), /*Тверская область*/
+            '70' => array('zone' => 3), /*Томская область*/
+            '71' => array('zone' => 1), /*Тульская область*/
+            '72' => array('zone' => 3), /*Тюменская область*/
+            '18' => array('zone' => 2), /*Удмуртская республика*/
+            '73' => array('zone' => 2), /*Ульяновская область*/
+            '27' => array('zone' => 5), /*Хабаровский край*/
+            '86' => array('zone' => 3), /*Ханты-Мансийский автономный округ - Югра*/
+            '74' => array('zone' => 2), /*Челябинская область*/
+            '20' => array('zone' => 2), /*Чеченская республика*/
+            '21' => array('zone' => 2), /*Чувашская республика*/
+            '87' => array('zone' => 5), /*Чукотский автономный округ*/
+            '89' => array('zone' => 3), /*Ямало-Ненецкий автономный округ*/
+            '76' => array('zone' => 1), /*Ярославская область*/
         ),
         'title'        => 'Регионы',
         'control_type' => 'RegionRatesControl',
     ),
     'exclude_cities'   => array(
         'value'        => '',
-        'title'        => 'Не доставлять в города',
-        'description'  => 'Названия городов через запятую (например, город магазина)',
+        'title'        => 'Не доставлять в города (например, город магазина)',
+        'description'  => 'Названия городов через запятую',
         'control_type' => waHtmlControl::INPUT,
     ),
     'halfkilocost'     => array(
-        'value'        => array(1 => 150.00, 2 => 185.0, 3 => 193.00, 4 => 233.00, 5 => 261.00,),
-        'title'        => 'Стоимость отправки посылки весом до 0.5 килограмм (включительно)',
+        'value'        => array(1 => 173.00, 2 => 235.00, 3 => 244.00, 4 => 294.00, 5 => 330.00,),
+        'title'        => 'Стоимость отправки посылки весом до 0,5 кг (включительно)',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
     'overhalfkilocost' => array(
-        'value'        => array(1 => 16.00, 2 => 19.00, 3 => 26.00, 4 => 39.00, 5 => 44.00,),
-        'title'        => 'Стоимость отправки каждых дополнительных 0.5 килограмм',
+        'value'        => array(1 => 21.00, 2 => 24.00, 3 => 33.00, 4 => 48.00, 5 => 55.00,),
+        'title'        => 'Стоимость отправки каждых дополнительных 0,5 кг',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
 
-    'air'     => array(
-        'value'        => '429.00',
-        'title'        => 'Надбавка за отправление «Авиа» (руб.)',
-        'description'  => 'Укажите стоимость в рублях',
-        'control_type' => waHtmlControl::INPUT,
-    ),
-    'caution' => array(
+    'caution'         => array(
         'value'        => '',
         'title'        => 'Все посылки отправляются с отметкой «Осторожно»',
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,
     ),
-
-    'max_weight' => array(
+    'caution_percent' => array(
+        'value'        => '30',
+        'placeholder'  => '30',
+        'title'        => 'Процент надбавки за отметку «Осторожно» (%)',
+        'description'  => 'Отредактируйте стандартное значение, только если выше включена настройка «Все посылки отправляются с отметкой „Осторожно”».',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+    'max_weight'      => array(
         'value'        => '20',
-        'title'        => 'Максимальный вес отправления',
-        'description'  => 'Укажите вес в килограммах',
+        'title'        => 'Максимальный вес посылки',
+        'description'  => 'Укажите максимальный вес в килограммах',
         'control_type' => waHtmlControl::INPUT,
     ),
 
-    'complex_calculation_weight' => array(
+    'complex_calculation_weight'  => array(
         'value'        => '10',
-        'title'        => 'Вес усложненной тарификации',
-        'description'  => 'Укажите вес в килограммах, начиная с которого к стоимости доставки посылки прибавляется 30% (согласно правилам усложненной тарификации Почты России)',
+        'title'        => 'Вес усложненной тарификации для посылки',
+        'description'  => 'Укажите вес в килограммах, начиная с которого к стоимости доставки посылки должна прибавляться надбавка за негабарит согласно правилам усложненной тарификации «Почты России»',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+    'complex_calculation_percent' => array(
+        'value'        => '40',
+        'placeholder'  => '40',
+        'title'        => 'Процент надбавки за негабарит посылки (%)',
+        'description'  => 'Надбавка будет прибавлена к стоимости оплаты за весь вес посылки, если ее вес превышает значение веса усложненной тарификации.',
         'control_type' => waHtmlControl::INPUT,
     ),
 
     'commission' => array(
         'value'        => '4',
         'title'        => 'Плата за сумму объявленной ценности посылки (%)',
-        'description'  => 'Укажите размер комиссии в процентах. Например, укажите 4, если с каждого рубля взимается 4 копейки.',
+        'description'  => 'Укажите размер комиссии в процентах. Например, укажите <em>4</em>, если с каждого рубля взимается 4 копейки.<br><br><br><br>',
         'control_type' => waHtmlControl::INPUT,
     ),
 
-    'extra_charge' => array(
-        'value'        => 0,
-        'title'        => 'Надбавка фиксированная (руб.)',
-        'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки.<br/><br/><br/><br/>',
+    'cod'              => array(
+        'value'        => '',
+        'title'        => 'Комиссия за почтовый перевод наложенного платежа',
+        'description'  => <<<HTML
+Рассчитанная комиссия «Почты России» за почтовый перевод будет показана для информации покупателю во время оформления заказа и пользователю бекенда в виде дополнительного поля на
+странице просмотра заказа. Эта комиссия не включается в стоимость доставки, покупатель оплачивает ее дополнительно к сумме почтового перевода за заказ (наложенный платеж) при
+получении посылки в отделении.
+<script type="text/javascript">
+(function () {
+    var handler = $('.russianpost_cash_on_delivery_handler'),
+        data = $('.russianpost_cash_on_delivery_data');
+    showData(handler, data);
+
+    handler.on('change', function () {
+        showData(handler, data);
+    });
+
+     function showData (handler, data) {
+        if (handler.is(':checked')) {
+            data.parents('div.field').show();
+        } else {
+            data.parents('div.field').hide();
+        }
+    }
+})();
+</script>
+HTML
+        ,
+        'control_type' => waHtmlControl::CHECKBOX,
+        'class'        => 'russianpost_cash_on_delivery_handler',
+    ),
+    'cash_on_delivery' => array(
+        'value'        => array(
+            0 => array('rate' => 80, 'percent' => 5),
+            1 => array('rate' => 90, 'percent' => 4),
+            2 => array('rate' => 190, 'percent' => 2),
+            3 => array('rate' => 290, 'percent' => 1.5),
+        ),
+        'title'        => 'Тарифы на доставку почтового перевода',
+        'description'  => '',
+        'control_type' => 'CashDelivery',
+        'class'        => 'russianpost_cash_on_delivery_data'
+    ),
+    'difficult_charge' => array(
+        'value'        => '50',
+        'placeholder'  => '50',
+        'title'        => 'Процент надбавки за доставку в труднодоступные отделения (%)',
+        'description'  => 'Надбавка будет добавлена к стоимости оплаты за весь вес посылки или бандероли.',
         'control_type' => waHtmlControl::INPUT,
     ),
+    'extra_charge'     => array(
+        'value'        => 0,
+        'title'        => 'Надбавка фиксированная (руб.)',
+        'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки посылки или бандероли.<br><br><br><br>',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
 
     #parcel
 
@@ -196,7 +253,7 @@ HTML
             'none'     => 'Не отправлять',
             'simple'   => 'Простые бандероли',
             'ordered'  => 'Заказные бандероли',
-            'declared' => 'Бандероли с объявленной ценностью (есть вариант Авиа)',
+            'declared' => 'Бандероли с объявленной ценностью',
         ),
         'description'  => 'Если включена отправка бандеролей, то заказы стоимостью и весом менее максимального будут отправляться бандеролями или посылками на <strong>выбор покупателя</strong>. Если необходимо, то можно отключить отправку посылок (см. настройку «Отправка посылок»).',
     ),
@@ -204,7 +261,7 @@ HTML
     'bookpost_max_weight' => array(
         'value'        => '1.9',
         'title'        => 'Максимальный вес заказа для отправки бандеролью (кг)',
-        'description'  => '2 кг — ограничение Почты России для бандеролей.',
+        'description'  => '2 кг — ограничение «Почты России» для бандеролей.',
         'control_type' => waHtmlControl::INPUT,
     ),
 
@@ -212,12 +269,12 @@ HTML
         'value'        => 10000,
         'placeholder'  => 10000,
         'title'        => 'Максимальная стоимость заказа для отправки бандеролью (руб.)',
-        'description'  => '10000 рублей — ограничение Почты России для бандеролей.',
+        'description'  => '10000 рублей — ограничение «Почты России» для бандеролей.',
         'control_type' => waHtmlControl::INPUT,
     ),
 
     'bookpost_simple_cost' => array(
-        'value'        => '43.66',
+        'value'        => '47.20',
         'title'        => 'Стоимость отправки бандероли весом 0,1 кг',
         'description'  => '',
         'class'        => 'russianpost_bookpost russianpost_simple',
@@ -233,7 +290,7 @@ HTML
     ),
 
     'bookpost_ordered_cost' => array(
-        'value'        => '62.54',
+        'value'        => '70.80',
         'title'        => 'Стоимость отправки бандероли весом 0,1 кг',
         'description'  => '',
         'class'        => 'russianpost_bookpost russianpost_ordered',
@@ -249,8 +306,8 @@ HTML
     ),
 
     'bookpost_weight_declared_cost' => array(
-        'value'        => array(1 => 82.60, 2 => 88.50, 3 => 94.40, 4 => 100.30, 5 => 118.00,),
-        'title'        => 'Стоимость отправки каждых 0.5 килограмм бандероли с объявленной ценностью',
+        'value'        => array(1 => 94.40, 2 => 106.20, 3 => 118.00, 4 => 129.80, 5 => 147.50,),
+        'title'        => 'Стоимость отправки каждых 0,5 кг бандероли с объявленной ценностью',
         'description'  => '',
         'class'        => 'russianpost_bookpost russianpost_declared',
         'control_type' => 'WeightCosts',
@@ -259,21 +316,13 @@ HTML
     'bookpost_declared_commission' => array(
         'value'        => '4',
         'title'        => 'Плата за сумму объявленной ценности бандероли (%)',
-        'description'  => 'Укажите размер комиссии в процентах. Например, укажите 4, если с каждого рубля взимается 4 копейки.',
-        'class'        => 'russianpost_bookpost russianpost_declared',
-        'control_type' => waHtmlControl::INPUT,
-    ),
-
-    'bookpost_air'       => array(
-        'value'        => '134.00',
-        'title'        => 'Надбавка за отправление «Авиа» для бандероли (руб.)',
-        'description'  => 'Укажите стоимость в рублях<br/><br/><br/><br/>',
+        'description'  => 'Укажите размер комиссии в процентах. Например, укажите <em>4</em>, если с каждого рубля взимается 4 копейки.',
         'class'        => 'russianpost_bookpost russianpost_declared',
         'control_type' => waHtmlControl::INPUT,
     ),
 
     #dleivery date
-    'delivery_date_show' => array(
+    'delivery_date_show'           => array(
         'value'        => true,
         'title'        => 'Показывать приблизительные сроки доставки',
         'description'  => <<<HTML
@@ -358,7 +407,7 @@ HTML
     'delivery_date_min' => array(
         'value'        => 7,
         'title'        => 'Приблизительный минимальный срок доставки',
-        'description'  => 'Укажите число дней',
+        'description'  => 'Укажите количество дней',
         'control_type' => waHtmlControl::INPUT,
         'class'        => 'russianpost_delivery_date_show',
     ),
@@ -366,7 +415,7 @@ HTML
     'delivery_date_max' => array(
         'value'        => 14,
         'title'        => 'Приблизительный максимальный срок доставки',
-        'description'  => 'Укажите число дней<br/><br/><br/><br/>',
+        'description'  => 'Укажите количество дней<br/><br/><br/><br/>',
         'control_type' => waHtmlControl::INPUT,
         'class'        => 'russianpost_delivery_date_show',
     ),
@@ -382,63 +431,69 @@ HTML
     'company_name2' => array(
         'value'        => '',
         'title'        => 'Получатель наложенного платежа (магазин)',
-        'description'  => '(вторая строка)',
+        'description'  => 'Заполните, если имя (наименование) получателя не помещается в одну строку.',
         'control_type' => 'text',
     ),
 
-    'address1'            => array(
+    'address1'                => array(
         'value'        => '',
         'title'        => 'Адрес получателя наложенного платежа (магазина), строка 1',
         'description'  => 'Почтовый адрес получателя наложенного платежа.',
         'control_type' => 'text',
     ),
-    'address2'            => array(
+    'address2'                => array(
         'value'        => '',
         'title'        => 'Адрес получателя наложенного платежа (магазина), строка 2',
         'description'  => 'Заполните, если адрес не помещается в одну строку.',
         'control_type' => 'text',
     ),
-    'zip'                 => array(
+    'zip'                     => array(
         'value'        => '',
         'title'        => 'Индекс получателя наложенного платежа (магазина)',
-        'description'  => 'Индекс должен состоять ровно из 6 цифр.',
+        'description'  => 'Индекс должен состоять только из 6 цифр.',
         'control_type' => 'text',
     ),
-    'phone'               => array(
+    'zip_distribution_center' => array(
+        'value'        => '',
+        'title'        => 'Индекс центра распределения переводов',
+        'description'  => 'Заполните, если нужно указать отдельный индекс для бланка наложенного платежа',
+        'control_type' => 'text',
+    ),
+    'phone'                   => array(
         'value'        => '',
         'title'        => 'Телефон отправителя (магазина)',
         'description'  => '',
         'placeholder'  => '+7(123)123-45-67',
         'control_type' => 'text',
     ),
-    'inn'                 => array(
+    'inn'                     => array(
         'value'        => '',
         'title'        => 'ИНН получателя наложенного платежа (магазина)',
-        'description'  => 'Заполняется только для юридических лиц. 10 цифр.',
+        'description'  => 'Заполняется только для юридических лиц — 10 цифр.',
         'control_type' => 'text',
     ),
-    'bank_kor_number'     => array(
+    'bank_kor_number'         => array(
         'value'        => '',
-        'title'        => 'Кор. счет получателя наложенного платежа (магазина)',
-        'description'  => 'Заполняется только для юридических лиц. 20 цифр.',
+        'title'        => 'Корр. счет получателя наложенного платежа (магазина)',
+        'description'  => 'Заполняется только для юридических лиц — 20 цифр.',
         'control_type' => 'text',
     ),
-    'bank_name'           => array(
+    'bank_name'               => array(
         'value'        => '',
         'title'        => 'Наименование банка получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц.',
         'control_type' => 'text',
     ),
-    'bank_account_number' => array(
+    'bank_account_number'     => array(
         'value'        => '',
         'title'        => 'Расчетный счет получателя наложенного платежа (магазина)',
-        'description'  => 'Заполняется только для юридических лиц. 20 цифр.',
+        'description'  => 'Заполняется только для юридических лиц — 20 цифр.',
         'control_type' => 'text',
     ),
-    'bik'                 => array(
+    'bik'                     => array(
         'value'        => '',
         'title'        => 'БИК получателя наложенного платежа (магазина)',
-        'description'  => 'Заполняется только для юридических лиц. 9 цифр.',
+        'description'  => 'Заполняется только для юридических лиц — 9 цифр.',
         'control_type' => 'text',
     ),
 
@@ -473,21 +528,21 @@ HTML
     'document_issued_month' => array(
         'value'        => '',
         'title'        => 'Дата выдачи документа, месяц (магазина)',
-        'description'  => 'Дата выдачи документа получателя наложенного платежа (месяц, две цифры).',
+        'description'  => 'Дата выдачи документа получателя наложенного платежа (номер месяца в виде 2 цифр).',
         'control_type' => 'text',
     ),
 
     'document_issued_year' => array(
         'value'        => '',
         'title'        => 'Дата выдачи документа, год (магазина)',
-        'description'  => 'Дата выдачи документа получателя наложенного платежа (год, две последние цифры).',
+        'description'  => 'Дата выдачи документа получателя наложенного платежа (год, 2 последние цифры).',
         'control_type' => 'text',
     ),
 
     'document_issued' => array(
         'value'        => '',
         'title'        => 'Кем выдан документ (магазина)',
-        'description'  => 'Название организации, выдавшей документ',
+        'description'  => 'Название организации, выдавшей документ.',
         'control_type' => 'text',
     ),
 

@@ -16,12 +16,17 @@
  * @property-read string $bank_name Наименование банка получателя наложенного платежа (магазина)
  * @property-read string $bank_account_number Расчетный счет получателя наложенного платежа (магазина)
  * @property-read string $bik БИК получателя наложенного платежа (магазина)
+ * @property-read int $delivery_date_min Минимальное время доставки
+ * @property-read int $delivery_date_max Максимальное время доставки
  */
 class emsruShipping extends waShipping
 {
 
     protected function calculate()
     {
+        //Plugin does not work
+        return false;
+
         $params = array();
         $params['weight'] = max(0.1, $this->getTotalWeight());
 
@@ -65,16 +70,18 @@ class emsruShipping extends waShipping
             if (!empty($params['from']) || !empty($params['type'])) {
                 if ($result = $this->request('ems.calculate', $params)) {
 
-                    $est_delivery = '';
-                    $time = array(
-                        'min' => sprintf('+%d day', ifset($result['term']['min'], 7)),
-                        'max' => sprintf('+%d day', ifset($result['term']['max'], 14)),
-                    );
-                    $est_delivery .= waDateTime::format('humandate', strtotime($time['min']));
-                    if ($time['min'] != $time['max']) {
-                        $est_delivery .= ' — ';
-                        $est_delivery .= waDateTime::format('humandate', strtotime($time['max']));
+                    if (!$delivery_date_min = $this->delivery_date_min) {
+                        $delivery_date_min = 3;
                     }
+                    if (!$delivery_date_max = $this->delivery_date_max) {
+                        $delivery_date_max = 7;
+                    }
+
+                    $delivery_date[] = waDateTime::format('humandate', strtotime(sprintf('+%d days', $delivery_date_min)));
+                    $delivery_date[] = waDateTime::format('humandate', strtotime(sprintf('+%d days', $delivery_date_max)));
+                    $delivery_date = implode(' - ', $delivery_date);
+
+
                     $rate = doubleval(ifset($result['price'], 0));
                     if (doubleval($this->surcharge) > 0) {
                         $rate += $this->getTotalPrice() * doubleval($this->surcharge) / 100.0;
@@ -90,7 +97,7 @@ class emsruShipping extends waShipping
                     $services['main'] = array(
                         'rate'         => $rate,
                         'currency'     => 'RUB',
-                        'est_delivery' => $est_delivery,
+                        'est_delivery' => $delivery_date,
                     );
 
                 } else {
@@ -112,10 +119,12 @@ class emsruShipping extends waShipping
 
     public function saveSettings($settings = array())
     {
-        $address = array_merge(array('country' => 'rus'), $settings);
-        if (!$this->findTo($address)) {
-            throw new waException('Указанный адрес пункта отправления не найден в списке поддерживаемых API службы «EMS Почта России».');
-        }
+//        Plugin does not work
+//        $address = array_merge(array('country' => 'rus'), $settings);
+//        if (!$this->findTo($address)) {
+//            throw new waException('Указанный адрес пункта отправления не найден в списке поддерживаемых API службы «EMS Почта России».');
+//        }
+
         if (isset($settings['surcharge'])) {
             if (strpos($settings['surcharge'], ',')) {
                 $settings['surcharge'] = str_replace(',', '.', $settings['surcharge']);
@@ -216,6 +225,9 @@ class emsruShipping extends waShipping
 
     public function allowedAddress()
     {
+        //Plugin does not work
+        return array();
+
         $cache = new waSerializeCache(__CLASS__.__FUNCTION__, 86400, 'webasyst');
         if (!($addresses = $cache->get())) {
             $addresses = array();

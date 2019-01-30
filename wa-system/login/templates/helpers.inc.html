@@ -1,0 +1,23 @@
+{function show_messages messages=[]}
+    <div class="wa-info-messages" {if !$messages}style="display: none;"{/if}>
+        {foreach $messages as $group_id => $group_messages}
+            {foreach $group_messages as $message}
+                <div class="wa-info-msg" data-group-id="{$group_id}">{$message}</div>
+            {/foreach}
+        {/foreach}
+    </div>
+{/function}
+
+{function show_field_errors errors=[]}
+    {foreach $errors as $error}
+        <em class="wa-error-msg">{$error}</em>
+    {/foreach}
+{/function}
+
+{function show_uncaught_errors errors=[]}
+    <div class="wa-uncaught-errors" {if !$errors}style="display: none;"{/if}>
+        {foreach $errors as $_errors}
+            {show_field_errors errors=$_errors}
+        {/foreach}
+    </div>
+{/function}

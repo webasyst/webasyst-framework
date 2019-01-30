@@ -1,0 +1,29 @@
+<form action="" method="post">
+
+    <div class="field">
+        <div class="name field-password">[s`Enter a new password`]</div>
+        <div class="value">
+            <input name="{$renderer->getInputName('password')}" type="password" class="wa-login-text-input">
+        </div>
+    </div>
+    <div class="field field-password">
+        <div class="name">[s`Re-enter password`]</div>
+        <div class="value">
+            <input name="{$renderer->getInputName('password_confirm')}" type="password" class="wa-login-text-input">
+        </div>
+    </div>
+
+    {$renderer->renderCaptcha()}
+
+    <div class="field">
+
+        {$renderer->renderUncaughtErrors()}
+
+        <div class="value wa-submit">
+            <input type="submit" class="button green" value="[s`Save and log in`]">
+        </div>
+    </div>
+
+    {$renderer->renderCsrf()}
+
+</form>

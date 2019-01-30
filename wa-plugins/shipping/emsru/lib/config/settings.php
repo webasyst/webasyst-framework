@@ -1,44 +1,74 @@
 <?php
 return array(
-    'region'          => array(
+    'attention'            => array(
+        'title'        => '',
+        'value'        => 'Поддержка плагина прекращена. Отключен официальный API службы доставки.',
+        'control_type' => waHtmlControl::HELP,
+        'style'        => 'color:red; font-weight: bold;',
+    ),
+    'region'            => array(
         'title'        => 'Домашний регион магазина',
         'description'  => 'Выберите регион (область, край, округ, республику) пункта отправления, из которого осуществляется доставка.',
         'control_type' => waHtmlControl::SELECT,
+        'disabled'     => true,
     ),
-    'city'            => array(
+    'city'              => array(
         'title'        => 'Город магазина',
         'description'  => 'Введите название города пункта отправления. ВАЖНО: Убедитесь, что указанное вами название города присутствует в списке городов, доставка между которыми может быть автоматически рассчитана с помощью API службы «EMS Почта России»: <a href="http://emspost.ru/api/rest/?method=ems.get.locations&type=cities&plain=true" target="_blank">http://emspost.ru/api/rest/?method=ems.get.locations&type=cities&plain=true</a> (регистр при вводе названия города не имеет значения).',
         'control_type' => waHtmlControl::INPUT,
+        'disabled'     => true,
     ),
-    'home_delivery'   => array(
+    'home_delivery'     => array(
         'value'        => true,
         'title'        => 'Доставлять ЕМС в городе магазина',
         'description'  => 'Выключите эту опцию, если не хотите предлагать доставку ЕМС в регионе, из которого вы отправляете заказы.',
         'control_type' => waHtmlControl::CHECKBOX,
+        'disabled'     => true,
     ),
-    'surcharge'       => array(
+    'surcharge'         => array(
         'value'        => 1,
         'title'        => 'Надбавка (%)',
         'description'  => 'Указанный процент от общей стоимости отправления будет прибавлен к стоимости доставки.',
         'control_type' => waHtmlControl::INPUT,
+        'disabled'     => true,
     ),
-    'difficult_charge' => array(
+    'difficult_charge'  => array(
         'value'        => 110.00,
         'title'        => 'Надбавка за доставку в труднодоступные регионы (руб.)',
         'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки за каждый полный или неполный килограмм массы.',
         'control_type' => waHtmlControl::INPUT,
+        'disabled'     => true,
     ),
-    'fixed_surcharge' => array(
+    'delivery_date_min' => array(
+        'value'        => 3,
+        'title'        => 'Приблизительный минимальный срок доставки',
+        'description'  => 'Укажите количество дней',
+        'control_type' => waHtmlControl::INPUT,
+        'placeholder'  => 3,
+        'disabled'     => true,
+    ),
+
+    'delivery_date_max' => array(
+        'value'        => 7,
+        'title'        => 'Приблизительный максимальный срок доставки',
+        'description'  => 'Укажите количество дней<br/><br/><br/><br/>',
+        'control_type' => waHtmlControl::INPUT,
+        'placeholder'  => 7,
+        'disabled'     => true,
+    ),
+    'fixed_surcharge'   => array(
         'value'        => 1,
         'title'        => 'Надбавка фиксированная (руб.)',
         'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки.',
         'control_type' => waHtmlControl::INPUT,
+        'disabled'     => true,
     ),
-    'company_name'    => array(
+    'company_name'      => array(
         'value'        => '',
         'title'        => 'Получатель наложенного платежа (магазин)',
         'description'  => 'Для юридического лица — полное или краткое наименование; для гражданина — ФИО полностью.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
 
     'address1'            => array(
@@ -46,47 +76,55 @@ return array(
         'title'        => 'Адрес получателя наложенного платежа (магазина), строка 1',
         'description'  => 'Почтовый адрес получателя наложенного платежа.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
     'address2'            => array(
         'value'        => '',
         'title'        => 'Адрес получателя наложенного платежа (магазина), строка 2',
         'description'  => 'Заполните, если адрес не помещается в одну строку.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
     'zip'                 => array(
         'value'        => '',
         'title'        => 'Индекс получателя наложенного платежа (магазина)',
         'description'  => 'Индекс должен состоять ровно из 6 цифр.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
     'inn'                 => array(
         'value'        => '',
         'title'        => 'ИНН получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц. 10 цифр.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
     'bank_kor_number'     => array(
         'value'        => '',
         'title'        => 'Кор. счет получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц. 20 цифр.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
     'bank_name'           => array(
         'value'        => '',
         'title'        => 'Наименование банка получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
     'bank_account_number' => array(
         'value'        => '',
         'title'        => 'Расчетный счет получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц. 20 цифр.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
     'bik'                 => array(
         'value'        => '',
         'title'        => 'БИК получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц. 9 цифр.',
         'control_type' => 'text',
+        'disabled'     => true,
     ),
 );

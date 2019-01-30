@@ -190,7 +190,6 @@
                     </li>
                 </ul>
             </div>
-
             <div class="block double-padded b-post b-bottom-extra-padded {$blog.color}"{if isset($post.id) && $post.id} id="b-post-{$post.id}"{/if} style="position: static;">
 
                 <input id="post-title" name="title" type="text" value="{$post.title|escape}" class="b-post-title" maxlength="255" placeholder="[`Post title`]">
@@ -218,10 +217,12 @@
                             <span id="url-editable" {if $is_adding || $unsuccessful_save}style="display:none;"{/if}>
                                 {$link = $post.link}
                                 {$full_link = "{if $link}{$link|escape}{if $post.url}{$post.url|escape}{/if}/{if isset($preview_hash)}?preview={$preview_hash}{/if}{/if}"}
-                                <a id="url-link" target="_blank" href="{$full_link}">{$post.link|escape}<span class="slug">{if $post.url}{$post.url|escape}/{else}<!-- slug placeholder -->{/if}</span></a>
+                                {$realtime_preview_url = $post.preview_link}
+                                <a id="url-link" target="_blank" href="{$full_link}" data-preview-url="{$realtime_preview_url|escape}">{$post.link|escape}<span class="slug">{if $post.url}{$post.url|escape}/{else}<!-- slug placeholder -->{/if}</span></a>
                                 <a id="url-edit-link" href="javascript:void(0);" class="inline-link inline-edit"><i class="icon10 edit"></i><b><i>[`edit`]</i></b></a>
                             </span>
                             <span id="url-edit" {if !$is_adding && !$unsuccessful_save}style="display:none;"{/if}>
+                                <a href="#" id="preview-url" style="display: none">{$post.preview_url|default:''|escape}</a>
                                 {strip}
                                     <span id="pure-url">{$post.link|escape}</span>
                                     <input type="text" id="post-url" name="url" value="{$post.url|escape}" {if isset($validate_messages) && !empty($validate_messages)}class="error"{/if}>/
@@ -231,12 +232,13 @@
 
                         <div id="other-urls">
                             {if isset($post.other_links) && !empty($post.other_links)}
-                                {foreach $post.other_links item=link name=link}
+                                {foreach $post.other_links as $i => $link}
                                     {$full_link = "{if $link}{$link|escape}{if $post.url}{$post.url|escape}{/if}/{if isset($preview_hash)}?preview={$preview_hash}{/if}{/if}"}
+                                    {$realtime_preview_url = ifset($post, 'other_preview_links', $i, '')}
                                     {if $post.status == blogPostModel::STATUS_PUBLISHED}
                                         <i class="icon10 yes"></i>
                                         <span class="small">[`Published`]:
-                                            <a target="_blank" href="{$full_link}">{$link|escape}<span class="slug">{if $post.url}{$post.url|escape}/{else}<!-- slug placeholder -->{/if}</span></a>
+                                            <a target="_blank" href="{$full_link}" data-preview-url="{$realtime_preview_url|escape}">{$link|escape}<span class="slug">{if $post.url}{$post.url|escape}/{else}<!-- slug placeholder -->{/if}</span></a>
                                         </span>
                                     {else if $is_adding}
                                         <span class="small">[`Preview`]:
@@ -244,7 +246,7 @@
                                         </span>
                                     {else}
                                         <span class="hint">[`Preview`]:
-                                            <a target="_blank" href="{$full_link}">{$link|escape}<span class="slug">{if $post.url}{$post.url|escape}/{else}<!-- slug placeholder -->{/if}</span></a>
+                                            <a target="_blank" href="{$full_link}" data-preview-url="{$realtime_preview_url|escape}">{$link|escape}<span class="slug">{if $post.url}{$post.url|escape}/{else}<!-- slug placeholder -->{/if}</span></a>
                                         </span>
                                     {/if}
                                     <br>
@@ -310,7 +312,7 @@
                         </li>
                     {/if}
                 </ul>
-                <textarea id="post_text" name="text" cols="60" rows="20" style="border:0">{$post.text|escape}</textarea>
+                <textarea id="post_text" name="text" cols="60" rows="20" style="border:0; display: none;">{$post.text|escape}</textarea>
                 <div  class="b-post-editor-wrapper" id="post_text_wrapper">
                     {if blogPhotosBridge::isAvailable()}
                         <div id="blog-photo_bridge-editor" class="hidden">
@@ -450,11 +452,15 @@
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
 {/if}
 
+{* REDACTOR (WYSIWYG) *}
+<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/2/redactor.css?v{$wa->version(true)}">
+{* CUT PLUGIN *}
 <script src="{$wa_app_static_url}js/redactor_plugins.js?v{$wa->version()}"></script>
-<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/redactor.css?v{$wa->version(true)}">
-<script src="{$wa_url}wa-content/js/redactor/redactor.min.js?v{$wa->version(true)}"></script>
-{if $lang!='en'}<script src="{$wa_url}wa-content/js/redactor/{$lang}.js?v{$wa->version(true)}"></script>{/if}
-
+<script src="{$wa_url}wa-content/js/redactor/2/redactor.min.js?v{$wa->version(true)}"></script>
+{if substr($wa->locale(), 0, 2)!='en'}
+    <script src="{$wa_url}wa-content/js/redactor/2/{substr($wa->locale(), 0, 2)}.js?v{$wa->version(true)}"></script>
+{/if}
+{* ACE *}
 <script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
 <script type="text/javascript" src="{$wa_url}wa-content/js/elrte/elrte.min.js"></script>
 {if $lang!='en'}

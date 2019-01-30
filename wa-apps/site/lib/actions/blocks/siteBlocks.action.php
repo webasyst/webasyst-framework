@@ -61,6 +61,7 @@ class siteBlocksAction extends waViewAction
         $site_config = array();
         $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
         if (file_exists($path)) {
+            wa($app_id);
             $site_config = include($path);
             if (!is_array($site_config)) {
                 $site_config = array();

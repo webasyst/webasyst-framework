@@ -328,6 +328,7 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
         foreach ($mailboxes as $email => $name) {
             $mailboxStr = $email;
             if (!is_null($name)) {
+                $name = $this->removeInvalidCharacters($name);
                 $nameStr = $this->createDisplayNameString($name, empty($strings));
                 $mailboxStr = $nameStr . ' <' . $mailboxStr . '>';
             }
@@ -335,6 +336,11 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
         }
 
         return $strings;
+    }
+
+    protected function removeInvalidCharacters($str)
+    {
+        return str_replace(array("<", ">", '"'), "", $str);
     }
 
     /**

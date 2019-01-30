@@ -41,11 +41,29 @@ class waPlugin
         $this->checkUpdates();
     }
 
+    /**
+     * Returns plugin ID.
+     * @return string
+     * @since 1.8.2
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Returns localized plugin name.
+     * @return string
+     */
     public function getName()
     {
         return $this->info['name'];
     }
 
+    /**
+     * Returns plugin's version number.
+     * @return string
+     */
     public function getVersion()
     {
         $version = isset($this->info['version']) ? $this->info['version'] : '0.0.1';
@@ -216,7 +234,11 @@ class waPlugin
         waFiles::delete(wa()->getAppCachePath('', $this->app_id));
     }
 
-
+    /**
+     * Returns URL of plugin's root directory.
+     * @param bool $absolute Whether abolsute URL must be returned.
+     * @return string
+     */
     public function getPluginStaticUrl($absolute = false)
     {
         return wa()->getAppStaticUrl($this->app_id, $absolute).'plugins/'.$this->id.'/';
@@ -245,13 +267,37 @@ class waPlugin
         }
     }
 
+    /**
+     * Adds a JavaScript file URL to the array returned by {$wa->js()}.
+     * @param string $url JavaScript file URL, relative or absolute, depending on $is_plugin parameter value.
+     * @param bool $is_plugin Whether a relative or absolute file URL must be conitained in $url parameter.
+     * @return null
+     */
     protected function addJs($url, $is_plugin = true)
     {
+        if (false === strpos($url, '?')) {
+            $url .= '?'.$this->getVersion();
+            if (waSystemConfig::isDebug()) {
+                $url .= '.'.time();
+            }
+        }
         waSystem::getInstance()->getResponse()->addJs($this->getUrl($url, $is_plugin), $this->app_id);
     }
 
+    /**
+     * Adds a CSS file URL to the array returned by {$wa->css()}.
+     * @param string $url CSS file URL, relative or absolute, depending on $is_plugin parameter value.
+     * @param bool $is_plugin Whether a relative or absolute file URL must be conitained in $url parameter.
+     * @return null
+     */
     protected function addCss($url, $is_plugin = true)
     {
+        if (false === strpos($url, '?')) {
+            $url .= '?'.$this->getVersion();
+            if (waSystemConfig::isDebug()) {
+                $url .= '.'.time();
+            }
+        }
         waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin), $this->app_id);
     }
 
@@ -294,8 +340,9 @@ class waPlugin
     }
 
     /**
-     * @param null $name
-     * @return array|mixed|null|string
+     * Returns plugin's settings values.
+     * @param string|null $name Optional key to return one setting's value. If empty, all settings' values are returned.
+     * @return mixed
      */
     public function getSettings($name = null)
     {

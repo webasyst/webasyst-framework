@@ -106,5 +106,56 @@ class waSitemapConfig
         return $this->routing->getUrlByRoute($route, $this->real_domain);
     }
 
-}
+    /**
+     * Adding manually created pages
+     * @param $page_model
+     * @param $route
+     */
+    public function addPages($page_model, $route)
+    {
+        $pages = $this->getPages($page_model, $route);
 
+        // get part of url by route
+        $u = $this->getUrlByRoute($route);
+        foreach ($pages as $p) {
+            if (!empty($p['priority']) && $p['priority'] >= 0 && $p['priority'] <= 100) {
+                $priority = (int)$p['priority'] / 100.0;
+            } else {
+                $priority = false;
+            }
+            if (!$p['url']) {
+                if ($priority === false) {
+                    $priority = 1;
+                }
+                $change = self::CHANGE_WEEKLY;
+            } else {
+                if ($priority === false) {
+                    $priority = $p['parent_id'] ? 0.2 : 0.6;
+                }
+                $change = self::CHANGE_MONTHLY;
+            }
+            $p['url'] = $u.$p['url'];
+            if (strpos($p['url'], '<') === false) {
+                $this->addUrl($p['url'], $p['update_datetime'], $change, $priority);
+            }
+        }
+    }
+
+    /**
+     * For all app except the 'site'
+     * @param $page_model
+     * @param $route
+     * @return null|array
+     */
+    protected function getPages($page_model, $route)
+    {
+        $sql = "SELECT p.id, p.parent_id, p.name, p.title, p.full_url as url, p.create_datetime, p.update_datetime, pp.value as priority
+            FROM ".$page_model->getTableName().' p
+            LEFT JOIN '.$page_model->getParamsModel()->getTableName()." pp ON p.id = pp.page_id AND pp.name = 'priority'
+            WHERE domain = s:domain AND p.route = s:route AND p.status = 1
+            ORDER BY sort";
+        $pages = $page_model->query($sql, array('domain' => $this->routing->getDomain(null, true), 'route' => $route['url']))->fetchAll('id');
+
+        return $pages;
+    }
+}

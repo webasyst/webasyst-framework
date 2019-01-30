@@ -38,6 +38,20 @@ class waAPIController
 
     public function dispatch()
     {
+        // Make sure API is enabled
+        if (wa('webasyst')->getConfig()->getOption('disable_api')) {
+            $msg = wa('webasyst')->getConfig()->getOption('disable_api_message');
+            throw new waAPIException('disabled', ifempty($msg, 'API is disabled'), 404);
+        }
+
+        // Redirect to HTTPS if set up in domain params
+        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
+            $domain = wa()->getRouting()->getDomain(null, true);
+            $url = 'https://'.wa()->getRouting()->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
+            wa()->getResponse()->redirect($url, 301);
+            return;
+        }
+
         $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
         if ($request_url === 'api.php/auth') {
             $user = wa()->getUser();

@@ -1,0 +1,42 @@
+<form action="{$forgotpassword_url}" method="post">
+
+    {if !empty($show_title)}
+        {$renderer->renderTitle()}
+    {/if}
+
+    <section class="wa-set-password-form-fields js-set-password-form-fields">
+
+        <div class="wa-field">
+            <div class="wa-name wa-field-password">[s`Enter a new password`]</div>
+            <div class="wa-value">
+                <input name="{$renderer->getInputName('password')}" type="password">
+            </div>
+        </div>
+        <div class="wa-field wa-field-password">
+            <div class="wa-name">[s`Repeat new password`]</div>
+            <div class="wa-value">
+                <input name="{$renderer->getInputName('password_confirm')}" type="password">
+            </div>
+        </div>
+
+        {$renderer->renderCaptcha()}
+
+    </section>
+
+    <section class="wa-set-password-form-actions js-set-password-form-actions">
+
+        {$renderer->renderUncaughtErrors()}
+
+        <div class="wa-value wa-submit">
+            <input type="submit" value="[s`Save and log in`]">
+        </div>
+
+        <div class="wa-value wa-login-url">
+            [s`Found the password?`] <a href="{$login_url}" data-type="login">[s`Log in`]</a>
+        </div>
+
+    </section>
+
+    {$renderer->renderCsrf()}
+
+</form>

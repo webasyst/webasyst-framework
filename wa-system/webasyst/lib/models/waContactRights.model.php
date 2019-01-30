@@ -396,6 +396,11 @@ class waContactRightsModel extends waModel {
 
         return $access;
     }
+
+    public static function clearRightsCache()
+    {
+        self::$cache = array();
+    }
 }
 
 // EOF

@@ -456,6 +456,7 @@
                             : wholeUrl
                     );
                     $('#pure-url').text(descriptor.link);
+                    $('#preview-url').data('preview-url', descriptor.preview_link);
 
                     if (descriptor.slug && !cachedSlug) {
                         $('#post-url').val(descriptor.slug);
@@ -477,6 +478,7 @@
                                 className: className,
                                 slug: cachedSlug,
                                 link: descriptor.other_links[k],
+                                preview_link: descriptor.other_preview_links[k],
                                 href : descriptor.preview_hash
                                             ? descriptor.other_links[k] + cachedSlug + '/?preview=' + descriptor.preview_hash
                                             : descriptor.other_links[k] + cachedSlug + '/'
@@ -486,7 +488,7 @@
                             ?   '<span class="${className}">${previewText}${link}' +
                                     '<span class="slug">{{if slug}}${slug}/{{/if}}</span>' +
                                 '</span><br>'
-                            : '<span class="${className}">${previewText}<a target="_blank" href="${href}">${link}' +
+                            : '<span class="${className}">${previewText}<a target="_blank" href="${href}" data-preview-url="${preview_link}">${link}' +
                                     '<span class="slug">{{if slug}}${slug}/{{/if}}</span></a>' +
                                 '</span><br>';
 
@@ -850,6 +852,9 @@
                 $iframe.one('load', function() {
                     iframe_loaded = true;
                 });
+                $.pm.bind('updater_loaded', function(data) {
+                    iframe_loaded = true;
+                });
 
                 // Resize columns when user drags the resize handler
                 $.widget('ui.blog_draghandler', $.ui.mouse, {
@@ -933,7 +938,7 @@
                         return;
                     }
 
-                    var template_url = getTemplateUrl(this);
+                    var template_url = getTemplateUrl($(this));
                     if (template_url != $iframe.attr('src')) {
                         $iframe.attr('src', template_url);
                         var iframe_loaded = false;
@@ -1010,15 +1015,15 @@
                 }
 
                 // URL of preview template using data from an <a> element of static preview link
-                function getTemplateUrl(a) {
-                    return $(a).attr('href').replace(/\/[^\/]*\/(\?[^\/]*)?$/, '/postpreview/');
+                function getTemplateUrl($a) {
+                    return $a.data('preview-url') || '';
                 }
 
                 function getAnyTemplateUrl() {
                     var any_url = null;
                     $('#post-url-field a').each(function() {
-                        var url = getTemplateUrl(this);
-                        if (url.substr(0, 11) == 'javascript:') {
+                        var url = getTemplateUrl($(this));
+                        if (!url || url.substr(0, 11) == 'javascript:') {
                             return;
                         }
                         if ($iframe.attr('src') == url) {
@@ -1128,11 +1133,10 @@
                 }
             }
         },
-        cloneTextarea: function(textarea,wrapper,editor)
-        {
+        cloneTextarea: function($textarea,wrapper,editor) {
             var id = "editor_container_"+editor;
-            $(wrapper).append(textarea.clone(true).attr({'id':id,'name':'text_'+editor,'disabled':true}));
-            textarea.hide();
+            $(wrapper).append($textarea.clone(true).attr({'id':id,'name':'text_'+editor,'disabled':true}));
+            $textarea.hide();
             return id;
         },
         cut_hr: '<span class="b-elrte-wa-split-vertical elrte-wa_post_cut">%text%</span>',
@@ -1162,7 +1166,7 @@
                 editor:null,
                 container: null,
                 inited: false,
-                init : function(textarea) {
+                init : function($textarea) {
                     if(!this.inited) {
 
                         this.inited = true;
@@ -1181,11 +1185,12 @@
                         session.setMode("ace/mode/html");
                         session.setMode("ace/mode/smarty");
                         session.setUseWrapMode(true);
+                        this.editor.$blockScrolling = Infinity;
                         this.editor.renderer.setShowGutter(false);
                         this.editor.setShowPrintMargin(false);
                         this.editor.setFontSize(13);
                         $('.ace_editor').css('fontFamily', '');
-                        session.setValue(textarea.hide().val());
+                        session.setValue($textarea.hide().val());
                         this.editor.moveCursorTo(0, 0);
 
                         if (navigator.appVersion.indexOf('Mac') != -1) {
@@ -1249,35 +1254,35 @@
 
                     return true;
                 },
-                show: function(textarea) {
+                show: function($textarea) {
                     this.container.show();
                     this.container.parent().show();
                     var self = this;
-                    setTimeout(function() {
-                        if(self.editor/* && self.editor.editor*/) {
-                            var text = $.wa_blog.editor.wysiwygToHtml(textarea.val());
-                            var p = self.editor.getCursorPosition();
-                            self.editor.setValue(text);
-                            if (!$('#post-title').is(':focus')) {
-                                self.editor.focus();
-                            }
-                            self.editor.navigateTo(p.row, p.column);
-                        } else {
-                            if(typeof(console) == 'object') {
-                                console.log('wait for ace editor init');
-                            }
-                            self.show(textarea);
+
+                    if(self.editor/* && self.editor.editor*/) {
+                        var text = $textarea.val();
+                        text = $.wa_blog.editor.wysiwygToHtml(text);
+                        var p = self.editor.getCursorPosition();
+                        self.editor.setValue(text);
+                        if (!$('#post-title').is(':focus')) {
+                            self.editor.focus();
                         }
-                    },100);
+                        self.editor.navigateTo(p.row, p.column);
+                    } else {
+                        if(typeof(console) == 'object') {
+                            console.log('wait for ace editor init');
+                        }
+                        self.show($textarea);
+                    }
 
                 },
                 hide: function() {
                     this.container.hide();
                     this.container.parent().hide();
                 },
-                update : function(textarea) {
+                update : function($textarea) {
                     if(this.inited) {
-                        textarea.val(this.editor.getValue());
+                        $textarea.val(this.editor.getValue());
                     }
                 },
                 correctEditorHeight: function(height) {
@@ -1289,7 +1294,7 @@
                 inited:false,
                 callback:false,
                 editor: null,
-                init : function(textarea) {
+                init : function($textarea) {
                     if(!this.inited) {
                         var $window = $(window);
                         var $save_button = $('#b-post-save-button');
@@ -1297,27 +1302,56 @@
                         var sidebar_height = $('#post-form .sidebar .b-edit-options:first').height();
 
                         var options = $.extend({
-                            //boldTag: 'b',
-                            //italicTag: 'i',
+                            focus: true,
                             deniedTags: false,
-                            minHeight: Math.max(300, sidebar_height - 229),
+                            minHeight: 300, //minHeight: Math.max(300, sidebar_height - 229),
+                            linkify: false,
                             source: false,
-                            paragraphy: true,
-                            convertDivs: true,
-                            toolbarFixedBox: true,
-                            buttons: ['html', 'formatting', 'bold', 'italic', 'underline', 'deleted', 'unorderedlist', 'orderedlist',
-                                'outdent', 'indent', 'image', 'video', 'file', 'table', 'link', 'alignment', '|',
-                                'horizontalrule'],
-                            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'table', 'video', 'cut'],
+                            paragraphy: false,
+                            replaceDivs: false,
+                            toolbarFixed: true,
+                            replaceTags: {
+                                'b': 'strong',
+                                'i': 'em',
+                                'strike': 'del'
+                            },
+                            removeNewlines: false,
+                            removeComments: false,
+                            imagePosition: true,
+                            imageResizable: true,
+                            imageFloatMargin: '1.5em',
+                            buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists',
+                                'image', 'video', 'file', 'table', 'link', 'alignment', 'fontcolor', 'fontsize', 'fontfamily'],
+                            plugins: ['fontcolor', 'fontfamily', 'alignment', 'fontsize', 'table', 'video', 'cut'],
                             lang: wa_lang,
-                            imageUpload: '?action=upload&filelink=1&absolute=1',
-                            uploadImageFields: textarea.data('uploadFields'),
-                            //imageUpload: '?module=post&action=image',
-                            imageUploadErrorCallback: function(json) {
+                            imageUpload: '?action=upload&r=2&absolute=1',
+                            imageUploadFields: $textarea.data('uploadFields'),
+                            callbacks: {
+                                change: function () {
+                                    if ($postpublish_edit.is(':visible')) {
+                                        $postpublish_edit.removeClass('green').addClass('yellow');
+                                    }
+                                    if ($save_button.is(':visible')) {
+                                        $save_button.removeClass('green').addClass('yellow');
+                                    }
+                                    // Make sure sticky bottom buttons behave correctly when height of an editor changes
+                                    $window.scroll();
+                                }
+                            }
+                        }, (options || {}));
+
+                        options.callbacks = $.extend({
+                            imageUploadError: function(json) {
+                                console.log('imageUploadError', json);
                                 alert(json.error);
                             },
-
-                            syncBeforeCallback: function(html) {
+                            syncClean: function (html) {
+                                // Unescape '->' in smarty tags
+                                return html.replace(/\{[a-z\$'"_\(!+\-][^\}]*\}/gi, function (match) {
+                                    return match.replace(/-&gt;/g, '->');
+                                });
+                            },
+                            syncBefore: function (html) {
                                 html = html.replace(/{[a-z$][^}]*}/gi, function (match, offset, full) {
                                     var i = full.indexOf("</script", offset + match.length);
                                     var j = full.indexOf('<script', offset + match.length);
@@ -1329,23 +1363,14 @@
                                     }
                                     return match;
                                 });
+
                                 return html;
-                            },
-                            changeCallback: function() {
-                                if ($postpublish_edit.is(':visible')) {
-                                    $postpublish_edit.removeClass('green').addClass('yellow');
-                                }
-                                if ($save_button.is(':visible')) {
-                                    $save_button.removeClass('green').addClass('yellow');
-                                }
-                                // Make sure sticky bottom buttons behave correctly when height of an editor changes
-                                $window.scroll();
                             }
-                        }, (options || {}));
+                        }, (options.callbacks || {}));
 
                         // Modify image upload dialog to include tab from Photos app
                         if ($.wa_blog_options.photos_bridge_available) {
-                            options.modalOpenedCallback = function(name, $modal_wrapper) {
+                            options.callbacks.modalOpened = function(name, $modal_wrapper) {
                                 if (name != 'image') {
                                     return;
                                 }
@@ -1354,26 +1379,30 @@
                                 this.modal.width = 1100;
                                 var $modal = this.modal.getModal();
 
-                                // Contents of Upload tab
-                                var $tabBox1 = $('<div class="redactor-tab redactor-tab1">').append($modal.children());
-
-                                // Tab headers
-                                this.modal.createTabber($modal);
-                                this.modal.addTab(1, $_('Upload'), 'active');
-                                this.modal.addTab(2, $_('Select from Photos app'));
-
                                 // Contents of Select tab
                                 var $photos_selector_wrapper = $('<div id="photos-image-selector-wrapper">');
-                                var $tabBox2 = $('<div class="redactor-tab redactor-tab2">').hide().append($photos_selector_wrapper).append('<div class="clear-both">');
-                                var $total_photos_selected = $tabBox2.find('.total-photos-selected'); // !!! currently not used
+                                var $custom_tab = $('<div class="redactor-modal-tab redactor-tab1" data-title="'+ $_('Select from Photos app') +'">').hide().append($photos_selector_wrapper).append('<div class="clear-both">');
+                                var $total_photos_selected = $custom_tab.find('.total-photos-selected'); // !!! currently not used
+
+                                // Tab headers
+                                $modal.append($custom_tab);
+                                this.modal.buildTabber();
 
                                 // Controller for Photos selector tab
                                 (function() {
                                     var total_photos_selected = 0;
                                     var selected_photos = {}; // id => url
 
+                                    // Insert photos to blog post when user clicks on a button
+                                    var $insert_button = $('<button id="redactor-modal-button-action" style="margin-top: 16px;">' + redactor.lang.get('insert') + '</button>').hide();
+                                    $custom_tab.append($insert_button);
+
+                                    // Cancel button closes the dialog
+                                    var $cancel_button = $('<button id="redactor-modal-button-cancel" style="margin-top: 16px;">' + redactor.lang.get('cancel') + '</button>').hide();
+                                    $custom_tab.append($cancel_button);
+
                                     // Load content from Photos app when user goes to its tab
-                                    $modal_wrapper.on('click', '#redactor-modal-tabber a[rel="tab2"]', function() {
+                                    $('#redactor-modal-tabber a[rel="1"]').on('click', function() {
                                         if ($insert_button.is(':visible')) {
                                             return;
                                         }
@@ -1385,21 +1414,14 @@
                                             updateEmbeddedHtml();
                                         });
                                     });
-
-                                    // Cancel button closes the dialog
-                                    redactor.modal.createCancelButton();
-                                    var $cancel_button = $('#redactor-modal > footer > .redactor-modal-btn.redactor-modal-close-btn').css('width', '50%').hide();
                                     $cancel_button.off('click').on('click', function() {
                                         redactor.modal.close();
                                     });
-
-                                    // Insert photos to blog post when user clicks on a button
-                                    var $insert_button = redactor.modal.createActionButton($_('Insert')).css('width', '50%').hide();
                                     $insert_button.on('click', function() {
                                         if (total_photos_selected > 0) {
                                             var html = [];
                                             $.each(selected_photos, function(photo_id, photo_url) {
-                                                html.push('<img src="'+photo_url+'">');
+                                                html.push('<figure><img src="'+photo_url+'"></figure>');
                                             });
                                             redactor.insert.html(html.join("\n"));
                                         }
@@ -1407,7 +1429,7 @@
                                     });
 
                                     // Hide buttons when user switches back to Upload tab
-                                    $modal_wrapper.on('click', '#redactor-modal-tabber a[rel="tab1"]', function() {
+                                    $('#redactor-modal-tabber a[rel="0"]').on('click', function() {
                                         $insert_button.hide();
                                         $cancel_button.hide();
                                     });
@@ -1449,51 +1471,52 @@
                                         $(window).resize();
                                     }
                                 })();
-
-                                $modal.append($tabBox1);
-                                $modal.append($tabBox2);
-                                this.modal.resize();
                             };
                         }
 
-                        textarea.redactor(options);
-                        textarea.redactor('core.getBox').css('z-index', 0);
-                        textarea.redactor('core.getToolbar').css('z-index', 1);
-                        this.editor = textarea.data('redactor');
+                        $textarea.redactor(options);
+                        $textarea.redactor('core.box').css('z-index', 0);
+                        $textarea.redactor('core.toolbar').css('z-index', 1);
+                        this.editor = $textarea.data('redactor');
                         this.inited = true;
                     }
                     return true;
                 },
-                show: function(textarea) {
-                    var text = $.wa_blog.editor.htmlToWysiwyg(textarea.val());
-                    textarea.val(text);
+                show: function($textarea) {
+                    var text = $.wa_blog.editor.htmlToWysiwyg($textarea.val());
+                    $textarea.val(text);
 
                     $('.redactor-box').show();
-                    textarea.redactor('core.getEditor').find('img[src*="$wa_url"]').each(function () {
+                    $textarea.redactor('core.editor').find('img[src*="$wa_url"]').each(function () {
                         var s = decodeURIComponent($(this).attr('src'));
                         $(this).attr('data-src', s);
                         $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
                     });
-                    textarea.redactor('code.set', textarea.val());
-                    textarea.redactor('observe.load');
-                    textarea.redactor('focus.setStart');
+                    this.editor.code.set($textarea.val());
+                    this.editor.observe.load();
+                    this.editor.focus.start();
                 },
                 hide: function(textarea) {
                     $('.redactor-box').hide();
                 },
-                update : function(textarea) {
+                update : function($textarea) {
                     if(this.inited) {
-                        textarea.val(this.editor.code.get());
+                        var code = this.editor.code.get();
+                        code = this.editor.clean.onSync(
+                            this.editor.clean.onSet(code)
+                        );
+                        code = $.wa_blog.editor.wysiwygToHtml(code);
+                        $textarea.val(code);
                     }
                 }
             },
             photo_bridge : {
                 container: null,
                 inited: false,
-                init : function(textarea) {
+                init : function($textarea) {
                     if(!this.inited) {
                         this.inited = true;
-                        textarea.hide();
+                        $textarea.hide();
                         this.container = $('#blog-photo_bridge-editor');
                         if (!this.container.length) {
                             return;
@@ -1556,10 +1579,10 @@
         },
         selectEditor : function(id, external) {
             if (this.editors[id]) {
-                var textarea = $("#" + this.options['content_id']);
-                if(textarea.length) {
+                var $textarea = $("#" + this.options['content_id']);
+                if($textarea.length) {
                     try {
-                        if(this.editors[id].init(textarea)) {
+                        if(this.editors[id].init($textarea)) {
                             var current_id = null;
                             if (!external) {
                                 try {
@@ -1573,13 +1596,13 @@
                             if(current_item.length) {
                                 current_item.parent().removeClass('selected');
                                 if(current_id = current_item.attr('id')) {
-                                    this.editors[current_id].update(textarea);
+                                    this.editors[current_id].update($textarea);
                                     this.editors[current_id].hide();
                                 }
                             }
 
                             $('#' + id).parent().addClass('selected');
-                            this.editors[id].show(textarea);
+                            this.editors[id].show($textarea);
 
                             // Make sure sticky bottom buttons behave correctly when height of an editor changes
                             setTimeout(function() { $(window).scroll(); }, 0);
@@ -1649,13 +1672,13 @@
                 }
             }
 
-            var textarea = $("#" + this.options['content_id']);
+            var $textarea = $("#" + this.options['content_id']);
 
-            if(textarea.length) {
+            if($textarea.length) {
                 var current_id = null;
                 var current_item = $('.b-post-editor-toggle li.selected a');
                 if(current_item.length && (current_id = current_item.attr('id')) ) {
-                    this.editors[current_id].update(textarea);
+                    this.editors[current_id].update($textarea);
                 }
             }
 
@@ -1748,4 +1771,3 @@
     };
 
 })(jQuery);
-

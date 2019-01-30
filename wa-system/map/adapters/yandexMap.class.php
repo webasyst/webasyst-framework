@@ -103,7 +103,7 @@ JS;
             'lang' => wa()->getLocale(),
         );
 
-        $url .= http_build_query($params);
+        $url .= '?' . http_build_query($params);
         if ($html) {
             return <<<HTML
 <script type="text/javascript" src="{$url}"></script>

@@ -1,0 +1,182 @@
+{**
+  * HELPER FUNC
+  * RENDER BLOCK OF ERRORS
+  *}
+{function signup_render_errors errors=[]}
+    {foreach $errors as $error}
+        <em class="wa-error-msg">{$error}</em>
+    {/foreach}
+{/function}
+
+{**
+  * HELPER FUNC
+  * FORMAT INPUT NAME BY TAKING INTO ACCOUNT NAMESPACE OF DATA
+  *}
+{function input_name field_id=''}{$namespace}[{$field_id}]{/function}
+
+{**
+  * HELPER FUNC
+  * RENDER BLOCK WITH LINK TO EDIT EMAIL AND REQUEST NEW ONE-TIME PASSWORD
+  *}
+{function signup_render_onetime_password_edit_link}
+
+    {$_wrapper_class = 'wa-send-onetime-password-edit-link-wrapper'}
+    {$_wrapper_id = uniqid($_wrapper_class)}
+
+    <div class="{$_wrapper_class}" id="{$_wrapper_id}" style="display: none;">
+        <a href="javascript:void(0);" class="wa-send-onetime-password-edit-link">
+            <i class="wa-send-onetime-password-edit-icon"></i> [s`Edit`]
+        </a>
+    </div>
+
+    <script>
+        {* FIX - move LINK right after email input inside all wrappers (example <p>) *}
+        $(function () {
+            var $wrapper = $('#{$_wrapper_id}'),
+                $field = $wrapper.closest('.wa-field-email');
+
+            if ($field.length <= 0) {
+                $field = $wrapper.closest('.wa-field-phone')
+            }
+
+            var $input = $field.find('input[type=text]');
+
+            $wrapper.insertAfter($input);
+        })
+    </script>
+{/function}
+
+{**
+  * HELPER FUNC
+  * WRAPPED FIELD HTML IN BLOCK WITH LABEL AND STUFF
+  *}
+{function signup_render_wrapped field_id='' parent_field_id='' ext='' caption='' html='' class='' required=false}
+
+    {$caption = $caption|escape}
+
+    <div class="wa-field wa-field-{$field_id} {$class|default:''}" data-field-id="{$field_id}"
+         data-parent-field-id="{$parent_field_id}"
+         data-is-required="{if $required}1{/if}"
+         data-ext="{$ext}">
+        <div class="wa-name">{$caption} {if $required}*{/if}</div>
+        <div class="wa-value">
+            {$html}
+
+            {if $field_id === 'email' && $is_onetime_password_auth_type}
+                {signup_render_onetime_password_edit_link}
+            {/if}
+
+            {if $field_id === 'phone' && $is_onetime_password_auth_type}
+                {signup_render_onetime_password_edit_link}
+            {/if}
+
+            {signup_render_errors errors=$errors}
+        </div>
+    </div>
+{/function}
+
+{**
+  * HELPER FUNC
+  * RENDER PASSWORD CONFIRM FIELD
+  *}
+{function signup_password_confirm_field}
+    {capture assign="_html"}
+        {$placeholder = $params.password_confirm_placeholder|default:''}
+        {$placeholder = $placeholder|escape}
+        <input type="password" name="{input_name field_id='password_confirm'}" {if $placeholder}placeholder="{$placeholder}"{/if}>
+    {/capture}
+    {signup_render_wrapped
+        field_id='password_confirm'
+        caption='[`Confirm password`]'
+        html=$_html
+        required=true}
+{/function}
+
+{**
+  * HELPER FUNC
+  * RENDER VIEW (HTML) OF FIELD (waContactField) BY APPLING PARAMS
+  *}
+{function signup_render_field_html field=[] params=[]}
+
+    {$attrs = []}
+
+    {$classes = $params.classes|default:[]}
+    {if $errors}
+        {$classes[] = 'wa-error'}
+    {/if}
+
+    {$classes = join(' ', $classes)}
+    {$attrs[] = "class=\"`$classes`\""}
+
+    {$placeholder = $params.placeholder|default:''}
+    {$placeholder = $placeholder|escape}
+
+    {if $placeholder}
+        {$attrs[] = "placeholder=\"`$placeholder`\""}
+    {/if}
+
+    {if $params.disabled|default:false}
+        {$attrs[] = 'disabled="disabled"'}
+    {/if}
+
+    {$attrs = join(' ', $attrs)}
+
+    {$field->getHtml($params, $attrs)}
+{/function}
+
+{**
+  * HELPER FUNC
+  * RENDER SIGNLE FIELD (waContactField) THAT CAN BY AS INDIVIDUAL AS PART (SUBFIELD) OF COMPOSITE FIELD
+  * ALSO WRAP FIELD HTML IN FIELD-BLOCK (SEE signup_render_field_html AND signup_render_wrapped)
+  *}
+{function signup_render_field field=[] is_sub_field=false}
+
+    {$_field_id = $_field->getId()}
+
+    {$_is_hidden = $is_hidden}
+    {$_params = $params}
+
+    {if $is_sub_field}
+        {$_params = $sub_fields[$_field_id].params}
+        {$_is_hidden = $sub_fields[$_field_id].is_hidden}
+    {/if}
+
+    {capture assign="_html"}
+        {signup_render_field_html field=$field params=$_params}
+    {/capture}
+
+    {if !$_is_hidden}
+        {$_parent_field_id = null}
+        {if $is_sub_field}
+            {$_parent_field_id = $_params.parent}
+        {/if}
+
+        {signup_render_wrapped
+            field_id=$_field_id
+            caption=$_params.caption|default:''
+            html=$_html
+            parent_field_id=$_parent_field_id
+            ext=$_params.ext|default:''
+            required=$_params.required|default:false}
+
+        {if $_field_id === 'password'}
+            {signup_password_confirm_field}
+        {/if}
+
+    {else}
+        {$_html}
+    {/if}
+
+{/function}
+
+{* TEMPLATE BODY *}
+
+{if $is_composite}
+    {$_fields = $field->getFields()}
+{else}
+    {$_fields = [$field]}
+{/if}
+
+{foreach $_fields as $_field}
+    {signup_render_field field=$_field is_sub_field=$is_composite}
+{/foreach}

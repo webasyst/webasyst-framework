@@ -107,9 +107,9 @@ abstract class waActions extends waController
         }
         $this->getResponse()->sendHeaders();
         if (!$errors) {
-            echo json_encode(array('status' => 'ok', 'data' => $data));
+            echo waUtils::jsonEncode(array('status' => 'ok', 'data' => $data));
         } else {
-            echo json_encode(array('status' => 'fail', 'errors' => $errors, 'data' => $data));
+            echo waUtils::jsonEncode(array('status' => 'fail', 'errors' => $errors, 'data' => $data));
         }
     }
 }

@@ -108,7 +108,8 @@
 
                 <div class="value">
                   <input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
-                  <label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
+                  <label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label><br>
+                  <span class="hint settings-captcha-switcher-text" style="{if !$backend_settings['request_captcha']}display: none{/if}">{sprintf('<a href="%s">[`Select Webasyst default captcha or Google reCAPTCHA`]</a>',"{$wa_backend_url}site/#/system-settings/captcha/")}</span>
                 </div>
 
               </div>
@@ -315,6 +316,14 @@
         $(this).replaceWith(el);
         el.select();
     });
+
+      $('#settings-captcha-switcher').on('change', function () {
+          if ($('#settings-captcha-switcher').prop( "checked" )) {
+              $('.settings-captcha-switcher-text').show();
+          } else {
+              $('.settings-captcha-switcher-text').hide();
+          }
+      });
 
   });
 </script>

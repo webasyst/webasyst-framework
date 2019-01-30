@@ -275,7 +275,21 @@ var TeamCalendar = ( function($) {
             }
         });
 
+        $(document).on("keydown", keydownWatcher);
+
         // FUNCTIONS
+
+        function keydownWatcher(event) {
+            var is_exist = $.contains(document, that.$wrapper[0]);
+            if (is_exist) {
+                var key = event.keyCode;
+                if (key === 27) {
+                    that.deselectDays();
+                }
+            } else {
+                $(document).off("keydown", keydownWatcher);
+            }
+        }
 
         function move(event) {
             if (!that.is_locked) {

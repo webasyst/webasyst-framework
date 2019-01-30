@@ -19,6 +19,11 @@
  * @property-read string $hash_method
  *
  * @property-read bool $receipt
+ * @property-read integer $payment_subject_type_product
+ * @property-read integer $payment_subject_type_service
+ * @property-read integer $payment_subject_type_shipping
+ * @property-read integer $payment_method_type
+ * @property-read integer $payment_agent_type
  * @property-read string $taxes
  */
 class webmoneyPayment extends waPayment implements waIPayment
@@ -29,6 +34,8 @@ class webmoneyPayment extends waPayment implements waIPayment
     const PROTOCOL_PAYMASTER = 'paymaster';
     const PROTOCOL_WEBMONEY_LEGACY_COM = 'webmoney_legacy_com';
     const PROTOCOL_PAYMASTER_COM = 'paymaster_com';
+
+    private $item_key = 0;
 
     /**
      * Возвращает ISO3-коды валют, поддерживаемых платежной системой,
@@ -392,7 +399,10 @@ class webmoneyPayment extends waPayment implements waIPayment
                 if ($this->hash_method == 'md5') {
                     $transaction_hash = strtolower(md5($hash_string));
                 } else {
-                    if (function_exists('hash') && function_exists('hash_algos') && in_array('sha256', hash_algos())) {
+                    if (function_exists('hash')
+                        && function_exists('hash_algos')
+                        && in_array('sha256', hash_algos())
+                    ) {
                         $transaction_hash = strtolower(hash('sha256', $hash_string));
                     } else {
                         throw new waException('sha256 not supported');
@@ -512,6 +522,11 @@ class webmoneyPayment extends waPayment implements waIPayment
         );
     }
 
+    /**
+     * @see https://paymaster.ru/docs/wmi.html#cashbox
+     * @param waOrder $order
+     * @return array
+     */
     private function getReceiptData(waOrder $order)
     {
         $fields = array();
@@ -522,10 +537,11 @@ class webmoneyPayment extends waPayment implements waIPayment
 
         if ($order->shipping > 0) {
             $item = array(
-                'name'     => mb_substr($order->shipping_name,0, 64),
+                'name'     => $order->shipping_name,
                 'quantity' => 1,
                 'amount'   => $order->shipping,
                 'tax_rate' => $order->shipping_tax_rate,
+                'type'=>'shipping',
             );
             if ($order->shipping_tax_included !== null) {
                 $item['tax_included'] = $order->shipping_tax_included;
@@ -538,18 +554,36 @@ class webmoneyPayment extends waPayment implements waIPayment
 
     private function formatItem($item)
     {
-        static $key;
-        $namespace = sprintf('LMI_SHOPPINGCART.ITEM[%d].', $key);
+        $namespace = sprintf('LMI_SHOPPINGCART.ITEM[%d].', $this->item_key++);
+
+        switch (ifset($item['type'])) {
+            case 'shipping':
+                $item['payment_subject_type'] = $this->payment_subject_type_shipping;
+                break;
+            case 'service':
+                $item['payment_subject_type'] = $this->payment_subject_type_service;
+                break;
+            case 'product':
+            default:
+                $item['payment_subject_type'] = $this->payment_subject_type_product;
+                break;
+        }
+
         $fields = array(
-            "{$namespace}NAME"  => mb_substr($item['name'],0, 64),
-            "{$namespace}QTY"   => $item['quantity'],
-            "{$namespace}PRICE" => number_format($item['amount'], 2, '.', ''),
-            "{$namespace}TAX"   => $this->getTaxId($item),
+            "{$namespace}NAME"       => mb_substr($item['name'], 0, 64),
+            "{$namespace}QTY"        => $item['quantity'],
+            "{$namespace}PRICE"      => number_format($item['amount'], 2, '.', ''),
+            "{$namespace}TAX"        => $this->getTaxId($item),
+            "{$namespace}AGENT.TYPE" => $this->payment_agent_type,
+            "{$namespace}METHOD"     => $this->payment_method_type,
+            "{$namespace}SUBJECT"    => $item['payment_subject_type'],
         );
-        ++$key;
+
+        if ($this->payment_agent_type == 42) {
+            unset($fields["{$namespace}AGENT.TYPE"]);
+        }
         return $fields;
     }
-
 
     private function getTaxId($item)
     {
@@ -571,6 +605,9 @@ class webmoneyPayment extends waPayment implements waIPayment
                 }
 
                 switch ($rate) {
+                    case 20: # НДС чека по ставке 20%;
+                        $id = $tax_included ? 'vat20' : 'vat120';
+                        break;
                     case 18: # НДС чека по ставке 18%;
                         $id = $tax_included ? 'vat18' : 'vat118';
                         break;

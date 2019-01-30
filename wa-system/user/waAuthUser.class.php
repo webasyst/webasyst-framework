@@ -16,6 +16,9 @@ class waAuthUser extends waUser
 {
     protected $auth = false;
 
+    // cache for $this->getTimezone()
+    protected $auth_user_timezone = false;
+
     public function __construct($id = null, $options = array())
     {
         foreach ($options as $name => $value) {
@@ -23,7 +26,6 @@ class waAuthUser extends waUser
         }
         $this->init();
     }
-
 
     public function init()
     {
@@ -36,8 +38,8 @@ class waAuthUser extends waUser
             self::$options['session_timeout'] = 1800;
         }
 
-        if (ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
-            ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
+        if (!headers_sent() && ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
+            @ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
         }
 
         $auth = waSystem::getInstance()->getAuth();
@@ -45,11 +47,43 @@ class waAuthUser extends waUser
         if ($info && isset($info['id']) && $info['id']) {
             $this->auth = true;
             $this->id = $info['id'];
-            // update last_datetime for contact
-            if (!waRequest::request('background_process')) {
-                $this->updateLastTime();
+
+            try {
+                // Update last user activity time.
+                if (!waRequest::request('background_process')) {
+                    $this->updateLastTime();
+                }
+                $is_data_loaded = !!$this->getCache();
+                $last_check = time() - ifset($info['storage_set'], 0);
+
+                // Make sure that the user did not change the password
+                // We do this once in a while, or in case user data is already loaded anyway.
+                $session_user = wa()->getStorage()->get('auth_user');
+                $session_token = (!empty($session_user['token'])) ? $session_user['token'] : null;
+                if ($session_token && ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_PASSWORD_CHECK'))) {
+                    if ($auth->getToken($this) !== $session_token) {
+                        throw new waException('Password changed');
+                    } else {
+                        $auth->updateAuth($this->getCache());
+                    }
+                }
+
+                // Make sure user is not banned.
+                // We do this once in a while, or in case user data is already loaded anyway.
+                if ($is_data_loaded || $last_check >= 120 || defined('WA_STRICT_BAN_CHECK')) {
+                    if ($this['is_user'] < 0) {
+                        throw new waException('Contact is banned');
+                    } else {
+                        $auth->updateAuth($this->getCache());
+                    }
+                }
+            } catch (waException $e) {
+                // Contact is banned or deleted
+                $auth->clearAuth();
+                $this->id = 0;
             }
-            // check CSRF cookie
+
+            // Set CSRF protection cookie
             if (!waRequest::cookie('_csrf')) {
                 waSystem::getInstance()->getResponse()->setCookie('_csrf', uniqid('', true));
             }
@@ -120,9 +154,10 @@ class waAuthUser extends waUser
             }
             if (!$last_activity) {
                 $login_log_model->insert(array(
-                    'contact_id' => $this->id,
-                    'datetime_in' => date("Y-m-d H:i:s"),
-                    'datetime_out' => $force == 'logout' ? date("Y-m-d H:i:s") : null
+                    'contact_id'   => $this->id,
+                    'datetime_in'  => date("Y-m-d H:i:s"),
+                    'datetime_out' => $force == 'logout' ? date("Y-m-d H:i:s") : null,
+                    'ip'           => waRequest::getIp(),
                 ));
                 // TODO: insert record in waLog
             } else {
@@ -132,9 +167,10 @@ class waAuthUser extends waUser
                     if (time() - $last_datetime > self::$options['activity_timeout']) {
                         $login_log_model->updateById($last_activity['id'], array('datetime_out' => $time));
                         $login_log_model->insert(array(
-                            'contact_id' => $this->id,
-                            'datetime_in' => date("Y-m-d H:i:s"),
-                            'datetime_out' => null
+                            'contact_id'   => $this->id,
+                            'datetime_in'  => date("Y-m-d H:i:s"),
+                            'datetime_out' => null,
+                            'ip'           => waRequest::getIp(),
                         ));
                         // TODO: insert record in waLog
                     }
@@ -166,23 +202,39 @@ class waAuthUser extends waUser
         $this->auth = false;
     }
 
-    public function getTimezone()
+    public function getTimezone($return_object=false)
     {
-        $data = array(
-            $this->get('timezone'),
-            waRequest::cookie('tz', '', 'string'),
-            waRequest::cookie('oldtz', '', 'string'),
-            self::$options['default']['timezone'],
-        );
-        foreach($data as $timezone) {
-            if ($timezone) {
-                try {
-                    // Make sure it's a valid timezone
-                    new DateTimeZone($timezone);
-                    return $timezone;
-                } catch (Exception $e) {
+        // this cache significantly speeds up date and time formatting
+        if ($this->auth_user_timezone === false) {
+            $this->auth_user_timezone = null;
+            $data = array(
+                $this->get('timezone'),
+                waRequest::cookie('tz', '', 'string'),
+                waRequest::cookie('oldtz', '', 'string'),
+                self::$options['default']['timezone'],
+            );
+            foreach($data as $timezone) {
+                if ($timezone) {
+                    try {
+                        // Make sure it's a valid timezone
+                        $this->auth_user_timezone = new DateTimeZone($timezone);
+                        break;
+                    } catch (Exception $e) {
+                    }
                 }
             }
+        }
+
+        if ($this->auth_user_timezone) {
+            if ($return_object) {
+                return $this->auth_user_timezone;
+            } else {
+                return $this->auth_user_timezone->getName();
+            }
+        } else if ($return_object) {
+            throw new waException('No timezone selected');
+        } else {
+            return null;
         }
     }
 }

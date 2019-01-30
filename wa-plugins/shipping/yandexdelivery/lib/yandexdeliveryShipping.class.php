@@ -22,10 +22,9 @@
  */
 class yandexdeliveryShipping extends waShipping
 {
-    /**
-     * @var string https://delivery.yandex.ru/api/<версия_API>/<метод>
-     */
+    /** @var string https://delivery.yandex.ru/api/<версия_API>/<метод>  endpoint template */
     private $url = 'https://delivery.yandex.ru/api/%s/%s';
+    /** @var string endpoint API version */
     private $api_version = '1.0';
 
     private $cache_key = null;
@@ -54,9 +53,44 @@ class yandexdeliveryShipping extends waShipping
         );
     }
 
+    public function requestedAddressFieldsForService($service)
+    {
+        if (!isset($service['type'])) {
+            $fields = parent::requestedAddressFieldsForService($service);
+        } else {
+            $fields = array(
+                'city' => array(
+                    'cost'     => true,
+                    'required' => true,
+                ),
+            );
+            switch ($service['type']) {
+                case self::TYPE_PICKUP:
+                    break;
+                case self::TYPE_TODOOR:
+                    $fields['street'] = array(
+                        'required' => true,
+                    );
+                    break;
+                case self::TYPE_POST:
+                    $fields['street'] = array(
+                        'required' => true,
+                    );
+                    $fields['zip'] = array(
+                        'cost'     => true,
+                        'required' => true,
+                    );
+                    break;
+
+            }
+        }
+
+        return $fields;
+    }
+
     public function requestedAddressFields()
     {
-        return array(
+        $fields = array(
             'city'   => array(
                 'cost'     => true,
                 'required' => true,
@@ -64,52 +98,54 @@ class yandexdeliveryShipping extends waShipping
             'street' => array(),
             'zip'    => array(),
         );
+
+        return $fields;
+    }
+
+    public function customFieldsForService(waOrder $order, $service)
+    {
+        $fields = parent::customFields($order);
+        $fields += $this->getGeoIdField($order, $service);
+        if (ifset($service['type']) === self::TYPE_TODOOR) {
+            $fields += $this->getDeliveryIntervalField($order, $service);
+        }
+
+        return $fields;
     }
 
     public function customFields(waOrder $order)
     {
-        $this->registerControl('YandexdeliveryDate', array($this, 'settingDateControl'));
         $fields = parent::customFields($order);
-        $shipping_params = $order->shipping_params;
-        $fields['geo_id_to'] = array(
-            'value'            => ifset($shipping_params['geo_id_to']),
-            'title'            => 'Город доставки',
-            'control_type'     => waHtmlControl::SELECT,
-            'description'      => 'Уточните адрес',
-            'options_callback' => array($this, 'getGeocodeOptions'),
-            'data'             => array(
-                'affects-rate' => true,
-            ),
-        );
 
-        $options = array(
-            array(
-                'value'       => 'todoor',
-                'title'       => 'Все курьерские службы',
-                'group'       => 'Курьером',
-                'description' => 'description_placeholder',
-            ),
-            array(
-                'value'       => 'pickup',
-                'title'       => 'Все пункты самовывоза',
-                'group'       => 'Самовывоз',
-                'description' => 'description_placeholder',
-            ),
-            array(
-                'value'       => 'post',
-                'title'       => 'Все почтовые службы',
-                'group'       => 'Почтовой службой',
-                'description' => 'description_placeholder',
-            ),
-
-        );
+        $fields += $this->getGeoIdField($order);
+        $fields += $this->getDeliveryIntervalField($order);
 
         $fields['_js'] = array(
             'value'        => null,
             'title'        => '',
             'description'  => '',
             'control_type' => 'YandexFilterControl',
-            'options'      => $options,
+            'options'      => array(
+                array(
+                    'value'       => 'todoor',
+                    'title'       => 'Все курьерские службы',
+                    'group'       => 'Курьером',
+                    'description' => 'description_placeholder',
+                ),
+                array(
+                    'value'       => 'pickup',
+                    'title'       => 'Все пункты самовывоза',
+                    'group'       => 'Самовывоз',
+                    'description' => 'description_placeholder',
+                ),
+                array(
+                    'value'       => 'post',
+                    'title'       => 'Все почтовые службы',
+                    'group'       => 'Почтовой службой',
+                    'description' => 'description_placeholder',
+                ),
+
+            ),
         );
 
         if (wa()->getEnv() !== 'backend') {
@@ -119,9 +155,14 @@ class yandexdeliveryShipping extends waShipping
             $fields['_js']['subtype'] = waHtmlControl::HIDDEN;
         }
 
-        $setting = array();
+        return $fields;
+    }
 
+    private function getDeliveryIntervalField(waOrder $order, $service = array())
+    {
         $value = array();
+
+        $shipping_params = $order->shipping_params;
 
         if (!empty($shipping_params['desired_delivery.interval'])) {
             $value['interval'] = $shipping_params['desired_delivery.interval'];
@@ -134,18 +175,58 @@ class yandexdeliveryShipping extends waShipping
             $value['date'] = $shipping_params['desired_delivery.date'];
         }
 
-        $fields['desired_delivery'] = array(
-            'value'        => $value,
-            'title'        => 'Желаемое время доставки',
-            'control_type' => 'YandexdeliveryDate',
-            'params'       => array(
-                'date'      => 0,
-                'interval'  => ifset($setting['interval']),
-                'intervals' => ifset($setting['intervals']),
+        if ($service) {
+            $intervals = ifset($service, 'custom_data', 'courier', 'intervals', array());
+        } else {
+            $intervals = array(
+                null => array(0, 1, 2, 3, 4, 5, 6),
+            );
+        }
+
+        return array(
+            'desired_delivery' => array(
+                'value'        => $value,
+                'title'        => 'Желаемые дата и время доставки',
+                'control_type' => waHtmlControl::DATETIME,
+                'params'       => array(
+                    'date'      => (int)ifset($service, 'custom_data', 'courier', 'offset', 0),
+                    'interval'  => true,
+                    'intervals' => $intervals,
+                ),
             ),
         );
+    }
 
-        return $fields;
+    private function getGeoIdField(waOrder $order, $service = null)
+    {
+        $shipping_params = $order->shipping_params;
+        if ($service) {
+            $options = $this->getGeocodeOptions($order->shipping_address['city']);
+            if (count($options) > 1) {
+                $options = array(
+                    'options' => $options,
+                );
+            } else {
+                return array();
+            }
+        } else {
+            $options = array(
+                'options_callback' => array($this, 'getGeocodeOptions'),
+            );
+        }
+
+        return array(
+            'geo_id_to' => $options + array(
+                    'value'        => ifset($shipping_params, 'geo_id_to', null),
+                    'title'        => 'Населенный пункт доставки',
+                    'control_type' => waHtmlControl::SELECT,
+                    'description'  => 'Уточните адрес',
+
+                    'data' => array(
+                        'affects-rate' => true,
+                    ),
+                ),
+        );
     }
 
     public function getStateFields($state, waOrder $order = null, $params = array())
@@ -155,7 +236,7 @@ class yandexdeliveryShipping extends waShipping
             case self::STATE_READY:
                 $fields['shipment_date'] = array(
                     'value'        => date('Y-m-d', strtotime('tomorrow')),
-                    'title'        => 'Дата отгрузка',
+                    'title'        => 'Дата отгрузки',
                     'description'  => 'Укажите дату отгрузки заказа в службу доставки',
                     'control_type' => waHtmlControl::INPUT,
                 );
@@ -189,6 +270,7 @@ class yandexdeliveryShipping extends waShipping
                 return $total_discount - $total;
             }
         }
+
         return 0.0;
     }
 
@@ -211,7 +293,7 @@ class yandexdeliveryShipping extends waShipping
             $data['order_id'] = $order->shipping_data['order_id'];
             $method = 'updateOrder';
         }
-        $weight = $this->getTotalWeight();
+        $weight = number_format($this->getTotalWeight(), 3, '.', '');
         $size = $this->getPackageSize($weight);
 
         $shipping_discount = $this->correctItems();
@@ -227,10 +309,10 @@ class yandexdeliveryShipping extends waShipping
             'order_width'             => $size['width'],       //number Ширина заказа, см (округляется до целого в большую сторону)
             'order_height'            => $size['height'],      //number Высота заказа, см (округляется до целого в большую сторону)
             'order_assessed_value'    => $this->getAssessedPrice($this->insurance),//number Объявленная ценность, руб.
-            'order_delivery_cost'     => round($order->shipping - $shipping_discount),     //number Стоимость доставки, руб.
+            'order_delivery_cost' => number_format($order->shipping - $shipping_discount, 2, '.', ''),     //number Стоимость доставки, руб.
             'is_manual_delivery_cost' => empty($shipping_discount) ? 0 : 1,
 
-            'order_amount_prepaid' => $order->paid_datetime ? $this->getPackageProperty('price') : null,                 //number Сумма предоплаты по заказу, руб. (    300)
+            'order_amount_prepaid' => $order->paid_datetime ? number_format($this->getPackageProperty('price'), 2, '.', '') : null,                 //number Сумма предоплаты по заказу, руб. (    300)
             //'order_total_cost'           => $this->getPackageProperty('price'),
 
             'order_shipment_date' => null,//$order->shipping_data['shipment_date'], //string 03 - 13 (string)-Дата отгрузки заказа 2017
@@ -304,6 +386,7 @@ class yandexdeliveryShipping extends waShipping
                 'client_id' => $this->client_id,
                 'view_data' => sprintf($template, $response['order']['status_label'], $response['order']['id'], $response['order']['full_num']),
             );
+
             return $shipping_data;
         } catch (waException $ex) {
             return $ex->getMessage();
@@ -322,6 +405,9 @@ class yandexdeliveryShipping extends waShipping
                     $rate = -1;
                 }
                 switch ($rate) {
+                    case 20:
+                        $id = 7;
+                        break;
                     case 18:
                         $id = 1;
                         break;
@@ -409,6 +495,7 @@ class yandexdeliveryShipping extends waShipping
             $response = $this->apiQuery('confirmSenderOrders', $data);
             if (isset($response['result']['error'][$order_id])) {
                 $message = 'Ошибка при автоматическом подтверждении отправления. Подтвердите отправление вручную в личном кабинете «Яндекс.Доставки».';
+
                 return $message;
             } elseif (isset($response['result']['success'])) {
                 $result = reset($response['result']['success']);
@@ -421,6 +508,7 @@ class yandexdeliveryShipping extends waShipping
                 if (isset($result['parcel_id']) && isset($result['orders']) && in_array($order_id, $result['orders'])) {
                     $data['parcel_id'] = $result['parcel_id'];
                 }
+
                 return $data;
             } else {
                 return null;
@@ -452,6 +540,7 @@ class yandexdeliveryShipping extends waShipping
                 );
             }
         }
+
         return $forms;
     }
 
@@ -537,6 +626,7 @@ class yandexdeliveryShipping extends waShipping
             }
             $settings = json_encode($settings, $options);
         }
+
         return $settings;
     }
 
@@ -553,15 +643,22 @@ class yandexdeliveryShipping extends waShipping
                     break;
             }
         }
+
         return parent::saveSettings($settings);
     }
 
     public function inputDataAction()
     {
-        $key = $this->getCacheKey();
-        $storage = wa()->getStorage();
-        $data = $storage->get($key);
-        $storage->del($key);
+        $key = waRequest::request('key', $this->getCacheKey(), waRequest::TYPE_STRING_TRIM);
+        $data = null;
+        if (strlen($key)) {
+            $cache = new waVarExportCache($key.'.data', 600, 'webasyst', true);
+            if ($cache->isCached()) {
+                $data = $cache->get($data);
+            }
+            $cache->delete();
+        }
+
         if (is_array($data)) {
             $response = array(
                 'services' => $data,
@@ -607,14 +704,15 @@ class yandexdeliveryShipping extends waShipping
         }
     }
 
-    public function getGeocodeOptions()
+    public function getGeocodeOptions($city = null)
     {
         $options = array();
-        $city = null;
-        if (!empty($this->raw_address['city_to'])) {
-            $city = $this->raw_address['city_to'];
-        } else {
-            $city = trim(waRequest::post('city'));
+        if (empty($city)) {
+            if (!empty($this->raw_address['city_to'])) {
+                $city = $this->raw_address['city_to'];
+            } else {
+                $city = trim(waRequest::post('city'));
+            }
         }
 
         if (!empty($city)) {
@@ -649,6 +747,7 @@ class yandexdeliveryShipping extends waShipping
                 //$this->sendJsonError($ex->getMessage());
             }
         }
+
         return $options;
     }
 
@@ -691,6 +790,7 @@ class yandexdeliveryShipping extends waShipping
                     default:
                         $text = sprintf('Статус отправления: «%s».', $status);
                 }
+
                 return $text;
             } catch (waException $ex) {
                 if ($this->api_error) {
@@ -700,6 +800,7 @@ class yandexdeliveryShipping extends waShipping
                 }
             }
         }
+
         return null;
     }
 
@@ -708,58 +809,45 @@ class yandexdeliveryShipping extends waShipping
      */
     private $raw_address = array();
 
+    private $result = null;
+
     protected function calculate()
     {
         try {
+            if ($this->debug === 'demo') {
+                $response = $this->path.'/lib/config/debug/response.php';
+                if (file_exists($response)) {
+                    $response = include($response);
+
+                    return $this->handleCalculateResponse(null, $response['data']);
+                } else {
+                    return 'Demo data not available.';
+                }
+            }
             $params = array();
             $params += $this->prepareAddress();
-            $params['weight'] = $this->getTotalWeight();
+            $params['weight'] = number_format($this->getTotalWeight(), 3, '.', '');
             $params += $this->getPackageSize($params['weight']);
 
             $params['to_yd_warehouse'] = $this->yd_warehouse ? 1 : 0;
             $params['assessed_value'] = $this->getAssessedPrice($this->insurance);
-            $params['total_cost'] = round($this->getTotalPrice(), 2);
-            $params['order_cost'] = $params['total_cost'];
+            $params['total_cost'] = number_format($this->getTotalPrice(), 2, '.', '');
+            $params['order_cost'] = number_format($params['total_cost'], 2, '.', '');
+            /** @var string $departure_datetime SQL DATETIME */
+            $departure_datetime = $this->getPackageProperty('departure_datetime');
+            if ($departure_datetime) {
+                $params['ship_date'] = date('Y-m-d', strtotime($departure_datetime));
+            }
+
             try {
-                $services = $this->apiQuery('searchDeliveryList', $params);
+                $callback = array($this, 'handleCalculateResponse');
+                $services = $this->apiQuery('searchDeliveryList', $params, $callback);
+
+                return $this->handleCalculateResponse(null, $services);
             } catch (waException $ex) {
-                switch ($ex->getCode()) {
-                    case 500:
-                        $message = 'При расчете стоимости доставки произошла ошибка. Повторите попытку позднее.';
-                        break;
-                    case 403:
-                        $message = 'При расчете стоимости доставки произошла ошибка. Проверьте параметры доступа.';
-                        break;
-                    default:
-                        $message = 'При расчете стоимости доставки произошла ошибка.';
-                        break;
-                }
-                throw new waException($message);
-            }
-            if (empty($services)) {
-                throw new waException('Доставка по указанному адресу недоступна.');
+                return $this->handleCalculateResponse(null, $ex);
             }
 
-            uasort($services, array($this, 'sortServices'));
-
-            $rates = $this->groupServices($services);
-
-            foreach ($services as $service) {
-                $rates += $this->formatRate($service);
-            }
-
-            $data = array();
-            if (!empty($rates)) {
-                foreach ($rates as $rate_id => $rate) {
-                    if (!empty($rate['custom_data']) && (count($rate['custom_data']) > 1)) {
-                        $data[$rate_id] = $rate['custom_data'];
-                    }
-                }
-            }
-
-            //$this->cache_key = md5(var_export($params, true));
-            wa()->getStorage()->set($this->getCacheKey(), $data);
-            return $rates;
         } catch (waException $ex) {
             return array(
                 array(
@@ -767,6 +855,72 @@ class yandexdeliveryShipping extends waShipping
                     'comment' => $ex->getMessage(),
                 ),
             );
+        }
+    }
+
+    public function getPromise()
+    {
+        return $this->result;
+    }
+
+    public function handleCalculateResponse($net, $result)
+    {
+        if ($result instanceof waException) {
+            switch ($result->getCode()) {
+                case 500:
+                    $message = 'При расчете стоимости доставки произошла ошибка. Повторите попытку позднее.';
+                    break;
+                case 403:
+                    $message = 'При расчете стоимости доставки произошла ошибка. Проверьте параметры доступа.';
+                    break;
+                default:
+                    $message = 'При расчете стоимости доставки произошла ошибка.';
+                    break;
+            }
+            $rates = array(
+                array(
+                    'rate'    => null,
+                    'comment' => $message,
+                ),
+            );
+            $this->api_callback = null;
+
+            return $this->result = $rates;
+        } elseif ($result instanceof waNet) {
+            return $this;
+        } elseif ($result instanceof self) {
+            return $this;
+        } else {
+            $services = $result;
+            if (empty($services)) {
+                $rates = 'Доставка по указанному адресу недоступна.';
+            } else {
+
+                uasort($services, array($this, 'sortServices'));
+
+                $rates = $this->groupServices($services);
+
+                foreach ($services as $service) {
+                    $rates += $this->formatRate($service);
+                }
+
+                $data = array();
+                if (!empty($rates)) {
+                    foreach ($rates as $rate_id => $rate) {
+                        if (!empty($rate['custom_data']) && (count($rate['custom_data']) > 1)) {
+                            $data[$rate_id] = $rate['custom_data'];
+                        }
+                    }
+                }
+
+                if ($key = $this->getCacheKey()) {
+                    $cache = new waVarExportCache($key.'.data', 600, 'webasyst', true);
+                    $cache->set($data);
+                }
+            }
+            $this->api_callback = null;
+
+            return $this->result = $rates;
         }
     }
 
@@ -781,7 +935,7 @@ class yandexdeliveryShipping extends waShipping
         }
 
         if (empty($address['city_to'])) {
-            throw new waException('Не указан город доставки.');
+            throw new waException('Не указан населенный пункт доставки.');
         }
 
         $params = $this->getPackageProperty('shipping_params');
@@ -829,7 +983,8 @@ class yandexdeliveryShipping extends waShipping
             'width'  => 10,
             'length' => 10,
         );
-        return $data;
+
+        return array_map('intval', $data);
     }
 
     private function formatRate($service)
@@ -847,17 +1002,27 @@ class yandexdeliveryShipping extends waShipping
 
         }
 
-        $delivery_date = array(
+        $min_delivery_date = min($delivery_date);
+        $n = max(7, abs($service['maxDays'] - $service['minDays']));
+
+        $human_delivery_date = array(
             'minDays' => waDateTime::format('humandate', min($delivery_date)),
             'maxDays' => waDateTime::format('humandate', max($delivery_date)),
         );
 
+        $delivery_date = array_unique(array(min($delivery_date), max($delivery_date)));
+        if (count($delivery_date) == 1) {
+            $delivery_date = reset($delivery_date);
+        }
+
         $rate = array(
-            'name'         => array($service['delivery']['name'], $service['tariffName']),
-            'id'           => sprintf('%s:%s', $service['delivery']['id'], $service['tariffId']),
-            'est_delivery' => implode(' - ', array_unique($delivery_date)),
-            'rate'         => ifset($service['costWithRules'], $service['cost']),
-            'currency'     => 'RUB',
+            'name'          => array($service['delivery']['name'], $service['tariffName']),
+            'service'       => $service['delivery']['name'],
+            'id'            => sprintf('%s:%s', $service['delivery']['id'], $service['tariffId']),
+            'est_delivery'  => implode(' - ', array_unique($human_delivery_date)),
+            'delivery_date' => self::formatDatetime($delivery_date),
+            'rate'          => (float)str_replace(',', '.', ifset($service['costWithRules'], $service['cost'])),
+            'currency'      => 'RUB',
         );
 
         $rate['name'] = implode(': ', array_unique($rate['name']));
@@ -872,8 +1037,11 @@ class yandexdeliveryShipping extends waShipping
 
         switch ($type) {
             case 'post': //Почтой России
+                $rate['type'] = self::TYPE_POST;
                 break;
+
             case 'todoor': //Курьерская
+                $rate['type'] = self::TYPE_TODOOR;
                 $schedules = ifset($service['delivery']['courier']['schedules'], array());
                 $rate['custom_data']['courier'] = array(
                     'intervals' => array(),
@@ -891,7 +1059,7 @@ class yandexdeliveryShipping extends waShipping
                     if (!isset($intervals[$interval])) {
                         $intervals[$interval] = array();
                     }
-                    $intervals[$interval][] = $schedule['day'];
+                    $intervals[$interval][] = $schedule['day'] - 1;
                 }
 
                 foreach ($intervals as &$interval) {
@@ -901,7 +1069,7 @@ class yandexdeliveryShipping extends waShipping
                     unset($interval);
                 }
 
-                ksort($intervals, SORT_NATURAL);
+                ksort($intervals, defined('SORT_NATURAL') ? constant('SORT_NATURAL') : SORT_REGULAR);
                 unset($intervals);
 
                 $date_format = waDateTime::getFormat('date');
@@ -910,10 +1078,11 @@ class yandexdeliveryShipping extends waShipping
                 break;
 
             case 'pickup': //В пункт самовывоза
+                $rate['type'] = self::TYPE_PICKUP;
                 $pickup_points = ifset($service['pickupPoints'], array());
                 $rate['custom_data']['pickup'] = array();
                 foreach ($pickup_points as $pickup_point) {
-                    $rate['custom_data']['pickup'] = $this->formatPickupPoint($pickup_point);
+                    $rate['custom_data']['pickup'] = $this->formatPickupPoint($pickup_point, $min_delivery_date);
                     $pickup_rate = $rate;
                     $pickup_rate['name'] .= sprintf(' %s', $pickup_point['name']);
                     $pickup_rate['comment'] = ifset($pickup_point['full_address'], '');
@@ -926,11 +1095,11 @@ class yandexdeliveryShipping extends waShipping
         return $rates ? $rates : array($type.'.'.$rate['id'] => $rate);
     }
 
-    private function formatPickupPoint($pickup_point)
+    private function formatPickupPoint($pickup_point, $delivery_date = null)
     {
         $schedule = array();
         $days = array(
-            1 => 'Пн',
+            'Пн',
             'Вт',
             'Ср',
             'Чт',
@@ -939,19 +1108,43 @@ class yandexdeliveryShipping extends waShipping
             'Вс',
         );
 
+        $schedule_array = array();
+
+        $formatted_schedule = array();
+
         foreach ($pickup_point['schedules'] as $schedule_item) {
-            $day = intval($schedule_item['day']);
+            $day = intval($schedule_item['day']) - 1;
             $from = preg_replace('@\:00$@', '', $schedule_item['from']);
             $to = preg_replace('@\:00$@', '', $schedule_item['to']);
+            $formatted_schedule[$day] = array(
+                'start_work' => $schedule_item['from'],
+                'end_work'   => $schedule_item['to'],
+            );
             $schedule[$day] = array(
                 'days' => array($day),
                 'time' => sprintf('%s - %s', $from, $to),
             );
         }
+        if ($delivery_date && $formatted_schedule) {
+            $first_day = date('N', $delivery_date) - 1;
+            for ($i = 0; count($schedule_array) < 7; $i++) {
+                $day = ($i + $first_day) % 7;
+                if (isset($formatted_schedule[$day])) {
+                    $sql_time = $formatted_schedule[$day];
+                    $sql_day = date('Y-m-d', strtotime(sprintf('+%d days', $i), $delivery_date));
+                    $schedule_array[] = array(
+                        'start_work' => $sql_day.' '.$sql_time['start_work'],
+                        'end_work'   => $sql_day.' '.$sql_time['end_work'],
+                        'type'       => 'workday',
+                    );
+                }
+            }
+        }
+
         $prev = null;
 
         foreach ($schedule as $day => $schedule_item) {
-            if ($prev && (strcmp($schedule[$prev]['time'], $schedule_item['time'])) === 0) {
+            if (($prev !== null) && (strcmp($schedule[$prev]['time'], $schedule_item['time'])) === 0) {
                 $schedule[$prev]['days'][] = $day;
                 unset($schedule[$day]);
             } else {
@@ -963,39 +1156,39 @@ class yandexdeliveryShipping extends waShipping
 <div class="yandexdelivery-list-item">%s: %s</div>
 HTML;
 
-
         foreach ($schedule as $day => &$schedule_item) {
-            $day = implode(' - ', array_unique(array($days[min($schedule_item['days'])], $days[max($schedule_item['days'])])));
+            $schedule_days = array(
+                $days[min($schedule_item['days'])],
+                $days[max($schedule_item['days'])],
+            );
+            $day = implode(' - ', array_unique($schedule_days));
             $schedule_item = sprintf($template, $day, $schedule_item['time']);
         }
         $schedule = implode($schedule);
 
-        $payment = "";
-        $_payments = array();
+        $payment = array();
         if (intval($pickup_point['has_payment_card'])) {
-            $_payments[] = "Оплата картой";
+            $payment[self::PAYMENT_TYPE_CARD] = "Оплата картой";
         }
         if (intval($pickup_point['has_payment_cash'])) {
-            $_payments[] = "Оплата наличными";
+            $payment[self::PAYMENT_TYPE_CASH] = "Оплата наличными";
         }
         if (intval($pickup_point['has_payment_prepaid'])) {
-            $_payments[] = "Предоплата";
-        }
-        if (!empty($_payments)) {
-            $payment = implode($_payments, ", ");
+            $payment[self::PAYMENT_TYPE_PREPAID] = "Предоплата";
         }
 
         $comment = ifset($pickup_point['address']['comment'], '');
 
         $data = array(
-            'id'          => $pickup_point['id'],
-            'lat'         => $pickup_point['lat'],
-            'lng'         => $pickup_point['lng'],
-            'title'       => ifset($pickup_point['name'], $pickup_point['id']),
-            'description' => ifset($pickup_point['full_address'], ''),
-            'comment'     => htmlentities($comment, ENT_QUOTES, 'UTF-8'),
-            'payment'     => $payment,
-            'schedule'    => $schedule,
+            'id'            => $pickup_point['id'],
+            'lat'           => $pickup_point['lat'],
+            'lng'           => $pickup_point['lng'],
+            'title'         => ifset($pickup_point['name'], $pickup_point['id']),
+            'description'   => ifset($pickup_point['full_address'], ''),
+            'comment'       => htmlentities($comment, ENT_QUOTES, 'UTF-8'),
+            'payment'       => $payment,
+            'schedule'      => $delivery_date ? array('weekdays' => $schedule_array) : $schedule,
+            'schedule_html' => $schedule,
         );
 
         return $data;
@@ -1039,6 +1232,7 @@ HTML;
             $pickup['name'] .= sprintf(' × %d', $pickup['count']);
             $rates[$pickup['id']] = $pickup;
         }
+
         return $rates;
     }
 
@@ -1227,8 +1421,8 @@ HTML;
 
         container.on('click', '.js-delete-size', function () {
             /**
-            * @this HTMLInputElement
-            */
+             * @this HTMLInputElement
+             */
             var el = $(this);
             var table = el.parents('table:first');
             if (table.find('tr.js-size').length > 1) {
@@ -1250,7 +1444,7 @@ HTML;
                 var scope = container.find('.js-weight');
                 switch (this.value) {
                     case 'fixed':
-                        if(rows.length>1){
+                        if (rows.length > 1) {
                             rows.filter(':not(:first)').hide();
                         }
                         scope.hide();
@@ -1319,6 +1513,7 @@ HTML;
         $url_params = array(
             'action_id' => 'inputData',
             'plugin_id' => $this->key,
+            'key'       => $this->getCacheKey(),
         );
         $url = json_encode(wa()->getRouteUrl(sprintf('%s/frontend/shippingPlugin', $this->app_id), $url_params, true));
 
@@ -1447,206 +1642,6 @@ HTML;
         return $html;
     }
 
-
-    /**
-     * @param string $name
-     * @param array $params
-     * @return string
-     */
-    public function settingDateControl($name, $params = array())
-    {
-        $html = '';
-        $javascript = '';
-
-        $wrappers = array(
-            'title'           => '',
-            'title_wrapper'   => '%s',
-            'description'     => '',
-            'control_wrapper' => "%s\n%3\$s\n%2\$s\n",
-        );
-
-        $params = array_merge($params, $wrappers);
-        $value = ifset($params['value']);
-        if (!is_array($value)) {
-            $value = array();
-        }
-        $params['value'] = null;
-
-        $available_days = array(1, 2, 3, 4, 5, 6, 7);
-        unset($params['id']);
-
-        $interval_params = $params;
-        $interval_params['value'] = ifset($value['interval']);
-        $interval_params['data'] = array(
-            'value' => $interval_params['value'],
-        );
-
-        $interval_params['description'] = _ws('Time');
-        $interval_params['options'] = array(
-            array(
-                'value' => '',
-                'title' => '',
-                'data'  => array('days' => $available_days),
-            ),
-        );
-
-        $interval_name = preg_replace('@([_\w]+)(\]?)$@', '$1.interval$2', $name);
-        waHtmlControl::makeId($interval_params, $interval_name);
-
-        $date_params = $params;
-        $date_format = waDateTime::getFormat('date');
-        if (isset($params['params']['date'])) {
-            $date_params['style'] = "z-index: 100000;";
-
-            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
-            $offset = min(365, max(0, intval(ifset($params['params']['date'], 0))));
-            $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
-            $date_params['description'] = _ws('Date');
-
-            $date_params['value'] = ifset($value['date_str']);
-            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
-            waHtmlControl::makeId($date_params, $date_name);
-
-            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
-            $date_formatted_params = $params;
-            $date_formatted_params['style'] = "display: none;";
-
-            $date_formatted_params['value'] = ifset($value['date']);
-            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
-            waHtmlControl::makeId($date_formatted_params, $date_name);
-
-            $date_format_map = array(
-                'PHP' => 'JavaScript',
-                'Y'   => 'yy',
-                'd'   => 'dd',
-                'm'   => 'mm',
-            );
-            $js_date_format = str_replace(array_keys($date_format_map), array_values($date_format_map), $date_format);
-            $locale = wa()->getLocale();
-            $localization = sprintf("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-%s.js", $locale);
-            if (!is_readable($localization)) {
-                $localization = '';
-            }
-
-
-            if (empty($interval_params['id'])) {
-                $interval_params['id'] = '';
-            }
-
-            $available_days = json_encode($available_days);
-            $root_url = wa()->getRootUrl();
-
-
-            $javascript = <<<HTML
-<script type="text/javascript">
-    $(function () {
-        'use strict';
-        var id_date = '{$date_params['id']}';
-        var id_date_formatted = '{$date_formatted_params['id']}';
-        var date = $('#'+id_date);
-        var date_formatted = $('#'+id_date_formatted);
-        var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
-        
-        date.data('available_days', {$available_days});
-        var init = function () {
-            date.datepicker();
-            date.datepicker("option", {
-                "dateFormat": '{$js_date_format}',
-                "minDate": {$offset},
-                "onSelect": function (dateText) {
-                    var d = date.datepicker('getDate');
-                    date.val(dateText);
-                    date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
-                    if (d && interval && interval.length) {
-                        var day = (d.getDay() + 6) % 7;
-                        /**
-                         * filter select by days
-                         */
-                        var value = typeof(interval.val())!=='undefined';
-                        var matched = null;
-                        interval.find('option').each(function () {
-                            /**
-                             * @this HTMLOptionElement
-                             */
-
-                            var option = $(this);
-                            var disabled = (option.data('days').indexOf(day) === -1) ? 'disabled' : null;
-                            option.attr('disabled', disabled);
-                            if (disabled) {
-                                if (this.selected) {
-                                    value = false;
-                                }
-                            } else {
-                                matched = this;
-                                if (!value) {
-                                    this.selected = true;
-                                    value = !!this.value;
-                                    if (typeof(interval.highlight) === 'function') {
-                                        interval.highlight();
-                                    }
-                                }
-                            }
-                        });
-
-                        if (value) {
-                            interval.removeClass('error');
-                        } else if (matched) {
-                            matched.selected = true;
-                            interval.removeClass('error');
-                        } else {
-                            interval.addClass('error');
-                        }
-                    }
-                },
-                "beforeShowDay": function (d) {
-                    if (interval && interval.length) {
-                        var day = ((d.getDay() + 6) % 7)+1;
-                        var available_days = date.data('available_days')||[];
-                        return [available_days.indexOf(day) !== -1]
-                    } else {
-                        return [true];
-                    }
-                }
-            });
-            $('.ui-datepicker').css({
-                "zIndex": 999998,
-                "display": 'none'
-            });
-        };
-
-        var init_locale = function () {
-            if ('{$localization}' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
-                $.getScript('{$root_url}{$localization}', init);
-            } else {
-                init();
-            }
-        };
-
-        if (typeof(date.datepicker) !== 'function') {
-            $("<link/>", {
-                rel: "stylesheet",
-                type: "text/css",
-                href: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
-            }).appendTo("head");
-            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init_locale);
-
-        } else {
-            init_locale();
-        }
-    });
-</script>
-HTML;
-        }
-
-        $html .= ifset($params['control_separator']);
-        unset($interval_params['id']);
-        $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
-
-        $html .= $javascript;
-
-        return $html;
-    }
-
     private function sendJsonError($error)
     {
         $response = array(
@@ -1700,6 +1695,7 @@ HTML;
         if (!isset($keys[$method]) || !strlen($keys[$method])) {
             throw new waException(sprintf("Not found key for method %s. Check plugin settings field 'method_keys'.", $method));
         }
+
         return $keys[$method];
     }
 
@@ -1718,6 +1714,7 @@ HTML;
         } else {
             $data = (string)$data;
         }
+
         return $data;
     }
 
@@ -1727,12 +1724,17 @@ HTML;
             return $data;
         }
         ksort($data);
+
         return implode('', array_map(array($this, 'implode'), $data));
     }
 
     private $api_error = array();
 
-    private function apiQuery($method, $data = array())
+    private $api_debug = array();
+
+    private $api_callback = null;
+
+    private function apiQuery($method, $data = array(), $callback = null)
     {
         $this->api_error = array();
         $data += array(
@@ -1744,12 +1746,13 @@ HTML;
 
         $url = sprintf($this->url, $this->api_version, $method);
         $key = md5($url.var_export($data, true));
-        $methods = array(
-            'searchDeliveryList',
-            'autocomplete',
+        $cache_ttl = array(
+            'searchDeliveryList' => 3600,
+            'autocomplete'       => 3600 * 24 * 7,
         );
-        if (in_array($method, $methods)) {
-            $cache = new waVarExportCache($this->getCacheKey($key), 3600, 'webasyst');
+        $cache = null;
+        if (isset($cache_ttl[$method])) {
+            $cache = new waVarExportCache($this->getCacheKey($key), $cache_ttl[$method], 'webasyst', true);
             if ($cache->isCached()) {
                 return $cache->get();
             }
@@ -1763,31 +1766,111 @@ HTML;
                 'verify'         => false,
             );
 
-            $net = new waNet($options);
-
-            $response = $net->query($url, $data, waNet::METHOD_POST);
-            if ($response['status'] != 'ok') {
-                $this->api_error = $response['data'];
-                throw new waException($response['error']);
-            } elseif (!empty($cache)) {
-                $cache->set($response['data']);
+            if (!empty($callback)) {
+                $this->api_callback = compact('callback', 'cache');
             }
 
-            if ($this->debug) {
-                $debug = var_export(compact('url', 'data', 'response'), true);
-                waLog::log($debug, 'wa-plugins/shipping/yandexdelivery/api.debug.log');
+            $net = new waNet($options);
+
+            $this->api_debug = array(
+                'url'  => $url,
+                'data' => $data,
+            );
+
+            unset($this->api_debug['data']['secret_key']);
+
+            $response = $net->query($url, $data, waNet::METHOD_POST, empty($callback) ? null : array($this, 'handleApiQuery'));
+            if ($response instanceof waNet) {
+                return $this;
+            } else {
+                $this->api_callback = null;
+
+                return $this->handleApiQuery($net, $response, $cache);
             }
 
         } catch (waException $ex) {
-            $message = $ex->getMessage();
-            unset($data['secret_key']);
-
-            $debug = var_export(compact('url', 'data', 'response'), true);
-            waLog::log($message."\n".$debug, 'wa-plugins/shipping/yandexdelivery/api.error.log');
+            $this->handleApiException(empty($net) ? null : $net, $ex);
             throw $ex;
         }
 
         return $response['data'];
+    }
+
+    /**
+     * @param waNet $net
+     * @param waNet|waException|array $result
+     * @param waiCache $cache
+     * @return $this|mixed|null
+     */
+    public function handleApiQuery($net, $result, $cache = null)
+    {
+        if ($result instanceof waNet) {
+            return $this;
+        } elseif ($result instanceof waException) {
+            return $this->handleApiException($net, $result);
+        } else {
+            $response = $result;
+            try {
+                if ($response['status'] != 'ok') {
+                    $this->api_error = $response['data'];
+                    throw new waException($response['error']);
+                } elseif (!empty($cache)) {
+                    $cache->set($response['data']);
+                }
+
+                if ($this->debug) {
+                    $debug = var_export(compact('url', 'data', 'response'), true);
+                    waLog::log($debug, 'wa-plugins/shipping/yandexdelivery/api.debug.log');
+                }
+
+                if (empty($this->api_callback)) {
+                    return $response['data'];
+                } else {
+                    $callback = $this->api_callback['callback'];
+                    if (empty($cache) && isset($this->api_callback['cache'])) {
+                        $cache = $this->api_callback['cache'];
+                    }
+
+                    if ($cache instanceof waiCache) {
+                        $cache->set($response['data']);
+                    }
+
+                    return call_user_func_array($callback, array($net, $response['data'], $cache));
+                }
+
+            } catch (waException $ex) {
+                return $this->handleApiException($net, $ex);
+            }
+        }
+    }
+
+    /**
+     * @param waNet $net
+     * @param waException $ex
+     * @return null
+     * @throws waException
+     */
+    private function handleApiException($net, $ex)
+    {
+        $message = $ex->getMessage();
+        if ($net) {
+            $response = $net->getResponse();
+            if (empty($response)) {
+                $response = $net->getResponse(true);
+            }
+            $message .= "\n".var_export(compact('response'), true);
+        }
+
+        waLog::log($message, 'wa-plugins/shipping/yandexdelivery/api.error.log');
+
+        if (empty($this->api_callback)) {
+            throw $ex;
+        } else {
+            $callback = $this->api_callback['callback'];
+            call_user_func_array($callback, array($net, $ex));
+        }
+
+        return null;
     }
 
     private function getAssessedPrice($string)
@@ -1815,6 +1898,7 @@ HTML;
                 $cost += $value;
             }
         }
+
         return round(max(0.0, $cost), 2);
     }
 

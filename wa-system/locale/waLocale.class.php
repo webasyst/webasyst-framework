@@ -17,7 +17,7 @@ class waLocale
     protected static $locale;
     protected static $domain;
     /**
-     * @var waLocaleAdapter
+     * @var waiLocaleAdapter
      */
     public static $adapter;
 
@@ -43,7 +43,7 @@ class waLocale
             } else if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
                 self::$adapter = new waLocalePHPAdapter();
             } else {
-                 self::$adapter = new waLocaleAdapter();
+                self::$adapter = new waLocaleAdapter();
             }
         }
     }
@@ -84,6 +84,7 @@ class waLocale
         // load old locale
         if ($old_locale) {
             self::$locale = $old_locale;
+            //unset(self::$loaded[$old_locale][$domain]);
             self::loadByDomain($domain, $old_locale);
         }
         return $result;
@@ -101,8 +102,7 @@ class waLocale
             $locale_path = waSystem::getInstance()->getAppPath('locale', $domain);
         }
         if (isset(self::$loaded[$locale][$domain])) {
-//            todo: do something
-//            return;
+            return;
         }
         if (file_exists($locale_path)) {
             self::load($locale, $locale_path, $domain, false);
@@ -112,7 +112,7 @@ class waLocale
     /**
      * Returns locale adapter
      *
-     * @return waLocaleAdapter|waLocalePHPAdapter
+     * @return waiLocaleAdapter
      */
     public static function getAdapter()
     {
@@ -179,7 +179,7 @@ class waLocale
             $decimals = $locale_info['frac_digits'];
         }
 
-        return number_format($n, $decimals, $locale_info['decimal_point'], $locale_info['thousands_sep']);
+        return number_format($n, $decimals, ifset($locale_info, 'decimal_point', '.'), ifset($locale_info, 'thousands_sep', ''));
     }
 
     /**

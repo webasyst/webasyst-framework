@@ -38,7 +38,7 @@ return array(
 Если не заполнить, то будет использовано значение по умолчанию: 24 часа.',
         'control_type' => waHtmlControl::INPUT,
         'class'        => '',
-        'placeholder' => '24',
+        'placeholder'  => '24',
     ),
     'two_step'           => array(
         'value'        => '',
@@ -47,7 +47,7 @@ return array(
         'class'        => '',
         'description'  => 'Включите, только если ваш договор предусматривает необходимость ручного потверждения платежей.'
     ),
-    'cancel'           => array(
+    'cancel'             => array(
         'value'        => '',
         'title'        => 'Отмена платежей',
         'control_type' => 'checkbox',
@@ -60,16 +60,54 @@ return array(
         'title'        => 'Фискализация платежей',
         'control_type' => 'checkbox',
         'class'        => '',
-        'description'  => /*_wp*/('Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:')
+        'description'  => /*_wp*/
+            ('Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:')
             .'<br>'
             .'— к элементам заказа и стоимости доставки не применяются налоги'
             .'<br>'
             .'— налог составляет 0%, 10% либо 18% и <em>включен</em> в стоимость элементов заказа и стоимость доставки',
     ),
-    'tax_system'         => array(
+
+    'payment_method'           => array(
+        'value'        => '1',
+        'title'        => 'Признак способа расчёта в чеках',
+        'description'  => '',
+        'control_type' => waHtmlControl::SELECT,
+        'options'      => array(
+            '1' => 'полная предоплата',
+            '2' => 'частичная предоплата',
+            '3' => 'аванс',
+            '4' => 'полный расчет',
+            '5' => 'частичный расчет и кредит',
+            '6' => 'кредит',
+            '7' => 'выплата по кредиту',
+        ),
+    ),
+    'payment_subject_product'  => array(
+        'value'            => '1',
+        'title'            => 'Признак предмета расчёта для товаров в чеках',
+        'description'      => 'Категория ваших товаров в чеке — для передачи в налоговую инспекцию.',
+        'control_type'     => waHtmlControl::SELECT,
+        'options_callback' => array('sbPayment', 'settingsPaymentSubjectOptions'),
+    ),
+    'payment_subject_service'  => array(
+        'value'            => '4',
+        'title'            => 'Признак предмета расчёта для услуг в чеках',
+        'description'      => 'Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.',
+        'control_type'     => waHtmlControl::SELECT,
+        'options_callback' => array('sbPayment', 'settingsPaymentSubjectOptions'),
+    ),
+    'payment_subject_shipping' => array(
+        'value'            => '4',
+        'title'            => 'Признак предмета расчёта для доставки в чеках',
+        'description'      => 'Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.',
+        'control_type'     => waHtmlControl::SELECT,
+        'options_callback' => array('sbPayment', 'settingsPaymentSubjectOptions'),
+    ),
+    'tax_system'               => array(
         'value'        => '',
         'title'        => 'Система налогообложения',
-        'description'  => 'Выберите для правильной фискализации платежей',
+        'description'  => 'Категория способа оплаты всех позиций в чеке — для передачи в налоговую инспекцию.',
         'control_type' => waHtmlControl::SELECT,
         'options'      => array(
             '0' => 'Общая',

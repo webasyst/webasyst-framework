@@ -40,11 +40,11 @@
                         </p>
                         <h2><?php echo $message; ?></h2>
                         <p>
-                        <?php if ($app) {?>
-                        Please contact app developer.
-                        <?php } else {?>
-                        Please contact server administrator.
-                        <?php }?>
+                        <?php if ($app) {
+                            echo _ws('Please contact app developer.');
+                        } else {
+                            echo _ws('Please contact server administrator.');
+                        }?>
                         </p>
                     </div>
                 </div>

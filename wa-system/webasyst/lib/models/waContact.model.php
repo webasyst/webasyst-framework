@@ -5,10 +5,10 @@ class waContactModel extends waModel
     protected $table = "wa_contact";
 
     /**
-     * Возвращает имя/имена указанного контакта/контактов
+     * Returns name/names of specified contact/contacts
      *
-     * @param int|array $id - число или массив
-     * @return string|array - если $id был массивов, возвращает ассоциативный массив с ключем - id, значением - имя контакта
+     * @param int|array $id Contact id or array of ids
+     * @return string|array If $id is array, return associative array with ids as keys and contact names as values
      */
     public function getName($id)
     {
@@ -61,7 +61,7 @@ class waContactModel extends waModel
     }
 
     /**
-     * Delete one or more contacts and fire event сontacts.delete
+     * Delete one or more contacts and fire event contacts.delete
      *
      * @event contacts.delete
      *
@@ -96,6 +96,10 @@ class waContactModel extends waModel
             $contact_rights_model = new contactsRightsModel();
             $contact_rights_model->deleteByField('group_id', $nid);
         }
+
+        // Clean tied verification channel assets
+        $verification_channel_assets_model = new waVerificationChannelAssetsModel();
+        $verification_channel_assets_model->clearByContact($id);
 
         // Delete settings
         $setting_model = new waContactSettingsModel();

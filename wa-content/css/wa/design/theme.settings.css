@@ -1,0 +1,242 @@
+#wa-design-container .wa-theme-navigation {
+  padding: 10px 0 20px 0;
+  border-bottom: 1px solid #ddd;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-expand-collapse {
+  display: inline-block;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-expand-collapse .icon16 {
+  opacity: 0.4;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-expand-collapse a {
+  color: #aaa;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-search-settings {
+  display: inline-block;
+  margin: 0 16px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-search-settings .wa-theme-search-input {
+  display: inline-block;
+  vertical-align: top;
+  margin: -6px 0 0 0;
+  padding: 3px 5px;
+  border: 1px solid #ccc;
+  background: transparent;
+  font-size: 1rem;
+  line-height: 1.25em;
+  box-sizing: border-box;
+  outline: none;
+  border-radius: 3px;
+  width: 250px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-hidden-settings {
+  display: inline-block;
+  color: #aaa;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors {
+  margin-top: 20px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-setting-anchor {
+  color: #000;
+  padding: 3px 4px;
+  display: inline-block;
+  margin-top: 10px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-setting-anchor:not(:last-child) {
+  margin-right: 10px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-setting-anchor.selected {
+  color: #909090;
+  background-color: #ededed;
+  border-radius: 2px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-setting-anchor.selected b {
+  border-bottom: none;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-other-anchor {
+  color: #999;
+  padding: 3px 4px;
+  white-space: nowrap;
+  margin-top: 10px;
+  display: inline-block;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-other-anchor:not(:last-child) {
+  margin-right: 10px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-other-anchor.selected {
+  color: #909090;
+  border: 1px solid #ededed;
+  border-radius: 2px;
+  padding: 2px 3px;
+}
+#wa-design-container .wa-theme-navigation .wa-theme-anchors .wa-other-anchor.selected b {
+  border-bottom: none;
+}
+#wa-design-container .wa-theme-sidebar .theme-parent {
+  display: inline-block;
+  margin-left: 0;
+  padding-left: 0;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-usage {
+  padding-bottom: 0;
+  float: none;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-usage .field {
+  margin-bottom: 16px;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-usage .field .name {
+  float: none;
+  padding-bottom: 5px;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-usage .field .value {
+  margin-left: 0;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-help {
+  margin-bottom: 20px;
+  padding-bottom: 0;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-help .heading {
+  cursor: default;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-help .heading .wa-theme-help-icon {
+  background: url("../../../../wa-content/img/help-icon@2x.png") no-repeat;
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
+  padding-left: 21px;
+  padding-top: 0;
+  margin-left: -3px;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-help ul {
+  padding-left: 18px;
+}
+#wa-design-container .wa-theme-sidebar .wa-theme-help ul li {
+  margin-bottom: 10px;
+}
+#wa-design-container .wa-theme-content {
+  padding-right: 40px;
+}
+#wa-design-container .wa-theme-expand-icon-wrapper {
+  cursor: pointer;
+  display: inline-block;
+  min-width: 20px;
+}
+#wa-design-container .wa-theme-search-result {
+  font-weight: bold;
+  font-size: 15px;
+  margin: 10px 0 0;
+}
+#wa-design-container .wa-theme-search-no-result {
+  font-size: 15px;
+  margin: 80px auto;
+  text-align: center;
+  color: #999;
+}
+#wa-design-container .wa-theme-settings-list {
+  width: 100%;
+}
+#wa-design-container #theme-settings .field-group {
+  margin: 0;
+}
+#wa-design-container #theme-settings .field-group .field .name {
+  line-height: 17px;
+  color: #000;
+}
+#wa-design-container #theme-settings .field-group .field .value .image img {
+  max-width: 300px;
+}
+#wa-design-container #theme-settings .wa-setting-highlight {
+  background-color: #ffa;
+}
+#wa-design-container #theme-settings .invisible-setting {
+  display: none !important;
+}
+#wa-design-container #theme-settings .wa-theme-setting-divider {
+  clear: left;
+  text-align: left;
+  margin: 0;
+  position: relative;
+}
+#wa-design-container #theme-settings .wa-theme-setting-divider .icon16 {
+  margin-top: -4px;
+}
+#wa-design-container #theme-settings .wa-theme-setting-divider h1 {
+  margin-top: 25px;
+  font-size: 22px;
+}
+#wa-design-container #theme-settings .wa-theme-setting-divider h2,
+#wa-design-container #theme-settings .wa-theme-setting-divider h3,
+#wa-design-container #theme-settings .wa-theme-setting-divider h4,
+#wa-design-container #theme-settings .wa-theme-setting-divider h5,
+#wa-design-container #theme-settings .wa-theme-setting-divider h6 {
+  margin-top: 16px;
+  font-size: 1.35em;
+}
+#wa-design-container #theme-settings .wa-theme-setting-divider .wa-theme-group-all-settings {
+  cursor: pointer;
+  display: inline-block;
+  margin-left: 8px;
+}
+#wa-design-container #theme-settings .wa-theme-setting-divider .wa-theme-group-all-settings .icon10 {
+  margin-top: 0;
+}
+#wa-design-container #theme-settings .wa-theme-setting-divider-name {
+  white-space: nowrap;
+  display: inline-block;
+  cursor: pointer;
+}
+#wa-design-container #theme-settings .divider-tooltip-1 {
+  margin-top: 20px !important;
+}
+#wa-design-container #theme-settings .divider-tooltip-2,
+#wa-design-container #theme-settings .divider-tooltip-3,
+#wa-design-container #theme-settings .divider-tooltip-4,
+#wa-design-container #theme-settings .divider-tooltip-5,
+#wa-design-container #theme-settings .divider-tooltip-6 {
+  margin-top: 10px !important;
+}
+#wa-design-container #theme-settings .wa-theme-settings-group {
+  margin-left: 20px;
+}
+#wa-design-container #theme-settings .wa-theme-settings-group[data-divider-level="1"] {
+  margin-bottom: 21px;
+}
+#wa-design-container #theme-settings .wa-theme-paragraph {
+  text-align: left;
+  margin: 16px 0;
+  font-size: 15px;
+}
+#wa-design-container .wa-theme-other .wa-theme-other-data {
+  margin-top: 31px;
+}
+#wa-design-container .wa-theme-other .wa-theme-other-data:first-child {
+  margin-top: 14px;
+}
+#wa-design-container .wa-theme-other .wa-theme-other-data .label {
+  display: inline-block;
+  font-size: 22px;
+  font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+#wa-design-container .wa-theme-other .wa-theme-other-data .label .icon16 {
+  margin: 4px 4px 0 0;
+}
+#wa-design-container .wa-theme-other .wa-theme-other-data .content {
+  margin: 10px 21px;
+}
+#wa-theme-import-settings-dialog .wa-theme-settings-import-message {
+  background-color: #ffc;
+  text-align: center;
+}
+#wa-theme-import-settings-dialog .wa-archive-name {
+  font-weight: bold;
+}
+#wa-theme-import-settings-dialog .wa-theme-settings-import-dialog-error {
+  color: #f00;
+  font-weight: bold;
+  margin-top: 16px;
+  min-height: 14px;
+}
