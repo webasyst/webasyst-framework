@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -37,8 +37,8 @@ msgstr "Срок хранения"
 msgid "days"
 msgstr "дней"
 
-msgid "Available delivery options"
-msgstr "Условия доступности варианта доставки"
+msgid "Availability options"
+msgstr "Условия доступности доставки"
 
 msgid "Address"
 msgstr "Адрес"
@@ -133,7 +133,7 @@ msgstr "от"
 msgid "to"
 msgstr "до"
 
-msgid "Work time"
+msgid "Working time"
 msgstr "Рабочее время"
 
 msgid "Time zone"
@@ -157,7 +157,7 @@ msgstr "Время"
 msgid "Add date"
 msgstr "Добавить дату"
 
-msgid "Extra weekend"
+msgid "Extra days off"
 msgstr "Дополнительные выходные"
 
 msgid "Shipping time"
@@ -184,7 +184,7 @@ msgstr "Описание"
 msgid "How to reach"
 msgstr "Как добраться"
 
-msgid "Download photo"
+msgid "Upload a photo"
 msgstr "Загрузить фото"
 
 msgid "Photos"
@@ -222,3 +222,6 @@ msgstr "Заказы на выдачу"
 
 msgid "Values in “%s” column denote the last hour of a pickup point’s workday until which orders are accepted to be ready for pickup by customers on the same day. Orders received after that hour are ready for pickup on the next workday."
 msgstr "Значения в столбце «%s» обозначают последний час рабочего дня пункта выдачи заказов, до которого принимаются заказы для самовывоза в течение того же рабочего дня. Заказы, полученные после указанного часа, будут готовы для самовывоза на следующий рабочий день."
+
+msgid "Order pickup point available to customers from specified localities or region."
+msgstr "Пункт выдачи заказов для покупателей из указанного региона или населённых пунктов."

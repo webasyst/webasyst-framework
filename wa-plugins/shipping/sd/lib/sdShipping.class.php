@@ -54,6 +54,9 @@ class sdShipping extends waShipping
 
     protected function calculate()
     {
+        if (!$this->isCompletedAddress()) {
+            return array();
+        }
         if (!$this->isValidAddress()) {
             return $this->_w('Pickup is not available for this address.');
         }
@@ -131,7 +134,40 @@ class sdShipping extends waShipping
 
     public function requestedAddressFields()
     {
-        return array('country' => array('cost' => true,));
+        $value = array('cost' => true, 'required' => true);
+
+        $fields = array(
+            'country' => $value
+        );
+
+        if ($this->region) {
+            $fields['region'] = $value;
+        }
+
+        if ($this->getCity()) {
+            $fields['city'] = $value;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Check if valid address is entered
+     * @return bool
+     */
+    protected function isCompletedAddress()
+    {
+        $requested_fields = $this->requestedAddressFields();
+        $flag = true;
+
+        foreach ($requested_fields as $field_name => $field) {
+            if (empty($this->getAddress($field_name))) {
+                $flag = false;
+                break;
+            }
+        }
+
+        return $flag;
     }
 
     /**
@@ -764,7 +800,7 @@ class sdShipping extends waShipping
     protected function getCountries()
     {
         $cm = new waCountryModel();
-        $countries = $cm->all();
+        $countries = $cm->allWithFav();
 
         return $countries;
     }

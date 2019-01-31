@@ -1,7 +1,7 @@
 <div class="field-group">
     <div class="field">
         <div class="name"></div>
-        <div class="value"><h3>{$obj->_w('Available delivery options')}</h3></div>
+        <div class="value"><h3>{$obj->_w('Availability options')}</h3></div>
     </div>
 
     {*ADDRESS*}
@@ -12,7 +12,7 @@
             <select name="{$namespace}[country]" class="js-sd-select-country" required>
                 {foreach $countries as $country}
                     <option value="{$country.iso3letter|escape}"
-                            {if $settings.country|default:''|escape == $country.iso3letter}selected="selected"{/if}>{$country.name|escape}
+                            {if !empty($settings.country) && $settings.country|escape == $country.iso3letter}selected="selected"{/if}>{$country.name|escape}
                     </option>
                 {/foreach}
             </select>
