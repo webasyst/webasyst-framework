@@ -1283,3 +1283,399 @@ msgstr ", "
 
 msgid "”</b>, <b>“"
 msgstr "</b>, <b>"
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:2
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:22
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:60
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:205
+#: /wa-apps/site/lib/classes/siteHelper.class.php:45
+msgid "Custom text"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:79
+msgid "Comment"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:142
+msgid "Language"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:146
+msgid "Select a language to translate text strings in website frontend."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:147
+msgid "If “Auto” option is selected, website language will be determined by user browser settings."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:161
+#: /wa-apps/site/templates/actions/settings/Settings.html:63
+msgid "Security"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:164
+#: /wa-apps/site/templates/actions/settings/Settings.html:66
+msgid "Redirect to HTTPS"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:165
+#: /wa-apps/site/templates/actions/settings/Settings.html:67
+msgid "You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:166
+#: /wa-apps/site/templates/actions/settings/Settings.html:68
+msgid "To activate this option, <a>log in via HTTPS</a>."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:167
+msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:169
+#: /wa-apps/site/templates/actions/settings/Settings.html:71
+msgid "This option will work only if an SSL certificate is installed for your domain name."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:206
+msgid "Text to be returned at specified URL"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:209
+msgid "Content type"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:212
+msgid "file"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:233
+msgid "App [%s] deleted or disabled."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:268
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:371
+msgid "Delete route"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:269
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:367
+msgid "You are about to delete the only routing rule set up for <b>%s</b> app."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:269
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:367
+msgid "This will limit its functionality. Delete the rule?"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:171
+msgid "To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href=\"%s#/settings/\">common site settings</a>."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:20
+msgid "This rule is disabled because it is placed below a more general rule. Move this rule higher in the list to enable it."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:3
+msgid "CDN address"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:4
+msgid "Remove"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:24
+#: /wa-apps/site/templates/layouts/Sidebar.html:50
+msgid "Site settings"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:69
+msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:228
+msgid "Add"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:237
+msgid "Site structure error notifications"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:240
+msgid "Show error notifications in site structure settings."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:394
+msgid "Deleting this site will also delete routing rules set up for installed apps. This will limit their functionality. Delete the site?"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:401
+msgid "Delete this site alias? It will <strong>not</strong> delete any data of the main site."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:397
+msgid "Deleting this site will also delete routing rules set up for <b>%s</b> app. This will limit its functionality.</p><p>Upon site deletion, set up routing rules for this app in the structure settings of remaining sites to continue using all functions."
+msgid_plural "Deleting this site will also delete routing rules set up for <b>%s</b> apps. This will limit their functionality.</p><p>Upon site deletion, set up routing rules for these apps in the structure settings of remaining sites to continue using all functions."
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/site/templates/actions/files/Files.html:48
+msgid "Files uploaded here are accessible to all website visitors without authorization. Do not upload private files."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/files/Files.html:170
+msgid "Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:7
+msgid "Login and signup settings for %s"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
+msgid "User personal area"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:24
+msgid "authorization enabled"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:40
+msgid "Ways of login and registration"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:41
+msgid "Set up how website visitors will log in and sign up on your website."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:71
+msgid "Login & signup forms"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:72
+msgid "Set up fields website visitors will need to complete in login and signup forms."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:105
+msgid "Cannot disable both authorization options “Email” &amp; “Phone”"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:106
+msgid "Keep at least one of these two basic authorization option enabled for website visitors to be able to log into their accounts."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:107
+msgid "Authorization with an email address is used by default."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:124
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:161
+msgid "Email"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:125
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:255
+msgid "Phone"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:126
+msgid "Email or phone"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:10
+msgid "Login and signup settings"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:16
+msgid "Personal account sections"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:49
+msgid "Sections are determined by connected applications."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:52
+msgid "Read <a href=\"https://support.webasyst.com/29298/site-auth-settings/\" target=\"_blank\">user manual</a>."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:16
+msgid "Site section for login and signup"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:28
+msgid "Select app"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:70
+msgid "Passwords type"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:93
+msgid "Confirm signup"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:95
+msgid "A signup confirmation link or code will be sent in a notification."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:104
+msgid "Successful signup notification"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:110
+msgid "Send successful signup notifications to users"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:121
+msgid "Verification code re-sending"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:125
+msgid "Waiting period in seconds before sending next verification code:"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:138
+msgid "Authorization by login name"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:145
+msgid "Enable to allow backend users to log in on the website with their login names. Only login names different from phone numbers, i.e. containing characters other than digits, are supported."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:166
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:260
+msgid "User notifications"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:168
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:262
+msgid "Select a group of notification templates to be used for sending login, signup, and password recovery notifications."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:169
+msgid "Edit email notification templates in <a href=\"%s\">Settings</a> app"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:171
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:267
+msgid "Notification templates"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:174
+msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section of Settings app."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:182
+msgid "Edit the list in “<a href=\"%s\">Email&nbsp;templates</a>” section."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:206
+msgid "Social networks (additional authorization option)"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:210
+msgid "Services"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:264
+msgid "Edit SMS notification templates in <a href=\"%s\">Settings</a> app"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:279
+msgid "Priority over email notifications"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:285
+msgid "Prefer SMS over email for sending notifications. In case of SMS sending failure, email will be sent as a replacement."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:306
+msgid "Signup form"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:312
+msgid "Personal data processing"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:317
+msgid "Do not require consent to personal data protection policy"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:325
+msgid "Show only notice and link to policy"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:332
+msgid "Show mandatory checkbox, notice, and link"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:339
+msgid "Restore original text"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:348
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:446
+msgid "Captcha"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:348
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:446
+msgid "A user must enter characters shown in an image"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:359
+msgid "Fields"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:381
+msgid "Required field"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:410
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:514
+msgid "Invisible captcha will be used"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:439
+msgid "Login form"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:467
+msgid "Auto-login"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:322
+msgid "---INSERT A LINK HERE!---"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:16
+msgid "authorization disabled"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:43
+msgid "Login, signup, and personal account"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:84
+msgid "System settings"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:20
+#: /wa-apps/site/lib/actions/domains/siteDomainsSave.controller.php:9
+msgid "Incorrect domain URL: %s"
+msgstr ""
+
+#: /wa-apps/site/lib/classes/siteHelper.class.php:33
+msgid "You have no rules set up for %s app."
+msgid_plural "You have no rules set up for %s apps."
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/site/lib/classes/siteHelper.class.php:52
+msgid "Some rules of %s app are incorrect."
+msgid_plural "Some rules of %s apps are incorrect."
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/site/themes/default/admin-sidebar.html:427
+msgid "Settings have been saved"
+msgstr ""

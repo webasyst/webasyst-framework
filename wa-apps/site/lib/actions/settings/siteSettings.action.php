@@ -47,6 +47,7 @@ class siteSettingsAction extends waViewAction
         $this->view->assign('apps', $temp);
         $this->view->assign('domain_id', siteHelper::getDomainId());
         $this->view->assign('domain', siteHelper::getDomain());
+        $this->view->assign('domain_idn', waIdna::dec(siteHelper::getDomain()));
         $this->view->assign('title', siteHelper::getDomain('title'));
         $this->view->assign('is_https', waRequest::isHttps());
 

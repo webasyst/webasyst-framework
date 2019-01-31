@@ -20,7 +20,9 @@
 {/strip}
 <html{if !empty($html_class_array)} class="{join(' ', $html_class_array)}"{/if}>
 
-<head>
+{$_head_prefix = $wa->globals("headPrefix")}
+
+<head {if !empty($_head_prefix)}prefix="{$_head_prefix}"{/if}>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
     <meta http-equiv="x-ua-compatible" content="IE=edge">

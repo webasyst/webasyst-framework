@@ -118,12 +118,12 @@
         </div>
 
         {$_locale = [
-            'enabled' => '[`Enabled`]',
-            'disabled' => '[`Disabled`]',
+            'enabled'     => _w('Enabled'),
+            'disabled'    => _w('Disabled'),
             'login_names' => [
-                'email' => '[`Email`]',
-                'phone' => '[`Phone`]',
-                'email_or_phone' => '[`Email or phone`]'
+                'email'          => _w('Email'),
+                'phone'          => _w('Phone'),
+                'email_or_phone' => _w('Email or phone')
             ]
         ]}
 
@@ -133,7 +133,7 @@
                     $wrapper: $('#{$wrapper_id}'),
                     no_channels: {$no_channels|json_encode},
                     $minimum_auth_type_dialog: $('#s-minimum-auth-type-dialog'),
-                    domain_id: {$domain_id},
+                    domain_id: {$domain_id|json_encode},
                     locale: {$_locale|json_encode}
                 });
             });

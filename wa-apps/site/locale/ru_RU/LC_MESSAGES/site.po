@@ -1816,3 +1816,29 @@ msgstr "Включите, чтобы пользователи бекенда м�
 
 msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section of Settings app."
 msgstr "Не заполнен email-адрес отправителя в разделе «<a href=\"%s\">Настройки email</a>» приложения «Настройки»."
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:142
+msgid "Language"
+msgstr "Язык"
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:233
+msgid "App [%s] deleted or disabled."
+msgstr "Приложение [%s] удалено или отключено."
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:124
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:161
+msgid "Email"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:125
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:255
+msgid "Phone"
+msgstr "Телефон"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:182
+msgid "Edit the list in “<a href=\"%s\">Email&nbsp;templates</a>” section."
+msgstr "Измените список в разделе «<a href=\"%s\">Email-шаблоны</a>»."
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:381
+msgid "Required field"
+msgstr "Обязательное поле"

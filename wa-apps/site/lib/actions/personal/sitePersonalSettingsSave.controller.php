@@ -33,9 +33,19 @@ class sitePersonalSettingsSaveController extends waJsonController
             $post_adapters = $this->getRequest()->post('adapters');
             $post_adapters = is_array($post_adapters) ? $post_adapters : array();
             foreach ($post_adapter_ids as $adapter_id) {
-                $adapters[$adapter_id] = $post_adapters[$adapter_id];
+                $adapter_params = $post_adapters[$adapter_id];
+                $adapter_params = $this->prepareAdapterParams($adapter_params);
+                $adapters[$adapter_id] = $adapter_params;
             }
         }
         return $adapters;
+    }
+
+    protected function prepareAdapterParams(array $params)
+    {
+        foreach ($params as $key => $value) {
+            $params[$key] = trim($value);
+        }
+        return $params;
     }
 }
