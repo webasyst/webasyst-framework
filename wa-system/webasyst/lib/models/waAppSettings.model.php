@@ -69,7 +69,7 @@ class waAppSettingsModel extends waModel
     public function set($app_id, $name, $value)
     {
         $key = $this->getCacheKey($app_id);
-        $this->getCache($app_id)->delete();
+        $this->clearCache($app_id, true);
         if ($this->getByField(array('app_id' => $key, 'name' => $name))) {
             $this->updateByField(array('app_id' => $key, 'name' => $name), array('value' => $value));
         } else {
@@ -85,7 +85,7 @@ class waAppSettingsModel extends waModel
     public function del($app_id, $name = null)
     {
         $key = $this->getCacheKey($app_id);
-        $this->getCache($app_id)->delete();
+        $this->clearCache($app_id, true);
         $params = array('app_id' => $key);
         if ($name === null) {
             if (isset(self::$settings[$key])) {
@@ -100,12 +100,12 @@ class waAppSettingsModel extends waModel
         return $this->deleteByField($params);
     }
 
-    public function clearCache($app_id)
+    public function clearCache($app_id, $only_file = false)
     {
-        self::$settings = array();
-
-        $cache =  new waVarExportCache('app_settings/'.$app_id, SystemConfig::isDebug() ? 600 : 86400, 'webasyst');
-        $cache->delete();
+        $this->getCache($app_id)->delete();
+        if (!$only_file) {
+            self::$settings = array();
+        }
     }
 
     public function describe($table = null, $keys = false)

@@ -132,6 +132,18 @@ class webasystSettingsTemplateCheckSendingController extends webasystSettingsJso
                     ));
 
                     break;
+
+                case 'confirmation_code':
+
+                    $res = $this->channel->sendConfirmationCodeMessage($recipient, array(
+                        'site_url' => $site_url,
+                        'site_name' => $site_name,
+                        'login_url' => $login_url,
+                        'code' => 'TEST-CODE',
+                        'is_test_send' => true
+                    ));
+
+                    break;
             }
 
             if (!$res) {

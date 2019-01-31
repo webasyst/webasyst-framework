@@ -19,11 +19,11 @@ class waContactDataModel extends waModel
     {
         $sql = "SELECT * FROM ".$this->table."
                 WHERE contact_id";
-            if (is_array($ids)) {
-                $sql .= " IN ('".implode("', '", $this->escape($ids))."')";
-            } else {
-                $sql .= " = ".(int)$ids;
-            }
+        if (is_array($ids)) {
+            $sql .= " IN ('".implode("', '", $this->escape($ids))."')";
+        } else {
+            $sql .= " = ".(int)$ids;
+        }
         if ($fields) {
             $sql .= " AND field IN ('".implode("', '", $this->escape($fields))."')";
         }
@@ -47,13 +47,18 @@ class waContactDataModel extends waModel
                         'data' => array(
                             $subfield => $row['value']
                         ),
-                        'ext' => $row['ext']
+                        'ext'  => $row['ext'],
+                        'status' => $row['status']
                     );
                 } else {
                     $result[$row['contact_id']][$f][$row['sort']]['data'][$subfield] = $row['value'];
                 }
             } else {
-                $result[$row['contact_id']][$field][$row['sort']] = array('value' => $row['value'], 'ext' => $row['ext']);
+                $result[$row['contact_id']][$field][$row['sort']] = array(
+                    'value' => $row['value'],
+                    'ext'   => $row['ext'],
+                    'status' => $row['status']
+                );
             }
         }
         if (is_array($ids)) {
@@ -120,24 +125,24 @@ class waContactDataModel extends waModel
         $sql = "SELECT * FROM ".$this->table."
                 WHERE contact_id = i:id
                 ORDER BY field, sort";
-        $data =  $this->query($sql, array('id' => $id));
+        $data = $this->query($sql, array('id' => $id));
         $result = array();
         foreach ($data as $row) {
             if (strpos($row['field'], ':') !== false) {
                 $field = explode(':', $row['field'], 2);
                 $result[$field[0]][$row['ext']][$row['sort']][$field[1]] = array(
-                    'id' => $row['id'],
+                    'id'    => $row['id'],
                     'value' => $row['value']
                 );
             } else {
                 if (!isset($result[$row['field']][$row['ext']][$row['sort']])) {
                     $result[$row['field']][$row['ext']][$row['sort']] = array(
-                        'id' => $row['id'],
+                        'id'    => $row['id'],
                         'value' => $row['value']
                     );
                 } else {
                     $result[$row['field']][$row['ext']][] = array(
-                        'id' => $row['id'],
+                        'id'    => $row['id'],
                         'value' => $row['value']
                     );
                 }
@@ -178,9 +183,9 @@ class waContactDataModel extends waModel
         $sort = $this->getSort($contact_id, $field);
         $data = array(
             'contact_id' => $contact_id,
-            'field' => $field,
-            'value' => $value,
-            'sort' => $sort
+            'field'      => $field,
+            'value'      => $value,
+            'sort'       => $sort
         );
         if ($ext) {
             $data['ext'] = $ext;
@@ -201,7 +206,7 @@ class waContactDataModel extends waModel
                 GROUP BY value
                 ORDER BY n DESC
                 LIMIT i:limit";
-        return $this->query($sql, array('field' => $field, 'limit'=> $limit))->fetchAll('value', true);
+        return $this->query($sql, array('field' => $field, 'limit' => $limit))->fetchAll('value', true);
     }
 
     public function getContactIdByPhone($phone)
@@ -228,8 +233,8 @@ class waContactDataModel extends waModel
     {
         $this->updateByField(array(
             'contact_id' => $contact_id,
-            'field' => 'phone',
-            'value' => $phone
+            'field'      => 'phone',
+            'value'      => $phone
         ), array(
             'status' => $status
         ));

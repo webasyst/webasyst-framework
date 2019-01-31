@@ -155,6 +155,7 @@ class waAuth implements waiAuth
      * @param $priority
      * @return array|null
      * @throws waAuthException
+     * @throws waException
      */
     public function getByLogin($login, $priority = null)
     {
@@ -450,7 +451,7 @@ class waAuth implements waiAuth
         $phone_row = $cdm->getPhone($contact['id']);
 
         // error that stop logging in
-        $error = new waAuthException(_ws("Contact can't be authorized"));;
+        $error = new waAuthException(_ws("Contact can't be authorized"));
 
         // What login field used to auth
         $login_field_id = $this->current_login_field_id;

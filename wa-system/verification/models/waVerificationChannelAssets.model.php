@@ -9,6 +9,7 @@ class waVerificationChannelAssetsModel extends waModel
     const NAME_ONETIME_PASSWORD = 'onetime_password';
     const NAME_PASSWORD_RECOVERY_HASH = 'password_recovery_hash';
     const NAME_PASSWORD_RECOVERY_CODE = 'password_recovery_code';
+    const NAME_CONFIRMATION_CODE = 'confirmation_code';
 
     public function __construct($type = null, $writable = false)
     {

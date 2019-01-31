@@ -1,4 +1,4 @@
-{$_title = "[s`Email settings`] — {$wa->accountName()}"}
+{$_title = "[s`Email settings`] — {$wa->accountName(false)}"}
 {function name="_renderConfig" key=key config=[] is_template=is_template}
     {$_transport = $config.type|default:mail}
     {$_rand = rand()}
@@ -82,7 +82,7 @@
                         <div class="field">
                             <div class="name">[s`Password`]</div>
                             <div class="value">
-                                <input type="password" data-name="password" value="{$config.password|default:null|escape}" />
+                                <input type="text" data-name="password" value="{$config.password|default:null|escape}" />
                             </div>
                         </div>
                         <div class="field">

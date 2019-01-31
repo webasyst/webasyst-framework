@@ -340,7 +340,6 @@ abstract class waAuthConfig
 
     /**
      * @return waVerificationChannel
-     * @throws waException
      */
     public function getEmailVerificationChannelInstance()
     {
@@ -358,7 +357,6 @@ abstract class waAuthConfig
 
     /**
      * @return waVerificationChannel
-     * @throws waException
      */
     public function getSMSVerificationChannelInstance()
     {
@@ -377,8 +375,8 @@ abstract class waAuthConfig
     }
 
     /**
+     * @param string $type waVerificationChannelModel::TYPE_*
      * @return waVerificationChannel
-     * @throws waException
      */
     public function getVerificationChannelInstance($type)
     {

@@ -1,9 +1,10 @@
-{$_title = "[s`Maps settings`] — {$wa->accountName()}"}
+{$_title = "[s`Maps settings`] — {$wa->accountName(false)}"}
 <div class="s-maps-settings-page blank block double-padded" id="s-maps-settings-page">
     <h1 class="s-page-header">[s`Maps settings`]</h1>
     <div class="s-description">[s`Select an online map service to display maps.`]</div>
     <div class="s-maps-settings-fields-block">
         <form action="?module=settingsMapsSave">
+
             <div class="field-group">
                 <div class="field">
                     <div class="name">[s`Map service`]</div>
@@ -38,6 +39,7 @@
                     <i class="icon16 loading s-loading" style="display: none;"></i>
                 </div>
             </div>
+
         </form>
     </div>
 </div>

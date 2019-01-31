@@ -394,6 +394,13 @@ class waVerificationChannelEmail extends waVerificationChannel
 
     protected function sendMessage($recipient, $subject, $body)
     {
+        $status = $this->send($recipient, $subject, $body);
+        $this->trackSendingStats($status);
+        return $status;
+    }
+
+    private function send($recipient, $subject, $body)
+    {
         $recipient = $this->typecastInputRecipient($recipient);
         if (!$recipient) {
             return false;
@@ -492,6 +499,92 @@ class waVerificationChannelEmail extends waVerificationChannel
         // use session to storage asset_id if non-test case
         if (!empty($options['use_session']) && !$is_test_send) {
             $key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_ONETIME_PASSWORD;
+            wa()->getStorage()->set($key, $asset_id);
+            return true;
+        }
+
+        return $is_test_send ? true : $asset_id;
+    }
+
+    /**
+     * @param string|array|waContact|id $recipient recipient to send confirmation
+     *  - string: means 'address' where send confirmation message
+     *  - array: have keys
+     *    + 'address' or 'phone' field - where send confirmation message
+     *    + 'name' Optional. Name of recipient
+     *  - waContact: extract from object proper info for send confirmation message
+     *  - id: means contact ID, extract by this ID proper info for send confirmation message
+     *
+     * @param array $options
+     *   - bool 'use_session' - Use session for storage asset ID. Default false
+     *   - bool 'is_test_send' - If we need just test sending. Default value is False
+     *
+     *   Template vars also pass by $options each as separate option
+     *   For list of template vars @see getTemplateVars
+     *
+     * @return bool|int
+     *   If 'use_session' == True OR 'is_test_send' == True - return bool
+     *   Otherwise return int > 0 OR bool (if was failure)
+     */
+    public function sendConfirmationCodeMessage($recipient, $options = array())
+    {
+        $template_name = 'confirmation_code';
+
+        $template = $this->getTemplate($template_name);
+        if (!$template) {
+            return false;
+        }
+
+        $recipient = $this->typecastInputRecipient($recipient);
+        if (!$recipient) {
+            return false;
+        }
+
+        $subject_template = $template['subject'];
+        $text_template = $template['text'];
+
+        $is_test_send = !empty($options['is_test_send']);
+
+        if (isset($options['code'])) {
+            $confirmation_code = $options['code'];
+        } else {
+            $confirmation_code = $this->generateCode();
+        }
+
+        $asset_id = 0;
+        if (!$is_test_send) {
+            $vca = new waVerificationChannelAssetsModel();
+            $asset_id = $vca->set($this->getId(), $recipient['email'],
+                waVerificationChannelAssetsModel::NAME_CONFIRMATION_CODE,
+                waContact::getPasswordHash($confirmation_code), '1 hour');
+
+            if ($asset_id <= 0) {
+                return false;
+            }
+        }
+
+        // Prepare vars (assign array)
+        $var_names = self::getTemplateVars($template_name);
+        $vars = waUtils::extractValuesByKeys($options, $var_names, false, '');
+        $vars['code'] = $confirmation_code;
+
+        // typecast all vars values to str
+        waUtils::toStrArray($vars);
+
+        // Render Body of Message
+        $body = $this->renderTemplate($text_template, $vars);
+
+        // Render Subject of Message
+        $subject = $this->renderTemplate($subject_template, $vars);
+
+        $result = $this->sendMessage($recipient, $subject, $body);
+        if (!$result) {
+            return false;
+        }
+
+        // use session to storage asset_id if non-test case
+        if (!empty($options['use_session']) && !$is_test_send) {
+            $key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_CONFIRMATION_CODE;
             wa()->getStorage()->set($key, $asset_id);
             return true;
         }
@@ -771,33 +864,39 @@ class waVerificationChannelEmail extends waVerificationChannel
             $all_vars = array(
                 'confirm_signup' => array(
                     'site_name'        => _ws('Name of site that has sent a message'),
-                    'site_url'     => _ws('Address of site that has sent a message'),
+                    'site_url'         => _ws('Address of site that has sent a message'),
                     'confirmation_url' => _ws('Signup confirmation link URL')
                 ),
                 'onetime_password' => array(
                     'site_name'    => _ws('Name of site that has sent a message'),
-                    'site_url' => _ws('Address of site that has sent a message'),
+                    'site_url'     => _ws('Address of site that has sent a message'),
                     'login_url'    => _ws('Login page URL'),
                     'password'     => _ws('One-time password'),
                 ),
                 'password' => array(
                     'site_name'    => _ws('Name of site that has sent a message'),
-                    'site_url' => _ws('Address of site that has sent a message'),
+                    'site_url'     => _ws('Address of site that has sent a message'),
                     'login_url'    => _ws('Login page URL'),
                     'password'     => _ws('One-time password'),
                 ),
                 'recovery_password' => array(
                     'site_name'    => _ws('Name of site that has sent a message'),
-                    'site_url' => _ws('Address of site that has sent a message'),
+                    'site_url'     => _ws('Address of site that has sent a message'),
                     'login_url'    => _ws('Login page URL'),
                     'recovery_url' => _ws('Password recovery page URL')
                 ),
                 'successful_signup' => array(
                     'site_name'    => _ws('Name of site that has sent a message'),
-                    'site_url' => _ws('Address of site that has sent a message'),
+                    'site_url'     => _ws('Address of site that has sent a message'),
                     'login_url'    => _ws('Login page URL'),
                     'email'        => _ws('User email address'),
                     'password'     => _ws('Generated password')
+                ),
+                'confirmation_code' => array(
+                    'site_name'    => _ws('Name of site that has sent a message'),
+                    'site_url'     => _ws('Address of site that has sent a message'),
+                    'login_url'    => _ws('Login page URL'),
+                    'code'         => _ws('Confirmation code'),
                 )
             );
         }
@@ -809,5 +908,27 @@ class waVerificationChannelEmail extends waVerificationChannel
             return $vars;
         }
         return array_keys($vars);
+    }
+
+
+    public function isWorking()
+    {
+        if (!$this->exists()) {
+            return false;
+        }
+
+        $address = $this->getAddress();
+        if (!$this->isValidEmail($address)) {
+            return false;
+        }
+
+        // just heuristics
+
+        $stats = $this->getSendingStats();
+        if ($stats['last_failed'] >= 3) {
+            return false;
+        }
+
+        return true;    // must be working
     }
 }

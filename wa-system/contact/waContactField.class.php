@@ -528,7 +528,7 @@ abstract class waContactField
                 // when formats are delimited by comma, use the first one that exists
                 $found = false;
                 foreach (explode(',', $f) as $f) {
-                    if ($f == 'value' || $f == 'html' || $this->getFormatter($f)) {
+                    if ($f == 'value' || $f == 'html' || $f == 'js' || $this->getFormatter($f)) {
                         $found = true;
                         break;
                     }
@@ -547,43 +547,47 @@ abstract class waContactField
                 }
             }
 
-            if ($f == 'value') {
-                if (is_array($data) && isset($data['value'])) {
-                    $k = array_keys($data);
-                    $data = $data['value'];
-                    sort($k);
-                    if ($k == array('ext', 'value')) {
-                        $data = htmlspecialchars($data);
-                    }
-                } else {
-                    if (!is_array($data)) {
-                        $data = htmlspecialchars($data);
-                    } else {
-                        $data = '';
-                    }
-                }
-                continue;
-            }
-
-            if ($f == 'html') {
-                if ($this->isMulti()) {
-                    if (is_array($data)) {
-                        $result = htmlspecialchars($data['value']);
-                        if (isset($data['ext']) && $data['ext']) {
-                            $ext = $data['ext'];
-                            if (isset($this->options['ext'][$ext])) {
-                                $ext = _ws($this->options['ext'][$ext]);
-                            }
-                            $result .= ' <em class="hint">'.htmlspecialchars($ext).'</em>';
+            switch ($f) {
+                case 'value':
+                    if (is_array($data) && isset($data['value'])) {
+                        $k = array_keys($data);
+                        $data = $data['value'];
+                        sort($k);
+                        if ($k == array('ext', 'value')) {
+                            $data = htmlspecialchars($data);
                         }
-                        $data = $result;
+                    } else {
+                        if (!is_array($data)) {
+                            $data = htmlspecialchars($data);
+                        } else {
+                            $data = '';
+                        }
                     }
-                } else {
-                    if (!is_array($data) || isset($data['value'])) {
-                        $data = htmlspecialchars(is_array($data) ? $data['value'] : $data);
+                    break;
+                case 'html':
+                    if ($this->isMulti()) {
+                        if (is_array($data)) {
+                            $result = htmlspecialchars($data['value']);
+                            if (isset($data['ext']) && $data['ext']) {
+                                $ext = $data['ext'];
+                                if (isset($this->options['ext'][$ext])) {
+                                    $ext = _ws($this->options['ext'][$ext]);
+                                }
+                                $result .= ' <em class="hint">'.htmlspecialchars($ext).'</em>';
+                            }
+                            $data = $result;
+                        }
+                    } else {
+                        if (!is_array($data) || isset($data['value'])) {
+                            $data = htmlspecialchars(is_array($data) ? $data['value'] : $data);
+                        }
                     }
-                }
-                continue;
+                    break;
+                case 'js':
+                    if (is_array($data)) {
+                        unset($data['status']);
+                    }
+                    break;
             }
         }
         return $data;

@@ -17,6 +17,12 @@
 {/function}
 
 {function include_form_js}
+    {$_locale = [
+        'required'          => _ws('Field is required'),
+        'login_required'    => _ws('Login is required'),
+        'password_required' => _ws('Password is required'),
+        'captcha_required'  => _ws('Captcha is required')
+    ]}
     <script>
         (function($) {
             new WaBackendLogin({
@@ -26,12 +32,7 @@
                 errors: {$errors|json_encode},
                 messages: {$messages|json_encode},
                 onetime_password_url: {$onetime_password_url|json_encode},
-                locale: {
-                    required: '[s`Field is required`]',
-                    login_required: '[s`Login is required`]',
-                    password_required: '[s`Password is required`]',
-                    captcha_required: '[s`Captcha is required`]'
-                },
+                locale: {$_locale|json_encode},
                 is_json_mode: {$is_json_mode|default:false|json_encode}
             });
         })(jQuery);

@@ -243,20 +243,47 @@ abstract class waLoginModuleController extends waViewAction
         return $to_string ? (string)$value : $value;
     }
 
-    protected function logErrors($errors)
+    /**
+     * @param $error
+     * @param array $context
+     *   Context where error occurred. May be any string like 'line' or 'file'
+     */
+    protected function logError($error, $context = array())
     {
-        $errors = is_array($errors) || is_scalar($errors) ? (array)$errors : array();
-        if (!$errors) {
-            return;
+        // IMPORTANT:
+        // @var_export - @ just in case if var_export trigger warning or notice
+        // For example "var_export does not handle circular references"
 
+        if ($error instanceof Exception) {
+            $trace = $error->getTraceAsString();
+            $message = get_class($error) . " - " . $error->getCode() . " - " . $error->getMessage() . PHP_EOL . $trace . PHP_EOL;
+        } elseif (!is_scalar($error)) {
+            $message = @var_export($error, true);
+        } else {
+            $message = $error;
         }
-        $log_error = var_export(array(
-            'errors' => $errors,
-            'class_name' => get_class($this),
-            'ip' => waRequest::getIp(),
-            'user' => wa()->getUser() ? wa()->getUser()->getId() : null,
-            'is_user_auth' => wa()->getUser() ? wa()->getUser()->isAuth() : null,
-        ), true);
-        waLog::log($log_error, 'login/action/error.log');
+
+        if ($context) {
+            $log_error = sprintf("Error=%s\nContext=%s\nAction=%s\nIP=%s\nUserID=%s\nisUserAuth=%s",
+                $message,
+                @var_export($context, true),
+                get_class($this),
+                waRequest::getIp(),
+                wa()->getUser()->getId() > 0 ? wa()->getUser()->getId() : 'NULL',
+                wa()->getUser()->getId() > 0 ? wa()->getUser()->isAuth() : 'NULL'
+            );
+        } else {
+            $log_error = sprintf("Error=%s\nAction=%s\nIP=%s\nUserID=%s\nisUserAuth=%s",
+                $message,
+                get_class($this),
+                waRequest::getIp(),
+                wa()->getUser()->getId() > 0 ? wa()->getUser()->getId() : 'NULL',
+                wa()->getUser()->getId() > 0 ? wa()->getUser()->isAuth() : 'NULL'
+            );
+        }
+
+
+        $date = date('Y-m-d');
+        waLog::log($log_error, "login/action/error-{$date}.log");
     }
 }

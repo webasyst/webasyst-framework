@@ -9,6 +9,12 @@ abstract class waVerificationChannel
     protected $info;
     protected $options;
 
+    /**
+     * waVerificationChannel constructor.
+     * @param $channel
+     * @param array $options
+     * @throws waException
+     */
     public function __construct($channel, $options = array())
     {
         $this->options = is_array($options) ? $options : array();
@@ -28,10 +34,9 @@ abstract class waVerificationChannel
     }
 
     /**
-     * @param $channel
+     * @param waVerificationChannel|int|array|string|null $channel
      * @param array $options
      * @return waVerificationChannel
-     * @throws waException
      */
     public static function factory($channel, $options = array())
     {
@@ -49,13 +54,22 @@ abstract class waVerificationChannel
         } else {
             $type = null;
         }
+
+        $instance = null;
+
         if ($type === waVerificationChannelModel::TYPE_EMAIL) {
-            return new waVerificationChannelEmail($channel, $options);
+            try {
+                $instance = new waVerificationChannelEmail($channel, $options);
+            } catch (waException $e) {
+            }
         } elseif ($type === waVerificationChannelModel::TYPE_SMS) {
-            return new waVerificationChannelSMS($channel, $options);
-        } else {
-            return new waVerificationChannelNull();
+            try {
+                $instance = new waVerificationChannelSMS($channel, $options);
+            } catch (waException $e) {
+            }
         }
+
+        return $instance ? $instance : new waVerificationChannelNull();
     }
 
     /**
@@ -330,6 +344,7 @@ abstract class waVerificationChannel
      * Save (update or insert) date into DB
      * @param array $data array of fields of records + 'params' key for save params
      * @param bool $delete_old_params Delete old param values or not
+     * @throws waException
      */
     public function save($data, $delete_old_params = false)
     {
@@ -371,7 +386,11 @@ abstract class waVerificationChannel
         if (!is_array($params)) {
             return;
         }
-        $this->save(array('params' => $params), $delete_old_params);
+        try {
+            $this->save(array('params' => $params), $delete_old_params);
+        } catch (waException $e) {
+            //
+        }
     }
 
     /**
@@ -381,7 +400,11 @@ abstract class waVerificationChannel
     public function saveParam($key, $value)
     {
         if (is_scalar($key)) {
-            $this->save(array('params' => array($key => $value)));
+            try {
+                $this->save(array('params' => array($key => $value)));
+            } catch (waException $e) {
+
+            }
         }
     }
 
@@ -447,6 +470,16 @@ abstract class waVerificationChannel
         }
         self::getModel()->deleteChannel($this->id);
         $this->info = null;
+    }
+
+    protected function generateCode()
+    {
+        $len = 4;
+        $code = array();
+        for ($i = 0; $i < $len; $i++) {
+            $code[] = rand(0, 9);
+        }
+        return join('', $code);
     }
 
     protected function generateOnetimePassword()
@@ -564,15 +597,16 @@ abstract class waVerificationChannel
      * @param string $password
      * @param array $options
      *   - 'recipient' If need to extra STRENGTHEN validation
-     *   - bool 'use_session'
+     *   - 'asset_id' Optional. Asset ID where is stored onetime password. If skipped, get asset from session
      *
-     * @return bool|int
-     *   If 'use_session' == True - return bool
-     *   Otherwise return int > 0 OR bool (if was failure)
+     * @return bool|string
+     *   Return address that was validated OR FALSE (if was failure)
      */
     public function validateOnetimePassword($password, $options = array())
     {
         $use_session = !isset($options['asset_id']);
+
+        $session_key = null;
 
         if ($use_session) {
             $session_key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_ONETIME_PASSWORD;
@@ -613,6 +647,110 @@ abstract class waVerificationChannel
         }
 
         return $asset['address'];
+    }
+
+    /**
+     * Send message with confirmation code
+     * By this code recipient can confirm that current channel (address) belongs to this recipient
+     *
+     * @param $recipient
+     * @param array $options
+     * @return mixed
+     */
+    abstract public function sendConfirmationCodeMessage($recipient, $options = array());
+
+    /**
+     * @param string|int $code
+     * @param array $options
+     *   - 'recipient' If need to extra STRENGTHEN validation
+     *   - 'asset_id' Optional. Asset ID where is stored onetime password. If skipped, get asset from session
+     *
+     * @return array Associative array
+     *
+     *   Format of this associative array:
+     *
+     *   - bool  'status'  - successful or not was validation
+     *
+     *   - array 'details' - detailed information about result of validation
+     *      Format of details depends on 'status'
+     *        If 'status' is TRUE
+     *          - string 'address'     - address that was validated
+     *          - int    'contact_id'  - id of contact bind to this address
+     *        Otherwise details is empty array
+     */
+    public function validateConfirmationCode($code, $options = array())
+    {
+        // Initialize fail result structure
+        $fail = array(
+            'status' => false,
+            'details' => array()
+        );
+
+        $use_session = !isset($options['asset_id']);
+
+        $session_key = null;
+
+        if ($use_session) {
+            $session_key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_CONFIRMATION_CODE;
+            $asset_id = wa()->getStorage()->get($session_key);
+            $asset_id = wa_is_int($asset_id) ? (int)$asset_id : 0;
+        } else {
+            $asset_id = wa_is_int($options['asset_id']) ? (int)$options['asset_id'] : 0;
+        }
+
+        $vca = new waVerificationChannelAssetsModel();
+        $asset = $vca->getById($asset_id);
+        if (!$asset) {
+            return $fail;
+        }
+
+        // check is proper asset
+        if ($asset['channel_id'] != $this->getId() ||
+            $asset['name'] != waVerificationChannelAssetsModel::NAME_CONFIRMATION_CODE) {
+            return $fail;
+        }
+
+        $recipient = null;
+        if (isset($options['recipient'])) {
+            $recipient = $this->typecastInputRecipient($options['recipient']);
+        }
+
+        $asset_contact_id = (int)$asset['contact_id'];
+
+        if ($recipient !== null) {
+
+            // check addresses
+            if ($asset['address'] !== $recipient['address']) {
+                return $fail;
+            }
+
+            // check contact IDs
+            if (isset($recipient['id']) && intval($recipient['id']) !== $asset_contact_id) {
+                return $fail;
+            }
+
+        }
+
+        // check code
+        if (waContact::getPasswordHash($code) !== $asset['value']) {
+            return $fail;
+        }
+
+        // clean asset
+        $vca->deleteById($asset['id']);
+        if ($use_session) {
+            wa()->getStorage()->del($session_key);
+        }
+
+        // SUCCESS
+        return array(
+            'status' => true,
+            'details' => array(
+                'address' => $asset['address'],
+                'contact_id' => $asset_contact_id
+            )
+        );
+
     }
 
     /**
@@ -693,6 +831,76 @@ abstract class waVerificationChannel
      *   + other optional fields
      */
     abstract protected function typecastInputRecipient($recipient);
+
+    abstract public function isWorking();
+
+    /**
+     * Keep track stats about sending
+     * @param bool $status
+     */
+    protected function trackSendingStats($status)
+    {
+        // For existing channel KEEP TRACK fail stats
+
+        $send_stats = $this->getSendingStats();
+
+        $send_stats['total'] += 1;
+        $send_stats['last_send_dt'] = date('Y-m-d H:i:s');
+
+        if (!$status) {
+            $send_stats['total_failed'] += 1;
+            $send_stats['last_failed']  += 1;
+            $send_stats['last_fail_dt'] = date('Y-m-d H:i:s');
+        } else {
+            $send_stats['last_failed'] = 0;
+        }
+
+        if ($this->exists()) {
+            $this->saveParam('send_stats', $send_stats);
+        } else {
+            $this->setParam('send_stats', $send_stats);
+        }
+
+    }
+
+    /**
+     * @return array
+     *  - int           'total'         total sends
+     *  - int           'total_failed'  total number of failed sends
+     *  - int           'last_failed'   number only of last failed in a row sends
+     *  - null|string   'last_send_dt'  datetime of last send
+     *  - null|string   'last_fail_dt'  datetime of last failed send
+     */
+    protected function getSendingStats()
+    {
+        $stats = array(
+            'total'        => 0,
+            'total_failed' => 0,
+            'last_failed'  => 0,
+            'last_send_dt'    => null,
+            'last_fail_dt'    => null,
+        );
+
+        $send_stats = $this->getParam('send_stats');
+        $send_stats = is_array($send_stats) ? $send_stats : array();
+
+        // merge with defaults and ensure all keys we needed
+        $send_stats = array_merge($stats, $send_stats);
+
+        // typecast each field
+        foreach ($send_stats as $key => &$value) {
+            if (!array_key_exists($key, $stats)) {
+                unset($send_stats[$key]);
+            } elseif (wa_is_int($stats[$key])){
+                $value = wa_is_int($value) && $value >= 0 ? $value : 0;
+            } else {
+                $value = is_scalar($value) ? $value : null;
+            }
+        }
+        unset($value);
+
+        return $send_stats;
+    }
 
     /**
      * Render template
@@ -810,7 +1018,29 @@ abstract class waVerificationChannel
 
             // Template of message that has onetime password for logging in
             'onetime_password'  => _ws('One-time password'),
+
+            // Template of message that has confirmation code to confirm channel
+            // 'confirmation_code' => _ws('Confirmation code')
         );
         return $templates_list;
+    }
+
+    /**
+     * Get string represent diagnostic info about channel
+     * @param bool $verbose - if verbose add sending stats info
+     * @return string
+     */
+    public function getDiagnostic($verbose = true)
+    {
+        // IMPORTANT:
+        // @var_export - @ just in case if var_export trigger warning or notice
+        // For example "var_export does not handle circular references"
+
+        $msg = "Channel diagnostic:\nType: %s\nInfo: %s";
+        $msg = sprintf($msg, get_class($this), @var_export($this->getInfo(false), true));
+        if ($verbose) {
+            $msg .= sprintf("\nStats:%s", @var_export($this->getSendingStats(), true));
+        }
+        return $msg;
     }
 }

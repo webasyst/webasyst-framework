@@ -1,4 +1,4 @@
-{$_title = "[s`Backend authorization`] — {$wa->accountName()}"}
+{$_title = "[s`Backend authorization`] — {$wa->accountName(false)}"}
 {$_title = $_title|replace:'&nbsp;':' '}
 {$_account_name = {$wa->accountName()}}
 {function name="_renderCustomBackground" custom_image=[]}
@@ -307,12 +307,12 @@
 </div>
 
 {$_locale = [
-    'enabled' => '[`enabled`]',
-    'disabled' => '[`disabled`]',
+    'enabled'     => _w('enabled'),
+    'disabled'    => _w('disabled'),
     'login_names' => [
-        'login' => '[`Login`]',
-        'phone' => '[`Phone`]',
-        'login_or_phone' => '[`Login or phone`]'
+        'login'          => _w('Login'),
+        'phone'          => _w('Phone'),
+        'login_or_phone' => _w('Login or phone')
     ]
 ]}
 <script type="text/javascript">

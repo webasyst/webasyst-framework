@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-01-14 16:25+0300\n"
+"PO-Revision-Date: 2019-01-30 17:08+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5668,9 +5668,6 @@ msgstr "Вы успешно зарегистрировались. На номе�
 msgid "Signup failed."
 msgstr "Регистрация не удалась."
 
-msgid "Signup has failed, password was not sent."
-msgstr "Регистрация не удалась, пароль не был отправлен."
-
 #: /wa-system/signup/actions/waSignup.action.php:423
 msgid "Please check new mail at <strong>%s</strong>, we have sent a message for you to confirm signup."
 msgstr "Проверьте почту для адреса <strong>%s</strong> — мы отправили вам сообщение для подтверждения регистрации."
@@ -5846,3 +5843,26 @@ msgstr "(отправлен по email)"
 
 msgid "(sent in SMS)"
 msgstr "(отправлен в SMS)"
+
+msgid "API key"
+msgstr "Ключ API"
+
+msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>."
+msgstr "Получите ключ API в <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">кабинете разработчика</a>."
+
+msgid "“Address” is a complex field, which cannot be completely disabled; you can only edit its components listed below."
+msgstr "Поле «Адрес» — составное, его нельзя полностью отключить, но можно редактировать его составляющие, перечисленные ниже."
+
+msgid "Please check new mail, we have sent you a message with a link to confirm the password change. After confirmation, we will send you your password in the next message."
+msgstr "Проверьте новую почту — мы отправили вам сообщение со ссылкой для подтверждения смены пароля. После подтверждения мы пришлем новый пароль следующим письмом."
+
+msgid "Please check new mail, we have sent you a message with a password recovery link."
+msgstr "Проверьте новую почту — мы отправили вам сообщение со ссылкой для восстановления пароля."
+
+#: /wa-system/signup/actions/waSignup.action.php:604
+msgid "Password has not been sent. Please contact your administrator."
+msgstr "Пароль не отправлен. Обратитесь к своему администратору."
+
+#: /wa-system/signup/actions/waSignup.action.php:1039
+msgid "Sending error"
+msgstr "Ошибка отправки"

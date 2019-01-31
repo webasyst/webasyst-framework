@@ -112,6 +112,13 @@ class waVerificationChannelSMS extends waVerificationChannel
 
     protected function sendSMS($phone, $message)
     {
+        $status = $this->send($phone, $message);
+        $this->trackSendingStats($status);
+        return $status;
+    }
+
+    private function send($phone, $message)
+    {
         $phone = waContactPhoneField::cleanPhoneNumber($phone);
         $sms = new waSMS();
         return $sms->send($phone, $message, $this->getAddress());
@@ -255,14 +262,6 @@ class waVerificationChannelSMS extends waVerificationChannel
         return $validator->isValid($phone);
     }
 
-    protected function generateCode($len = 4)
-    {
-        $code = array();
-        for ($i = 0; $i < $len; $i++) {
-            $code[] = rand(0, 9);
-        }
-        return join('', $code);
-    }
 
     /**
      * @param string|array|waContact|id $recipient recipient to send confirmation
@@ -314,6 +313,67 @@ class waVerificationChannelSMS extends waVerificationChannel
         // use session to storage asset_id
         if (!empty($options['use_session'])) {
             $key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_ONETIME_PASSWORD;
+            wa()->getStorage()->set($key, $asset_id);
+            return true;
+        }
+
+        return $asset_id;
+    }
+
+    /**
+     *
+     * Send message with confirmation code
+     * By this code recipient can confirm that current channel (address) belongs to this recipient
+     *
+     * @param string|array|waContact|id $recipient recipient to send confirmation
+     *  - string: means 'address' where send confirmation message
+     *  - array: have keys
+     *    + 'address' or 'phone' field - where send confirmation message
+     *    + 'name' Optional. Name of recipient
+     *  - waContact: extract from object proper info for send confirmation message
+     *  - id: means contact ID, extract by this ID proper info for send confirmation message
+     *
+     * @param array $options
+     *   - bool 'use_session', use session for storage asset ID. Default false
+     *
+     * @return bool|int
+     *   If 'use_session' == True - return bool
+     *   Otherwise return int > 0 OR bool (if was failure)
+     */
+    public function sendConfirmationCodeMessage($recipient, $options = array())
+    {
+        $template = $this->getTemplate('confirmation_code');
+        if (!$template) {
+            return false;
+        }
+        $recipient = $this->typecastInputRecipient($recipient);
+        if (!$recipient) {
+            return false;
+        }
+
+        $confirmation_code = $this->generateCode();
+
+        $vca = new waVerificationChannelAssetsModel();
+        $asset_id = $vca->set($this->getId(), $recipient['phone'],
+            waVerificationChannelAssetsModel::NAME_CONFIRMATION_CODE,
+            waContact::getPasswordHash($confirmation_code), '1 hour');
+
+        if ($asset_id <= 0) {
+            return false;
+        }
+
+        $message = $this->renderTemplate($template, array(
+            'code' => $confirmation_code
+        ));
+
+        $result = $this->sendSMS($recipient['phone'], $message);
+        if (!$result) {
+            return false;
+        }
+
+        // use session to storage asset_id
+        if (!empty($options['use_session'])) {
+            $key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_CONFIRMATION_CODE;
             wa()->getStorage()->set($key, $asset_id);
             return true;
         }
@@ -546,5 +606,26 @@ class waVerificationChannelSMS extends waVerificationChannel
         $templates_list = parent::getTemplatesList();
         unset($templates_list['recovery_password']);
         return $templates_list;
+    }
+
+    public function isWorking()
+    {
+        if (!$this->exists()) {
+            return false;
+        }
+
+        $address = $this->getAddress();
+        if (!$this->isValidPhoneNumber($address)) {
+            return false;
+        }
+
+        // just heuristics
+
+        $stats = $this->getSendingStats();
+        if ($stats['last_failed'] >= 3) {
+            return false;
+        }
+
+        return true;    // must be working
     }
 }

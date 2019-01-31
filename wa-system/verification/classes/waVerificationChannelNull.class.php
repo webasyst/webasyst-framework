@@ -12,6 +12,9 @@
  */
 class waVerificationChannelNull extends waVerificationChannel
 {
+    /**
+     * waVerificationChannelNull constructor.
+     */
     public function __construct() {}
 
     public function exists()
@@ -194,6 +197,16 @@ class waVerificationChannelNull extends waVerificationChannel
     }
 
     public function validateOnetimePassword($password, $options = array())
+    {
+        return false;
+    }
+
+    public function sendConfirmationCodeMessage($recipient, $options = array())
+    {
+        return false;
+    }
+
+    public function isWorking()
     {
         return false;
     }

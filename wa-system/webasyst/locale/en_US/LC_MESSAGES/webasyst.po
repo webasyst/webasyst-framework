@@ -3790,3 +3790,90 @@ msgstr ""
 #: /wa-system/auth/exceptions/waAuthConfirmPhoneException.class.php:9
 msgid "Phone number confirmation error."
 msgstr ""
+
+#: /wa-system/login/templates/login/frontend/form_wrapper.html:35
+#: /wa-system/signup/templates/form_wrapper.html:25
+msgid "(sent by email)"
+msgstr ""
+
+#: /wa-system/login/templates/login/frontend/form_wrapper.html:36
+#: /wa-system/signup/templates/form_wrapper.html:26
+msgid "(sent in SMS)"
+msgstr ""
+
+#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:560
+msgid "Please check new mail, we have sent you a message with a link to confirm the password change. After confirmation, we will send you your password in the next message."
+msgstr ""
+
+#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:562
+msgid "Please check new mail, we have sent you a message with a password recovery link."
+msgstr ""
+
+#: /wa-system/auth/waDemoAuth.class.php:134
+#: /wa-system/auth/exceptions/waAuthInvalidCredentialsException.class.php:9
+msgid "Invalid login name or password."
+msgstr ""
+
+#: /wa-system/map/adapters/yandexMap.class.php:217
+msgid "API key"
+msgstr ""
+
+#: /wa-system/map/adapters/yandexMap.class.php:217
+msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:93
+msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:133
+msgid "“Address” is a complex field, which cannot be completely disabled; you can only edit its components listed below."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:190
+msgid "Design theme user manual"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:195
+msgid "User support"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:520
+msgid "Minimum 3 characters"
+msgstr ""
+
+#: /wa-system/signup/actions/waSignup.action.php:604
+msgid "Contact is singed up, but password has not sent. Contact with admin"
+msgstr ""
+
+#: /wa-system/signup/actions/waSignup.action.php:869
+#: /wa-system/contact/waContactEmailField.class.php:65
+#: /wa-system/contact/waContactEmailField.class.php:72
+#: /wa-system/contact/waContactPhoneField.class.php:118
+#: /wa-system/contact/waContactPhoneField.class.php:125
+msgid "User with the same “%s” field value is already registered."
+msgstr ""
+
+#: /wa-system/signup/actions/waSignup.action.php:1039
+msgid "Send error"
+msgstr ""
+
+#: /wa-system/config/waAuthConfig.class.php:468
+msgid "You can request password recovery in <strong>%s:%s</strong>."
+msgstr ""
+
+#: /wa-system/config/waAuthConfig.class.php:474
+msgid "You have been requesting password recovery too frequently. Try again in <strong>%s:%s</strong>."
+msgstr ""
+
+#: /wa-system/config/waAuthConfig.class.php:489
+msgid "You can request a one-time password in <strong>%s:%s</strong>."
+msgstr ""
+
+#: /wa-system/config/waAuthConfig.class.php:495
+msgid "You have been requesting a one-time password too frequently. Try again in <strong>%s:%s</strong>."
+msgstr ""
+
+#: /wa-system/config/waAuthConfig.class.php:539
+msgid "You have been requesting a code too frequently. Try again in <strong>%s:%s</strong>."
+msgstr ""

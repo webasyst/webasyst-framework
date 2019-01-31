@@ -439,9 +439,11 @@ var WaSignup = ( function($) {
         // Channel field is Email or Phone field depends which channel has been choose by server
         var $channel_field = null;
         if (data.used_channel_type === 'email') {
-            $channel_field = that.getFormField('email')
+            $channel_field = that.getFormField('email');
+            $wrapper.find('.wa-onetime-password-transport-message').html(that.locale.sent_by_email || '');
         } else {
             $channel_field = that.getFormField('phone');
+            $wrapper.find('.wa-onetime-password-transport-message').html(that.locale.sent_by_sms || '');
         }
 
         that.turnOffBlock(that.$wrapper.find('.wa-buttons-wrapper'));

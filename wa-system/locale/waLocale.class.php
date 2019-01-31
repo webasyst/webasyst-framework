@@ -406,6 +406,10 @@ function _wd($domain, $msgid1, $msgid2 = null, $n = null, $sprintf = true)
     if ($msgid1 === '' || $msgid1 === null) {
         return $msgid1;
     }
+
+    // load by domain already optimized - so just call it
+    waLocale::loadByDomain($domain);
+
     if ($msgid2 === null) {
         return waLocale::$adapter->dgettext($domain, $msgid1);
     } else {

@@ -281,6 +281,8 @@ class waContactPhoneJsFormatter extends waContactPhoneFormatter
     {
         if (is_array($data)) {
             $data['value'] = parent::format($data);
+            unset($data['status']);
+
             // No htmlspecialchars, because isn't needed here
             // This formatted data means to be used in js code,
             // make escape there by yourself

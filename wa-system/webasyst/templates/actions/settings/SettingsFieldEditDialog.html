@@ -111,21 +111,28 @@
                     <div class="value">
                         {* Person *}
                         <label>
+                            {if $field.type == 'Address'} <input type="hidden" name="type[]" value="person" />{/if}
                             <input type="checkbox" name="type[]"
                                 value="person"
-                                {if !$field || $field.pStatus != 'disabled'}checked="checked"{/if}
-                                {if $field.type === 'Email'}disabled="disabled"{/if}>
+                                {if !$field || $field.pStatus != 'disabled' || $field.type == 'Address'}checked="checked"{/if}
+                                {if $field.type === 'Email'}disabled="disabled"{/if}{if $field.type == 'Address'} disabled="disabled"{/if}>
                             [s`Person`]
                         </label>
                         <br>
                         {* Company *}
                         <label>
+                            {if $field.type == 'Address'} <input type="hidden" name="type[]" value="company" />{/if}
                             <input type="checkbox" name="type[]"
                                 value="company"
-                                {if $field && $field.cStatus != 'disabled'}checked="checked"{/if}>
+                                {if $field && ($field.cStatus != 'disabled' || $field.type == 'Address')}checked="checked"{/if}{if $field.type == 'Address'} disabled="disabled"{/if}>
                             [s`Company`]
                         </label>
                     </div>
+                    {if $field.type == 'Address'}
+                        <div class="value hint">
+                            [`“Address” is a complex field, which cannot be completely disabled; you can only edit its components listed below.`]
+                        </div>
+                    {/if}
                 </div>
 
                 {* Adress fields *}
@@ -166,11 +173,15 @@
                         {if $field}
                             <div class="c-column middle right">
                                 {if $field.editable}
-                                    <a href="javascript:void(0);" class="red small float-right s-field-delete">[s`Delete field`]</a>
+                                    {if $field.type !== 'Address'}
+                                        <a href="javascript:void(0);" class="red small float-right s-field-delete">[s`Delete field`]</a>
+                                    {/if}
                                 {elseif $field.disabled}
                                     <a href="javascript:void(0);" class="red small float-right s-field-enable">[s`Enable field`]</a>
                                 {else}
-                                    <a href="javascript:void(0);" class="red small float-right s-field-disable">[s`Disable field`]</a>
+                                    {if $field.type !== 'Address'}
+                                        <a href="javascript:void(0);" class="red small float-right s-field-disable">[s`Disable field`]</a>
+                                    {/if}
                                 {/if}
                             </div>
                         {/if}

@@ -522,7 +522,9 @@ class waSignupForm
             'need_redirects' => $this->options['need_redirects'],
             'contact_type' => $this->options['contact_type'],
             'include_css' => $this->options['include_css'],
-            'include_js' => true
+            'include_js' => true,
+            'is_email_channel_available' => !!$this->config->getEmailVerificationChannel(),
+            'is_sms_channel_available' => !!$this->config->getSMSVerificationChannel(),
         ));
 
         return $assign;

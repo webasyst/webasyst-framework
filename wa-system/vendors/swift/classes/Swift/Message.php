@@ -148,13 +148,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     		return parent::toString();
     	}
 
-        $old_content_type = $this->getContentType();
         $this->saveMessage();
-        // wa: fix bug with the wrong content type, if the dkim is installed
-        //     and the attachment is attached to the message
-        if ($old_content_type === 'multipart/mixed' && $old_content_type !== $this->getContentType()) {
-            $this->setContentType($old_content_type);
-        }
 
         $this->doSign();
         
@@ -176,7 +170,7 @@ class Swift_Message extends Swift_Mime_SimpleMessage
             parent::toByteStream($is);
             return;
         }
-        
+
         $this->saveMessage();
         
         $this->doSign();
@@ -225,6 +219,8 @@ class Swift_Message extends Swift_Mime_SimpleMessage
      */
     protected function saveMessage()
     {
+        $old_content_type = $this->getContentType();
+
     	$this->savedMessage = array('headers'=> array());
     	$this->savedMessage['body'] = $this->getBody();
     	$this->savedMessage['children'] = $this->getChildren();
@@ -232,6 +228,12 @@ class Swift_Message extends Swift_Mime_SimpleMessage
     		$this->setChildren(array_merge(array($this->_becomeMimePart()), $this->savedMessage['children']));
     		$this->setBody('');
     	}
+
+        // wa: fix bug with the wrong content type, if the dkim is installed
+        //     and the attachment is attached to the message
+        if ($old_content_type === 'multipart/mixed' && $old_content_type !== $this->getContentType()) {
+            $this->setContentType($old_content_type);
+        }
     }
     
     /**

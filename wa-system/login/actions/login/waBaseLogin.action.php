@@ -20,6 +20,10 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
     protected $env;
 
+    /**
+     * waBaseLoginAction constructor.
+     * @param null $params
+     */
     public function __construct($params = null)
     {
         parent::__construct($params);
@@ -28,6 +32,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
     }
 
+    /**
+     * Entry point of action
+     * @throws waAuthException
+     * @throws waException
+     */
     public function execute()
     {
         wa()->getResponse()->setTitle(_w('Login'));
@@ -58,6 +67,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
     }
 
+    /**
+     * Validate login. Login can be one of these: email, phone or wa_contact.login
+     * @param $login
+     * @return string|null
+     */
     protected function validateLogin($login)
     {
         $login = is_scalar($login) ? (string)$login : '';
@@ -68,6 +82,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
     }
 
+    /**
+     * Validate password
+     * @param string $password
+     * @return string|null
+     */
     protected function validatePassword($password)
     {
         $password = is_scalar($password) ? (string)$password : '';
@@ -78,6 +97,10 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
     }
 
+    /**
+     * Validate captcha
+     * @return string|null
+     */
     protected function validateCaptcha()
     {
         if (!$this->auth_config->needLoginCaptcha()) {
@@ -90,6 +113,12 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
     }
 
+    /**
+     * Validate confirmation code
+     * @param string $code
+     * @param string|int $phone
+     * @return string|null
+     */
     protected function validateCode($code, $phone)
     {
         if (!$this->auth_config->getSignupConfirm()) {
@@ -113,6 +142,12 @@ abstract class waBaseLoginAction extends waLoginModuleController
         }
     }
 
+    /**
+     * Validate input data
+     * @param $data
+     * @param null|array $fields What fields to validate. Null is all input fields
+     * @return array
+     */
     protected function validate($data, $fields = null)
     {
         $fields = is_array($fields) || is_scalar($fields) ? (array)$fields : array(
@@ -138,18 +173,27 @@ abstract class waBaseLoginAction extends waLoginModuleController
         return $errors;
     }
 
+    /**
+     * Main auth business logic of auth
+     * @return bool
+     * @throws waAuthException
+     * @throws waException
+     */
     protected function tryAuth()
     {
         $data = $this->getData();
         $errors = $this->validate($data);
 
+        // there are some validate errors
         if ($errors) {
             $this->assign('errors', $errors);
             return false;
         }
 
+        // auth provider
         $auth = wa()->getAuth();
 
+        // Confirmation code posted and in validation step already validated, so update phone status
         if (isset($data['confirmation_code'])) {
             $contact_info = $auth->getByLogin($data['login'], waAuth::LOGIN_FIELD_PHONE);
             if ($contact_info) {
@@ -158,13 +202,27 @@ abstract class waBaseLoginAction extends waLoginModuleController
             }
         }
 
+        // Run actual auth logic in system through auth provider
+        // Auth provider throws different type of exception - need to process every of it
+        // in $errors collect auth errors and than send they to client
         $errors = array();
 
         try {
+
+            // actual auth in system through auth provider
             if ($auth->auth($data)) {
                 $this->logAction('login', $this->env);
                 $this->afterAuth();
+            } else {
+                // almost never happens -- may be contact is not registered
+                $errors['auth'] = _ws("Contact is not registered.");
+                // diagnostic print
+                $this->logError(
+                    "Almost never happens -- may be contact is not registered or exist",
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
             }
+
         } catch (waAuthConfirmEmailException $e) {
 
             // EMAIL IS NOT CONFIRMED
@@ -231,8 +289,6 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
             }
 
-
-
         } catch (waAuthInvalidCredentialsException $e) {
             if ($this->auth_config->getAuthType() ===  waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
                 $errors['password'] = _ws('Incorrect or expired one-time password. Try again or request a new one-time password.');
@@ -243,6 +299,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
             $errors['auth'] = $e->getMessage();
         }
 
+        // errors occur - log fail try from backend user in system wa_log
         if ($errors) {
 
             $login = $this->getData('login');
@@ -260,11 +317,18 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
         }
 
+        // send errors to client
         $this->assign('errors', $errors);
 
         return !$errors;
     }
 
+    /**
+     * Timeout checker for confirmation code
+     * Need to prevent to ofter request of confirmation code
+     * See usage of method for details
+     * @return bool
+     */
     protected function isSentCodeTimeoutPassed()
     {
         $key = 'wa/login/sent_code/last_time/';
@@ -279,13 +343,24 @@ abstract class waBaseLoginAction extends waLoginModuleController
         return $result;
     }
 
+    /**
+     * Backward compatibility -- send into template options of auth provider
+     * @throws waException
+     */
     protected function afterExecute()
     {
         parent::afterExecute();
         $auth = wa()->getAuth();
-        $this->view->assign('options', $auth->getOptions());
+        if (!$this->isJsonMode()) {
+            $this->view->assign('options', $auth->getOptions());
+        }
     }
 
+    /**
+     * Prepare input post data - typecast and etc
+     * @param $data
+     * @return array
+     */
     protected function prepareData($data)
     {
         $data = is_array($data) ? $data : array();
@@ -296,10 +371,16 @@ abstract class waBaseLoginAction extends waLoginModuleController
         return $data;
     }
 
+    /**
+     * Try send onetime password and assign details of result
+     * @return bool
+     * @throws waAuthException
+     * @throws waException
+     */
     protected function trySendOnetimePassword()
     {
+        // diagnostic already printed inside
         list($ok, $details) = $this->sendOnetimePassword();
-
 
         $this->assign('send_onetime_password_ok', $ok);
 
@@ -321,9 +402,12 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * @return array
      *  * 0 - bool <status>
      *  * 1 - array <details>
+     * @throws waAuthException
+     * @throws waException
      */
     protected function sendOnetimePassword()
     {
+        // ensure that it is onetime password mode
         $auth_config = $this->auth_config;
         if ($auth_config->getAuthType() !== waDomainAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
             return array(false, array());
@@ -331,26 +415,27 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
         $data = $this->getData();
 
+        // validate input data
         $errors = $this->validate($data, array('login', 'captcha'));
         if ($errors) {
             return array(false, $errors);
         }
 
+        // try find contact by login
+        $contact = null;
         $user_info = wa()->getAuth()->getByLogin($data['login']);
-        if (!$user_info) {
+        if ($user_info) {
+            $contact = new waContact($user_info['id']);
+        }
+
+        // contact does not exists - error
+        if (!$contact || !$contact->exists()) {
             $signup_url = $auth_config->getSignUpUrl();
             $error = sprintf(_ws('Contact does not exist. <a href="%s">Sign up</a> first.'), $signup_url);
             return array(false, array('login' => $error));
         }
 
-        $priority = $this->getChannelPriorityByLogin($data['login']);
-        $channels = $auth_config->getVerificationChannelInstances($priority);
-
-        $recipient = new waContact($user_info['id']);
-        if (!$recipient->exists()) {
-            return array(false, array());
-        }
-
+        // check timeout message
         if (!$this->isTimeoutPassed()) {
             $errors = array(
                 'timeout' => array(
@@ -361,12 +446,20 @@ abstract class waBaseLoginAction extends waLoginModuleController
             return array(false, $errors);
         }
 
+        // by login define what channel will be looked first
+        $priority = $this->getChannelPriorityByLogin($data['login']);
+
+        // get auth verification channels
+        $channels = $auth_config->getVerificationChannelInstances($priority);
+
+        // result of looking through the channels
         $asset_id = null;
         $channel_type = null;
 
+        // look through channels and try send onetime password, first success - break loop
         foreach ($channels as $channel) {
 
-            $asset_id = $channel->sendOnetimePasswordMessage($recipient, array(
+            $asset_id = $channel->sendOnetimePasswordMessage($contact, array(
                 'site_url' => $this->auth_config->getSiteUrl(),
                 'site_name' => $this->auth_config->getSiteName(),
                 'login_url' => $this->auth_config->getLoginUrl(array(), true),
@@ -376,35 +469,72 @@ abstract class waBaseLoginAction extends waLoginModuleController
                 $channel_type = $channel->getType();
                 break;
             }
+
+            // diagnostic log prints
+            if ($channel->isEmail()) {
+                $diagnostic_message = "Couldn't send email message with onetime password. Check email settings\n%s";
+                $this->logError(
+                    sprintf($diagnostic_message, $channel->getDiagnostic()),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+            } elseif ($channel->isSMS()) {
+                $diagnostic_message = "Couldn't send SMS with onetime password. Explore sms.log for details\n%s";
+                $this->logError(
+                    sprintf($diagnostic_message, $channel->getDiagnostic()),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+            } else {
+                $diagnostic_message = "Couldn't send message with onetime password.\n%s";
+                $this->logError(
+                    sprintf($diagnostic_message, $channel->getDiagnostic()),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+            }
+
         }
 
+        // Looks like all channels failed - try log diagnostic information for admin
         if (!$asset_id) {
+
+            // Looks like all channels failed
+            $this->logError(
+                sprintf("Couldn't send message with onetime password.\nLooks like there is no any working channel in system. Check auth settings for this env=%s and site=%s",
+                    $this->env, $this->auth_config->getSiteUrl()),
+                array('line' => __LINE__, 'file' => __FILE__)
+            );
+
             return array(false, array());
         }
 
+        // remember onetime password asset for this user
         $csm = new waContactSettingsModel();
         $csm->set($user_info['id'], 'webasyst', 'onetime_password_id', $asset_id);
 
-        $sent_message = _ws('One-time password has been sent.');
-
+        // prepare message for user
         if ($channel_type == waVerificationChannelModel::TYPE_EMAIL) {
             $sent_message = _ws('One-time password has been sent to your email address.');
         } elseif ($channel_type == waVerificationChannelModel::TYPE_SMS) {
             $sent_message = _ws('One-time password has been sent to you as an SMS.');
+        } else {
+            $sent_message = _ws('One-time password has been sent.');
         }
 
-
-
+        // prepare details array and return it with success status
         $details = array(
             'used_channel_type' => $channel_type,
             'onetime_password_sent_message' => $sent_message,
             'onetime_password_timeout_message' => $this->auth_config->getOnetimePasswordTimeoutMessage(),
             'onetime_password_timeout' => $this->auth_config->getOnetimePasswordTimeout()
         );
-
         return array(true, $details);
     }
 
+    /**
+     * Timeout checker for onetime password
+     * Need to prevent to ofter request of onetime password
+     * See usage of method for details
+     * @return bool
+     */
     protected function isTimeoutPassed()
     {
         $key = 'wa/login/onetime_password/last_time/';
@@ -419,6 +549,12 @@ abstract class waBaseLoginAction extends waLoginModuleController
         return $result;
     }
 
+    /**
+     * Check auth config and if check is failed throw exception
+     * Logging in will be stop by that exception
+     * @return mixed
+     * @throws waException
+     */
     abstract protected function checkAuthConfig();
 
     /**
@@ -428,6 +564,9 @@ abstract class waBaseLoginAction extends waLoginModuleController
      */
     abstract protected function saveReferer();
 
+    /**
+     * Some Voodoo magic xml-http checker - see details inside
+     */
     protected function checkXMLHttpRequest()
     {
         $is_json_mode = $this->isJsonMode();
@@ -466,6 +605,10 @@ abstract class waBaseLoginAction extends waLoginModuleController
      */
     abstract protected function afterAuth();
 
+    /**
+     * @see waLoginModuleController
+     * @return string
+     */
     protected function getLoginUrl()
     {
         return $this->auth_config->getLoginUrl();

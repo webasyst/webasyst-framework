@@ -397,6 +397,8 @@ class waSignupAction extends waViewAction
             return array(false, array());
         }
 
+        $generated_password_auth_type = $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD;
+
         $channels = $this->auth_config->getVerificationChannelInstances($priority);
 
         $sent = false;
@@ -411,25 +413,60 @@ class waSignupAction extends waViewAction
             } else {
                 $address = null;
             }
-            if ($address) {
-                $options = array(
-                    'site_url' => $this->auth_config->getSiteUrl(),
-                    'site_name' => $this->auth_config->getSiteName(),
-                    'login_url' => $this->auth_config->getLoginUrl(array(), true)
-                );
-                if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD) {
-                    $options['password'] = $this->getGeneratePassword();
-                }
-                $sent = $channel->sendSignUpSuccessNotification($address, $options);
-                if ($sent) {
-                    $used_address = $address;
-                    $used_channel_type = $channel->getType();
-                    break;
+
+            if (!$address) {
+                continue;
+            }
+
+            $options = array(
+                'site_url' => $this->auth_config->getSiteUrl(),
+                'site_name' => $this->auth_config->getSiteName(),
+                'login_url' => $this->auth_config->getLoginUrl(array(), true)
+            );
+            if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD) {
+                $options['password'] = $this->getGeneratePassword();
+            }
+            $sent = $channel->sendSignUpSuccessNotification($address, $options);
+
+            if ($sent) {
+                $used_address = $address;
+                $used_channel_type = $channel->getType();
+                break;
+            }
+
+            // print diagnostic only if generated password not sent
+            if ($generated_password_auth_type) {
+                if ($channel->isEmail()) {
+                    $diagnostic_message = "Couldn't send email message with generated password. Check email settings.\n%s";
+                    $this->logError(
+                        sprintf($diagnostic_message, $channel->getDiagnostic()),
+                        array('line' => __LINE__, 'file' => __FILE__)
+                    );
+                } elseif ($channel->isSMS()) {
+                    $diagnostic_message = "Couldn't send SMS with generated password. Explore sms.log for details.\n%s";
+                    $this->logError(
+                        sprintf($diagnostic_message, $channel->getDiagnostic()),
+                        array('line' => __LINE__, 'file' => __FILE__)
+                    );
+                } else {
+                    $diagnostic_message = "Couldn't send message with generated password.\n%s";
+                    $this->logError(
+                        sprintf($diagnostic_message, $channel->getDiagnostic()),
+                        array('line' => __LINE__, 'file' => __FILE__)
+                    );
                 }
             }
         }
 
         if (!$sent) {
+            // print diagnostic only if generated password not sent
+            if ($generated_password_auth_type) {
+                $this->logError(
+                    sprintf("Couldn't send message with generated password.\nLooks like there is no any working channel in system. Check auth settings for this domain %s",
+                        $this->auth_config->getDomain()),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+            }
             return array(false, array());
         }
 
@@ -546,6 +583,7 @@ class waSignupAction extends waViewAction
             $priority = waVerificationChannelModel::TYPE_SMS;
         }
 
+        // diagnostic already printed inside
         list($notify_sent, $notify_details) = $this->sendSignupNotify($data, $priority);
 
         // IMPORTANT detail
@@ -563,7 +601,13 @@ class waSignupAction extends waViewAction
         // If notify hasn't sent - it is bad, but not fatal
         // But if client can't get password - need show errors to client
         if (!$notify_sent && $generated_password_auth_type) {
-            $this->assign('errors', array('signup' => _ws('Signup has failed, password was not sent.')));
+            $this->assign('errors', array('signup' => _ws('Password has not been sent. Please contact your administrator.')));
+
+            $this->logError(
+                sprintf("Contact is singed up but send notification about signup failed and password not sent. See above detailed messages"),
+                array('line' => __LINE__, 'file' => __FILE__)
+            );
+
             return;
         }
 
@@ -988,13 +1032,17 @@ class waSignupAction extends waViewAction
                 $addresses['email'] = $data['email'];
             }
 
+            // diagnostic already printed inside
             list($sent, $details) = $this->sendOnetimePassword($addresses);
+
             if (!$sent) {
-                $errors = $details ? $details : array('onetime_password' => 'Send error');
-                $this->assign('errors', $errors);
+                $errors = $details ? $details : array('onetime_password_send' => _ws('Sending error'));
+                $details['onetime_password_sent'] = $sent;
+                return array(self::SIGNED_UP_STATUS_FAILED, $errors);
+            } else {
+                $details['onetime_password_sent'] = $sent;
+                return array(self::SIGNED_UP_STATUS_IN_PROCESS, $details);
             }
-            $details['onetime_password_sent'] = $sent;
-            return array(self::SIGNED_UP_STATUS_IN_PROCESS, $details);
 
         }
 
@@ -1022,6 +1070,7 @@ class waSignupAction extends waViewAction
             $auth_right_away = $this->auth_config->getAuthType() !== waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD;
 
             if (!$this->trySignupContact($contact, $auth_right_away)) {
+                // error already logged - so no need log one time again
                 return array(self::SIGNED_UP_STATUS_FAILED, array());
             }
 
@@ -1032,10 +1081,13 @@ class waSignupAction extends waViewAction
 
         // Confirm need - try send confirmation message
         $confirmation_sent = null;
+
         $channels = $this->auth_config->getVerificationChannelInstances();
         $contact_created = null;
 
-        foreach ($channels as $channel_id => $channel) {
+        foreach ($channels as $channel) {
+
+            // try email first
             if ($channel->isEmail() && !empty($data['email'])) {
 
                 // For this case with must create contact first
@@ -1052,20 +1104,37 @@ class waSignupAction extends waViewAction
                     // sending is failed
                     $contact_created->delete();
                     $contact_created = null;
+
+                    // diagnostic log print
+                    $this->logError(
+                        sprintf("Couldn't send email message with link. Check email settings.\n%s",
+                            $channel->getDiagnostic()),
+                        array('line' => __LINE__, 'file' => __FILE__)
+                    );
                 }
             }
 
+            // then try sms
             if ($channel->isSMS() && !empty($data['phone'])) {
                 list($ok, $details) = $this->sendCode($data['phone']);
                 if ($ok) {
                     $confirmation_sent = waVerificationChannelModel::TYPE_SMS;
                     break;
-                }
-                if (!$ok) {
+                } elseif (isset($details['timeout'])) {
+                    // Tell user about timeout error right aways - so return
                     return array(self::SIGNED_UP_STATUS_FAILED, $details);
+                } else {
+                    // diagnostic log print
+                    $this->logError(
+                        sprintf("Couldn't send SMS with code. Explore sms.log for details.\n%s",
+                            $channel->getDiagnostic()),
+                        array('line' => __LINE__, 'file' => __FILE__)
+                    );
                 }
             }
+
         }
+
 
         // Confirmation sent by email
         if ($confirmation_sent === waVerificationChannelModel::TYPE_EMAIL) {
@@ -1082,7 +1151,13 @@ class waSignupAction extends waViewAction
             ));
         }
 
-        // Something wrong
+        // Looks like all channels failed
+        $this->logError(
+            sprintf("Couldn't send message with confirmation secret (link or code).\nLooks like there is no any working channel in system. Check auth settings for this domain %s",
+                $this->auth_config->getDomain()),
+            array('line' => __LINE__, 'file' => __FILE__)
+        );
+
         return array(self::SIGNED_UP_STATUS_FAILED, array());
     }
 
@@ -1096,6 +1171,7 @@ class waSignupAction extends waViewAction
         try {
             $result = (bool)wa()->getAuth()->auth($contact);
         } catch (waException $e) {
+            $this->logError($e);
         }
         if ($result) {
             $this->assign('auth_status', 'ok');
@@ -1103,8 +1179,6 @@ class waSignupAction extends waViewAction
         }
         return $result;
     }
-
-    //#
 
     /**
      *
@@ -1115,6 +1189,7 @@ class waSignupAction extends waViewAction
      * @param waContact $contact
      * @param bool $need_auth Need auth right away
      * @return bool
+     * @throws waException
      */
     protected function trySignupContact(waContact $contact, $need_auth = true)
     {
@@ -1148,6 +1223,7 @@ class waSignupAction extends waViewAction
      * @param $data
      * @param array $errors
      * @return null|waContact
+     * @throws waException
      */
     protected function trySaveContact($data, &$errors = array())
     {
@@ -1202,7 +1278,6 @@ class waSignupAction extends waViewAction
             }
             return null;
         }
-
         return $contact;
     }
 
@@ -1241,7 +1316,6 @@ class waSignupAction extends waViewAction
      * Send confirmation link
      * @param waContact
      * @return bool
-     * @throws waException
      */
     public function sendLink($recipient)
     {
@@ -1300,6 +1374,7 @@ class waSignupAction extends waViewAction
                 )
             ));
         }
+
         $channel = $this->auth_config->getSMSVerificationChannelInstance();
         $result = $channel->sendSignUpConfirmationMessage($phone, array(
             'use_session' => true
@@ -1337,6 +1412,8 @@ class waSignupAction extends waViewAction
 
 
         foreach ($channels as $channel) {
+
+            // choose address
             if ($channel->isEmail() && !empty($addresses['email'])) {
                 $address = $addresses['email'];
             } elseif ($channel->isSMS() && !empty($addresses['phone'])) {
@@ -1344,22 +1421,59 @@ class waSignupAction extends waViewAction
             } else {
                 $address = null;
             }
-            if ($address) {
-                $sent = $channel->sendOnetimePasswordMessage($address, array(
-                    'site_url' => $this->auth_config->getSiteUrl(),
-                    'site_name' => $this->auth_config->getSiteName(),
-                    'login_url' => $this->auth_config->getLoginUrl(array(), true),
-                    'use_session' => true
-                ));
-                if ($sent) {
-                    $used_channel_type = $channel->getType();
-                    $used_address = $address;
-                    break;
-                }
+
+            if (!$address) {
+                continue;
+            }
+
+            $sent = $channel->sendOnetimePasswordMessage($address, array(
+                'site_url' => $this->auth_config->getSiteUrl(),
+                'site_name' => $this->auth_config->getSiteName(),
+                'login_url' => $this->auth_config->getLoginUrl(array(), true),
+                'use_session' => true
+            ));
+
+            // successful send
+            if ($sent) {
+                $used_channel_type = $channel->getType();
+                $used_address = $address;
+                break;
+            }
+
+            // fail send
+
+            // diagnostic log print
+
+            if ($channel->isEmail()) {
+                $diagnostic_message = "Couldn't send email message with onetime password. Check email settings.\n%s";
+                $this->logError(
+                    sprintf($diagnostic_message, $channel->getDiagnostic()),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+            } elseif ($channel->isSMS()) {
+                $diagnostic_message = "Couldn't send SMS with onetime password. Explore sms.log for details.\n%s";
+                $this->logError(
+                    sprintf($diagnostic_message, $channel->getDiagnostic()),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+            } else {
+                $diagnostic_message = "Couldn't send message with onetime password.\n%s";
+                $this->logError(
+                    sprintf($diagnostic_message, $channel->getDiagnostic()),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
             }
         }
 
         if (!$sent) {
+
+            // Looks like all channels failed
+            $this->logError(
+                sprintf("Couldn't send message with onetime password.\nLooks like there is no any working channel in system. Check auth settings for this domain %s",
+                    $this->auth_config->getDomain()),
+                array('line' => __LINE__, 'file' => __FILE__)
+            );
+
             return array(false, array());
         }
 
@@ -1461,5 +1575,40 @@ class waSignupAction extends waViewAction
     protected function notFound()
     {
         throw new waException(_ws('Page not found'), 404);
+    }
+
+    /**
+     * @param $error
+     * @param array $context
+     *   Context where error occurred. May be any string like 'line' or 'file'
+     */
+    protected function logError($error, $context = array())
+    {
+        // IMPORTANT:
+        // @var_export - @ just in case if var_export trigger warning or notice
+        // For example "var_export does not handle circular references"
+
+        if ($error instanceof Exception) {
+            $trace = $error->getTraceAsString();
+            $message = get_class($error) . " - " . $error->getCode() . " - " . $error->getMessage() . PHP_EOL . $trace . PHP_EOL;
+        } elseif (!is_scalar($error)) {
+            $message = @var_export($error, true);
+        } else {
+            $message = $error;
+        }
+
+        if ($context) {
+            $log_error = sprintf("Error=%s\nContext=%s\nAction=%s\nIP=%s",
+                $message,
+                @var_export($context, true),
+                get_class($this),
+                waRequest::getIp()
+            );
+        } else {
+            $log_error = sprintf("Error=%s\nAction=%s\nIP=%s", $message, get_class($this), waRequest::getIp());
+        }
+
+        $date = date('Y-m-d');
+        waLog::log($log_error, "signup/action/error-{$date}.log");
     }
 }

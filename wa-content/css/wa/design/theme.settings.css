@@ -2,6 +2,11 @@
   padding: 10px 0 20px 0;
   border-bottom: 1px solid #ddd;
 }
+#wa-design-container .wa-theme-navigation.is-top-fixed,
+#wa-design-container .wa-theme-navigation.is-bottom-fixed {
+  background: #fff;
+  z-index: 1;
+}
 #wa-design-container .wa-theme-navigation .wa-theme-expand-collapse {
   display: inline-block;
 }

@@ -982,7 +982,7 @@ class waArchiveTar
                         }
                     } elseif (isset($this->files[$_path])) {
                         $map[$this->files[$_path]['offset']] = $_path;
-                    } elseif (true) {
+                    } else {
                         $map = array();
                         break;
                     }
@@ -994,7 +994,7 @@ class waArchiveTar
                     $this->seekBlock(key($map), true);
                     $map = array_reverse($map, true);
 
-
+                    $_next_offset = false; // file read up to the end
                     foreach ($map as $_offset => $_path) {
                         $offset_map[$_path] = $_next_offset;
                         $_next_offset = $_offset;
@@ -1044,9 +1044,14 @@ class waArchiveTar
                     $this->writeItem($header);
                     if ($file_list && is_array($file_list)) {
                         if (isset($offset_map[$header['filename']])) {
-                            $_offset = ceil(($header['size'] / self::BLOCK_SIZE)) + $header['offset'] + 1;
-                            if ($_offset < $offset_map[$header['filename']]) {
-                                $this->seekBlock($offset_map[$header['filename']], true);
+                            $_next_offset = $offset_map[$header['filename']];
+                            if ($_next_offset !== false) {
+                                $_offset = ceil(($header['size'] / self::BLOCK_SIZE)) + $header['offset'] + 1;
+                                if ($_offset < $_next_offset) {
+                                    $this->seekBlock($_next_offset, true);
+                                }
+                            } else {
+                                break;
                             }
                         }
                     }

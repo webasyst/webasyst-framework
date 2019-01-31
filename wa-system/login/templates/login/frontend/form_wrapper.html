@@ -28,15 +28,15 @@
 {if $include_js}
 
     {$_locale = [
-        'required' => '[s`Field is required`]',
-        'login_required' => '[s`Login is required`]',
-        'password_required' => '[s`Password is required`]',
-        'captcha_required' => '[s`Captcha is required`]',
-        'sent_by_email' => '[s`(sent by email)`]',
-        'sent_by_sms' => '[s`(sent in SMS)`]'
+        'required'          => _ws('Field is required'),
+        'login_required'    => _ws('Login is required'),
+        'password_required' => _ws('Password is required'),
+        'captcha_required'  => _ws('Captcha is required'),
+        'sent_by_email'     => _ws('(sent by email)'),
+        'sent_by_sms'       => _ws('(sent in SMS)')
     ]}
     {if $is_onetime_password_auth_type}
-        {$_locale['password_required'] = '[`Enter a one-time code to log in.`]'}
+        {$_locale['password_required'] = _ws('Enter a one-time code to log in.')}
     {/if}
 
     {* Resources *}
