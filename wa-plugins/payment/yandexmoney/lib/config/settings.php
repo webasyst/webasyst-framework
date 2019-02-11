@@ -37,14 +37,14 @@ return array(
         'title'        => 'Пароль',
         'description'  => <<<HTML
 <span class="js-yandexmoney-registration-link" style="background-color: #FFE6E6; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%;">
-Подключаясь к платежной системе <a href="https://kassa.yandex.ru/?source=webasyst" target="_blank">через Webasyst</a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8% на 3&nbsp;месяца + купон на 7000&nbsp;рублей</b> на первую рекламную кампанию в «Яндекс.Директе» при оплате от 2500&nbsp;рублей.
+Подключаясь к платежной системе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">через Webasyst</a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8% на 3&nbsp;месяца + купон на 7000&nbsp;рублей</b> на первую рекламную кампанию в «Яндекс.Директе» при оплате от 2500&nbsp;рублей.
 </span>
 <span class="js-yandexmoney-registration-link" style="font-weight: normal; font-size: 14px;color: black;">
-Чтобы получить идентификатор, номер витрины и пароль, <a href="https://kassa.yandex.ru/?source=webasyst" target="_blank">отправьте заявку на подключение</a>.
+Чтобы получить идентификатор, номер витрины и пароль, <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">отправьте заявку на подключение</a>.
 </span>
 <br><br>
 HTML
-,
+        ,
         'control_type' => waHtmlControl::PASSWORD,
         'class'        => 'js-yandexmoney-integration-type js-yandexmoney-kassa',
         'data'         => array('integration-type' => 'kassa',),

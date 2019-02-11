@@ -16,7 +16,17 @@ return array(
     'secret_key'      => array(
         'value'        => '',
         'title'        => 'Secret key',
-        'description'  => 'Секретный ключ',
+        'description'  => 'Секретный ключ'.
+        <<<HTML
+<span class="js-webmoney-registration-link" style="background-color: #FFE6E6; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%;">
+Подключаясь к платежной системе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=1474e584a17b158f24e83c8c47ec500373" target="_blank">через Webasyst</a>, вы получаете <b>специальные ставки ниже стандартных</b>: при обороте до 0,8 млн руб. — <b>2,7%</b> вместо 2,95%; при обороте 0,8–2 млн руб. — <b>2,4%</b> вместо 2,6%; при обороте больше 2 млн руб. — <b>2,3%</b> вместо 2,5%. Вы также получаете преимущество по коммерческим условиям сотрудничества.
+</span>
+<span class="js-webmoney-registration-link" style="font-weight: normal; font-size: 14px;color: black;">
+Чтобы получить идентификатор и пароль, <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=1474e584a17b158f24e83c8c47ec500373" target="_blank">отправьте заявку на подключение</a>.
+</span>
+<br><br>
+HTML
+,
         'control_type' => 'input',
     ),
     'protocol'        => array(
@@ -62,11 +72,14 @@ return array(
 — налог составляет 0%, 10% либо 20% и <em>включен</em> в стоимость элементов заказа и стоимость доставки
 <script type="text/javascript">
     (function () {
+        var form = $(':input[name$="\[LMI_MERCHANT_ID\]"]').parents('form:first');
+        var registered = true;
+
         var toggle = function (input, event, selector, show) {
             if (show === undefined) {
                 show = input.checked;
             }
-            $(input).parents('form').find(selector).each(function () {
+            form.find(selector).each(function () {
                 if (show) {
                     $(this).parents('div.field').show(400);
                 } else {
@@ -74,7 +87,20 @@ return array(
                 }
             });
         };
-        $(':input[name$="\[receipt\]"]').unbind('change').bind('change', function (event) {
+        
+        form.find(':input[name$="\[LMI_MERCHANT_ID\]"], :input[name$="\[secret_key\]"]').each(function () {
+            /** @this HTMLInputElement */
+            if (('' + this.value).length === 0) {
+                registered = false;
+            }
+        });
+
+        if (registered) {
+            form.find('.js-webmoney-registration-link').hide();
+        }
+        
+        
+        form.find(':input[name$="\[receipt\]"]').unbind('change').bind('change', function (event) {
             var name = [
                 'taxes',
                 'payment_subject_type_product',
@@ -89,7 +115,8 @@ return array(
             }
             toggle(this, event, selector.join(', '));
         }).trigger('change');
-        $(':input[name$="\[TESTMODE\]"]').unbind('change').bind('change', function (event) {
+        
+        form.find(':input[name$="\[TESTMODE\]"]').unbind('change').bind('change', function (event) {
             toggle(this, event, ':input[name$="\[LMI_SIM_MODE\]"]');
         }).trigger('change');
     })();

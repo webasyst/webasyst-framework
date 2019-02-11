@@ -5,5 +5,5 @@ return array(
     'icon'        => 'img/paymaster16.png',
     'logo'        => 'img/paymaster.png',
     'vendor'      => 'webasyst',
-    'version'     => '2.0.2',
+    'version'     => '2.0.3',
 );
