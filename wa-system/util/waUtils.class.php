@@ -195,7 +195,7 @@ class waUtils
      * @param array $keys
      * @param bool $skip default true
      * @param mixed $populate
-     * @param bool|string $multi set key or true for extract keys from sub arrays
+     * @param mixed $multi default false, set key or true for extract keys from sub arrays
      *
      * That values of $keys that aren't keys in $array will be
      *  + skipped - If $skip === True (default value)
