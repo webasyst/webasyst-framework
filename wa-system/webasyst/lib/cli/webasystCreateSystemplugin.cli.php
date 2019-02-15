@@ -152,7 +152,7 @@ REPORT;
         }
 
         $this->createStructure($structure);
-        $this->protect(array('lib', 'templates');
+        $this->protect(array('lib', 'templates'));
 
         return $config;
     }
