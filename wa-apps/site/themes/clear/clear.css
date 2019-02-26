@@ -74,7 +74,7 @@ input:-ms-input-placeholder { color: #ccc; }
 .hint a,
 .hint:visited,
 .hint a:visited { color: #888; }
-.gray { color: #aaa; }
+.gray:not(button):not(input) { color: #aaa; }
 .gray a,
 .gray:visited,
 .gray a:visited { color: #888; }
@@ -318,6 +318,7 @@ h2.title { font-size: 300%; letter-spacing: 0.2em; }
 
 .app-navigation { border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; font-size: 1.0em; margin-top: 2em; }
 .app-navigation .static-text { padding: 12px 23px; color: #555; font-weight: bold; }
+.app-navigation .schedule { padding: 12px 23px; color: #555; }
 .app-navigation ul.menu-h li { margin: 0 !important; }
 .app-navigation ul.menu-h li a { text-decoration: none; text-transform: uppercase; padding: 15px 15px 15px 0; color: #777; }
 .app-navigation ul.menu-h li.selected a { font-weight: bold; }

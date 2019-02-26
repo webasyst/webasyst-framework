@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.8">
+<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.2.0">
     <name locale="en_US">CUSTOM</name>
     <name locale="ru_RU">CUSTOM</name>
     <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -120,6 +120,20 @@
             <value></value>
             <name locale="en_US">Footer notice</name>
             <name locale="ru_RU">Уведомление в подвале сайта</name>
+        </setting>
+        <setting var="use_shop_schedule" control_type="checkbox">
+            <value>1</value>
+            <name locale="ru_RU">Показывать график работы магазина на текущую неделю из настроек Shop-Script</name>
+            <name locale="en_US">Show online store’s working schedule for current week from Shop-Script settings</name>
+            <description locale="ru_RU">При включении игнорируется настройка «Сокращенный график работы».</description>
+            <description locale="en_US">When enabled, “Brief working schedule” setting is ignored.</description>
+        </setting>
+        <setting var="manual_schedule" control_type="text">
+            <value></value>
+            <name locale="ru_RU">Сокращенный график работы</name>
+            <name locale="en_US">Brief working schedule</name>
+            <description locale="ru_RU">Например: Пн—Сб 08:00–18:00</description>
+            <description locale="en_US">Example: Mo—Sa 08:00–18:00</description>
         </setting>
     </settings>
 </theme>

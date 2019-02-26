@@ -21,8 +21,9 @@
 	{$wa->css()} {* links active plugins CSS *}
 
 	<!-- js -->
-    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_theme_url}custom.js?v{$wa_theme_version}"></script>
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-1.11.1.min.js" ></script>
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script src="{$wa_theme_url}custom.js?v{$wa_theme_version}"></script>
     {$wa->js()} {* links active plugins JS *}
 
     {include file="`$wa_active_theme_path`/head.html" inline}
@@ -72,7 +73,13 @@
         			{$cart_total = $wa->shop->cart->total()}
 					{$cart_count = $wa->shop->cart->count()}
    		     		<div id="cart" class="float-right{if !$cart_count} empty{/if}">
-   		     			<a href="{$wa->getUrl('shop/frontend/cart')}">
+
+                        {$_cart_url = $wa->getUrl('shop/frontend/cart')}
+                        {if method_exists($wa->shop, 'checkout')}
+                            {$_cart_url = $wa->shop->checkout()->cartUrl()}
+                        {/if}
+
+   		     			<a href="{$_cart_url}">
    		     				<i class="icon16 cart{if !$cart_count} empty{/if}"></i>
    		     				[s`Shopping cart`]:
    		     				<strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>

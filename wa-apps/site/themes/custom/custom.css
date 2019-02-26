@@ -68,7 +68,7 @@ hr { background-color: #ccc; height: 1px; border: 0; }
 .hint a,
 .hint:visited,
 .hint a:visited { color: #aaa; }
-.gray { color: #aaa; }
+.gray:not(button):not(input) { color: #aaa; }
 .float-left { float: left; }
 .float-right { float: right; }
 .align-left { text-align: left; }

@@ -15,7 +15,7 @@
                     <a href="tel:{$wa->shop->settings('phone')}" data-rel="external">{$wa->shop->settings('phone')}</a>
                 </div>
 
-                {if method_exists($wa->shop, 'schedule')}
+                {if !empty($theme_settings.use_shop_schedule) && method_exists($wa->shop, 'schedule')}
                     {$_schedule = $wa->shop->schedule()}​​
 
                     <div class="s-schedule-wrapper" id="js-schedule-wrapper">
@@ -71,9 +71,20 @@
                         </script>
                     </div>
 
-                {elseif $wh = $wa->shop->settings('workhours')}
-                    <div class="workhours-wrapper">{$wh.days_from_to}{if $wh.hours_from && $wh.hours_to} {$wh.hours_from}—{$wh.hours_to}{/if}</div>
+                {elseif !empty($theme_settings.manual_schedule)}
+                {strip}
+                    <div class="s-schedule-wrapper">
+                        <div class="s-visible">
+                            <div class="s-label-wrapper">
+                                <div class="workhours-wrapper">
+                                    <span class="s-text">{$theme_settings.manual_schedule|escape}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/strip}
                 {/if}
+
             </div>
         {/if}
 

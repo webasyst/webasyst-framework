@@ -16,8 +16,10 @@
   background: rgba(8,9,10,0.93);
 }
 .s-schedule-wrapper .s-label-wrapper {
-  cursor: pointer;
   color: #bbb;
+}
+.s-schedule-wrapper .s-label-wrapper.js-show-schedule {
+  cursor: pointer;
 }
 .s-schedule-wrapper .s-label-wrapper .workhours-wrapper {
   display: inline-block;

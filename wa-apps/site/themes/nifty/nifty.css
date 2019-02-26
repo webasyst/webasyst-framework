@@ -73,7 +73,7 @@ input:-ms-input-placeholder { color: #ccc; }
 .hint a,
 .hint:visited,
 .hint a:visited { color: #888; }
-.gray { color: #aaa; }
+.gray:not(button):not(input) { color: #aaa; }
 .gray a,
 .gray:visited,
 .gray a:visited { color: #888; }
@@ -281,6 +281,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 #header .block { padding: 0 20px; }
 #header a { text-decoration: none; }
 #header .phone { padding: 5px 30px 5px 5px; font-size: 1.5em; font-weight: bold; }
+#header .schedule { padding: 8px 0; margin-right: 20px; }
 #header .subscribe { padding: 9px; font-weight: bold; }
 #header .subscribe i.icon16 { margin-top: -2px; }
 #header .auth a { font-style: italic; }

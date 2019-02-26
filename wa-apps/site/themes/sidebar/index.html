@@ -24,8 +24,9 @@
     {$wa->css()} {* links active plugins CSS *}
 
     <!-- js -->
-    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_theme_url}sidebar.js?v{$wa_theme_version}"></script>
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-1.11.1.min.js" ></script>
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script src="{$wa_theme_url}sidebar.js?v{$wa_theme_version}"></script>
     {$wa->js()} {* links active plugins JS *}
 
     {include file="`$wa_active_theme_path`/head.html" inline}
@@ -70,7 +71,7 @@
                     <b>{$wa->shop->settings('phone')}</b>
                 {/if}
 
-                {if method_exists($wa->shop, 'schedule')}
+                {if !empty($theme_settings.use_shop_schedule) && method_exists($wa->shop, 'schedule')}
                     {if $_schedule = $wa->shop->schedule()}{/if}
 
                     <div class="s-schedule-wrapper" id="js-schedule-wrapper">
@@ -126,8 +127,18 @@
                         </script>
                     </div>
 
-                {elseif $wh = $wa->shop->settings('workhours')}
-                    <span class="hint">{$wh.days_from_to}{if $wh.hours_from && $wh.hours_to} {$wh.hours_from}—{$wh.hours_to}{/if}</span>
+                {elseif !empty($theme_settings.manual_schedule)}
+                {strip}
+                    <div class="s-schedule-wrapper">
+                        <div class="s-visible">
+                            <div class="s-label-wrapper">
+                                <div class="workhours-wrapper">
+                                    <span class="s-text">{$theme_settings.manual_schedule|escape}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/strip}
                 {/if}
             </div>
         {/if}

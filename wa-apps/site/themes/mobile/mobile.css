@@ -466,27 +466,27 @@ select {
   background: #ccc;
   color: #000;
 }
-iframe {
+.site-wrapper iframe {
   margin: 1em 0 0;
   width: 100% !important;
 }
 @media (orientation: portrait) {
-  iframe {
+  .site-wrapper iframe {
     height: 270px !important;
   }
 }
 @media (orientation: landscape) {
-  iframe {
+  .site-wrapper iframe {
     height: 360px !important;
   }
 }
 @media (orientation: portrait) and (max-width: 320px) {
-  iframe {
+  .site-wrapper iframe {
     height: 225px !important;
   }
 }
 @media (orientation: landscape) and (max-width: 480px) {
-  iframe {
+  .site-wrapper iframe {
     height: 270px !important;
   }
 }
