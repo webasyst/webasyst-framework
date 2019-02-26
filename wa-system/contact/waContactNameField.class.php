@@ -99,7 +99,7 @@ class waContactNameField extends waContactStringField
 
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
-        $value = preg_replace('~\s+~', ' ', trim($value));
+        $value = preg_replace('~\s+~u', ' ', trim($value));
         if ($contact['is_company']) {
             return $value;
         }

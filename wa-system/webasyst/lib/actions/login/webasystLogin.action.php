@@ -53,7 +53,75 @@ class webasystLoginAction extends waBackendLoginAction
 
         wa()->getUser()->setSettings('webasyst', 'backend_url', $this->getConfig()->getHostUrl() . $backend_url);
 
-        $this->redirect(array('url' => $redirect));
+        $result = $this->throwLoginEvent(array(
+            'redirect_url' => $redirect
+        ));
+
+        $this->redirect(array('url' => $result['redirect_url']));
+    }
+
+    /**
+     * Throw event about successful log-in and then process it
+     *
+     * 1. Event throwing step:
+     *   Name of event will be 'backend_login'
+     *   App id of event will be 'webasyst'
+     *
+     * 2. Processing event result
+     *   a. Check all redirect urls and choose first not looks like original redirect url (just simple === for now)
+     *   b.
+     *   c.
+     *   ...
+     *
+     * @param array $params Input params of event
+     *   - 'redirect_url' Original url where login action going to redirect
+     *
+     * @return array
+     *   - 'redirect_url' - always presented - chosen redirect url
+     *
+     */
+    protected function throwLoginEvent($params = array())
+    {
+        // typecast input options
+        $params = is_array($params) ? $params : array();
+
+        /**
+         * Event after successful logging in webasyst backend
+         *
+         * @event backend_login
+         * @app_id webasyst (system)
+         * @param array
+         *   - 'redirect_url' Original url where login action going to redirect
+         *
+         * @return array
+         *   Each handler expected return array of this format
+         *     - string|null 'redirect_url' - Optional url where need to redirect there
+         */
+        $results = wa()->event(array('webasyst', 'backend_login'), $params);
+
+        // extract original redirect url
+        $original_redirect_url = isset($params['redirect_url']) && is_scalar($params['redirect_url']) ? (string)$params['redirect_url'] : null;
+
+        // result of processing
+        $process_result = array(
+            'redirect_url' => null
+        );
+
+        foreach ($results as $res) {
+            if (is_array($res)) {
+                $redirect_url = !empty($res['redirect_url']) && is_scalar($res['redirect_url']) ? (string)$res['redirect_url'] : null;
+                if ($redirect_url !== $original_redirect_url) {
+                    $process_result['redirect_url'] = $redirect_url;
+                    break;
+                }
+            }
+        }
+
+        if ($process_result['redirect_url'] === null) {
+            $process_result['redirect_url'] = $original_redirect_url;
+        }
+
+        return $process_result;
     }
 
     public function getTitle()

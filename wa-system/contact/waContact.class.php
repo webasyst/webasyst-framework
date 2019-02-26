@@ -321,24 +321,34 @@ class waContact implements ArrayAccess
             // Composite field
             // @todo: make simple method for check composite fields
             if ($subfield && $field instanceof waContactCompositeField) {
+                $subfields = null;
+                if ($format === 'value' || (is_array($format) && in_array('value', $format))) {
+                    $subfields = $field->getParameter('fields');
+                }
                 $result = $field->get($this);
                 if (!$field->isMulti()) {
                     if (isset($result['data'][$subfield])) {
-                        $result['value'] = $result['data'][$subfield];
+                        if (isset($subfields[$subfield])) {
+                            $result['value'] = trim($subfields[$subfield]->format($result['data'][$subfield], 'value', $result['data']));
+                        } else {
+                            $result['value'] = $result['data'][$subfield];
+                        }
                         $result['data'] = array($subfield => $result['data'][$subfield]);
                     } else {
                         $result['value'] = "";
                     }
-                    $result = $field->format($result, $format);
                 } else {
                     foreach ($result as &$row) {
                         if (isset($row['data'][$subfield])) {
-                            $row['value'] = $row['data'][$subfield];
+                            if (isset($subfields[$subfield])) {
+                                $row['value'] = trim($subfields[$subfield]->format($row['data'][$subfield], 'value', $row['data']));
+                            } else {
+                                $row['value'] = $row['data'][$subfield];
+                            }
                             $row['data'] = array($subfield => $row['data'][$subfield]);
                         } else {
                             $row['value'] = "";
                         }
-                        $row = $field->format($row, $format);
                     }
                     unset($row);
                 }
@@ -611,6 +621,7 @@ class waContact implements ArrayAccess
      * @param array $data Associative array of contact property values.
      * @param bool $validate Flag requiring to validate property values. Defaults to false.
      * @return int|array Zero, if saved successfully, or array of error messages otherwise
+     * @throws waException
      */
     public function save($data = array(), $validate = false)
     {
@@ -834,37 +845,44 @@ class waContact implements ArrayAccess
         if ($this instanceof waAuthUser && wa()->getEnv() == 'frontend') {
             // User selected specific locale (stored in session)?
             if (wa()->getStorage()->get('locale')) {
-                return wa()->getStorage()->get('locale');
+                $locale = wa()->getStorage()->get('locale');
             }
             // Routing settlement has a locale setting?
             if (waRequest::param('locale')) {
-                return waRequest::param('locale');
+                $locale = waRequest::param('locale');
             }
         }
 
-        if (!$this->id) {
-            $locale = isset($this->data['locale']) ? $this->data['locale'] : null;
-            if (!$locale) {
-                $locale = waRequest::get('lang', null, 'string');
-            }
-        } else {
-            if (isset(self::$cache[$this->id]['locale'])) {
-                $locale = self::$cache[$this->id]['locale'];
+        if (empty($locale)) {
+            if (!$this->id) {
+                $locale = isset($this->data['locale']) ? $this->data['locale'] : null;
+                if (!$locale) {
+                    $locale = waRequest::get('lang', null, 'string');
+                }
             } else {
-                $contact_model = new waContactModel();
-                $contact_info = $contact_model->getById($this->id);
-                $this->setCache($contact_info);
-                $locale = isset($contact_info['locale']) ? $contact_info['locale'] : null;
+                if (isset(self::$cache[$this->id]['locale'])) {
+                    $locale = self::$cache[$this->id]['locale'];
+                } else {
+                    $contact_model = new waContactModel();
+                    $contact_info = $contact_model->getById($this->id);
+                    $this->setCache($contact_info);
+                    $locale = isset($contact_info['locale']) ? $contact_info['locale'] : null;
+                }
             }
         }
 
-        if (!$locale) {
+        if (empty($locale)) {
             $locale = self::$options['default']['locale'];
             if ($this instanceof waAuthUser) {
                 // Try to guess locale using Accept-Language request header
                 $locale = waRequest::getLocale($locale);
             }
         }
+
+        if (empty($locale) || !waLocale::getInfo($locale)) {
+            $locale = self::$options['default']['locale'];
+        }
+
         return $locale;
     }
 

@@ -67,9 +67,6 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
         $this->view->assign(array(
             'auth_config'                => $auth_config->getData(),
             'auth_types'                 => $auth_config->getAuthTypes(),
-            'login_caption'              => $auth_config->getLoginCaption(),
-            'login_captcha'              => $auth_config->getLoginCaptcha(),
-            'login_placeholder'          => $auth_config->getLoginPlaceholder(),
             'onetime_password_timeout'   => $auth_config->getOnetimePasswordTimeout(),
             'used_auth_methods'          => $used_auth_methods,
             'email_channels'             => $email_channels,

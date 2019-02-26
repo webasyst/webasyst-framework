@@ -140,6 +140,7 @@ abstract class waAppPayment implements waiPluginApp
     }
 
     /**
+     * @since 1.6.9 / 14.03.2017
      * @param $name string
      * @return mixed
      */

@@ -130,10 +130,17 @@ class waVerificationChannelAssetsModel extends waModel
         return $asset;
     }
 
+    /**
+     * Get one asset by unique key (ID or other unique key)
+     * Also increment 'tries' value
+     * @param int|array $key
+     * @return array|null
+     * @throws waException
+     */
     public function getAsset($key)
     {
         if (wa_is_int($key)) {
-            return $this->getById($key);
+            $asset = $this->getById($key);
         } elseif (is_array($key)) {
 
             $field = array();
@@ -152,11 +159,20 @@ class waVerificationChannelAssetsModel extends waModel
                 }
             }
 
-            return $this->getByField($field);
+            $asset = $this->getByField($field);
 
         } else {
+            $asset = null;
+        }
+
+        if (!$asset) {
             return null;
         }
+
+        $this->updateById($asset['id'], array('tries' => $asset['tries'] + 1));
+        $asset['tries'] += 1;
+
+        return $asset;
     }
 
     public function getByField($field, $value = null, $all = false, $limit = false)

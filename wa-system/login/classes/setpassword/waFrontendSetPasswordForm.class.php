@@ -42,19 +42,6 @@ class waFrontendSetPasswordForm extends waSetPasswordForm
     }
 
     /**
-     * @param array $options - that options will be passed to proper factory/constructor
-     * @return waFrontendSetPasswordForm
-     */
-    public static function factory($options = array())
-    {
-        if (waConfig::get('is_template')) {
-            return null;
-        }
-        $auth_config = waDomainAuthConfig::factory();
-        return wa($auth_config->getApp())->getSetPasswordForm($options);
-    }
-
-    /**
      * Get info from last response of forgot-password action
      *
      * NOTICE: delete response from storage right away, cause we need process this response only 1 time!

@@ -69,7 +69,11 @@ class waContactPhoneField extends waContactStringField
     public function getHtmlOne($params = array(), $attrs = '')
     {
         if (isset($params['value'])) {
-            $params['value'] = $this->format($params['value'], 'value');
+            if (is_array($params['value']) && isset($params['value']['value'])) {
+                $params['value']['value'] = $this->format($params['value']['value'], 'value');
+            } else {
+                $params['value'] = $this->format($params['value'], 'value');
+            }
         }
         return parent::getHtmlOne($params, $attrs);
     }

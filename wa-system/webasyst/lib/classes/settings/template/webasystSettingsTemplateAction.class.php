@@ -25,9 +25,16 @@ abstract class webasystSettingsTemplateAction extends webasystSettingsViewAction
         ));
     }
 
+    /**
+     * @return mixed
+     */
     protected function getRequestId()
     {
-        return waRequest::param('id', null, waRequest::TYPE_INT);
+        $id = waRequest::param('id', null, waRequest::TYPE_INT);
+        if ($id === null) {
+            $id = waRequest::request('id', null, waRequest::TYPE_INT);
+        }
+        return $id;
     }
 
 

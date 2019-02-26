@@ -9,6 +9,9 @@ abstract class waVerificationChannel
     protected $info;
     protected $options;
 
+    const VERIFY_ERROR_INVALID = 'invalid';
+    const VERIFY_ERROR_OUT_OF_TRIES = 'out_of_tries';
+
     /**
      * waVerificationChannel constructor.
      * @param $channel
@@ -653,6 +656,8 @@ abstract class waVerificationChannel
      * Send message with confirmation code
      * By this code recipient can confirm that current channel (address) belongs to this recipient
      *
+     * TODO: Maybe need take into account timeout for sending right inside of this method? I do not now yet
+     *
      * @param $recipient
      * @param array $options
      * @return mixed
@@ -662,8 +667,21 @@ abstract class waVerificationChannel
     /**
      * @param string|int $code
      * @param array $options
+     *
      *   - 'recipient' If need to extra STRENGTHEN validation
      *   - 'asset_id' Optional. Asset ID where is stored onetime password. If skipped, get asset from session
+     *
+     *   - 'check_tries' Optional. Options for 'tries' logic. Format of options:
+     *       - 'count' Number of tries to validate code.
+     *              Default - is NULL, not take into account number of tries
+     *              Otherwise - int
+     *                  if number of calls of this method already greater than 'tries' than this method will be failed and return 'error'
+     *      - 'clean' Delete asset after exceeding the number of tries
+     *              Default is FALSE
+     *
+     *
+     *     NOTICE: total number of tries is global for this for this asset (for this channel and recipient)
+     *
      *
      * @return array Associative array
      *
@@ -673,17 +691,21 @@ abstract class waVerificationChannel
      *
      *   - array 'details' - detailed information about result of validation
      *      Format of details depends on 'status'
-     *        If 'status' is TRUE
+     *        If 'status' is TRUE 'details' has keys:
      *          - string 'address'     - address that was validated
      *          - int    'contact_id'  - id of contact bind to this address
-     *        Otherwise details is empty array
+     *        Otherwise 'details' has keys:
+     *          - string 'error' - string identificator of error - VERIFY_ERROR_* consts
+     * @throws waException
      */
     public function validateConfirmationCode($code, $options = array())
     {
         // Initialize fail result structure
         $fail = array(
             'status' => false,
-            'details' => array()
+            'details' => array(
+                'error' => self::VERIFY_ERROR_INVALID
+            )
         );
 
         $use_session = !isset($options['asset_id']);
@@ -699,9 +721,32 @@ abstract class waVerificationChannel
         }
 
         $vca = new waVerificationChannelAssetsModel();
-        $asset = $vca->getById($asset_id);
+        $asset = $vca->getAsset($asset_id);
         if (!$asset) {
             return $fail;
+        }
+
+        // check tries logic
+        if (isset($options['check_tries']) && is_array($options['check_tries'])) {
+            // number of tries
+            $tries = isset($options['check_tries']['count']) ? $options['check_tries']['count'] : null;
+
+            // if exceeding number of tries
+            if (wa_is_int($tries) && $asset['tries'] > $tries) {
+
+                // set proper error
+                $fail['details']['error'] = self::VERIFY_ERROR_OUT_OF_TRIES;
+
+                // need clean asset, so next call of this method returns VERIFY_ERROR_INVALID error
+                if (!empty($options['check_tries']['clean'])) {
+                    $vca->deleteById($asset['id']);
+                    if ($use_session) {
+                        wa()->getStorage()->del($session_key);
+                    }
+                }
+
+                return $fail;
+            }
         }
 
         // check is proper asset
@@ -1020,10 +1065,18 @@ abstract class waVerificationChannel
             'onetime_password'  => _ws('One-time password'),
 
             // Template of message that has confirmation code to confirm channel
-            // 'confirmation_code' => _ws('Confirmation code')
+            'confirmation_code' => _ws('Confirmation code')
         );
         return $templates_list;
     }
+
+    /**
+     * Get vars name for each predefined template, optionally with description
+     * @param string $template_name
+     * @param bool $with_description
+     * @return array
+     */
+    abstract public function getTemplateVars($template_name, $with_description = false);
 
     /**
      * Get string represent diagnostic info about channel

@@ -24,19 +24,7 @@ class waSignupForm
 
     /**
      * waSignupForm constructor.
-     *
-     * IMPORTANT: Constructor must be public for being available for wa()->getFactory()
-     * @see waSystem::getFactory()
-     * @see waSystem::getSignupForm()
-     * @see factory()
-     *
-     * @param null|string|waDomainAuthConfig $domain_config
-     *   If passed null than will use waDomainAuthConfig for current domain
-     *   If passed string than will use waDomainAuthConfig for passed domain
-     *   If passed waDomainAuthConfig that will used passed config
-     *
-     * @see waDomainAuthConfig
-     *
+
      * @param array $options
      *
      *   bool   'show_title' - need show own title. Default - FALSE
@@ -53,9 +41,9 @@ class waSignupForm
      *
      * @throws waException
      */
-    public function __construct($domain_config = null, $options = array())
+    public function __construct($options = array())
     {
-        $this->config = self::factoryDomainConfig($domain_config);
+        $this->config = waDomainAuthConfig::factory();
 
         $this->options = is_array($options) ? $options : array();
 
@@ -73,6 +61,13 @@ class waSignupForm
         }
         $this->options['need_redirects'] = $need_redirects;
 
+        // init 'need_placeholders' option. Notice that TRUE is default
+        $need_placeholders = true;
+        if (array_key_exists('need_placeholders', $this->options)) {
+            $need_placeholders = (bool)$this->options['need_placeholders'];
+        }
+        $this->options['need_placeholders'] = $need_placeholders;
+
         // init 'contact_type' option
         if (isset($this->options['contact_type']) && is_scalar($this->options['contact_type'])) {
             $this->options['contact_type'] = (string)$this->options['contact_type'];
@@ -89,56 +84,20 @@ class waSignupForm
 
     }
 
-    /**
-     * Factory waDomainAuthConfig by input param
-     *
-     * @param null|string $domain_config
-     *
-     *   If passed null create waDomainAuthConfig for current domain
-     *   If passed string create waDomainAuthConfig for passed domain
-     *   If passed waDomainAuthConfig just return the same object
-     *
-     * @see waDomainAuthConfig
-     *
-     * @return waDomainAuthConfig
-     * @throws waException
-     */
-    public static function factoryDomainConfig($domain_config = null)
+    public static function factory($options = array())
     {
-        if (!($domain_config instanceof waDomainAuthConfig)) {
-            if ($domain_config !== null && !is_scalar($domain_config)) {
-                $domain = null;
-            } else {
-                $domain = $domain_config;
+        $config = waDomainAuthConfig::factory();
+        $app_id = $config->getApp();
+        if ($app_id && wa()->appExists($app_id)) {
+            $class = "{$app_id}SignupForm";
+            if (class_exists($class)) {
+                $form = new $class($options);
+                if ($form instanceof waSignupForm) {
+                    return $form;
+                }
             }
-            $domain_config = waDomainAuthConfig::factory($domain);
         }
-        if (!($domain_config instanceof waDomainAuthConfig)) {
-            throw new waException('Domain Auth config is required');
-        }
-        return $domain_config;
-    }
-
-    /**
-     * Factory object by wa(APP_ID)->getSignupForm() method
-     * Factoring depends on WHAT app is responsible for signing up process
-     * App responsible for signing up process associated with waDomainAuthConfig ( @see waDomainAuthConfig )
-     *
-     * @see waSystem::getFactory()
-     * @see waSystem::getSignupForm()
-     *
-     * @param null|string|waDomainAuthConfig $domain_config
-     *   If passed null than will use waDomainAuthConfig for current domain
-     *   If passed string than will use waDomainAuthConfig for passed domain
-     *   If passed waDomainAuthConfig that will used passed config
-     *
-     * @param array $options
-     * @return waSignupForm
-     */
-    public static function factory($domain_config = null, $options = array())
-    {
-        $domain_config = self::factoryDomainConfig($domain_config);
-        return wa($domain_config->getApp())->getSignupForm($domain_config, $options);
+        return new waSignupForm($options);
     }
 
     /**
@@ -520,6 +479,7 @@ class waSignupForm
             'show_title' => $this->options['show_title'],
             'show_oauth_adapters' => $this->options['show_oauth_adapters'],
             'need_redirects' => $this->options['need_redirects'],
+            'need_placeholders' => $this->options['need_placeholders'],
             'contact_type' => $this->options['contact_type'],
             'include_css' => $this->options['include_css'],
             'include_js' => true,

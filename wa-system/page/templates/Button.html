@@ -18,12 +18,20 @@
                     },
                     getHelpEvent: function () {
                         $("#wa-editor-help-link-" + cheat_sheet_name).click(function () {
-                            if ($("#wa-editor-help-" + cheat_sheet_name).is(":visible")) {
-                                $("#wa-editor-help-" + cheat_sheet_name).hide();
+                            var $help = $("#wa-editor-help-" + cheat_sheet_name),
+                                data = $.cheatsheet[cheat_sheet_name].data;
+
+                            if ($help.is(":visible")) {
+                                $help.hide();
                                 return false;
                             }
-                            $("#wa-editor-help-" + cheat_sheet_name).load('{$wa_backend_url}?module=backendCheatSheet&action=cheatSheet', $.cheatsheet[cheat_sheet_name].data, function () {
-                                $(this).show();
+
+                            var loadHelp = function (afterLoad) {
+                                $help.load('{$wa_backend_url}?module=backendCheatSheet&action=cheatSheet', data, afterLoad);
+                            };
+
+                            var showHelp = function () {
+                                $help.show();
                                 var f = function (e) {
                                     if ($(e.target).attr('id') == 'wa-editor-help-' + cheat_sheet_name || $(e.target).parents('#wa-editor-help-' + cheat_sheet_name).length) {
                                         $(document).one('click', f);
@@ -32,7 +40,18 @@
                                     }
                                 };
                                 $(document).one('click', f);
-                            });
+                            };
+
+                            if (!data.need_cache || !$help.data('loaded')) {
+                                loadHelp(function () {
+                                    showHelp();
+                                    $help.data('loaded', 1);
+                                    $(document).trigger('wa_cheatsheet_load.' + cheat_sheet_name);
+                                });
+                            } else {
+                                showHelp();
+                            }
+
                             return false;
                         });
                     },

@@ -2,6 +2,8 @@
 
 class webasystInstaller
 {
+    protected $db;
+
     public function installAll()
     {
         $this->createCliFile();
@@ -148,27 +150,40 @@ CLI;
 
     public function createTable($table)
     {
-        $tables = array_map('strval', (array)$table);
-        if (empty($tables)) {
-            return;
-        }
-
-        $db_path = wa()->getAppPath('lib/config/db.php', 'webasyst');
-        $db = include($db_path);
-
-        $db_partial = array();
-        foreach ($tables as $table) {
-            if (isset($db[$table])) {
-                $db_partial[$table] = $db[$table];
-            }
-        }
-
-        if (empty($db_partial)) {
+        $db_tables = $this->getDbTables($table);
+        if (empty($db_tables)) {
             return;
         }
 
         $m = new waModel();
-        $m->createSchema($db_partial);
+        $m->createSchema($db_tables);
+    }
+
+    protected function getDbTables($table)
+    {
+        $tables = array_map('strval', (array)$table);
+        if (empty($tables)) {
+            return array();
+        }
+
+        // cache for only one instance
+        if ($this->db === null) {
+            $db_path = wa('webasyst')->getAppPath('lib/config/db.php', 'webasyst');
+            $this->db = include($db_path);
+        }
+
+        $db_partial = array();
+        foreach ($tables as $table) {
+            if (isset($this->db[$table])) {
+                $db_partial[$table] = $this->db[$table];
+            }
+        }
+
+        if (empty($db_partial)) {
+            return array();
+        }
+
+        return $db_partial;
     }
 
     public function tableExists($table)

@@ -210,4 +210,15 @@ class waVerificationChannelNull extends waVerificationChannel
     {
         return false;
     }
+
+    /**
+     * Get vars name for each predefined template, optionally with description
+     * @param string $template_name
+     * @param bool $with_description
+     * @return array
+     */
+    public function getTemplateVars($template_name, $with_description = false)
+    {
+        return array();
+    }
 }

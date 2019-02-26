@@ -6,6 +6,13 @@
  */
 class waContactBranchField extends waContactSelectField
 {
+    public function getInfo()
+    {
+        $data = parent::getInfo();
+        $data['branch_hide'] = ifempty($this->options, 'hide', array());
+        return $data;
+    }
+
     public function getHtmlOne($params = array(), $attrs = '')
     {
         //
@@ -68,7 +75,7 @@ class waContactBranchField extends waContactSelectField
     var previous_selection = 'hide_by_default';
 
     radios_parent.on('change', ':radio[name="{$radios_name}"]', function() {
-    
+
         var option_id = $(this).val();
 
         // Show previously hidden

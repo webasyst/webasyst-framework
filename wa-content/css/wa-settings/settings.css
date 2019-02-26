@@ -629,13 +629,6 @@ table.zebra tr.selected .s-single-line:after {
   display: inline-block;
   margin-left: 16px;
 }
-.s-email-templates-page .content .s-template-form .s-cheat-sheet-wrapper .wa-cheatsheet-dropdown {
-  display: inline-block;
-  float: none;
-}
-.s-email-templates-page .content .s-template-form .s-cheat-sheet-wrapper .wa-cheatsheet-dropdown .wa-cheatsheet-dropdown-block {
-  right: unset;
-}
 .s-email-templates-page .content .s-channel-actions {
   float: right;
   display: inline-block;
@@ -695,12 +688,6 @@ table.zebra tr.selected .s-single-line:after {
 .s-sms-templates-page .content .s-cheat-sheet-wrapper {
   display: inline-block;
   margin-left: 16px;
-}
-.s-sms-templates-page .content .wa-cheatsheet-dropdown {
-  float: none;
-}
-.s-sms-templates-page .content .wa-cheatsheet-dropdown .wa-cheatsheet-dropdown-block {
-  right: unset;
 }
 .s-sms-templates-page .content .ace {
   border: 1px solid #ccc;

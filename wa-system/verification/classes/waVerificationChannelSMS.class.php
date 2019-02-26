@@ -608,6 +608,48 @@ class waVerificationChannelSMS extends waVerificationChannel
         return $templates_list;
     }
 
+    /**
+     * Get vars name for each predefined template, optionally with description
+     * For list of available templates and description about they @see getTemplatesList
+     *
+     * @param string $template_name
+     * @param bool $with_description
+     * @return array
+     *    If $with_description === True than return map <name_of_var> => <description_or_var>
+     *    If $with_description === True than return array of <name_of_var>
+     */
+    public function getTemplateVars($template_name, $with_description = false)
+    {
+        static $all_vars;
+        if ($all_vars === null) {
+            $all_vars = array(
+                'confirm_signup' => array(
+                    'code' => _ws('Confirmation code'),
+                ),
+                'onetime_password' => array(
+                    'password' => _ws('One-time password'),
+                ),
+                'password' => array(
+                    'password' => _ws('New password'),
+                ),
+                'successful_signup' => array(
+                    'password' => _ws('Generated password'),
+                ),
+                'confirmation_code' => array(
+                    'code' => _ws('Confirmation code'),
+                )
+            );
+        }
+        if (!isset($all_vars[$template_name])) {
+            return array();
+        }
+        $vars = $all_vars[$template_name];
+        if ($with_description) {
+            return $vars;
+        }
+        return array_keys($vars);
+    }
+
     public function isWorking()
     {
         if (!$this->exists()) {

@@ -49,6 +49,34 @@ class waContactEmailsModel extends waModel
         return $this->getByField(array('contact_id' => $contact_id, 'sort' => $sort));
     }
 
+    /**
+     * Update email status for this contact
+     *
+     * @param int $contact_id
+     * @param string $email
+     * @param string $status self::STATUS_* const
+     *
+     * @return bool
+     *   If email for this contact doesn't exists return FALSE
+     *   Otherwise return TRUE
+     *
+     * @throws waException
+     */
+    public function updateContactEmailStatus($contact_id, $email, $status)
+    {
+        $row = $this->getByField(array(
+            'contact_id' => $contact_id,
+            'email' => $email
+        ));
+        if (!$row) {
+            return false;
+        }
+        if ($row['status'] !== $status) {
+            $this->updateById($row['id'], array('status' => $status));
+        }
+        return true;
+    }
+
     public function delete($email_id)
     {
         $row = $this->getById($email_id);
@@ -64,7 +92,7 @@ class waContactEmailsModel extends waModel
     {
         $sql = "SELECT contact_id FROM ".$this->table."
                 WHERE email LIKE ('".$this->escape($email, 'like')."')
-                ORDER BY sort LIMIT 1";
+                ORDER BY contact_id,sort LIMIT 1";
         return $this->query($sql)->fetchField();
     }
 

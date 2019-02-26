@@ -149,12 +149,15 @@ class waVerificationChannelEmail extends waVerificationChannel
         }
 
         $confirmation_hash = $this->injectAssetIdIntoHash($asset_id, $confirmation_hash);
+        if (!$is_test_send) {
+            $vca->updateById($asset_id, array('value' => $confirmation_hash));
+        }
 
         $confirmation_url = $options['confirmation_url'];
         $confirmation_url = str_replace('{$confirmation_hash}', $confirmation_hash, $confirmation_url);
 
         // Prepare vars (assign array)
-        $var_names = self::getTemplateVars($template_name);
+        $var_names = $this->getTemplateVars($template_name);
         $vars = waUtils::extractValuesByKeys($options, $var_names, false, '');
         $vars['confirmation_url'] = $confirmation_url;
 
@@ -189,6 +192,12 @@ class waVerificationChannelEmail extends waVerificationChannel
     protected function injectAssetIdIntoHash($asset_id, $hash)
     {
         return substr($hash, 0, 16) . $asset_id . substr($hash, -16);
+    }
+
+    protected function extractAssetIdFromHash($hash)
+    {
+        $asset_id = substr(substr($hash, 16), 0, -16);
+        return $asset_id;
     }
 
     protected function parseHash($hash)
@@ -226,7 +235,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         $text_template = $template['text'];
 
         // Prepare vars (assign array)
-        $var_names = self::getTemplateVars($template_name);
+        $var_names = $this->getTemplateVars($template_name);
         $vars = waUtils::extractValuesByKeys($options, $var_names, false, '');
         $vars['email'] = $recipient['email'];
 
@@ -273,7 +282,7 @@ class waVerificationChannelEmail extends waVerificationChannel
             return $result;
         }
 
-        list($asset_id, $confirmation_hash) = $this->parseHash($confirmation_secret);
+        $asset_id = $this->extractAssetIdFromHash($confirmation_secret);
 
         $vca = new waVerificationChannelAssetsModel();
         $asset = $vca->getOnce($asset_id);
@@ -303,7 +312,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         // not recipient related checking
         if ($asset['channel_id'] != $this->getId() ||
             $asset['name'] != waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH ||
-            $asset['value'] != $confirmation_hash) {
+            $asset['value'] != $confirmation_secret) {
             return $result;
         }
 
@@ -478,7 +487,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         }
 
         // Prepare vars (assign array)
-        $var_names = self::getTemplateVars($template_name);
+        $var_names = $this->getTemplateVars($template_name);
         $vars = waUtils::extractValuesByKeys($options, $var_names, false, '');
         $vars['password'] = $onetime_password;
 
@@ -564,7 +573,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         }
 
         // Prepare vars (assign array)
-        $var_names = self::getTemplateVars($template_name);
+        $var_names = $this->getTemplateVars($template_name);
         $vars = waUtils::extractValuesByKeys($options, $var_names, false, '');
         $vars['code'] = $confirmation_code;
 
@@ -667,7 +676,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         $recovery_url = str_replace('{$secret_hash}', $secret_hash, $recovery_url);
 
         // Prepare vars (assign array)
-        $var_names = self::getTemplateVars($template_name);
+        $var_names = $this->getTemplateVars($template_name);
         $vars = waUtils::extractValuesByKeys($options, $var_names, false, '');
         $vars['recovery_url'] = $recovery_url;
 
@@ -828,7 +837,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         $text_template = $template['text'];
 
         // Prepare vars (assign array)
-        $var_names = self::getTemplateVars($template_name);
+        $var_names = $this->getTemplateVars($template_name);
         $vars = waUtils::extractValuesByKeys($options, $var_names, false, '');
         $vars['password'] = $password;
 
@@ -857,7 +866,7 @@ class waVerificationChannelEmail extends waVerificationChannel
      *    If $with_description === True than return map <name_of_var> => <description_or_var>
      *    If $with_description === True than return array of <name_of_var>
      */
-    public static function getTemplateVars($template_name, $with_description = false)
+    public function getTemplateVars($template_name, $with_description = false)
     {
         static $all_vars;
         if ($all_vars === null) {

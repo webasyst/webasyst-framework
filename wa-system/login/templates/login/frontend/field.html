@@ -99,15 +99,16 @@
 
     {$attrs[] = "class=\"`$classes`\""}
 
-    {$_placeholder = $params.placeholder|default:''}
-    {$_placeholder = $_placeholder|escape}
+    {$is_onetime_password_field = $is_onetime_password_auth_type && $_field_id === 'password'}
 
-    {if strlen($_placeholder) > 0}
-        {if $is_onetime_password_auth_type && $_field_id === 'password'}
-            {$_placeholder = ''}
-        {/if}
-        {$attrs[] = "placeholder=\"`$_placeholder`\""}
+    {$_placeholder = ''}
+    {if $need_placeholders && !$is_onetime_password_field}
+        {$_placeholder = $params.placeholder|default:''}
+        {$_placeholder = $_placeholder|escape}
     {/if}
+
+
+    {$attrs[] = "placeholder=\"`$_placeholder`\""}
 
     {if $params.disabled|default:false}
         {$attrs[] = 'disabled="disabled"'}

@@ -30,16 +30,4 @@ class waFrontendForgotPasswordForm extends waForgotPasswordForm
         }
     }
 
-    /**
-     * @param array $options that options will be passed to proper factory/constructor
-     * @return waFrontendForgotPasswordForm
-     */
-    public static function factory($options = array())
-    {
-        if (waConfig::get('is_template')) {
-            return null;
-        }
-        $auth_config = waDomainAuthConfig::factory();
-        return wa($auth_config->getApp())->getForgotPasswordForm($options);
-    }
 }

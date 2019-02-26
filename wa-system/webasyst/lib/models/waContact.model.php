@@ -152,10 +152,17 @@ class waContactModel extends waModel
         return $this->deleteById($id);
     }
 
+    /**
+     * @param string $email
+     * @param bool|null $with_password With OR Without password OR ignore that condition
+     *   Default - ignore password condition
+     * @return array
+     */
     public function getByEmail($email, $with_password = null)
     {
-        $sql = "SELECT c.* FROM ".$this->table." c JOIN wa_contact_emails e ON c.id = e.contact_id
-        WHERE e.email = s:0";
+        $sql = "SELECT c.* FROM `{$this->table}` c 
+                JOIN `wa_contact_emails` e ON c.id = e.contact_id
+                WHERE e.email = s:0";
         if ($with_password !== null) {
             if ($with_password) {
                 $sql .= " AND c.password != ''";
@@ -166,6 +173,30 @@ class waContactModel extends waModel
         $sql .= ' LIMIT 1';
         return $this->query($sql, $email)->fetch();
     }
+
+    /**
+     * @param string $phone
+     * @param bool|null $with_password With OR Without password OR ignore that condition
+     *   Default - ignore password condition
+     * @return array
+     */
+    public function getByPhone($phone, $with_password = null)
+    {
+        $phone = waContactPhoneField::cleanPhoneNumber($phone);
+        $sql = "SELECT c.* FROM `{$this->table}` c 
+                JOIN `wa_contact_data` d ON c.id = d.contact_id
+                WHERE d.field = 'phone' AND d.value = s:0";
+        if ($with_password !== null) {
+            if ($with_password) {
+                $sql .= " AND c.password != ''";
+            } else {
+                $sql .= " AND c.password = ''";
+            }
+        }
+        $sql .= ' LIMIT 1';
+        return $this->query($sql, $phone)->fetchAssoc();
+    }
+
 
     public function getByGroups($groups)
     {

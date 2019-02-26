@@ -77,6 +77,9 @@ class waDomainAuthConfig extends waAuthConfig
      */
     public static function factory($domain = null)
     {
+        if (waConfig::get('is_template')) {
+            return null;
+        }
         if (!$domain) {
             $domain = wa()->getRouting()->getDomain(null, true, false);
         }
@@ -306,6 +309,7 @@ class waDomainAuthConfig extends waAuthConfig
     }
 
     /**
+     * Placeholder for input 'login' for Login form
      * @return string
      */
     public function getLoginPlaceholder()
@@ -313,10 +317,6 @@ class waDomainAuthConfig extends waAuthConfig
         return $this->getScalarValue('login_placeholder', _ws('Email'));
     }
 
-    public function setLoginPlaceholder($placeholder)
-    {
-        $this->setScalarValue('login_placeholder', $placeholder);
-    }
 
     /**
      * @return bool
@@ -542,6 +542,7 @@ class waDomainAuthConfig extends waAuthConfig
                 'login_captcha'             => array('login'),
                 'login_placeholder'         => array('login'),
                 'login_caption'             => array('login'),
+                'password_placeholder'      => array('signup'),
                 'signup_confirm'            => array('signup'),
                 'signup_notify'             => array('signup'),
                 'signup_captcha'            => array('signup'),

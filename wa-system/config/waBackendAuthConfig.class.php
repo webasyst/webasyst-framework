@@ -77,6 +77,7 @@ class waBackendAuthConfig extends waAuthConfig
                 'login_caption',
                 'login_captcha',
                 'login_placeholder',
+                'password_placeholder',
                 'verification_channel_ids',
                 'used_auth_methods'
             );
@@ -167,7 +168,7 @@ class waBackendAuthConfig extends waAuthConfig
     /**
      * @return bool
      */
-    public function getSignupConfirm()
+    public function getSignUpConfirm()
     {
         return false;
     }
@@ -189,5 +190,23 @@ class waBackendAuthConfig extends waAuthConfig
     public function getCanLoginByContactLogin()
     {
         return true;
+    }
+
+    /**
+     * Placeholder for input 'login' for Login form
+     * @return string
+     */
+    public function getLoginPlaceholder()
+    {
+        return $this->getScalarValue('login_placeholder', _ws('Login'));
+    }
+
+    /**
+     * Placeholder for input 'password' for Login form
+     * @return string
+     */
+    public function getPasswordPlaceholder()
+    {
+        return $this->getScalarValue('password_placeholder', _ws('Password'));
     }
 }

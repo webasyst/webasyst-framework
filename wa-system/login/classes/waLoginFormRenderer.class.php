@@ -60,10 +60,6 @@ abstract class waLoginFormRenderer
 
     /**
      * waLoginFormRenderer constructor.
-     * IMPORTANT: Constructor must be public for being available for wa()->getFactory()
-     * @see waSystem::getFactory()
-     * @see waSystem::getSignupForm()
-     * @see factory()
      *
      * @param array $options
      *
@@ -101,6 +97,7 @@ abstract class waLoginFormRenderer
         $this->options['show_sub_title'] = $this->getBoolVal($this->options, 'show_sub_title');
         $this->options['show_oauth_adapters'] = $this->getBoolVal($this->options, 'show_oauth_adapters');
         $this->options['need_redirects'] = $this->getBoolVal($this->options, 'need_redirects', true);
+        $this->options['need_placeholders'] = $this->getBoolVal($this->options, 'need_placeholders', true);
         $this->options['include_css'] = $this->getBoolVal($this->options, 'include_css', true);
         $this->options['include_js'] = true;
     }
@@ -472,6 +469,7 @@ abstract class waLoginFormRenderer
             'show_sub_title'                => $this->options['show_sub_title'],
             'show_oauth_adapters'           => $this->options['show_oauth_adapters'],
             'need_redirects'                => $this->options['need_redirects'],
+            'need_placeholders'             => $this->options['need_placeholders'],
             'is_onetime_password_auth_type' => $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD,
             'auth_config'                   => $this->auth_config->getData(),
             'is_need_confirm'               => $this->auth_config->getSignUpConfirm(),

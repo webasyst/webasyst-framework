@@ -361,6 +361,10 @@ var WASettingsEmailTemplate = ( function($) {
         var that = this,
             cheat_sheet_name = that.cheat_sheet_name;
 
+        var getViewRight = function() {
+            return ($(window).width() - (that.$wrapper.offset().left + that.$wrapper.outerWidth()));
+        };
+
         $(document).bind('wa_cheatsheet_init.' + cheat_sheet_name, function () {
             $.cheatsheet[cheat_sheet_name].insertVarEvent = function () {
                 $("#wa-editor-help-" + cheat_sheet_name).on('click', "div.fields a.inline-link", function () {
@@ -383,10 +387,49 @@ var WASettingsEmailTemplate = ( function($) {
                 options: {
                     name: cheat_sheet_name,
                     app: 'webasyst',
-                    key: 'email_template_' + that.template_id
+                    key: 'email_template_' + that.template_id,
+                    need_cache: 1
                 }
             },
-            function () {}
+            function () {
+
+                $(document).one('wa_cheatsheet_load.' + cheat_sheet_name, function() {
+                    var $help = $("#wa-editor-help-" + cheat_sheet_name);
+
+
+                    var getHelpRight = function() {
+                        return $(window).width() - ($help.offset().left + $help.outerWidth());
+                    };
+
+                    var adjustHelpOffset = function () {
+                        if ($help.length) {
+                            $help.css('right', 0);
+                            var diff = getHelpRight() - getViewRight();
+                            $help.css('right', (-diff) + 'px');
+                        }
+                    };
+
+                    var watcher = function() {
+                        var timer = setInterval(function () {
+                            if (!$.contains(document, $help.get(0))) {
+                                $(window).off('resize.' + cheat_sheet_name);
+                                clearInterval(timer);
+                                timer = null;
+                            }
+                        }, 500);
+                    };
+
+                    adjustHelpOffset();
+
+                    $(window).on('resize.' + cheat_sheet_name, function () {
+                        adjustHelpOffset();
+                    });
+
+                    watcher();
+
+                });
+
+            }
         );
     };
 

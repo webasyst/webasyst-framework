@@ -177,43 +177,6 @@ class waSystem
     }
 
     /**
-     * @param null|waDomainAuthConfig|string $domain_config
-     * @param array $options
-     * @return waSignupForm
-     */
-    public function getSignupForm($domain_config = null, $options = array())
-    {
-        return $this->getFactory('signup_form', 'waSignupForm', $options, $domain_config);
-    }
-
-    /**
-     * @param array $options
-     * @return waFrontendLoginForm
-     */
-    public function getLoginForm($options = array())
-    {
-        return $this->getFactory('login_form', 'waFrontendLoginForm', $options);
-    }
-
-    /**
-     * @param array $options
-     * @return waFrontendForgotPasswordForm
-     */
-    public function getForgotPasswordForm($options = array())
-    {
-        return $this->getFactory('forgotpassword_form', 'waFrontendForgotPasswordForm', $options);
-    }
-
-    /**
-     * @param array $options
-     * @return waFrontendSetPasswordForm
-     */
-    public function getSetPasswordForm($options = array())
-    {
-        return $this->getFactory('setpassword_form', 'waFrontendSetPasswordForm', $options);
-    }
-
-    /**
      * Returns instance of class used for routing managing (waRouting).
      *
      * @return waRouting
@@ -299,7 +262,7 @@ class waSystem
     }
 
     /**
-     * @param waUser $user
+     * @param waAuthUser $user
      */
     public function setUser(waUser $user)
     {
@@ -1497,7 +1460,10 @@ class waSystem
     /**
      * Trigger event with given $name from current active application.
      *
-     * @param  string $name Event name.
+     * @param  string|array $name:
+     *      - Event name like just string scalar value OR
+     *      - Array where 0 item is app ID and 1st item is string scalar value
+     *
      * @param  mixed $params Parameters passed to event handlers.
      * @param  string[] $array_keys Array of expected template items for UI events.
      * @return  array  app_id or plugin_id => data returned from handler (unless null is returned)

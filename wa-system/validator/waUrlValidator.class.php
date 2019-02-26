@@ -28,7 +28,7 @@ class waUrlValidator extends waRegexValidator
 
         // more restrictions for common protocols
         if (!$this->isEmpty($value) && !$this->getErrors() && ('http' == substr($value, 0, 4) || 'ftp' == substr($value, 0, 3))) {
-            if (!preg_match('`^(https?|ftp):((//)|(\\\\\\\\))+((?:([^[:punct:]]|-)+\\.)+[^[:punct:]]{2,6})((/|\\|#)([^[:punct:]]|[:#@%/;$()~_?\+-=\.&\\\\])*)?$`ui', $value)) {
+            if (!preg_match('`^(https?|ftp):((//)|(\\\\\\\\))+((?:([^[:punct:]]|-)+\\.)+[^[:punct:]]{2,7})((/|\\|#)([^[:punct:]]|[:#@%/;$()~_?\+-=\.&\\\\])*)?$`ui', $value)) {
                 $this->setError($this->getMessage('not_match', array('value' => $value)));
             }
         }

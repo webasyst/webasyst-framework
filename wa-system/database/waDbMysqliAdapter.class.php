@@ -226,6 +226,63 @@ class waDbMysqliAdapter extends waDbAdapter
 
     public function createTable($table, $data)
     {
+        $statements = $this->buildStatements($data);
+
+        $fields = $statements['fields'];
+        $keys   = $statements['keys'];
+
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table." (".implode(",\n", $fields);
+        if ($keys) {
+            $sql .= ", ".implode(",\n", $keys);
+        }
+
+        $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8";
+        if (!$this->query($sql)) {
+            $this->exception();
+        }
+    }
+
+    /**
+     * Add column by db.php schema for current table
+     *
+     * @param string $table
+     * @param string $column
+     *
+     * @param string $table_schema - db.php config TABLE schema
+     * See db.php format
+     *
+     * @param null|string $after_column
+     *
+     * @throws waDbException
+     */
+    public function addColumn($table, $column, $table_schema, $after_column = null)
+    {
+        $statements = $this->buildStatements($table_schema);
+        $fields = $statements['fields'];
+
+        if (!isset($fields[$column])) {
+            return;
+        }
+
+        if ($this->query("SELECT `{$column}` FROM `{$table}` WHERE 0")) {
+            return; // column exist - skip
+        }
+
+        $statement = $fields[$column];
+
+        $sql = "ALTER TABLE `{$table}` ADD COLUMN {$statement}";
+
+        if ($after_column && isset($fields[$after_column])) {
+            $sql .= " AFTER `{$after_column}`";
+        }
+
+        if (!$this->query($sql)) {
+            $this->exception();
+        }
+    }
+
+    protected function buildStatements($data)
+    {
         $fields = array();
         foreach ($data as $field_id => $field) {
             if (substr($field_id, 0, 1) != ':') {
@@ -250,7 +307,7 @@ class waDbMysqliAdapter extends waDbAdapter
                 if (!empty($field['autoincrement'])) {
                     $type .= ' AUTO_INCREMENT';
                 }
-                $fields[] = $this->escapeField($field_id)." ".$type;
+                $fields[$field_id] = $this->escapeField($field_id)." ".$type;
             }
         }
         $keys = array();
@@ -277,14 +334,10 @@ class waDbMysqliAdapter extends waDbAdapter
             }
             $keys[] = $k." (".implode(', ', $key_fields).')';
         }
-        $sql = "CREATE TABLE IF NOT EXISTS ".$table." (".implode(",\n", $fields);
-        if ($keys) {
-            $sql .= ", ".implode(",\n", $keys);
-        }
-        $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8";
-        if (!$this->query($sql)) {
-            $this->exception();
-        }
+        return array(
+            'fields' => $fields,
+            'keys' => $keys
+        );
     }
 
     protected function exception()

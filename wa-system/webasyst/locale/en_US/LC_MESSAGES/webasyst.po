@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-12-12 10:56+0300\n"
+"PO-Revision-Date: 2019-02-21 14:44+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3819,7 +3819,7 @@ msgid "API key"
 msgstr ""
 
 #: /wa-system/map/adapters/yandexMap.class.php:217
-msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>."
+msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “JavaScript API, Geocoding API” option."
 msgstr ""
 
 #: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:93
@@ -3876,4 +3876,24 @@ msgstr ""
 
 #: /wa-system/config/waAuthConfig.class.php:539
 msgid "You have been requesting a code too frequently. Try again in <strong>%s:%s</strong>."
+msgstr ""
+
+#: /wa-system/mail/waMailPOP3.class.php:54
+msgid "Server address is required"
+msgstr ""
+
+#: /wa-system/mail/waMailPOP3.class.php:56
+msgid "Port is required"
+msgstr ""
+
+#: /wa-system/webasyst/lib/config/webasystConfig.class.php:227
+msgid "<strong>%s</strong> in <strong>%s</strong> template."
+msgstr ""
+
+#: /wa-system/signup/actions/waSignup.action.php:605
+msgid "Password has not been sent. Please contact your administrator."
+msgstr ""
+
+#: /wa-system/signup/actions/waSignup.action.php:1092
+msgid "Sending error"
 msgstr ""

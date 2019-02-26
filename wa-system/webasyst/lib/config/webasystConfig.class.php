@@ -146,5 +146,117 @@ class webasystConfig extends waAppConfig
     {
         //
     }
+
+    /**
+     * CheatSheet help for webasyst/webasyst/settings/email/template/ pages
+     * @return array
+     */
+    public function getEmailChannelTemplatesHelp()
+    {
+        // Here will be vars for each Email template
+        $email_template_vars = array();
+
+        // "Empty" Email channel, need to extract template names
+        $email_channel = waVerificationChannel::factory(waVerificationChannelModel::TYPE_EMAIL);
+
+        // List of templates: template_id => localized template name
+        $template_list = $email_channel->getTemplatesList();
+
+        // Name of vars tabs
+        $vars_tab_names = array();
+
+        foreach ($template_list as $template_name => $loc_template_name) {
+
+            // template vars
+            $vars = $email_channel->getTemplateVars($template_name, true);
+
+            // each var name need to prefix with $
+            // for it separate keys and values, prefix each key with $ and than combine arrays back
+            $var_names = array_keys($vars);
+            $var_values = array_values($vars);
+            $var_names = array_map(wa_lambda('$name', 'return \'$\' . $name;'), $var_names);
+            $vars = array_combine($var_names, $var_values);
+
+            // vars for each email template put into own section
+            $email_template_vars[ 'email_template_' . $template_name ] = $vars;
+
+            // name of tab where this vars enumerated
+            $vars_tab_names[ 'email_template_' . $template_name ] = $loc_template_name;
+        }
+
+
+        // If you need to add new vars not related with Email templates merge they with $email_template_vars
+        return array(
+            'vars_tab_names' => $vars_tab_names,
+            'vars' => $email_template_vars
+        );
+    }
+
+    /**
+     * CheatSheet help for webasyst/webasyst/settings/sms/template/ pages
+     * @return array
+     */
+    public function getSMSChannelTemplatesHelp()
+    {
+        // Here will be vars for each SMS template
+        $sms_template_vars = array();
+
+        // "Empty" SMS channel, need to extract template names
+        $sms_channel = waVerificationChannel::factory(waVerificationChannelModel::TYPE_SMS);
+
+        // List of templates: template_id => localized template name
+        $template_list = $sms_channel->getTemplatesList();
+
+        foreach ($template_list as $template_name => $loc_template_name) {
+
+            // template vars
+            $vars = $sms_channel->getTemplateVars($template_name, true);
+
+            // each var name need to prefix with $
+            // for it separate keys and values, prefix each key with $ and than combine arrays back
+            $var_names = array_keys($vars);
+            $var_values = array_values($vars);
+            $var_names = array_map(wa_lambda('$name', 'return \'$\' . $name;'), $var_names);
+            $vars = array_combine($var_names, $var_values);
+
+            // merge all vars
+            foreach ($vars as $var => $description) {
+                if (!isset($sms_template_vars['sms_templates'][$var])) {
+                    $sms_template_vars['sms_templates'][$var] = array();
+                }
+                $sms_template_vars['sms_templates'][$var][] = sprintf(_ws('<strong>%s</strong> in <strong>%s</strong> template.'), $description, $loc_template_name);
+            }
+        }
+
+        // join descriptions into strings
+        foreach ($sms_template_vars['sms_templates'] as $var => &$descriptions) {
+            $descriptions = join("<br>", $descriptions);
+        }
+        unset($descriptions);
+
+        // If you need to add new vars not related with Email templates merge they with $email_template_vars
+        return array(
+            'vars_tab_names' => array('sms_templates' => _ws('SMS templates')),
+            'vars' => $sms_template_vars
+        );
+    }
+
+    /**
+     * CheatSheet help for webasyst/webasyst/settings/email/template/ pages
+     *   +
+     * CheatSheet help for webasyst/webasyst/settings/sms/template/ pages
+     *
+     * @return array
+     */
+    public function getAllChannelTemplatesHelp()
+    {
+        $email_templates_help = $this->getEmailChannelTemplatesHelp();
+        $sms_templates_help = $this->getSMSChannelTemplatesHelp();
+        return array(
+            'vars_tab_names' => $email_templates_help['vars_tab_names'] + $sms_templates_help['vars_tab_names'],
+            'vars' => $email_templates_help['vars'] + $sms_templates_help['vars']
+        );
+
+    }
 }
 

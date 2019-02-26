@@ -498,6 +498,9 @@ var WaSignup = ( function($) {
             return;
         }
 
+        r = r || {};
+        r.data = r.data || {};
+
         // onOk - dispatch different responses
         if (r.data.code_sent) {
             that.onCodeSent(r.data);
@@ -526,6 +529,18 @@ var WaSignup = ( function($) {
                     password_sent: r.data.generated_password_sent
                 }
             );
+        } else if (r.data.signup_status === 'in_process') {
+            if (r.data.confirmation_link_sent) {
+                that.triggerEvent('wa_auth_link_sent', {
+                    message: r.data.confirmation_link_sent_message || '',
+                    transport: 'email'
+                });
+            } else if (r.data.code_sent) {
+                that.triggerEvent('wa_auth_code_sent', {
+                    message: r.data.code_sent_message || '',
+                    transport: 'sms'
+                });
+            }
         }
 
         // Trigger event for further processing successfully authorized contact

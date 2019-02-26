@@ -53,6 +53,13 @@ class waMailDecode
 
     protected $current_header;
 
+    /**
+     * For some headers need to prevent multiple decoding header value
+     * Cause if call iconv several times on the same string it would be incorrect broken string as a final result
+     * @var array string => int
+     */
+    protected $decoded_header_counter = array();
+
     public function __construct($options = array())
     {
         $this->options = $options + $this->options;
@@ -133,7 +140,14 @@ class waMailDecode
             if (is_array($v)) {
                 $v = implode(self::TEMP_NEW_LINE, $v);
             }
-            $v = $this->decodeHeader($v);
+
+
+            if ($h == 'subject') {
+                $v = $this->decodeHeader($v, $h, true);
+            } else {
+                $v = $this->decodeHeader($v, $h);
+            }
+
             if ($h == 'subject') {
                 if (strpos($v, ' ') === false) {
                     $v = str_replace('_', ' ', $v);
@@ -481,10 +495,11 @@ class waMailDecode
                 }
                 break;
             case self::TYPE_HEADER_VALUE:
-                $part['value'] = $this->decodeHeader($part['value']);
+
+                $part['value'] = $this->decodeHeader($part['value'], $this->current_header);
 
                 if ($this->current_header == 'content-type') {
-                    $info = $this->parseHeader($part['value']);
+                    $info = $this->parseHeader($part['value'], $this->current_header);
                     $this->part['type'] = strtolower(strtok($info['value'], '/'));
                     $this->part['subtype'] = strtolower(strtok(''));
                     $this->part['params'] = $info['params'];
@@ -651,18 +666,41 @@ class waMailDecode
     }
 
     /**
+     * Decode header value
+     *
+     * @param string|array $value
+     * @param string $header
+     * @param bool $decode_once - not decode if already decode this header
+     *      Cause if call iconv several times on the same string it would be incorrect broken string as a final result
+     * @return string
+     */
+    protected function decodeHeader($value, $header, $decode_once = false)
+    {
+        $this->decoded_header_counter[$header] = isset($this->decoded_header_counter[$header]) ? (int)$this->decoded_header_counter[$header] : 0;
+        if ($decode_once && $this->decoded_header_counter[$header] >= 1) {
+            return $value;
+        }
+        $value = $this->decodeHeaderValue($value);
+        $this->decoded_header_counter[$header]++;
+        return $value;
+    }
+
+    /**
+     * Decode header value
      * @param string|array $value
      * @return string
      */
-    protected function decodeHeader($value)
+    protected function decodeHeaderValue($value)
     {
         if (is_array($value)) {
             foreach ($value as &$v) {
-                $v = $this->decodeHeader($v);
+                $v = $this->decodeHeaderValue($v);
             }
             unset($v);
+
             return $value;
         }
+
         if (preg_match("/=\?(.+)\?(B|Q)\?(.*)\?=?(.*)/i", $value, $m)) {
             $value = ltrim($value);
             $value = str_replace("\r", "", $value);
@@ -691,18 +729,24 @@ class waMailDecode
         return $value;
     }
 
-    protected function parseHeader($str)
+    /**
+     * @param $str
+     * @param string $header
+     * @return array
+     */
+    protected function parseHeader($str, $header = null)
     {
         if (is_array($str)) {
             $str = implode("", $str);
         }
+
         $result = array('value' => trim(strtok($str, ';')), 'params' => array());
         while (($param = strtok('=')) !== false) {
             $result['params'][strtolower(trim($param))] = trim(strtok(';'), ' "');
         }
 
         if (isset($result['params']['name'])) {
-            $result['params']['name'] = $this->decodeHeader($result['params']['name']);
+            $result['params']['name'] = $this->decodeHeader($result['params']['name'], $header);
         }
         $temp = array();
         foreach ($result['params'] as $key => $value) {

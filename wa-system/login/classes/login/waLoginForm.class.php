@@ -33,7 +33,7 @@ abstract class waLoginForm extends waLoginFormRenderer
         if (wa()->getEnv() === 'backend') {
             return new waBackendLoginForm($options);
         } else {
-            return waFrontendLoginForm::factory($options);
+            return new waFrontendLoginForm($options);
         }
     }
 
@@ -212,7 +212,10 @@ abstract class waLoginForm extends waLoginFormRenderer
                 $placeholder = $login_placeholder;
             }
         } elseif ($field_id === 'password') {
-            $placeholder = $field->getName();
+            $password_placeholder = $this->auth_config->getPasswordPlaceholder();
+            if (strlen($password_placeholder) > 0) {
+                $placeholder = $password_placeholder;
+            }
         }
         return $placeholder;
     }

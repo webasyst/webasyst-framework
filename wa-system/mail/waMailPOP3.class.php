@@ -49,8 +49,23 @@ class waMailPOP3
 
     public function connect()
     {
+        $error = '';
+        if (!$this->server) {
+            $error = _ws('Server address is required');
+        } elseif (!$this->port || !wa_is_int($this->port)) {
+            $error = _ws('Port is required');
+        }
+        if ($error) {
+            throw new waException($error);
+        }
+        $this->tryToConnect();
+    }
+
+    protected function tryToConnect()
+    {
         // extra options for stream context
         $stream_context_options = $this->getOption('stream_context_options');
+
 
         // try open socket
         if ($this->getOption('tls')) {
@@ -79,14 +94,26 @@ class waMailPOP3
             } else {
                 $this->handler = @fsockopen($this->server, $this->port, $errno, $errstr, $timeout);
             }
-
         }
+
         if ($this->handler) {
             // read welcome
             $this->read();
             // auth
             $this->auth();
         } else {
+
+            // Not error number - try get error another way
+            if (!$errno) {
+                if (function_exists('socket_last_error')) {
+                    $errno = socket_last_error();
+                    $errstr = socket_strerror($errno);
+                } else {
+                    $error = error_get_last();
+                    $errstr = is_array($error) && isset($error['message']) ? $error['message'] : '';
+                }
+            }
+
             if (!preg_match('//u', $errstr)) {
                 $tmp = @iconv('windows-1251', 'utf-8//ignore', $errstr);
                 if ($tmp) {

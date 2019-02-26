@@ -19,7 +19,11 @@
         {foreach $vars as $id => $app_vars}
             {if !empty($apps_info[$id])}
                 <li id="wa-help-{$id}-vars-{$name}" {if $app_vars@first}class="selected"{/if}>
-                    <a href="#">{$apps_info[$id]['name']|escape}</a>
+                    {$_tab_name = $tab_names[$id]|default:''|escape}
+                    {if !$_tab_name}
+                        {$_tab_name = $apps_info[$id]['name']|escape}
+                    {/if}
+                    <a href="#">{$_tab_name}</a>
                 </li>
             {/if}
         {/foreach}

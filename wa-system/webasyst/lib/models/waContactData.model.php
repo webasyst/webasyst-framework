@@ -229,15 +229,35 @@ class waContactDataModel extends waModel
         return $this->getByField(array('contact_id' => $contact_id, 'field' => 'phone', 'sort' => $sort));
     }
 
+    /**
+     * Update phone status for this contact
+     *
+     * @param int $contact_id
+     * @param string $phone
+     * @param string $status self::STATUS_*
+     *
+     * @return bool
+     *   If phone for this contact doesn't exists return FALSE
+     *   Otherwise return TRUE
+     *
+     * @throws waException
+     */
     public function updateContactPhoneStatus($contact_id, $phone, $status)
     {
-        $this->updateByField(array(
+        $row = $this->getByField(array(
             'contact_id' => $contact_id,
             'field'      => 'phone',
             'value'      => $phone
-        ), array(
-            'status' => $status
         ));
+        if (!$row) {
+            return false;
+        }
+        if ($row['status'] !== $status) {
+            $this->updateById($row['id'], array(
+                'status' => $status
+            ));
+        }
+        return true;
     }
 
     protected function getContactIdByFieldValue($field_id, $value)
@@ -246,7 +266,7 @@ class waContactDataModel extends waModel
                 WHERE
                     `field` = :field_id AND
                     `value` LIKE ('".$this->escape($value, 'like')."')
-                ORDER BY sort LIMIT 1";
+                ORDER BY contact_id, sort LIMIT 1";
         return $this->query($sql, array('field_id' => $field_id))->fetchField();
     }
 }

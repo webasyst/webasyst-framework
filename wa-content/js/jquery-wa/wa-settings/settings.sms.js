@@ -73,8 +73,6 @@ var WASettingsSMS = ( function($) {
         });
     };
 
-    return WASettingsSMS;
-
 })(jQuery);
 
 var WASettingsSMSTemplate = ( function($) {
@@ -187,6 +185,10 @@ var WASettingsSMSTemplate = ( function($) {
         var that = this,
             cheat_sheet_name = that.cheat_sheet_name;
 
+        var getViewRight = function() {
+            return ($(window).width() - (that.$wrapper.offset().left + that.$wrapper.outerWidth()));
+        };
+
         $(document).bind('wa_cheatsheet_init.' + cheat_sheet_name, function () {
             $.cheatsheet[cheat_sheet_name].insertVarEvent = function () {
                 $("#wa-editor-help-" + cheat_sheet_name).on('click', "div.fields a.inline-link", function () {
@@ -204,7 +206,54 @@ var WASettingsSMSTemplate = ( function($) {
             }
         });
 
-        $(".js-cheat-sheet-wrapper").load('?module=backendCheatSheet&action=button', {options: {name: cheat_sheet_name, app: 'webasyst'}}, function () {});
+        $(".js-cheat-sheet-wrapper").load('?module=backendCheatSheet&action=button',
+            {
+                options: {
+                    name: cheat_sheet_name,
+                    app: 'webasyst',
+                    key: 'sms_templates',
+                    need_cache: 1
+                }
+            }, function () {
+
+                $(document).one('wa_cheatsheet_load.' + cheat_sheet_name, function() {
+                    var $help = $("#wa-editor-help-" + cheat_sheet_name);
+
+
+                    var getHelpRight = function() {
+                        return $(window).width() - ($help.offset().left + $help.outerWidth());
+                    };
+
+                    var adjustHelpOffset = function () {
+                        if ($help.length) {
+                            $help.css('right', 0);
+                            var diff = getHelpRight() - getViewRight();
+                            $help.css('right', (-diff) + 'px');
+                        }
+                    };
+
+                    var watcher = function() {
+                        var timer = setInterval(function () {
+                            if (!$.contains(document, $help.get(0))) {
+                                $(window).off('resize.' + cheat_sheet_name);
+                                clearInterval(timer);
+                                timer = null;
+                            }
+                        }, 500);
+                    };
+
+                    adjustHelpOffset();
+
+                    $(window).on('resize.' + cheat_sheet_name, function () {
+                        adjustHelpOffset();
+                    });
+
+                    watcher();
+
+                });
+            }
+        );
+
     };
 
     WASettingsSMSTemplate.prototype.initPreview = function() {
@@ -383,20 +432,35 @@ var WASettingsSMSTemplate = ( function($) {
                     that.$button.removeClass('yellow').addClass('green');
                     that.$loading.removeClass('loading').addClass('yes');
                     that.$footer_actions.removeClass('is-changed');
+
+
+                    // UI update
+                    if (res.data && res.data.channel && res.data.channel.id > 0) {
+
+                        // Reload sidebar
+                        $('#s-sms-templates-page .s-sms-template-sidebar-wrapper')
+                            .load('?module=settingsTemplateSMS&action=sidebar&id=' + res.data.channel.id, function () {
+                                // Update header, but after reload sidebar, cause we need UI updating looks like it does it at once, not alternately
+                                that.$wrapper.find('.s-template-name').text(res.data.channel.name);
+                            });
+
+                    }
+
                     setTimeout(function(){
                         that.$loading.hide();
                     },2000);
                 } else {
                     if (res.errors) {
                         $.each(res.errors, function (field, message) {
-                            var $input = that.$form.find('input[name="data['+field+']"]');
+                            var $input = that.$form.find(':input[name="data['+field+']"]');
                             $input.addClass('shake animated');
                             $input.after('<span style="color: red; margin-left: 12px;">'+ message +'</span>');
                             setTimeout(function(){
                                 $input.removeClass('shake animated');
                                 $input.next().remove();
                             },2000);
-                        })
+                        });
+                        $("html, body").scrollTop(that.$wrapper.offset().top);
                     }
                     that.$loading.hide();
                 }

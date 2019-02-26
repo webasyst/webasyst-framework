@@ -139,13 +139,22 @@ class waViewHelper
             }
             $class_name = $app_id.'MyNavAction';
             if (class_exists($class_name)) {
-                /**
-                 * @var waViewAction $action
-                 */
+
                 try {
+                    // Because in waMyNavAction we call static method with check on is_template var
+                    $is_from_template = waConfig::get('is_template');
+                    waConfig::set('is_template', null);
+
+                    /**
+                     * @var waMyNavAction $action
+                     */
                     $action = new $class_name();
                     wa()->getView()->assign('my_nav_selected', $app_id == $old_app ? $my_nav_selected : '');
                     $result[$app_id] = $action->display(false);
+
+                    // restore is_template var
+                    waConfig::set('is_template', $is_from_template);
+
                 } catch (Exception $e) {
                     unset($result[$app_id]);
                 }
@@ -788,11 +797,9 @@ HTML;
         waConfig::set('is_template', null);
 
         try {
-            $renderer = waFrontendLoginForm::factory($options);
 
-            /**
-             * @var waFrontendLoginForm $renderer
-             */
+            $renderer = new waFrontendLoginForm($options);
+
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
                 $data = $data[$ns];
@@ -845,11 +852,9 @@ HTML;
         waConfig::set('is_template', null);
 
         try {
-            $renderer = waFrontendForgotPasswordForm::factory($options);
 
-            /**
-             * @var waFrontendForgotPasswordForm $renderer
-             */
+            $renderer = new waFrontendForgotPasswordForm($options);
+
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
                 $data = $data[$ns];
@@ -903,10 +908,9 @@ HTML;
         waConfig::set('is_template', null);
 
         try {
-            $renderer = waFrontendSetPasswordForm::factory($options);
-            /**
-             * @var waFrontendSetPasswordForm $renderer
-             */
+
+            $renderer = new waFrontendSetPasswordForm($options);
+
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
                 $data = $data[$ns];
@@ -983,7 +987,7 @@ HTML;
         waConfig::set('is_template', null);
 
         try {
-            $config = waSignupForm::factoryDomainConfig();
+            $config = waDomainAuthConfig::factory();
             $url = $config->getSignUpUrl(array(), $absolute);
         } catch (Exception $e) {
             $url = '';
@@ -1030,17 +1034,15 @@ HTML;
 
         try {
             $data = wa()->getRequest()->post();
-            $renderer = waSignupForm::factory(null, $options);
 
-            /**
-             * @var waSignupForm $renderer
-             */
-            $ns = $renderer->getNamespace();
+            $form = waSignupForm::factory($options);
+
+            $ns = $form->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
                 $data = $data[$ns];
             }
 
-            $html = $renderer->render($data, $errors);
+            $html = $form->render($data, $errors);
         } catch (Exception $e) {
             waLog::log($e->getMessage() . PHP_EOL . $e->getTraceAsString());
             $html = '';

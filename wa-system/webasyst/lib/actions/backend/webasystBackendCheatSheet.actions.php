@@ -87,6 +87,7 @@ class webasystBackendCheatSheetActions extends waActions
         if (empty($only_plugin) || (int)$only_plugin === 0) {
             $assign = array(
                 'vars'        => $this->getVars(),
+                'tab_names'   => $this->getVarsTabNames(),
                 'page'        => ifset($this->fields, 'page', null),
                 'apps_info'   => wa()->getApps(true),
                 'app_id'      => $app,
@@ -140,6 +141,58 @@ class webasystBackendCheatSheetActions extends waActions
         }
 
         return $vars;
+    }
+
+    /**
+     * @return array|null
+     */
+    protected function getVarsTabNames()
+    {
+        $app = waRequest::request('app', null, waRequest::TYPE_STRING);
+        $all_apps_site_config = $this->getCacheAppsSiteConfig();
+
+        $all_apps_site_config = is_array($all_apps_site_config) ? $all_apps_site_config : array();
+
+        $names = array();
+
+        if ($app) {
+            $site_config = ifset($all_apps_site_config, $app, array());
+            $name = $this->extractVarsTabName($site_config);
+            if (!empty($name)) {
+                $names[$app] = $name;
+            }
+        } else {
+            foreach ($all_apps_site_config as $app_id => $site_config) {
+                $name = $this->extractVarsTabName($site_config);
+                if (!empty($name)) {
+                    $names[$app_id] = $name;
+                }
+            }
+        }
+
+        return $names;
+    }
+
+    /**
+     * @param array $site_config
+     * @return null|string
+     */
+    protected function extractVarsTabName($site_config)
+    {
+        $key = waRequest::request('key', null);
+
+        if (empty($key)) {
+            return null;
+        }
+
+        $vars_tab_names_presented = $site_config && is_array($site_config) && isset($site_config['vars_tab_names']) &&
+            is_array($site_config['vars_tab_names']);
+
+        if (!$vars_tab_names_presented) {
+            return null;
+        }
+
+        return isset($site_config['vars_tab_names'][$key]) ? $site_config['vars_tab_names'][$key] : null;
     }
 
     protected function varsParser($site_config)

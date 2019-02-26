@@ -69,19 +69,6 @@ class waFrontendLoginForm extends waLoginForm
         }
     }
 
-    /**
-     * @param array $options that options will be passed to constructor
-     * @see __construct
-     * @return waFrontendLoginForm
-     */
-    public static function factory($options = array())
-    {
-        if (waConfig::get('is_template')) {
-            return null;
-        }
-        $auth_config = waDomainAuthConfig::factory();
-        return wa($auth_config->getApp())->getLoginForm($options);
-    }
 
     /**
      * Render 'remember me' control

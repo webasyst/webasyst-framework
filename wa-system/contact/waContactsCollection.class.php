@@ -176,8 +176,14 @@ class waContactsCollection
         // Add required fields to select and delete fields for getting data after query
         foreach ($fields as $i => $f) {
             if (!$contact_model->fieldExists($f)) {
-                if ($f == 'email') {
-                    $this->post_fields['email'][] = $f;
+                if ($f === 'email' || substr($f, 0, 6) === 'email.') {
+                    if ($f === 'email') {
+                        $this->post_fields['email'][] = $f; // OLD style behavior
+                    } elseif ($f === 'email.*') {
+                        $this->post_fields['email'][] = '*';
+                    } else {
+                        $this->post_fields['email'][] = substr($f, 6);
+                    }
                 } elseif ($f == '_online_status') {
                     $required_fields['last_datetime'] = 'c';
                     $required_fields['login'] = 'c';
@@ -215,6 +221,29 @@ class waContactsCollection
     /**
      * Get data for contacts in this collection.
      * @param string|array $fields
+     *
+     * If need extract other columns of email row, NOT just email value use dot notation
+     * Like this
+     * email.status, email.email
+     *
+     * You can use even '*"
+     * Like this
+     * email.*
+     *
+     * @example
+     * $col->getContacts('*,email.email,email.status')
+     * OR
+     * $col->getContacts('*,email.*')
+     *
+     * If use OLD notation - without dot (.) collection extract only email values
+     * $col->getContacts('*')  (email values will be extracted - case we skip 'email' in fields list)
+     * $col->getContacts('*,email')  (email values will be extracted - same as we skipped 'email')
+     * $col->getContacts('*,email.email')  (email values will be extracted - same as previous )
+     *
+     * APPLICABLE only for email, cause we need save just 'email' notation for backward compatibility
+     *
+     * For other data fields we extract raw data from DB
+     *
      * @param int $offset
      * @param int $limit
      * @return array [contact_id][field] = field value in appropriate field format
@@ -334,7 +363,66 @@ class waContactsCollection
                     continue;
                 }
 
+
+                if ($table === 'email') {
+
+                    $model = $this->getModel('email');
+
+                    $columns = array();
+                    foreach ($fields as $field) {
+                        if ($field === '*') {
+                            $columns = array_keys($model->getMetadata());
+                            break;
+                        }
+                        if ($model->fieldExists($field)) {
+                            $columns[] = $field;
+                        }
+                    }
+                    $columns = array_unique($columns);
+
+                    $all_emails = $model->getByField('contact_id', $ids, true);
+
+                    // fill each contact by empty 'email'
+                    foreach ($data as $contact_id => &$contact) {
+                        $contact['email'] = array();
+                    }
+                    unset($contact);
+
+                    // merge into contacts info about emails AND take into account columns array
+                    foreach ($all_emails as $email_row) {
+                        if (isset($data[$email_row['contact_id']])) {
+                            if ($columns === array('email')) {
+                                // OLD style behavior case
+                                $data[$email_row['contact_id']]['email'][$email_row['sort']] = $email_row['email'];
+                            } else {
+                                $email_info = array();
+                                foreach ($columns as $column) {
+                                    if ($column != 'id' && $column != 'contact_id' && $column != 'sort') {
+                                        $email_info[$column] = $email_row[$column];
+                                    }
+                                }
+
+                                // just in case if some contact field formatter consume only 'value'
+                                // see for example
+                                $email_info['value'] = $email_info['email'];
+
+                                $data[$email_row['contact_id']]['email'][$email_row['sort']] = $email_info;
+                            }
+                        }
+                    }
+
+                    // array_values just in case
+                    foreach ($data as $contact_id => &$contact) {
+                        $contact['email'] = array_values($contact['email']);
+                    }
+                    unset($contact);
+
+                    continue;
+
+                }
+
                 $data_fields = $fields;
+
                 foreach ($data_fields as $k => $field_id) {
                     $f = waContactFields::get($field_id);
                     if ($f && $f instanceof waContactCompositeField) {
@@ -344,6 +432,7 @@ class waContactsCollection
                 }
 
                 $model = $this->getModel($table);
+
                 $post_data = $model->getData($ids, $data_fields);
                 foreach ($post_data as $contact_id => $contact_data) {
                     foreach ($contact_data as $field_id => $value) {
@@ -356,6 +445,7 @@ class waContactsCollection
                         }
                     }
                 }
+
                 if ($fields) {
                     $fill[$table] = array_fill_keys($fields, '');
                 } else if (!isset($fill[$table])) {

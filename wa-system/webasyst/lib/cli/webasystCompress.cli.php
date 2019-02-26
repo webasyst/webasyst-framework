@@ -800,6 +800,7 @@ HELP;
                                 'shop_settings',
                                 'importexport',
                                 'export_profile',
+                                'printforms',
                             )
                         );
                         break;
@@ -823,6 +824,7 @@ HELP;
                                 'type',
                                 'offline',
                                 'discount',
+                                'partial_refund',
                             )
                         );
                         break;
@@ -1034,7 +1036,13 @@ HELP;
 
                 if (is_array($requirements)) {
                     if (!version_compare($version, $requirements['version'], $requirements['operator'])) {
-                        $this->tracef("PHP %s file syntax check\t SKIPPED: Requirement NOT satisfied [%s%s%s])", $version, $version, $requirements['operator'], $requirements['version']);
+                        $this->tracef(
+                            "PHP %s file syntax check\t SKIPPED: Requirement NOT satisfied [%s%s%s])",
+                            $version,
+                            $version,
+                            $requirements['operator'],
+                            $requirements['version']
+                        );
                         continue;
                     }
                 }
@@ -1164,7 +1172,7 @@ HELP;
                                 $next_id = $id;
                                 do {
                                     $next = ifset($tokens, ++$next_id, array());
-                                } while (ifset($next[0]) != T_STRING);
+                                } while (!is_array($next) || (ifset($next[0]) != T_STRING));
 
                                 if (is_array($next) && isset($next[1])) {
                                     if (!isset($info['classes'][$next[1]])) {
@@ -1281,6 +1289,9 @@ HELP;
         $extensions = array_diff(
             $extensions,
             array(
+                'Core',
+                'pcre',
+                'session',
                 'standard',
                 'SPL',
                 'iconv',

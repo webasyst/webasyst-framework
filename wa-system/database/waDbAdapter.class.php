@@ -133,4 +133,22 @@ abstract class waDbAdapter
     {
 
     }
+
+    /**
+     * Add column by db.php schema for current table
+     *
+     * @param string $table
+     * @param string $column
+     *
+     * @param string $table_schema - db.php config TABLE schema
+     * See db.php format
+     *
+     * @param null|string $after_column
+     *
+     */
+    public function addColumn($table, $column, $table_schema, $after_column = null)
+    {
+        // override
+        // TODO: ADD to all adapters
+    }
 }

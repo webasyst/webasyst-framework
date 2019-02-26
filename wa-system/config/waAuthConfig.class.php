@@ -25,10 +25,14 @@ abstract class waAuthConfig
     /**
      * @param null|array $options
      *   string|null 'env' Environment. If skip or NULL get current env
-     * @return waApiAuthConfig|waBackendAuthConfig|waDomainAuthConfig
+     * @return waApiAuthConfig|waBackendAuthConfig|waDomainAuthConfig|null
      */
     public static function factory($options = null)
     {
+        if (waConfig::get('is_template')) {
+            return null;
+        }
+
         $options = is_array($options) ? $options : array();
 
         $env = isset($options['env']) && is_scalar($options['env']) ? $options['env'] : null;
@@ -38,11 +42,12 @@ abstract class waAuthConfig
             return waBackendAuthConfig::getInstance();
         } elseif ($env === 'api') {
             return waApiAuthConfig::getInstance();
-        } else {
+        } elseif ($env === 'frontend') {
             return waDomainAuthConfig::factory(isset($options['domain']) ? $options['domain'] : null);
+        } else {
+            return null;
         }
     }
-
 
     /**
      * Ensure that some channel set in config and it exists
@@ -154,6 +159,7 @@ abstract class waAuthConfig
     }
 
     /**
+     * Placeholder for input 'login' for Login form
      * @return string
      */
     public function getLoginPlaceholder()
@@ -161,9 +167,32 @@ abstract class waAuthConfig
         return $this->getScalarValue('login_placeholder');
     }
 
+    /**
+     * Set placeholder for input 'login' for Login form
+     * @param $placeholder
+     */
     public function setLoginPlaceholder($placeholder)
     {
         $this->setScalarValue('login_placeholder', $placeholder);
+    }
+
+    /**
+     * Placeholder for input 'password' for Login form
+     * @return string
+     */
+    public function getPasswordPlaceholder()
+    {
+        return $this->getScalarValue('password_placeholder');
+    }
+
+
+    /**
+     * Set placeholder for input 'password' for Login form
+     * @param $placeholder
+     */
+    public function setPasswordPlaceholder($placeholder)
+    {
+        $this->setScalarValue('password_placeholder', $placeholder);
     }
 
     /**
@@ -278,6 +307,9 @@ abstract class waAuthConfig
      *   ALSO Take into account 'used_methods' setting ( @see getUsedAuthMethods )
      *   Therefore getVerificationChannelIds not compatible with getVerificationChannels ( @see getVerificationChannelIds )
      *   So BE CAREFUL
+     *
+     *
+     * TODO: take into account getAuth() status of authorization
      *
      * @return array
      *   Array indexed by channel type
@@ -793,7 +825,7 @@ abstract class waAuthConfig
      * Need signup confirm or not
      * @return bool
      */
-    abstract public function getSignupConfirm();
+    abstract public function getSignUpConfirm();
 
     /**
      * Driver method for getting and saving data all at once

@@ -75,7 +75,6 @@ class waAuth implements waiAuth
             }
         }
 
-
         $this->auth_config = waAuthConfig::factory($this->env);
 
         $this->initLoginFieldIds();
@@ -783,7 +782,12 @@ class waAuth implements waiAuth
 
     protected function initLoginFieldIds()
     {
-        $this->options['login_field_ids'] = $this->auth_config->getLoginFieldIds();
+        $this->options['login_field_ids'] = array();
+
+        if ($this->auth_config != null) {
+            $this->options['login_field_ids'] = $this->auth_config->getLoginFieldIds();
+        }
+
         /*
         // backend case
         if ($this->env === 'backend') {

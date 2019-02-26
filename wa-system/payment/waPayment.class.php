@@ -184,8 +184,8 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * Get payment plugin instance
-     * @param string $id plugin identity (e.g. cash, paypal, etc.)
-     * @param int $merchant_id Merchant settings key
+     * @param string              $id          plugin identity (e.g. cash, paypal, etc.)
+     * @param int                 $merchant_id Merchant settings key
      * @param string|waAppPayment $app_adapter app_id or application adapter
      * @return waPayment
      */
@@ -206,8 +206,8 @@ abstract class waPayment extends waSystemPlugin
 
     /**
      * Enumerate available payment plugins
-     * @param $options array
-     * @param null $type will be ignored
+     * @param      $options array
+     * @param null $type    will be ignored
      * @return array
      */
     final public static function enumerate($options = array(), $type = null)
@@ -219,8 +219,8 @@ abstract class waPayment extends waSystemPlugin
      *
      * Get plugin description
      * @param string $id
-     * @param array $options
-     * @param null $type will be ignored
+     * @param array  $options
+     * @param null   $type will be ignored
      * @return mixed[string]
      * @return string['name']
      * @return string['description']
@@ -269,9 +269,9 @@ abstract class waPayment extends waSystemPlugin
     }
 
     /**
-     * @param array $payment_form_data POST form data
-     * @param waOrder $order_data formalized order data
-     * @param bool $auto_submit
+     * @param array   $payment_form_data POST form data
+     * @param waOrder $order_data        formalized order data
+     * @param bool    $auto_submit
      * @return string HTML payment form
      */
     public function payment($payment_form_data, $order_data, $auto_submit = false)
@@ -295,10 +295,43 @@ abstract class waPayment extends waSystemPlugin
 
         $module = null;
         try {
+            if (class_exists('waPaymentDebug')) {
+                waPaymentDebug::startDebugCallback();
+            }
             $module = self::factory($module_id);
             self::log($module_id, $log);
-            return $module->callbackInit($request)->init()->callbackHandler($request);
+
+
+            $response = $module->callbackInit($request)->init()->callbackHandler($request);
+            if (class_exists('waPaymentDebug')) {
+                waPaymentDebug::endDebugCallback($module_id, $response);
+            }
+            return $response;
         } catch (Exception $ex) {
+
+            if (!$module) {
+                $log += array(
+                    'plugin_id' => $module_id,
+                );
+            }
+            $log += array(
+                'exception' => $ex->getMessage(),
+                'code'      => $ex->getCode(),
+            );
+
+            self::log($module ? $module->getId() : 'general', $log);
+            if (class_exists('waPaymentDebug')) {
+                waPaymentDebug::endDebugCallback($module ? $module->getId() : 'general');
+            }
+            if ($module) {
+                return $module->callbackExceptionHandler($ex);
+            } else {
+                return array(
+                    'error' => $ex->getMessage(),
+                    'code'  => $ex->getCode(),
+                );
+            }
+        } catch (Error $ex) {
             if (!$module) {
                 $log += array(
                     'plugin_id' => $module_id,
@@ -309,6 +342,7 @@ abstract class waPayment extends waSystemPlugin
                 'code'      => $ex->getCode(),
             );
             self::log($module ? $module->getId() : 'general', $log);
+            self::endDebugCallback($module ? $module->getId() : 'general');
             if ($module) {
                 return $module->callbackExceptionHandler($ex);
             } else {
@@ -386,7 +420,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * @param string $method
-     * @param array $transaction_data
+     * @param array  $transaction_data
      * @return array[string]mixed
      * @return array['order_id']int
      * @return array['customer_id']int
@@ -559,7 +593,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      * Saves formatted data and raw data to DB
      *
-     * @param $wa_transaction_data
+     * @param       $wa_transaction_data
      * @param array $transaction_raw_data
      * @return array
      *
@@ -694,7 +728,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      * Adds order [and customer] info to wa_transaction DB table (for cases like Google Checkout)
      * @param $wa_transaction_id int
-     * @param $result array
+     * @param $result            array
      * @return bool result
      * @deprecated
      */
@@ -743,7 +777,7 @@ abstract class waPayment extends waSystemPlugin
      *
      * @example waPayment::execTransactionCallback(waPayment::TRANSACTION_CAPTURE,'AuthorizeNet',$request)
      * @param $module_id string Module identity
-     * @param $request array
+     * @param $request   array
      * @return mixed
      * @deprecated
      */
@@ -897,9 +931,9 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * Displays printable form content (HTML) by id
-     * @param string $id
+     * @param string  $id
      * @param waOrder $order
-     * @param array $params
+     * @param array   $params
      * @return string
      */
     public function displayPrintForm($id, waOrder $order, $params = array())

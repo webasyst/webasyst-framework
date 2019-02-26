@@ -83,6 +83,9 @@
     {capture assign="_html"}
         {$placeholder = $params.password_confirm_placeholder|default:''}
         {$placeholder = $placeholder|escape}
+        {if !$need_placeholders}
+            {$placeholder = ''}
+        {/if}
         <input type="password" name="{input_name field_id='password_confirm'}" {if $placeholder}placeholder="{$placeholder}"{/if}>
     {/capture}
     {signup_render_wrapped
@@ -111,9 +114,11 @@
     {$placeholder = $params.placeholder|default:''}
     {$placeholder = $placeholder|escape}
 
-    {if $placeholder}
-        {$attrs[] = "placeholder=\"`$placeholder`\""}
+    {if !$need_placeholders}
+        {$placeholder = ''}
     {/if}
+
+    {$attrs[] = "placeholder=\"`$placeholder`\""}
 
     {if $params.disabled|default:false}
         {$attrs[] = 'disabled="disabled"'}

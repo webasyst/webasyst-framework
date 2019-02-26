@@ -27,7 +27,22 @@ class webasystSettingsTemplateSMSAction extends webasystSettingsTemplateAction
             'channels'          => $channels,
             'numbers'           => $this->getNumbers(),
             'user'              => wa()->getUser(),
+            'sidebar_html'      => $this->getSidebarHtml()
         ));
+    }
+
+    /**
+     * @return string
+     */
+    protected function getSidebarHtml()
+    {
+        $vars = $this->view->getVars();
+        $this->view->clearAllAssign();
+        $sidebar = new webasystSettingsTemplateSMSSidebarAction();
+        $html = $sidebar->display();
+        $this->view->clearAllAssign();
+        $this->view->assign($vars);
+        return $html;
     }
 
     protected function getNumbers()

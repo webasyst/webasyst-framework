@@ -352,7 +352,7 @@ return array(
             'PRIMARY' => 'id',
             'address' => 'address'
         )
-        ),
+    ),
     'wa_verification_channel_params' => array(
         'channel_id' => array('int', 11, 'null' => 0),
         'name' => array('varchar', 64, 'null' => 0),
@@ -369,6 +369,7 @@ return array(
         'name' => array('varchar', 64, 'null' => 0),
         'value' => array('text'),
         'expires' => array('datetime'), // IF NULL asset never expires
+        'tries' => array('int', 11, 'null' => 0, 'default' => 0),    // How may validation tries already done
         ':keys' => array(
             'PRIMARY' => 'id',
             'channel_address_name' => array('channel_id', 'address', 'contact_id', 'name', 'unique' => 1),

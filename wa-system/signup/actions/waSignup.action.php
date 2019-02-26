@@ -170,6 +170,7 @@ class waSignupAction extends waViewAction
     }
 
     /**
+     * Action for email confirmation
      * @param $confirm_hash
      * @throws waException
      */
@@ -629,6 +630,7 @@ class waSignupAction extends waViewAction
     /**
      * Central action - workup signing up process itself
      * @param array $data
+     * @throws waException
      */
     protected function executeSignupAction($data)
     {
@@ -767,6 +769,18 @@ class waSignupAction extends waViewAction
         }
     }
 
+    /**
+     *
+     * Main validation method - validate all data
+     * Input data might be changed
+     *
+     * @param array &$data input data, passed by link. Might be changed
+     * @return array Errors. For each invalid field array of errors
+     *   Format:
+     *     <field_id> => array <errors>
+     *
+     * @throws waException
+     */
     protected function validate(&$data)
     {
         $data = is_array($data) ? $data : array();
@@ -861,12 +875,11 @@ class waSignupAction extends waViewAction
         }
 
 
-        // Ok, no errors => check existing of contact
-        $auth = wa()->getAuth();
-        $contacts = $auth->lookupByLoginFields($data);
-        foreach ($contacts as $field_id => $contact) {
+        // Ok, no errors => check uniqueness
+        $uniqueness_errors = $this->validateUniqueness($data);
+        foreach ($uniqueness_errors as $field_id => $error_msg) {
             $errors[$field_id] = (array)ifset($errors[$field_id]);
-            $errors[$field_id]['exists'] = sprintf(_ws('User with the same “%s” field value is already registered.'), $this->getFieldCaption($field_id));
+            $errors[$field_id]['exists'] = $error_msg;
         }
 
         // User already exists - stop work => return errors
@@ -927,6 +940,27 @@ class waSignupAction extends waViewAction
         return $errors;
     }
 
+    /**
+     * Validate for uniqueness
+     * This method check each "login" field for uniqueness
+     *
+     * @param array $data input data
+     * @return array Errors array of errors
+     *   Format:
+     *     <field_id> => array
+     * @throws waException
+     */
+    protected function validateUniqueness($data)
+    {
+        $errors = array();
+        $auth = wa()->getAuth();
+        $contacts = $auth->lookupByLoginFields($data);
+        foreach ($contacts as $field_id => $contact) {
+            $errors[$field_id] = sprintf(_ws('User with the same “%s” field value is already registered.'), $this->getFieldCaption($field_id));
+        }
+        return $errors;
+    }
+
     protected function isEmailValid($email)
     {
         if (is_scalar($email)) {
@@ -955,6 +989,12 @@ class waSignupAction extends waViewAction
             $value = is_array($value) ? $value : array();
             return $this->isArrayEmpty($value);
         }
+
+        if ($field_id === 'birthday') {
+            $validator = new waDateValidator();
+            return $validator->isEmpty($value);
+        }
+
         $value = is_scalar($value) ? (string)$value : '';
         return strlen($value) <= 0;
     }
@@ -999,6 +1039,11 @@ class waSignupAction extends waViewAction
 
     /**
      * Core of signing up action
+     *
+     * Consist of 2 parts:
+     *   - validation
+     *   - try signup logic
+     *
      * @param array $data
      * @return array(0 => <status>, 1 => <details>)
      *  - 0 - string <status> SIGNED_UP_STATUS_* const
@@ -1011,7 +1056,21 @@ class waSignupAction extends waViewAction
         if ($errors) {
             return array(self::SIGNED_UP_STATUS_FAILED, $errors);
         }
+        return $this->trySignup($data);
+    }
 
+    /**
+     * Core of signing up action
+     * Try signup logic after data passed validation
+     *
+     * @param array $data
+     * @return array(0 => <status>, 1 => <details>)
+     *  - 0 - string <status> SIGNED_UP_STATUS_* const
+     *  - 1 - array <details> details what happened. In Failed status, for example, here is errors
+     * @throws waException
+     */
+    protected function trySignup($data)
+    {
         //
         $onetime_password_need = $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD;
 
@@ -1053,15 +1112,15 @@ class waSignupAction extends waViewAction
         // So try save & sign up client right away
         if (!$need_confirm || $confirm_by_sms) {
 
-            $contact = $this->trySaveContact($data, $errors);
+            $save_options = array();
+            if ($confirm_by_sms) {
+                // to mark that phone is confirmed
+                $save_options['confirmed'] = waVerificationChannelModel::TYPE_SMS;
+            }
+            $contact = $this->trySaveContact($data, $errors, $save_options);
+
             if ($errors) {
                 return array(self::SIGNED_UP_STATUS_FAILED, $errors);
-            }
-
-            // mark that phone is confirmed
-            if ($confirm_by_sms) {
-                $cdm = new waContactDataModel();
-                $cdm->updateContactPhoneStatus($contact->getId(), $data['phone'], waContactDataModel::STATUS_CONFIRMED);
             }
 
             // IMPORTANT: User interaction behavior detail
@@ -1083,27 +1142,38 @@ class waSignupAction extends waViewAction
         $confirmation_sent = null;
 
         $channels = $this->auth_config->getVerificationChannelInstances();
-        $contact_created = null;
+        $contact = null;
 
         foreach ($channels as $channel) {
 
             // try email first
             if ($channel->isEmail() && !empty($data['email'])) {
 
+                // We might need rollback contact creation when sending link has failed
+                // If contact not need by deleted on failure redefined trySaveContact MUST not save this hash
+                $creation_hash = md5(uniqid('trySaveContact'));
+
                 // For this case with must create contact first
                 // Cause with need validate email related for this contact ONLY
-                $contact_created = $this->trySaveContact($data, $errors);
+                $contact = $this->trySaveContact($data, $errors, array(
+                    'creation_hash' => $creation_hash
+                ));
                 if ($errors) {
                     break;
                 }
 
-                if ($this->sendLink($contact_created)) {
+                if ($this->sendLink($contact)) {
+                    // clean rollback creation hash
+                    $contact->save(array('creation_hash' => null));
                     $confirmation_sent = waVerificationChannelModel::TYPE_EMAIL;
                     break;
                 } else {
-                    // sending is failed
-                    $contact_created->delete();
-                    $contact_created = null;
+
+                    // sending is failed - rollback creation
+                    if ($contact['creation_hash'] === $creation_hash) {
+                        $contact->delete();
+                        $contact = null;
+                    }
 
                     // diagnostic log print
                     $this->logError(
@@ -1111,6 +1181,7 @@ class waSignupAction extends waViewAction
                             $channel->getDiagnostic()),
                         array('line' => __LINE__, 'file' => __FILE__)
                     );
+
                 }
             }
 
@@ -1140,7 +1211,7 @@ class waSignupAction extends waViewAction
         if ($confirmation_sent === waVerificationChannelModel::TYPE_EMAIL) {
             return array(self::SIGNED_UP_STATUS_IN_PROCESS, array(
                 'confirmation_link_sent' => true,
-                'contact' => $contact_created
+                'contact' => $contact
             ));
         }
 
@@ -1220,12 +1291,17 @@ class waSignupAction extends waViewAction
     }
 
     /**
-     * @param $data
-     * @param array $errors
+     * @param array $data Input array of data
+     * @param array $errors Output Array of errors
+     * @param array $options
+     *      Extra options to manage save process.
+     *       - mixed 'confirmed'
+     *          If 'string' waContactVerificationModel::TYPE_* const - mark contact confirmed by this channel right away
+     *          Otherwise not mark
      * @return null|waContact
      * @throws waException
      */
-    protected function trySaveContact($data, &$errors = array())
+    protected function trySaveContact($data, &$errors = array(), $options = array())
     {
         if (isset($data['birthday']['value']) && is_array($data['birthday']['value'])) {
             foreach ($data['birthday']['value'] as $bd_id => $bd_val) {
@@ -1257,15 +1333,41 @@ class waSignupAction extends waViewAction
         }
 
         $need_signup_confirm = $this->auth_config->getSignUpConfirm();
+        $options['confirmed'] = isset($options['confirmed']) ? $options['confirmed'] : null;
 
+        // Prepare email field with proper status
         if (!empty($data_to_save['email'])) {
-            $status = $need_signup_confirm ? waContactEmailsModel::STATUS_UNCONFIRMED : waContactEmailsModel::STATUS_UNKNOWN;
+
+            $status = waContactEmailsModel::STATUS_UNKNOWN;
+            if ($need_signup_confirm) {
+                if ($options['confirmed'] === waVerificationChannelModel::TYPE_EMAIL) {
+                    $status = waContactEmailsModel::STATUS_CONFIRMED;
+                } else {
+                    $status = waContactEmailsModel::STATUS_UNCONFIRMED;
+                }
+            }
+
             $data_to_save['email'] = array('value' => $data['email'], 'status' => $status);
         }
 
+        // Prepare phone field with proper status
         if (!empty($data_to_save['phone'])) {
-            $status = $need_signup_confirm ? waContactDataModel::STATUS_UNCONFIRMED : waContactDataModel::STATUS_UNKNOWN;
+
+            $status = waContactDataModel::STATUS_UNKNOWN;
+            if ($need_signup_confirm) {
+                if ($options['confirmed'] === waVerificationChannelModel::TYPE_SMS) {
+                    $status = waContactDataModel::STATUS_CONFIRMED;
+                } else {
+                    $status = waContactDataModel::STATUS_UNCONFIRMED;
+                }
+            }
+
             $data_to_save['phone'] = array('value' => $data['phone'], 'status' => $status);
+        }
+
+        // Rollback creation hash
+        if (isset($options['creation_hash'])) {
+            $data_to_save['creation_hash'] = $options['creation_hash'];
         }
 
         $contact = new waContact();
@@ -1352,7 +1454,7 @@ class waSignupAction extends waViewAction
             return false;
         }
 
-        return true;
+        return $result;
     }
 
     /**

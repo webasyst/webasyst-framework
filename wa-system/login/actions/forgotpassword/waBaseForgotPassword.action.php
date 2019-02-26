@@ -880,7 +880,9 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      */
     protected function generateHashByCode($code)
     {
-        $hash = md5(uniqid($code));
+        $salt = 'xxuuw:dswr4$h5t392n1jlkdfa/.`w';
+        $unique_id = uniqid($code.time().$salt.mt_rand().mt_rand().mt_rand(), true);
+        $hash = md5($unique_id);
         $hash = substr($hash, 0, 16) . $code . substr($hash, 16);
         return $hash;
     }

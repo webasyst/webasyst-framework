@@ -868,7 +868,10 @@ HTML;
             'title' => '—',
             'value' => '',
         );
-        $fields = waContactFields::getAll();
+
+        $contact_type = isset($params['contact_type']) ? $params['contact_type'] : 'person';
+
+        $fields = waContactFields::getAll($contact_type);
         foreach ($fields as $field) {
             if ($field instanceof waContactCompositeField) {
                 /**
