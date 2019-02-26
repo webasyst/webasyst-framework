@@ -302,9 +302,11 @@
                     </div>
                 {/if}
 
-                {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
+                {if !empty($theme_settings.footer_subscribe_form_use) && $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
                     <div class="footer-block mailer-subscribe">
-                        <a href="javascript:void(0);" class="top">[s`Follow us`]</a>
+                        {if !empty($theme_settings.footer_subscribe_form_title)}
+                            <a href="javascript:void(0);" class="top">{$theme_settings.footer_subscribe_form_title}</a>
+                        {/if}
 
                         <section class="s-subscribe-section" id="js-subscribe-section">
                             <form>
@@ -318,6 +320,10 @@
                             <p class="js-success-message" style="display:none">
                                 <i>[s`Thank you! We’ll keep you posted.`]</i>
                             </p>
+
+                            {if !empty($theme_settings.footer_subscribe_personal_data)}
+                                <div class="s-form-desc">{$theme_settings.footer_subscribe_personal_data}</div>
+                            {/if}
 
                             <script>
                                 ( function($) {

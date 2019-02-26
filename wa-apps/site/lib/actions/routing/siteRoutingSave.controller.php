@@ -78,9 +78,12 @@ class siteRoutingSaveController extends waJsonController
 
             // Save new route
             $params = array(
-                'domain' => $domain,
-                'route'  => &$route,
+                'domain'   => $domain,
+                'route'    => &$route,
+                'route_id' => $route_id,
+                'is_new'   => true
             );
+
             wa('site')->event('route_save.before', $params);
             $routes[$domain][$route_id] = $route;
             waUtils::varExportToFile($routes, $path);
@@ -164,8 +167,10 @@ class siteRoutingSaveController extends waJsonController
             }
 
             $params = array(
-                'domain' => $domain,
-                'route'  => &$new,
+                'domain'   => $domain,
+                'route'    => &$new,
+                'route_id' => $route_id,
+                'is_new'   => false
             );
 
             wa('site')->event('route_save.before', $params);

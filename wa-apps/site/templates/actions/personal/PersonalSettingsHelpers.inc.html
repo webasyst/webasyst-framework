@@ -449,7 +449,7 @@
                         <ul class="menu-v">
                             {foreach $login_captcha_variants as $_variant_val => $_variant_info}
                                 {$_name = $_variant_info.name}
-                                {$_is_checked = $login_captcha === $_variant_val}
+                                {$_is_checked = $auth_config.login_captcha === $_variant_val}
                                 <li>
                                     <label>
                                         <input type="radio" name="login_captcha" value="{$_variant_val}"{if $_is_checked} checked="checked"{/if}>
@@ -483,13 +483,13 @@
                         <div class="s-field-name name">
                             <span class="js-editable-wrapper" title="[`Edit field label`]">
                                 <label class="s-editable-item s-editable-text js-editable-item">
-                                    {$login_caption|escape}
+                                    {$auth_config.login_caption|escape}
                                 </label>
-                                <input type="text" class="s-editable-field-label hidden" name="login_caption" value="{$login_caption|escape}"/>
+                                <input type="text" class="s-editable-field-label hidden" name="login_caption" value="{$auth_config.login_caption|escape}"/>
                             </span>
                         </div>
                         <div class="value placeholder" title="[`Edit hint for this field`]">
-                            <input type="text" class="fill s-placeholder-input" name="login_placeholder" value="{$login_placeholder|escape}"/>
+                            <input type="text" class="fill s-placeholder-input" name="login_placeholder" value="{$auth_config.login_placeholder|escape}"/>
                         </div>
                     </div>
 
@@ -497,7 +497,7 @@
                     <div class="field">
                         <div class="s-field-name name">[s`Password`]</div>
                         <div class="value">
-                            <input class="fill s-placeholder-input" type="password" placeholder="[s`Password`]" disabled />
+                            <input class="fill s-placeholder-input" type="text" name="password_placeholder" placeholder="{$auth_config.password_placeholder|escape}" />
                         </div>
                     </div>
 
@@ -509,7 +509,7 @@
                     </div>
 
                     {* Captcha *}
-                    <div class="s-captcha-preview js-captcha-preview"{if $login_captcha !== waAuthConfig::LOGIN_CAPTCHA_ALWAYS} style="display: none;"{/if}>
+                    <div class="s-captcha-preview js-captcha-preview"{if $auth_config.login_captcha !== waAuthConfig::LOGIN_CAPTCHA_ALWAYS} style="display: none;"{/if}>
                         {if $demo_captcha->getOption('invisible')}
                             <div class="hint">[`Invisible captcha will be used`]</div>
                         {else}

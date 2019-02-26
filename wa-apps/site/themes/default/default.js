@@ -225,6 +225,10 @@ var SubscribeSection = ( function($) {
     SubscribeSection.prototype.initClass = function() {
         var that = this;
 
+        if (that.request_uri.substr(0,4) === "http") {
+            that.request_uri = that.request_uri.replace("http:", "").replace("https:", "");
+        }
+
         var $invisible_captcha = that.$form.find(".wa-invisible-recaptcha");
         if (!$invisible_captcha.length) {
             that.initView();
@@ -321,17 +325,19 @@ var SubscribeSection = ( function($) {
 
                 var href = that.request_uri;
 
-                $.post(href, data, function(response) {
-                    if (response.status === "ok") {
-                        renderSuccess();
+                $.post(href, data, "jsonp")
+                    .always( function() {
+                        is_locked = false;
+                    })
+                    .done( function(response) {
+                        if (response.status === "ok") {
+                            renderSuccess();
 
-                    } else if (response.errors) {
-                        var errors = formatErrors(response.errors);
-                        renderErrors(errors);
-                    }
-                }, "json").always( function() {
-                    is_locked = false;
-                });
+                        } else if (response.errors) {
+                            var errors = formatErrors(response.errors);
+                            renderErrors(errors);
+                        }
+                    });
             }
 
             /**

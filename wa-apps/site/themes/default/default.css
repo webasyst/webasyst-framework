@@ -478,6 +478,7 @@ footer a:hover { color: red !important; }
 
 .s-subscribe-section { position: relative; }
 .s-subscribe-section.is-extended .s-hidden { display: block; }
+.s-subscribe-section .s-form-desc { margin: 0.5em 0 0; font-size: 13px; line-height: 1.2em; color: #888; }
 .s-subscribe-section .s-hidden { display: none; position: absolute; top: 100%; left: 0; width: 340px; padding: 1em; background: #fff; z-index: 1; -webkit-box-shadow: 0 0 16px rgba(0,0,0,.2); box-shadow: 0 0 16px rgba(0,0,0,.15); border-radius: 3px; }
 .s-subscribe-section .s-hidden .wa-captcha { margin: 0; padding: 0; }
 .s-subscribe-section .s-hidden .wa-captcha p { margin: .5em 0 0; }

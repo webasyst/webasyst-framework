@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.6">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.8">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -341,6 +341,20 @@
                 <name locale="ru_RU">Свое фоновое изображение в основном меню</name>
                 <name locale="en_US">Subheader custom image</name>
             </setting>
+        <setting var="use_shop_schedule" control_type="checkbox">
+            <value>1</value>
+            <name locale="ru_RU">Показывать график работы магазина на текущую неделю из настроек Shop-Script</name>
+            <name locale="en_US">Show online store’s working schedule for current week from Shop-Script settings</name>
+            <description locale="ru_RU">При включении игнорируется настройка «Сокращенный график работы».</description>
+            <description locale="en_US">When enabled, “Brief working schedule” setting is ignored.</description>
+        </setting>
+        <setting var="manual_schedule" control_type="text">
+            <value></value>
+            <name locale="ru_RU">Сокращенный график работы</name>
+            <name locale="en_US">Brief working schedule</name>
+            <description locale="ru_RU">Например: Пн—Сб 08:00–18:00</description>
+            <description locale="en_US">Example: Mo—Sa 08:00–18:00</description>
+        </setting>
 
 
         <setting var="divider_footer" control_type="group_divider">
@@ -369,6 +383,36 @@
                 <name locale="ru_RU">Уведомление в подвале сайта</name>
             </setting>
 
+            <setting var="divider_footer_subscription" control_type="group_divider">
+                <value>divider_footer/divider_footer_subscription</value>
+                <name locale="en_US">Subscription form</name>
+                <name locale="ru_RU">Форма подписки</name>
+                <tooltip locale="en_US">Works with installed Mailer app</tooltip>
+                <tooltip locale="ru_RU">Работает, если установлено приложение «Рассылки»</tooltip>
+            </setting>
+
+            <setting var="footer_subscribe_form_use" control_type="checkbox">
+                <value>1</value>
+                <name locale="en_US">Display form</name>
+                <name locale="ru_RU">Показывать форму</name>
+                <description locale="en_US">A subscription form is displayed only if Mailer app is installed. Subscribers are added to its common subsciber list.</description>
+                <description locale="ru_RU">Форма подписки отображается, только если установлено приложение «Рассылки». Подписчики добавляются в его общий список подписчиков.</description>
+            </setting>
+
+            <setting var="footer_subscribe_form_title" control_type="text">
+                <value locale="en_US">Subscribe</value>
+                <value locale="ru_RU">Подписаться</value>
+                <name locale="en_US">Heading</name>
+                <name locale="ru_RU">Заголовок</name>
+            </setting>
+
+            <setting var="footer_subscribe_personal_data" control_type="text">
+                <value></value>
+                <name locale="en_US">Personal data protection message</name>
+                <name locale="ru_RU">Информация об обработке персональных данных</name>
+                <description locale="en_US"><![CDATA[By submitting this form I agree to &lt;a href=&quot;---INSERT A LINK HERE!---&quot; target=&quot;_blank&quot;&gt;personal data protection policy&lt;/a&gt;]]></description>
+                <description locale="ru_RU"><![CDATA[Нажимая на кнопку подтверждения, я принимаю условия &lt;a href=&quot;---ВСТАВЬТЕ СЮДА ССЫЛКУ НА ДОКУМЕНТ!---&quot; target=&quot;_blank&quot;&gt;политики обработки персональных данных&lt;/a&gt;]]></description>
+            </setting>
 
             <setting var="divider_social_links" control_type="group_divider">
                 <value>divider_footer/divider_social_links</value>
