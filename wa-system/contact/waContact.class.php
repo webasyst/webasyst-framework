@@ -844,11 +844,10 @@ class waContact implements ArrayAccess
     {
         if ($this instanceof waAuthUser && wa()->getEnv() == 'frontend') {
             // User selected specific locale (stored in session)?
-            if (wa()->getStorage()->get('locale')) {
-                $locale = wa()->getStorage()->get('locale');
-            }
+            $locale = wa()->getStorage()->get('locale');
+
             // Routing settlement has a locale setting?
-            if (waRequest::param('locale')) {
+            if (empty($locale) && waRequest::param('locale')) {
                 $locale = waRequest::param('locale');
             }
         }
