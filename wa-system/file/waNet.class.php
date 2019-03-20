@@ -413,9 +413,8 @@ class waNet
     public function getResponseHeader($header = null)
     {
         if (!empty($header)) {
-            $_header = strtolower($header);
             foreach($this->response_header as $field=>$val) {
-                if(strtolower($field) === $_header) {
+                if(strcasecmp($field, $header) === 0) {
                     return $val;
                 }
             }
