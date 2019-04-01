@@ -157,6 +157,26 @@ var WaBackendLogin = ( function($) {
         }
     };
 
+    Self.prototype.onDoneSubmitHandlers = function () {
+        var that = this,
+            handlers = Parent.prototype.onDoneSubmitHandlers.call(that);
+        handlers.redirect = function (redirect_url) {
+            var current_url = window.location.href || '',
+                is_prefix = current_url.indexOf(redirect_url) === 0,
+                has_hash = current_url.indexOf('#') !== -1;
+
+            // absolute redirect_url is prefix for current location.href
+            // and location.href HAS '#'
+            //  => Make a conclusion that all we need it is location.reload()
+            if (is_prefix && has_hash) {
+                window.location.reload();
+            } else {
+                window.location.href = redirect_url;
+            }
+        };
+        return handlers;
+    };
+
     return Self;
 
 })(jQuery);

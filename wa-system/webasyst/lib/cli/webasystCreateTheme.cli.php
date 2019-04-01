@@ -12,14 +12,14 @@ class webasystCreateThemeCli extends webasystCreateCliController
     {
         echo <<<HELP
 Usage: php wa.php createTheme [app_id[,app_id_2[,...]]] [theme_id] [parameters]
-    app_id - App id (string in lower case, `*` asterisk for all enabled apps with theme support)
-    theme_id - theme id (string in lower case)
+    app_id - App ID (string in lower case for one app, or asterisk in quotes "*" for all enabled apps with theme support)
+    theme_id - theme ID (string in lower case)
 Optional parameters:
     -name (theme name; if comprised of several words, enclose in quotes; e.g., 'My theme')
-    -parent (parent theme app_id)
+    -parent (parent theme’s app_id)
     -version (theme version; e.g., 1.0.0)
-    -vendor (Numerical vendor id)
-    -prototype (original theme id, default is `default`, also recommended value is `dummy`)
+    -vendor (numerical vendor ID)
+    -prototype (original theme ID, default is `default`, also recommended value is `dummy`)
 Example: php wa.php createTheme someapp mytheme -name 'My theme' -version 1.0.0 -vendor 123456 -frontend -settings
 HELP;
         parent::showHelp();
@@ -45,7 +45,7 @@ HELP;
             $errors['theme_id'] = "Invalid theme ID";
         }
         if (!empty($errors['app_id'])) {
-            if ($this->app_id === '*') {
+            if (trim($this->app_id, '\'"`') === '*') {
                 unset($errors['app_id']);
             } elseif (strpos($this->app_id, ',')) {
                 $this->app_id = preg_split('@[,\s]+@', $this->app_id);
@@ -58,29 +58,36 @@ HELP;
             $apps = wa()->getApps();
             foreach ($apps as $app_id => $app) {
                 if (!empty($app['themes']) && !empty($app['frontend'])) {
-                    $this->app_id[] = $app_id;
+                    $this->app_id[$app_id] = $app_id;
                 }
             }
         } else {
-            $this->app_id = (array)$this->app_id;
+            $this->app_id = array_combine((array)$this->app_id, (array)$this->app_id);
         }
+
+        $errors['app_id'] = array();
+
         foreach ($this->app_id as $app_id) {
             if ($info = wa()->getAppInfo($app_id)) {
-                if (empty($info['themes'])) {
-                    $errors['themes'] = "Application '{$this->app_id}' doesn't support themes";
-                } else {
-                    if (empty($info['frontend'])) {
-                        $errors['app_id'] = "Application {$this->app_id} doesn't support frontend";
-                    }
+                if (empty($info['frontend'])) {
+                    $errors['app_id'][] = sprintf("Application [%s] doesn't support frontend", $app_id);
+                    unset($this->app_id[$app_id]);
+                } elseif (empty($info['themes'])) {
+                    $errors['app_id'][] = sprintf("Application [%s] doesn't support themes", $app_id);
+                    unset($this->app_id[$app_id]);
                 }
-                $this->app_id = (array)$this->app_id;
             } else {
-                $errors['app_id'] = "Application not found";
-            }
-            if (!empty($errors['app_id'])) {
-                break;
+                $errors['app_id'][] = sprintf("Application [%s] not found", $app_id);
+                unset($this->app_id[$app_id]);
             }
         }
+
+        if (!empty($errors['app_id'])) {
+            $errors['app_id'] = implode("\n", $errors['app_id']);
+        } else {
+            unset($errors['app_id']);
+        }
+        return $errors;
     }
 
     protected function create($params = array())
@@ -134,7 +141,7 @@ HELP;
         $custom_path = wa()->getDataPath('themes/', true, $this->app_id).$this->theme_id;
 
         if (file_exists($original_path) || file_exists($custom_path)) {
-            return sprintf('Theme %s already exists', $this->theme_id);
+            return sprintf('Theme [%s] already exists', $this->theme_id);
         }
         if (!empty($params['prototype']) && ($params['prototype'] !== 'null')) {
 
@@ -160,7 +167,7 @@ HELP;
             $theme_files = $this->getThemeFiles();
             foreach ($theme_files as $class => $class_files) {
                 foreach ($class_files as $file) {
-                    $theme->addFile($file, sprintf('template used at %s', $class));
+                    $theme->addFile($file, sprintf('template used at [%s]', $class));
                     @touch($path.$file);
                 }
             }
@@ -275,7 +282,7 @@ HELP;
                     print sprintf("\tparent: %s\n", $theme->parent_theme_id);
                 }
             } else {
-                print sprintf("Theme isn't created for app %s.\n\tError: %s\n", $app_id, $theme);
+                print sprintf("Theme isn't created for app [%s].\n\tError: %s\n", $app_id, $theme);
             }
             print "\n";
         }

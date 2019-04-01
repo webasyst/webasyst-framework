@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-02-21 14:44+0300\n"
+"PO-Revision-Date: 2019-03-12 19:18+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5355,7 +5355,7 @@ msgstr "Антиспам-защита"
 
 #: /wa-system/login/templates/login/frontend/form_wrapper.html:34
 msgid "Enter a one-time code to log in."
-msgstr "Введите проверочный код, чтобы войти."
+msgstr "Введите одноразовый код, чтобы войти."
 
 #: /wa-system/login/templates/login/frontend/field.html:31
 #: /wa-system/login/templates/forgotpassword/backend/form.html:35
@@ -5378,7 +5378,7 @@ msgstr "Повторите новый пароль"
 #: /wa-system/login/templates/forgotpassword/frontend/form_wrapper.html:33
 #: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:238
 msgid "Enter a confirmation code to complete the operation."
-msgstr "Введите проверочный код, чтобы завершить процедуру."
+msgstr "Введите код подтверждения, чтобы завершить процедуру."
 
 #: /wa-system/login/templates/forgotpassword/backend/form.html:26
 msgid "Code"
@@ -5402,7 +5402,7 @@ msgstr "Восстановить пароль"
 #: /wa-system/signup/templates/confirmation_block.inc.html:13
 #: /wa-system/signup/templates/onetime_password_field.inc.html:9
 msgid "Confirmation code"
-msgstr "Проверочный код"
+msgstr "Код подтверждения"
 
 #: /wa-system/login/actions/login/waBaseLogin.action.php:130
 #: /wa-system/login/actions/login/waBaseLogin.action.php:251
@@ -5413,10 +5413,10 @@ msgstr "Не удалось войти через «%s»."
 #: /wa-system/signup/actions/waSignup.action.php:743
 #: /wa-system/signup/actions/waSignup.action.php:765
 msgid "Incorrect or expired one-time password. Try again or request a new one-time password."
-msgstr "Введен неверный проверочный код или истек срок его действия. Попробуйте еще раз или запросите новый код."
+msgstr "Введен неверный одноразовый код, или истек срок его действия. Попробуйте еще раз или запросите новый код."
 
 msgid "Incorrect or expired confirmation code. Try again or request a new code."
-msgstr "Введен неверный проверочный код или истек срок его действия. Попробуйте еще раз или запросите новый код."
+msgstr "Введен неверный код подтверждения, или истек срок его действия. Попробуйте еще раз или запросите новый код."
 
 #: /wa-system/login/actions/login/waBaseLogin.action.php:241
 msgid "Contact does not exist. <a href=\"%s\">Sign up</a> first."
@@ -5436,7 +5436,7 @@ msgstr "Готово! На номер телефона <strong>%s</strong> от�
 
 #: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:247
 msgid "Incorrect confirmation code. Try again or request a new code."
-msgstr "Введен неверный проверочный код. Попробуйте еще раз или запросите новый код."
+msgstr "Введен неверный код подтверждения. Попробуйте еще раз или запросите новый код."
 
 #: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:304
 msgid "Password recovery for “%s” has been banned."
@@ -5637,7 +5637,7 @@ msgstr "Некорректный архив"
 #: /wa-system/signup/actions/waSignup.action.php:728
 #: /wa-system/signup/actions/waSignup.action.php:748
 msgid "Enter a confirmation code to complete signup"
-msgstr "Чтобы завершить регистрацию, введите проверочный код"
+msgstr "Чтобы завершить регистрацию, введите код подтверждения"
 
 #: /wa-system/signup/templates/form.html:31
 msgid "Done"
@@ -5725,7 +5725,7 @@ msgid "Time"
 msgstr "Время"
 
 msgid "Receive confirmation code"
-msgstr "Получить проверочный код"
+msgstr "Получить код подтверждения"
 
 msgid "Receive code"
 msgstr "Получить код"

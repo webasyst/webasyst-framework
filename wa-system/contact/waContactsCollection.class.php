@@ -378,6 +378,10 @@ class waContactsCollection
                             $columns[] = $field;
                         }
                     }
+
+                    // always present, cause it is important field
+                    $columns[] = 'email';
+
                     $columns = array_unique($columns);
 
                     $all_emails = $model->getByField('contact_id', $ids, true);

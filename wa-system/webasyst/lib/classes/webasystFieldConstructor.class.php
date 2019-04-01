@@ -312,6 +312,24 @@ class webasystFieldConstructor
     }
 
     /**
+     * Can delete this field or subfield
+     * @param string $field_id
+     * @param string $subfield_id
+     * @return bool|mixed
+     */
+    public function canDeleteSubfield($field_id, $subfield_id)
+    {
+        if (!is_scalar($field_id) || !is_scalar($subfield_id)) {
+            return false;
+        }
+        $parent_field_info = $this->getFieldInfo($field_id);
+        $original_sub_field_ids = ifset($parent_field_info, 'original_sub_field_ids', array());
+        $original_sub_field_ids = is_array($original_sub_field_ids) ? $original_sub_field_ids : array();
+        return !in_array($subfield_id, $original_sub_field_ids, true);
+    }
+
+    /**
+     * Is field system
      * @param string|waContactField $field
      * @return mixed null, if field does not exist; false if it is custom; true if it is system.
      */
@@ -420,12 +438,18 @@ class webasystFieldConstructor
     {
         $fields = $this->getAllFields();
         if (isset($fields['main'][$field_id])) {
-            return $fields['main'][$field_id];
+            $info = $fields['main'][$field_id];
+        } elseif (isset($fields['other'][$field_id])) {
+            $info = $fields['other'][$field_id];
+        } else {
+            $info = null;
         }
-        if (isset($fields['other'][$field_id])) {
-            return $fields['other'][$field_id];
+        if ($info && $field_id === 'address') {
+            $info['original_sub_field_ids'] = array(
+                'street', 'city', 'region', 'zip', 'country'
+            );
         }
-        return null;
+        return $info;
     }
 
     public function getAllFields()

@@ -8,15 +8,15 @@ class webasystCreatePluginCli extends webasystCreateCliController
     {
         echo <<<HELP
 Usage: php wa.php createPlugin [app_id] [plugin_id] [parameters]
-    app_id - App id (string in lower case)
-    plugin_id - Plugin id (string in lower case)
+    app_id - App ID (string in lower case)
+    plugin_id - Plugin ID (string in lower case)
 Optional parameters:
-    -name (Plugin name; if comprised of several words, enclose in quotes; e.g., 'My plugin')
-    -version (Plugin version; e.g., 1.0.0)
-    -vendor (Numerical vendor id)
+    -name (plugin name; if comprised of several words, enclose in quotes; e.g., 'My plugin')
+    -version (plugin version; e.g., 1.0.0)
+    -vendor (numerical vendor ID)
     -frontend (Has frontend)
-    -settings (Implements custom settings screen)
-    -disable (1|true) not enable plugin at wa-config/apps/app_id/plugins.php
+    -settings (implements custom settings screen)
+    -disable (1|true) not enable plugin in wa-config/apps/app_id/plugins.php
 Example: php wa.php createPlugin someapp myplugin -name 'My plugin' -version 1.0.0 -vendor 123456 -frontend -settings
 HELP;
         parent::showHelp();

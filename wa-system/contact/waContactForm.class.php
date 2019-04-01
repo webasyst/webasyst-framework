@@ -291,6 +291,9 @@ class waContactForm
             $this->errors[$field_id] = array();
         }
         $this->errors[$field_id][] = $error_text;
+
+        $this->treatNamesFieldValidation();
+
         return $this;
     }
 
@@ -302,6 +305,7 @@ class waContactForm
     public function isValid($contact = null)
     {
         $this->validateFields($contact);
+        $this->treatNamesFieldValidation();
         return !$this->errors;
     }
 
@@ -331,6 +335,7 @@ class waContactForm
     public function html($field_id = null, $with_errors = true, $placeholders = false)
     {
         $this->validateFields();
+        $this->treatNamesFieldValidation();
 
         // Single field?
         if ($field_id) {
@@ -425,6 +430,7 @@ class waContactForm
             $result .= "\n</div></div>";
         }
         $result .= '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
+
         return $result;
     }
 
@@ -463,6 +469,7 @@ class waContactForm
         if ($this->post() === null) {
             return;
         }
+
         foreach ($this->fields as $fid => $f) {
             $errors = $f->validate($f->set($this->contact, $this->post($fid), array()), $this->contact->getId());
             if (!$errors) {
@@ -478,6 +485,27 @@ class waContactForm
                 $this->errors[$fid] = $errors;
             } else {
                 $this->errors[$fid] = array_merge($this->errors[$fid], $errors);
+            }
+        }
+    }
+
+    /**
+     * System waContactNameField field always requires "At least one of these fields must be filled"
+     * In this situation other name fields ('firstname', 'middlename', 'lastname') need to be marked visually (by error class)
+     * To achieve it call this method
+     *
+     * Must be called after validateFields and after each call of $this->errors()
+     */
+    protected function treatNamesFieldValidation()
+    {
+        if (isset($this->errors['name']) && $this->fields('name')) {
+            $name_fields = array('firstname', 'middlename', 'lastname');
+            foreach ($name_fields as $name_field) {
+                if ($this->fields($name_field) && empty($this->errors[$name_field])) {
+                    $this->errors[$name_field] = array(
+                        '' // just mark field red
+                    );
+                }
             }
         }
     }

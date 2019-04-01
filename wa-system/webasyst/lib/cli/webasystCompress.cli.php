@@ -592,6 +592,8 @@ HELP;
             $sniffer->setAllowedFileExtensions($extensions);
         }
 
+        $this->tracef('INFO: CodeSniffer version %s', PHP_CodeSniffer::VERSION);
+
         if (is_array($files) === false) {
             $files = array($files);
         }
@@ -1039,9 +1041,9 @@ HELP;
                         $this->tracef(
                             "PHP %s file syntax check\t SKIPPED: Requirement NOT satisfied [%s%s%s])",
                             $version,
-                            $version,
+                            $requirements['version'],
                             $requirements['operator'],
-                            $requirements['version']
+                            $version
                         );
                         continue;
                     }
@@ -1293,14 +1295,17 @@ HELP;
                 'pcre',
                 'session',
                 'standard',
+                'tokenizer',
                 'SPL',
-                'iconv',
                 'date',
+                'iconv',
+                'libxml',
+                'dom',
+                'json',
                 'gettext',
                 'mbstring',
                 'mysql',
                 'mysqli',
-                'tokenizer',
             )
         );
         $functions = array();

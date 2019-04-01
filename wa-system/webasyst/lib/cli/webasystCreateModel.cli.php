@@ -17,7 +17,7 @@ class webasystCreateModelCli extends waCliController
         echo <<<HELP
 Usage: php wa.php createModel app_id db_table_name
 
-    Create a model in given app for given mysql table.
+    Create a model in given app for given database table.
 
 Example:
     php wa.php createModel myapp myapp_records

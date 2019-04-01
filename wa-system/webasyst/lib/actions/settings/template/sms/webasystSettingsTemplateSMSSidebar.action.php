@@ -16,8 +16,8 @@ class webasystSettingsTemplateSMSSidebarAction extends webasystSettingsTemplateA
         $this->setTemplate('templates/actions/settings/sidebar/SidebarSMS.html');
 
         $this->view->assign(array(
-            'channel'           => $this->channel,
-            'channels'          => $channels,
+            'channel'  => $this->channel,
+            'channels' => $channels,
         ));
     }
 }

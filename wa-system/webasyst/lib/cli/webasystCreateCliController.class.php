@@ -34,7 +34,7 @@ abstract class webasystCreateCliController extends waCliController
     {
         echo <<<HELP
 
-Hint: use wa-config/developer.php to setup common defaults e.g. vendor, version
+Hint: use wa-config/developer.php to set up common defaults; e.g. vendor, version
 
 HELP;
 

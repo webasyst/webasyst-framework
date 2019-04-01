@@ -26,9 +26,18 @@ class webasystSettingsFieldFormRowAction extends webasystSettingsViewAction
             'namespace' => "{$prefix}[{$fid}]"
         ));
 
+
+        if ($parent) {
+            $field_constructor = new webasystFieldConstructor();
+            $can_delete = $field_constructor->canDeleteSubfield($parent, $fid);
+        } else {
+            $can_delete = true;
+        }
+
         $this->view->assign(array(
             'f'          => $f,
             'fid'        => $fid,
+            'can_delete' => $can_delete,
             'form'       => $form,
             'parent'     => $parent,
             'prefix'     => $prefix,
@@ -37,5 +46,6 @@ class webasystSettingsFieldFormRowAction extends webasystSettingsViewAction
             'tr_classes' => $css_class,
             'ftypes'     => waContactFields::getTypes(),
         ));
+
     }
 }

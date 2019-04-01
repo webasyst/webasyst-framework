@@ -209,6 +209,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
         try {
 
+            // just in case filter-off 'id' from input data, although prepareData MUST be always prepare secure data
+            if (array_key_exists('id', $data)) {
+                unset($data['id']);
+            }
+
             // actual auth in system through auth provider
             if ($auth->auth($data)) {
                 $this->logAction('login', $this->env);
@@ -357,18 +362,29 @@ abstract class waBaseLoginAction extends waLoginModuleController
     }
 
     /**
-     * Prepare input post data - typecast and etc
+     * Prepare input post data - typecast field values, filter off excess fields to prevent malicious, and etc
+     *
+     * IMPORTANT: This method MUST return ready and secure (cleaned) data, because
+     * this data will be pass straight to wa()->getAuth()->auth()
+     *
      * @param $data
      * @return array
      */
     protected function prepareData($data)
     {
         $data = is_array($data) ? $data : array();
-        $data['login'] = trim($this->getScalarValue('login', $data));
-        $data['password'] = $this->getScalarValue('password', $data);
-        $data['captcha'] = $this->getScalarValue('captcha', $data);
-        $data['remember'] = !empty($data['remember']);
-        return $data;
+        $clean_data = array(
+            'login'    => trim($this->getScalarValue('login', $data)),
+            'password' => $this->getScalarValue('password', $data),
+            'captcha'  => $this->getScalarValue('captcha', $data),
+            'remember' => !empty($data['remember'])
+        );
+
+        // 'confirmation_code' will be here if confirmation of phone is required and phone is not confirmed yet
+        if (isset($data['confirmation_code'])) {
+            $clean_data['confirmation_code'] = $this->getScalarValue('confirmation_code', $data);
+        }
+        return $clean_data;
     }
 
     /**

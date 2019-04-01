@@ -57,7 +57,9 @@ class webasystLoginAction extends waBackendLoginAction
             'redirect_url' => $redirect
         ));
 
-        $this->redirect(array('url' => $result['redirect_url']));
+        $this->redirect(array(
+            'url' => $result['redirect_url']
+        ));
     }
 
     /**
@@ -120,6 +122,15 @@ class webasystLoginAction extends waBackendLoginAction
         if ($process_result['redirect_url'] === null) {
             $process_result['redirect_url'] = $original_redirect_url;
         }
+
+        $redirect_url = $process_result['redirect_url'];
+
+        if (substr($redirect_url, 0, 5) !== 'http:' && substr($redirect_url, 0, 6) !== 'https:') {
+            $host = $this->getConfig()->getHostUrl();
+            $redirect_url = $host . '/' . ltrim($redirect_url, '/');
+        }
+
+        $process_result['redirect_url'] = $redirect_url;
 
         return $process_result;
     }

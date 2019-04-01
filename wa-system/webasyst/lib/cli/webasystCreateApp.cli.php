@@ -152,17 +152,17 @@ HTACCESS;
     {
         echo <<<HELP
 Usage: php wa.php createApp [app_id] [parameters]
-    app_id - App id (string in lower case)
+    app_id - App ID (string in lower case)
 Optional parameters:
-    -name (App name; if comprised of several words, enclose in quotes; e.g., 'My app')
-    -version (App version; e.g., 1.0.0)
-    -vendor (Numerical vendor id)
+    -name (app name; if comprised of several words, enclose in quotes; e.g., 'My app')
+    -version (app version; e.g., 1.0.0)
+    -vendor (numerical vendor id)
     -frontend (1|true|themes) (Has frontend and if value is themes support design themes)
     -features (comma separated values)
-        plugins (Supports plugins)
-        cli (Has CLI handlers)
-        api (Has API)
-    -disable (1|true) not enable application at wa-config/apps.php
+        plugins (supports plugins)
+        cli (has CLI handlers)
+        api (has API)
+    -disable (1|true) not enable application in wa-config/apps.php
 
 Example: php wa.php createApp myapp -name 'My app' -version 1.0.0 -vendor 123456 -frontend themes -plugins -cli -api
 HELP;

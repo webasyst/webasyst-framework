@@ -691,20 +691,32 @@ abstract class waVerificationChannel
      *
      *   - array 'details' - detailed information about result of validation
      *      Format of details depends on 'status'
+     *
      *        If 'status' is TRUE 'details' has keys:
+     *
      *          - string 'address'     - address that was validated
      *          - int    'contact_id'  - id of contact bind to this address
+     *          - int    'tries'       - total count of already made tries
+     *          - int    'rest_tries'  - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *
      *        Otherwise 'details' has keys:
-     *          - string 'error' - string identificator of error - VERIFY_ERROR_* consts
+     *
+     *          - string    'error'     - string identificator of error - VERIFY_ERROR_* consts
+     *          - int|null 'tries'      - total count of already made tries. Can be NULL in case if code is already dead or not exist
+     *          - int      'rest_tries' - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *                                    But this value is NULL when 'tries' is NULL (in case if code is already dead or not exist)
+     *
      * @throws waException
      */
     public function validateConfirmationCode($code, $options = array())
     {
         // Initialize fail result structure
         $fail = array(
-            'status' => false,
+            'status'  => false,
             'details' => array(
-                'error' => self::VERIFY_ERROR_INVALID
+                'tries'      => null,
+                'rest_tries' => null,
+                'error'      => self::VERIFY_ERROR_INVALID
             )
         );
 
@@ -726,10 +738,21 @@ abstract class waVerificationChannel
             return $fail;
         }
 
+        $fail['details']['tries'] = $asset['tries'];
+
         // check tries logic
         if (isset($options['check_tries']) && is_array($options['check_tries'])) {
+
             // number of tries
             $tries = isset($options['check_tries']['count']) ? $options['check_tries']['count'] : null;
+
+            // rest tries
+            if (wa_is_int($tries) && $tries > 0) {
+                $fail['details']['rest_tries'] = $tries - $asset['tries'];
+                if ($fail['details']['rest_tries'] <= 0) {
+                    $fail['details']['rest_tries'] = 0;
+                }
+            }
 
             // if exceeding number of tries
             if (wa_is_int($tries) && $asset['tries'] > $tries) {
@@ -788,13 +811,29 @@ abstract class waVerificationChannel
         }
 
         // SUCCESS
-        return array(
+
+        $result = array(
             'status' => true,
             'details' => array(
-                'address' => $asset['address'],
+                'tries'      => $asset['tries'],
+                'rest_tries' => null,
+                'address'    => $asset['address'],
                 'contact_id' => $asset_contact_id
             )
         );
+
+        // rest tries
+        if (isset($options['check_tries']) && is_array($options['check_tries'])) {
+            $tries = isset($options['check_tries']['count']) ? $options['check_tries']['count'] : null;
+            if (wa_is_int($tries) && $tries > 0) {
+                $result['details']['rest_tries'] = $asset['tries'] - $tries;
+                if ($fail['details']['rest_tries'] <= 0) {
+                    $fail['details']['rest_tries'] = 0;
+                }
+            }
+        }
+
+        return $result;
 
     }
 

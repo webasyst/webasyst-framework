@@ -33,10 +33,27 @@ class waVerificationChannelModel extends waModel
         $this->createDefaultSystemEmailChannel();
     }
 
+    /**
+     * Try define system email for verification channel
+     * @return array|mixed|string|null
+     * @throws waDbException
+     */
     protected function getDefaultSystemEmail()
     {
         $sm = new waAppSettingsModel();
-        return $sm->get('webasyst', 'email', '');
+
+        // Try get 'sender' email
+        $email = $sm->get('webasyst', 'sender', '');
+        $v = new waEmailValidator();
+        if ($v->isValid($email)) {
+            return $email;
+        }
+
+        $date = date('Y-m-d');
+        waLog::log("System sender email is not valid or empty. Please correct it in \"Settings\" app => \"Email settings\" => \"Sender email address\"",
+            "verification/channel/error-{$date}.log");
+
+        return '';
     }
 
     protected function createDefaultSystemEmailChannel()

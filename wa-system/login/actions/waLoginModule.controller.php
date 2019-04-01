@@ -198,9 +198,17 @@ abstract class waLoginModuleController extends waViewAction
         }
     }
 
+    /**
+     * Prepare input post data - typecast field values, filter off excess fields to prevent malicious, and etc
+     *
+     * IMPORTANT: This method MUST return ready and secure (cleaned) data
+     *
+     * @param array $data
+     * @return array
+     */
     protected function prepareData($data)
     {
-        return $data;
+        return array();
     }
 
     protected function getErrors()

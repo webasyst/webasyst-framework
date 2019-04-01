@@ -117,6 +117,28 @@ abstract class waView
 
     abstract public function display($template, $cache_id = null);
 
+    /**
+     * Render some template without any influence on current assign scope
+     *
+     * @param string $template
+     * @param array $assign
+     * @param bool $capture - Capture current assign vars or not. By default is FALSE
+     * @param mixed|null $cache_id
+     * @return mixed
+     */
+    public function renderTemplate($template, $assign = array(), $capture = false, $cache_id = null)
+    {
+        $old_vars = $this->getVars();
+        if (!$capture) {
+            $this->clearAllAssign();
+        }
+        $this->assign($assign);
+        $html = $this->fetch($template, $cache_id);
+        $this->clearAllAssign();
+        $this->assign($old_vars);
+        return $html;
+    }
+
     abstract public function templateExists($template);
 
     public function isCached($template, $cache_id = null)

@@ -81,6 +81,8 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
     {
         $all_fields = waContactFields::getAll('all');
 
+        $field_constructor = new webasystFieldConstructor();
+
         $cfvm = new waContactFieldValuesModel();
 
         foreach ($options as $field_id => $opts)
@@ -112,10 +114,11 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
                     }
 
                     // delete
-                    if (!empty($params['_deleted']) && $params['_deleted'] == 1) {
+                    if (!empty($params['_deleted']) && $params['_deleted'] == 1 && $field_constructor->canDeleteSubfield($field_id, $subfield_id)) {
                         unset($old_fields[$subfield_id]); // from old array
                         unset($new_fields[$subfield_id]); // from new array
                     }
+
                 } else {
                     // create
                     $new_subfield = $this->createFromOpts($params, $all_fields);

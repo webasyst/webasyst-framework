@@ -828,19 +828,26 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
     }
 
     /**
-     * Prepare input data, typecast and etc
+     * Prepare input post data - typecast field values, filter off excess fields to prevent malicious, and etc
+     *
+     * IMPORTANT: This method MUST return ready and secure (cleaned) data
+     *
      * @param $data
      * @return mixed
      */
     protected function prepareData($data)
     {
+        $clean_data = array();
         if ($this->isSetPasswordMode()) {
-            $data['password'] = $this->getScalarValue('password', $data);
-            $data['password_confirm'] = $this->getScalarValue('password_confirm', $data);
+            $clean_data['password'] = $this->getScalarValue('password', $data);
+            $clean_data['password_confirm'] = $this->getScalarValue('password_confirm', $data);
         } else {
-            $data['login'] = trim($this->getScalarValue('login', $data));
+            $clean_data['login'] = trim($this->getScalarValue('login', $data));
+            if (isset($data['confirmation_code'])) {
+                $clean_data['confirmation_code'] = trim($this->getScalarValue('confirmation_code', $data));
+            }
         }
-        return $data;
+        return $clean_data;
     }
 
     /**

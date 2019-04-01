@@ -38,17 +38,16 @@ class waContactCheckboxField extends waContactField
         return $result;
     }
 
-    public function getHTML($params = array(), $attrs = '')
+    public function getHtmlOne($params = array(), $attrs = '')
     {
         $value = isset($params['value']) ? $params['value'] : '';
-        
+
         $disabled = '';
         if (wa()->getEnv() === 'frontend' && isset($params['my_profile']) && $params['my_profile'] == '1') {
             $disabled = 'disabled="disabled"';
         }
-        
+
         return '<input type="hidden" '.$disabled.' name="'.$this->getHTMLName($params).'" value=""><input type="checkbox"'.($value ? ' checked="checked"' : '').' name="'.$this->getHTMLName($params).'" value="'.ifempty($value, '1').'" '.$attrs.'>';
     }
-
 }
 

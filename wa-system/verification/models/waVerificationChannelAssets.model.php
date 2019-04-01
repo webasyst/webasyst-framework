@@ -105,9 +105,11 @@ class waVerificationChannelAssetsModel extends waModel
             }
         }
 
+        $data['tries'] = 0;
         $data['expires'] = $expires;
 
         return $this->insert($data, 1);
+
     }
 
     /**
@@ -140,7 +142,13 @@ class waVerificationChannelAssetsModel extends waModel
     public function getAsset($key)
     {
         if (wa_is_int($key)) {
+
+            // inc 'tries' field - table hold, so just one can process can inc this field
+            $this->incTriesByWhere($this->getWhereByField(array('id' => $key)));
+
+            // in this case get get already updated 'tires' counter
             $asset = $this->getById($key);
+
         } elseif (is_array($key)) {
 
             $field = array();
@@ -159,6 +167,10 @@ class waVerificationChannelAssetsModel extends waModel
                 }
             }
 
+            // inc 'tries' field - table hold, so just one can process can inc this field
+            $this->incTriesByWhere($this->getWhereByField($field));
+
+            // in this case get get already updated 'tires' counter
             $asset = $this->getByField($field);
 
         } else {
@@ -169,10 +181,13 @@ class waVerificationChannelAssetsModel extends waModel
             return null;
         }
 
-        $this->updateById($asset['id'], array('tries' => $asset['tries'] + 1));
-        $asset['tries'] += 1;
-
         return $asset;
+    }
+
+    protected function incTriesByWhere($where)
+    {
+        $sql = "UPDATE `wa_verification_channel_assets` SET `tries` = `tries` + 1 WHERE {$where}";
+        $this->exec($sql);
     }
 
     public function getByField($field, $value = null, $all = false, $limit = false)

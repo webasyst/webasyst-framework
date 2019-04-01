@@ -8,12 +8,12 @@ class webasystCreateWidgetCli extends webasystCreateCliController
     {
         echo <<<HELP
 Usage: php wa.php createWidget [app_id] [widget_id] [parameters]
-    app_id - App id (string in lower case)
-    widget_id - Widget id (string in lower case)
+    app_id - App ID (string in lower case)
+    widget_id - Widget ID (string in lower case)
 Optional parameters:
-    -name (Plugin name; if comprised of several words, enclose in quotes; e.g., 'My widget')
-    -version (Plugin version; e.g., 1.0.0)
-    -vendor (Numerical vendor id)
+    -name (plugin name; if comprised of several words, enclose in quotes; e.g., 'My widget')
+    -version (plugin version; e.g., 1.0.0)
+    -vendor (numerical vendor id)
     -settings (has settings)
 Example: php wa.php createWidget someapp mywidget -name 'My widget' -version 1.0.0 -vendor 123456 -settings
 HELP;

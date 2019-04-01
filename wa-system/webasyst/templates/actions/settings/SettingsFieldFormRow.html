@@ -44,7 +44,9 @@
                 <div class="s-link-wrapper">
                     <div style="min-width: 36px; display: inline-block; text-align: left;">
                         <a href="javascript:void(0)" class="inline" title="[s`Edit`]"><i class="icon16 edit"></i></a>
-                        <a href="javascript:void(0)" class="inline" title="[s`Delete`]"><i class="icon16 no js-delete-subfield"></i></a>
+                        {if $can_delete}
+                            <a href="javascript:void(0)" class="inline" title="[s`Delete`]"><i class="icon16 no js-delete-subfield"></i></a>
+                        {/if}
                     </div>
                 </div>
             {/if}

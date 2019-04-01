@@ -505,7 +505,11 @@ class waSystem
 
         } catch(Exception $e) {
             if (!waSystemConfig::isDebug() && !in_array($e->getCode(), array(404, 403))) {
-                $log = array("Uncaught exception ".get_class($e).":");
+                $log = array(wa()->getConfig()->getRequestUrl());
+                if (waRequest::method() == 'post') {
+                    $log[] = "POST ".wa_dump_helper(ref(waRequest::post()));
+                }
+                $log[] = "Uncaught exception ".get_class($e).":";
                 $log[] = $e->getMessage()." (".$e->getCode().")";
                 $log[] = $e instanceof waException ? $e->getFullTraceAsString() : $e->getTraceAsString();
                 waLog::log(join("\n", $log));

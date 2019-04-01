@@ -27,10 +27,18 @@ class waContactUrlField extends waContactStringField
 
     protected function setValue($value)
     {
-        if (is_array($value) && isset($value['value'])) {
-            $value = $value['value'];
+        if (is_array($value)) {
+            if (isset($value['value']) && is_scalar($value['value'])) {
+                $value = (string)$value['value'];
+            } else {
+                $value = '';
+            }
+        } elseif (is_scalar($value)) {
+            $value = (string)$value;
+        } else {
+            $value = '';
         }
-        $value = (string)$value;
+
         if ($value && !strpos($value, '://')) {
             $value = 'http://'.$value;
         }

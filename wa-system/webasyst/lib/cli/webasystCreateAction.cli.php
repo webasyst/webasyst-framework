@@ -28,7 +28,7 @@ Usage: php wa.php createAction app_id module [action_type] action_names
     Create an action or controller in given app, along with an HTML template(s)
     if appropriate for given controller type.
 
-Action type be one of:
+Action type can be one of:
     action  waViewAction // default if omitted
     actions waViewActions
     long    waLongActionController
