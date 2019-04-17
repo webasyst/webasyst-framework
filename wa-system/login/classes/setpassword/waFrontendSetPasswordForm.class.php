@@ -10,10 +10,7 @@
  */
 class waFrontendSetPasswordForm extends waSetPasswordForm
 {
-    /**
-     * @var waDomainAuthConfig
-     */
-    protected $auth_config;
+    protected $env = 'frontend';
 
     /**
      * waFrontendSetPasswordForm constructor.

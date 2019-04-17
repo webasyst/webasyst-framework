@@ -11,10 +11,6 @@
  */
 class waForgotPasswordAction extends waBaseForgotPasswordAction
 {
-    /**
-     * @var waDomainAuthConfig
-     */
-    protected $auth_config;
     protected $env = 'frontend';
 
     public function __construct($params = null)

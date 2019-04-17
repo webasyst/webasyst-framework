@@ -741,6 +741,9 @@ abstract class waAuthConfig
         return $get;
     }
 
+    /**
+     * @return waVerificationChannelModel
+     */
     protected function getVerificationChannelModel()
     {
         return new waVerificationChannelModel();

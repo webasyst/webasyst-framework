@@ -11,10 +11,7 @@
  */
 abstract class waLoginAction extends waBaseLoginAction
 {
-    /**
-     * @var waDomainAuthConfig
-     */
-    protected $auth_config;
+    protected $env = 'frontend';
 
     /**
      * waLoginAction constructor.

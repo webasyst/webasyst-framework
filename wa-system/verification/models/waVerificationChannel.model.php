@@ -25,7 +25,7 @@ class waVerificationChannelModel extends waModel
         // MUST BE ALWAYS AT LEAST ONE SYSTEM EMAIL CHANNEL
         $count = $this->countByField(array(
             'type' => waVerificationChannelModel::TYPE_EMAIL,
-            'system' => '1'
+            'system' => 1
         ));
         if ($count > 0) {
             return;
@@ -71,7 +71,7 @@ class waVerificationChannelModel extends waModel
             'name' => _ws('System template'),
             'type' => self::TYPE_EMAIL,
             'address' => $email,
-            'system' => '1'
+            'system' => 1
         ));
     }
 
@@ -102,7 +102,7 @@ class waVerificationChannelModel extends waModel
             $data['create_datetime'] = date('Y-m-d H:i:s');
         }
 
-        $data['system'] = empty($data['system']) ? '0' : '1';
+        $data['system'] = empty($data['system']) ? 0 : 1;
 
         $id = $this->insert($data);
         if (!$id) {
@@ -178,7 +178,7 @@ class waVerificationChannelModel extends waModel
     {
         $query = $this->select('*')
             ->order('id')
-            ->where("type = :type AND system = '1'", array('type' => self::TYPE_EMAIL))
+            ->where("type = :type AND `system` = 1", array('type' => self::TYPE_EMAIL))
             ->limit(1);
         $result = $query->fetchAssoc();
         if (!$result) {
@@ -205,16 +205,16 @@ class waVerificationChannelModel extends waModel
         // mix-in system
         if ($is_system !== null) {
             $where[] = array(
-                'system = :system'
+                '`system` = :system'
             );
         } else {
-            $is_system = $is_system ? '1' : '0';
+            $is_system = $is_system ? 1 : 0;
         }
 
         $where = join(' AND ', $where);
 
         $query = $this->select('*')
-                      ->order('system DESC, type DESC,name,id')
+                      ->order('`system` DESC, type DESC,name,id')
                       ->where($where, array('type' => $type, 'system' => $is_system));
 
         return $query->fetchAll('id');

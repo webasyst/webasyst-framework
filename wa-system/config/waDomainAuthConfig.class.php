@@ -720,7 +720,7 @@ class waDomainAuthConfig extends waAuthConfig
 
         $channel_ids = $this->getVerificationChannelIds();
 
-        $vcm = new waVerificationChannelModel();
+        $vcm = $this->getVerificationChannelModel();
         $channels = $vcm->getChannels($channel_ids);
 
         $types = array();   // <type> => count

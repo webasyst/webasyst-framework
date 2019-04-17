@@ -508,6 +508,11 @@ class waFiles
     public static function upload($url, $path)
     {
         $s = parse_url($url, PHP_URL_SCHEME);
+        $host = parse_url($url, PHP_URL_HOST);
+        $encoded_host = waIdna::enc($host);
+        if ($encoded_host != $host) {
+            $url = preg_replace('@^(\w+://)[^/]+/@', '$1'.$encoded_host.'/', $url);
+        }
         $w = stream_get_wrappers();
         if (in_array($s, $w) && ini_get('allow_url_fopen')) {
             if ($fp = @fopen($url, 'rb')) {

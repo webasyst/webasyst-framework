@@ -8,10 +8,7 @@
  */
 abstract class waBackendLoginAction extends waBaseLoginAction
 {
-    /**
-     * @var waBackendAuthConfig
-     */
-    protected $auth_config;
+    protected $env = 'backend';
 
     public function __construct($params = null)
     {

@@ -91,6 +91,10 @@ abstract class waMyProfileAction extends waViewAction
             }
         }
 
+        if (isset($data['address'])) {
+            $this->prepareAddressesBeforeSave($data['address']);
+        }
+
         foreach ($data as $field => $value) {
             $contact->set($field, $value);
         }
@@ -120,6 +124,40 @@ abstract class waMyProfileAction extends waViewAction
         return true;
     }
 
+    protected function prepareAddressesBeforeSave(&$address_data)
+    {
+        if (!is_array($address_data)) {
+            return;
+        }
+
+        // This is a list of all addresses saved in contact. [ i => array( data => array, ext => string ) ]
+        $contact_addresses = $this->contact['address'];
+
+        // preserve address 'ext'
+        if (!isset($address_data[0])) {
+            $address_data = array($address_data);
+        }
+
+        foreach ($address_data as $index => &$address) {
+
+            if (isset($address['data']) && (isset($address['ext']) || isset($address['value']))) {
+                $address = $address['data'];
+            }
+
+            if (isset($contact_addresses[$index])) {
+                $ext = isset($contact_addresses[$index]['ext']) ? $contact_addresses[$index]['ext'] : null;
+            } else {
+                $ext = null;
+            }
+
+            $address = array(
+                'value' => $address,
+                'ext' => $ext
+            );
+        }
+        unset($address);
+    }
+
     public function logProfileEdit($old_data, $new_data)
     {
         $diff = array();
@@ -128,7 +166,7 @@ abstract class waMyProfileAction extends waViewAction
             $this->logAction('my_profile_edit', $diff, null, $this->contact->getId());
         }
     }
-    
+
     /**
      * waContact to use as initial form data.
      * @return waContact

@@ -6,13 +6,9 @@
  * Abstract action for restore password for backend
  *
  */
-class waBackendForgotPasswordAction extends waBaseForgotPasswordAction
+abstract class waBackendForgotPasswordAction extends waBaseForgotPasswordAction
 {
-    /**
-     * @var waBackendAuthConfig
-     */
-    protected $auth_config;
-    protected $env = 'frontend';
+    protected $env = 'backend';
 
     public function __construct($params = null)
     {

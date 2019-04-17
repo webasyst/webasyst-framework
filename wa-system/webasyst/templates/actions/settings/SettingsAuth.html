@@ -85,7 +85,7 @@
                         {* Email *}
                         <div class="s-auth-method js-auth-method">
                             <label>
-                                <input class="js-auth-method-checkbox" name="used_auth_methods[email]" data-method="email" type="checkbox"{if in_array(waVerificationChannelModel::TYPE_EMAIL, $used_auth_methods)} checked="checked"{/if}>
+                                <input class="js-auth-method-checkbox" name="used_auth_methods[email]" data-method="email" type="checkbox"{if in_array(waVerificationChannelModel::TYPE_EMAIL, $used_auth_methods)} checked="checked"{/if} disabled="disabled">
                                 [`Email`]
                             </label>
                             <div class="hint s-template-link">

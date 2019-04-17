@@ -10,10 +10,7 @@
  */
 class waFrontendForgotPasswordForm extends waForgotPasswordForm
 {
-    /**
-     * @var waDomainAuthConfig
-     */
-    protected $auth_config;
+    protected $env = 'frontend';
 
     /**
      * waFrontendForgotPasswordForm constructor.

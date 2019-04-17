@@ -9,33 +9,10 @@
 abstract class waLoginForm extends waLoginFormRenderer
 {
     /**
-     * @var waAuthConfig
-     */
-    protected $auth_config;
-
-    /**
      * Which part is rendered
      * @var array
      */
     protected $is_rendered = array();
-
-    /**
-     * @param array $options that options will be passed to proper factory/constructor
-     * @see waBackendLoginForm
-     * @see waFrontendLoginForm
-     * @return waLoginForm
-     */
-    public static function factory($options = array())
-    {
-        if (waConfig::get('is_template')) {
-            return null;
-        }
-        if (wa()->getEnv() === 'backend') {
-            return new waBackendLoginForm($options);
-        } else {
-            return new waFrontendLoginForm($options);
-        }
-    }
 
     /**
      * Prepares assign array before form rendering

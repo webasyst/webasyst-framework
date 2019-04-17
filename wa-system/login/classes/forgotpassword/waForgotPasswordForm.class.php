@@ -10,27 +10,6 @@
 abstract class waForgotPasswordForm extends waLoginFormRenderer
 {
     /**
-     * @var waAuthConfig
-     */
-    protected $auth_config;
-
-    /**
-     * @param array $options that options will be passed to proper factory/constructor
-     * @return waForgotPasswordForm
-     */
-    public static function factory($options = array())
-    {
-        if (waConfig::get('is_template')) {
-            return null;
-        }
-        if (wa()->getEnv() === 'backend') {
-            return new waBackendForgotPasswordForm($options);
-        } else {
-            return waFrontendForgotPasswordForm::factory($options);
-        }
-    }
-
-    /**
      * Prepare assign array before form rendering
      * @return array
      */

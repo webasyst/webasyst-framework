@@ -9,11 +9,6 @@
  */
 abstract class waSetPasswordForm extends waLoginFormRenderer
 {
-    /**
-     * @var waAuthConfig
-     */
-    protected $auth_config;
-
     public function renderField($field_id, $params = array())
     {
         // Render directly in form template

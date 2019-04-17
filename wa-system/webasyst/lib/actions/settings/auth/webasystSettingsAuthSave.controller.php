@@ -26,6 +26,8 @@ class webasystSettingsAuthSaveController extends webasystSettingsJsonController
     {
         $data = $this->getRequest()->post();
         $data['used_auth_methods'] = (!empty($data['used_auth_methods'])) ? array_keys($data['used_auth_methods']) : array();
+        // Always must be set
+        $data['used_auth_methods'][] = waAuthConfig::AUTH_METHOD_EMAIL;
         return is_array($data) ? $data : array();
     }
 }

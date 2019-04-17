@@ -346,10 +346,13 @@ var WASettingsAuth = ( function($) {
 
                 if ($method_checkbox.is(':checked') && !$.trim($select.val())) {
                     errors = true;
-                    $select.addClass('shake animated');
+                    $select.addClass('shake animated error');
                     setTimeout(function(){
                         $select.removeClass('shake animated');
                     },500);
+                    $select.one('change', function () {
+                        $(this).removeClass('error');
+                    });
                 }
                 if (errors) {
                     return errors;

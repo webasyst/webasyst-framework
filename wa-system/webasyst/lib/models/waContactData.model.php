@@ -244,6 +244,8 @@ class waContactDataModel extends waModel
      */
     public function updateContactPhoneStatus($contact_id, $phone, $status)
     {
+        $phone = waContactPhoneField::cleanPhoneNumber($phone);
+        
         $row = $this->getByField(array(
             'contact_id' => $contact_id,
             'field'      => 'phone',

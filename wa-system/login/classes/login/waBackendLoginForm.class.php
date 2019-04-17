@@ -8,11 +8,6 @@
 class waBackendLoginForm extends waLoginForm
 {
     /**
-     * @var waBackendAuthConfig
-     */
-    protected $auth_config;
-
-    /**
      * @var string
      */
     protected $env = 'backend';
