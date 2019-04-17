@@ -31,7 +31,7 @@ class photosAlbumAddMethod extends waAPIMethod
         }
         
         if (!isset($data['type'])) {
-            $data['type'] == photosAlbumModel::TYPE_STATIC;
+            $data['type'] = photosAlbumModel::TYPE_STATIC;
         }
 
         $parent_id = waRequest::post('parent_id', 0, 'int');

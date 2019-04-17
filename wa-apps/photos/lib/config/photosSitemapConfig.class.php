@@ -2,6 +2,8 @@
 
 class photosSitemapConfig extends waSitemapConfig
 {
+    protected $unique_urls = array();
+
     public function execute()
     {
         $routes = $this->getRoutes();
@@ -34,10 +36,10 @@ class photosSitemapConfig extends waSitemapConfig
                         }
                         $current_album_id = $photo['album_id'];
                     }
-                    $photo_url = photosFrontendPhoto::getLink($photo, $albums[$current_album_id]);
+                    $photo_url = photosFrontendPhoto::getLink($photo);
 
                     $lastmod_time = max($photo['edit_datetime'], $photo['upload_datetime']);
-                    $this->addUrl($photo_url, $lastmod_time);
+                    $this->addUniqueUrl($photo_url, $lastmod_time);
                     $current_album_lastmod_time = max($current_album_lastmod_time, $lastmod_time);
                     if ($photo['rate'] > 0) {
                         $favorites_lastmod_time = max($favorites_lastmod_time, $lastmod_time);
@@ -49,7 +51,7 @@ class photosSitemapConfig extends waSitemapConfig
             foreach ((array)$album_photos_model->getPhotos() as $photo) {
                 $photo_url = photosFrontendPhoto::getLink($photo);
                 $lastmod_time = max($photo['edit_datetime'], $photo['upload_datetime']);
-                $this->addUrl($photo_url, $lastmod_time);
+                $this->addUniqueUrl($photo_url, $lastmod_time);
                 if ($photo['rate'] > 0) {
                     $favorites_lastmod_time = max($favorites_lastmod_time, $lastmod_time);
                 }
@@ -72,6 +74,14 @@ class photosSitemapConfig extends waSitemapConfig
 
             // main page
             $this->addUrl($main_url, time(), self::CHANGE_DAILY, 1.0);
+        }
+    }
+
+    public function addUniqueUrl($loc, $lastmod, $changefreq = null, $priority = null)
+    {
+        if (empty($this->unique_urls[$loc])) {
+            parent::addUrl($loc, $lastmod, $changefreq, $priority);
+            $this->unique_urls[$loc] = true;
         }
     }
 }

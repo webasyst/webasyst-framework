@@ -45,7 +45,7 @@
     {/wa_js}
 
     <script type="text/javascript" src="?action=loc&amp;v={$wa->version()}"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
     {$wa->js(false)}
     {* @event backend_assets.%plugin_id% *}
     {foreach $backend_assets as $item}
@@ -419,7 +419,8 @@
         last_login_time: {json_encode(strtotime($last_login_datetime))},
         title_suffix: " — {$wa->accountName()}",
         retina_2x_enabled: {if $wa->photos->config('enable_2x')}1{else}0{/if},
-        photo_list_render_chunk: 25
+        photo_list_render_chunk: 25,
+        map_options: {$map_options|json_encode}
     });
     var Album = {
         TYPE_STATIC: '{photosAlbumModel::TYPE_STATIC}',

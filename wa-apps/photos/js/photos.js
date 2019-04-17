@@ -1606,28 +1606,100 @@
         },
 
         renderMap: function(lat, lng, title) {
-            if (lat && lng) {
-                $('#photo-map').show();
-                var latLng = new google.maps.LatLng(lat, lng),
-                    options = {
-                        zoom: 11,
-                        center: latLng,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP,
-                        disableDefaultUI: true,
-                        zoomControlOptions: {
-                            position: google.maps.ControlPosition.TOP_LEFT,
-                            style: google.maps.ZoomControlStyle.SMALL
-                        }
-                    };
-                map = new google.maps.Map($('#photo-map').get(0), options);
-                var marker = new google.maps.Marker({
-                    position: latLng,
-                    map: map,
-                    title: title
-                });
-            } else {
+            var that = this,
+                map_options = that.options.map_options || {},
+                render = function () {};    // map renderer
+
+            if (!lat || !lng) {
                 $('#photo-map').hide();
+                return;
             }
+
+            if (map_options.type === 'google') {
+                render = function() {
+
+                    window.initPhotosGoogleMap = function () {
+
+                        if (!(window.google)) {
+                            $('#photo-map').hide();
+                            return;
+                        }
+
+                        $('#photo-map').show();
+                        var latLng = new google.maps.LatLng(lat, lng),
+                            options = {
+                                zoom: 11,
+                                center: latLng,
+                                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                                disableDefaultUI: true,
+                                zoomControlOptions: {
+                                    position: google.maps.ControlPosition.TOP_LEFT,
+                                    style: google.maps.ZoomControlStyle.SMALL
+                                }
+                            };
+                        var map = new google.maps.Map($('#photo-map').get(0), options);
+                        var marker = new google.maps.Marker({
+                            position: latLng,
+                            map: map,
+                            title: title
+                        });
+                    };
+
+                    if (!(window.google)) {
+                        var script_url = 'https://maps.googleapis.com/maps/api/js?sensor=false&key=:KEY&lang=:LOCALE&callback=initPhotosGoogleMap';
+                        script_url = script_url.replace(':KEY', map_options.key || '').replace(':LOCALE', map_options.locale || '');
+                        $.getScript(script_url);
+                    } else {
+                        initPhotosGoogleMap();
+                    }
+
+                };
+            } else if (map_options.type === 'yandex') {
+                render = function() {
+                    var initYandexMap = function() {
+
+                        if (!(window.ymaps)) {
+                            $('#photo-map').hide();
+                            return;
+                        }
+
+                        ymaps.ready(function () {
+                            $('#photo-map').show();
+                            var coords = [lat, lng];
+                            var map = new ymaps.Map('photo-map', {
+                                center: coords,
+                                zoom: 11,
+                                controls: [
+                                    'zoomControl',
+                                    'fullscreenControl'
+                                ]
+                            });
+                            map.setCenter(coords);
+                            map.geoObjects.add(new ymaps.Placemark(coords, {balloonContent: ''}));
+                        });
+                    };
+
+                    if (!(window.ymaps)) {
+                        var script_url = 'https://api-maps.yandex.ru/2.1/?';
+
+                        script_url += ('lang=' + (map_options.locale || 'ru_RU'));
+
+                        if (map_options.key) {
+                            script_url += ('&apikey=' + map_options.key);
+                        }
+
+                        $.getScript(script_url, initYandexMap);
+                    } else {
+                        initYandexMap();
+                    }
+                };
+            } else {
+                render = function() {
+                    $('#photo-map').hide();
+                }
+            }
+
+            render();
         },
 
         joinObject: function(obj, glue) {
@@ -2715,7 +2787,8 @@
         },
 
         highlightSidebarItem: function() {
-            var href = $.photos.hash;
+            var href = decodeURIComponent($.photos.hash);
+            
             $('#p-sidebar li.selected').removeClass('selected');
             var link = $('#p-sidebar li a[href="#'+(href||'/')+'"]');
             if (!link.length) {

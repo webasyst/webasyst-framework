@@ -71,6 +71,8 @@ class photosDefaultLayout extends waLayout
         $config = $this->getConfig();
         $this->view->assign('big_size', $config->getSize('big'));
         $this->view->assign('sidebar_width', $config->getSidebarWidth());
+
+        $this->view->assign('map_options', $this->getMapOptions());
     }
 
     public static function getAppAlbums($force_app_ids=array())
@@ -117,5 +119,29 @@ class photosDefaultLayout extends waLayout
         }
 
         return $result;
+    }
+
+    protected function getMapOptions()
+    {
+        $map = wa()->getMap();
+        if ($map->getId() === 'google') {
+            return array(
+                'type' => $map->getId(),
+                'key' => $map->getSettings('key'),
+                'locale' => wa()->getLocale()
+            );
+        } elseif ($map->getId() === 'yandex') {
+            return array(
+                'type' => $map->getId(),
+                'key' => $map->getSettings('apikey'),
+                'locale' => wa()->getLocale()
+            );
+        } else {
+            return array(
+                'type' => '',
+                'key' => '',
+                'locale' => ''
+            );
+        }
     }
 }

@@ -427,7 +427,7 @@
                         if (current.nextAll(drSelector).length > 0) {
                             return nearby;
                         }
-                        return arguments.callee(nearby, current.parent().closest('li'));
+                        return addBelow(nearby, current.parent().closest('li'));
                     };
 
                     // widen all spaces above the current li and below the prev li (which may be on another tree level)
@@ -750,10 +750,11 @@
                         self.die("mouseover", self.data('init_draggable'));
                     }
                 });
-                this.live("mouseover", function() {
+                var h;
+                this.live("mouseover", h = function() {
                     var self = $(this);
                     if (!self.data("init_draggable")) {
-                        self.data("init_draggable", arguments.callee).draggable(opts);
+                        self.data("init_draggable", h).draggable(opts);
                     }
                 });
             };
@@ -769,7 +770,7 @@
                 var init = function() {
                     var self = $(this);
                     if (!self.data("init_droppable")) {
-                        self.data("init_droppable", arguments.callee).droppable(opts);
+                        self.data("init_droppable", init).droppable(opts);
                         self.mouseover();
                     }
                 };

@@ -57,8 +57,7 @@ class photosPhotoModel extends waModel
 
         // if deleted just one photo in stack (not stack itself)
         if ($parent && $parent['id'] != $id) {
-            $stack_count = $parent['stack_count'] - 1;
-            $stack_count = $stack_count > 1 ? $stack_count : 0;
+            $stack_count = $this->countByField('parent_id', $parent['id']);
             $sql = "UPDATE {$this->table} SET stack_count = i:stack_count WHERE id = i:id";
             $this->exec($sql, array(
                 'id' => $parent['id'],
@@ -350,7 +349,7 @@ class photosPhotoModel extends waModel
             $id = (int)$photo;
             $photo = $this->select('id, parent_id, stack_count')->where('id = i:id', array(
                 'id' => $id
-            ))->fetch();
+            ))->fetchAssoc();
         }
 
         $parent_id = false;

@@ -62,7 +62,7 @@ class photosDialogAlbumSettingsAction extends waViewAction
          * Extend album settings
          * Add extra html to album settings dialog
          * @event backend_album_settings
-         * @params array[string]string $params['id'] Album id
+         * @params array[string]string $params['id'] Album id, if > 0 than edit existing album, otherwise new create new album
          * @return array[string][string]string $return[%plugin_id%]['top'] Insert html to the top of dialog (just after title)
          * @return array[string][string]string $return[%plugin_id%]['bottom'] Insert html to the bottom of dialog (right before buttons)
          */

@@ -191,6 +191,11 @@
                         </div>
                     </div>
 
+                    {* @event backend_album_settings.%plugin_id%.bottom *}
+                    {foreach $backend_album_settings as $plugin_id => $item}
+                        {$item.bottom|default:''}
+                    {/foreach}
+
                 </div>
 
             </div>

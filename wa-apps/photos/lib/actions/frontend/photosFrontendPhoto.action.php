@@ -108,6 +108,10 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
         $this->getResponse()->addJs('js/common.js?v='.$version, true);
         $this->getResponse()->addJs('js/photo.stream.slider.js?v='.$version, true);
         $this->getResponse()->addJs('js/frontend.photo.js?v='.$version, true);
+
+        // Canonical URL - for SEO
+        $photo_url = photosFrontendPhoto::getLink($this->photo);
+        $this->getResponse()->addHeader('Link', 'rel="canonical"; href="' . $photo_url . '"');
     }
 
     private function getPhoto($url)

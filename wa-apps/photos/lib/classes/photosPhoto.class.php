@@ -526,9 +526,11 @@ class photosPhoto
             }
         }
 
+        $schema = waRequest::isHttps() ? 'https://' : 'http://';
+
         // Domains with Photos frontend
         foreach(wa()->getRouting()->getByApp('photos') as $domain => $params) {
-            $domain_url = 'http://'.rtrim(wa()->getRouting()->getDomainUrl($domain), '/').'/';
+            $domain_url = $schema . rtrim(wa()->getRouting()->getDomainUrl($domain), '/').'/';
             $domains[$domain_url] = array(
                 'url' => $domain_url,
                 'frontend_url' => wa()->getRouteUrl($route_module_action, $route_url_params, true, $domain),
@@ -537,7 +539,7 @@ class photosPhoto
 
         // Other domains
         foreach(array_merge(wa()->getRouting()->getDomains(), array(waRequest::server('HTTP_HOST').wa()->getConfig()->getRootUrl())) as $domain) {
-            $domain_url = 'http://'.rtrim(wa()->getRouting()->getDomainUrl($domain), '/').'/';
+            $domain_url = $schema . rtrim(wa()->getRouting()->getDomainUrl($domain), '/').'/';
             if (empty($domains[$domain_url])) {
                 $domains[$domain_url] = array(
                     'url' => $domain_url,
