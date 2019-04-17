@@ -6,19 +6,19 @@
  * @link https://tech.yandex.ru/maps/jsapi/
  *
  *
- * @property-read string $client_id идентификатор аккаунта в сервисе
- * @property-read string $sender_id идентификаторы и URL магазинов из аккаунта в сервисе
- * @property-read string $warehouse_id
- * @property-read string[] $method_keys ключи для использования каждого ресурса openAPI
- * @property-read string[] $city город отправления
- * @property-read array[] $size настройки размеров
- * @property-read string $insurance
+ * @property-read string    $client_id   идентификатор аккаунта в сервисе
+ * @property-read string    $sender_id   идентификаторы и URL магазинов из аккаунта в сервисе
+ * @property-read string    $warehouse_id
+ * @property-read string[]  $method_keys ключи для использования каждого ресурса openAPI
+ * @property-read string[]  $city        город отправления
+ * @property-read array[]   $size        настройки размеров
+ * @property-read string    $insurance
  * @property-read boolean[] $integration
- * @property-read string $shipping_type
- * @property-read boolean $yd_warehouse
- * @property-read string $map
- * @property-read string $taxes
- * @property-read boolean $debug
+ * @property-read string    $shipping_type
+ * @property-read boolean   $yd_warehouse
+ * @property-read string    $map
+ * @property-read string    $taxes
+ * @property-read boolean   $debug
  */
 class yandexdeliveryShipping extends waShipping
 {
@@ -277,7 +277,7 @@ class yandexdeliveryShipping extends waShipping
     /**
      * Set package state into waShipping::STATE_DRAFT
      * @param waOrder $order
-     * @param array $shipping_data
+     * @param array   $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function draftPackage(waOrder $order, $shipping_data = array())
@@ -299,23 +299,34 @@ class yandexdeliveryShipping extends waShipping
         $shipping_discount = $this->correctItems();
 
         $data += array(
-            'order_requisite' => null,//number ID реквизитов магазина
-            'order_warehouse' => ($this->shipping_type == 'import') ? null : $this->warehouse_id,//number ID склада
-            'order_num'       => $order->id,//number Номер заказа магазина (не больше 15 цифр)
+            'order_requisite' => null,
+            //number ID реквизитов магазина
+            'order_warehouse' => ($this->shipping_type == 'import') ? null : $this->warehouse_id,
+            //number ID склада
+            'order_num'       => $order->id,
+            //number Номер заказа магазина (не больше 15 цифр)
 
-            'order_weight' => $weight,//Вес заказа, кг
+            'order_weight' => $weight,
+            //Вес заказа, кг
 
-            'order_length'            => $size['length'],      //number Длина заказа, см (округляется до целого в большую сторону)
-            'order_width'             => $size['width'],       //number Ширина заказа, см (округляется до целого в большую сторону)
-            'order_height'            => $size['height'],      //number Высота заказа, см (округляется до целого в большую сторону)
-            'order_assessed_value'    => $this->getAssessedPrice($this->insurance),//number Объявленная ценность, руб.
-            'order_delivery_cost' => number_format($order->shipping - $shipping_discount, 2, '.', ''),     //number Стоимость доставки, руб.
+            'order_length'            => $size['length'],
+            //number Длина заказа, см (округляется до целого в большую сторону)
+            'order_width'             => $size['width'],
+            //number Ширина заказа, см (округляется до целого в большую сторону)
+            'order_height'            => $size['height'],
+            //number Высота заказа, см (округляется до целого в большую сторону)
+            'order_assessed_value'    => $this->getAssessedPrice($this->insurance),
+            //number Объявленная ценность, руб.
+            'order_delivery_cost'     => number_format(round($order->shipping - $shipping_discount), 0, '.', ''),
+            //number Стоимость доставки, руб.
             'is_manual_delivery_cost' => empty($shipping_discount) ? 0 : 1,
 
-            'order_amount_prepaid' => $order->paid_datetime ? number_format($this->getPackageProperty('price'), 2, '.', '') : null,                 //number Сумма предоплаты по заказу, руб. (    300)
+            'order_amount_prepaid' => $order->paid_datetime ? number_format($this->getPackageProperty('price'), 2, '.', '') : null,
+            //number Сумма предоплаты по заказу, руб. (    300)
             //'order_total_cost'           => $this->getPackageProperty('price'),
 
-            'order_shipment_date' => null,//$order->shipping_data['shipment_date'], //string 03 - 13 (string)-Дата отгрузки заказа 2017
+            'order_shipment_date' => null,
+            //$order->shipping_data['shipment_date'], //string 03 - 13 (string)-Дата отгрузки заказа 2017
             'order_shipment_type' => preg_replace('@\..+$@', '', $order->shipping_rate_id),
 
             'order_comment' => $order->comment,
@@ -435,7 +446,7 @@ class yandexdeliveryShipping extends waShipping
     /**
      * Set package state into waShipping::STATE_CANCELED
      * @param waOrder $order
-     * @param array $shipping_data
+     * @param array   $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function cancelPackage(waOrder $order, $shipping_data = array())
@@ -473,7 +484,7 @@ class yandexdeliveryShipping extends waShipping
     /**
      * Set package state into waShipping::STATE_READY
      * @param waOrder $order
-     * @param array $shipping_data
+     * @param array   $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function readyPackage(waOrder $order, $shipping_data = array())
@@ -958,6 +969,11 @@ class yandexdeliveryShipping extends waShipping
         $data = array();
         $size = $this->size;
         switch ($size['type']) {
+            case 'passed':
+                if ($size = $this->getTotalSize()) {
+                    $data = $size;
+                }
+                break;
             case 'fixed':
                 $data += reset($size['table']);
                 break;
@@ -1307,12 +1323,22 @@ HTML;
 
         $radio_params = $params;
         $radio_params['value'] = ifset($params['value']['type']);
-        $radio_params['options'] = array(
-            array(
-                'value'       => 'fixed',
-                'title'       => 'Фиксированное значение',
-                'description' => '',
-            ),
+        $radio_params['options'] = array();
+        if (isset($params['instance'])) {
+            /** @var yandexdeliveryShipping $instance */
+            $instance = $params['instance'];
+            if ($instance->getAdapter()->getAppProperties('dimensions')) {
+                $radio_params['options'][] = array(
+                    'value'       => 'passed',
+                    'title'       => 'Рассчитанные дополнительным плагином',
+                    'description' => '',
+                );
+            }
+        }
+        $radio_params['options'][] = array(
+            'value'       => 'fixed',
+            'title'       => 'Фиксированное значение',
+            'description' => '',
         );
         $html .= waHtmlControl::getControl(waHtmlControl::RADIOGROUP, 'type', $radio_params);
 
@@ -1444,14 +1470,19 @@ HTML;
                 var scope = container.find('.js-weight');
                 switch (this.value) {
                     case 'fixed':
+                        container.show();
                         if (rows.length > 1) {
                             rows.filter(':not(:first)').hide();
                         }
                         scope.hide();
                         break;
                     case 'table':
+                        container.show();
                         scope.show();
                         rows.show();
+                        break;
+                    default:
+                        container.hide();
                         break;
 
                 }
@@ -1797,9 +1828,9 @@ HTML;
     }
 
     /**
-     * @param waNet $net
+     * @param waNet                   $net
      * @param waNet|waException|array $result
-     * @param waiCache $cache
+     * @param waiCache                $cache
      * @return $this|mixed|null
      */
     public function handleApiQuery($net, $result, $cache = null)
@@ -1845,7 +1876,7 @@ HTML;
     }
 
     /**
-     * @param waNet $net
+     * @param waNet       $net
      * @param waException $ex
      * @return null
      * @throws waException
