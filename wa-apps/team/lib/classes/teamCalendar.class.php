@@ -154,7 +154,7 @@ class teamCalendar
                 }
             }
             unset($c);
-            // usort($users, create_function('$a,$b', 'return $a["birthday"] > $b["birthday"];'));
+            // usort($users, wa_lambda('$a,$b', 'return $a["birthday"] > $b["birthday"];'));
         }
 
         if (!$events) { // for empty calendar

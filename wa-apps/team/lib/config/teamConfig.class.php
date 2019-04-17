@@ -151,7 +151,7 @@ class teamConfig extends waAppConfig
     {
         $path = wa()->getDataPath('photos', true, 'contacts');
 
-        $force = $force || !file_exists($path.'/thumbnail_generator');
+        $force = $force || !file_exists($path.'/team_thumbnail_generator');
         if (!$force) {
             return;
         }

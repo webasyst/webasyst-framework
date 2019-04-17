@@ -49,7 +49,7 @@
                                     {if !empty($available_calendars)}
                                         <ul class="menu-v with-icons">
                                             {foreach $available_calendars as $_c}
-                                                <li class="t-menu-item {if $_c.id == $_selected_calendar.id}selected{/if}" data-calendar-id="{$_c.id}" data-default-status="{$_c.default_status}">
+                                                <li class="t-menu-item {if $_c.id == $_selected_calendar.id}selected{/if}" data-calendar-id="{$_c.id}" data-default-status="{$_c.default_status|default:''}">
                                                     <a href="javascript:void(0);">
                                                         <i class="icon16 userpic20 {if !empty($_c.icon_class)}{$_c.icon_class}{/if}" style="{if !empty($_c.bg_color)}background: {$_c.bg_color};{/if}{if !empty($_c.font_color)}color: {$_c.font_color};{/if}"></i>
                                                         <b><i>{$_c.name|escape}</i></b>

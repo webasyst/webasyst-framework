@@ -165,13 +165,14 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if(mode == 'view' && !this.fieldValue) {
                     return null;
                 }
+                var value = typeof this.fieldValue == 'object' ? this.fieldValue.value : this.fieldValue;
                 var result = null;
                 if (mode == 'edit') {
                     result = $('<span><input class="val" type="text"></span>');
-                    result.find('.val').val(this.fieldValue);
+                    result.find('.val').val(value);
                 } else {
                     result = $('<span class="val"></span>');
-                    result.text(this.fieldValue);
+                    result.text(value);
                 }
                 return result;
             },
@@ -237,7 +238,6 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if (mode != 'view' && mode != 'edit') {
                     throw new Error('Unknown mode: '+mode);
                 }
-
                 if (this.currentMode != mode) {
                     this.currentMode = mode;
                     if (replaceEditor) {
@@ -379,8 +379,21 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     if (id === '') {
                         attrs += ' disabled';
                     }
-                    options += '<option value="'+id+'"'+attrs+'>' + $.wa.encodeHTML(this.fieldData.options[id]) + '</option>';
+
+                    id = id || '';
+                    id = typeof id === 'string' ? id : ('' + id);
+
+                    // Escape not only html tags but also quote
+                    var id_safe = $.wa.encodeHTML(id).replace('"', '&quot;');
+
+                    var opt = '<option value="{$id}" {$attrs}>{$text}</option>'
+                            .replace('{$id}', id_safe)
+                            .replace('{$attrs}', attrs)
+                            .replace('{$text}', $.wa.encodeHTML(this.fieldData.options[id]));
+
+                    options += opt;
                 }
+
                 return $('<div><select class="val '  + (this.fieldData.type + '').toLowerCase() + '"><option value=""'+(selected ? '' : ' selected')+'>'+this.notSet()+'</option>'+options+'</select></div>');
             }
         }
@@ -530,6 +543,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
         },
 
         newInlineFieldElement: function(mode) {
+
             // Do not show anything in view mode if field is empty
             if(mode == 'view' && !this.fieldValue) {
                 return null;
@@ -618,10 +632,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 } else {
                     // show as input
                     var result = $('<div></div>').append(contactEditor.baseFieldType.newInlineFieldElement.call(this, mode));
-
-                    result.find('.val').val('');
-
-                    //$.wa.defaultInputValue(result.find('.val'), this.fieldData.name+(this.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
+                    
                     result.find('.val').attr('placeholder', this.fieldData.name+(this.fieldData.required ? ' ('+$_('required')+')' : ''));
                     return result;
                 }
@@ -885,7 +896,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     // if there's something else, then pass the whole object.
                     var passObject = false;
                     for(var k in data[i]) {
-                        if (k != 'value' && k != 'ext') {
+                        if (k != 'value' && k != 'ext' && k != 'status') {
                             passObject = true;
                             break;
                         }
@@ -1614,11 +1625,13 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 return;
             }
             if (this.currentMode == 'edit') {
-                this.domElement.find('.val').each(function() {
-                    var el = $(this);
-                    var part = el.data('part');
-                    el.val(data.data[part] || '');
-                });
+                if (data && data.data) {
+                    this.domElement.find('.val').each(function() {
+                        var el = $(this);
+                        var part = el.data('part');
+                        el.val(data.data[part] || '');
+                    });
+                }
             } else {
                 this.domElement.find('.val').html(this.fieldValue);
             }
@@ -1999,10 +2012,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     return;
                 }
 
-                if (typeof this.fieldEditors[f] == 'undefined') {
-                    this.fieldEditors[f] = this.editorFactories[f].createEditor(this.contactType);
+                try {
+                    if (typeof this.fieldEditors[f] == 'undefined') {
+                        this.fieldEditors[f] = this.editorFactories[f].createEditor(this.contactType);
+                    }
+                    this.fieldEditors[f].setValue(newData[f]);
+                } catch (e) {
+                    console.log('Unable to initialize editor '+f);
+                    console.log(e);
                 }
-                this.fieldEditors[f].setValue(newData[f]);
             }
 
         },
