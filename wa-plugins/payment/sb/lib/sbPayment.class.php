@@ -447,7 +447,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         $tax_type = null;
 
-        if ($tax == 18 || $tax == 20) {
+        if ($tax == 20) {
+            $tax_type = 6;
+        } elseif  ($tax == 18) {
             $tax_type = 3;
         } elseif ($tax == 10) {
             $tax_type = 2;
