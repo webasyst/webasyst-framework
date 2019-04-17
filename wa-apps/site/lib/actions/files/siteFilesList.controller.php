@@ -13,10 +13,13 @@ class siteFilesListController extends waJsonController
 
         $dh = opendir($path);
         $names = array();
-        while (($f = readdir($dh)) !== false) {
-            if ($f !== '.' && $f !== '..' && is_file($path.'/'.$f)) {
-                $names[] = $f;
+        if ($dh) {
+            while (($f = readdir($dh)) !== false) {
+                if ($f !== '.' && $f !== '..' && is_file($path.'/'.$f)) {
+                    $names[] = $f;
+                }
             }
+            closedir($dh);
         }
         natcasesort($names);
         $n = count($names);
@@ -37,7 +40,6 @@ class siteFilesListController extends waJsonController
                 'datetime' => waDateTime::format('humandatetime', $t)
             );
         }
-        closedir($dh);
         $this->response['pages'] = ceil((float)$n / $limit);
         $this->response['files'] = $files;
     }

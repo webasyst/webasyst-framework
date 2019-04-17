@@ -1721,6 +1721,9 @@ msgstr "Настройте поля форм входа и регистраци�
 msgid "A signup confirmation link or code will be sent in a notification."
 msgstr "Ссылка или код для подтверждения регистрации будут отправлены в уведомлении."
 
+msgid "A registered website visitor will be able to log in only with an email address or phone number confirmed."
+msgstr "Зарегистрированный посетитель сможет войти только после подтверждения email-адреса или номера телефона."
+
 msgid "Wait for specified number of seconds before sending next one-time password"
 msgstr "Период ожидания в секундах перед отправкой следующего одноразового кода"
 
