@@ -32,7 +32,7 @@ class waMemcachedCacheAdapter extends waCacheAdapter
 
     public function key($key, $app_id, $group = null)
     {
-        return (isset($this->options['namespace']) ? $this->options['namespace'].'/' : '').parent::key($key, $app_id. $group);
+        return (isset($this->options['namespace']) ? $this->options['namespace'].'/' : '').parent::key($key, $app_id, $group);
     }
 
     public function get($key, $group = null)
