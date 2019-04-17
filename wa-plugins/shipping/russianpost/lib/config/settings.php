@@ -17,6 +17,21 @@ return array(
 HTML
         ,
     ),
+    'required_address_fields' => array(
+        'title'        => 'Обязательные поля адреса',
+        'control_type' => waHtmlControl::GROUPBOX,
+        'options'      => array(
+            array(
+                'value' => 'zip',
+                'title' => 'Почтовый индекс',
+            ),
+            array(
+                'value' => 'street',
+                'title' => 'Улица, дом, квартира',
+            ),
+        ),
+        'description'  => 'Выберите поля адреса, которые должны быть обязательны для заполнения.<br><br>',
+    ),
 
     #parcel
 
@@ -113,8 +128,8 @@ HTML
     ),
     'exclude_cities'   => array(
         'value'        => '',
-        'title'        => 'Не доставлять в города (например, город магазина)',
-        'description'  => 'Названия городов через запятую',
+        'title'        => 'Не доставлять в населенные пункты (например, город магазина)',
+        'description'  => 'Перечислите названия населенных пунктов через запятую',
         'control_type' => waHtmlControl::INPUT,
     ),
     'halfkilocost'     => array(
