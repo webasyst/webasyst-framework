@@ -25,7 +25,7 @@
             {$_version = null}
         {/if}
 
-        <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($reuqest_uri, $_item_url) !== false} class="selected"{/if}>
+        <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($request_uri, $_item_url) !== false} class="selected"{/if}>
             {* Build app icon count *}
             {$_count = null}
             {if $counts && isset($counts[$_id])}
@@ -64,7 +64,7 @@
 <div id="wa-header">
     {* Account name *}
     <div id="wa-account">
-        {if $reuqest_uri == $backend_url || $reuqest_uri == "`$backend_url`/"}
+        {if $request_uri == $backend_url || $request_uri == "`$backend_url`/"}
             <h3 title="{$company_name}">
                 {$company_name|truncate:18:'...'}
                 <a href="{$company_url}" class="wa-frontend-link" target="_blank">
@@ -109,7 +109,7 @@
                 <a href="#" id="wa-moreapps"></a>
             </li>
         </ul>
-        {if $reuqest_uri == $backend_url || $reuqest_uri == "`$backend_url`/"}
+        {if $request_uri == $backend_url || $request_uri == "`$backend_url`/"}
             <div class="d-dashboard-header-content">
                 <div class="d-dashboards-list-wrapper" id="d-dashboards-list-wrapper"></div>
                 <div class="d-dashboard-link-wrapper" id="d-dashboard-link-wrapper">
