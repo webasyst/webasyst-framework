@@ -123,25 +123,31 @@ class photosDefaultLayout extends waLayout
 
     protected function getMapOptions()
     {
-        $map = wa()->getMap();
-        if ($map->getId() === 'google') {
-            return array(
-                'type' => $map->getId(),
-                'key' => $map->getSettings('key'),
-                'locale' => wa()->getLocale()
-            );
-        } elseif ($map->getId() === 'yandex') {
-            return array(
-                'type' => $map->getId(),
-                'key' => $map->getSettings('apikey'),
-                'locale' => wa()->getLocale()
-            );
-        } else {
-            return array(
-                'type' => '',
-                'key' => '',
-                'locale' => ''
-            );
+        $map_options = array(
+            'type' => '',
+            'key' => '',
+            'locale' => ''
+        );
+
+        try {
+            $map = wa()->getMap();
+            if ($map->getId() === 'google') {
+                $map_options = array(
+                    'type' => $map->getId(),
+                    'key' => $map->getSettings('key'),
+                    'locale' => wa()->getLocale()
+                );
+            } elseif ($map->getId() === 'yandex') {
+                $map_options = array(
+                    'type' => $map->getId(),
+                    'key' => $map->getSettings('apikey'),
+                    'locale' => wa()->getLocale()
+                );
+            }
+        } catch (waException $e) {
+
         }
+
+        return $map_options;
     }
 }
