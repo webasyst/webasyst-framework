@@ -75,6 +75,20 @@
         <div class="block padded s-redirect-details" style="{if empty($route.redirect)}display: none;{/if}">
             {* FIELDS FOR REDIRECT *}
             <div class="field-group">
+                <div class="field">
+                    <div class="name">[`Temporary redirecting`]</div>
+                    <div class="value">
+                        <label>
+                            <input type="checkbox" name="params[code]" value="302"{if !empty($route.code) && $route.code == 302} checked{/if} />
+                            [`Use server response code 302`]
+                        </label>
+                    </div>
+                    <div class="value">
+                        <div class="hint">[`Enable for <strong>temproray</strong> redirecting only, which you are planning to cancel in the future.`]</div>
+                        <div class="hint">[`Disable for <strong>permanent</strong> redirecting with server response code 301, which is used to inform search engines that the new URL should be indexed instead of the old one.`]</div>
+                    </div>
+                </div>
+
                 <div id="s-route-comment" class="field" style="{if empty($route.redirect)}display: none;{/if}">
                     <div class="name">[`Comment`]</div>
                     <div class="value">

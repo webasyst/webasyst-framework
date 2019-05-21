@@ -60,6 +60,8 @@ var SitePersonalSettings = ( function($) {
         //
         that.initFixedActions();
         //
+        that.initErrorsAutoCleaner();
+        //
         that.initSubmit();
     };
 
@@ -559,6 +561,29 @@ var SitePersonalSettings = ( function($) {
         });
     };
 
+    SitePersonalSettings.prototype.showErrors = function(errors) {
+        var that = this,
+            $form = that.$form;
+        $.each(errors, function (name, errormsg) {
+            $form.find('[name="' + name + '"]').addClass('error').after('<em class="errormsg">' + $.wa.encodeHTML(errormsg) + '</em>');
+        });
+    };
+
+    SitePersonalSettings.prototype.clearErrors = function() {
+        var that = this,
+            $form = that.$form;
+        $form.find('.errormsg').remove();
+        $form.find('.error').removeClass('error');
+    };
+
+    SitePersonalSettings.prototype.initErrorsAutoCleaner = function() {
+        var that = this,
+            $form = that.$form;
+        $form.on('change', ':input', function () {
+            that.clearErrors();
+        });
+    };
+
     SitePersonalSettings.prototype.initSubmit = function() {
         var that = this,
             $form = that.$form;
@@ -572,6 +597,9 @@ var SitePersonalSettings = ( function($) {
             if (that.is_locked) {
                 return;
             }
+
+            that.clearErrors();
+
             var errors = validateFields();
             if (errors) {
                 return false;
@@ -584,19 +612,22 @@ var SitePersonalSettings = ( function($) {
             var href = $form.attr('action'),
                 data = $form.serialize();
 
-            $.post(href, data, function (res) {
-                if (res.status === 'ok') {
-                    that.$loading.removeClass('loading').addClass('yes').show();
-                    that.setFormChanged(false);
-                } else {
-                    that.$loading.removeClass('loading').addClass('no').show();
-                }
-                that.is_locked = false;
-                that.$button.prop('disabled', false);
-                setTimeout(function(){
-                    that.$loading.hide();
-                },2000);
-            });
+            $.post(href, data)
+                .done(function (res) {
+                    if (res.status === 'ok') {
+                        that.$loading.removeClass('loading').addClass('yes').show();
+                        that.setFormChanged(false);
+                    } else {
+                        that.$loading.removeClass('loading').addClass('no').show();
+                        that.showErrors(res.errors);
+                    }
+                    setTimeout(function(){
+                        that.$loading.hide();
+                    },2000);
+                }).always(function () {
+                    that.is_locked = false;
+                    that.$button.prop('disabled', false);
+                });
         });
 
         function validateFields() {

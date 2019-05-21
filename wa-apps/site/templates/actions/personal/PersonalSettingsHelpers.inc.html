@@ -255,7 +255,7 @@
         </div>
         <h3 class="name">[`Phone`]</h3>
         <div class="s-settings-wrapper js-settings-wrapper" style="display: none;">
-            {* Email template select *}
+            {* Phone template select *}
             <div class="field-group">
                 <div class="field">
                     <div class="name">[`User notifications`]</div>
@@ -286,6 +286,28 @@
                                     [`Prefer SMS over email for sending notifications. In case of SMS sending failure, email will be sent as a replacement.`]
                                 </label>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`National direct-dialing code (NDD)`]</div>
+
+                    {$_phone_transform_prefix = $auth_config.phone_transform_prefix|default:[]}
+
+                    <div class="value">
+                        {$_input_code = $_phone_transform_prefix['input_code']|default:''}
+                        <input type="text" class="short" name="phone_transform_prefix[input_code]" value="{$_input_code}">
+                        <div class="hint" style="margin-top: 10px;">
+                            [`Enter the NDD code which is used for making calls within your country.`]<br>
+                            [`The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers.`]
+                        </div>
+                    </div>
+                    <div class="name">[`Country code`]</div>
+                    <div class="value">
+                        {$_output_code = $_phone_transform_prefix['output_code']|default:''}
+                        + <input type="text" class="short" name="phone_transform_prefix[output_code]" value="{$_output_code}">
+                        <div class="hint" style="margin-top: 10px;">
+                            [`Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD.`]
                         </div>
                     </div>
                 </div>

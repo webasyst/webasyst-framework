@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -1845,3 +1845,33 @@ msgstr "Измените список в разделе «<a href=\"%s\">Email-�
 #: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:381
 msgid "Required field"
 msgstr "Обязательное поле"
+
+msgid "National direct-dialing code (NDD)"
+msgstr "Код междугородней связи"
+
+msgid "Enter the NDD code which is used for making calls within your country."
+msgstr "Введите код, с помощью которого совершаются междугородние звонки в вашей стране. Пример кода для Российской Федерации: 8."
+
+msgid "The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers."
+msgstr "Если указан код междугородней связи, то в номерах посетителей сайта он будет заменен на телефонный код страны."
+
+msgid "Country code"
+msgstr "Код страны"
+
+msgid "Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD."
+msgstr "Международный код вашей страны, который будет использоваться в телефонных номерах посетителей сайта вместо кода междугородней связи."
+
+msgid "Enter digits only"
+msgstr "Введите только цифры"
+
+msgid "Temporary redirecting"
+msgstr "Временное перенаправление"
+
+msgid "Use server response code 302"
+msgstr "Использовать код ответа сервера 302"
+
+msgid "Enable for <strong>temproray</strong> redirecting only, which you are planning to cancel in the future."
+msgstr "Включите только для <strong>временного</strong> перенаправления, которое вы планируете отменить в будущем."
+
+msgid "Disable for <strong>permanent</strong> redirecting with server response code 301, which is used to inform search engines that the new URL should be indexed instead of the old one."
+msgstr "Выключите для использования <strong>постоянного</strong> перенаправления с кодом ответа сервера 301 — он сообщает поисковым системам, что новый URL должен индексироваться вместо старого."

@@ -100,7 +100,7 @@
                 $("#s-radio-select-{$route_id}-{$id} select").prop('disabled', true);
                 $(this).parent().next("select").prop('disabled', false);
             }
-        });
+        }).trigger('change');
     </script>
 
 {elseif $info.type == 'radio_checkbox'}
@@ -145,7 +145,7 @@
                 $("#s-radio-checkbox-{$route_id}-{$id} input:checkbox").prop('disabled', true).prop('checked', false);
                 $(this).parent().next("div").find("input").prop('disabled', false);
             }
-        });
+        }).trigger('change');
     </script>
 
 {elseif $info.type == 'radio_text'}
@@ -183,7 +183,7 @@
             } else {
                 $("#s-radio-select-{$route_id}-{$id} input:text").prop('disabled', true);
             }
-        });
+        }).trigger('change');
     </script>
 
 {/if}
