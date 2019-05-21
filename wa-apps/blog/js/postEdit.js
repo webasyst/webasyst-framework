@@ -532,15 +532,6 @@
                     cachedSlug = null;
                     var $post_url = $('#post-url').val('');
 
-                    // When there's no frontend routing for this blog, we don't care for URL validation
-                    if (status == 'empty' || status == 'hidden_empty') {
-                        if (!$post_url.siblings('[name="update_url_on_error"]').length) {
-                            $post_url.after($.parseHTML('<input type="hidden" name="update_url_on_error" value="1">'));
-                        }
-                    } else {
-                        $post_url.siblings('[name="update_url_on_error"]').remove();
-                    }
-
                     $('#post-url-field').hide('fast').trigger($.Event('change', { status: status }));
                 }
 

@@ -119,7 +119,7 @@ class blogSettingsAction extends waViewAction
                     'post_default' => 'none',
                     'default' => 'posts:overdue:comments_to_my_post',
                     'validate' => array('vAvailable', array('none', 'posts', 'overdue', 'comments', 'comments_to_my_post')),
-                    'callback' => create_function('$a', '
+                    'callback' => wa_lambda('$a', '
                  $a = explode(":",$a);
                  $res = array();
                  foreach ($a as $b) {

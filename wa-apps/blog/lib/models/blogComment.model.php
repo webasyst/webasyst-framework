@@ -371,7 +371,7 @@ class blogCommentModel extends waNestedSetModel
                 if (mb_strlen($comment['name']) > 255) {
                     $errors[]['name'] = _w('Name length should not exceed 255 symbols');
                 }
-                if (empty($comment['name']) || (mb_strlen($comment['email']) == 0)) {
+                if (empty($comment['email']) || (mb_strlen($comment['email']) == 0)) {
                     $errors[]['email'] = _w('Email can not be left blank');
                 }
                 $validator = new waEmailValidator();

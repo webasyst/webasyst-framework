@@ -37,7 +37,7 @@ SQL;
             $where[] = $this->getWhereByField('status', self::STATUS_PUBLISHED);
             if ($blogs !== false) {
                 $where[] = $this->getWhereByField('blog_id', $blogs);
-                if (count($blogs) > 1) {
+                if (count((array)$blogs) > 1) {
                     $use_blog_id = false;
                 }
             } else {

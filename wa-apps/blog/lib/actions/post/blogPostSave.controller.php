@@ -179,12 +179,13 @@ class blogPostSaveController extends waJsonController
 
     private function save($post)
     {
-        $options = array();
+        $options = array(
+            // IF no settlements for blog, we must have unique URL, but silently (without validation error about uniqueness of url)
+            'update_url_on_error' => !wa()->getRouteUrl('blog/')
+        );
+
         if (waRequest::post('transliterate', null)) {
             $options['transliterate'] = true;
-        }
-        if (waRequest::post('update_url_on_error')) {
-            $options['update_url_on_error'] = true;
         }
 
         $this->validate_messages = $this->post_model->validate($post, $options);

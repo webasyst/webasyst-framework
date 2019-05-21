@@ -1023,7 +1023,7 @@ msgstr "Meta Description"
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:108
 msgid "No meta parameters are defined for this blog post."
-msgstr "Для этой записи мета-параметры не заданы."
+msgstr "Для этой записи метапараметры не заданы."
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:110
 msgid "Edit meta"
