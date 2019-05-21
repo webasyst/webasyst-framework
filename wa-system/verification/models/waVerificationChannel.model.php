@@ -19,18 +19,25 @@ class waVerificationChannelModel extends waModel
             // table not exist
             if ($e->getCode() == 1146) {
                 $this->createTables();
+                parent::__construct($type, $writable);
+            } else {
+                throw $e;
             }
+
         }
 
-        // MUST BE ALWAYS AT LEAST ONE SYSTEM EMAIL CHANNEL
-        $count = $this->countByField(array(
-            'type' => waVerificationChannelModel::TYPE_EMAIL,
-            'system' => 1
-        ));
-        if ($count > 0) {
-            return;
+        // MUST BE ALWAYS AT LEAST ONE SYSTEM EMAIL CHANNEL, but check this condition only one time in runtime execution
+        if (!isset(self::$static_cache['system_existing_checked'])) {
+            $count = $this->countByField(array(
+                'type' => waVerificationChannelModel::TYPE_EMAIL,
+                'system' => 1
+            ));
+            if ($count > 0) {
+                return;
+            }
+            $this->createDefaultSystemEmailChannel();
+            self::$static_cache['system_existing_checked'] = true;
         }
-        $this->createDefaultSystemEmailChannel();
     }
 
     /**

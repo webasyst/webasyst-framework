@@ -385,6 +385,8 @@ class webasystFieldConstructor
 
         $types = array_unique($types);
 
+        $was_enabled_for_contact = (bool)waContactFields::get($field->getId(), 'enabled');
+
         $enable = 0;
         foreach (array('person', 'company') as $type) {
             if (in_array($type, $types)) {
@@ -418,6 +420,14 @@ class webasystFieldConstructor
                 }
             }
         }
+
+        // IF was not enable for contact and now is - move field in his OLD place
+        if (!$was_enabled_for_contact && $enable > 0) {
+            $all_fields_order = $this->getAllFieldsOrder();
+            $fields_order = array_diff($all_fields_order, self::$person_main_fields, self::$company_main_fields);
+            $this->saveFieldsOrder($fields_order);
+        }
+
     }
 
     /**

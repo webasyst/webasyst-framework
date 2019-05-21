@@ -748,7 +748,7 @@ table.light td.no-border { border: none; }
 
 /* 16x16
 -------------------------------------------- */
-i.icon16 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon16.png?1503); height:16px; width:16px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
+i.icon16 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon16.png?1504); height:16px; width:16px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
 * i.icon16 { text-decoration:none!important; vertical-align:top; margin: -0.1em 0.25em 0 0; }
 .heading i.icon16 { vertical-align:top; margin:-0.1em 0.1em 0 -0.5em; }
 .hint i.icon10 { vertical-align:top; margin:0.15em 0.15em 0 0; }
@@ -875,6 +875,7 @@ i.icon16.hidden { display: none; }
 .icon16.twitter { background-position:-208px -112px; }
 .icon16.google { background-position:-288px -112px; }
 .icon16.linkedin { background-position:-304px -112px; }
+.icon16.telegram { background-position:-320px -112px; }
 .icon16.vkontakte { background-position:-240px -112px; }
 .icon16.livejournal { background-position:-256px -112px; }
 .icon16.picasa { background-position:-272px -112px; }
@@ -947,7 +948,7 @@ i.icon16.hidden { display: none; }
 
 /* 10x10
 -------------------------------------------- */
-i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon10.png?1503); height:10px; width:10px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
+i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon10.png?1504); height:10px; width:10px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
 * i.icon10 { text-decoration:none!important; vertical-align:top; margin: 0.2em 0.1em 0 0; }
 .icon10.plus { background-position:-20px -20px; }
 .icon10.plus-bw { background-position:-30px -20px; }
@@ -1074,8 +1075,8 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 @media
 (-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {
-    i.icon10 { background-image: url(../../../wa-content/img/icon10@2x.png?1503); background-size: 120px 50px; }
-    i.icon16 { background-image: url(../../../wa-content/img/icon16@2x.png?1503); background-size: 512px 128px; }
+    i.icon10 { background-image: url(../../../wa-content/img/icon10@2x.png?1504); background-size: 120px 50px; }
+    i.icon16 { background-image: url(../../../wa-content/img/icon16@2x.png?1504); background-size: 512px 128px; }
     i.icon16.country { background-size: 16px; }
 }
 

@@ -30,10 +30,15 @@ abstract class waOAuth2Adapter extends waAuthAdapter
             wa()->getResponse()->redirect($url);
         }
 
-        if ($this->check_state && waRequest::get('state') != wa()->getStorage()->get('auth_state')) {
-            // @todo: error
-            return array();
+        if ($this->check_state) {
+            $state = waRequest::get('state');
+            $auth_state = wa()->getStorage()->get('auth_state');
+            if (!$state || !$auth_state || $state !== wa()->getStorage()->get('auth_state')) {
+                // @todo: error
+                return array();
+            }
         }
+
         // close session
         wa()->getStorage()->close();
         // get token

@@ -1367,7 +1367,16 @@ class waSignupAction extends waViewAction
                 }
             }
 
-            $data_to_save['phone'] = array('value' => $data['phone'], 'status' => $status);
+            $phone = $data['phone'];
+
+            // non-international phone try to convert to international
+            $is_international = substr($phone, 0, 1) === '+';
+            if (!$is_international) {
+                $result = $this->auth_config->transformPhone($phone);
+                $phone = $result['phone'];
+            }
+
+            $data_to_save['phone'] = array('value' => $phone, 'status' => $status);
         }
 
         // Rollback creation hash

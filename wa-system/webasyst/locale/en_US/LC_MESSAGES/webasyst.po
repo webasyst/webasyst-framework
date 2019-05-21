@@ -3978,3 +3978,6 @@ msgstr ""
 #: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:24
 msgid "OK"
 msgstr ""
+
+msgid "WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?"
+msgstr ""

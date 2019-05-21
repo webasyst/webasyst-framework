@@ -859,4 +859,110 @@ abstract class waAuthConfig
      */
     abstract protected function getMethodByKey($type, $key = null);
 
+    /**
+     * Get options for transform phone(s) prefix
+     * @param array
+     * @return array
+     */
+    abstract public function getPhoneTransformPrefix();
+
+    /**
+     * @return bool
+     */
+    public function needTransformPhonePrefix()
+    {
+        return !!$this->getPhoneTransformPrefix();
+    }
+
+    /**
+     * @param $options
+     * @return mixed
+     */
+    abstract public function setPhoneTransformPrefix($options);
+
+    /**
+     * Transform phone by rule(s) that in current config
+     * @param string $phone
+     * @param bool $is_reverse Reverse (<=) or direct (=>) transformation
+     * @return array $result
+     *   bool   $result['status'] if TRUE phone is changed (transformed)
+     *   string $result['phone']  Resulted phone
+     */
+    public function transformPhone($phone, $is_reverse = false)
+    {
+        $result = array(
+            'status' => false,
+            'phone' => $phone
+        );
+
+        if (!is_scalar($phone)) {
+            return $result;
+        }
+
+        $options = $this->getPhoneTransformPrefix();
+        $result = self::transformPhonePrefix($phone, array_merge($options, array('is_reverse' => $is_reverse)));
+
+        return $result;
+    }
+
+    /**
+     * Transform phone by specified rule
+     *
+     * @param string|string[] $phone
+     *
+     * @param array $options - options of transformation:
+     *   - string 'input_code', for example 8 for Russia
+     *   - string 'output_code', for example 7 for Russia
+     *   - bool 'is_reverse' - reverse transformation (for example for Russia, 8 => 7) or direct (for example for Russia, 7 => 8).
+     *      By default is false, so direction of transformation is direct
+     *
+     * @return array
+     */
+    protected static function transformPhonePrefix($phone, $options = array())
+    {
+        $is_input_scalar = is_scalar($phone) || $phone === null;
+        $phones = waUtils::toStrArray($phone);
+        $original_phones = $phones;
+
+        $options = is_array($options) ? $options : array();
+        // is reverse transformation
+        $is_reverse = (bool)ifset($options['is_reverse']);
+
+        foreach ($phones as &$phone) {
+            $phone = waContactPhoneField::cleanPhoneNumber($phone);
+
+            $input_code = ifset($options['input_code']);
+            $input_code = is_scalar($input_code) && strlen((string)$input_code) > 0 ? (string)$input_code : null;
+
+            $output_code = ifset($options['output_code']);
+            $output_code = is_scalar($output_code) && strlen((string)$output_code) > 0 ? (string)$output_code : null;
+
+            if (wa_is_int($input_code) && wa_is_int($output_code)) {
+                $input_code_len = strlen($input_code);
+                $output_code_len = strlen($output_code);
+                if (!$is_reverse && substr($phone, 0, $input_code_len) === $input_code) {
+                    $phone = $output_code . substr($phone, $input_code_len);
+                } elseif ($is_reverse && substr($phone, 0, $output_code_len) === $output_code) {
+                    $phone = $input_code . substr($phone, $output_code_len);
+                }
+            }
+        }
+        unset($phone);
+
+        $result = array();
+        foreach ($phones as $index => $phone) {
+            $changed = !waContactPhoneField::isPhoneEquals($original_phones[$index], $phone);
+            $result[$index] = array(
+                'status' => $changed,
+                'phone' => $phone
+            );
+        }
+
+        if ($is_input_scalar) {
+            return reset($result);
+        } else {
+            return $result;
+        }
+    }
+
 }

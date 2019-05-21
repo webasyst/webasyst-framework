@@ -130,8 +130,7 @@ var WaBackendLogin = ( function($) {
         $wrapper.find('.wa-request-onetime-password-link-wrapper').hide();
 
         // Message about timeout to re-request onetime_password
-        var $timer_message = that.$wrapper.find('.' + that.classes.message_msg + '[data-name="password"][data-index="timeout"]');
-
+        var $timer_message = that.getInfoMessageItem('password', 'timeout');
 
         // go timer
         that.runTimeoutMessage($timer_message, {

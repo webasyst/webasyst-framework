@@ -31,6 +31,8 @@ class waLocaleAdapter implements waiLocaleAdapter
     protected static $php_adapter;
     protected static $gettext_adapter;
 
+    protected static $adapter_by_file = array();
+
     public function load($locale, $locale_path, $domain, $textdomain = true)
     {
 
@@ -101,12 +103,16 @@ class waLocaleAdapter implements waiLocaleAdapter
         if (!$locale_file) {
             $locale_file = $this->buildLocaleFile($locale_path, $locale, $domain);
         }
-        if ($this->isChangedRecently($locale_file)) {
-            $adapter = $this->getPhpAdapter();
-        } else {
-            $adapter = $this->getGettextAdapter();
+
+        if (!isset(self::$adapter_by_file[$locale_file])) {
+            if ($this->isChangedRecently($locale_file)) {
+                $adapter = $this->getPhpAdapter();
+            } else {
+                $adapter = $this->getGettextAdapter();
+            }
+            self::$adapter_by_file[$locale_file] = $adapter;
         }
-        return $adapter;
+        return self::$adapter_by_file[$locale_file];
     }
 
     /**
@@ -114,6 +120,10 @@ class waLocaleAdapter implements waiLocaleAdapter
      * @return bool
      */
     protected function isChangedRecently($file) {
+        $global_config = wa()->getConfig()->getPath('config').'/config.php';
+        if ($this->freshness_time > (time() - filemtime($global_config))) {
+            return true;
+        }
         if (!file_exists($file) || $this->freshness_time > (time() - filemtime($file))) {
             return true;
         }

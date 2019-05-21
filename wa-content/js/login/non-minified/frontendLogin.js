@@ -274,6 +274,9 @@ var WaFrontendLogin = ( function($) {
 
             error_html = error_html.replace(substitute, error);
 
+            // delete previous the same error
+            that.getErrorItem(error_namespace, error_code).remove();
+
             return error_html;
         }
 

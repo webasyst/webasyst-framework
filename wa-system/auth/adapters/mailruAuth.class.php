@@ -9,7 +9,8 @@
 
 class mailruAuth extends waOAuth2Adapter
 {
-
+    protected $check_state = true;
+    
     public function getControls()
     {
         return array(

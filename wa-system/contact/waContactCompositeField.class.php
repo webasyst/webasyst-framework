@@ -73,7 +73,7 @@ class waContactCompositeField extends waContactField
                      */
                     $subId = $field->getId();
                     $str = isset($v[$subId]) ? trim($v[$subId]) : '';
-                    if ($str) {
+                    if (strlen($str) > 0) {
                         if ( ( $e = $field->validate($v[$subId]))) {
                             $errors[$sort][$subId] = $e;
                         }

@@ -607,6 +607,7 @@ class waSystem
             if (preg_match('~^([a-z0-9_]+)~i', $url, $m) && !empty($m[1])) {
                 $module_id = $m[1];
                 waRequest::setParam('module_id', $module_id);
+                waRequest::setParam('no_domain_www_redirect', true);
                 wa('webasyst', 1)->getFrontController()->execute(null, 'payments');
             }
             return;

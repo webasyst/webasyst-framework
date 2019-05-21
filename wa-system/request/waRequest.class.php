@@ -403,7 +403,10 @@ class waRequest
 
         // get client's IP from headers if allowed
         if ($is_trusted_proxy) {
-            if (getenv('HTTP_X_FORWARDED_FOR')) {
+            if (getenv('HTTP_CF_CONNECTING_IP')) {
+                // This is used by cloudflare
+                $ip = getenv('HTTP_CF_CONNECTING_IP');
+            } elseif (getenv('HTTP_X_FORWARDED_FOR')) {
                 // Contains a chain of proxy addresses, the last IP goes directly to the customer to contact the proxy server.
                 $ip = array_filter(array_map('trim', explode(',', getenv('HTTP_X_FORWARDED_FOR'))));
                 $ip = (string) end($ip);

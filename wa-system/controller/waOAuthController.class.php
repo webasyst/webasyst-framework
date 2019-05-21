@@ -30,7 +30,13 @@ class waOAuthController extends waViewController
         try {
             // Look into wa-config/auth.php, find provider settings
             // and instantiate proper class.
-            $auth = $this->getAuthAdapter(waRequest::get('provider', '', 'string'));
+
+            $provider_id = $this->getAuthProviderId();
+            if (!$provider_id) {
+                throw new waException('Unknown adapter ID');
+            }
+
+            $auth = $this->getAuthAdapter($provider_id);
 
             // Use waAuthAdapter to identify the user.
             // In case of waOAuth2Adapter, things are rather complicated:
@@ -56,6 +62,29 @@ class waOAuthController extends waViewController
             $this->cleanup();
             throw $e; // Caught in waSystem->dispatch()
         }
+    }
+
+    protected function getAuthProviderId()
+    {
+        // callback url might looks like this: oauth.php?provider=<provider_id>
+        $provider_id = waRequest::get('provider', '', 'string');
+        if ($provider_id) {
+            return $provider_id;
+        }
+
+        // or callback url might looks like this: oauth.php/<auth_adapter_id>/
+        $request_url = wa()->getConfig()->getRequestUrl(true, true);
+
+        $tail_part = trim(substr($request_url, 9), '/');
+        if ($tail_part) {
+            $parts = explode('/', $tail_part);
+            if (!empty($parts[0])) {
+                return $parts[0];
+            }
+        }
+
+        return null;
+
     }
 
     protected function getAuthAdapter($provider)

@@ -235,6 +235,7 @@ class waContactForm
             $post = array();
             $fields = $this->fields();
             foreach ((array)waRequest::post($this->opt('namespace')) as $f_id => $value) {
+                $value = $this->preparePostValue($value);
                 if (isset($fields[$f_id])) {
                     $post[$f_id] = $value;
                 }
@@ -262,6 +263,26 @@ class waContactForm
     }
 
     /**
+     * Cuts off spaces at all possible values.
+     * @param $values
+     * @return array|string
+     */
+    protected function preparePostValue($values)
+    {
+        if (is_array($values)) {
+            foreach ($values as $key => $value) {
+                if (is_string($value)) {
+                    $values[$key] = trim($value);
+                }
+            }
+        } elseif (is_string($values)) {
+            $values = trim($values);
+        }
+
+        return $values;
+    }
+
+    /**
      * Get list of errors for specified field, or append an error to the list.
      *
      * With no parameters returns an array of all errors: field_id => list of strings.
@@ -274,6 +295,7 @@ class waContactForm
      *
      * @param string $field_id field_id or null to set message for entire form, not attached to any field.
      * @param string $error_text
+     * @return array|mixed|waContactForm|null
      */
     public function errors($field_id = '', $error_text = null)
     {
@@ -354,7 +376,7 @@ class waContactForm
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->post($field_id), array());
             } elseif (isset($this->values[$field_id]) &&
                 ((is_array($this->values[$field_id]) && count($this->values[$field_id]) > 0) ||
-                 (!is_array($this->values[$field_id]) && strlen((string)$this->values[$field_id])))) {
+                    (!is_array($this->values[$field_id]) && strlen((string)$this->values[$field_id])))) {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->values[$field_id], array());
             } else {
                 $default_value = $this->fields[$field_id]->getParameter('value');
@@ -389,18 +411,18 @@ class waContactForm
 
             // Upload contact photo
             if ($fid === 'photo') {
-                $result .= '<div class="' . $class_field . ' ' . ($class_field.'-'.$f->getId()) . '"><div class="' . $class_name . '">' .
-                    _ws('Photo') . '</div><div class="' . $class_value . '">';
+                $result .= '<div class="'.$class_field.' '.($class_field.'-'.$f->getId()).'"><div class="'.$class_name.'">'.
+                    _ws('Photo').'</div><div class="'.$class_value.'">';
 
                 // Current photo of a person
                 if (wa()->getUser()->get($fid)) {
-                    $result .= "\n" . '<img src="' . wa()->getUser()->getPhoto() . '">';
+                    $result .= "\n".'<img src="'.wa()->getUser()->getPhoto().'">';
                 }
 
                 // Empty photo
-                $result .= "\n" . '<img src="' . waContact::getPhotoUrl(null, null, null, null, 'person') . '">';
+                $result .= "\n".'<img src="'.waContact::getPhotoUrl(null, null, null, null, 'person').'">';
 
-                $result .= "\n" . '<p><input type="file" name="' . $fid . '_file"></p>';
+                $result .= "\n".'<p><input type="file" name="'.$fid.'_file"></p>';
                 $result .= $this->html($fid, true);
                 $result .= "\n</div></div>";
                 continue;
@@ -424,9 +446,9 @@ class waContactForm
             if ($f->isRequired()) {
                 $field_class .= ' '.(wa()->getEnv() == 'frontend' ? 'wa-required' : 'required');
             }
-            $result .= '<div class="' . $class_field . ' ' . $field_class . '"><div class="' . $class_name . '">' .
-                $f->getName(null, true) . '</div><div class="' . $class_value . '">';
-            $result .= "\n" . $this->html($fid, $with_errors, $placeholders);
+            $result .= '<div class="'.$class_field.' '.$field_class.'"><div class="'.$class_name.'">'.
+                $f->getName(null, true).'</div><div class="'.$class_value.'">';
+            $result .= "\n".$this->html($fid, $with_errors, $placeholders);
             $result .= "\n</div></div>";
         }
         $result .= '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-04-22 11:39+0300\n"
+"PO-Revision-Date: 2019-04-26 18:24+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -975,6 +975,9 @@ msgstr "Реюньон"
 
 msgid "Romania"
 msgstr "Румыния"
+
+msgid "Russia"
+msgstr "Россия"
 
 msgid "Russian Federation"
 msgstr "Российская Федерация"
@@ -5948,3 +5951,18 @@ msgstr "Настройте отправителя в разделе «<a href=\"
 #: /wa-system/verification/classes/waVerificationChannelEmail.class.php:995
 msgid "Notification sending is not working."
 msgstr "Отправка уведомлений не работает."
+
+msgid "Design theme update failure"
+msgstr "Ошибка обновления темы дизайна"
+
+msgid "This design theme cannot be updated."
+msgstr "Невозможно обновить эту тему дизайна."
+
+msgid "Insufficient permissions to read files"
+msgstr "Недостаточно прав на доступа для чтения файлов"
+
+msgid "Insufficient permissions to write to files"
+msgstr "Недостаточно прав на доступа для записи в файлы"
+
+msgid "WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?"
+msgstr "Редактор WYSIWYG может изменить ваш HTML-код. Это необходимо для правильного форматирования текста. Код Smarty может быть сломан, и устаревшие HTML-теги могут быть заменены на современные. Вы действительно хотите переключиться на WYSIWYG-редактор?"

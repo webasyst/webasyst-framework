@@ -234,4 +234,14 @@ class twitterAuth extends waAuthAdapter
         }
         return array();
     }
+
+    public function getUrl()
+    {
+        return wa()->getRootUrl(false, true).'oauth.php/' . $this->getId() . '/?app=' . wa()->getApp();
+    }
+
+    public function getCallbackUrl($absolute = true)
+    {
+        return wa()->getRootUrl($absolute, true).'oauth.php/twitter/';
+    }
 }

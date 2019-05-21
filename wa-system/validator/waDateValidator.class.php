@@ -24,7 +24,7 @@ class waDateValidator extends waValidator
      *
      * @param array|string $value
      * @param bool $more_current
-     * @return type
+     * @return bool
      */
     public function isValid($value, $more_current = true)
     {
@@ -56,7 +56,7 @@ class waDateValidator extends waValidator
             };
 
             if ($day && $month) {
-                // Febrary
+                // February
                 if ($month == '2') {
                     if (!$year) {
                         $leap = true;
@@ -85,7 +85,12 @@ class waDateValidator extends waValidator
             }
 
         } else {
-            $time = strtotime($value);
+            $value = is_scalar($value) ? (string)$value : '';
+            if (strlen($value) <= 0) {
+                return false;
+            }
+
+            $time = strtotime($value . ' 00:00:00');
             if (!$time) {
                 $this->setError($this->getMessage('incorrect_date'));
             } else {

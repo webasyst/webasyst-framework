@@ -1103,12 +1103,57 @@ XML;
         }
     }
 
+    public function problemFiles()
+    {
+        $source_path = $this->path_original;
+        $target_path = $this->path_custom;
+
+        $files = $this->getFiles();
+
+        $errors = array();
+
+        // Check original files for reading
+        foreach ($files as $file_name => $file_data) {
+            if (!empty($file_data['parent'])) {
+                continue;
+            }
+            $source_file_path = $source_path . '/' . $file_name;
+            if (!is_readable($source_file_path)) {
+                $errors['not_readable'][] = $source_file_path;
+            }
+        }
+
+        // Check the availability of editing in the target the directory
+        if (!is_writable($target_path)) {
+            $errors['not_writable'][] = $target_path;
+        }
+
+        // Check the availability of editing files (if any) in the target directory
+        foreach ($files as $file_name => $file_data) {
+            if (!empty($file_data['parent'])) {
+                continue;
+            }
+            $target_file_path = $target_path . '/' . $file_name;
+            if (file_exists($target_file_path) && !is_dir($target_file_path) && !is_writable($target_file_path)) {
+                $errors['not_writable'][] = $target_file_path;
+            }
+        }
+
+        return $errors;
+    }
+
     public function update($only_if_not_modified = true)
     {
         if (!$this->path_custom || ($this->type != self::OVERRIDDEN)) {
             return true;
         }
+
+        if (!empty($this->problemFiles())) {
+            return false;
+        }
+
         $files = $this->getFiles();
+
         $modified = array();
         foreach ($files as $f_id => $f) {
             if (!empty($f['modified'])) {

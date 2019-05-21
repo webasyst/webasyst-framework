@@ -238,10 +238,43 @@ class waAuth implements waiAuth
     }
 
     /**
+     * Get registered contact by phone with taking into account transformation settings of auth config
      * @param string $phone
      * @return array|null
      */
     protected function getByPhone($phone)
+    {
+        if (!$this->isValidPhoneNumber($phone)) {
+            return null;
+        }
+
+        // do always first try by phone as it
+        $contact = $this->findByPhone($phone);
+        if ($contact) {
+            return $contact;
+        }
+
+        $phone = (string)$phone;
+        $is_international = substr($phone, 0, 1) === '+';
+
+        // If international phone number - "reverse" transform to phone with 8
+        // If not international phone number - transform 8 to code (country prefix)
+        $result = $this->auth_config->transformPhone($phone, $is_international);
+
+        // phone is changed (transformation has been applied), so try find by this new phone
+        if ($result['status']) {
+            return $this->findByPhone($result['phone']);
+        }
+
+        return null;
+    }
+
+    /**
+     * Find registered contact by phone without taking into account transformation settings of auth config
+     * @param $phone
+     * @return array|null
+     */
+    protected function findByPhone($phone)
     {
         if (!$this->isValidPhoneNumber($phone)) {
             return null;

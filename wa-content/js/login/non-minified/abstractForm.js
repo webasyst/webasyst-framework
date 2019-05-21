@@ -319,9 +319,9 @@ var WaLoginAbstractForm = ( function($) {
             }
 
             var messages_blocks = [];
-            $.each(messages || [], function (index, msg) {
+            $.each(messages || [], function (code, msg) {
                 var $msg = that.formatInfoMessage(msg, false, name);
-                $msg.data('index', index).attr('data-index', index);
+                $msg.data('code', code).attr('data-code', code);
                 messages_blocks.push($msg);
             });
 
@@ -377,9 +377,9 @@ var WaLoginAbstractForm = ( function($) {
             $error = $error_msg.clone();
             $error
                 .data('name', error_namespace)
-                .data('index', error_code)
+                .data('code', error_code)
                 .attr('data-name', error_namespace)
-                .attr('data-index', error_code);
+                .attr('data-code', error_code);
         $error.html(that.prepareErrorText(error_namespace, error, error_code));
         return $error;
     };
@@ -412,6 +412,26 @@ var WaLoginAbstractForm = ( function($) {
         var that = this,
             $wrapper = that.$wrapper;
         return $wrapper.find('.' + that.classes.field + '[data-field-id="' + id +'"]');
+    };
+
+    Self.prototype.getInfoMessageItem = function(name, code) {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $messages = $wrapper.find('.' + that.classes.message_msg + '[data-name="' + name + '"]');
+        if (code !== undefined) {
+            return $messages.filter('[data-code="'+ code +'"]');
+        }
+        return $messages;
+    };
+
+    Self.prototype.getErrorItem = function(error_namespace, error_code) {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $errors = $wrapper.find('.' + that.classes.error_msg + '[data-name="' + error_namespace + '"]');
+        if (error_code !== undefined) {
+            return $errors.filter('[data-code="'+ error_code +'"]');
+        }
+        return $errors;
     };
 
     Self.prototype.showUncaughtErrors = function (name, error_items, reset) {
@@ -806,7 +826,7 @@ var WaLoginAbstractForm = ( function($) {
     Self.prototype.runTimeoutMessage = function ($message, options) {
         var that = this,
             ticks = options.timeout,
-            msg = $message.html(),
+            msg = $.trim($message.html()),
             onFinish = options.onFinish;
 
         ticks = parseInt(ticks, 10);

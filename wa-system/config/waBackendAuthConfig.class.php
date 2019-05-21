@@ -274,4 +274,22 @@ class waBackendAuthConfig extends waAuthConfig
 
         }
     }
+
+    /**
+     * Backend auth not support phone prefix transformation
+     * @return array
+     */
+    public function getPhoneTransformPrefix()
+    {
+        return array();
+    }
+
+    /**
+     * Backend auth not support phone transformation
+     * @param string|string[] $options
+     */
+    public function setPhoneTransformPrefix($options)
+    {
+        // noting to do
+    }
 }

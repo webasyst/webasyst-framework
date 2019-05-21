@@ -496,14 +496,23 @@ HTACCESS;
             $theme_original = new waTheme($theme_id, true, 'original');
             $data = array(
                 'theme'                  => $theme,
-                'theme_original_version' => $theme_original->version
+                'theme_original_version' => $theme_original->version,
+                'theme_problem_files'    => $theme->problemFiles(),
             );
             if ($theme->parent_theme && ($theme->version == $theme_original->version) && ($theme->parent_theme->type == waTheme::OVERRIDDEN)) {
                 $parent_theme_original = new waTheme($theme->parent_theme->id, $theme->parent_theme->app, 'original');
                 $data['theme_original_version'] = $parent_theme_original->version;
                 $data['parent_only'] = true;
+                $data['parent_theme_problem_files'] = $theme->parent_theme->problemFiles();
             }
-            $this->display($data, $this->getConfig()->getRootPath().'/wa-system/design/templates/ThemeUpdate.html');
+
+            $template_dir = $this->getConfig()->getRootPath().'/wa-system/design/templates/';
+
+            if (!empty($data['theme_problem_files']) || !empty($data['parent_theme_problem_files'])) {
+                $this->display($data, $template_dir.'ThemeUpdateProblemDialog.html');
+            } else {
+                $this->display($data, $template_dir.'ThemeUpdateDialog.html');
+            }
         }
     }
 

@@ -573,6 +573,11 @@ var WAThemeSettings = ( function($) {
             $other_blocks = that.$other_blocks,
             expanded_group = localStorage.getItem(that.theme_storage_key);
 
+        // If the design theme is not used or it does not provide settings, then there’s no need to
+        if (!that.$theme_navigation.length) {
+            return false;
+        }
+
         var fixedBlock = initFixedBlock();
         fixedBlock.is_disabled = true;
 
@@ -1000,8 +1005,14 @@ var WAThemeSettings = ( function($) {
     };
 
     WAThemeSettings.prototype.initScrollToTopButton = function() {
-        var $button = $('#wa-design-scroll-top'),
+        var that = this,
+            $button = $('#wa-design-scroll-top'),
             top_show = 300;
+
+        // If the design theme is not used or it does not provide settings, then there’s no need to
+        if (!that.$theme_navigation.length) {
+            return false;
+        }
 
         $(document).ready(function() {
             $(window).scroll(function () {

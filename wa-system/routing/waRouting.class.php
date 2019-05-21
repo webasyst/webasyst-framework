@@ -167,7 +167,7 @@ class waRouting
             }
             if (isset($this->routes[$domain])) {
                 $this->domain = $domain;
-                if (wa()->getEnv() == 'frontend') {
+                if (wa()->getEnv() == 'frontend' && !waRequest::param('no_domain_www_redirect')) {
                     $url = 'http'.(waRequest::isHttps()? 's' : '').'://';
                     $url .= $this->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
                     wa()->getResponse()->redirect($url, 301);
@@ -367,7 +367,8 @@ class waRouting
                             }
                         }
                     }
-                    wa()->getResponse()->redirect($r['redirect'], 302);
+                    $redirect_code = (!empty($r['code']) && $r['code'] == 302) ? 302 : 301;
+                    wa()->getResponse()->redirect($r['redirect'], $redirect_code);
                 } elseif (isset($r['static_content'])) {
                     $response = wa()->getResponse();
                     switch (ifset($r['static_content_type'])){

@@ -552,7 +552,8 @@ class waDomainAuthConfig extends waAuthConfig
                 'params'                    => array('signup'),
                 'used_auth_methods'         => array('login', 'signup'),
                 'priority_auth_method'      => array('login', 'signup'),
-                'can_login_by_contact_login' => array('login')
+                'can_login_by_contact_login' => array('login'),
+                'phone_transform_prefix'     => array('signup', 'login')
             );
             $methods = array();
             foreach ($keys as $k => $nss) {
@@ -1126,5 +1127,76 @@ class waDomainAuthConfig extends waAuthConfig
     public function setCanLoginByContactLogin($enabled)
     {
         $this->setBoolValue('can_login_by_contact_login', $enabled);
+    }
+
+    /**
+     * Get options for transform phone(s) prefix
+     * @param array
+     * @return array
+     */
+    public function getPhoneTransformPrefix()
+    {
+        return $this->getArrayValue('phone_transform_prefix');
+    }
+
+    /**
+     * @param string|string[] $options
+     */
+    public function setPhoneTransformPrefix($options)
+    {
+        $input_code = ifset($options['input_code']);
+        $input_code = is_scalar($input_code) && strlen((string)$input_code) ? (string)$input_code : null;
+
+        $output_code = ifset($options['output_code']);
+        $output_code = is_scalar($output_code) && strlen((string)$output_code) ? (string)$output_code : null;
+
+        if (wa_is_int($input_code) && wa_is_int($output_code)) {
+            $this->setArrayValue('phone_transform_prefix', array(
+                'input_code' => $input_code,
+                'output_code' => $output_code
+            ));
+        } else {
+            $this->unsetKey('phone_transform_prefix');
+        }
+
+    }
+
+    /**
+     * Transform phone by rules for specified (or all) domains
+     * @param $phone
+     * @param bool $is_reverse
+     * @param null|array $domains - NULL - for all domains, otherwise for specified domains
+     * @return array
+     */
+    public static function transformPhonePrefixForDomains($phone, $is_reverse = false, $domains = null)
+    {
+        if ($domains !== null) {
+            $domains = waUtils::toStrArray($domains);
+            $domains = array_fill_keys($domains, true);
+        }
+
+        // auth config by all domains
+        $auth_config = wa()->getConfig()->getAuth();
+
+        // collect options for phone transformation for all domains
+        $domain_transform_options = array();
+        foreach ($auth_config as $domain => $config) {
+            if ($domains === null || !empty($domains[$domain])) {
+                $config = is_array($config) ? $config : array();
+                $phone_transform_prefix = ifset($config['phone_transform_prefix']);
+                $phone_transform_prefix = is_array($phone_transform_prefix) ? $phone_transform_prefix : array();
+                $domain_transform_options[$domain] = $phone_transform_prefix;
+            }
+        }
+
+        // apply transformations and collect results
+        $results = array();
+        foreach ($domain_transform_options as $domain => $options) {
+            $options['is_reverse'] = $is_reverse;
+            $result = parent::transformPhonePrefix($phone, $options);
+            $results[$domain] = $result;
+        }
+
+        return $results;
     }
 }

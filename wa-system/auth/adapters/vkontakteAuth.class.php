@@ -9,6 +9,8 @@ class vkontakteAuth extends waOAuth2Adapter
     const API_URL = "https://api.vk.com/method/";
     const API_VERSION = '5.21';
 
+    protected $check_state = true;
+
     /**
      * @return string
      * @see http://vk.com/dev/oauth_dialog
