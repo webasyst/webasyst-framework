@@ -272,14 +272,16 @@ class waVerificationChannelEmail extends waVerificationChannel
     public function validateSignUpConfirmation($confirmation_secret, $options = array())
     {
         // Initialize result structure
-        $result = array(
+        $fail = array(
             'status' => false,
-            'details' => array()
+            'details' => array(
+                'error' => self::VERIFY_ERROR_INVALID
+            )
         );
 
         $confirmation_secret = is_scalar($confirmation_secret) ? (string)$confirmation_secret : '';
         if (strlen($confirmation_secret) <= 0) {
-            return $result;
+            return $fail;
         }
 
         $asset_id = $this->extractAssetIdFromHash($confirmation_secret);
@@ -287,7 +289,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         $vca = new waVerificationChannelAssetsModel();
         $asset = $vca->getOnce($asset_id);
         if (!$asset) {
-            return $result;
+            return $fail;
         }
 
         $recipient = null;
@@ -299,13 +301,13 @@ class waVerificationChannelEmail extends waVerificationChannel
 
         if ($recipient !== null) {
             // check addresses
-            if ($asset['address'] !== $recipient['address']) {
-                return $result;
+            if (!$this->isAddressEquals($asset['address'], $recipient['address'])) {
+                return $fail;
             }
 
             // check contact ID
             if (isset($recipient['id']) && intval($recipient['id']) !== $asset_contact_id) {
-                return $result;
+                return $fail;
             }
         }
 
@@ -313,18 +315,18 @@ class waVerificationChannelEmail extends waVerificationChannel
         if ($asset['channel_id'] != $this->getId() ||
             $asset['name'] != waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH ||
             $asset['value'] != $confirmation_secret) {
-            return $result;
+            return $fail;
         }
 
         // successful validation result
 
-        $result['status'] = true;
-        $result['details'] = array(
-            'address' => $asset['address'],
-            'contact_id' => $asset_contact_id
+        return array(
+            'status' => true,
+            'details' => array(
+                'address' => $asset['address'],
+                'contact_id' => $asset_contact_id
+            ),
         );
-
-        return $result;
     }
 
     /**
@@ -477,9 +479,18 @@ class waVerificationChannelEmail extends waVerificationChannel
         $asset_id = 0;
         if (!$is_test_send) {
             $vca = new waVerificationChannelAssetsModel();
-            $asset_id = $vca->set($this->getId(), $recipient['email'],
-                waVerificationChannelAssetsModel::NAME_ONETIME_PASSWORD,
-                waContact::getPasswordHash($onetime_password), '1 hour');
+
+            $asset_data = array(
+                'channel_id' => $this->getId(),
+                'address' => $recipient['email'],
+                'name' => waVerificationChannelAssetsModel::NAME_ONETIME_PASSWORD,
+                'value' => waContact::getPasswordHash($onetime_password)
+            );
+            if (isset($recipient['id'])) {
+                $asset_data['contact_id'] = $recipient['id'];
+            }
+
+            $asset_id = $vca->setAsset($asset_data, '1 hour');
 
             if ($asset_id <= 0) {
                 return false;
@@ -701,9 +712,26 @@ class waVerificationChannelEmail extends waVerificationChannel
     }
 
     /**
+     * Validate secret that was in message
+     * That secret grants rights to recovery (set new) password
+     *
+     * @see sendRecoveryPasswordMessage
      * @param string $secret
      * @param array $options
-     *   'recipient' If need to extra STRENGTHEN validation
+     *
+     *   - 'recipient' If need to extra STRENGTHEN validation
+     *
+     *   - 'check_tries' Optional. Options for 'tries' logic. Format of options:
+     *       - 'count' Number of tries to validate code.
+     *              Default - is NULL, not take into account number of tries
+     *              Otherwise - int
+     *                  if number of calls of this method already greater than 'tries' than this method will be failed and return 'error'
+     *      - 'clean' Delete asset after exceeding the number of tries
+     *              Default is FALSE
+     *
+     *
+     *     NOTICE: total number of tries is global for this for this asset (for this channel and recipient)
+     *
      *
      * @return array Associative array
      *
@@ -713,66 +741,31 @@ class waVerificationChannelEmail extends waVerificationChannel
      *
      *   - array 'details' - detailed information about result of validation
      *      Format of details depends on 'status'
-     *        If 'status' is TRUE
+     *
+     *        If 'status' is TRUE 'details' has keys:
+     *
      *          - string 'address'     - address that was validated
      *          - int    'contact_id'  - id of contact bind to this address
-     *        Otherwise details is empty array
+     *          - int    'tries'       - total count of already made tries
+     *          - int    'rest_tries'  - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *
+     *        Otherwise 'details' has keys:
+     *
+     *          - string   'error'      - string identificator of error - VERIFY_ERROR_* const
+     *          - int|null 'tries'      - total count of already made tries. Can be NULL in case if code is already dead or not exist
+     *          - int      'rest_tries' - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *                                    But this value is NULL when 'tries' is NULL (in case if code is already dead or not exist)
+     *
+     * @throws waException
      */
     public function validateRecoveryPasswordSecret($secret, $options = array())
     {
-        // Initialize result structure
-        $result = array(
-            'status' => false,
-            'details' => array()
-        );
-
         $hash = is_scalar($secret) ? (string)$secret : '';
-        if (strlen($hash) <= 0) {
-            return $result;
-        }
-
         list($asset_id, $hash) = $this->parseHash($hash);
+        $options['asset_id'] = $asset_id;
+        $options['clean'] = false;
+        return $this->validateSecret($hash, waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_HASH, $options);
 
-        $vca = new waVerificationChannelAssetsModel();
-        $asset = $vca->getById($asset_id);
-        if (!$asset) {
-            return $result;
-        }
-
-        $recipient = null;
-        if (isset($options['recipient'])) {
-            $recipient = $this->typecastInputRecipient($options['recipient']);
-        }
-
-        $asset_contact_id = (int)$asset['contact_id'];
-
-        if ($recipient !== null) {
-            // check addresses
-            if ($asset['address'] !== $recipient['address']) {
-                return $result;
-            }
-
-            // check contact ID
-            if (isset($recipient['id']) && intval($recipient['id']) !== $asset_contact_id) {
-                return $result;
-            }
-        }
-
-        if ($asset['channel_id'] != $this->getId() ||
-            $asset['name'] != waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_HASH ||
-            $asset['value'] != $hash) {
-            return $result;
-        }
-
-        // successful validation result
-
-        $result['status'] = true;
-        $result['details'] = array(
-            'address' => $asset['address'],
-            'contact_id' => $asset_contact_id
-        );
-
-        return $result;
     }
 
     public function invalidateRecoveryPasswordSecret($secret, $options = array())
@@ -852,6 +845,23 @@ class waVerificationChannelEmail extends waVerificationChannel
 
         return $this->sendMessage($recipient, $subject, $body);
     }
+
+    /**
+     * Compare 2 secret for equal
+     * @param $input_secret
+     * @param $asset_secret
+     * @param $asset_name
+     * @return bool
+     */
+    protected function isSecretEquals($input_secret, $asset_secret, $asset_name)
+    {
+        if ($asset_name === waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_HASH || $asset_name === waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_HASH) {
+            return $input_secret === $asset_secret;
+        } else {
+            return waContact::getPasswordHash($input_secret) === $asset_secret;
+        }
+    }
+
 
     /**
      * Get vars name for each predefined template, optionally with description
@@ -939,5 +949,68 @@ class waVerificationChannelEmail extends waVerificationChannel
         }
 
         return true;    // must be working
+    }
+
+    /**
+     * Get diagnostic info about address of this channel
+     * @return array
+     */
+    public function getAddressDiagnostic()
+    {
+        $diagnostic = array();
+
+        $sender = $this->getAddress();
+
+        $sender = $this->isValidEmail($sender) ? $sender : null;
+        if ($sender === null) {
+            $diagnostic['invalid_format'] = array(
+                'text' => _ws('Email address is not valid.')
+            );
+            return $diagnostic;
+        }
+
+        $system_mail_config = wa()->getConfig()->getMail();
+
+        $system_default_sender = $this->getSystemDefaultSender();
+
+        $domain = wa()->getConfig()->getDomain();
+        $domain_has_email_sending_config = isset($system_mail_config[$domain]);
+
+        $is_system_sender = $sender == $system_default_sender;
+        $has_sending_config = $domain_has_email_sending_config || isset($system_mail_config[$sender]);
+
+        if (!$is_system_sender && !$has_sending_config) {
+            $text = _ws('Sender address %s is not configured.');
+            $diagnostic['invalid_sender'] = array(
+                'text' => sprintf($text, $sender),
+                'help_text' => sprintf(
+                    _ws('Configure a sender in “<a href="%s">%s</a>” section.'),
+                    wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/email/',
+                    _ws('Email settings')
+                )
+            );
+        }
+
+        if (!$diagnostic) {
+            $send_stats = $this->getSendingStats();
+            if (isset($send_stats['last_failed']) && $send_stats['last_failed'] >= 3) {
+                $diagnostic['failed_sending'] = array(
+                    'text' => _ws('Notification sending is not working.')
+                );
+            }
+        }
+
+        return $diagnostic;
+    }
+
+    protected function getSystemDefaultSender()
+    {
+        $sm = new waAppSettingsModel();
+        $email = $sm->get('webasyst', 'sender', '');
+        $v = new waEmailValidator();
+        if ($v->isValid($email)) {
+            return $email;
+        }
+        return null;
     }
 }

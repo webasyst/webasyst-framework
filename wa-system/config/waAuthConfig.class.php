@@ -104,6 +104,16 @@ abstract class waAuthConfig
     }
 
     /**
+     * @return bool
+     */
+    abstract public function getRememberMe();
+
+    /**
+     * @param bool $enable
+     */
+    abstract public function setRememberMe($enable = true);
+
+    /**
      * @return string
      */
     public function getAuthType()
@@ -295,6 +305,15 @@ abstract class waAuthConfig
             self::AUTH_METHOD_SMS,
             self::AUTH_METHOD_SOCIAL
         );
+    }
+
+    /**
+     * Number of attempts to verify code
+     * @return int
+     */
+    public function getVerifyCodeTriesCount()
+    {
+        return 3;
     }
 
     /**

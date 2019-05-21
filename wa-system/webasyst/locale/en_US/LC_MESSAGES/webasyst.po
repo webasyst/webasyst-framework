@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-02-21 14:44+0300\n"
+"PO-Revision-Date: 2019-04-22 11:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3896,4 +3896,85 @@ msgstr ""
 
 #: /wa-system/signup/actions/waSignup.action.php:1092
 msgid "Sending error"
+msgstr ""
+
+#: /wa-system/login/actions/login/waBaseLogin.action.php:165
+#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:689
+#: /wa-system/signup/actions/waSignup.action.php:1646
+msgid "You have run out of available attempts. Please request a new code."
+msgstr ""
+
+#: /wa-system/login/actions/login/waBaseLogin.action.php:492
+msgid "User does not exist."
+msgstr ""
+
+#: /wa-system/auth/exceptions/waAuthRunOutOfTriesException.class.php:9
+msgid "You have run out of available attempts."
+msgstr ""
+
+#: /wa-system/auth/waAuth.class.php:689
+#: /wa-system/signup/actions/waSignup.action.php:1713
+msgid "You have run out of available attempts. Please request a new one-time password."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:98
+msgid "Specify email sender address"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:103
+msgid "Please be sure to correctly set up a sender. It will be used to restore a lost password or to regain access to the backend should the one-time password authentication fail."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:124
+msgid "No email template group is selected."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:8
+msgid "Set one-time password authentication?"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:10
+msgid "This authentication type means that a backend user is sent a new one-time password every time they log into the backend. Therefore, you must ensure that at least either email or SMS notifications, or both, are being sent and delivered so that your backend users can always log in with their one-time passwords."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:13
+msgid "Please check in “<a href=\"%s\">%s</a>” section that email notifications based on “%s“ template are correctly sent."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:16
+msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending mignt not work occasionally; e.g., due to low SMS balance."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:23
+msgid "I'm aware"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/settings/auth/webasystSettingsAuthSave.controller.php:56
+#: /wa-system/webasyst/lib/actions/settings/auth/webasystSettingsAuthSave.controller.php:65
+msgid "Email notifications must be enabled."
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/settings/sms/webasystSettingsSMSSave.controller.php:55
+#: /wa-system/webasyst/lib/actions/settings/sms/webasystSettingsSMSSave.controller.php:56
+msgid "Sender ID “%s” is already in use by “%s” provider. You can save each sender ID for one provider only."
+msgstr ""
+
+#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:967
+msgid "Email address is not valid."
+msgstr ""
+
+#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:983
+msgid "Sender address %s is not configured."
+msgstr ""
+
+#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:984
+msgid "Configure a sender in “<a href=\"%s\">%s</a>” section."
+msgstr ""
+
+#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:995
+msgid "Notification sending is not working."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:24
+msgid "OK"
 msgstr ""

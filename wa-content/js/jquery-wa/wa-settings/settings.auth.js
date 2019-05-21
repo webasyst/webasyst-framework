@@ -57,13 +57,103 @@ var WASettingsAuth = ( function($) {
 
     WASettingsAuth.prototype.initSelectAuthType = function () {
         var that = this,
-            $auth_type_wrapper = that.$wrapper.find('.js-auth-type-select');
+            $wrapper = that.$wrapper,
+            $auth_methods = that.$auth_methods,
+            $auth_type_wrapper = $wrapper.find('.js-auth-type-select'),
+            $auth_type_radio_inputs = $auth_type_wrapper.find(':radio[name="auth_type"]'),
+            $onetime_password_type = $auth_type_radio_inputs.filter('[value="onetime_password"]'),
+            $email_template_select = $auth_methods.find('select.js-template[data-channel-type="email"]'),
+            $sms_template_select = $auth_methods.find('select.js-template[data-channel-type="sms"]'),
+            $confirm_dialog = $wrapper.find('.js-onetime-password-confirm-dialog .s-onetime-password-auth-confirm-dialog').clone();
 
-        $auth_type_wrapper.on('change', ":radio[name='auth_type']", function () {
-            var $selected_type_wrapper = $(this).parents('.js-auth-type');
-            $auth_type_wrapper.find('.js-auth-type-fields').hide();
-            $selected_type_wrapper.find('.js-auth-type-fields').show();
+        $confirm_dialog.removeClass('.js-is-template');
+
+        // remove all previous rendered dialogs
+        $('.s-onetime-password-auth-confirm-dialog:not(.js-is-template)').remove();
+
+        var showConfirmDialog = function() {
+            $confirm_dialog.waDialog({
+                onLoad: function () {
+
+                    var $dialog = $(this);
+
+                    // replace substitute var to form correct link to current email templates (email channel) section
+                    var $email_channel_text = $dialog.find('.js-email-channel-text'),
+                        $email_channel_link = $email_channel_text.find('a'),
+                        href = $.trim($email_channel_link.attr('href')),
+                        email_channel_id = $.trim($email_template_select.val()),
+                    href = href.replace(':id:', email_channel_id);
+                    $email_channel_link.attr('href', href);
+
+                    // replace substitute var to form correct link to current sms templates (sms channel) section
+                    var $sms_channel_text = $dialog.find('.js-sms-channel-text'),
+                        $sms_channel_link = $sms_channel_text.find('a'),
+                        $sms_channel_type_checkbox = $sms_template_select.closest('.js-auth-method').find('.js-auth-method-checkbox'),
+                        href = $.trim($sms_channel_link.attr('href')),
+                        sms_channel_id = $.trim($sms_template_select.val());
+                    href = href.replace(':id:', sms_channel_id);
+                    $sms_channel_link.attr('href', href);
+
+                    if ($sms_channel_type_checkbox.is(':checked') && sms_channel_id > 0) {
+                        $sms_channel_text.show();
+                    } else {
+                        $sms_channel_text.hide();
+                    }
+
+                    var content_height = $dialog.find('.dialog-content-indent').height(),
+                        dialog_height = Math.max(Math.min(550, content_height + 50), 300);
+
+                    // adjust height
+                    $dialog.find('.dialog-window').css('height', dialog_height);
+
+                    var close = function() {
+                        $dialog.trigger('close');
+                    };
+
+                    $email_channel_link.click(close);
+                    $sms_channel_link.click(close);
+
+                    $dialog.find('.button').click(close);
+
+                    // not confirm (click cancel) - rollback radio selecting
+                    $dialog.find('.cancel').click(function () {
+                        $auth_type_radio_inputs.not($onetime_password_type).first().click();
+                    });
+                }
+            });
+        };
+
+        // on email template change
+        $email_template_select.change(function () {
+            var $select = $(this);
+            var channel_id = $.trim($select.val());
+
+            if (channel_id > 0) {
+                $onetime_password_type.attr('disabled', false);
+            } else {
+                $onetime_password_type.attr('disabled', true);
+                if ($onetime_password_type.is(':checked')) {
+                    $onetime_password_type.parent().find('.exclamation').show();
+                } else {
+                    $onetime_password_type.parent().find('.exclamation').hide();
+                }
+            }
+
+        }).trigger('change');   // trigger change to init UI invariant
+
+        // on auth type change
+        $auth_type_radio_inputs.change(function () {
+            var $radio = $(this),
+                type = $.trim($radio.val());
+
+            if (type === 'onetime_password') {
+                showConfirmDialog();
+            } else {
+                $auth_type_wrapper.find(':radio[name="auth_type"][value="onetime_password"]').parent().find('.exclamation').hide();
+            }
+
         });
+
     };
 
     WASettingsAuth.prototype.initAuthMethods = function() {
@@ -299,23 +389,41 @@ var WASettingsAuth = ( function($) {
     };
 
     WASettingsAuth.prototype.initSubmit = function () {
-        var that = this;
+        var that = this,
+            $template_selects = that.$auth_methods.find('select.js-template'),
+            $form = that.$form;
+
+        var markAsHasError = function ($select, with_animate) {
+            $select.addClass('error');
+            if (!with_animate) {
+                return;
+            }
+            $select.addClass('shake animated');
+            setTimeout(function(){
+                $select.removeClass('shake animated');
+            },500);
+        };
+
+        // Before submit, do validation to show current errors, so user could fix it
+        validateFields();
 
         that.$form.on('submit', function (e) {
             e.preventDefault();
             if (that.is_locked) {
                 return;
             }
-            var errors = validateFields();
+
+            var errors = validateFields(true);
             if (errors) {
                 return false;
             }
+
             that.is_locked = true;
             that.$button.prop('disabled', true);
             that.$loading.removeClass('yes').addClass('loading').show();
 
-            var href = that.$form.attr('action'),
-                data = that.$form.serialize();
+            var href = $form.attr('action'),
+                data = $form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
@@ -327,36 +435,99 @@ var WASettingsAuth = ( function($) {
                     },2000);
                 } else {
                     that.$loading.hide();
+
+                    if (res.errors && res.errors.email) {
+                        $.each(res.errors.email, function (error_type, errors) {
+                            if (error_type === 'required') {
+                                $form.find('.s-email-template-not-selected-msg').show();
+                            } else if (error_type === 'diagnostic') {
+                                $.each(errors, function (channel_id, diagnostic) {
+                                    var $diagnostic_messages = $form.find('.s-email-template-diagnostic-messages[data-channel-id="' + channel_id + '"]');
+
+                                    $diagnostic_messages.html('');
+
+                                    $.each(diagnostic, function (index, message) {
+                                        var $message = $form.find('.s-email-template-diagnostic-message.is-template').clone();
+                                        $message.find('.s-error-text-wrapper .s-error-txt').html(message.text || '');
+                                        $message.find('.s-error-help-text-wrapper .s-error-txt').html(message.help_text || '');
+                                        $diagnostic_messages.append($message.show());
+                                    });
+
+                                    $diagnostic_messages.show();
+                                    markAsHasError($template_selects.filter('[data-channel-type="email"]'), true);
+
+
+                                });
+
+                            }
+
+                        });
+
+                    }
+
                 }
                 that.is_locked = false;
                 that.$button.prop('disabled', false);
             });
         });
 
-        function validateFields() {
-            var errors = false;
+        // clear error when change on selector
+        that.$auth_methods.find('select.js-template').on('change', function () {
+            var $select = $(this),
+                channel_type = $select.data('channelType');
+            $select.removeClass('error');
 
-            // Check all template fields
-            var $template_selects = that.$auth_methods.find('select.js-template');
+            if (channel_type === 'email') {
+                $form.find('.s-email-template-not-selected-msg').hide();
+                $form.find('.s-email-template-diagnostic-messages').hide();
+            }
+        });
+
+        // js validate
+        function validateFields(with_animate) {
+            var errors = false,
+                $form = that.$form;
 
             $template_selects.each(function (i, select) {
                 var $select = $(select),
+                    has_error = false,
+                    channel_type = $select.data('channelType'),
                     $method_wrapper = $select.parents('.js-auth-method'),
-                    $method_checkbox = $method_wrapper.find('.js-auth-method-checkbox');
+                    $method_checkbox = $method_wrapper.find('.js-auth-method-checkbox'),
+                    channel_id = $.trim($select.val()),
+                    channel_type_is_checked = $method_checkbox.is(':checked');
 
-                if ($method_checkbox.is(':checked') && !$.trim($select.val())) {
-                    errors = true;
-                    $select.addClass('shake animated error');
-                    setTimeout(function(){
-                        $select.removeClass('shake animated');
-                    },500);
-                    $select.one('change', function () {
-                        $(this).removeClass('error');
-                    });
+                // concrete channel_id is not selected - could be error
+                if (!channel_id) {
+
+                    if (channel_type === 'email') {
+
+                        // for EMAIL channel must be always selected concrete channel_id
+                        has_error = true;
+
+                        // show message about concrete channel is not selected
+                        $form.find('.s-email-template-not-selected-msg').show();
+
+                    } else if (channel_type === 'sms') {
+                        // for SMS channels concrete channel_id must be selected if channel_type is checked
+                        has_error = channel_type_is_checked;
+                    }
                 }
-                if (errors) {
-                    return errors;
+
+                if (channel_type === 'email' && channel_id > 0) {
+                    // if there are diagnostic messages for this concrete channel - show them
+                    var $diagnostic_messages = $form.find('.s-email-template-diagnostic-messages[data-channel-id="' + channel_id + '"]');
+                    if ($diagnostic_messages.children().length > 0) {
+                        has_error = true;
+                        $diagnostic_messages.show();
+                    }
                 }
+
+                if (has_error) {
+                    markAsHasError($select, with_animate);
+                }
+
+                errors = errors || has_error;
             });
 
             return errors;

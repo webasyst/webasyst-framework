@@ -303,14 +303,14 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
 
         $confirmation_code_presented = isset($data['confirmation_code']);
 
-
         // Validate code
         if ($confirmation_code_presented) {
             if (empty($data['confirmation_code'])) {
                 $errors['confirmation_code'] = _ws('Enter a confirmation code to complete the operation.');
             } else {
-                if (!$this->validateCode($data['confirmation_code'], $data['login'])) {
-                    $errors['confirmation_code'] = _ws('Incorrect confirmation code. Try again or request a new code.');
+                list($valid, $details) = $this->validateCode($data['confirmation_code'], $data['login']);
+                if (!$valid) {
+                    $errors['confirmation_code'][$details['error_code']] = $details['error_msg'];
                 }
             }
         }
@@ -584,6 +584,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      * @param waContact $contact
      * @param waVerificationChannel $channel
      * @return bool
+     * @throws waException
      */
     protected function sendGeneratedPassword(waContact $contact, waVerificationChannel $channel)
     {
@@ -652,15 +653,47 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         }
     }
 
+    /**
+     * @param $code
+     * @param $phone
+     * @return array
+     * @throws waException
+     */
     protected function validateCode($code, $phone)
     {
+        $default_error = _ws('Incorrect confirmation code. Try again or request a new code.');
+
         $channel = $this->auth_config->getSMSVerificationChannel();
         if (!$channel) {
-            return false;
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => $default_error,
+            ));
         }
         $channel = waVerificationChannel::factory($channel);
-        return $channel->validateRecoveryPasswordSecret($code, array(
-            'recipient' => $phone
+
+        $validation_result = $channel->validateRecoveryPasswordSecret($code, array(
+            'recipient' => $phone,
+            'check_tries' => array(
+                'count' => $this->auth_config->getVerifyCodeTriesCount(),
+                'clean' => true
+            )
+        ));
+
+        // Validation is failed
+        if ($validation_result['status']) {
+            return array(true, null);
+        }
+
+        if ($validation_result['details']['error'] === waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES) {
+            $msg = _ws('You have run out of available attempts. Please request a new code.');
+        } else {
+            $msg = _ws('Incorrect or expired confirmation code. Try again or request a new code.');
+        }
+
+        return array(false, array(
+            'error_code' => $validation_result['details']['error'],
+            'error_msg' => $msg,
         ));
     }
 

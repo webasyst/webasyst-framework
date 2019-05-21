@@ -6,19 +6,36 @@ class webasystSettingsSMSSaveController extends webasystSettingsJsonController
     {
         $sms = wa()->getRequest()->post('sms');
         if (is_array($sms)) {
-            $this->saveSMSAdapters($sms);
+            $errors = $this->saveSMSAdapters($sms);
+            if ($errors) {
+                $this->errors = $errors;
+            }
         }
     }
 
     protected function saveSMSAdapters($sms)
     {
         $path = $this->getConfig()->getPath('config', 'sms');
+
+        $errors = array();
+
+        $adapter_indexes = array();
+
         $save = array();
-        foreach ($sms as $s) {
+        foreach ($sms as $index => $s) {
+
+            // validate errors has occurred - stop looping
+            if ($errors) {
+                break;
+            }
+
             $from = $s['from'];
             $adapter = $s['adapter'];
-            unset($s['from']);
-            unset($s['adapter']);
+
+            $adapter_indexes[$adapter] = $index;
+
+            unset($s['from'], $s['adapter']);
+
             $empty = true;
             foreach ($s as $v) {
                 if ($v) {
@@ -32,11 +49,25 @@ class webasystSettingsSMSSaveController extends webasystSettingsJsonController
                 }
                 foreach (explode("\n", $from) as $from) {
                     $from = trim($from);
+                    if (isset($save[$from])) {
+                        $used_adapter = $save[$from]['adapter'];
+                        $used_adapter_index = $adapter_indexes[$used_adapter];
+                        $errors["sms[{$index}][from]"] = sprintf(_ws('Sender ID “%s” is already in use by “%s” provider. You can save each sender ID for one provider only.'), $from, $used_adapter);
+                        $errors["sms[{$used_adapter_index}][from]"] = sprintf(_ws('Sender ID “%s” is already in use by “%s” provider. You can save each sender ID for one provider only.'), $from, $adapter);
+                        break;
+                    }
                     $save[$from] = $s;
                     $save[$from]['adapter'] = $adapter;
                 }
             }
         }
-        waUtils::varExportToFile($save, $path);
+
+        if (!$errors) {
+            waUtils::varExportToFile($save, $path);
+        }
+
+        return $errors;
+
+
     }
 }

@@ -117,29 +117,60 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * Validate confirmation code
      * @param string $code
      * @param string|int $phone
-     * @return string|null
+     * @return array
+     *  - 0 - bool status
+     *  - 1 - array details
+     *      If status is FALSE, details has keys
+     *        - string|null 'error_code' some string ID of error, that will be send to client as a controller response
+     *        - string      'error_msg'  message about error
      */
     protected function validateCode($code, $phone)
     {
         if (!$this->auth_config->getSignupConfirm()) {
-            return null;
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => _ws('Incorrect or expired confirmation code. Try again or request a new code.'),
+            ));
         }
+
         if (!$code) {
-            return _ws('Enter a confirmation code to complete signup');
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => _ws('Enter a confirmation code to complete signup'),
+            ));
         }
 
         if (!$this->isValidPhoneNumber($phone)) {
-            return _ws('Incorrect phone number value');
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => _ws('Incorrect phone number value'),
+            ));
         }
 
         $channel = $this->auth_config->getSMSVerificationChannelInstance();
 
-        $result = $channel->validateSignUpConfirmation($code, $phone);
-        if (!$result['status']) {
-            return _ws('Incorrect or expired confirmation code. Try again or request a new code.');
-        } else {
-            return null;
+        $result = $channel->validateSignUpConfirmation($code, array(
+            'recipient' => $phone,
+            'check_tries' => array(
+                'count' => $this->auth_config->getVerifyCodeTriesCount(),
+                'clean' => true
+            )
+        ));
+
+        if ($result['status']) {
+            return array(true, null);   // no error, successful verification
         }
+
+        if ($result['details']['error'] === waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES) {
+            $msg = _ws('You have run out of available attempts. Please request a new code.');
+        } else {
+            $msg = _ws('Incorrect or expired confirmation code. Try again or request a new code.');
+        }
+
+        return array(false, array(
+            'error_code' => $result['details']['error'],
+            'error_msg' => $msg,
+        ));
     }
 
     /**
@@ -156,18 +187,26 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
         $errors = array();
         foreach ($fields as $field_id) {
-            $error = null;
             if ($field_id === 'login') {
                 $error = $this->validateLogin($data['login']);
+                if ($error) {
+                    $errors[$field_id] = $error;
+                }
             } elseif ($field_id === 'password') {
                 $error = $this->validatePassword($data['password']);
+                if ($error) {
+                    $errors[$field_id] = $error;
+                }
             } elseif ($field_id === 'captcha') {
                 $error = $this->validateCaptcha();
+                if ($error) {
+                    $errors[$field_id] = $error;
+                }
             } elseif ($field_id === 'confirmation_code' && isset($data['confirmation_code'])) {
-                $error = $this->validateCode($data['confirmation_code'], $data['login']);
-            }
-            if ($error !== null) {
-                $errors[$field_id] = $error;
+                list($valid, $details) = $this->validateCode($data['confirmation_code'], $data['login']);
+                if (!$valid) {
+                    $errors[$field_id][$details['error_code']] = $details['error_msg'];
+                }
             }
         }
         return $errors;
@@ -295,11 +334,13 @@ abstract class waBaseLoginAction extends waLoginModuleController
             }
 
         } catch (waAuthInvalidCredentialsException $e) {
-            if ($this->auth_config->getAuthType() ===  waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
+            if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
                 $errors['password'] = _ws('Incorrect or expired one-time password. Try again or request a new one-time password.');
             } else {
                 $errors['auth'] = $e->getMessage();
             }
+        } catch (waAuthRunOutOfTriesException $e) {
+            $errors['password'][waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES] = $e->getMessage();
         } catch (waException $e) {
             $errors['auth'] = $e->getMessage();
         }
@@ -447,7 +488,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
         // contact does not exists - error
         if (!$contact || !$contact->exists()) {
             $signup_url = $auth_config->getSignUpUrl();
-            $error = sprintf(_ws('Contact does not exist. <a href="%s">Sign up</a> first.'), $signup_url);
+            if ($this->env === 'backend') {
+                $error = _ws('User does not exist.');
+            } else {
+                $error = sprintf(_ws('Contact does not exist. <a href="%s">Sign up</a> first.'), $signup_url);
+            }
             return array(false, array('login' => $error));
         }
 

@@ -8,7 +8,6 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
         $settings = array(
             'auth_form_background'         => 'stock:bokeh_vivid.jpg',
             'auth_form_background_stretch' => 1,
-            'rememberme'                   => 1,
         );
         foreach ($settings as $setting => &$value) {
             $value = $model->get('webasyst', $setting, $value);
@@ -58,11 +57,10 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             }
         }
 
+        $this->extendByDiagnosticInfo($email_channels);
+
         $used_auth_methods = $auth_config->getUsedAuthMethods();
 
-        // If there are no email channels and no SMS is used as
-        // a verification channel, will limit some functionality. #51.5712
-        $no_channels = (empty($email_channels) && !in_array(waVerificationChannelModel::TYPE_SMS, $used_auth_methods));
 
         $this->view->assign(array(
             'auth_config'                => $auth_config->getData(),
@@ -71,7 +69,6 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             'used_auth_methods'          => $used_auth_methods,
             'email_channels'             => $email_channels,
             'sms_channels'               => $sms_channels,
-            'no_channels'                => $no_channels,
             'login_captcha_variants'     => $auth_config->getLoginCaptchaVariants(),
             'verification_channel_types' => $auth_config->getVerificationChannelTypes(),
             'verification_channels'      => $auth_config->getAvailableVerificationChannels(),
@@ -95,5 +92,30 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             }
         }
         return array_values($files);
+    }
+
+    /**
+     * ONLY FOR EMAIL CHANNELS
+     * @param array & $email_channels
+     */
+    protected function extendByDiagnosticInfo(&$email_channels)
+    {
+        foreach ($email_channels as $index => &$email_channel) {
+
+            /**
+             * @var waVerificationChannelEmail $channel
+             */
+            $channel = waVerificationChannel::factory($email_channel['id']);
+
+            if (!($channel instanceof waVerificationChannelEmail)) {
+                // being paranoid
+                unset($email_channels[$index]);
+                continue;
+            }
+
+            $diagnostic = $channel->getAddressDiagnostic();
+            $email_channel['diagnostic'] = $diagnostic;
+        }
+        unset($email_channel);
     }
 }

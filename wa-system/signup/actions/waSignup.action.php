@@ -917,9 +917,9 @@ class waSignupAction extends waViewAction
                     $addresses['phone'] = $data['phone'];
                 }
 
-                $valid = $this->validateOnetimePassword($data['onetime_password'], $addresses);
+                list($valid, $details) = $this->validateOnetimePassword($data['onetime_password'], $addresses);
                 if (!$valid) {
-                    $errors['onetime_password']['invalid'] = _ws('Incorrect or expired one-time password. Try again or request a new one-time password.');
+                    $errors['onetime_password'][$details['error_code']] = $details['error_msg'];
                 }
             }
 
@@ -930,9 +930,9 @@ class waSignupAction extends waViewAction
                 $errors['confirmation_code']['required'] = _ws('Enter a confirmation code to complete signup');
             } else {
                 // Validate verification code
-                $valid = $this->validateConfirmationCode($data['confirmation_code'], $data['phone']);
+                list($valid, $details) = $this->validateConfirmationCode($data['confirmation_code'], $data['phone']);
                 if (!$valid) {
-                    $errors['confirmation_code']['invalid'] = _ws('Incorrect or expired confirmation code. Try again or request a new code.');
+                    $errors['confirmation_code'][$details['error_code']] = $details['error_msg'];
                 }
             }
         }
@@ -1608,30 +1608,72 @@ class waSignupAction extends waViewAction
     /**
      * @param $code
      * @param $phone
-     * @return bool
+     * @return array
+     *  - 0 - bool status
+     *  - 1 - array details
+     *      If status is FALSE, details has keys
+     *        - string|null 'error_code' some string ID of error, that will be send to client as a controller response
+     *        - string      'error_msg'  message about error
      * @throws waException
      */
     protected function validateConfirmationCode($code, $phone)
     {
+        $default_error = _ws('Incorrect or expired confirmation code. Try again or request a new code.');
+
         if (!$this->auth_config->getSignUpConfirm()) {
-            return false;
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => $default_error,
+            ));
         }
+
         $channel = $this->auth_config->getSMSVerificationChannelInstance();
+
         $result = $channel->validateSignUpConfirmation($code, array(
-            'recipient' => $phone
+            'recipient' => $phone,
+            'check_tries' => array(
+                'count' => $this->auth_config->getVerifyCodeTriesCount(),
+                'clean' => true
+            )
         ));
-        return $result['status'];
+
+        if ($result['status']) {
+            return array(true, null);   // no error, successful verification
+        }
+
+        $error_code = $result['details']['error'];
+        if ($error_code === waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES) {
+            $error_msg = _ws('You have run out of available attempts. Please request a new code.');
+        } else {
+            $error_msg = $default_error;
+        }
+
+        return array(false, array(
+            'error_code' => $error_code,
+            'error_msg'  => $error_msg
+        ));
     }
 
     /**
      * @param string $password
      * @param array $addresses
-     * @return bool
+     * @return array
+     *  - 0 - bool status
+     *  - 1 - array details
+     *      If status is FALSE, details has keys
+     *        - string|null 'error_code' some string ID of error, that will be send to client as a controller response
+     *        - string      'error_msg'  message about error
+     * @throws waException
      */
     protected function validateOnetimePassword($password, $addresses)
     {
+        $default_error = _ws('Incorrect or expired one-time password. Try again or request a new one-time password.');
+
         if ($this->auth_config->getAuthType() !== waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD) {
-            return false;
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => $default_error
+            ));
         }
 
         // Save used_channel_type so we can validate on that type of channel
@@ -1645,13 +1687,37 @@ class waSignupAction extends waViewAction
                 $used_address = $address;
             }
         }
+
         if (!$used_address) {
-            return false;
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => $default_error
+            ));
         }
 
         $channel = $this->auth_config->getVerificationChannelInstance(ifset($sent_info['used_channel_type']));
-        return !!$channel->validateOnetimePassword($password, array(
-            'recipient' => $used_address
+        $result = $channel->validateOnetimePassword($password, array(
+            'recipient' => $used_address,
+            'check_tries' => array(
+                'count' => $this->auth_config->getVerifyCodeTriesCount(),
+                'clean' => true
+            )
+        ));
+
+        if ($result['status']) {
+            return array(true, null);   // no error, successful verification
+        }
+
+        $error_code = $result['details']['error'];
+        if ($error_code === waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES) {
+            $error_msg = _ws('You have run out of available attempts. Please request a new one-time password.');
+        } else {
+            $error_msg = $default_error;
+        }
+
+        return array(false, array(
+            'error_code' => $error_code,
+            'error_msg'  => $error_msg
         ));
     }
 
@@ -1669,7 +1735,9 @@ class waSignupAction extends waViewAction
         if (!$this->auth_config->getSignUpConfirm()) {
             return array(
                 'status' => false,
-                'details' => array()
+                'details' => array(
+                    'error' => waVerificationChannel::VERIFY_ERROR_INVALID
+                )
             );
         }
         $channel = $this->auth_config->getEmailVerificationChannelInstance();

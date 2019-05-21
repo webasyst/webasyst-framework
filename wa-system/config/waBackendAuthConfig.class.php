@@ -103,7 +103,8 @@ class waBackendAuthConfig extends waAuthConfig
                 'login_placeholder',
                 'password_placeholder',
                 'verification_channel_ids',
-                'used_auth_methods'
+                'used_auth_methods',
+                'rememberme'
             );
             $methods = array();
             foreach ($keys as $k) {
@@ -245,5 +246,32 @@ class waBackendAuthConfig extends waAuthConfig
             $methods[] = self::AUTH_METHOD_EMAIL;
         }
         return $methods;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getRememberMe()
+    {
+        try {
+            $app_settings_model = new waAppSettingsModel();
+            $enable = !!$app_settings_model->get('webasyst', 'rememberme', true);
+        } catch (waDbException $e) {
+            $enable = true;
+        }
+        return $enable;
+    }
+
+    /**
+     * @param bool $enable
+     */
+    public function setRememberMe($enable = true)
+    {
+        try {
+            $app_settings_model = new waAppSettingsModel();
+            $app_settings_model->set('webasyst', 'rememberme', $enable ? '1' : '0');
+        } catch (waDbException $e) {
+
+        }
     }
 }

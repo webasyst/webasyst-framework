@@ -63,7 +63,21 @@ var WaLoginAbstractLoginForm = ( function($) {
         return errors;
     };
 
-    Self.prototype.isOneTypePasswordMode = function () {
+    Self.prototype.prepareErrorItem = function (error_namespace, error, error_code) {
+        var that = this,
+            $error = Parent.prototype.prepareErrorItem.call(that, error_namespace, error, error_code);
+        if (that.isOneTimePasswordMode() && error_namespace === 'password' && error_code === 'out_of_tries') {
+            // OUT of tries error case
+            // UX/UI thing: "Disable" next attempt
+            var $input = that.getFormInput('password'),
+                $form = that.getFormItem();
+            $input.attr('readonly', true);
+            $form.find('.wa-login-submit').attr('disabled', true);
+        }
+        return $error;
+    };
+
+    Self.prototype.isOneTimePasswordMode = function () {
         var that = this,
             auth_type = that.auth_type;
         return auth_type === 'onetime_password';
@@ -81,7 +95,7 @@ var WaLoginAbstractLoginForm = ( function($) {
             $link = options.$link,
             $loading = options.$loading;
 
-        if (!$link.length || !that.isOneTypePasswordMode()) {
+        if (!$link.length || !that.isOneTimePasswordMode()) {
             return;
         }
 

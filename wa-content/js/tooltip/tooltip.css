@@ -1,0 +1,199 @@
+.wa-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: default;
+}
+.wa-tooltip .wa-tooltip-icon {
+  position: relative;
+  display: inline-block;
+  background: #888;
+  color: #fff;
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.7rem;
+  line-height: 1rem;
+  text-align: center;
+  -webkit-transition: background 200ms linear;
+  -moz-transition: background 200ms linear;
+  -o-transition: background 200ms linear;
+  -ms-transition: background 200ms linear;
+  transition: background 200ms linear;
+}
+.wa-tooltip:not(.is-hover-disabled):hover .wa-tooltip-icon,
+.wa-tooltip.is-hover .wa-tooltip-icon {
+  background: #666;
+}
+.wa-tooltip.is-opened .wa-tooltip-icon {
+  background: #393;
+}
+.wa-tooltip.right.custom .wa-tooltip-text,
+.wa-tooltip.right:not(.custom):after {
+  top: 50%;
+  left: 100%;
+  -webkit-transform: translate(8px, -50%);
+  -moz-transform: translate(8px, -50%);
+  -o-transform: translate(8px, -50%);
+  -ms-transform: translate(8px, -50%);
+  transform: translate(8px, -50%);
+}
+.wa-tooltip.right:not(.custom):before {
+  top: 50%;
+  left: 100%;
+  margin-left: -12px;
+  border-right-color: #333;
+  -webkit-transform: translate(8px, -50%);
+  -moz-transform: translate(8px, -50%);
+  -o-transform: translate(8px, -50%);
+  -ms-transform: translate(8px, -50%);
+  transform: translate(8px, -50%);
+}
+.wa-tooltip.left.custom .wa-tooltip-text,
+.wa-tooltip.left:not(.custom):after {
+  top: 50%;
+  right: 100%;
+  -webkit-transform: translate(-8px, -50%);
+  -moz-transform: translate(-8px, -50%);
+  -o-transform: translate(-8px, -50%);
+  -ms-transform: translate(-8px, -50%);
+  transform: translate(-8px, -50%);
+}
+.wa-tooltip.left:not(.custom):before {
+  top: 50%;
+  right: 100%;
+  margin-right: -12px;
+  border-left-color: #333;
+  -webkit-transform: translate(-8px, -50%);
+  -moz-transform: translate(-8px, -50%);
+  -o-transform: translate(-8px, -50%);
+  -ms-transform: translate(-8px, -50%);
+  transform: translate(-8px, -50%);
+}
+.wa-tooltip.top.custom .wa-tooltip-text,
+.wa-tooltip.top:not(.custom):after {
+  bottom: 100%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -8px);
+  -moz-transform: translate(-50%, -8px);
+  -o-transform: translate(-50%, -8px);
+  -ms-transform: translate(-50%, -8px);
+  transform: translate(-50%, -8px);
+}
+.wa-tooltip.top:not(.custom):before {
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: -12px;
+  border-top-color: #333;
+  -webkit-transform: translate(-50%, -8px);
+  -moz-transform: translate(-50%, -8px);
+  -o-transform: translate(-50%, -8px);
+  -ms-transform: translate(-50%, -8px);
+  transform: translate(-50%, -8px);
+}
+.wa-tooltip.bottom.custom .wa-tooltip-text,
+.wa-tooltip.bottom:not(.custom):after {
+  top: 100%;
+  left: 50%;
+  -webkit-transform: translate(-50%, 8px);
+  -moz-transform: translate(-50%, 8px);
+  -o-transform: translate(-50%, 8px);
+  -ms-transform: translate(-50%, 8px);
+  transform: translate(-50%, 8px);
+}
+.wa-tooltip.bottom:not(.custom):before {
+  top: 100%;
+  left: 50%;
+  margin-top: -12px;
+  border-bottom-color: #333;
+  -webkit-transform: translate(-50%, 8px);
+  -moz-transform: translate(-50%, 8px);
+  -o-transform: translate(-50%, 8px);
+  -ms-transform: translate(-50%, 8px);
+  transform: translate(-50%, 8px);
+}
+html:not(.with-touch) .wa-tooltip:not(.custom):not(.is-hover-disabled):hover:before,
+.wa-tooltip:not(.custom).is-hover:before,
+.wa-tooltip:not(.custom).is-opened:before,
+html:not(.with-touch) .wa-tooltip:not(.custom):not(.is-hover-disabled):hover:after,
+.wa-tooltip:not(.custom).is-hover:after,
+.wa-tooltip:not(.custom).is-opened:after {
+  visibility: visible;
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.wa-tooltip:not(.custom):before {
+  content: "";
+  visibility: hidden;
+  display: block;
+  position: absolute;
+  border: 6px solid transparent;
+  z-index: 9999;
+  -webkit-transition: opacity 500ms ease-in-out;
+  -moz-transition: opacity 500ms ease-in-out;
+  -o-transition: opacity 500ms ease-in-out;
+  -ms-transition: opacity 500ms ease-in-out;
+  transition: opacity 500ms ease-in-out;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+}
+.wa-tooltip:not(.custom):after {
+  content: attr(data-title);
+  visibility: hidden;
+  display: block;
+  position: absolute;
+  padding: 5px 7px;
+  text-align: left;
+  border-radius: 5px;
+  width: 200px;
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.166666666666667em;
+  word-break: break-word;
+  z-index: 9999;
+  -webkit-transition: opacity 500ms ease-in-out;
+  -moz-transition: opacity 500ms ease-in-out;
+  -o-transition: opacity 500ms ease-in-out;
+  -ms-transition: opacity 500ms ease-in-out;
+  transition: opacity 500ms ease-in-out;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+}
+.wa-tooltip:not(.custom).is-inline:after {
+  width: auto;
+  white-space: nowrap;
+}
+html:not(.with-touch) .wa-tooltip.custom:not(.is-hover-disabled):hover .wa-tooltip-text,
+.wa-tooltip.custom.is-hover .wa-tooltip-text,
+.wa-tooltip.custom.is-opened .wa-tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.wa-tooltip.custom .wa-tooltip-text {
+  visibility: hidden;
+  display: block;
+  position: absolute;
+  padding: 5px 7px;
+  text-align: left;
+  border-radius: 5px;
+  width: 200px;
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.166666666666667em;
+  word-break: break-word;
+  z-index: 9999;
+  -webkit-transition: opacity 500ms ease-in-out;
+  -moz-transition: opacity 500ms ease-in-out;
+  -o-transition: opacity 500ms ease-in-out;
+  -ms-transition: opacity 500ms ease-in-out;
+  transition: opacity 500ms ease-in-out;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+}

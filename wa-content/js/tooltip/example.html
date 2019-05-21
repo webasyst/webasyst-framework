@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <title>Example</title>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./tooltip.js"></script>
+    <link href="./tooltip.css" rel="stylesheet">
+</head>
+<body>
+
+    <ul>
+        <li>
+            <span class="wa-tooltip left is-inline" data-title="Left">Подсказка слева</span>
+        </li>
+        <li>
+            Подсказка справа
+            <span class="wa-tooltip right is-inline" data-title="Right"><span class="wa-tooltip-icon"></span></span>
+        </li>
+        <li>
+            <span class="wa-tooltip top is-inline" data-title="Top">Подсказка сверху</span>
+        </li>
+        <li>
+            Подсказка снизу
+            <span class="wa-tooltip bottom is-inline" data-title="Bottom"><span class="wa-tooltip-icon"></span></span>
+        </li>
+
+        <li>
+            Сложная подсказка слева
+            <div class="wa-tooltip custom left">
+                <span class="wa-tooltip-icon"></span>
+                <div class="wa-tooltip-text">HTML</div>
+            </div>
+        </li>
+        <li>
+            <div class="wa-tooltip custom right">
+                Сложная подсказка справа при наведении на текст
+                <div class="wa-tooltip-text">HTML</div>
+            </div>
+        </li>
+        <li>
+            <div class="wa-tooltip custom top">
+                Сложная подсказка сверху при наведении на текст
+                <div class="wa-tooltip-text">HTML</div>
+            </div>
+        </li>
+        <li>
+            Сложная подсказка снизу
+            <div class="wa-tooltip custom bottom">
+                <span class="wa-tooltip-icon"></span>
+                <div class="wa-tooltip-text">HTML</div>
+            </div>
+        </li>
+
+        <li>
+            Сложная подсказка с отображением по клику
+            <div class="wa-tooltip custom bottom" id="wa-tooltip-1">
+                <span class="wa-tooltip-icon"></span>
+                <div class="wa-tooltip-text">HTML</div>
+
+                <script>
+                    ( function($) {
+                        $.waTooltip({
+                            $wrapper: $("#wa-tooltip-1"),
+                            // hover: true,
+                            open: function(that) {
+                                console.log("open", that);
+                            },
+                            close: function(that) {
+                                console.log("close", that);
+                            }
+                        });
+                    })(jQuery);
+                </script>
+            </div>
+        </li>
+
+    </ul>
+
+</body>
+</html>

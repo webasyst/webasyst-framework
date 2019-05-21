@@ -119,41 +119,20 @@ var WaLoginAbstractForgotPasswordForm = ( function($) {
         return errors;
     };
 
-    /*Self.prototype.runCountdowns = function () {
+    Self.prototype.prepareErrorItem = function (error_namespace, error, error_code) {
         var that = this,
-            $wrapper = that.$wrapper,
-            $errors = $wrapper.find('.' + that.classes.error_msg + '[data-not-clear=1]'),
-            timeout_msg = $.trim(that.locale.timeout || ''),
-            timeout_template_msg = $.trim(that.locale.timeout_template || '');
+            $error = Parent.prototype.prepareErrorItem.apply(that, arguments);
+        if (error_namespace === 'confirmation_code' && error_code === 'out_of_tries') {
+            // OUT of tries error case
+            // UX/UI thing: "Disable" next attempt
+            var $confirmation_code_input = that.getFormInput('confirmation_code'),
+                $form = that.getFormItem();
+            $confirmation_code_input.attr('readonly', true);
+            $form.find('.wa-confirmation-code-input-submit').attr('disabled', true);
+        }
+        return $error;
+    };
 
-        var runCountdown = function ($error) {
-            var ticks = that.timeout,
-                timer = null;
-
-            timer = setInterval(function () {
-                ticks -= 1;
-                if (ticks <= 0) {
-                    clearInterval(timer);
-                    $error.remove();
-                    return;
-                }
-
-                var msg = timeout_template_msg.replace('%d', ticks);
-                $error.text(msg);
-
-            }, 1000);
-
-        };
-
-        $errors.each(function () {
-            var $error = $(this),
-                msg = $.trim($error.text() || '');
-            if (msg !== timeout_msg) {
-                return;
-            }
-            runCountdown($error);
-        });
-    };*/
 
     return Self;
 

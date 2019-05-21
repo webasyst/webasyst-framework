@@ -69,6 +69,14 @@ abstract class waFileCache implements waiCache
         if ($this->hard_clean) {
             $this->getCacheModel()->add($this->getCacheName(), $this->ttl);
         }
+
+        // Update the value so that you can continue working with the object.
+        // But only if that makes sense.
+        // This will eliminate the excessive reading of the cache file, if after set we need get.
+        if ($result && $this->ttl !== 0) {
+            $this->value = $value;
+        }
+
         return $result;
     }
 

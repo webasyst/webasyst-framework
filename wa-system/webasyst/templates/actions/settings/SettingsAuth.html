@@ -1,6 +1,7 @@
 {$_title = "[s`Backend authorization`] — {$wa->accountName(false)}"}
 {$_title = $_title|replace:'&nbsp;':' '}
 {$_account_name = {$wa->accountName()}}
+
 {function name="_renderCustomBackground" custom_image=[]}
     {strip}
         <div>
@@ -50,7 +51,7 @@
                     <div class="name">[s`Passwords type`]</div>
                     <div class="value js-auth-type-select">
                         {$_auth_type = $auth_config.auth_type|default:waAuthConfig::AUTH_TYPE_USER_PASSWORD}
-                        {if $no_channels}
+                        {if empty($email_channels)}
                             {$_auth_type = waAuthConfig::AUTH_TYPE_USER_PASSWORD}
                         {/if}
                         <ul class="menu-v" style="margin-top: -4px;">
@@ -59,8 +60,11 @@
                                 {$_is_checked = $_auth_type === $_auth_type_id}
                                 <li class="js-auth-type">
                                     <label>
-                                        <input type="radio" name="auth_type" value="{$_auth_type_id|escape}"{if $_is_checked} checked="checked"{/if}{if $no_channels && !$_is_checked} disabled{/if}>
+                                        <input type="radio" name="auth_type" value="{$_auth_type_id|escape}"{if $_is_checked} checked="checked"{/if}{if empty($email_channels) && !$_is_checked} disabled{/if}>
                                         {$_name|escape}
+                                        {if $_auth_type_id === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD}
+                                            <i class="icon16 exclamation" style="display: none;"></i>
+                                        {/if}
                                     </label>
                                 </li>
                             {/foreach}
@@ -89,17 +93,53 @@
                                 [`Email`]
                             </label>
                             <div class="hint s-template-link">
-                                {if $no_channels}
-                                    {sprintf('[`No sender email address specified in “<a href="%s">Email settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/")}
+
+                                {if empty($email_channels)}
+                                    <div class="errormsg"><i class="icon16 exclamation"></i> [`Specify email sender address`] </div>
+                                    <div>
+                                        {sprintf('[s`No sender email address specified in “<a href="%s">Email settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/")}
+                                    </div>
+                                    <div>
+                                        [s`Please be sure to correctly set up a sender. It will be used to restore a lost password or to regain access to the backend should the one-time password authentication fail.`]
+                                    </div>
                                 {else}
                                     [s`Email notification templates`]
-                                    <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;">
+
+                                    <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;" data-channel-type="email">
                                         <option value="">[s`Select template`]</option>
                                         {foreach $email_channels as $_id => $_channel}
-                                            <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
+                                            {$_selected = in_array($_id, $auth_config.verification_channel_ids)}
+                                            <option value="{$_id|escape}"{if $_selected} selected{/if}>{$_channel.name|escape}</option>
+                                            {if $_selected}
+                                                {$_selected_email_channel = $_channel}
+                                            {/if}
                                         {/foreach}
                                     </select>
-                                    {sprintf('[`Edit the list in “<a href="%s">Email&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/template/")}
+
+                                    <span>
+                                        {sprintf('[s`Edit the list in “<a href="%s">Email&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/template/")}
+                                    </span>
+
+                                    {* HERE ERROR MESSAGES THAT WILL BE SHOW/HIDE OR RERENDER BY JS *}
+                                    <div class="errormsg s-email-template-not-selected-msg" style="display: none;"><i class="icon16 exclamation"></i> [s`No email template group is selected.`] </div>
+
+                                    {function name="webasyst_showDiagnosticMessage" message=[] is_template=false}
+                                        <div class="s-email-template-diagnostic-message {if $is_template}is-template{/if}" {if $is_template}style="display: none;"{/if}>
+                                            <div class="errormsg s-error-text-wrapper"><i class="icon16 exclamation"></i> <span class="s-error-txt">{$message.text|default:''}</span></div>
+                                            <div class="s-error-help-text-wrapper"> <span class="s-error-txt">{$message.help_text|default:''}</span></div>
+                                        </div>
+                                    {/function}
+
+                                    {foreach $email_channels as $_channel}
+                                        <div class="s-email-template-diagnostic-messages" data-channel-id="{$_channel.id}" style="display: none;">
+                                            {foreach $_channel.diagnostic|default:[] as $_message_id => $_message}
+                                                {webasyst_showDiagnosticMessage message=$_message}
+                                            {/foreach}
+                                        </div>
+                                    {/foreach}
+
+                                    {webasyst_showDiagnosticMessage message=[] is_template=true}
+
                                 {/if}
                             </div>
                         </div>
@@ -113,7 +153,7 @@
                                 </label>
                                 <div class="hint s-template-link">
                                     [s`SMS notification templates`]
-                                    <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;">
+                                    <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;" data-channel-type="sms">
                                         <option value="">[s`Select template`]</option>
                                         {foreach $sms_channels as $_id => $_channel}
                                             <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
@@ -163,8 +203,8 @@
                     </div>
                     <div class="value no-shift">
                         <input type="hidden" name="rememberme" value="0" />
-                        <input id="s-rememberme-auth" name="rememberme" class="ibutton js-rememberme-auth-toogle" type="checkbox" value="1"{if $settings.rememberme} checked="checked"{/if}>
-                        <label for="s-rememberme-auth"><span class="js-rememberme-auth-status">{if $settings.rememberme}[`enabled`]{else}[`disabled`]{/if}</span></label>
+                        <input id="s-rememberme-auth" name="rememberme" class="ibutton js-rememberme-auth-toogle" type="checkbox" value="1"{if $auth_config.rememberme} checked="checked"{/if}>
+                        <label for="s-rememberme-auth"><span class="js-rememberme-auth-status">{if $auth_config.rememberme}[`enabled`]{else}[`disabled`]{/if}</span></label>
                     </div>
                 </div>
 
@@ -241,7 +281,7 @@
                         </div>
 
                         {* Remember me *}
-                        <div class="field js-remember-me-preview"{if !$settings.rememberme} style="display: none;"{/if}>
+                        <div class="field js-remember-me-preview"{if !$auth_config.rememberme} style="display: none;"{/if}>
                             <div class="value">
                                 <label><input type="checkbox" checked="checked" disabled /> [s`Remember me`]</label>
                             </div>
@@ -277,6 +317,10 @@
                 </div>
             </div>
         </form>
+
+        <div class="js-onetime-password-confirm-dialog">
+            {include file="./SettingsOnetimePasswordAuthConfirmDialog.inc.html" inline}
+        </div>
 
         {* Templates for js *}
 

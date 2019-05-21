@@ -37,7 +37,7 @@ var WaFrontendLogin = ( function($) {
     Self.prototype.initView = function () {
         var that = this;
 
-        if (that.isOneTypePasswordMode()) {
+        if (that.isOneTimePasswordMode()) {
             that.initOnetimePasswordView();
         }
 
@@ -92,15 +92,42 @@ var WaFrontendLogin = ( function($) {
         $edit_link.click(function () {
             that.turnOffBlock($confirm_block);
             $login.removeAttr('readonly');
+
+            var $form = that.getFormItem(),
+                $button = $form.find(':submit:first:not(:disabled)');
+
+            if (!$button.length) {
+                // see prepareErrorItem for 'confirmation_code' error_namespace
+                $button = $form.find(':submit:first');
+                $button.attr('disabled', false);
+
+                var $confirmation_code_input = that.getFormInput('confirmation_code');
+                $confirmation_code_input.removeAttr('readonly').val('');
+            }
         });
 
         $sent_link.click(function () {
             // re-request code - disable confirmation code input
             that.turnOffBlock($confirm_block);
 
+
+            var $form = that.getFormItem(),
+                $button = $form.find(':submit:first:not(:disabled)');
+
+            if (!$button.length) {
+
+                // see prepareErrorItem for 'confirmation_code' error_namespace
+
+                $button = $form.find(':submit:first');
+                $button.attr('disabled', false);
+
+                var $confirmation_code_input = that.getFormInput('confirmation_code');
+                $confirmation_code_input.removeAttr('readonly').val('');
+
+            }
+
             // trigger submit
-            var $form = that.getFormItem();
-            $form.find(':submit:first:not(:disabled)').trigger('click');
+            $button.trigger('click');
         });
     };
 
@@ -132,12 +159,14 @@ var WaFrontendLogin = ( function($) {
 
 
         // Init 'button' for request onetime password
+        // On success request new password will be called that.onSentOnetimePassword
         that.initOnetimePasswordLink({
             $link: $wrapper.find('.wa-request-onetime-password-button'),
             $loading: $wrapper.find('.wa-request-onetime-password-button-loading')
         });
 
         // Init 'link' for re-request ('sent again') onetime password
+        // On success request new password will be called that.onSentOnetimePassword
         that.initOnetimePasswordLink({
             $link: $wrapper.find('.wa-send-again-onetime-password-link'),
             $loading: $wrapper.find('.wa-send-again-onetime-password-link-loading')
@@ -153,10 +182,8 @@ var WaFrontendLogin = ( function($) {
 
     /**
      * When onetime password successfully sent to client
-     *
-     * Overridden method
+     * It is template, overridden method, that will be called in Parent class
      * @see Parent
-     *
      * @param data
      */
     Self.prototype.onSentOnetimePassword = function (data) {
@@ -177,8 +204,14 @@ var WaFrontendLogin = ( function($) {
         // Place messages
         $wrapper.find('.wa-onetime-password-input-message').html($timeout_message);
 
+        var $password_block = that.getFormField('password'),
+            $password_input = that.getFormInput('password');
+
         // Show PASSWORD filed itself
-        that.turnOnBlock(that.getFormField('password'));
+        that.turnOnBlock($password_block);
+
+        // see Parent.prepareErrorItem for password out_of_tries error in onetime time password mode
+        $password_input.removeAttr('readonly').val('');
 
         // Show actual SUBMIT button
         that.turnOnBlock($wrapper.find('.wa-buttons-wrapper'));
@@ -205,30 +238,58 @@ var WaFrontendLogin = ( function($) {
 
     };
 
-    Self.prototype.prepareErrorText = function (name, error) {
+    Self.prototype.prepareErrorText = function (error_namespace, error, error_code) {
         var that = this;
-        if (name === 'confirm_email') {
+        if (error_namespace === 'login' && error_code === 'confirm_email' || error_namespace === 'confirm_email') {
             return $.trim(error || '');
         } else {
-            return Parent.prototype.prepareErrorText.call(that, name, error);
+            return Parent.prototype.prepareErrorText.apply(that, arguments);
         }
     };
 
-    Self.prototype.getErrorTemplate = function (name) {
+    Self.prototype.getErrorTemplate = function (error_namespace, error, error_code) {
         var that = this;
-        if (name === 'confirm_email') {
+        if (error_namespace === 'login' && error_code === 'confirm_email' || error_namespace === 'confirm_email') {
             return that.$templates.confirm_email_error;
         } else {
-            return Parent.prototype.getErrorTemplate.call(that, name);
+            return Parent.prototype.getErrorTemplate.apply(that, arguments);
         }
     };
 
-    Self.prototype.prepareErrorItem = function (name, error) {
+    Self.prototype.prepareErrorItem = function (error_namespace, error, error_code) {
         var that = this,
-            $error = Parent.prototype.prepareErrorItem.call(that, name, error);
-        if (name === 'confirm_email') {
-            $error.data('notClear', 1).attr('data-not-clear', '1');
+            $error;
+
+        if (error_namespace === 'login' && error_code === 'confirm_email' || error_namespace === 'confirm_email') {
+
+            // This error has javascript inside it, but in earlier versions of jq (e.g. 1.8.2) inserting js in memory DOM item
+            // eval js right away - and it is not what we need. Js must executed only when whole error in REAL DOM (not memory)
+
+            var substitute = ':ERROR-' + ('' + Math.random()).slice(2) + ':';
+            $error = Parent.prototype.prepareErrorItem.call(that, error_namespace, substitute, error_code);
+            $error.attr('data-not-clear', '1');
+
+            var $tmp = $('<div>').append($error),
+                error_html = $tmp.html();
+
+            error_html = error_html.replace(substitute, error);
+
+            return error_html;
         }
+
+        $error = Parent.prototype.prepareErrorItem.call(that, error_namespace, error, error_code);
+
+        if (error_namespace === 'confirmation_code' && error_code === 'out_of_tries') {
+            // OUT of tries error case
+            // UX/UI thing: "Disable" next attempt
+            var $confirmation_code_input = that.getFormInput('confirmation_code'),
+                $form = that.getFormItem();
+            $confirmation_code_input.attr('readonly', true);
+            $form.find('.wa-login-submit').attr('disabled', true);
+            return $error;
+        }
+
+
         return $error;
     };
 
@@ -241,6 +302,24 @@ var WaFrontendLogin = ( function($) {
         var that = this;
         that.hideOauthAdaptersBlock();
         return Parent.prototype.beforeJsonPost.call(that, url, data);
+    };
+
+    Self.prototype.beforeErrorTimerStart = function(message, timeout, options) {
+        var that = this;
+        Parent.prototype.beforeErrorTimerStart(message, timeout, options);
+        if (options.error_namespace === 'confirmation_code') {
+            var $confirmation_code_input = that.getFormInput('confirmation_code');
+            $confirmation_code_input.attr('readonly', 1);
+        }
+    };
+
+    Self.prototype.afterErrorTimerFinish = function(message, timeout, options) {
+        var that = this;
+        Parent.prototype.afterErrorTimerFinish(message, timeout, options);
+        if (options.error_namespace === 'confirmation_code') {
+            var $confirmation_code_input = that.getFormInput('confirmation_code');
+            $confirmation_code_input.removeAttr('readonly');
+        }
     };
 
     Self.prototype.onConfirmPhoneError = function (response) {
@@ -283,7 +362,6 @@ var WaFrontendLogin = ( function($) {
                 $edit_link.show();
             }
         });
-
     };
 
     Self.prototype.onDoneSubmitHandlers = function () {

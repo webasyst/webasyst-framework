@@ -125,12 +125,25 @@ class waVerificationChannelSMS extends waVerificationChannel
     }
 
     /**
-     * @param string $confirmation_secret
+     * Validate signup code that was sent by SMS to recipient
+     *
+     * @param string $confirmation_secret signup code
      * @param array $options
      *
-     *  - 'asset_id' int
-     *       If isset than use it AS asset ID that says where secret placed in DB
-     *       Otherwise try asset ID from session ( @see sendSignUpConfirmationMessage )
+     *   - 'recipient' If need to extra STRENGTHEN validation
+     *   - 'asset_id' Optional. Asset ID where is stored code. If skipped, get asset from session
+     *
+     *   - 'check_tries' Optional. Options for 'tries' logic. Format of options:
+     *       - 'count' Number of tries to validate code.
+     *              Default - is NULL, not take into account number of tries
+     *              Otherwise - int
+     *                  if number of calls of this method already greater than 'tries' than this method will be failed and return 'error'
+     *      - 'clean' Delete asset after exceeding the number of tries
+     *              Default is FALSE
+     *
+     *
+     *     NOTICE: total number of tries is global for this for this asset (for this channel and recipient)
+     *
      *
      * @return array Associative array
      *
@@ -140,77 +153,38 @@ class waVerificationChannelSMS extends waVerificationChannel
      *
      *   - array 'details' - detailed information about result of validation
      *      Format of details depends on 'status'
-     *        If 'status' is TRUE
+     *
+     *        If 'status' is TRUE 'details' has keys:
+     *
      *          - string 'address'     - address that was validated
      *          - int    'contact_id'  - id of contact bind to this address
-     *        Otherwise details is empty array
+     *          - int    'tries'       - total count of already made tries
+     *          - int    'rest_tries'  - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *
+     *        Otherwise 'details' has keys:
+     *
+     *          - string   'error'      - string identificator of error - VERIFY_ERROR_* const
+     *          - int|null 'tries'      - total count of already made tries. Can be NULL in case if code is already dead or not exist
+     *          - int      'rest_tries' - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *                                    But this value is NULL when 'tries' is NULL (in case if code is already dead or not exist)
+     *
+     * @throws waException
      */
     public function validateSignUpConfirmation($confirmation_secret, $options = array())
     {
-        // Initialize result structure
-        $result = array(
-            'status' => false,
-            'details' => array()
-        );
-
-        $confirmation_secret = is_scalar($confirmation_secret) ? (string)$confirmation_secret : '';
-        if (strlen($confirmation_secret) <= 0) {
-            return $result;
-        }
-
-        $use_session = !isset($options['asset_id']);
-
-        $session_key = '';
-        if ($use_session) {
-            $session_key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_CODE;
-            $asset_id = wa()->getStorage()->get($session_key);
-            $asset_id = wa_is_int($asset_id) ? $asset_id : 0;
-        } else {
-            $asset_id = wa_is_int($options['asset_id']) ? $options['asset_id'] : 0;
-        }
-
-        if ($asset_id <= 0) {
-            return $result;
-        }
-        $confirmation_code = $confirmation_secret;
-
-        $vca = new waVerificationChannelAssetsModel();
-        $asset = $vca->getById($asset_id);
-        if (!$asset) {
-            return $result;
-        }
-
-        $recipient = null;
-        if (isset($options['recipient'])) {
-            $recipient = $this->typecastInputRecipient($options['recipient']);
-        }
-
-        if ($recipient !== null && !waContactPhoneField::isPhoneEquals($asset['address'], $recipient['address'])) {
-            return $result;
-        }
-
-        if ($asset['channel_id'] != $this->getId() ||
-            $asset['name'] != waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_CODE ||
-            $asset['value'] != waContact::getPasswordHash($confirmation_code)) {
-            return $result;
-        }
-
-        // clean asset
-        $vca->deleteById($asset['id']);
-        if ($use_session) {
-            wa()->getStorage()->del($session_key);
-        }
-
-        // successful validation result
-
-        $result['status'] = true;
-        $result['details'] = array(
-            'address' => waContactPhoneField::cleanPhoneNumber($asset['address']),
-            'contact_id' => $asset['contact_id']
-        );
-
-        return $result;
+        return $this->validateSecret($confirmation_secret, waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_CODE, $options);
     }
+
+    protected function isAddressEquals($address1, $address2)
+    {
+        return waContactPhoneField::isPhoneEquals($address1, $address2);
+    }
+
+    protected function isSecretEquals($input_secret, $asset_secret, $asset_name)
+    {
+        return waContact::getPasswordHash($input_secret) === $asset_secret;
+    }
+
 
     /**
      * @param array|string|waContact $recipient
@@ -293,9 +267,18 @@ class waVerificationChannelSMS extends waVerificationChannel
         $onetime_password = $this->generateOnetimePassword();
 
         $vca = new waVerificationChannelAssetsModel();
-        $asset_id = $vca->set($this->getId(), $recipient['phone'],
-            waVerificationChannelAssetsModel::NAME_ONETIME_PASSWORD,
-            waContact::getPasswordHash($onetime_password), '1 hour');
+
+        $asset_data = array(
+            'channel_id' => $this->getId(),
+            'address' => $recipient['phone'],
+            'name' => waVerificationChannelAssetsModel::NAME_ONETIME_PASSWORD,
+            'value' => waContact::getPasswordHash($onetime_password)
+        );
+        if (isset($recipient['id'])) {
+            $asset_data['contact_id'] = $recipient['id'];
+        }
+
+        $asset_id = $vca->setAsset($asset_data, '1 hour');
 
         if ($asset_id <= 0) {
             return false;
@@ -381,10 +364,9 @@ class waVerificationChannelSMS extends waVerificationChannel
         return $asset_id;
     }
 
-    public function validateOnetimePassword($password, $options = array())
+    protected function cleanAddress($address)
     {
-        $result = parent::validateOnetimePassword($password, $options);
-        return is_bool($result) ? $result : waContactPhoneField::cleanPhoneNumber($result);
+        return waContactPhoneField::cleanPhoneNumber($address);
     }
 
     /**
@@ -439,12 +421,27 @@ class waVerificationChannelSMS extends waVerificationChannel
     }
 
     /**
+     * Validate secret that was in message
+     * That secret grants rights to recovery (set new) password
+     *
+     * @see sendRecoveryPasswordMessage
      * @param string $secret
      * @param array $options
      *
-     *  - 'asset_id' int
-     *       If isset than use it AS asset ID that says where secret placed in DB
-     *       Otherwise try asset ID from session ( @see sendSignUpConfirmationMessage )
+     *   - 'recipient' If need to extra STRENGTHEN validation
+     *
+     *   - 'asset_id' Optional. Asset ID where is stored code. If skipped, get asset from session
+     *
+     *   - 'check_tries' Optional. Options for 'tries' logic. Format of options:
+     *       - 'count' Number of tries to validate code.
+     *              Default - is NULL, not take into account number of tries
+     *              Otherwise - int
+     *                  if number of calls of this method already greater than 'tries' than this method will be failed and return 'error'
+     *      - 'clean' Delete asset after exceeding the number of tries
+     *              Default is FALSE
+     *
+     *
+     *     NOTICE: total number of tries is global for this for this asset (for this channel and recipient)
      *
      * @return array Associative array
      *
@@ -454,65 +451,27 @@ class waVerificationChannelSMS extends waVerificationChannel
      *
      *   - array 'details' - detailed information about result of validation
      *      Format of details depends on 'status'
-     *        If 'status' is TRUE
+     *
+     *        If 'status' is TRUE 'details' has keys:
+     *
      *          - string 'address'     - address that was validated
      *          - int    'contact_id'  - id of contact bind to this address
-     *        Otherwise details is empty array
+     *          - int    'tries'       - total count of already made tries
+     *          - int    'rest_tries'  - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *
+     *        Otherwise 'details' has keys:
+     *
+     *          - string   'error'      - string identificator of error - VERIFY_ERROR_* const
+     *          - int|null 'tries'      - total count of already made tries. Can be NULL in case if code is already dead or not exist
+     *          - int      'rest_tries' - For convenience: count of rest tries. Formula is $options['check_tries']['count'] - $result['details']['tries']
+     *                                    But this value is NULL when 'tries' is NULL (in case if code is already dead or not exist)
+     *
+     * @throws waException
      */
     public function validateRecoveryPasswordSecret($secret, $options = array())
     {
-        // Initialize result structure
-        $result = array(
-            'status' => false,
-            'details' => array()
-        );
-
-        $secret = is_scalar($secret) ? (string)$secret : '';
-        if (strlen($secret) <= 0) {
-            return $result;
-        }
-
-        $session_key = 'wa_verification_channel_' . $this->getId() . '_asset/' . waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE;
-
-        if (array_key_exists('asset_id', $options)) {
-            $asset_id = wa_is_int($options['asset_id']) ? $options['asset_id'] : 0;
-        } else {
-            $asset_id = wa()->getStorage()->get($session_key);
-            $asset_id = wa_is_int($asset_id) ? $asset_id : 0;
-        }
-
-        if ($asset_id <= 0) {
-            return $result;
-        }
-
-        $vca = new waVerificationChannelAssetsModel();
-        $asset = $vca->getById($asset_id);
-        if (!$asset) {
-            return $result;
-        }
-
-        $recipient = null;
-        if (isset($options['recipient'])) {
-            $recipient = $this->typecastInputRecipient($options['recipient']);
-        }
-
-        if ($recipient !== null && !waContactPhoneField::isPhoneEquals($asset['address'], $recipient['address'])) {
-            return $result;
-        }
-
-        if ($asset['channel_id'] != $this->getId() ||
-            $asset['name'] != waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE ||
-            $asset['value'] != waContact::getPasswordHash($secret)) {
-            return $result;
-        }
-
-        $result['status'] = true;
-        $result['details'] = array(
-            'address' => waContactPhoneField::cleanPhoneNumber($asset['address']),
-            'contact_id' => $asset['contact_id']
-        );
-
-        return $result;
+        $options['clean'] = false;
+        return $this->validateSecret($secret, waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE, $options);
     }
 
     /**

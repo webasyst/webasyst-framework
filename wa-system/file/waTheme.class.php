@@ -1895,7 +1895,6 @@ HTACCESS;
         $this->init();
         $requirements = array();
 
-
         if (!empty($this->info['requirements'])) {
             $requirements = $this->info['requirements'];
         }

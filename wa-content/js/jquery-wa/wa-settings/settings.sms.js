@@ -30,9 +30,14 @@ var WASettingsSMS = ( function($) {
     };
 
     WASettingsSMS.prototype.initSubmit = function () {
-        var that = this;
+        var that = this,
+            $form = that.$form;
 
-        that.$form.on('submit', function (e) {
+        $form.on('change', function () {
+            that.clearValidateErrors();
+        });
+
+        $form.on('submit', function (e) {
             e.preventDefault();
             if (that.is_locked) {
                 return;
@@ -44,6 +49,8 @@ var WASettingsSMS = ( function($) {
             var href = that.$form.attr('action'),
                 data = that.$form.serialize();
 
+            that.clearValidateErrors();
+
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
                     that.$button.removeClass('yellow').addClass('green');
@@ -53,6 +60,7 @@ var WASettingsSMS = ( function($) {
                         that.$loading.hide();
                     },2000);
                 } else {
+                    that.showValidateErrors(res.errors);
                     that.$loading.hide();
                 }
                 that.is_locked = false;
@@ -71,6 +79,22 @@ var WASettingsSMS = ( function($) {
             $.wa.content.reload();
             return;
         });
+    };
+
+    WASettingsSMS.prototype.showValidateErrors = function (errors) {
+        var that = this,
+            $form = that.$form;
+        $.each(errors || {}, function (field_name, error) {
+            var $field = $form.find('[name="' + field_name + '"]').addClass('error');
+            $field.after('<div class="errormsg">' + $.wa.encodeHTML(error) + '</div>')
+        });
+    };
+
+    WASettingsSMS.prototype.clearValidateErrors = function () {
+        var that = this,
+            $form = that.$form;
+        $form.find('.error').removeClass('error');
+        $form.find('.errormsg').remove();
     };
 
     return WASettingsSMS;

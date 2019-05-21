@@ -154,8 +154,20 @@ var WaSignup = ( function($) {
             $wrapper = that.$wrapper,
             $errors = $wrapper.find('.' + that.classes.uncaught_errors);
 
-        $.each(all_errors || {}, function (name, errors) {
-            var $input = that.getFormInput(name);
+        var onCodeOutOfTriesError = function($input) {
+            // UX/UI thing: "Disable" next attempt
+            $input.attr('readonly', 1);
+            $wrapper.find('.wa-confirm-signup-button').attr('disabled', true);
+        };
+
+        var onOnetimePasswordOutOfTriesError = function($input) {
+            // UX/UI thing: "Disable" next attempt
+            $input.attr('readonly', 1);
+            $wrapper.find('.wa-done-signup-button').attr('disabled', true);
+        };
+
+        $.each(all_errors || {}, function (errors_namespace, errors) {
+            var $input = that.getFormInput(errors_namespace);
             if (typeof errors === 'string') {
                 errors = [errors];
             }
@@ -163,26 +175,41 @@ var WaSignup = ( function($) {
             var $error_msg = that.$templates.error_msg,
                 errors_html = [];
 
-            if (name === 'timeout') {
+            var code_out_of_tries_error_presents = false,
+                onetime_password_out_of_tries_error_presents = false;
+
+            if (errors_namespace === 'timeout') {
                 errors_html = that.prepareTimeoutErrorItem(errors.message, errors.timeout);
                 errors_html = [errors_html]
             } else {
-                $.each(errors || [], function (index, error) {
-                    error = $.trim('' + error);
+                $.each(errors || [], function (error_code, error_msg) {
+                    error_msg = $.trim('' + error_msg);
                     var $error = $error_msg.clone();
-                    $error.text(error);
+                    $error.data('errorCode', error_code).attr('data-error-code', error_code).text(error_msg);
                     errors_html.push($error);
+
+                    code_out_of_tries_error_presents = code_out_of_tries_error_presents ||
+                        errors_namespace === 'confirmation_code' && error_code === 'out_of_tries';
+
+                    onetime_password_out_of_tries_error_presents = onetime_password_out_of_tries_error_presents ||
+                        errors_namespace === 'onetime_password' && error_code === 'out_of_tries';
                 });
             }
 
             if ($input.length) {
                 $input.parent().append(errors_html);
                 $input.addClass(that.classes.error_input);
+                if (code_out_of_tries_error_presents) {
+                    onCodeOutOfTriesError($input);
+                }
+                if (onetime_password_out_of_tries_error_presents) {
+                    onOnetimePasswordOutOfTriesError($input);
+                }
             } else {
                 $errors.show().append(errors_html);
             }
 
-            if (name === 'email,phone') {
+            if (errors_namespace === 'email,phone') {
                 that.getFormInput('email').addClass(that.classes.error_input);
                 that.getFormInput('phone').addClass(that.classes.error_input);
             }
@@ -399,7 +426,6 @@ var WaSignup = ( function($) {
 
         // Move block of errors
         $wrapper.find('.wa-confirm-signup-button-wrapper').prepend($wrapper.find('.wa-uncaught-errors'));
-
 
         that.turnOnBlock($wrapper.find('.wa-signup-form-confirmation-block'));
 
@@ -674,6 +700,9 @@ var WaSignup = ( function($) {
             // Un-Disable for editing email field
             that.getFormInput('email').removeAttr('readonly');
             that.getFormInput('phone').removeAttr('readonly');
+
+            // remove readonly attr, see onOnetimePasswordOutOfTriesError() in that.showErrors()
+            that.getFormInput('onetime_password').removeAttr('readonly');
         };
 
         initView();
@@ -698,12 +727,16 @@ var WaSignup = ( function($) {
             e.preventDefault();
 
             var $button = $(this),
-                $loading = $button.parent().find('.js-send-onetime-password-loading');
+                $loading = $button.parent().find('.js-send-onetime-password-loading'),
+                $onetime_password_input = that.getFormInput('onetime_password');
+
+            // remove readonly attr, see onOnetimePasswordOutOfTriesError() in that.showErrors()
+            $onetime_password_input.removeAttr('readonly');
 
             // IMPORTANT:
             // PROTOCOL detail (!)
             // If we post form WITHOUT 'onetime_password' than it means that we request new 'onetime_password'
-            that.getFormInput('onetime_password').attr('disabled', true);
+            $onetime_password_input.attr('disabled', true);
 
             // Send submit to server
             var res = that.submit({
@@ -713,7 +746,7 @@ var WaSignup = ( function($) {
 
             // restore 'disabled' status
             // see previous protocol detail comment
-            that.getFormInput('onetime_password').attr('disabled', false);
+            $onetime_password_input.attr('disabled', false);
 
             if (res) {
                 xhr && xhr.abort();
@@ -765,10 +798,15 @@ var WaSignup = ( function($) {
         $link.click(function (e) {
             e.preventDefault();
 
+            var $confirmation_code_input = that.getFormInput('confirmation_code');
+
+            // remove readonly attr, see onCodeOutOfTriesError() in that.showErrors()
+            $confirmation_code_input.removeAttr('readonly');
+
             // IMPORTANT:
             // PROTOCOL detail (!)
             // If we post form WITHOUT 'confirmation_code' than it means that we request new 'confirmation_code'
-            that.getFormInput('confirmation_code').attr('disabled', true);
+            $confirmation_code_input.attr('disabled', true);
 
             var res = that.submit({
                 $button: $link,
@@ -777,7 +815,7 @@ var WaSignup = ( function($) {
 
             // restore 'disabled' status
             // see previous protocol detail comment
-            that.getFormInput('confirmation_code').attr('disabled', false);
+            $confirmation_code_input.attr('disabled', false);
 
             if (res) {
                 xhr && xhr.abort();

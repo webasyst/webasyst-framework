@@ -163,8 +163,14 @@ class waVerificationChannelAssetsModel extends waModel
                     $field['contact_id'] = 0;
                 } else {
                     // not needed field_id
-                    return null;
+                    $field = array();
+                    break;
                 }
+            }
+
+            if (!$field) {
+                // just any condition key
+                $field = $key;
             }
 
             // inc 'tries' field - table hold, so just one can process can inc this field

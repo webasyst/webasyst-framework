@@ -62,19 +62,6 @@ class waAuth implements waiAuth
             $this->options['is_user'] = $this->env == 'backend';
         }
 
-        if (!isset($this->options['remember_enabled'])) {
-            if ($this->env == 'backend') {
-                try {
-                    $app_settings_model = new waAppSettingsModel();
-                    $this->options['remember_enabled'] = $app_settings_model->get('webasyst', 'rememberme', true);
-                } catch (waException $e) {
-                    $this->options['remember_enabled'] = true;
-                }
-            } else {
-                $this->options['remember_enabled'] = true;
-            }
-        }
-
         $this->auth_config = waAuthConfig::factory($this->env);
 
         $this->initLoginFieldIds();
@@ -88,6 +75,9 @@ class waAuth implements waiAuth
      * @return array|bool - If failed - return false, otherwise contact info as associative array
      * @throws waAuthException
      * @throws waAuthInvalidCredentialsException
+     * @throws waAuthConfirmEmailException
+     * @throws waAuthConfirmPhoneException
+     * @throws waAuthRunOutOfTriesException
      * @throws waException
      */
     public function auth($params = array())
@@ -396,6 +386,7 @@ class waAuth implements waiAuth
      * @throws waAuthInvalidCredentialsException
      * @throws waAuthConfirmEmailException
      * @throws waAuthConfirmPhoneException
+     * @throws waAuthRunOutOfTriesException
      * @throws waException
      */
     protected function _auth($params)
@@ -428,11 +419,11 @@ class waAuth implements waiAuth
         }
 
         if ($this->isOnetimePasswordMode()) {
+            // this method could throw different kind of exceptions by himself
             $result = $this->_authByOnetimePassword(new waContact($user_info['id']), $login, $password);
-            if (!$result) {
-                throw new waAuthInvalidCredentialsException();
+            if ($result) {
+                return $this->_afterAuth($user_info, $params);
             }
-            return $this->_afterAuth($user_info, $params);
         }
 
         $result = $this->_authByPassword($user_info, $password);
@@ -612,8 +603,8 @@ class waAuth implements waiAuth
         $response = waSystem::getInstance()->getResponse();
 
         // if remember
-        $model = new waAppSettingsModel();
-        if ($remember && $model->get('webasyst', 'rememberme', 1)) {
+        $remember_enabled = $this->auth_config->getRememberMe();
+        if ($remember && $remember_enabled) {
             $cookie_domain = ifset($this->options['cookie_domain'], '');
             $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, $cookie_domain, false, true);
             $response->setCookie('remember', 1);
@@ -633,19 +624,28 @@ class waAuth implements waiAuth
         return strlen($contact_password) > 0 && waContact::getPasswordHash($password) === $contact_password;
     }
 
+    /**
+     * @param waContact $contact
+     * @param $login
+     * @param $password
+     * @return bool
+     * @throws waAuthInvalidCredentialsException
+     * @throws waAuthRunOutOfTriesException
+     * @throws waException
+     */
     protected function _authByOnetimePassword(waContact $contact, $login, $password)
     {
         if (!$this->isOnetimePasswordMode()) {
-            return false;
+            throw new waAuthInvalidCredentialsException();
         }
         if (!$contact->exists()) {
-            return false;
+            throw new waAuthInvalidCredentialsException();
         }
 
         $csm = new waContactSettingsModel();
         $asset_id = $csm->getOne($contact->getId(), 'webasyst', 'onetime_password_id');
         if (!$asset_id) {
-            return false;
+            throw new waAuthInvalidCredentialsException();
         }
 
         if ($this->isValidEmail($login)) {
@@ -658,22 +658,39 @@ class waAuth implements waiAuth
 
         $channels = $this->auth_config->getVerificationChannels($priority);
         if (!$channels) {
-            return false;
+            throw new waAuthInvalidCredentialsException();
         }
 
-        $result = false;
+        $verified = false;
+        $results = array();
         foreach ($channels as $channel_id => $channel) {
             $channel = waVerificationChannel::factory($channel);
-            $result = $channel->validateOnetimePassword($password, array(
+            $res = $channel->validateOnetimePassword($password, array(
                 'recipient' => $contact,
-                'asset_id' => $asset_id
+                'asset_id' => $asset_id,
+                'check_tries' => array(
+                    'count' => $this->auth_config->getVerifyCodeTriesCount(),
+                    'clean' => true
+                )
             ));
-            if ($result) {
+            $results[$channel->getType()] = $res;
+            if ($res['status']) {
+                $verified = true;
                 break;
             }
         }
 
-        return $result;
+        if ($verified) {
+            return true;
+        }
+        
+        foreach ($results as $result) {
+            if ($result['details']['error'] === waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES) {
+                throw new waAuthRunOutOfTriesException(_ws('You have run out of available attempts. Please request a new one-time password.'));
+            }
+        }
+
+        throw new waAuthInvalidCredentialsException();
 
     }
 
@@ -708,7 +725,8 @@ class waAuth implements waiAuth
      */
     protected function _authByCookie()
     {
-        if ($this->getOption('remember_enabled') && $token = waRequest::cookie('auth_token')) {
+        $remember_enabled = $this->auth_config->getRememberMe();
+        if ($remember_enabled && $token = waRequest::cookie('auth_token')) {
             $model = new waContactModel();
             $response = waSystem::getInstance()->getResponse();
             $id = substr($token, 15, -15);

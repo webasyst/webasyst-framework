@@ -17,6 +17,7 @@ return array(
     'waAuthConfirmEmailException'       => 'auth/exceptions/waAuthConfirmEmailException.class.php',
     'waAuthConfirmPhoneException'       => 'auth/exceptions/waAuthConfirmPhoneException.class.php',
     'waAuthInvalidCredentialsException' => 'auth/exceptions/waAuthInvalidCredentialsException.class.php',
+    'waAuthRunOutOfTriesException'      => 'auth/exceptions/waAuthRunOutOfTriesException.class.php',
 
     'waAutoload'                        => 'autoload/waAutoload.class.php',
 
@@ -199,6 +200,5 @@ return array(
 
     'waDesignActions'                   => 'design/actions/waDesign.actions.php',
     'waPluginsActions'                  => 'plugin/actions/waPlugins.actions.php',
-
 );
 

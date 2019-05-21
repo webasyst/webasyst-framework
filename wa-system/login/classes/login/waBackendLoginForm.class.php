@@ -29,8 +29,8 @@ class waBackendLoginForm extends waLoginForm
      */
     public function renderRememberMe()
     {
-        $model = new waAppSettingsModel();
-        if (!$model->get('webasyst', 'rememberme', 1)) {
+        $remember_enabled = $this->auth_config->getRememberMe();
+        if (!$remember_enabled) {
             return '';
         }
         return parent::renderRememberMe();

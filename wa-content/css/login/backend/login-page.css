@@ -173,6 +173,10 @@
   margin-top: 12px;
   display: inline-block;
 }
+#wa-login.wa-backend-login-page .wa-login-form input[readonly] {
+  pointer-events: none;
+  background-color: #eee;
+}
 #wa-login.wa-backend-login-page .wa-set-password-form .wa-info-messages .wa-info-text {
   display: block;
   margin: 10px 0;

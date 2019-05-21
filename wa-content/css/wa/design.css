@@ -42,7 +42,7 @@
 
 li.error a { color: red; }
 
-.wa-themes { background: url(../../img/cloth-background-light.jpg); box-shadow: 0 6px 10px -5px #777 inset; min-height: 500px; }
+.wa-themes { min-height: 500px; }
 .wa-themes ul.thumbs { padding: 25px 20px; margin-top: 0; }
 .wa-themes ul.thumbs li { text-align: center; margin-right: 33px; width: 300px; }
 .wa-themes ul.thumbs li a h5 { color: #000; margin-bottom: 10px; }

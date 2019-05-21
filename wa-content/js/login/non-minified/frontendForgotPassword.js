@@ -99,8 +99,15 @@ var WaFrontendForgotPassword = ( function($) {
         };
 
         var onSentSMS = function (r) {
+
+            var $confirmation_code_block = that.getFormField('confirmation_code'),
+                $confirmation_code_input = that.getFormInput('confirmation_code');
+
+            // see Parent.prepareErrorItem for out_of_tries error
+            $confirmation_code_input.removeAttr('readonly');
+
             // Show input for confirmation code
-            that.turnOnBlock(that.getFormField('confirmation_code'));
+            that.turnOnBlock($confirmation_code_block);
 
             // clean prev value of input
             that.getFormInput('confirmation_code').val('');
