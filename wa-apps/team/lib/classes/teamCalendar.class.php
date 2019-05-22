@@ -111,17 +111,19 @@ class teamCalendar
         if ($calendar_id == 'birthday') {
             $events = array();
         } else {
-            $events = $cem->getEventsByPeriod($period_start, $period_end, $calendar_id, $user_id);
+            $start = date('Y-m-d 00:00:00', strtotime($period_start));
+            $end = date('Y-m-d 23:59:59', strtotime($period_end));
+            $events = $cem->getEventsByPeriod($start, $end, $calendar_id, $user_id);
 
             // Filter out events from contacts current user can not see.
             $contacts = array();
-            foreach($events as $e) {
+            foreach ($events as $e) {
                 $contacts[$e['contact_id']] = array(
                     'id' => $e['contact_id'],
                 );
             }
             teamUser::keepVisible($contacts);
-            foreach($events as $i => $e) {
+            foreach ($events as $i => $e) {
                 if (empty($contacts[$e['contact_id']])) {
                     unset($events[$i]);
                 }
@@ -224,9 +226,9 @@ class teamCalendar
                             }
 
                             $event_row[$d] = array_merge($e, array(
-                                'is_status'   => !empty($e['is_status']),
-                                'day_count'   => self::countDays($e['start'], $e['end']),
-                                'can_edit'    => $can_edit,
+                                'is_status' => !empty($e['is_status']),
+                                'day_count' => self::countDays($e['start'], $e['end']),
+                                'can_edit'  => $can_edit,
                             ));
                         } else {
                             $event_row[$d] = $event_row[$d - 1];

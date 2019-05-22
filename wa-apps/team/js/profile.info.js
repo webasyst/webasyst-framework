@@ -165,7 +165,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if(mode == 'view' && !this.fieldValue) {
                     return null;
                 }
-                var value = typeof this.fieldValue == 'object' ? this.fieldValue.value : this.fieldValue;
+                var value = $.isPlainObject(this.fieldValue) ? this.fieldValue.value : this.fieldValue;
                 var result = null;
                 if (mode == 'edit') {
                     result = $('<span><input class="val" type="text"></span>');
@@ -859,7 +859,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             this.subfieldFactory.initializeFactory($.extend({}, this.fieldData));
             this.fieldData = $.extend({}, this.fieldData, {'required': this.subfieldFactory.fieldData.required});
             this.subfieldEditors = [this.subfieldFactory.createEditor(this.contactType)];
-            if (typeof this.subfieldEditors[0].fieldValue == 'object') {
+            if ($.isPlainObject(this.subfieldEditors[0].fieldValue)) {
                 this.emptySubValue = $.extend({}, this.subfieldEditors[0].fieldValue);
                 if (this.fieldData.ext) {
                     this.emptySubValue.ext = this.fieldData.extKeys[0];
@@ -1019,6 +1019,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
         /** Return button to delete subfield. */
         deleteSubfieldButton: function(sf) {
             var that = this;
+
             var r = $('<a class="delete-subfield hint" href="javascript:void(0)">'+$_('delete')+'</a>').click(function() {
                 if (that.subfieldEditors.length <= 1) {
                     return false;
@@ -1153,6 +1154,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
         newInlineFieldElement: null,
 
         newFieldElement: function(mode) {
+            var that = this;
+
             if(this.fieldData.read_only) {
                 mode = 'view';
             }
@@ -1163,9 +1166,15 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             var allEmpty = true;
             for(var i = 0; i < this.subfieldEditors.length; i++) {
                 var result = this.newSubFieldElement(mode, i);
+                result.data('subfieldEditor', this.subfieldEditors[i]);
+
+                if (mode === 'edit') {
+                    result.prepend('<i class="icon16 sort sort-handler"></i>');
+                }
                 childWrapper.append(result);
                 allEmpty = allEmpty && this.subfieldEditors[i].parentEditorData.empty;
             }
+
 
             // do not show anything if there are no values
             if (allEmpty && !this.fieldData.show_empty) {
@@ -1207,11 +1216,46 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                         if (that.currentMode != 'null') {
                             newLast.setMode(that.currentMode);
                         }
-                        childWrapper.append(that.newSubFieldElement(mode, index));
+
+                        var $value = that.newSubFieldElement(mode, index);
+                        $value.data('subfieldEditor', that.subfieldEditors[index]);
+                        $value.prepend('<i class="icon16 sort sort-handler"></i>');
+
+                        childWrapper.append($value);
+
                         that.domElement.find('.delete-subfield').css('display', 'inline');
                     })
                 );
                 wrapper.append(adder);
+
+                // init sortable
+                if (this.fieldData.multi && $.fn.sortable) {
+                    wrapper.find('.multifield-subfields').sortable({
+                        'distance': 5,
+                        'opacity': 0.75,
+                        'axis': 'y',
+                        'tolerance': 'pointer',
+                        'items': '> .value',
+                        'handle': '.sort-handler',
+                        'cursor': 'move',
+                        'update': function(event, ui) {
+                            var $item = ui.item,
+                                $multifield_subfields_block = $item.closest('.multifield-subfields');
+
+                            var new_index = 0;
+                            $multifield_subfields_block.find('[data-subfield-index]').each(function() {
+                                var $item = $(this),
+                                    editor = $item.parent().data('subfieldEditor');
+                                that.subfieldEditors[new_index] = editor;
+                                $item.data('subfieldIndex', new_index).attr('data-subfield-index', new_index);
+                                new_index++;
+                            });
+                        }
+                    });
+                } else {
+                    console.log(['$.fn.sortable available?', !!$.fn.sortable]);
+                }
+
             }
 
             if (inlineMode) {
@@ -1725,7 +1769,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (typeof data == 'undefined') {
                 data = '';
             }
-            if (typeof(data) == 'object') {
+            if ($.isPlainObject(data)) {
                 this.fieldValue = data.data;
                 this.viewValue = data.value;
             } else {
@@ -1764,7 +1808,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (typeof data == 'undefined') {
                 data = '';
             }
-            if (typeof(data) == 'object') {
+            if ($.isPlainObject(data)) {
                 this.fieldValue = data.data;
                 this.viewValue = data.value;
             } else {

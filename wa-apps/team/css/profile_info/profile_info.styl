@@ -250,7 +250,7 @@ input.external-error {
 .fields .field .multifield-subfields .value .address-field { margin-bottom: 15px; }
 .fields .edit-mode .field .multifield-subfields { margin-bottom: -2px; }
 .fields .value.multifield-subfields-add-another { margin-bottom: 10px; }
-.fields .field .multifield-subfields .ext { margin-left: 2px; font-size: 0.8em; }
+.fields .field .multifield-subfields .ext { font-size: 0.8em; }
 .multifield-subfields>:only-child .delete-subfield,
 .in-place-editor .delete-subfield {
     display: none;
@@ -259,6 +259,21 @@ input.external-error {
 .in-place-editor .delete-subfield {
     display: none;
 }
+
+.fields .field .multifield-subfields .sort-handler {
+    margin-left: -20px;
+    margin-top: 4px;
+    float: left;
+    opacity 0
+    cursor move
+}
+.fields .field[data-field-id="address"] .multifield-subfields .sort-handler {
+    margin-top: 0px;
+}
+.fields .field:hover .multifield-subfields .sort-handler {
+    opacity 1
+}
+
 .field.no-bot-margins .name, .field.no-bot-margins .value {
     margin-bottom: 0;
     padding-bottom: 0;

@@ -7,7 +7,7 @@ return array(
             48 => 'img/team48.png',
             96 => 'img/team96.png',
         ),
-    'version'    => '1.0.9',
+    'version'    => '1.0.10',
     'vendor'     => 'webasyst',
     'sash_color' => '#f0dc03',
     'system'     => true,
