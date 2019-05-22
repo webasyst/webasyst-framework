@@ -95,12 +95,33 @@
         {/foreach}
     </div>
     <script type="text/javascript">
-        $('#s-radio-select-{$route_id}-{$id} input[type=radio]').on('change', function () {
-            if ($(this).is(":checked")) {
-                $("#s-radio-select-{$route_id}-{$id} select").prop('disabled', true);
-                $(this).parent().next("select").prop('disabled', false);
-            }
-        }).trigger('change');
+        // Must be in own scope
+        $(function() {
+            // current "radio_select" control block
+            var $control_block = $("#s-radio-select-{$route_id}-{$id}");
+
+            // helper that enables selector of current radio input
+            var enableSelector = function($radio_input) {
+                // disable all selectors
+                $control_block.find("select").prop('disabled', true);
+                // enable current selector
+                $radio_input.parent().next("select").prop('disabled', false);
+            };
+
+            // all radio inputs of current control
+            var $radio_inputs = $control_block.find("input[type=radio]");
+
+            // initial state - enable selector of current checked radio
+            enableSelector($radio_inputs.filter(":checked"));
+
+            // change handler
+            $radio_inputs.on('change', function () {
+                var $radio_input = $(this);
+                if ($radio_input.is(":checked")) {
+                    enableSelector($radio_input);
+                }
+            });
+        });
     </script>
 
 {elseif $info.type == 'radio_checkbox'}
@@ -145,7 +166,7 @@
                 $("#s-radio-checkbox-{$route_id}-{$id} input:checkbox").prop('disabled', true).prop('checked', false);
                 $(this).parent().next("div").find("input").prop('disabled', false);
             }
-        }).trigger('change');
+        });
     </script>
 
 {elseif $info.type == 'radio_text'}
@@ -183,7 +204,7 @@
             } else {
                 $("#s-radio-select-{$route_id}-{$id} input:text").prop('disabled', true);
             }
-        }).trigger('change');
+        });
     </script>
 
 {/if}

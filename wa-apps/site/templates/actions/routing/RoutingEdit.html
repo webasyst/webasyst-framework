@@ -297,6 +297,16 @@ $(function () {
 
     var $disabled_toggle = $("#js-ibutton-disabled");
 
+    function updateRoutingErrors(routing_errors)
+    {
+        // Page could be loaded by other apps, so $.wa.site not loaded, but updateRoutingErrors is not very important method, so we just skip call
+        if ($.wa.site) {
+            $.wa.site.updateRoutingErrors(routing_errors);
+        } else if (routing_errors) {
+            console.log(routing_errors);
+        }
+    }
+
     {if isset($route.redirect)}
         $disabled_toggle.iButton({
             labelOn: "",
@@ -406,7 +416,7 @@ $(function () {
                     $("#s-rules").removeClass('s-routing-minimized');
                     $("#s-rules .s-domain-url").show();
 
-                    $.wa.site.updateRoutingErrors(response.data.routing_errors);
+                    updateRoutingErrors(response.data.routing_errors);
 
                 } else {
                     alert(response.errors);
@@ -476,7 +486,7 @@ $(function () {
                 callback(response);
             }
 
-            $.wa.site.updateRoutingErrors(response.data.routing_errors);
+            updateRoutingErrors(response.data.routing_errors);
 
         }, "json");
         return false;
