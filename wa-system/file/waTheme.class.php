@@ -1148,7 +1148,7 @@ XML;
             return true;
         }
 
-        if (!empty($this->problemFiles())) {
+        if ($this->problemFiles()) {
             return false;
         }
 
