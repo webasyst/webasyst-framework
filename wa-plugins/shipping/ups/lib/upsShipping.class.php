@@ -211,8 +211,8 @@ class upsShipping extends waShipping
             $error .= ": ".curl_errno($ch)." - ".curl_error($ch);
             throw new waException($error);
         }
-
-        $url = 'https://www.ups.com/ups.app/xml/Rate';
+        
+        $url = 'https://onlinetools.ups.com/ups.app/xml/Rate';
         @curl_setopt($ch, CURLOPT_URL, $url );
         @curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         @curl_setopt($ch, CURLOPT_HEADER, 0);
