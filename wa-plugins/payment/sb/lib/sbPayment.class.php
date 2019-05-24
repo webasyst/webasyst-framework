@@ -21,7 +21,7 @@
  *
  * @link https://developer.sberbank.ru/doc
  */
-class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
+class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel, waIPaymentRefund
 {
     /**
      * The parent transaction in the order
@@ -59,6 +59,17 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     public function allowedCurrency()
     {
         return 'RUB';
+    }
+
+    public function supportedOperations()
+    {
+        return array(
+            self::OPERATION_AUTH_CAPTURE,
+            self::OPERATION_AUTH_ONLY,
+            self::OPERATION_CAPTURE,
+            self::OPERATION_REFUND,
+            self::OPERATION_CANCEL,
+        );
     }
 
     /**
@@ -124,8 +135,8 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
     /**
      * @param array $request
-     * @throws waException
      * @return void
+     * @throws waException
      */
     public function callbackHandler($request)
     {
@@ -249,6 +260,57 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'parent_id'    => $data['transaction']['id'],
             'parent_state' => self::STATE_CANCELED,
             'state'        => self::STATE_CANCELED,
+        );
+
+        $save = $this->saveTransaction($transaction);
+
+        if ($save) {
+            return array('result' => 0, 'description' => '');
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $data
+     * @return array|bool
+     * @throws waException
+     * @throws waPaymentException
+     */
+    public function refund($data)
+    {
+        $net = new waNet(array(
+            'request_format' => 'default',
+            'format'         => waNet::FORMAT_JSON,
+            'verify'         => false,
+        ));
+
+        $request_cancel = array(
+            'userName' => $this->userName,
+            'password' => $this->password,
+            'orderId'  => $data['transaction']['native_id'],
+            'language' => substr(wa()->getLocale(), 0, 2),
+            'amount'   => (int)round($data['transaction']['amount'] * 100), //convert to cent
+        );
+
+        $response = $net->query($this->getURL('URL_PAYMENT_REFUND'), $request_cancel, waNet::METHOD_POST);
+
+        if ($response['errorCode'] != '0') {
+            $this->logError($this->id, $response['errorCode'].': '.$response['errorMessage']);
+            throw new waPaymentException($response['errorMessage']);
+        }
+
+        $transaction = array(
+            'native_id'    => $data['transaction']['native_id'],
+            'type'         => self::OPERATION_REFUND,
+            'result'       => 1,
+            'order_id'     => $data['transaction']['order_id'],
+            'customer_id'  => $data['transaction']['customer_id'],
+            'amount'       => $data['transaction']['amount'],
+            'currency_id'  => $data['transaction']['currency_id'],
+            'parent_id'    => $data['transaction']['id'],
+            'parent_state' => self::STATE_REFUNDED,
+            'state'        => self::STATE_REFUNDED,
         );
 
         $save = $this->saveTransaction($transaction);
@@ -449,7 +511,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
         if ($tax == 20) {
             $tax_type = 6;
-        } elseif  ($tax == 18) {
+        } elseif ($tax == 18) {
             $tax_type = 3;
         } elseif ($tax == 10) {
             $tax_type = 2;
@@ -816,6 +878,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'URL_ORDER_PRE_REGISTER' => '/payment/rest/registerPreAuth.do',
             'URL_PAYMENT_COMPLETE'   => '/payment/rest/deposit.do',
             'URL_PAYMENT_CANCEL'     => '/payment/rest/reverse.do',
+            'URL_PAYMENT_REFUND'     => '/payment/rest/refund.do',
         );
 
         // If the test mode is enabled, replace the URL
@@ -835,7 +898,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         self::log($module_id, $data);
     }
-    
+
     public static function settingsPaymentSubjectOptions()
     {
         return array(
