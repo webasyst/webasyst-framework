@@ -413,11 +413,13 @@ class waNet
     public function getResponseHeader($header = null)
     {
         if (!empty($header)) {
-            if (isset($this->response_header[$header])) {
-                return $this->response_header[$header];
+            foreach($this->response_header as $field=>$val) {
+                if(strcasecmp($field, $header) === 0) {
+                    return $val;
+                }
             }
+            
             $header = str_replace('-', '_', strtolower($header));
-
             return ifset($this->response_header[$header]);
         }
 
