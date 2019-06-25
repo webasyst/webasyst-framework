@@ -45,7 +45,7 @@ var systemShippingSDPluginSettings = (function ($) {
         var that = this,
             $currencies_select = that.$wrapper.find('.js-sd-select-currency'),
             $price_input = that.$wrapper.find('.js-sd-currency'),
-            currency_span = $('<span>', {'class': 'js-sd-currency-unit'}).text(' '+that.current_currency);
+            currency_span = $('<span>', {'class': 'js-sd-currency-unit'}).text(' ' + that.current_currency);
 
         //Set after load
         $price_input.after(currency_span);
@@ -65,7 +65,7 @@ var systemShippingSDPluginSettings = (function ($) {
         var that = this,
             $weight_select = that.$wrapper.find('.js-sd-select-weight'),
             $weight_input = that.$wrapper.find('.js-sd-weight'),
-            weight_span = $('<span>', {'class': 'js-sd-weight-unit'}).text(' '+that.current_weight);
+            weight_span = $('<span>', {'class': 'js-sd-weight-unit'}).text(' ' + that.current_weight);
 
         //Set after load
         $weight_input.after(weight_span);
@@ -76,7 +76,7 @@ var systemShippingSDPluginSettings = (function ($) {
                 $weight_span = that.$wrapper.find('.js-sd-weight-unit'),
                 unit_text = $self.find('option:selected').text();
 
-            $weight_span.text(' '+unit_text);
+            $weight_span.text(' ' + unit_text);
         })
     };
 
@@ -84,7 +84,7 @@ var systemShippingSDPluginSettings = (function ($) {
         var that = this,
             $length_select = that.$wrapper.find('.js-sd-select-length'),
             $length_input = that.$wrapper.find('.js-sd-length'),
-            length_span = $('<span>', {'class': 'js-sd-length-unit'}).text(' '+that.current_length);
+            length_span = $('<span>', {'class': 'js-sd-length-unit'}).text(' ' + that.current_length);
 
         //Set after load
         $length_input.after(length_span);
@@ -95,7 +95,7 @@ var systemShippingSDPluginSettings = (function ($) {
                 $length_span = that.$wrapper.find('.js-sd-length-unit'),
                 unit_text = $self.find('option:selected').text();
 
-            $length_span.text(' '+unit_text);
+            $length_span.text(' ' + unit_text);
         })
     };
 
@@ -169,8 +169,8 @@ var systemShippingSDPluginSettings = (function ($) {
         that.$wrapper.on('change', '.js-sd-time-start', function () {
             var $self = $(this),
                 time = $self.val(),
-                $time_end = $self.siblings('.js-sd-time-end');
-
+                $day_wrapper = $self.closest('tr'),
+                $time_end = $day_wrapper.find('.js-sd-time-end, .js-sd-end-process');
             $time_end.attr('min', time);
         });
 
@@ -189,6 +189,8 @@ var systemShippingSDPluginSettings = (function ($) {
                 $time = $day_wrapper.find('.js-sd-time-end');
             $time.attr('min', time);
         });
+
+        that.updateMinMaxTime();
     };
 
     /**
@@ -232,6 +234,8 @@ var systemShippingSDPluginSettings = (function ($) {
         //add new date)
         $table.on('click', '.js-sd-add-date', function () {
             $tbody.append(template);
+            that.updateMinMaxTime();
+
             setNames($tbody, type);
 
             //add new date to ignore
@@ -375,6 +379,10 @@ var systemShippingSDPluginSettings = (function ($) {
 
     };
 
+    systemShippingSDPluginSettings.prototype.updateMinMaxTime = function () {
+        var that = this;
+        that.$wrapper.find('input[type=time]').trigger('change')
+    };
 
     return systemShippingSDPluginSettings;
 

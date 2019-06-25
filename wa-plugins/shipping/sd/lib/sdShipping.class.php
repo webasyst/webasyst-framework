@@ -161,7 +161,8 @@ class sdShipping extends waShipping
         $flag = true;
 
         foreach ($requested_fields as $field_name => $field) {
-            if (empty($this->getAddress($field_name))) {
+            $address = $this->getAddress($field_name);
+            if (empty($address)) {
                 $flag = false;
                 break;
             }
@@ -665,43 +666,35 @@ class sdShipping extends waShipping
 
             switch ($type) {
                 case 'extra_workday':
-                    {
-                        $extra_workday = $this->days['workdays'][$date];
-                        $day_info = array(
-                            'type'       => 'workday',
-                            'start_work' => date('Y-m-d H:i', $extra_workday['start_work']),
-                            'end_work'   => date('Y-m-d H:i', $extra_workday['end_work']),
-                            'additional' => $extra_workday['additional'],
+                    $extra_workday = $this->days['workdays'][$date];
+                    $day_info = array(
+                        'type'       => 'workday',
+                        'start_work' => date('Y-m-d H:i', $extra_workday['start_work']),
+                        'end_work'   => date('Y-m-d H:i', $extra_workday['end_work']),
+                        'additional' => $extra_workday['additional'],
 
-                        );
-                        break;
-                    }
+                    );
+                    break;
                 case 'workday':
-                    {
-                        $day_name_code = date('N', $date);
-                        $day = $this->days['weekdays'][$day_name_code];
+                    $day_name_code = date('N', $date);
+                    $day = $this->days['weekdays'][$day_name_code];
 
-                        $day_info = array(
-                            'type'       => 'workday',
-                            'start_work' => date('Y-m-d H:i', $date + $day['start_work']),
-                            'end_work'   => date('Y-m-d H:i', $date + $day['end_work']),
-                            'additional' => $day['additional'],
+                    $day_info = array(
+                        'type'       => 'workday',
+                        'start_work' => date('Y-m-d H:i', $date + $day['start_work']),
+                        'end_work'   => date('Y-m-d H:i', $date + $day['end_work']),
+                        'additional' => $day['additional'],
 
-                        );
-                        break;
-                    }
+                    );
+                    break;
                 case 'extra_weekend':
-                    {
-                        $day_info['additional'] = $this->days['weekend'][$date]['additional'];
-                        break;
-                    }
+                    $day_info['additional'] = $this->days['weekend'][$date]['additional'];
+                    break;
                 case 'weekend':
-                    {
-                        $day_name_code = date('N', $date);
+                    $day_name_code = date('N', $date);
 
-                        $day_info['additional'] = $this->days['weekdays'][$day_name_code]['additional'];
-                        break;
-                    }
+                    $day_info['additional'] = $this->days['weekdays'][$day_name_code]['additional'];
+                    break;
             }
 
             $result['weekdays'][$i] = $day_info;
