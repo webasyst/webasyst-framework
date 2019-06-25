@@ -874,14 +874,19 @@ HTML;
 
                     $size = 35;
                     $sizes = array(35, 30, 30);
-                    $full_address = waRequest::request('shipping_address', $this->buildAddress($order->billing_address));
+
+                    $billing_address = $order->billing_address;
+                    if (!$this->buildAddress($billing_address)) {
+                        $billing_address = $order->shipping_address;
+                    }
+                    $full_address = waRequest::request('shipping_address',  $this->buildAddress($billing_address));
                     $address = $this->adjustSizes($full_address, $sizes, $size);
 
                     $this->printOnImage($image, $address[0], 1200, 1770, $size);
                     $this->printOnImage($image, $address[1], 850, 1840, $size);
                     $this->printOnImage($image, $address[2], 850, 1910, $size);
 
-                    $this->printOnImagePersign($image, $order->billing_address['zip'], 1990, 1900, 34, 35);
+                    $this->printOnImagePersign($image, $billing_address['zip'], 1990, 1900, 34, 35);
 
                     header("Content-type: image/gif");
                     imagegif($image);
@@ -1017,10 +1022,10 @@ HTML;
 
                     $zip = waRequest::get('shipping_zip', $order->shipping_address['zip']);
                     $this->printOnImagePersign($image, $zip, 3615, 2435, 103, 80);
-                    $order_price_d = self::floatval(waRequest::get('order_price_d', floor($order->total)));
+                    $order_price_d = self::floatval(waRequest::get('order_price_d', floor($order->total - $order->shipping)));
                     if ($order_price_d && waRequest::get('order_price_checked')) {
                         $this->printOnImage($image, 'X', 2310, 160, 35);
-                        $order_price = waRequest::get('order_price', waCurrency::format('%.W', floor($order->total), $order->currency));
+                        $order_price = waRequest::get('order_price', waCurrency::format('%.W', floor($order->total - $order->shipping), $order->currency));
 
                         $size = 60;
                         $prices = $this->adjustSizes(sprintf('%s (%s) руб.', $order_price_d, $order_price), array(47), $size);
@@ -1035,7 +1040,7 @@ HTML;
 
                         $order_amount_f = ($order_amount_d - floor($order_amount_d)) * 100;
                         $size = 60;
-                        $prices = $this->adjustSizes(sprintf('%s (%s) руб. %02d коп.', $order_amount_d, $order_amount, $order_amount_f), array(47), $size);
+                        $prices = $this->adjustSizes(sprintf('%s (%s) руб. %02d коп.', floor($order_amount_d), $order_amount, $order_amount_f), array(47), $size);
                         $this->printOnImage($image, reset($prices), 2300, 1250 + (35 - $size), $size);
                     }
 
@@ -1110,12 +1115,19 @@ HTML;
 
 
                     $this->printOnImage($image, waRequest::request('billing_name', $order->contact_name), 310, 1550);
-                    $full_address = waRequest::request('billing_address', $this->buildAddress($order->billing_address));
+
+
+                    $billing_address = $order->billing_address;
+                    if (!$this->buildAddress($billing_address)) {
+                        $billing_address = $order->shipping_address;
+                    }
+
+                    $full_address = waRequest::request('billing_address', $this->buildAddress($billing_address));
 
                     $size = 35;
                     $sizes = array(60, 65);
                     $address = $this->adjustSizes($full_address, $sizes, $size);
-                    $this->printOnImagePersign($image, $order->billing_address['zip'], 1965, 1690, 58.3, 50);
+                    $this->printOnImagePersign($image, $billing_address['zip'], 1965, 1690, 58.3, 50);
 
                     $this->printOnImage($image, $address[0], 520, 1635 + 35 - $size, $size);
                     $this->printOnImage($image, $address[1], 70, 1720 + 35 - $size, $size);
@@ -1148,7 +1160,11 @@ HTML;
                     $this->view()->assign('action', 'preview');
                 }
                 $this->view()->assign('order', $order);
-                $this->view()->assign('billing_address', $this->buildAddress($order->billing_address));
+                $billing_address = $this->buildAddress($order->billing_address);
+                if (empty($billing_address)) {
+                    $billing_address = $this->buildAddress($order->shipping_address);
+                }
+                $this->view()->assign('billing_address', $billing_address);
                 $this->view()->assign('editable', waRequest::post() ? false : true);
                 break;
         }

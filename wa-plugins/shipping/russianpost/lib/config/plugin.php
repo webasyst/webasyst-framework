@@ -1,10 +1,10 @@
 <?php
 return array(
     'name'                  => 'Почта России',
-    'description'           => 'Расчет стоимости доставки по алгоритму, опубликованному <a href="http://www.russianpost.ru/rp/servise/ru/home/postuslug/bookpostandparcel/parcelltariff" target="_blank">на сайте Почты России</a> для отправления посылок.',
+    'description'           => 'Расчет стоимости доставки по алгоритму, опубликованному <a href="https://www.pochta.ru/parcels" target="_blank">на сайте Почты России</a> для отправления посылок.',
     'icon'                  => 'img/RussianPost16.png',
     'logo'                  => 'img/RussianPost.png',
-    'version'               => '1.6.1',
+    'version'               => '1.6.3',
     'vendor'                => 'webasyst',
     'type'                  => 'post',
     'external_tracking'     => true,
