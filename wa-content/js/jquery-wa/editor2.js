@@ -38,7 +38,7 @@ jQuery.fn.waEditor2 = function () {
 
         /* Upload image without switch to WYSIWYG */
         if (options.upload_img_dialog) {
-            initAceImageUploader($(options.upload_img_dialog), $wrapper, ace_editor);
+            initAceImageUploader($(options.upload_img_dialog), $wrapper, ace_editor, options);
         }
 
         // Tab header: switch to HTML (Ace)
@@ -408,7 +408,7 @@ jQuery.fn.waEditor2 = function () {
         return !source.match(/\{[a-z\$'"_\(!+\-]/i);
     }
 
-    function initAceImageUploader($dialog_wrapper, $wrapper, ace_editor) {
+    function initAceImageUploader($dialog_wrapper, $wrapper, ace_editor, options) {
 
         // move the icon of the dialog for loading the images into the Ace tab
         var $uploader_button = $wrapper.find('.wa-editor-upload-img');

@@ -11,6 +11,7 @@
     version CDATA #IMPLIED
     edition CDATA #IMPLIED
     source_theme_id CDATA #IMPLIED
+    demo (1|0) "0"
 >
 
 <!ELEMENT name (#PCDATA)>

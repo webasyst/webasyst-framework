@@ -969,7 +969,7 @@ class waSignupAction extends waViewAction
     protected function isEmailValid($email)
     {
         if (is_scalar($email)) {
-            $validator = new waEmailValidator();
+            $validator = new waEmailValidator(array('required'=>true));
             return $validator->isValid((string)$email);
         }
         return $email !== null;

@@ -109,7 +109,7 @@ class waContactEmailsModel extends waModel
             return null;
         }
 
-        $validator = new waEmailValidator();
+        $validator = new waEmailValidator(array('required'=>true));
         if (!$validator->isValid($email)) {
             return null;
         }

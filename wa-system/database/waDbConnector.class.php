@@ -49,18 +49,18 @@ class waDbConnector
             return self::$connections[$name] = new $class($settings);
         }
     }
-            
+
     protected static function getConfig($name)
     {
         if (self::$config === null) {
             self::$config = waSystem::getInstance()->getConfig()->getDatabase();
         }
-          if (!isset(self::$config[$name])) {
-               throw new waDbException(sprintf("Unknown Database Connection %s", $name));
-           }
-           if (!isset(self::$config[$name]['type'])) {
-               self::$config[$name]['type'] = function_exists('mysqli_connect') ? 'mysqli' : 'mysql';
-           }
+        if (!isset(self::$config[$name])) {
+            throw new waDbException(sprintf("Unknown Database Connection %s", $name));
+        }
+        if (!isset(self::$config[$name]['type'])) {
+            self::$config[$name]['type'] = function_exists('mysqli_connect') ? 'mysqli' : 'mysql';
+        }
         return self::$config[$name];
     }
 

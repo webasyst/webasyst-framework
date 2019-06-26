@@ -24,9 +24,9 @@
 
     {* SETTINGS *}
     {wa_js}
-        {$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}
+        {$wa_url}wa-content/js/jquery-wa/wa.core.js
         {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
-        {$wa_url}wa-content/js/jquery-wa/wa.contentrouter.js?v{$wa->version(true)}
+        {$wa_url}wa-content/js/jquery-wa/wa.contentrouter.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.general.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.email.js
@@ -38,6 +38,8 @@
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.edit.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.delete.confirm.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.regions.js
+        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.js
+        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.list.dialog.js
     {/wa_js}
 
     <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/css/wa-settings/settingsDialog.css?v{$wa->version()}">
@@ -72,7 +74,8 @@
         </div>
 
     </div>
-    <script>(function($) { "use strict";
+    <script>
+        (function($) { "use strict";
 
             {* need for editor2.js *}
             window.wa_app = {$wa->app()|json_encode};
@@ -83,6 +86,7 @@
                 $content: $("#s-content-block"),
                 app_url: {"`$wa_backend_url`webasyst/settings/"|json_encode}
             });
-        })(jQuery);</script>
+        })(jQuery);
+    </script>
 </body>
 </html>

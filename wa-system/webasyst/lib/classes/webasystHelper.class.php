@@ -64,6 +64,10 @@ class webasystHelper
                 'name' => _ws('Backend authorization'),
                 'url'  => $app_url.'auth/',
             ),
+            'db' => array(
+                'name' => _w('Database'),
+                'url'  => $app_url.'db/',
+            ),
         );
 
         /**

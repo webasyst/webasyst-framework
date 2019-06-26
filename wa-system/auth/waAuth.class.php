@@ -448,7 +448,7 @@ class waAuth implements waiAuth
 
         $user_info = $this->getByLogin($login);
         if (!$user_info || ($this->options['is_user'] && $user_info['is_user'] <= 0)) {
-            throw new waAuthException(_ws("Contact is not registered."));
+            throw new waAuthException(_ws("No user with these data was found."));
         }
 
         if ($this->isOnetimePasswordMode()) {
@@ -716,7 +716,7 @@ class waAuth implements waiAuth
         if ($verified) {
             return true;
         }
-        
+
         foreach ($results as $result) {
             if ($result['details']['error'] === waVerificationChannel::VERIFY_ERROR_OUT_OF_TRIES) {
                 throw new waAuthRunOutOfTriesException(_ws('You have run out of available attempts. Please request a new one-time password.'));
@@ -737,7 +737,7 @@ class waAuth implements waiAuth
         if (!is_scalar($string)) {
             return false;
         }
-        $validator = new waEmailValidator();
+        $validator = new waEmailValidator(array('required'=>true));
         return $validator->isValid((string)$string);
     }
 

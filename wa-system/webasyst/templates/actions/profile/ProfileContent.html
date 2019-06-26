@@ -72,10 +72,9 @@
                 rootWindow = that.rootWindow;
 
             rootWindow.setTimeout(function() {
+                var $tab = rootWindow.$(".t-profile-tabs .t-tab.is-selected", rootWindow.document.body);
                 that.$frame.remove();
-                rootWindow.setTimeout(function() {
-                    rootWindow.$(".t-profile-tabs .t-tab.is-selected", rootWindow.document.body).removeClass("is-selected").find("a").click();
-                }, 0);
+                $tab.removeClass("is-selected").find("a").click();
             }, 0);
         };
 

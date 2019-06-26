@@ -1155,6 +1155,13 @@ HTACCESS;
         try {
             $theme_id = waRequest::post('theme');
             $theme = new waTheme($theme_id);
+
+            if (wa()->appExists('installer')) {
+                wa('installer');
+                $sender = new installerUpdateFact(installerUpdateFact::ACTION_DEL, array($this->getAppId().'/themes/'.$theme_id));
+                $sender->query();
+            }
+
             $theme->purge();
             $this->logAction('theme_delete', $theme_id);
             $this->displayJson(array('redirect' => $this->design_url, 'theme_id' => $theme_id));

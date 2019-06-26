@@ -1,6 +1,7 @@
 <?php
 
-function smarty_block_wa_js($params, $content, &$smarty) {
+function smarty_block_wa_js($params, $content, &$smarty)
+{
     if (!$content) {
         return '';
     }
@@ -12,7 +13,7 @@ function smarty_block_wa_js($params, $content, &$smarty) {
         'draggable'  => 0,
         'droppable'  => 0,
         'sortable'   => 0,
-        'datepicker' => 1
+        'datepicker' => 1,
     );
 
     // Add .js extension to filename to be written, if it ends in anything else
@@ -24,6 +25,18 @@ function smarty_block_wa_js($params, $content, &$smarty) {
     }
 
     $files = explode("\n", $content);
+    $files = array_map('trim', $files);
+    $files = array_filter($files);
+    foreach ($files as &$file) {
+        $file = trim($file);
+        if (pathinfo($file, PATHINFO_EXTENSION) !== 'js') {
+            $file = null;
+        }
+        if (preg_match('@(\\\\|/|^)\.\.(\\\\|/)@', $file)) {
+            $file = null;
+        }
+    }
+    $files = array_filter($files);
 
     $wa = waSystem::getInstance();
 
@@ -47,7 +60,6 @@ function smarty_block_wa_js($params, $content, &$smarty) {
         $wa_version = $wa->getVersion('webasyst');
         $r = true;
         foreach ($files as $f) {
-            $f = trim($f);
             $f = substr($f, $n);
             if (!$f) {
                 continue;
@@ -178,4 +190,3 @@ function smarty_block_wa_js($params, $content, &$smarty) {
     }
     return $result;
 }
-

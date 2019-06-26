@@ -135,7 +135,7 @@ abstract class waLoginModuleController extends waViewAction
         if (!is_scalar($string)) {
             return false;
         }
-        $validator = new waEmailValidator();
+        $validator = new waEmailValidator(array('required'=>true));
         return $validator->isValid((string)$string);
     }
 

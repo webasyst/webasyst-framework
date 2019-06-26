@@ -296,3 +296,29 @@
         </form>
     </div>
 </div>
+{* Blocking the removal of the design theme *}
+<div class="dialog width600px height200px" id="wa-theme-blocking-removal-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="dialog-content block double-padded">
+            <h1>[s`Unable to delete design theme`]</h1>
+            <p>
+                [s`This design theme is still in use on your website.`]
+                [s`To delete this theme, first select another theme in the following settlements’ settings:`]
+            </p>
+            <ul>
+                {foreach $theme_routes as $_r}
+                    <li>
+                        <a target="_blank" href="{$_r._url}" class="no-underline">{$_r._domain_decoded}/{$_r.url} <i class="icon10 new-window"></i></a>
+                    </li>
+                {/foreach}
+            </ul>
+            <div class="clear"></div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <input type="submit" class="cancel button" value="[s`Close`]">
+            </div>
+        </div>
+    </div>
+</div>

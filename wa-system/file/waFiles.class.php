@@ -420,7 +420,7 @@ class waFiles
         return $target;
     }
 
-    private static function curlInit($url, $curl_options = array())
+    private static function curlInit($url, $options)
     {
         $ch = null;
         if (extension_loaded('curl') && function_exists('curl_init')) {
@@ -433,7 +433,7 @@ class waFiles
                 throw new waException(sprintf("Error init curl %d: %s", curl_errno($ch), curl_error($ch)));
             }
 
-            $curl_default_options = array(
+            $curl_options = array(
                 CURLOPT_HEADER            => 0,
                 CURLOPT_RETURNTRANSFER    => 1,
                 CURLOPT_TIMEOUT           => 10,
@@ -445,28 +445,41 @@ class waFiles
             );
 
             if ((version_compare(PHP_VERSION, '5.4', '>=') || !ini_get('safe_mode')) && !ini_get('open_basedir')) {
-                $curl_default_options[CURLOPT_FOLLOWLOCATION] = true;
+                $curl_options[CURLOPT_FOLLOWLOCATION] = true;
             }
 
-            foreach ($curl_default_options as $option => $value) {
-                if (!isset($curl_options[$option])) {
-                    $curl_options[$option] = $value;
-                }
-            }
             $curl_options[CURLOPT_URL] = $url;
-            //TODO read proxy settings from generic config
-            $options = array();
 
-            if (!empty($options['host'])) {
+
+            $options += self::getDefaultOptions();
+            if ($options['verify']) {
+
+                $curl_options[CURLOPT_SSL_VERIFYHOST] = 2;
+                $curl_options[CURLOPT_SSL_VERIFYPEER] = true;
+                if (is_string($options['verify'])) {
+                    if (!file_exists($options['verify'])) {
+                        throw new InvalidArgumentException(
+                            "SSL CA bundle not found: {$options['verify']}"
+                        );
+                    }
+                    $curl_options[CURLOPT_CAINFO] = $options['verify'];
+
+                }
+            } else {
+                $curl_options[CURLOPT_SSL_VERIFYHOST] = 0;
+                $curl_options[CURLOPT_SSL_VERIFYPEER] = false;
+            }
+
+            if (!empty($options['proxy_host'])) {
                 $curl_options[CURLOPT_HTTPPROXYTUNNEL] = true;
                 $curl_options[CURLOPT_PROXY] = sprintf(
                     "%s%s",
-                    $options['host'],
-                    !empty($options['port']) ? ':'.$options['port'] : ''
+                    $options['proxy_host'],
+                    !empty($options['proxy_port']) ? ':'.$options['proxy_port'] : ''
                 );
 
-                if (!empty($options['user'])) {
-                    $curl_options[CURLOPT_PROXYUSERPWD] = sprintf("%s:%s", $options['user'], $options['password']);
+                if (!empty($options['proxy_user'])) {
+                    $curl_options[CURLOPT_PROXYUSERPWD] = sprintf("%s:%s", $options['proxy_user'], $options['proxy_password']);
                 }
             }
             foreach ($curl_options as $param => $option) {
@@ -496,16 +509,100 @@ class waFiles
         return $size;
     }
 
+    private static function getDefaultOptions()
+    {
+        static $options;
+        if (empty($options)) {
+            $config = wa()->getConfigPath().'/net.php';
+            $options = array();
+            if (file_exists($config)) {
+                $options = include($config);
+            }
+            if (!is_array($options)) {
+                $options = array();
+            }
+
+            $options += array(
+                'timeout'    => 15,
+                'user_agent' => sprintf('Webasyst-Framework/%s', wa()->getVersion('webasyst')),
+            );
+        }
+
+        return $options;
+    }
+
+    private static function getStreamContext($options)
+    {
+        static $context;
+        if (empty($context)) {
+            $options += self::getDefaultOptions();
+            $context_params = array(
+                'ignore_errors' => true,//PHP >= 5.2.10
+                'timeout'       => $options['timeout'],
+                'user_agent'    => $options['user_agent'],
+            );
+
+            $headers = array();
+            if (isset($options['proxy_host']) && strlen($options['proxy_host'])) {
+                $proxy = $options['proxy_host'];
+                if (isset($options['proxy_port']) && intval($options['proxy_port'])) {
+                    $proxy .= ':'.intval($options['proxy_port']);
+                }
+                $context_params['proxy'] = $proxy;
+
+                if (!empty($options['proxy_user'])) {
+                    $auth = base64_encode(sprintf('%s:%s', $options['proxy_user'], $options['proxy_password']));
+                    $headers[] = "Proxy-Authorization: Basic $auth";
+                }
+            }
+            if ($headers) {
+                $context_params['header'] = implode("\r\n", $headers); //5.2.10 array support
+            }
+
+            $context_params += array(
+                'follow_location' => true,//PHP >= 5.3.4
+                'max_redirects'   => 5,
+            );
+
+            //SSL
+            if (!empty($options['verify'])) {
+                $context_params['ssl']['verify_peer'] = true;
+                $context_params['ssl']['verify_peer_name'] = true;
+                $context_params['ssl']['allow_self_signed'] = false;
+                if (is_string($options['verify'])) {
+                    if (!file_exists($options['verify'])) {
+                        throw new RuntimeException("SSL CA bundle not found: {$options['verify']}");
+                    }
+                    $context_params['ssl']['cafile'] = $options['verify'];
+
+                } else {
+                    // PHP 5.6 or greater will find the system cert by default. When
+                    // < 5.6, try load it
+                    if (PHP_VERSION_ID < 50600) {
+                        //TODO try default system path with ca files
+                        //$context_params['ssl']['cafile'] = '';
+                    }
+                }
+            } else {
+                $context_params['ssl']['verify_peer'] = false;
+                $context_params['ssl']['verify_peer_name'] = false;
+            }
+
+            $context = stream_context_create(array('http' => $context_params,));
+        }
+        return $context;
+    }
+
     /**
      * Uploads a file from specified URL to a server directory.
      *
-     * @param string $url URL from which a file must be retrieved
+     * @param string $url  URL from which a file must be retrieved
      * @param string $path Path for saving the downloaded file
+     * @param array  $options
      * @return int
-     * @throws Exception
      * @throws waException
      */
-    public static function upload($url, $path)
+    public static function upload($url, $path, $options = array())
     {
         $s = parse_url($url, PHP_URL_SCHEME);
         $host = parse_url($url, PHP_URL_HOST);
@@ -513,9 +610,13 @@ class waFiles
         if ($encoded_host != $host) {
             $url = preg_replace('@^(\w+://)[^/]+/@', '$1'.$encoded_host.'/', $url);
         }
+        if (!is_array($options)) {
+            $options = array();
+        }
         $w = stream_get_wrappers();
         if (in_array($s, $w) && ini_get('allow_url_fopen')) {
-            if ($fp = @fopen($url, 'rb')) {
+            $context = self::getStreamContext($options);
+            if ($fp = @fopen($url, 'rb', null, $context)) {
                 try {
                     if (self::$fp = @fopen($path, 'wb')) {
                         self::$size = stream_copy_to_stream($fp, self::$fp);
@@ -554,7 +655,7 @@ class waFiles
             } else {
                 throw new waException("Error while open source file {$url}");
             }
-        } elseif ($ch = self::curlInit($url)) {
+        } elseif ($ch = self::curlInit($url, $options)) {
             if (self::$fp = @fopen($path, 'wb')) {
                 self::$size = 0;
                 wa()->getStorage()->close();
@@ -604,7 +705,6 @@ class waFiles
             if ($attach !== null) {
                 $send_as = str_replace('"', '\"', is_string($attach) ? $attach : basename($file));
                 $send_as = preg_replace('~[\n\r]+~', ' ', $send_as);
-
 
 
                 /**

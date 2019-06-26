@@ -193,13 +193,16 @@
 
 <div class="dialog" id="s-upload-dialog">
     <div class="dialog-background"> </div>
-    <div class="dialog-window" style="height: 225px; min-height: 225px; width: 450px; min-width: 450px">
+    <div class="dialog-window" style="height: 275px; min-height: 275px; width: 450px; min-width: 450px">
         <form id="s-upload-form" method="post" action="?module=pages&action=uploadimage&r=2" enctype="multipart/form-data">
             {$wa->csrf()}
             <div class="dialog-content">
                 <div class="dialog-content-indent">
                     <h2>[s`Upload image`]</h2>
                     <div id="redactor-droparea" style="text-align: center;">
+                        <p class="hint">
+                            [s`Only image files can be uploaded`]
+                        </p>
                         <input id="s-input-file" type="file" name="file" multiple>
                         <input type="hidden" name="path" id="s-upload-path" value="" />
                         <div class="loading" style="display:none; margin-top: 10px">

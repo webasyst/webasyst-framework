@@ -105,6 +105,13 @@ var config = {
             "sources": "./wa-content/css/signup/styl/*.styl",
             "target": "./wa-content/css/signup/styl/signup.styl"
         }
+    },
+    'wa-dropdown': {
+        'styl': {
+            "directory": "./wa-content/js/dropdown/",
+            "sources": "./wa-content/js/dropdown/styl/*.styl",
+            "target": "./wa-content/js/dropdown/styl/dropdown.styl"
+        }
     }
 };
 

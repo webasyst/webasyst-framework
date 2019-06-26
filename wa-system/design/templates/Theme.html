@@ -324,7 +324,7 @@
                     {* Import theme settings *}
                     <li><a class="js-import-theme-settings" href="#"><i class="icon16 export"></i>[s`Import theme settings`]</a></li>
                 {/if}
-                {if count($theme->related_themes)>1}
+                {if count($theme->related_themes) > 1}
                     <li><a class="theme-download" href="#"><i class="icon16 download"></i>[s`Download theme backup`]</a></li>
 
                 {else}
@@ -339,17 +339,30 @@
                     <div class="hint">[s`You can change the theme in settlement settings.`]</div>
                 </li>
                 {if empty($theme_warning_requirements) && empty($theme_original_warning_requirements)}
+                    {$_reset_is_disabled = false}
+                    {$_reset_disabled_alert = null}
+
+                    {if $theme.type neq waTheme::OVERRIDDEN}
+                        {$_reset_is_disabled = true}
+                        {$_reset_disabled_alert = _ws('You did not apply customizations to this theme yet, and thus there is nothing to revert.')}
+                    {/if}
+
+                    {if !$theme.path_original && $theme.type == waTheme::CUSTOM}
+                        {$_reset_is_disabled = true}
+                        {$_reset_disabled_alert = _ws('Design theme was not installed from Webasyst Store.')}
+                    {/if}
+
                     <li class="top-padded">
-                        <a class="theme-reset{if $theme.type neq waTheme::OVERRIDDEN} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $theme.type neq waTheme::OVERRIDDEN} onClick="window.alert('[s`You did not apply customizations to this theme yet, and thus there is nothing to revert.`]');"{/if}><i class="icon16 broom"></i>[s`Revert theme to original`]</a>
-                        {if $theme.type neq waTheme::OVERRIDDEN}
+                        <a class="theme-reset{if $_reset_is_disabled} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $_reset_disabled_alert} onClick="window.alert('{$_reset_disabled_alert}');"{/if}><i class="icon16 broom"></i>[s`Revert theme to original`]</a>
+                        {if $theme.path_original && $theme.type neq waTheme::OVERRIDDEN}
                             <span class="hint">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now.`]</span>
-                        {else}
+                        {elseif $theme.path_original}
                             <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
                         {/if}
                     </li>
                 {/if}
                 <li class="top-padded">
-                    <a class="theme-delete{if $theme.system} disabled{/if}" href="#" title="[s`This will permanently delete theme without the ability to recover. Are you sure?`]"><i class="icon16 delete"></i>[s`Delete theme`]</a>
+                    <a class="theme-delete{if $theme.system} disabled{/if}" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover. Are you sure?`]" data-success="[s`Design theme deleted.`]"><i class="icon16 delete"></i>[s`Delete theme`]</a>
                     {if $theme.system}<span class="hint">[s`Default theme cannot be deleted`]</span>{/if}
                 </li>
             </ul>
@@ -404,7 +417,7 @@
                             {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
                                 {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
                             {/if}
-                            <a target="_blank" href="{$_r._url}" class="no-underline  bold">{$_r._domain_decoded}/{$_r.url} <i class="icon10 new-window"></i></a>
+                            <a target="_blank" href="{$_r._url}" class="no-underline bold">{$_r._domain_decoded}/{$_r.url} <i class="icon10 new-window"></i></a>
                         </div>
                     {/foreach}
 
@@ -510,35 +523,35 @@
 
         {if !empty($settings.items)}
 
-        <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
-        <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
+            <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
+            <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
 
-        <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
-        <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
-            {$wa->csrf()}
-            <br>
-            <div class="wa-theme-search-min-symbol bold js-search-min-symbol" style="display: none;">[s`Minimum 3 characters`]</div>
-            <div class="wa-theme-search-result js-search-result" style="display: none;">[s`Search results:`]</div>
-            <div class="wa-theme-search-no-result js-search-no-result" style="display: none;">[s`No settings found`]</div>
+            <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
+            <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
+                {$wa->csrf()}
+                <br>
+                <div class="wa-theme-search-min-symbol bold js-search-min-symbol" style="display: none;">[s`Minimum 3 characters`]</div>
+                <div class="wa-theme-search-result js-search-result" style="display: none;">[s`Search results:`]</div>
+                <div class="wa-theme-search-no-result js-search-no-result" style="display: none;">[s`No settings found`]</div>
 
-            <div class="wa-theme-settings-list fields form js-settings-list">
-                {foreach $settings.items as $s_var => $setting}
-                    {_renderThemeSetting _setting_var=$s_var _setting=$setting}
-                {/foreach}
+                <div class="wa-theme-settings-list fields form js-settings-list">
+                    {foreach $settings.items as $s_var => $setting}
+                        {_renderThemeSetting _setting_var=$s_var _setting=$setting}
+                    {/foreach}
 
-            <div class="wa-design-save-panel block bordered-top">
-                <input type="submit" class="button green js-submit" value="[s`Save`]">
-                <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
-                <span id="theme-settings-error" class="errormsg" style="display: inline"></span>
-            </div>
-    </div>
-    </form>
-    {else}
-    <p>
-        <br>
-        <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
-    </p>
-    {/if}
+                    <div class="wa-design-save-panel block bordered-top">
+                        <input type="submit" class="button green js-submit" value="[s`Save`]">
+                        <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
+                        <span id="theme-settings-error" class="errormsg" style="display: inline"></span>
+                    </div>
+                </div>
+            </form>
+        {else}
+            <p>
+                <br>
+                <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
+            </p>
+        {/if}
 
     {/if}
 
@@ -579,18 +592,19 @@
 </div>
 
 {$_locale = [
-    'will_be_lost' => '[s`All customizations you’ve made to this file will be lost!`]',
-    'update_notice' => mb_strtoupper('[s`All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?`]'),
-    'expand_all' => '[s`Expand all`]',
-    'collapse_all' => '[s`Collapse all`]',
-    'expand' => '[s`Collapse`]',
-    'collapse' => '[s`Collapse`]'
+    'will_be_lost'  => _ws('All customizations you’ve made to this file will be lost!'),
+    'update_notice' => mb_strtoupper(_ws('All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?')),
+    'expand_all'    => _ws('Expand all'),
+    'collapse_all'  => _ws('Collapse all'),
+    'expand'        => _ws('Expand'),
+    'collapse'      => _ws('Collapse')
 ]}
 <script>
     (function ($) {
         new WAThemeSettings({
             $wrapper: $("#{$id}"),
             theme_id: {$theme.id|json_encode},
+            theme_routes: {$theme_routes|json_encode},
             design_url: {$design_url|json_encode},
             locale: {$_locale|json_encode}
         });

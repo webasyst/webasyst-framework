@@ -88,7 +88,18 @@
                     <div class="name">
                         [s`Webasyst version`]
                     </div>
-                    <div class="value no-shift">{$version}</div>
+                    <div class="value no-shift">{$framework_version}</div>
+                </div>
+
+                {* PHP version *}
+                <div class="field">
+                    <div class="name">
+                        [s`PHP version`]
+                    </div>
+                    <div class="value no-shift">{$php_version}</div>
+                    {if !$is_good_php_version}
+                        <div class="value no-shift bold">[`Webasyst is moving to PHP versions 5.6 and higher.`]</div>
+                    {/if}
                 </div>
             </div>
 

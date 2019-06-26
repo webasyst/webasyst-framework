@@ -94,15 +94,16 @@ abstract class waView
 		$wa = wa();
 
 		// Add global variables
-		$this->assign(array(
-			'wa_url'            => $wa->getRootUrl(),
-            'wa_static_url'     => $this->getStaticUrl($wa->getRootUrl()),
-			'wa_backend_url'    => waSystem::getInstance()->getConfig()->getBackendUrl(true),
-			'wa_app'            => $wa->getApp(),
-			'wa_app_url'        => $wa->getAppUrl(null, true),
-			'wa_app_static_url' => $this->getStaticUrl($wa->getAppStaticUrl()),
-			'wa'                => $this->getHelper()
-		));
+        $this->assign(array(
+            'wa_url'                 => $wa->getRootUrl(),
+            'wa_static_url'          => $this->getStaticUrl($wa->getRootUrl()),
+            'wa_backend_url'         => waSystem::getInstance()->getConfig()->getBackendUrl(true),
+            'wa_app'                 => $wa->getApp(),
+            'wa_app_url'             => $wa->getAppUrl(null, true),
+            'wa_app_static_url'      => $this->getStaticUrl($wa->getAppStaticUrl()),
+            'wa_real_app_static_url' => $wa->getAppStaticUrl(),
+            'wa'                     => $this->getHelper()
+        ));
 
 		// "Chainable" method
 		return $this;
@@ -192,6 +193,7 @@ abstract class waView
     {
         $this->assign('wa_active_theme_path', $theme->path);
         $this->assign('wa_active_theme_url', $this->getStaticUrl($theme->url));
+        $this->assign('wa_real_active_theme_url', $theme->url);
         $theme_settings = $theme->getSettings(true);
         $theme_settings_config = $theme->getSettings();
 
@@ -211,6 +213,7 @@ abstract class waView
                 $theme = $parent_theme;
             }
             $this->assign('wa_parent_theme_url', $this->getStaticUrl($parent_theme->url));
+            $this->assign('wa_real_parent_theme_url', $parent_theme->url);
             $this->assign('wa_parent_theme_path', $parent_theme->path);
             if ($parent_settings = $parent_theme->getSettings(true)) {
                 $theme_settings = $theme_settings + $parent_settings;

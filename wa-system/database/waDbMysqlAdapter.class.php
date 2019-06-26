@@ -17,6 +17,8 @@ class waDbMySQLAdapter extends waDbAdapter
     const RESULT_ASSOC = MYSQL_ASSOC;
     const RESULT_NUM = MYSQL_NUM;
     const RESULT_BOTH = MYSQL_BOTH;
+
+    const MB4_SUPPORTED_VERSION = '5.5.3';
         
     public function connect($settings)
     {
@@ -33,8 +35,15 @@ class waDbMySQLAdapter extends waDbAdapter
         if (!mysql_select_db($settings['database'], $handler)) {
             throw new waDbException(mysql_error(), mysql_errno());
         }
-        
+
+        $mysql_version = mysql_get_server_info($handler);
+        $mb4_is_supported = version_compare($mysql_version, self::MB4_SUPPORTED_VERSION, '>=');
+
         $charset = isset($settings['charset']) ? $settings['charset'] : 'utf8';
+        if (!isset($settings['charset']) && $mb4_is_supported) {
+            $charset = 'utf8mb4';
+        }
+
         @mysql_set_charset ($charset, $handler);
         if (isset($settings['sql_mode'])) {
             $sql = "SET SESSION sql_mode = '".mysql_real_escape_string($settings['sql_mode'], $handler)."'";

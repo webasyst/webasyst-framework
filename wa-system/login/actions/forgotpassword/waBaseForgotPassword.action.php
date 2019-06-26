@@ -180,7 +180,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         }
 
         /**
-         * @var waContact $details
+         * @var waContact $contact
          */
         $contact = $details['contact'];
 
@@ -195,6 +195,33 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
                 // save new password
                 $contact['password'] = $data['password'];
                 $contact->save();
+
+                // If contact is not confirmed yet, restoring password is enough to mark as confirmed
+                if ($this->auth_config->getSignUpConfirm()) {
+
+                    if ($details['channel_type'] === waVerificationChannelModel::TYPE_EMAIL) {
+                        $cem = new waContactEmailsModel();
+                        $email_row = $cem->getByField(array(
+                            'contact_id' => $contact->getId(),
+                            'email' => $details['address']
+                        ));
+                        if ($email_row) {
+                            // Email is now confirmed
+                            $cem->updateById($email_row['id'], array('status' => waContactEmailsModel::STATUS_CONFIRMED));
+                        }
+                    } elseif ($details['channel_type'] === waVerificationChannelModel::TYPE_SMS) {
+                        $cdm = new waContactDataModel();
+                        $phone_row = $cdm->getByField(array(
+                            'contact_id' => $contact->getId(),
+                            'field' => 'phone',
+                            'value' => $details['address']
+                        ));
+                        if ($phone_row) {
+                            // Phone is now confirmed
+                            $cdm->updateById($phone_row['id'], array('status' => waContactDataModel::STATUS_CONFIRMED));
+                        }
+                    }
+                }
 
                 // remove hash
                 $this->invalidateHash($hash);

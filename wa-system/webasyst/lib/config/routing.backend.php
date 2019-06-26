@@ -12,5 +12,6 @@ return array(
     'settings/auth/?'                           => 'settingsAuth',
     'settings/regions/?'                        => 'settingsRegions',
     'settings/field/?'                          => 'settingsField',
+    'settings/db/?'                             => 'settingsDatabase',
     'settings/?'                                => 'settings/',
 );

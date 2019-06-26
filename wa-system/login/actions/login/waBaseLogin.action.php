@@ -40,7 +40,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
     public function execute()
     {
         wa()->getResponse()->setTitle(_w('Login'));
-        
+
         if (wa()->getRequest()->request('send_onetime_password')) {
             $this->trySendOnetimePassword();
             return;
@@ -259,7 +259,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
                 $this->afterAuth();
             } else {
                 // almost never happens -- may be contact is not registered
-                $errors['auth'] = _ws("Contact is not registered.");
+                $errors['auth'] = _ws("No user with these data was found.");
                 // diagnostic print
                 $this->logError(
                     "Almost never happens -- may be contact is not registered or exist",

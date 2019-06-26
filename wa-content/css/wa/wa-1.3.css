@@ -116,7 +116,8 @@ a#wa-launchpad-add { float: right; margin-right: 12px; color: #888; text-decorat
 a#wa-my-username { font-weight: bold; text-decoration: none; }
 #wa-applist { margin: 2px 200px 0px 200px; padding-top: 5px; padding-right: 25px; position: relative; }
 #wa-applist ul { list-style-type: none; padding-left: 0; margin: 0; }
-#wa-applist ul li { display:inline-block; width: 72px; text-align: center; vertical-align: top; position:relative; }
+#wa-applist ul li { display:inline-block; width: 72px; margin-right: 3px; text-align: center; vertical-align: top; position:relative; }
+#wa-applist ul li:last-child { margin-right: 0; }
 #wa-applist ul li a { display: block; font-size: 11px; line-height: 1.05em; text-align: center; text-decoration: none; color: #777; padding-bottom: 13px; }
 #wa-applist ul li a:hover { color: #ee2200; }
 #wa-applist ul li a .indicator { position: absolute; top: 0px; right: 3px; background: #f00; color: #fff; }

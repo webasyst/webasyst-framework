@@ -20,6 +20,7 @@ var WAThemeSettings = ( function($) {
 
         // VARS
         that.theme_id = options["theme_id"];
+        that.theme_routes = options["theme_routes"];
         that.design_url = options["design_url"];
         that.locale = options["locale"];
         that.theme_storage_key = "theme/"+that.theme_id+"/expand";
@@ -207,7 +208,7 @@ var WAThemeSettings = ( function($) {
                             var l = $(this).parent();
                             if ($(this).is(':checked')) {
                                 if (!l.find('span.hint').length) {
-                                    l.append('<span class="hint">'+ that.locale.will_be_lost +'</span>');
+                                    l.append(' <span class="hint">'+ that.locale.will_be_lost +'</span>');
                                 }
                             } else {
                                 l.find('span.hint').remove();
@@ -406,18 +407,28 @@ var WAThemeSettings = ( function($) {
             href = "?module=design&action=themeDelete";
 
         $link.on('click', function () {
-            if (!$(this).hasClass('disabled') && confirm($(this).attr('title'))) {
-                $.post(href, { theme: that.theme_id}, function (response) {
+            var $self = $(this);
+
+            if (that.theme_routes.length) {
+                var $dialog_wrapper = that.$wrapper.find('#wa-theme-blocking-removal-dialog');
+                $dialog_wrapper.waDialog();
+
+                return false;
+            }
+
+            if (!$self.hasClass('disabled') && confirm($self.data('confirm'))) {
+                $.post(href, { theme: that.theme_id }, function (response) {
                     if (response.status === 'ok') {
                         if(response.data.theme_id) {
                             $('#wa-theme-block-' + response.data.theme_id).remove();
                             $('#wa-theme-list-' + response.data.theme_id).remove();
                         }
                         $('#wa-theme-list a').each(function () {
-                            if ($(this).attr('href').indexOf('theme=' + theme_id) != -1) {
+                            if ($(this).attr('href').indexOf('theme=' + that.theme_id) != -1) {
                                 $(this).parent().remove();
                             }
                         });
+                        alert($self.data('success'));
                         location.href = $('#wa-theme-list li:first a').attr('href');
                     } else {
                         alert(response.errors);

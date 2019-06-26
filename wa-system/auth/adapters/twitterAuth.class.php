@@ -175,8 +175,17 @@ class twitterAuth extends waAuthAdapter
 
         if (!waRequest::get('oauth_verifier')) {
 
-            $response = $this->oauth("oauth/request_token", array('oauth_callback' => $this->getCallbackUrl()));
+            $callback_url = $this->getCallbackUrl();
+            $response = $this->oauth("oauth/request_token", array('oauth_callback' => $callback_url));
+
             if (!isset($response['oauth_token']) || !isset($response['oauth_token_secret'])) {
+
+                if (SystemConfig::isDebug()) {
+                    $message = "Response = %s\nCallback URL = %s";
+                    $response_str = var_export($response, true);
+                    waLog::log(sprintf($message, $response_str, $callback_url), 'auth/twitter.log');
+                }
+
                 throw new waAuthException('Unable to complete OAuth: no token returned from Twitter');
             }
 

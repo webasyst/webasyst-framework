@@ -184,6 +184,8 @@ class waHtmlControl
 
         $params['class'][] = $type;
 
+        $params['value'] = array_key_exists('value', $params) ? $params['value'] : null;
+
         $original_wrappers = self::getControlWrappers($params);
         self::makeId($params, $name);
         $instance = self::getInstance();
@@ -452,7 +454,8 @@ class waHtmlControl
     {
         $control = '';
         $control_name = self::escape($name);
-        $control .= "<input id=\"{$params['id']}\" type=\"text\" name=\"{$control_name}\" ";
+        $field_type = self::escape((string)ifset($params, 'field_type', 'text'));
+        $control .= "<input id=\"{$params['id']}\" type=\"{$field_type}\" name=\"{$control_name}\" ";
         if (isset($params['format_description'])) {
             $params['format_description'] = self::_wp($params['format_description']);
         }
@@ -469,6 +472,13 @@ class waHtmlControl
             'disabled',
             'autocomplete',
             'autofocus',
+            'min',
+            'max',
+            'step',
+            'spellcheck',
+            'multiple', // for field_type='email', as example
+            'autocorrect', // Safari
+            'autocapitalize', // Safari
             'format'             => 'data-regexp',
             'format_description' => 'data-regexp-hint',
         );
@@ -544,7 +554,7 @@ class waHtmlControl
 </style>
 <script type="text/javascript">
     if(typeof(CodeMirror) == 'function') {
-        var textarea = document.getElementById('{$params['id']}'), 
+        var textarea = document.getElementById('{$params['id']}'),
             onchange = {
                 'onChange':function(cm) {
                     textarea.value = cm.getValue();
@@ -610,12 +620,14 @@ HTML;
         $options = isset($params['options']) ? (is_array($params['options']) ? $params['options'] : array($params['options'])) : array();
         foreach ($options as $option) {
             ++$id;
+
             $option_value = $option['value'];
             if ($option_value == $value) {
                 $params['checked'] = 'checked';
             } elseif (isset($params['checked'])) {
                 unset($params['checked']);
             }
+
             self::makeId($params, $name, md5($option_value));
             $option_value = self::escape($option_value);
             $control_name = self::escape($name);
@@ -625,7 +637,7 @@ HTML;
                 $option_title = self::escape(self::_wp($option['title'], $params));
                 $control .= ">&nbsp;<label";
                 $control .= self::addCustomParams(array('id' => 'for',), $params);
-                $control .= self::addCustomParams(array('description' => 'title', 'class', 'style',), $option);
+                $control .= self::addCustomParams(array('class', 'style',), $option);
                 $control .= ">{$option_title}</label>\n";
             } else {
                 $control .= ">\n";
@@ -698,19 +710,30 @@ HTML;
             $params['value'] = array();
         }
         self::addNamespace($params, $name);
-        $wrappers = ifempty($params['options_wrapper'], array()) + array(
-                'title_wrapper'       => '&nbsp;%s',
-                'description_wrapper' => '<span class="hint">%s</span>',
-                'control_wrapper'     => '%2$s'."\n".'%1$s'."\n".'%3$s'."\n",
-                'control_separator'   => "<br>",
 
-            );
+        $default_wrapper = array(
+            'title_wrapper'       => '&nbsp;%s',
+            'description_wrapper' => '<span class="hint">%s</span>',
+            'control_wrapper'     => '%2$s'."\n".'%1$s'."\n".'%3$s'."\n",
+            'control_separator'   => "<br>",
+        );
+
+        $options_wrapper = ifempty($params, 'options_wrapper', array());
+
+        $wrappers = $options_wrapper + $default_wrapper;
+
         unset($params['options_wrapper']);
         $params = array_merge($params, $wrappers);
         $checkbox_params = $params;
         if (isset($params['options'])) {
             unset($checkbox_params['options']);
         }
+
+        // Ignore 'custom_title_wrapper' from control for options
+        if (empty($options_wrapper['custom_title_wrapper'])) {
+            unset($checkbox_params['custom_title_wrapper']);
+        }
+
         $id = 0;
         foreach ($options as $option) {
             $checkbox_params['value'] = !empty($option['value']) ? $option['value'] : 1;
@@ -721,6 +744,11 @@ HTML;
             if ($checkbox_params['disabled'] && !empty($option['checked'])) {
                 $checkbox_params['checked'] = true;
             }
+
+            if (!empty($option['data']) && is_array($option['data'])) {
+                $checkbox_params['data'] = $option['data'];
+            }
+
             $control .= self::getControl(self::CHECKBOX, $option['value'], $checkbox_params);
             if (++$id < count($options)) {
                 $control .= $params['control_separator'];
@@ -746,7 +774,7 @@ HTML;
         self::addNamespace($input_params, $name);
         $input_name = "from";
         $input_params['value'] = $params['value']['from'];
-        $input_params['title'] = 'str_from';
+        $input_params['title'] = ifempty($params, 'control_title', 'from', 'str_from');
 
         $control .= self::getControl(self::INPUT, $input_name, $input_params)."\n";
 
@@ -754,7 +782,7 @@ HTML;
         $input_name = "to";
         self::addNamespace($input_params, $name);
         $input_params['value'] = $params['value']['to'];
-        $input_params['title'] = 'str_to';
+        $input_params['title'] = ifempty($params, 'control_title', 'to', 'str_to');
         $control .= self::getControl(self::INPUT, $input_name, $input_params)."\n";
         return $control;
     }
@@ -1035,7 +1063,7 @@ HTML;
         var date_input = $('#' + id_date);
         var date_formatted = $('#' + id_date_formatted);
         var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
-        
+
         date_input.data('available_days', {$available_days});
 
         var initDatePicker = function () {
@@ -1133,24 +1161,24 @@ HTML;
                     } else {
                         initDatePicker();
                     }
-                    
+
                 });
             }
         });
-        
+
         function load(sources) {
                 var deferred = $.Deferred();
-        
+
                 loader(sources).then( function() {
                     deferred.resolve();
                 });
-        
+
                 return deferred.promise();
-        
+
                 function loader(sources) {
                     var deferred = $.Deferred(),
                         counter = sources.length;
-        
+
                     $.each(sources, function(i, source) {
                         switch (source.type) {
                             case "css":
@@ -1161,70 +1189,70 @@ HTML;
                                 break;
                         }
                     });
-        
+
                     return deferred.promise();
-        
+
                     /**/
-        
+
                     function loadCSS(source) {
                         var link = $("#" + source.id);
                         if (link.length) {
                             link.data("promise").then(onLoad);
-        
+
                         } else {
                             var deferred = $.Deferred(),
                                 promise = deferred.promise();
-        
+
                             link = $("<link />", {
                                 id: source.id,
                                 rel: "stylesheet"
                             }).appendTo("head")
                                 .data("promise", promise);
-        
+
                             link.on("load", function() {
                                 onLoad();
                                 deferred.resolve();
                             });
-        
+
                             link.attr("href", source.uri);
                         }
-        
+
                         function onLoad() {
                             counter -= 1;
                             watcher();
                         }
                     }
-        
+
                     function loadJS(source) {
                         var script = $("#" + source.id);
                         if (script.length) {
                             script.data("promise").then(onLoad);
-        
+
                         } else {
                             var deferred = $.Deferred(),
                                 promise = deferred.promise(),
                                 script = document.createElement("script");
-                                
+
                             document.getElementsByTagName("head")[0].appendChild(script);
-        
+
                             script = $(script)
                                 .attr("id", source.id)
                                 .data("promise", promise);
-        
+
                             script.on("load", function () {
                                 onLoad();
                                 deferred.resolve();
                             });
-        
+
                             script.attr("src", source.uri);
                         }
-        
+
                         function onLoad() {
                             counter -= 1;
                             watcher();
                         }
                     }
-        
+
                     function watcher() {
                         if (counter === 0) {
                             deferred.resolve();
@@ -1315,7 +1343,10 @@ HTML;
         if (!empty($params['data'])) {
             $data = array();
             foreach ($params['data'] as $field => $value) {
-                $data['data-'.$field] = trim(json_encode($value), '"');
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
+                $data['data-'.$field] = trim(self::escape($value), '"');
             }
             $params_string .= $this->addCustomParams(array_keys($data), $data);
         }

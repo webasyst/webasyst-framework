@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-04-22 11:39+0300\n"
+"PO-Revision-Date: 2019-06-20 16:41+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2268,7 +2268,7 @@ msgid "Auth exception"
 msgstr ""
 
 #: /wa-system/auth/waAuth.class.php:380
-msgid "Contact is not registered."
+msgid "No user with these data was found."
 msgstr ""
 
 #: /wa-system/auth/waAuth.class.php:427
@@ -3980,4 +3980,181 @@ msgid "OK"
 msgstr ""
 
 msgid "WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?"
+msgstr ""
+
+msgid "Georgia State"
+msgstr "Georgia"
+
+#: /wa-system/page/templates/PageEdit.html:204
+msgid "Only image files can be uploaded"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:1
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:3
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:21
+msgid "Database"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:11
+msgid "MySQL version"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:14
+msgid "supports emoji"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:14
+msgid "does not support emoji"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:32
+msgid "Tables and fields without emoji support"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:37
+msgid "Proceed to adding emoji support"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:39
+msgid "To add emoji support enable <b>Debug mode</b> in <b>General settings</b>."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:9
+msgid "Database tables and fields"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:12
+msgid "New encoding"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:13
+msgid "Old encoding"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:18
+msgid "You may also use phpMyAdmin to change database tables and fields encoding."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:27
+msgid "Total tables"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:28
+msgid "Total fields"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:29
+msgid "Converted tables"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:30
+msgid "Converted fields"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:31
+msgid "Not converted tables"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:32
+msgid "Not converted fields"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:33
+msgid "Path to log file"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:42
+msgid "Change encoding"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:46
+msgid "Do not close this form until the conversion is completed."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:59
+msgid "Start changing encoding for tables and fields?"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:64
+msgid "This will start the conversion of your database tables and fields to <code>utf8mb4</code> encoding."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:65
+msgid "It will enable you and your website visitors use emoji (smilies), hieroglyphs, and other Unicode symbols."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:66
+msgid "The encoding change may last a few seconds or minutes."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:67
+msgid "It is essential to wait until the process completion to ensure that no tables or fields with outdated encoding remain."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:68
+msgid "Do not close this browser tab until the process is completed. It is recommended to start conversion during a period of minimum load on your website."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:75
+msgid "Run"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:6
+msgid "Table"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:7
+msgid "Fields"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:8
+msgid "Collation"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:42
+msgid "Tables not found."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/Settings.html:97
+msgid "PHP version"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/Settings.html:101
+msgid "Webasyst is moving to PHP versions 5.6 and higher."
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:4
+msgid "Design theme update failure"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:6
+msgid "This design theme cannot be updated."
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:9
+msgid "Insufficient permissions to read files"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:28
+msgid "Insufficient permissions to write to files"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:365
+msgid "Design theme deleted."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:352
+msgid "Design theme was not installed from Webasyst Store."
+msgstr ""
+
+#: /wa-system/design/templates/ThemeDialogs.inc.html:304
+msgid "Unable to delete design theme"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeDialogs.inc.html:306
+msgid "This design theme is still in use on your website."
+msgstr ""
+
+#: /wa-system/design/templates/ThemeDialogs.inc.html:307
+msgid "To delete this theme, first select another theme in the following settlements’ settings:"
 msgstr ""

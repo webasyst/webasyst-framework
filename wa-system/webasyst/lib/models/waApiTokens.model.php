@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class waApiTokensModel extends waModel
 {
@@ -31,7 +31,7 @@ class waApiTokensModel extends waModel
 
         $sql = "{$select}
                 FROM {$this->table}
-                ORDER BY create_datetime DESC, contact_id DESC";
+                ORDER BY last_use_datetime DESC, create_datetime DESC, contact_id DESC";
         // LIMIT
         if ($limit) {
             $sql .= " LIMIT $offset, $limit";
@@ -55,6 +55,7 @@ class waApiTokensModel extends waModel
      * @param int $contact_id
      * @param string $scope
      * @return string
+     * @throws waException
      */
     public function getToken($client_id, $contact_id, $scope)
     {
@@ -76,6 +77,23 @@ class waApiTokensModel extends waModel
             ));
             return $token;
         }
+    }
+
+    /**
+     * Update last use datetime
+     * @param array|string $token string token itself OR token record from DB
+     */
+    public function updateLastUseDatetime($token)
+    {
+        if (is_array($token) && isset($token['token'])) {
+            $token = $token['token'];
+        }
+        if (!is_scalar($token)) {
+            return;
+        }
+        $this->updateById($token, array(
+            'last_use_datetime' => date('Y-m-d H:i:s')
+        ));
     }
 
     /**

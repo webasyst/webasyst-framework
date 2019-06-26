@@ -212,7 +212,9 @@ class waTheme implements ArrayAccess
                         'edition'         => 0,
                         'source_theme_id' => '',
                         'requirements'    => array(),
+                        'demo'            => '',
                     );
+
                     try {
                         if (!$xml = $this->getXML()) {
                             waLog::log("Invalid theme description {$path}", 'themes.log');
@@ -222,6 +224,7 @@ class waTheme implements ArrayAccess
                         waLog::log("Invalid theme description {$path}: ".$ex->getMessage(), 'themes.log');
                         break;
                     }
+
                     /**
                      * @var SimpleXMLElement $xml
                      */
@@ -236,6 +239,7 @@ class waTheme implements ArrayAccess
 
                     $this->info['edition'] = (int)$this->info['edition'];
                     $this->info['system'] = isset($this->info['system']) ? (bool)$this->info['system'] : false;
+                    $this->info['demo'] = isset($this->info['demo']) ? (bool)$this->info['demo'] : false;
 
                     foreach ($ml_fields as $field) {
                         if ($xml->{$field}) {
@@ -249,6 +253,7 @@ class waTheme implements ArrayAccess
                             $this->info[$field][$locale] = $this->id;
                         }
                     }
+
                     if (!empty($this->info['parent_theme_id'])) {
                         $parent_exists = self::exists($this->info['parent_theme_id'], $this->app);
                     } else {
@@ -274,6 +279,7 @@ class waTheme implements ArrayAccess
                                 if ($this->info['files'][$path]['parent']) {
                                     $this->info['files'][$path]['parent_exists'] = $parent_exists;
                                 }
+
                                 foreach ($file->{'description'} as $value) {
                                     if ($value && ($locale = (string)$value['locale'])) {
                                         $this->info['files'][$path]['description'][$locale] = (string)$value;
@@ -283,6 +289,7 @@ class waTheme implements ArrayAccess
                         }
                         ksort($this->info['files']);
                     }
+
                     $this->info['settings'] = array();
                     if ($settings = $xml->{'settings'}) {
                         $id=0;
@@ -1108,15 +1115,12 @@ XML;
         $source_path = $this->path_original;
         $target_path = $this->path_custom;
 
-        $files = $this->getFiles();
+        $files = waFiles::listdir($source_path, true);
 
         $errors = array();
 
         // Check original files for reading
-        foreach ($files as $file_name => $file_data) {
-            if (!empty($file_data['parent'])) {
-                continue;
-            }
+        foreach ($files as $file_name) {
             $source_file_path = $source_path . '/' . $file_name;
             if (!is_readable($source_file_path)) {
                 $errors['not_readable'][] = $source_file_path;
@@ -1124,15 +1128,12 @@ XML;
         }
 
         // Check the availability of editing in the target the directory
-        if (!is_writable($target_path)) {
+        if ($target_path && !is_writable($target_path)) {
             $errors['not_writable'][] = $target_path;
         }
 
         // Check the availability of editing files (if any) in the target directory
-        foreach ($files as $file_name => $file_data) {
-            if (!empty($file_data['parent'])) {
-                continue;
-            }
+        foreach ($files as $file_name) {
             $target_file_path = $target_path . '/' . $file_name;
             if (file_exists($target_file_path) && !is_dir($target_file_path) && !is_writable($target_file_path)) {
                 $errors['not_writable'][] = $target_file_path;

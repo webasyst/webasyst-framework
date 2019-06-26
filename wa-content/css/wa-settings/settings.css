@@ -437,56 +437,35 @@ table.zebra tr.selected .s-single-line:after {
   -o-transition: all 0.3s ease;
   -ms-transition: all 0.3s ease;
   transition: all 0.3s ease;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  background-size: contain;
+  background-position: center;
 }
 .icon16.ws.general {
   background-image: url("../../img/wa-settings/ws-general.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
 }
 .icon16.ws.email {
   background-image: url("../../img/wa-settings/ws-email.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
 }
 .icon16.ws.maps {
   background-image: url("../../img/wa-settings/ws-map.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
 }
 .icon16.ws.captcha {
   background-image: url("../../img/wa-settings/ws-lock.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
 }
 .icon16.ws.sms {
   background-image: url("../../img/wa-settings/ws-sms.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
 }
 .icon16.ws.auth {
   background-image: url("../../img/wa-settings/ws-key.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
 }
 .icon16.ws.email-template,
 .icon16.ws.sms-template {
   background-image: url("../../img/wa-settings/ws-template.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
+}
+.icon16.ws.db {
+  background-image: url("../../img/wa-settings/ws-db.svg");
 }
 .s-error-message-wrapper {
   color: #f00;
@@ -1090,4 +1069,125 @@ table.zebra tr.selected .s-single-line:after {
 }
 .s-field-values-dialog .s-delete-value .icon10 {
   margin-top: 1px;
+}
+.s-db-list-dialog .good {
+  color: #139a13;
+}
+.s-db-list-dialog .bad {
+  color: #808080;
+}
+.s-db-list-dialog .s-dialog-header {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -o-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+.s-db-list-dialog .s-dialog-header a.is-selected b {
+  border-bottom: 0;
+}
+.s-db-list-dialog .s-dialog-header a.is-selected b i {
+  color: #000;
+  font-weight: bold;
+}
+.s-db-list-dialog .s-dialog-header a:not(:first-child):before {
+  content: "•";
+  padding-right: 5px;
+  color: #000;
+}
+.s-db-list-dialog .s-dialog-footer {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: box;
+  display: flex;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -o-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+@-webkit-keyframes pending {
+  0% {
+    color: #222;
+  }
+  50% {
+    color: rgba(34,34,34,0);
+  }
+  100% {
+    color: #222;
+  }
+}
+.s-db-list-dialog .s-dialog-footer .s-dialog-notice {
+  -webkit-animation: pending 2s linear infinite;
+  -webkit-animation: pending 2s linear infinite;
+  -moz-animation: pending 2s linear infinite;
+  -o-animation: pending 2s linear infinite;
+  -ms-animation: pending 2s linear infinite;
+  animation: pending 2s linear infinite;
+}
+@-moz-keyframes pending {
+  0% {
+    color: #222;
+  }
+  50% {
+    color: rgba(34,34,34,0);
+  }
+  100% {
+    color: #222;
+  }
+}
+@-webkit-keyframes pending {
+  0% {
+    color: #222;
+  }
+  50% {
+    color: rgba(34,34,34,0);
+  }
+  100% {
+    color: #222;
+  }
+}
+@-o-keyframes pending {
+  0% {
+    color: #222;
+  }
+  50% {
+    color: rgba(34,34,34,0);
+  }
+  100% {
+    color: #222;
+  }
+}
+@keyframes pending {
+  0% {
+    color: #222;
+  }
+  50% {
+    color: rgba(34,34,34,0);
+  }
+  100% {
+    color: #222;
+  }
 }

@@ -271,17 +271,35 @@
                 }
             });
         },
-
         saveHandlerAjax: function (form) {
             var self = this;
             this.message('submit');
-            var $form = $(form);
+            var $form = $(form),
+                fields_data = $form.serializeArray(),
+                form_data = new FormData();
+
+            $.each(fields_data, function () {
+                var field = $(this)[0];
+                form_data.append(field.name, field.value);
+            });
+
+            // Add files
+            var $file_controls = $form.find('input[type="file"]');
+            $file_controls.each(function (i, input) {
+                var $input = $(input);
+
+                if (input['files'].length) {
+                    form_data.append($input.attr('name'), input['files'][0]);
+                }
+            });
+
             $.ajax({
-                type: 'POST',
                 url: $form.attr('action'),
-                data: $form.serializeArray(),
-                iframe: true,
-                dataType: 'json',
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                type: 'POST',
                 success: function (data, textStatus, jqXHR) {
                     if (data && (data.status == 'ok')) {
                         var message = '[s`Saved`]';

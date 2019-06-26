@@ -16,6 +16,7 @@ return array(
         'token' => array('varchar', 32, 'null' => 0),
         'scope' => array('text', 'null' => 0),
         'create_datetime' => array('datetime', 'null' => 0),
+        'last_use_datetime' => array('datetime'),
         'expires' => array('datetime'),
         ':keys' => array(
             'PRIMARY' => 'token',

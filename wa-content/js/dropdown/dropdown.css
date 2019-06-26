@@ -1,0 +1,65 @@
+.wa-dropdown {
+  position: relative;
+  display: inline-block;
+}
+.wa-dropdown > .wa-dropdown-toggle:after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+.wa-dropdown > .wa-dropdown-toggle.with-out-after:after {
+  display: none;
+}
+.wa-dropdown > .wa-dropdown-area {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 200px;
+  min-width: 100%;
+  max-width: 500px;
+  max-height: 500px;
+  overflow: auto;
+  padding: 0.5rem 0;
+  margin: 0;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 5px;
+}
+.wa-dropdown > .wa-dropdown-area.right {
+  left: auto;
+  right: 0;
+}
+.wa-dropdown > .wa-dropdown-area > *:first-child {
+  margin-top: 0;
+}
+.wa-dropdown > .wa-dropdown-area > *:last-child {
+  margin-bottom: 0;
+}
+.wa-dropdown > .wa-dropdown-area > .wa-dropdown-item {
+  display: block;
+  padding: 0.25rem 1rem;
+  margin: 0;
+  line-height: 1.2em;
+  color: inherit;
+  cursor: pointer;
+}
+.wa-dropdown > .wa-dropdown-area > .wa-dropdown-item:hover {
+  background: rgba(0,0,0,0.1);
+}
+.wa-dropdown > .wa-dropdown-area > .wa-dropdown-item.selected {
+  background: rgba(0,0,0,0.1);
+  cursor: default;
+  font-weight: bold;
+}
+.wa-dropdown.is-opened > .wa-dropdown-area {
+  display: block;
+  z-index: 1000;
+}

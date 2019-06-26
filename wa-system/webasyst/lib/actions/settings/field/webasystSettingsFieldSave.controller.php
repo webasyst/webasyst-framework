@@ -100,15 +100,42 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
                 if ($subfield_id == '%FID%') {
                     continue;
                 }
-                // Removing empty subfield options (radio/select inputs)
+
+                // for radio/select kind of field
                 if (isset($params['options'])) {
-                    $params['options'] = array_diff($params['options'], array(''));
+
+                    $old_options = array();
+                    if (!empty($old_fields[$subfield_id])) {
+                        $subfield = $old_fields[$subfield_id];
+                        $old_options = $subfield->getParameter('options');
+                        $old_options = is_array($old_options) ? $old_options : array();
+                    }
+
+                    // Collect options (radio/select inputs) by this rules:
+                    // + as key so as value must not be empty
+                    // + key must be preserved in case of options resorted or new key added or another key deleted
+                    // + use value for new key
+                    $params_options = array();
+                    foreach ($params['options'] as $key => $value) {
+                        $key = trim($key);
+                        $value = trim($value);
+                        if (strlen($key) > 0 && strlen($value) > 0) {
+                            if (!isset($old_options[$key])) {   // is new key
+                                $key = $value;
+                            }
+                            $params_options[$key] = $value;
+                        }
+                    }
+                    $params['options'] = $params_options;
                 }
 
+
                 if (!empty($old_fields[$subfield_id])) {
+
+                    $subfield = $old_fields[$subfield_id];
+
                     // update
                     foreach ($params as $param_key => $param_value) {
-                        $subfield = $old_fields[$subfield_id];
                         $subfield->setParameter($param_key, $param_value);
                         $new_fields[$subfield_id] = $subfield;
                     }

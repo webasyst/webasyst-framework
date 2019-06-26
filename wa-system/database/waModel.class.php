@@ -360,7 +360,7 @@ class waModel
     /**
      * Updates table record with specified value of model's id field value.
      *
-     * @param string|int $id The value of model's id field, which is searched for across all table records to replace
+     * @param string|int|array $id The value of model's id field, which is searched for across all table records to replace
      *     values of fields specified in $data parameter in the found record.
      * @param array $data Associative array of new values for specified fields of the found record.
      * @param string $options Optional key words for SQL query UPDATE: LOW_PRIORITY or IGNORE.
@@ -849,7 +849,7 @@ class waModel
      *
      * One field mode:
      *
-     * @param string Field name.
+     * @param string|array Field name or array field name => value
      * @param mixed|array Field value or zero-based array of values.
      * @param bool|string Boolean flag requiring to return data of all found records
      *     or name of field whose values in all found entries must be used as keys of result array.

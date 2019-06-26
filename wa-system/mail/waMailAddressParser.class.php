@@ -50,13 +50,14 @@ class waMailAddressParser
 
     protected function parseAddress()
     {
+        $pattern = '~^[^\s@]+@[^\s@]+\.[^\s@\.]{2,}$~u';    // here is {2,} after '.' - supports international domains in punycode format
         $addrss = preg_split("~(,\s|\n)~", $this->string);
         foreach ($addrss as $a) {
             $name = $email = false;
-            if (preg_match('~<([^>]+)>[,;]?$~', $a, $m) && preg_match('~^[^\s@]+@[^\s@]+\.[^\s@\.]{2,6}$~u', trim($m[1]))) {
+            if (preg_match('~<([^>]+)>[,;]?$~', $a, $m) && preg_match($pattern, trim($m[1]))) {
                 $name = trim(str_replace($m[0], '', $a), "'\" \t\n\r");
                 $email = trim($m[1]);
-            } elseif (preg_match('~^[^\s@]+@[^\s@]+\.[^\s@\.]{2,6}$~u', trim($a))) {
+            } elseif (preg_match($pattern, trim($a))) {
                 $name = '';
                 $email = trim($a);
             }

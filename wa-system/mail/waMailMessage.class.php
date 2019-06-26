@@ -92,7 +92,28 @@ class waMailMessage extends Swift_Message
     public function setFrom($addresses, $name = null)
     {
         $this->_formatAddresses($addresses, $name);
-        return parent::setFrom($addresses, $name);
+
+        if (!is_array($addresses) && isset($name)) {
+            $addresses = array($addresses => $name);
+        }
+
+        $result = array();
+        foreach ((array)$addresses as $email => $name) {
+            if (!is_string($email)) {
+                $email = $name;
+                $name = null;
+            }
+            if (!preg_match("/^[a-z0-9~@+:\[\]\.-]+$/ui", $email)) {
+                $email = $this->encodeEmail($email);
+            }
+            if ($name === null) {
+                $result[] = $email;
+            } else {
+                $result[$email] = $name;
+            }
+        }
+
+        return parent::setFrom($result);
     }
 
     private function _formatAddresses(&$addresses, &$name)

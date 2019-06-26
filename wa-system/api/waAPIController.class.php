@@ -149,8 +149,13 @@ class waAPIController
                 if ($data['expires'] && (strtotime($data['expires']) < time())) {
                     throw new waAPIException('invalid_token', 'Access token has expired', 401);
                 }
+
+                // we will use token, update datetime
+                $tokens_model->updateLastUseDatetime($token);
+
                 // auth user
                 wa()->setUser(new waApiAuthUser($data['contact_id']));
+
                 return $data;
             }
             throw new waAPIException('invalid_token', 'Invalid access token', 401);

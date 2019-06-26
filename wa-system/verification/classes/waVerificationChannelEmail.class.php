@@ -178,6 +178,10 @@ class waVerificationChannelEmail extends waVerificationChannel
             $vca->deleteById($asset_id);
         }
 
+        if (!$result) {
+            return false;
+        }
+
         return $is_test_send ? $result : $asset_id;
     }
 
@@ -399,7 +403,7 @@ class waVerificationChannelEmail extends waVerificationChannel
         if (!is_scalar($email)) {
             return false;
         }
-        $validator = new waEmailValidator();
+        $validator = new waEmailValidator(array('required'=>true));
         return $validator->isValid($email);
     }
 
@@ -708,6 +712,10 @@ class waVerificationChannelEmail extends waVerificationChannel
             $vca->deleteById($asset_id);
         }
 
+        if (!$result) {
+            return false;
+        }
+
         return $is_test_send ? $result : $asset_id;
     }
 
@@ -1007,7 +1015,7 @@ class waVerificationChannelEmail extends waVerificationChannel
     {
         $sm = new waAppSettingsModel();
         $email = $sm->get('webasyst', 'sender', '');
-        $v = new waEmailValidator();
+        $v = new waEmailValidator(array('required'=>true));
         if ($v->isValid($email)) {
             return $email;
         }

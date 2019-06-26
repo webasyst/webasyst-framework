@@ -121,10 +121,10 @@ class waLocaleAdapter implements waiLocaleAdapter
      */
     protected function isChangedRecently($file) {
         $global_config = wa()->getConfig()->getPath('config').'/config.php';
-        if ($this->freshness_time > (time() - filemtime($global_config))) {
+        if ($this->freshness_time > (time() - @filemtime($global_config))) {
             return true;
         }
-        if (!file_exists($file) || $this->freshness_time > (time() - filemtime($file))) {
+        if (!file_exists($file) || $this->freshness_time > (time() - @filemtime($file))) {
             return true;
         }
         return false;

@@ -10,7 +10,7 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name) VALUES
 ('usa', 'DC', 'Washington, D.C.'),
 ('usa', 'DE', 'Delaware'),
 ('usa', 'FL', 'Florida'),
-('usa', 'GA', 'Georgia'),
+('usa', 'GA', 'Georgia State'),
 ('usa', 'HI', 'Hawaii'),
 ('usa', 'IA', 'Iowa'),
 ('usa', 'ID', 'Idaho'),

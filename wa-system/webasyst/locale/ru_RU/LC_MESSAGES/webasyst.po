@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-04-26 18:24+0300\n"
+"PO-Revision-Date: 2019-06-25 16:01+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -651,6 +651,9 @@ msgstr "Великобритания"
 
 msgid "Georgia"
 msgstr "Грузия"
+
+msgid "Georgia State"
+msgstr "Джорджия"
 
 msgid "Guernsey"
 msgstr "Гернси"
@@ -1302,6 +1305,27 @@ msgstr "Лос-Анджелес"
 
 msgid "Chicago"
 msgstr "Чикаго"
+
+msgid "Abkhazia"
+msgstr "Республика Абхазия"
+
+msgid "Bonaire, Sint Eustatius and Saba"
+msgstr "Бонайре, Саба и Синт-Эстатиус"
+
+msgid "Curaçao"
+msgstr "Кюрасао"
+
+msgid "Saint Martin (French Part)"
+msgstr "Сен-Мартен"
+
+msgid "Sint Maarten"
+msgstr "Синт-Мартен"
+
+msgid "South Ossetia"
+msgstr "Республика Южная Осетия"
+
+msgid "South Sudan"
+msgstr "Южный Судан"
 
 msgid "Street"
 msgstr "Улица"
@@ -2235,6 +2259,9 @@ msgstr "Создать дубликат"
 #: /wa-system/design/templates/Theme.html:23
 msgid "This will reset all customizations you applied to this design theme. Are you sure?"
 msgstr "Все изменения, которые вы вносили в тему дизайна, будут потеряны. Сбросить все изменения?"
+
+msgid "Design theme deleted."
+msgstr "Тема дизайна удалена."
 
 #: /wa-system/design/templates/Theme.html:23
 msgid "Revert theme to original"
@@ -5501,8 +5528,8 @@ msgid "Auth exception"
 msgstr "Ошибка авторизации"
 
 #: /wa-system/auth/waAuth.class.php:380
-msgid "Contact is not registered."
-msgstr "Контакт не зарегистрирован."
+msgid "No user with these data was found."
+msgstr "Пользователь с такими данными не найден."
 
 #: /wa-system/auth/waAuth.class.php:427
 msgid "Contact can't be authorized"
@@ -5740,6 +5767,12 @@ msgstr "Подтвердить регистрацию"
 msgid "Webasyst version"
 msgstr "Версия Webasyst"
 
+msgid "PHP version"
+msgstr "Версия PHP"
+
+msgid "MySQL version"
+msgstr "Версия MySQL"
+
 #: /wa-system/design/templates/Theme.html:223
 #: /wa-system/design/templates/Theme.html:249
 msgid "Update not available"
@@ -5966,3 +5999,118 @@ msgstr "Недостаточно прав на доступа для запис�
 
 msgid "WYSIWYG editor may change your HTML code. It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones. Are you sure to switch to WYSIWYG editor?"
 msgstr "Редактор WYSIWYG может изменить ваш HTML-код. Это необходимо для правильного форматирования текста. Код Smarty может быть сломан, и устаревшие HTML-теги могут быть заменены на современные. Вы действительно хотите переключиться на WYSIWYG-редактор?"
+
+msgid "Webasyst is moving to PHP versions 5.6 and higher."
+msgstr "Webasyst переходит на версии PHP 5.6 и выше."
+
+msgid "Database"
+msgstr "База данных"
+
+msgid "To add emoji support enable <b>Debug mode</b> in <b>General settings</b>."
+msgstr "Чтобы добавить поддержку эмодзи, включите <b>Режим отладки (debug mode)</b> в <b>Общих настройках</b>."
+
+msgid "supports emoji"
+msgstr "поддерживает эмодзи"
+
+msgid "does not support emoji"
+msgstr "не поддерживает эмодзи"
+
+msgid "Tables and fields without emoji support"
+msgstr "Таблицы и поля без поддержки эмодзи"
+
+msgid "You may also use phpMyAdmin to change database tables and fields encoding."
+msgstr "Для смены кодировки таблиц и полей в базе данных можно также использовать phpMyAdmin."
+
+msgid "Database tables and fields"
+msgstr "Таблицы и поля базы данных"
+
+msgid "New encoding"
+msgstr "Новая кодировка"
+
+msgid "Old encoding"
+msgstr "Старая кодировка"
+
+msgid "Table"
+msgstr "Таблица"
+
+msgid "Fields"
+msgstr "Поля"
+
+msgid "Collation"
+msgstr "Сравнение"
+
+msgid "Change encoding"
+msgstr "Сменить кодировку"
+
+msgid "Proceed to adding emoji support"
+msgstr "Перейти к добавлению поддержки эмодзи"
+
+msgid "Total tables"
+msgstr "Всего таблиц"
+
+msgid "Total fields"
+msgstr "Всего полей"
+
+msgid "Converted tables"
+msgstr "Сконвертировано таблиц"
+
+msgid "Converted fields"
+msgstr "Сконвертировано полей"
+
+msgid "Not converted tables"
+msgstr "Не преобразованные таблицы"
+
+msgid "Not converted fields"
+msgstr "Не преобразованные поля"
+
+msgid "Path to log file"
+msgstr "Путь к файлу с логом"
+
+msgid "Do not close this form until the conversion is completed."
+msgstr "Не закрывайте эту форму до окончания конвертации."
+
+msgid "Start changing encoding for tables and fields?"
+msgstr "Запустить смену кодировки для таблиц и полей?"
+
+msgid "This will start the conversion of your database tables and fields to <code>utf8mb4</code> encoding."
+msgstr "Будет запущен процесс конвертации таблиц и полей вашей базы данных в кодировку <code>utf8mb4</code>."
+
+msgid "It will enable you and your website visitors use emoji (smilies), hieroglyphs, and other Unicode symbols."
+msgstr "Это позволит вам и вашим пользователям использовать символы эмодзи (смайлики), иероглифы и другие символы Юникода."
+
+msgid "The encoding change may last a few seconds or minutes."
+msgstr "Смена кодировки может длиться несколько секунд или минут."
+
+msgid "It is essential to wait until the process completion to ensure that no tables or fields with outdated encoding remain."
+msgstr "Очень важно дождаться окончания конвертации, чтобы не осталось таблиц и полей с устаревшей кодировкой."
+
+msgid "Do not close this browser tab until the process is completed. It is recommended to start conversion during a period of minimum load on your website."
+msgstr "Не закрывайте эту вкладку браузера до окончания конвертации. Рекомендуется запускать этот процесс в период минимальных нагрузок на ваш сайт."
+
+msgid "Run"
+msgstr "Запустить"
+
+msgid "Unable to delete design theme"
+msgstr "Удаление темы дизайна невозможно"
+
+msgid "This design theme is still in use on your website."
+msgstr "Эта тема дизайна еще используется на вашем сайте."
+
+msgid "To delete this theme, first select another theme in the following settlements’ settings:"
+msgstr "Чтобы удалить тему дизайна, сначала смените ее на другую тему в настройках следующих поселений:"
+
+msgid "Only image files can be uploaded"
+msgstr "Можно загружать только файлы изображений"
+
+msgid "Design theme was not installed from Webasyst Store."
+msgstr "Тема дизайна была установлена не из магазина Webasyst."
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:42
+msgid "Tables not found."
+msgstr "Таблицы не найдены."
+
+msgid "Some tables and fields will not be converted. Do not try to run the conversion again to fix it."
+msgstr "Некоторые таблицы и поля не будут конвертированы. Не пытайтесь повторно запустить конвертацию, чтобы исправить это."
+
+msgid "Repeat the conversion after the installation of apps or plugins whenever you need to add emoji support for them."
+msgstr "Повторите конвертацию после установки приложений или плагинов, когда понадобится добавить для них поддержку эмодзи."

@@ -413,14 +413,21 @@ class waNet
     public function getResponseHeader($header = null)
     {
         if (!empty($header)) {
-            if (isset($this->response_header[$header])) {
+            if (array_key_exists($header, $this->response_header)) {
                 return $this->response_header[$header];
             }
-            $header = str_replace('-', '_', strtolower($header));
 
-            return ifset($this->response_header[$header]);
+            $header_alias = $header = str_replace('-', '_', $header);
+
+            foreach ($this->response_header as $field => $value) {
+                // Ignore register of headers according to RFC
+                if (strcasecmp($field, $header) === 0 || strcasecmp($header_alias, $header) === 0) {
+                    return $value;
+                }
+            }
+
+            return null;
         }
-
         return $this->response_header;
     }
 

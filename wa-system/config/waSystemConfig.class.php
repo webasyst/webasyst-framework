@@ -54,8 +54,8 @@ class waSystemConfig
             include($this->getRootPath()."/wa-system/helper/load.php");
         }
 
-        $this->configure();
         $this->environment = $environment;
+        $this->configure();
         $this->init();
 
         if ($this->environment === null) {
@@ -148,7 +148,7 @@ class waSystemConfig
     {
         $url = waRequest::server('REQUEST_URI', '/');
         if ($without_root) {
-            $url = substr($url, strlen($this->getRootUrl()));
+            $url = (string) substr($url, strlen($this->getRootUrl()));
         }
         if (!$this->getSystemOption('mod_rewrite')) {
             if (substr($url, 0, 9) == 'index.php') {
@@ -251,7 +251,7 @@ class waSystemConfig
             @set_magic_quotes_runtime(false);
         }
         // IIS
-        if (!isset($_SERVER['REQUEST_URI'])) {
+        if ($this->environment !== 'cli' && !isset($_SERVER['REQUEST_URI'])) {
             $_SERVER['REQUEST_URI'] = $_SERVER['PHP_SELF'];
             if (isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING'])) {
                 $_SERVER['REQUEST_URI'] .= '?'.$_SERVER['QUERY_STRING'];

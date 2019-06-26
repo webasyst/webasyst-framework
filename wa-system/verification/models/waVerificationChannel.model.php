@@ -51,7 +51,7 @@ class waVerificationChannelModel extends waModel
 
         // Try get 'sender' email
         $email = $sm->get('webasyst', 'sender', '');
-        $v = new waEmailValidator();
+        $v = new waEmailValidator(array('required'=>true));
         if ($v->isValid($email)) {
             return $email;
         }

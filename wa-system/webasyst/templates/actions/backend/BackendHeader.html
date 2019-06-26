@@ -8,46 +8,46 @@
     {/strip}
 {/function}
 {* Header item *}
+{strip}
 {function name="_renderHeaderItem" _id="" _info=[]}
-    {strip}
-        {* Build item url *}
-            {* pseudo-app *}
-            {if !empty($_info.app_id) && !empty($_info.link)}
-                {$_item_url = "`$backend_url``$_info.app_id`/`$_info.link`/"}
-            {* real app *}
-            {else}
-                {$_item_url = "`$backend_url``$_id`/"}
-            {/if}
-        {* Version *}
-        {if !empty($_info.version)}
-            {$_version = "?v=`$_info.version|escape`"}
+    {* Build item url *}
+        {* pseudo-app *}
+        {if !empty($_info.app_id) && !empty($_info.link)}
+            {$_item_url = "`$backend_url``$_info.app_id`/`$_info.link`/"}
+        {* real app *}
         {else}
-            {$_version = null}
+            {$_item_url = "`$backend_url``$_id`/"}
         {/if}
+    {* Version *}
+    {if !empty($_info.version)}
+        {$_version = "?v=`$_info.version|escape`"}
+    {else}
+        {$_version = null}
+    {/if}
 
-        <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($reuqest_uri, $_item_url) !== false} class="selected"{/if}>
-            {* Build app icon count *}
-            {$_count = null}
-            {if $counts && isset($counts[$_id])}
-                {if is_array($counts[$_id])}
-                    {$_item_url = $counts[$_id]['url']}
-                    {$_count = $counts[$_id]['count']}
-                {else}
-                    {$_count = $counts[$_id]}
-                {/if}
+    <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($reuqest_uri, $_item_url) !== false} class="selected"{/if}>
+        {* Build app icon count *}
+        {$_count = null}
+        {if $counts && isset($counts[$_id])}
+            {if is_array($counts[$_id])}
+                {$_item_url = $counts[$_id]['url']}
+                {$_count = $counts[$_id]['count']}
+            {else}
+                {$_count = $counts[$_id]}
             {/if}
-            <a href="{$_item_url}">
-                {if isset($_info.img)}
-                    <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{$_info.img}{$_version}" alt="">
-                {/if}
-                {$_info.name|ifempty}
-                {if $_count}
-                    <span class="indicator">{$_count}</span>
-                {/if}
-            </a>
-        </li>
-    {/strip}
+        {/if}
+        <a href="{$_item_url}">
+            {if isset($_info.img)}
+                <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{$_info.img}{$_version}" alt="">
+            {/if}
+            {$_info.name|ifempty}
+            {if $_count}
+                <span class="indicator">{$_count}</span>
+            {/if}
+        </a>
+    </li>
 {/function}
+{/strip}
 {strip}
 {* @event backend_header *}
 {* $return[%app_id%]['header_top'] *}
@@ -101,6 +101,7 @@
 
     {* App list *}
     <div id="wa-applist"{if is_array($counts)} class="counts-cached"{/if}>
+        {strip}
         <ul>
             {foreach $header_items as $_id => $_info}
                 {_renderHeaderItem _id=$_id _info=$_info}
@@ -109,6 +110,8 @@
                 <a href="#" id="wa-moreapps"></a>
             </li>
         </ul>
+        {/strip}
+
         {if $reuqest_uri == $backend_url || $reuqest_uri == "`$backend_url`/"}
             <div class="d-dashboard-header-content">
                 <div class="d-dashboards-list-wrapper" id="d-dashboards-list-wrapper"></div>
