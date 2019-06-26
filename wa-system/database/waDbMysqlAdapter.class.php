@@ -19,7 +19,7 @@ class waDbMySQLAdapter extends waDbAdapter
     const RESULT_BOTH = MYSQL_BOTH;
 
     const MB4_SUPPORTED_VERSION = '5.5.3';
-        
+
     public function connect($settings)
     {
         $host = $settings['host'].(isset($settings['port']) ? ':'.$settings['port'] : '');
@@ -44,7 +44,10 @@ class waDbMySQLAdapter extends waDbAdapter
             $charset = 'utf8mb4';
         }
 
-        @mysql_set_charset ($charset, $handler);
+        $charset_result = @mysql_set_charset($charset, $handler);
+        if (!$charset_result) {
+            mysql_set_charset('utf8', $handler); // fallback
+        }
         if (isset($settings['sql_mode'])) {
             $sql = "SET SESSION sql_mode = '".mysql_real_escape_string($settings['sql_mode'], $handler)."'";
             @mysql_query($sql, $handler);
@@ -56,7 +59,7 @@ class waDbMySQLAdapter extends waDbAdapter
     {
         return mysql_select_db($database, $this->handler);
     }
-    
+
     public function query($query)
     {
         $r = mysql_query($query, $this->handler);
@@ -70,62 +73,62 @@ class waDbMySQLAdapter extends waDbAdapter
         }
         return $r;
     }
-    
+
     public function free($result)
     {
         return mysql_free_result($result);
     }
-    
+
     public function data_seek($result, $offset)
     {
         return mysql_data_seek($result, $offset);
-    }        
-    
+    }
+
     public function close()
     {
         return mysql_close($this->handler);
     }
-    
+
     public function num_rows($result)
     {
         return mysql_num_rows($result);
     }
-    
+
     public function fetch_array($result, $mode = self::RESULT_NUM)
     {
         return mysql_fetch_array($result, $mode);
     }
-    
+
     public function fetch_assoc($result)
     {
         return mysql_fetch_assoc($result);
-    }    
-    
+    }
+
     public function insert_id()
     {
         return mysql_insert_id($this->handler);
     }
-    
+
     public function affected_rows()
     {
         return mysql_affected_rows($this->handler);
-    }        
-    
+    }
+
     public function escape($string)
     {
         return mysql_real_escape_string($string, $this->handler);
-    }    
-    
+    }
+
     public function error()
     {
         return mysql_error($this->handler);
     }
-    
+
     public function ping()
     {
         return mysql_ping($this->handler);
     }
-    
+
     public function errorCode()
     {
         return mysql_errno($this->handler);
@@ -314,5 +317,5 @@ class waDbMySQLAdapter extends waDbAdapter
     {
         throw new waDbException(mysql_error($this->handler), mysql_errno($this->handler));
     }
-    
+
 }

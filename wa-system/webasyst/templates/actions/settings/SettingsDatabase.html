@@ -25,6 +25,20 @@
                     </div>
                 </div>
 
+                {if !empty($connection_charset)}
+
+                    {* Connection charset *}
+                    <div class="field">
+                        <div class="name">
+                            <label for="config-name">[s`Connection charset`]</label>
+                        </div>
+                        <div class="value">
+                            {$connection_charset}
+                        </div>
+                    </div>
+
+                {/if}
+
                 {*  *}
                 {if $mb4_is_supported}
                     <div class="field">

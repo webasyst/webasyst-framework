@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-06-25 16:01+0300\n"
+"PO-Revision-Date: 2019-06-26 11:50+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5772,6 +5772,9 @@ msgstr "Версия PHP"
 
 msgid "MySQL version"
 msgstr "Версия MySQL"
+
+msgid "Connection charset"
+msgstr "Кодировка соединения"
 
 #: /wa-system/design/templates/Theme.html:223
 #: /wa-system/design/templates/Theme.html:249

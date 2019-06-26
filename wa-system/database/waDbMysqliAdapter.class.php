@@ -43,7 +43,10 @@ class waDbMysqliAdapter extends waDbAdapter
             $charset = 'utf8mb4';
         }
 
-        @$handler->set_charset($charset);
+        $charset_result = @$handler->set_charset($charset);
+        if (!$charset_result) {
+            $handler->set_charset('utf8'); // fallback
+        }
 
         if (isset($settings['sql_mode'])) {
             $sql = "SET SESSION sql_mode = '".$handler->real_escape_string($settings['sql_mode'])."'";

@@ -60,7 +60,7 @@ class webasystSettingsDatabaseConvertController extends waJsonController
             $this->addLog($message);
             $this->errors = array(
                 'error'    => $e->getMessage(),
-                'log_path' => $this->log_path,
+                'log_path' => $this->getLogPath(),
             );
         }
     }
@@ -109,13 +109,19 @@ class webasystSettingsDatabaseConvertController extends waJsonController
             $message = var_export($message, true);
         }
 
-        $file = '/db/mysql_mb4_convert/';
-
-        $file .= !empty($this->process_hash) ? $this->process_hash.'_error.log' : 'convert_error.log';
-
-        $this->log_path = $file;
+        $file = $this->getLogPath();
 
         waLog::log($message, $file);
+    }
+
+    protected function getLogPath()
+    {
+        if ($this->log_path === null) {
+            $file = '/db/mysql_mb4_convert/';
+            $file .= !empty($this->process_hash) ? $this->process_hash.'_error.log' : 'convert_error.log';
+            $this->log_path = $file;
+        }
+        return $this->log_path;
     }
 
     protected function getModel()
