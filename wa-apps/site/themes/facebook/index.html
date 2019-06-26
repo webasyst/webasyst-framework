@@ -3,11 +3,11 @@
 {$fb_url = "https://apps.facebook.com/`$fb_app_id`/"}
 {if !$wa->user()->isAuth() || !$wa->user('facebook_id')}
     {if $wa->post("signed_request")}
-    {$fb_signed_request = explode('.', $wa->post("signed_request"), 2)}
-    {$fb_data = json_decode(base64_decode(strtr($fb_signed_request[1], '-_', '+/')), true)}
-    {if !empty($fb_data.user_id)}
-        {$auth_user = $wa->oauth('facebook', [], $fb_data['oauth_token'])}
-    {/if}
+        {$fb_signed_request = explode('.', $wa->post("signed_request"), 2)}
+        {$fb_data = json_decode(base64_decode(strtr($fb_signed_request[1], '-_', '+/')), true)}
+        {if !empty($fb_data.user_id)}
+            {$auth_user = $wa->oauth('facebook', [], $fb_data['oauth_token'])}
+        {/if}
     {/if}
 {/if}
 {$fb_tabs = [
@@ -94,83 +94,83 @@
     {$wa->head()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 </head>
 <body id="{$wa_app}">
-    <div id="fb-root"></div>
-    <div id="header">
-        <div class="container" role="navigation">
+<div id="fb-root"></div>
+<div id="header">
+    <div class="container" role="navigation">
 
-            {if $wa->shop}
-                <!-- display shopping cart info in case Shop-Script is installed -->
-                {$cart_total = $wa->shop->cart->total()}
-                <div id="cart" class="block float-right{if !$cart_total} empty{/if}">
-                     <a href="{$wa->getUrl('shop/frontend/cart')}">
-                         <i class="icon16 cart"></i>[s`Cart`]: <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
-                     </a>
-                </div>
-
-                <!-- search form (app dependent) -->
-                <div class="search float-right">
-                    {include file="`$wa_active_theme_path`/searchform.html" inline}
-                </div>
-            {/if}
-
-            <h2 class="block facebook-app-title float-left">
-                <!-- replace with your company logo if you want -->
-                {$wa->accountName()}
-            </h2>
-
-            <div id="facebook_like" class="float-left" style="clear: none !important; margin-top: 13px;">
-                <div class="fb-like" data-href="{$wa->domainUrl()}" data-send="false" data-layout="button_count" data-width="200" data-show-faces="false"></div>
+        {if $wa->shop}
+            <!-- display shopping cart info in case Shop-Script is installed -->
+            {$cart_total = $wa->shop->cart->total()}
+            <div id="cart" class="block float-right{if !$cart_total} empty{/if}">
+                <a href="{$wa->getUrl('shop/frontend/cart')}">
+                    <i class="icon16 cart"></i>[s`Cart`]: <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                </a>
             </div>
 
-            <div class="clear-both"></div>
+            <!-- search form (app dependent) -->
+            <div class="search float-right">
+                {include file="`$wa_active_theme_path`/searchform.html" inline}
+            </div>
+        {/if}
 
-            <!-- phone number -->
-            {if $wa->shop && $wa->shop->settings('phone')}
-                <div class="block float-right">
-                    [s`Order by phone`]: <strong>{$wa->shop->settings('phone')}</strong>
-                </div>
-            {/if}
+        <h2 class="block facebook-app-title float-left">
+            <!-- replace with your company logo if you want -->
+            {$wa->accountName()}
+        </h2>
 
-            <!-- main Facebook app sections -->
-            <ul class="facebook-tabs">
-                {foreach $fb_tabs as $t}<li{if $t.url==$wa_app_url} class="selected"{/if}><a href="{$t.url}">{$t.name}</a></li>{/foreach}
-            </ul>
-
-            <div class="clear-both"></div>
-
+        <div id="facebook_like" class="float-left" style="clear: none !important; margin-top: 13px;">
+            <div class="fb-like" data-href="{$wa->domainUrl()}" data-send="false" data-layout="button_count" data-width="200" data-show-faces="false"></div>
         </div>
-    </div>
 
-    <div id="main">
+        <div class="clear-both"></div>
+
+        <!-- phone number -->
+        {if $wa->shop && $wa->shop->settings('phone')}
+            <div class="block float-right">
+                [s`Order by phone`]: <strong>{$wa->shop->settings('phone')}</strong>
+            </div>
+        {/if}
+
+        <!-- main Facebook app sections -->
+        <ul class="facebook-tabs">
+            {foreach $fb_tabs as $t}<li{if $t.url==$wa_app_url} class="selected"{/if}><a href="{$t.url}">{$t.name}</a></li>{/foreach}
+        </ul>
+
+        <div class="clear-both"></div>
+
+    </div>
+</div>
+
+<div id="main">
+    <div class="container">
+        <!-- INTERNAL APP NAVIGATION & CONTENT -->
+        {include file="`$wa_active_theme_path`/content.html" inline}
+        <div class="clear-both"></div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div id="footer">
+    <div class="block">
+        <div class="hr"></div>
         <div class="container">
-            <!-- INTERNAL APP NAVIGATION & CONTENT -->
-            {include file="`$wa_active_theme_path`/content.html" inline}
-            <div class="clear-both"></div>
+            {include file="`$wa_active_theme_path`/footer.html" inline}
+            <!--
+               <div id="sub-links" class="float-left">
+                <ul>
+                      <li><a href="#">About</a></li>
+                      <li><a href="#">Terms of service</a></li>
+                      <li><a href="#">Privacy policy</a></li>
+                </ul>
+              </div>
+            -->
+
+            {if !empty($theme_settings.footer_notice)}
+                <div style="clear: both"></div>
+                <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
+            {/if}
         </div>
     </div>
-
-    <!-- FOOTER -->
-    <div id="footer">
-        <div class="block">
-            <div class="hr"></div>
-            <div class="container">
-                {include file="`$wa_active_theme_path`/footer.html" inline}
-                <!--
-                   <div id="sub-links" class="float-left">
-                    <ul>
-                          <li><a href="#">About</a></li>
-                          <li><a href="#">Terms of service</a></li>
-                          <li><a href="#">Privacy policy</a></li>
-                    </ul>
-                  </div>
-                -->
-
-                {if !empty($theme_settings.footer_notice)}
-                    <div style="clear: both"></div>
-                    <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
-                {/if}
-            </div>
-        </div>
-    </div>
+</div>
 </body>
 </html>
