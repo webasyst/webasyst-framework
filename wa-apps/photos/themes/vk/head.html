@@ -1,26 +1,34 @@
-    <!-- photos app css -->
-    <link href="{$wa_active_theme_url}vk.photos.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
-    <link href="{$wa_active_theme_url}vk.photos.mobile.css?v{$wa_theme_version}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css">
+<!-- photos app css -->
+<link href="{$wa_active_theme_url}vk.photos.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+<link href="{$wa_active_theme_url}vk.photos.mobile.css?v{$wa_theme_version}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css">
 
-    <!-- js -->
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script type="text/javascript" src="{$wa_active_theme_url}vk.photos.js?v{$wa->version(true)}"></script>
-    {if $wa->photos->config('enable_2x')}
-    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery-plugins/jquery.retina.min.js?v{$wa->version(true)}"></script>
-    <script type="text/javascript">$(window).load(function(){ $('#photo-list img,.photo img,.albums img').retina()});</script>
-    {/if}
-    {if $nofollow}
-        <!-- "nofollow" for duplicate photo pages (context dependent) -->
-        <meta name="robots" content="nofollow" />
-    {/if}
+<!-- js -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="{$wa_active_theme_url}vk.photos.js?v{$wa->version(true)}"></script>
+{if $wa->photos->config('enable_2x')}
+<script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery-plugins/jquery.retina.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript">$(window).load(function(){ $('#photo-list img,.photo img,.albums img').retina()});</script>
+{/if}
+{if $nofollow}
+    <!-- "nofollow" for duplicate photo pages (context dependent) -->
+    <meta name="robots" content="nofollow" />
+{/if}
 
-    {* @event frontend_assets.%plugin_id% *}
-    {foreach $frontend_assets as $item}{if !empty($item)}{$item}{/if}{/foreach}
+{* @event frontend_assets.%plugin_id% *}
+{foreach $frontend_assets as $item}{if !empty($item)}{$item}{/if}{/foreach}
+
 <script>
-    $(window).on('photosLoaded', function () {
-        VK.callMethod('scrollTop');
+( function($) {
+    window.waTheme.getFrameSources().then( function(VK) {
+        var $body = $("body");
+
+        $(window).on('photosLoaded', function () {
+            VK.callMethod('scrollTop');
+        });
+
+        VK.addCallback('onScrollTop', function(scroll){
+            VK.callMethod("resizeWindow", $body.outerWidth(), $body.outerHeight());
+        });
     });
-    VK.addCallback('onScrollTop', function(scroll){
-        VK.callMethod("resizeWindow", $("body").outerWidth(), $("body").outerHeight());
-    });
+})(jQuery);
 </script>
