@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -1054,6 +1054,9 @@ msgstr "Добро пожаловать на ваш новый сайт!"
 msgid "Start by <a href=\"%s\">creating a page</a> in your site backend."
 msgstr "Начните с <a href=\"%s\">создания страницы</a> в бекенде сайта."
 
+msgid "Open “<a href=\"%s\">Pages</a>” section and add a new page with an empty address. You will see its contents here."
+msgstr "Перейдите в раздел «<a href=\"%s\">Страницы</a>» и создайте страницу с пустым адресом. Здесь вы увидите её текст."
+
 msgid "Start by creating a page in your <a href=\"%s\">site backend</a>."
 msgstr "Начните с создания страницы в <a href=\"%s\">бекенде сайта</a>."
 
@@ -1637,8 +1640,14 @@ msgstr "Тип содержимого"
 msgid "file"
 msgstr "файл"
 
-msgid "Port"
-msgstr "Порт"
+msgid "text (text/plain)"
+msgstr "текст (text/plain)"
+
+msgid "HTML code (text/html)"
+msgstr "HTML-код (text/html)"
+
+msgid "If content type “file” is selected, downloading of a file will start automatically if there is no extension in its name."
+msgstr "Если выбран тип содержимого «файл», то автоматически начнется скачивание файла, если в его имени не указано расширение."
 
 msgid "This rule is disabled because it is placed below a more general rule. Move this rule higher in the list to enable it."
 msgstr "Это правило отключено, потому что оно находится ниже более общего правила. Перенесите правило выше, чтобы включить его."

@@ -224,9 +224,11 @@
                             <div class="value">
                                 <select name="params[static_content_type]">
                                     <option value=""{if empty($route.static_content_type)} selected{/if}>[`file`]</option>
-                                    <option value="text/plain" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/plain')} selected{/if}>text/plain</option>
-                                    <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>text/html</option>
+                                    <option value="text/plain" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/plain')} selected{/if}>[`text (text/plain)`]</option>
+                                    <option value="text/html" {if !empty($route.static_content_type) && ($route.static_content_type === 'text/html')} selected{/if}>[`HTML code (text/html)`]</option>
                                 </select>
+                                <br>
+                                <span class="hint">[`If content type “file” is selected, downloading of a file will start automatically if there is no extension in its name.`]</span>
                             </div>
                         </div>
                         <div class="field">

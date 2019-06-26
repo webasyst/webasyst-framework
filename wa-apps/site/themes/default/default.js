@@ -172,17 +172,28 @@ $(document).ready(function() {
     });
 
     // STICKY CART for non-mobile
+    var $clone = null;
+
     $(window).scroll(function(){
         var is_mobile_case = MatchMedia("only screen and (max-width: 760px)");
         if (!is_mobile_case) {
             var scroll_top = $(this).scrollTop();
-            var $card = $("#cart"),
+            var $cart = $("#cart"),
                 $flyer = $('#cart-flyer');
 
-            if ( scroll_top >= 55 && !$card.hasClass( "fixed" ) && !$card.hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
-                $card.hide();
+            if ( scroll_top >= 55 && !$cart.hasClass( "fixed" ) && !$cart.hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
+                $cart.hide();
 
-                $card.addClass( "fixed" );
+                if (!$clone) {
+                    $clone = $("<div />").css({
+                        width: $cart.outerWidth(),
+                        height: "1rem"
+                    });
+                    $cart.before($clone);
+                }
+
+                $cart.addClass( "fixed" );
+
                 if ($flyer.length) {
                     var _width = $flyer.width()+52;
                     var _offset_right = $(window).width() - $flyer.offset().left - _width + 1;
@@ -190,11 +201,14 @@ $(document).ready(function() {
                     $("#cart").css({ "right": _offset_right+"px", "width": _width+"px" });
                 }
 
-                $card.show();
-                // $card.slideToggle(200);
+                $cart.show();
+                // $cart.slideToggle(200);
             } else if ( scroll_top < 50 && $("#cart").hasClass( "fixed" ) ) {
-                $card.removeClass( "fixed" );
-                $card.css({ "width": "auto" });
+
+                $cart.removeClass( "fixed" );
+                $cart.css({ "width": "auto" });
+
+                if ($clone) { $clone.remove(); $clone = null; }
             }
         }
     });

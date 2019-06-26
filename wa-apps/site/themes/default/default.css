@@ -355,6 +355,7 @@ header .auth li a:hover { color: #eea !important; }
 header .auth li a:visited { color: #777; }
 
 header .cart { display: inline-block; vertical-align: top; }
+header .cart .cart-summary { white-space: nowrap; }
 header .cart a { padding: 12px 16px 11px 13px; display: block; background: rgba(255,255,255,0.3); color: #fff; font-size: 1.5em; }
 header .cart a strong { color: #ff7; }
 header .cart a:hover { background: rgba(255,255,255,0.4) !important; }
