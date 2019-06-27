@@ -26,7 +26,7 @@ class paypalPayment extends waPayment implements waIPayment
      */
     public function allowedCurrency()
     {
-        return array_keys(array_filter(array_map('intval', $this->currency)));
+        return array_keys(array_filter($this->currency));
     }
 
     /**
@@ -45,8 +45,8 @@ class paypalPayment extends waPayment implements waIPayment
     /**
      * Returns array or currency selection options for plugin settings.
      *
-     * @see waPayment::settingCurrencySelect
      * @return array
+     * @see waPayment::settingCurrencySelect
      */
     public static function settingCurrencySelect()
     {
@@ -186,7 +186,6 @@ class paypalPayment extends waPayment implements waIPayment
      * Request parameters are checked and app's callback handler is called, if necessary.
      * Plugin settings are already initialized and available.
      * IPN (Instant Payment Notification)
-     * @throws waPaymentException
      * @param array $request Request data array ($_REQUEST) received from gateway
      * @return array Associative array of optional callback processing result parameters:
      *     'redirect' => URL to redirect user upon callback processing
@@ -199,22 +198,15 @@ class paypalPayment extends waPayment implements waIPayment
      *
      *     If a template is used, returned result is accessible in template source code via $result variable,
      *     and method's parameters via $params variable
+     * @throws waPaymentException
+     * @throws waException
      */
     protected function callbackHandler($request)
     {
-        // verifying that order id was received within callback
-        if (!$this->order_id) {
-            throw new waPaymentException('Invalid invoice number');
-        }
-
-        // verifying that plugin's essential settings values have been read and plugin has been correctly initialized
-        if (!$this->email) {
-            throw new waPaymentException('Empty merchant data');
-        }
+        $this->validateRequest($request);
 
         // sending additional request to payment gateway to receive current transaction status
         $state = $this->notifyValidate($request);
-
         /**
          * IMPORTANT! If response to status request does not contain correct signature and there is no way to verify
          * payment, then order status must not be changed.
@@ -226,36 +218,20 @@ class paypalPayment extends waPayment implements waIPayment
         if ($state == 'VERIFIED') {
             // accept transaction
             $transaction_data = $this->formalizeData($request);
-            $tm = new waTransactionModel();
-            $res = $tm->getByFields(
-                array(
-                    'native_id' => $transaction_data['native_id'],
-                    'plugin'    => $this->id,
-                )
-            );
 
-            if (!$res) { // making sure there are no duplicates of this transactions
+            // checking transaction unique id
+            $is_duplicate = $this->isDuplicate($transaction_data);
 
+            if (!$is_duplicate) { // making sure there are no duplicates of this transactions
+                $callback = null;
                 $transaction_data['order_id'] = $this->order_id;
                 $transaction_data['plugin'] = $this->id;
 
-                // checking transaction type
-                if (!in_array($transaction_data['type'], $this->supportedOperations())) {
-                    throw new waPaymentException('Unsupported payment operation');
-                }
-                // checking plugin settings 'email' field
-                if (empty($request['receiver_email']) || !($this->email) || $this->email != $request['receiver_email']) {
-                    throw new waPaymentException('Invalid receiver email: '.ifempty($request['receiver_email']));
-                }
-                // checking transaction unique id
-                if ($this->getUniqueTransaction($transaction_data)) {
-                    throw new waPaymentException('Duplicate transaction');
-                }
-                $transaction_data['state'] = self::STATE_CAPTURED;
-                $transaction_data = $this->saveTransaction($transaction_data, $request);
+                $this->prepareData($request, $transaction_data,$callback);
 
+                $transaction_data = $this->saveTransaction($transaction_data, $request);
                 // calling app's payment handler method for paid order
-                $result = $this->execAppCallback(self::CALLBACK_PAYMENT, $transaction_data);
+                $result = $this->execAppCallback($callback, $transaction_data);
                 if (!empty($result['error'])) {
                     throw new waPaymentException('Forbidden (validate error): '.$result['error']);
                 }
@@ -274,6 +250,68 @@ class paypalPayment extends waPayment implements waIPayment
         return array(
             'template' => false, // this plugin generates response without using a template
         );
+    }
+
+    /**
+     * @param $request
+     * @throws waPaymentException
+     */
+    protected function validateRequest($request)
+    {
+        // verifying that order id was received within callback
+        if (!$this->order_id) {
+            throw new waPaymentException('Invalid invoice number');
+        }
+
+        // verifying that plugin's essential settings values have been read and plugin has been correctly initialized
+        if (!$this->email) {
+            throw new waPaymentException('Empty merchant data');
+        }
+
+        // checking plugin settings 'email' field
+        if (empty($request['receiver_email']) || !($this->email) || $this->email != $request['receiver_email']) {
+            throw new waPaymentException('Invalid receiver email: '.ifempty($request['receiver_email']));
+        }
+    }
+
+    /**
+     * @param $transaction_data
+     * @return bool
+     */
+    protected function isDuplicate($transaction_data)
+    {
+        $transaction_model = new waTransactionModel();
+
+        $res = $transaction_model->getByFields(
+            array(
+                'plugin'      => $this->id,
+                'app_id'      => $this->app_id,
+                'merchant_id' => $this->merchant_id,
+                'native_id'   => $transaction_data['native_id']
+            )
+        );
+
+        return (bool)$res;
+    }
+
+    /**
+     * Prepares information for statuses
+     *
+     * For all statuses except "paid" displays an error in the order log
+     *
+     * @param $request
+     * @param $transaction_data
+     * @param $callback
+     */
+    protected function prepareData($request, &$transaction_data, &$callback)
+    {
+        if (in_array($transaction_data['type'], $this->supportedOperations())) {
+            $transaction_data['state'] = self::STATE_CAPTURED;
+            $callback = self::CALLBACK_PAYMENT;
+        } else {
+            $transaction_data['view_data'] = (sprintf(_wp('Transaction type: %s'), ifset($request, 'payment_status', _wp('unknown'))));
+            $callback = self::CALLBACK_NOTIFY;
+        }
     }
 
     /**
@@ -306,8 +344,7 @@ class paypalPayment extends waPayment implements waIPayment
         );
 
         $transaction_data['type'] = 'N/A';
-        if (
-            in_array(ifset($request['txn_type']), $types)
+        if (in_array(ifset($request['txn_type']), $types)
             && (strtolower(ifset($request['payment_status'])) == 'completed')
         ) {
             $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
@@ -353,15 +390,15 @@ class paypalPayment extends waPayment implements waIPayment
      */
     private function getEndpointUrl()
     {
-        return 'https://www.'.($this->sandbox ? 'sandbox.':'').'paypal.com/cgi-bin/webscr';
+        return 'https://www.'.($this->sandbox ? 'sandbox.' : '').'paypal.com/cgi-bin/webscr';
     }
 
     /**
      * Requests current transaction status from payment gateway.
      *
-     * @throws waException
-     * @param $data Transaction data
+     * @param array $data Transaction data
      * @return string Response received from payment gateway
+     * @throws waException
      */
     private function notifyValidate($data)
     {
@@ -418,16 +455,4 @@ class paypalPayment extends waPayment implements waIPayment
         return $response;
     }
 
-    private function getUniqueTransaction($transaction_data)
-    {
-        $transaction_model = new waTransactionModel();
-        return $transaction_model->getByFields(
-            array(
-                'plugin'      => $this->id,
-                'app_id'      => $this->app_id,
-                'merchant_id' => $this->merchant_id,
-                'native_id'   => $transaction_data['native_id']
-            )
-        );
-    }
 }
