@@ -384,9 +384,9 @@ abstract class waShipping extends waSystemPlugin
     }
 
     /**
-     * @param string $state one of waShipping::STATE_*
+     * @param string       $state one of waShipping::STATE_*
      * @param waOrder|null $order
-     * @param array $params
+     * @param array        $params
      * @return array
      */
     public function getStateFields($state, waOrder $order = null, $params = array())
@@ -401,7 +401,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_DRAFT
      * @param waOrder $order
-     * @param array $shipping_data
+     * @param array   $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function draftPackage(waOrder $order, $shipping_data = array())
@@ -412,7 +412,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_CANCELED
      * @param waOrder $order
-     * @param array $shipping_data
+     * @param array   $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function cancelPackage(waOrder $order, $shipping_data = array())
@@ -423,7 +423,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_SHIPPING
      * @param waOrder $order
-     * @param array $shipping_data
+     * @param array   $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function shippingPackage(waOrder $order, $shipping_data = array())
@@ -434,7 +434,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_READY
      * @param waOrder $order
-     * @param array $shipping_data
+     * @param array   $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function readyPackage(waOrder $order, $shipping_data = array())
@@ -456,9 +456,9 @@ abstract class waShipping extends waSystemPlugin
     /**
      *
      * Displays printable form content (HTML) by id
-     * @param string $id
+     * @param string  $id
      * @param waOrder $order
-     * @param array $params
+     * @param array   $params
      * @return string HTML code
      */
     public function displayPrintForm($id, waOrder $order, $params = array())
@@ -567,7 +567,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      *
      * Returns shipment current tracking info
-     * @param $tracking_id
+     * @param string $tracking_id
      * @return string Tracking information (HTML)
      */
     public function tracking($tracking_id = null)
@@ -578,7 +578,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      *
      * External shipping service callback handler
-     * @param array $params
+     * @param array  $params
      * @param string $module_id
      */
     public static function execCallback($params, $module_id)
@@ -644,7 +644,7 @@ abstract class waShipping extends waSystemPlugin
      * Country/region dependent select boxes [+ city input]
      *
      * @param string $name
-     * @param array $params
+     * @param array  $params
      * @return string
      * @example
      * Sample of params defined in proper settings.php
@@ -731,7 +731,7 @@ HTML;
 HTML;
 
 
-        $_style =!empty($regions) ? ' style="display:none;"' : '';
+        $_style = !empty($regions) ? ' style="display:none;"' : '';
         $_disabled = !empty($regions) ? ' disabled="disabled"' : '';
 
         $html .= <<<HTML
@@ -861,10 +861,11 @@ HTML;
     }
 
     /**
-     * @since installer 1.5.14
-     * @param $name
+     * @param       $name
      * @param array $params
      * @return string
+     * @throws Exception
+     * @since installer 1.5.14
      */
     public static function settingDeliveryIntervalControl($name, $params = array())
     {
@@ -882,7 +883,7 @@ HTML;
 
         waHtmlControl::addNamespace($params, $name);
 
-        $html = '<p class="hint">'._ws('This setting must be supported by the app; e.g., Shop-Script ver. 7.2.4.114 or higher.').'</p>';
+        $html = '<p class="hint">'._ws('This setting must be supported by the app; e.g., Shop-Script ver. 8.0 or higher.').'</p>';
 
 
         $interval_params = $params;
@@ -901,17 +902,23 @@ HTML;
         waHtmlControl::makeId($date_params, 'date');
         $html .= ifset($params['control_separator'], '<br/>');
 
+        $default_interval = array(
+            'from'   => 10,
+            'from_m' => 0,
+            'to'     => 12,
+            'to_m'   => 0,
+            'day'    => array_fill(0, 6, true),
+        );
+
+        if (!empty($params['extra_workdays'])) {
+            $default_interval['day']['workday'] = true;
+        }
+
         $intervals_params = $params;
         $intervals_params['value'] = ifempty(
             $params['value']['intervals'],
             array(
-                0 => array(
-                    'from'   => 10,
-                    'from_m' => 0,
-                    'to'     => 12,
-                    'to_m'   => 0,
-                    'day'    => array_fill(0, 6, true),
-                ),
+                0 => $default_interval,
             )
         );
 
@@ -953,21 +960,50 @@ HTML;
                 $to .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'to_m', $default_params + $interval_items_params);
             }
 
-            $days = array();
             $days_params = $interval_items_params;
             waHtmlControl::addNamespace($days_params, 'day');
-            for ($day = 0; $day < 7; $day++) {
+            $days = array_fill(0, 7, array('class' => 'js-days'));
+
+            $allow_hide = true;
+
+            if (!empty($params['extra_holidays'])) {
+                $days['holiday'] = array(
+                    'class' => 'js-holiday js-days',
+                    //'style' => 'border: solid 1px #FFF4F4 !important;',
+                );
+                $allow_hide = false;
+            }
+
+            if (!empty($params['extra_workdays'])) {
+                $days['workday'] = array(
+                    'class' => 'js-workday js-days',
+                    //'style' => 'background-color: #F4FFF4 !important;',
+                );
+                $allow_hide = false;
+            }
+
+            $allow_hide = json_encode($allow_hide);
+
+            foreach ($days as $day => &$day_info) {
                 $default_params = array(
                     'value' => ifset($value['day'][$day]),
                 );
-                $days[] = waHtmlControl::getControl(waHtmlControl::CHECKBOX, $day, $default_params + $days_params);
+                $day_info['control'] = waHtmlControl::getControl(waHtmlControl::CHECKBOX, $day, $default_params + $days_params);
+                unset($day_info);
             }
-            $days = implode('</td><td class="js-days">', $days);
+
+            $day_pattern = '<td class="%s" style="%s">%s</td>';
+            foreach ($days as &$day) {
+                $day = sprintf($day_pattern, $day['class'], ifset($day['style'], ''), $day['control']);
+                unset($day);
+            }
+
+            $days = implode($days);
             $rows[] = <<<HTML
 <tr>
     <td>{$from}</td>
     <td>{$to}</td>
-    <td class="js-days">{$days}</td>
+    {$days}
     <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete"></i></a></td>
 
 </tr>
@@ -984,6 +1020,15 @@ HTML;
             'Sat',
             'Sun',
         );
+
+        if (!empty($params['extra_holidays'])) {
+            $days[] = 'Extra day off';
+        }
+
+        if (!empty($params['extra_workdays'])) {
+            $days[] = 'Extra workday';
+        }
+
         foreach ($days as &$day) {
             $day = _ws($day);
         }
@@ -1020,34 +1065,37 @@ HTML;
     $(function () {
         'use strict';
         var table = $('#{$params['id']}');
-        var date = $('#{$date_params['id']}');
-        var interval = $('#{$interval_params['id']}');
 
-        interval.change(function (event) {
-            var fast = !event.originalEvent;
-            if (this.checked) {
-                table.show(fast ? null : 400);
-            } else {
-                table.hide(fast ? null : 400);
-            }
-        }).change();
-
-        date.change(function (event) {
-            var fast = !event.originalEvent;
-            if (this.checked) {
-                table.find('.js-days > *').animate({'opacity': '1'}, fast ? null : 300);
-                table.find('.js-days input').attr('disabled', null);
-                if (!this.defaultChecked) {
-                    table.find('.js-days input').attr('checked', true);
+        if({$allow_hide}) {
+            var interval = $('#{$interval_params['id']}');
+            interval.change(function (event) {
+                var fast = !event.originalEvent;
+                if (this.checked) {
+                    table.show(fast ? null : 400);
+                } else {
+                    table.hide(fast ? null : 400);
                 }
-            } else {
-                table.find('.js-days > *').animate({'opacity': '0'}, fast ? null : 300);
-                table.find('.js-days input').attr('disabled', true);
-            }
-        }).change();
+            }).change();
+
+            var date = $('#{$date_params['id']}');
+            date.change(function (event) {
+                var fast = !event.originalEvent;
+                if (this.checked) {
+                    table.find('.js-days > *').animate({'opacity': '1'}, fast ? null : 300);
+                    table.find('.js-days input').attr('disabled', null);
+                    if (!this.defaultChecked) {
+                        table.find('.js-days input').attr('checked', true);
+                    }
+                } else {
+                    table.find('.js-days > *').animate({'opacity': '0'}, fast ? null : 300);
+                    table.find('.js-days input').attr('disabled', true);
+                }
+            }).change();
+        }
 
         var set = function (tr, last) {
             tr.find('input[type="checkbox"]').attr('checked', true);
+            tr.find('input[type="checkbox"][name$="day\]"]').attr('checked', null);
             var value = last ? parseInt(last.find('input[name*="[to]"]').val()) : 10;
             var delta = last ? (24 + value - parseInt(last.find('input[name*="[from]"]').val())) : 2;
             tr.find('input[name*="[from]"]').val(value % 24).trigger('change');
@@ -1108,11 +1156,11 @@ HTML;
     }
 
     /**
-     * @since installer 1.5.14
-     * @deprecated use waHtmlControl::DATETIME instead
      * @param string $name
-     * @param array $params
+     * @param array  $params
      * @return string
+     * @deprecated use waHtmlControl::DATETIME instead
+     * @since      installer 1.5.14
      */
     public static function settingCustomDeliveryIntervalControl($name, $params = array())
     {
@@ -1327,8 +1375,8 @@ HTML;
     /**
      *
      * Get shipping plugin
-     * @param string $id
-     * @param null $key
+     * @param string               $id
+     * @param null                 $key
      * @param waAppShipping|string $app_adapter
      * @return waShipping
      */
@@ -1349,8 +1397,8 @@ HTML;
 
     /**
      * The list of available shipping options
-     * @param $options array
-     * @param null $type will be ignored
+     * @param      $options array
+     * @param null $type    will be ignored
      * @return array
      */
     final public static function enumerate($options = array(), $type = null)
@@ -1363,8 +1411,8 @@ HTML;
      *
      * Get plugin description
      * @param string $id
-     * @param array $options
-     * @param null $type will be ignored
+     * @param array  $options
+     * @param null   $type will be ignored
      * @return array[string]string
      * @return array['name']string
      * @return array['description']string
@@ -1381,8 +1429,8 @@ HTML;
 
     /**
      *
-     * @throws waException
      * @return waAppShipping
+     * @throws waException
      */
     final protected function getAdapter()
     {
@@ -1420,7 +1468,7 @@ HTML;
 
         } elseif (is_int($data)) {
             $data = date($format, $data);
-        } else {
+        } elseif ($data !== null) {
             $data = date($format, strtotime($data));
         }
         return $data;

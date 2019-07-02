@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-06-20 16:41+0300\n"
+"PO-Revision-Date: 2019-06-28 10:14+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3418,7 +3418,7 @@ msgid "Signup confirmation"
 msgstr ""
 
 #: /wa-system/shipping/waShipping.class.php:848
-msgid "This setting must be supported by the app; e.g., Shop-Script ver. 7.2.4.114 or higher."
+msgid "This setting must be supported by the app; e.g., Shop-Script ver. 8.0 or higher."
 msgstr ""
 
 #: /wa-system/shipping/waShipping.class.php:1168

@@ -2,8 +2,8 @@
 
     var class_names = {
         "wrapper": "wa-tooltip",
-            "icon": "wa-tooltip-icon",
-            "text": "wa-tooltip-text"
+        "icon": "wa-tooltip-icon",
+        "text": "wa-tooltip-text"
     };
 
     var Tooltip = ( function($) {
@@ -22,7 +22,9 @@
             that.hover_close_delay = ( options["hover_close_delay"] || 1000 );
             that.on = {
                 open: (typeof options["open"] === "function" ? options["open"] : function() {}),
-                close: (typeof options["close"] === "function" ? options["close"] : function() {})
+                close: (typeof options["close"] === "function" ? options["close"] : function() {}),
+                focus: (typeof options["focus"] === "function" ? options["focus"] : function() {}),
+                blur: (typeof options["blur"] === "function" ? options["blur"] : function() {})
             };
 
             // DYNAMIC VARS
@@ -58,12 +60,14 @@
                     event.preventDefault();
                     clearTimeout(close_timer);
                     that.$wrapper.addClass(hover_class);
+                    that.on.focus(that);
                 });
 
                 that.$wrapper.on("mouseleave", function(event) {
                     event.preventDefault();
                     close_timer = setTimeout( function() {
                         that.$wrapper.removeClass(hover_class);
+                        that.on.blur(that);
                     }, that.hover_close_delay);
                 });
             }
@@ -123,5 +127,37 @@
     function getSelector(name) {
         return (class_names[name] ? "." + class_names[name] : null);
     }
+
+    var plugin_name = "tooltip";
+
+    $.fn.waTooltip = function(plugin_options) {
+        var return_instance = ( typeof plugin_options === "string" && plugin_options === plugin_name),
+            $items = this,
+            result = this;
+
+        plugin_options = ( typeof plugin_options === "object" ? plugin_options : {});
+
+        if (return_instance) { result = getInstance(); } else { init(); }
+
+        return result;
+
+        function init() {
+            $items.each( function(index, item) {
+                var $wrapper = $(item);
+
+                if (!$wrapper.data(plugin_name)) {
+                    var options = $.extend(true, plugin_options, {
+                        $wrapper: $wrapper
+                    });
+
+                    $wrapper.data(plugin_name, new Tooltip(options));
+                }
+            });
+        }
+
+        function getInstance() {
+            return $items.first().data(plugin_name);
+        }
+    };
 
 })(jQuery);

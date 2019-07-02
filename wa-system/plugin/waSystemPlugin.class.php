@@ -192,7 +192,7 @@ abstract class waSystemPlugin
 
     /**
      * @param string $name
-     * @return array plugin settings as key => value
+     * @return array|string plugin settings as key => value or value only if name specified
      */
     public function getSettings($name = null)
     {
@@ -366,9 +366,10 @@ abstract class waSystemPlugin
     /**
      * Register user input control. See waHtmlControl::registerControl().
      *
-     * @param string $type
+     * @param string   $type
      * @param callback $callback
      * @return self Current object
+     * @throws Exception
      */
     protected function registerControl($type, $callback = null)
     {
@@ -410,15 +411,26 @@ abstract class waSystemPlugin
 
         foreach ($this->config() as $name => $row) {
             $row = array_merge($row, $params);
-            $row['value'] = $this->getSettings($name);
-            if (isset($options[$name])) {
-                $row['options'] = $options[$name];
-            }
-            if (isset($params['value']) && isset($params['value'][$name])) {
-                $row['value'] = $params['value'][$name];
-            }
+
             if (!empty($row['control_type'])) {
-                $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
+                if (isset($options[$name])) {
+                    $row['options'] = $options[$name];
+                }
+                if (isset($params['value']) && isset($params['value'][$name])) {
+                    $row['value'] = $params['value'][$name];
+                } elseif ($row['control_type'] === waHtmlControl::DATETIME) {
+                    $row['value'] = array(
+                        'date_str' => $this->getSettings($name.'.date_str'),
+                        'date'     => $this->getSettings($name.'.date'),
+                    );
+                } else {
+                    $row['value'] = $this->getSettings($name);
+                }
+                try {
+                    $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
+                } catch (Exception $ex) {
+                    $controls[$name] = $ex->getMessage();
+                }
             }
         }
         return implode("\n", $controls);
@@ -457,10 +469,11 @@ abstract class waSystemPlugin
     /**
      * @param array $settings
      * @return array
+     * @throws waException
      */
     public function saveSettings($settings = array())
     {
-        // Validate and prepare defualt values for checkboxes etc.
+        // Validate and prepare default values for checkboxes etc.
         $settings_config = $this->config();
         foreach ($settings_config as $name => $row) {
             if (!isset($settings[$name])) {
@@ -500,7 +513,7 @@ abstract class waSystemPlugin
      * See waShipping and waPayment for actual implementation.
      *
      * @throws waException
-     * @return waAppPayment
+     * @return waiPluginApp
      */
     abstract protected function getAdapter();
 }
