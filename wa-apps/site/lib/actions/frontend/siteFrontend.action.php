@@ -13,6 +13,7 @@ class siteFrontendAction extends waPageAction
                 }
             }
             $this->view->getHelper()->globals($params);
+            $this->view->assign('frontend_page', wa('site')->event('frontend_page', $page, array('before_content', 'after_content')));
             $this->view->assign('page', $page);
             $this->view->assign('wa_theme_url', $this->getThemeUrl());
             $page['content'] = $this->renderPage($page);
