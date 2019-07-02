@@ -2,14 +2,16 @@
 
 /**
  *
- * @property-read array $rate_zone
- * @property-read array $contact_fields
- * @property-read bool $required_fields
+ * @property-read array  $rate_zone
+ * @property-read array  $contact_fields
+ * @property-read bool   $required_fields
  * @property-read string $rate_by
  * @property-read string $currency
  * @property-read string $weight_dimension
- * @property-read array $rate
+ * @property-read array  $rate
  * @property-read string $delivery_time
+ * @property-read string $customer_interval
+ * @property-read int    $exact_delivery_time
  *
  */
 class courierShipping extends waShipping
@@ -22,9 +24,9 @@ class courierShipping extends waShipping
     }
 
     /**
-     * @see waShipping::getSettingsHTML()
      * @param array $params
      * @return string HTML
+     * @see waShipping::getSettingsHTML()
      */
     public function getSettingsHTML($params = array())
     {
@@ -120,6 +122,65 @@ class courierShipping extends waShipping
         return ($a > $b) ? 1 : ($a < $b ? -1 : 0);
     }
 
+    private $holidays;
+    private $workdays;
+    private $time;
+
+    private function setupSchedule()
+    {
+        if (empty($this->time)) {
+            $this->holidays = array_filter(explode(';', $this->getSettings('extra_holidays.date')));
+            $this->workdays = array_filter(explode(';', $this->getSettings('extra_workdays.date')));
+            $this->time = time();
+        }
+    }
+
+    private function getDeliveryTimes()
+    {
+        $this->setupSchedule();
+        if ($this->delivery_time) {
+            /** @var string $departure_datetime SQL DATETIME */
+            $departure_datetime = $this->getPackageProperty('departure_datetime');
+            /** @var  int $departure_timestamp */
+            if ($departure_datetime) {
+                $departure_timestamp = max(0, strtotime($departure_datetime) - $this->time);
+            } else {
+                $departure_timestamp = 0;
+            }
+            if ('exact_delivery_time' === $this->delivery_time) {
+                $delivery_date = array(
+                    $this->time + max(0, max(0, intval($this->exact_delivery_time)) * 3600) + $departure_timestamp,
+                );
+            } else {
+                $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
+                foreach ($delivery_date as & $date) {
+                    $date += $departure_timestamp;
+                }
+                unset($date);
+                $delivery_date = array_unique($delivery_date);
+            }
+
+            $est_delivery = array();
+            foreach ($delivery_date as $date) {
+                $est_delivery[] = waDateTime::format('humandate', $date);
+            }
+            $est_delivery = implode(' — ', $est_delivery);
+
+            if (count($delivery_date) == 1) {
+                $delivery_date = reset($delivery_date);
+            }
+        } else {
+            $delivery_date = null;
+            $est_delivery = null;
+        }
+
+
+        return array(
+            'timestamp' => $delivery_date,
+            'estimate'  => $est_delivery,
+        );
+    }
+
     protected function calculate()
     {
         $prices = array();
@@ -144,52 +205,137 @@ class courierShipping extends waShipping
             }
             $prices[] = $this->parseCost($rate['cost']);
         }
-        if ($this->delivery_time) {
-            /** @var string $departure_datetime SQL DATETIME */
-            $departure_datetime = $this->getPackageProperty('departure_datetime');
-            /** @var  int $departure_timestamp */
-            if ($departure_datetime) {
-                $departure_timestamp = max(0, strtotime($departure_datetime) - time());
-            } else {
-                $departure_timestamp = 0;
-            }
-
-            $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
-            foreach ($delivery_date as & $date) {
-                $date += $departure_timestamp;
-            }
-            unset($date);
-            $delivery_date = array_unique($delivery_date);
-
-            $est_delivery = array();
-            foreach ($delivery_date as $date) {
-                $est_delivery[] = waDateTime::format('humandate', $date);
-            }
-            $est_delivery = implode(' — ', $est_delivery);
-
-            if (count($delivery_date) == 1) {
-                $delivery_date = reset($delivery_date);
-            }
-            $delivery_date = self::formatDatetime($delivery_date);
-
-        } else {
-            $delivery_date = null;
-            $est_delivery = null;
-        }
 
         if (($limit !== null) && ($price === null)) {
             return false;
         }
 
-        return array(
-            'delivery' => array(
-                'est_delivery'  => $est_delivery,
-                'delivery_date' => $delivery_date,
-                'currency'      => $this->currency,
-                'rate'          => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
-                'type'          => self::TYPE_TODOOR,
-            ),
+        $delivery_times = $this->getDeliveryTimes();
+
+        $delivery = array(
+            'est_delivery' => $delivery_times['estimate'],
+            'currency'     => $this->currency,
+            'rate'         => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
+            'type'         => self::TYPE_TODOOR,
         );
+
+        $services = array();
+
+        $setting = $this->getSettings('customer_interval');
+
+        if (!empty($setting['intervals'])) {
+
+            $intervals = array();
+            $date_format = waDateTime::getFormat('date');
+            $offset = null;
+            foreach ($setting['intervals'] as $interval) {
+                $service_delivery_date = $this->workupInterval($interval, $delivery_times['timestamp']);
+
+                if (!empty($service_delivery_date)) {
+                    $key = $interval['interval'];
+                    $intervals[$key] = array_keys($interval['day']);
+                    $intervals[$key]['offset'] = $interval['offset'];
+                    if (!isset($delivery['delivery_date'])
+                        || (strtotime($delivery['delivery_date']) > strtotime($service_delivery_date))
+                    ) {
+                        $delivery['delivery_date'] = $service_delivery_date;
+                    }
+
+                    if (($offset === null) || ($offset > $interval['offset'])) {
+                        $offset = $interval['offset'];
+                    }
+                }
+            }
+
+            $custom_data = array(
+                'offset'      => $offset,
+                'intervals'   => $intervals,
+                'placeholder' => waDateTime::format($date_format, $delivery['delivery_date']),
+                'holidays'    => '',
+                'workdays'    => '',
+            );
+            $delivery += array(
+                'custom_data' => array(
+                    self::TYPE_TODOOR => $custom_data,
+                ),
+            );
+
+        }
+        $delivery += array(
+            'delivery_date' => self::formatDatetime($delivery_times['timestamp']),
+        );
+        $services['delivery'] = $delivery;
+
+        return $services;
+    }
+
+    /**
+     * @param $interval
+     * @param $timestamp
+     * @return false|string|null
+     */
+    private function workupInterval(&$interval, $timestamp)
+    {
+        $interval += array(
+            'from_m' => '00',
+            'to_m'   => '00',
+            'day'    => array(),
+            'offset' => 0,
+        );
+
+        $days = array_filter(array_map('intval', $interval['day']));
+        unset($interval['day']);
+        $interval = array_map('trim', $interval);
+
+        $service_delivery_date = null;
+        $interval['offset'] = 0;
+        $start = $timestamp ? (is_array($timestamp) ? reset($timestamp) : $timestamp) : $this->time;
+
+        $interval['from'] = sprintf('%02d:%02d', $interval['from'], $interval['from_m']);
+        unset($interval['from_m']);
+        $interval['to'] = sprintf('%02d:%02d', $interval['to'], $interval['to_m']);
+        unset($interval['to_m']);
+
+        $interval['interval'] = sprintf('%s-%s', $interval['from'], $interval['to']);
+
+        do {
+            $service_datetime = strtotime(sprintf('+%d days', $interval['offset']++), $start);
+            $service_date = date('Y-m-d', $service_datetime);
+
+            $week_day = date('N', $service_datetime) - 1;
+
+            $is_holiday = in_array($service_date, $this->holidays, true);
+
+            $is_extra_holiday = $is_holiday && !empty($days['holiday']);
+
+            if (!$is_holiday || $is_extra_holiday) {
+
+                $is_extra_workday = !empty($days['workday']) && in_array($service_date, $this->workdays, true);
+
+                $is_workday = $is_extra_holiday || $is_extra_workday || !empty($days[$week_day]);
+
+                if ($is_workday) {
+                    $is_same_day = date('Y-m-d', $this->time) === $service_date;
+                    if ($is_same_day) {
+                        if ((int)date('H', $this->time) >= (int)$interval['to']) {
+                            continue;
+                        }
+                    }
+                    $service_delivery_date = $service_date;
+                    $service_delivery_date .= sprintf(' %02d:00', $interval['from']);
+                }
+            }
+            if ($interval['offset'] > 60) {
+                break;
+            }
+        } while (empty($service_delivery_date));
+
+        //  unset($days['holiday']);
+        //  unset($days['workday']);
+
+        $interval['day'] = $days;
+
+        return $service_delivery_date;
     }
 
     public function allowedAddress()
@@ -287,6 +433,7 @@ class courierShipping extends waShipping
         $setting = $this->getSettings('customer_interval');
 
         if (!empty($setting['interval']) || !empty($setting['date'])) {
+            $this->setupSchedule();
             if (!strlen($this->delivery_time)) {
                 $from = time();
             } else {
@@ -306,15 +453,28 @@ class courierShipping extends waShipping
                 $value['date'] = $shipping_params['desired_delivery.date'];
             }
 
+            if (!empty($setting['intervals'])) {
+                $delivery_times = $this->getDeliveryTimes();
+                foreach ($setting['intervals'] as &$interval) {
+                    $start = $this->workupInterval($interval, $delivery_times['timestamp']);
+                    $interval['start_date'] = date('Y-m-d', strtotime($start));
+                }
+                unset($interval);
+            }
+
+            $params = array(
+                'date'      => empty($setting['date']) ? null : ifempty($offset, 0),
+                'interval'  => ifset($setting['interval']),
+                'intervals' => ifset($setting['intervals']),
+                'holidays'  => $this->holidays,
+                'workdays'  => $this->workdays,
+            );
+
             $fields['desired_delivery'] = array(
                 'value'        => $value,
                 'title'        => $this->_w('Preferred delivery time'),
                 'control_type' => waHtmlControl::DATETIME,
-                'params'       => array(
-                    'date'      => empty($setting['date']) ? null : ifempty($offset, 0),
-                    'interval'  => ifset($setting['interval']),
-                    'intervals' => ifset($setting['intervals']),
-                ),
+                'params'       => $params,
             );
         }
         return $fields;
@@ -330,6 +490,13 @@ class courierShipping extends waShipping
         );
     }
 
+    /**
+     * @param string  $id
+     * @param waOrder $order
+     * @param array   $params
+     * @return string
+     * @throws waException
+     */
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
         if ($id == 'delivery_list') {
@@ -390,7 +557,7 @@ class courierShipping extends waShipping
             $view->assign('p', $this);
             return $view->fetch($this->path.'/templates/form.html');
         } else {
-            throw new waException('Print form not found');
+            throw new waException('Print form not found', 404);
         }
     }
 

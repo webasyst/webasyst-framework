@@ -38,9 +38,9 @@
     
             </div>
             <div class="value">
-                <label>{$p->_w('City name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text"></label>
+                <label>{$p->_w('Locality name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text"></label>
     
-                <p class="hint">{$p->_w('If courier shipping is provided only within specific cities, enter the city names separated by comma so that customer is not be prompted to enter city name when this shipping option is selected; a city name will be automatically fetched as you specify it here. If this field is left blank, a customer will be prompted to enter a city name.')}</p>
+                <p class="hint">{$p->_w('If courier shipping is provided only within specific localities, enter the locality names separated by comma so that customer is not be prompted to enter a locality name when this shipping option is selected; a locality name will be automatically fetched as you specify it here. If this field is left blank, a customer will be prompted to enter a locality name.')}</p>
             </div>
             <br><br>
         </div>
@@ -368,5 +368,25 @@
                 }
             });
         })();
+
+        var $form = container.parents('form');
+        $form.find('input[name$="\[delivery_time\]"]').change(function (event) {
+            var $input = $form.find('input[name$="\[exact_delivery_time\]"]').parents('div.field');
+            if (this.checked) {
+                if (!event.originalEvent) {
+                    if (this.value === 'exact_delivery_time') {
+                        $input.show();
+                    } else {
+                        $input.hide();
+                    }
+                } else {
+                    if (this.value === 'exact_delivery_time') {
+                        $input.slideDown();
+                    } else {
+                        $input.slideUp();
+                    }
+                }
+            }
+        }).change();
     });
 </script>
