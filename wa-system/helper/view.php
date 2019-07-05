@@ -3,6 +3,7 @@
 function wa_header()
 {
     try {
+        wa('webasyst');
         $header = new webasystBackendHeaderAction();
         return $header->display();
     } catch (waException $e) {

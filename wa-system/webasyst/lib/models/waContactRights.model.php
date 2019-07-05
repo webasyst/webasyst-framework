@@ -49,12 +49,12 @@ class waContactRightsModel extends waModel {
             return $name ? PHP_INT_MAX : array('backend' => PHP_INT_MAX);
         }
 
-        if (!is_array($id)) {
+        if (!is_array($id) && $check_groups) {
             $cached = isset(self::$cache[$id]) && isset(self::$cache[$id][$app_id]);
         } else {
             $cached = false;
         }
-        if (is_array($id) || !$cached) {
+        if (!$cached) {
             $group_ids = is_array($id) ? array_map(wa_lambda('$a', 'return -$a;'), $id) : array(-$id);
             if ($check_groups) {
                 $group_ids[] = 0; // guests
@@ -77,7 +77,7 @@ class waContactRightsModel extends waModel {
                 $rights['backend'] = 0;
             }
 
-            if (!is_array($id)) {
+            if (!is_array($id) && $check_groups) {
                 self::$cache[$id][$app_id] = $rights;
             }
         } else {
@@ -194,6 +194,33 @@ class waContactRightsModel extends waModel {
         ));
 
         return $result;
+    }
+
+    /**
+     * Same as save() but for one current request only. Does not touch DB.
+     * Can not give access to app unless contact already has at least limited access.
+     * Can not change anything for global admin.
+     *
+     * @param int $id treated as user id if positive; group id otherwise; 0 is group id for guests.
+     * @param string $app_id application id
+     * @param string|array $name key to save value for, or array of key=>value pairs
+     * @param int|null $value int value to save
+     * @return bool
+     */
+    public function saveOnce($id, $app_id, $name, $value=null)
+    {
+        if ($this->get($id, 'webasyst', 'backend')) {
+            return false;
+        }
+        if (!$this->get($id, $app_id, 'backend')) {
+            return false;
+        }
+        if (is_array($name)) {
+            self::$cache[$id][$app_id] = $name + self::$cache[$id][$app_id];
+        } else {
+            self::$cache[$id][$app_id][$name] = $value;
+        }
+        return true;
     }
 
     /**

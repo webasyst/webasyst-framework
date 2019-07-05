@@ -1025,47 +1025,47 @@ HTML;
         }
 
         $interval_params = $params;
-        if (!empty($params['params']['interval'])) {
-            $intervals = ifempty($params['params']['intervals'], false);
-            if (is_array($intervals)) {
-                $interval_params['options'] = array();
-                foreach ($intervals as $id => $interval) {
-                    if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
-                        $days = array_filter(ifset($interval['day'], array()));
-                        $days = array_keys($days);
-                        $start_date = ifset($interval['start_date'], false);
-                        $start_timestamp = $start_date ? strtotime($start_date) : 0;
+        $intervals = ifempty($params['params']['intervals'], false);
+        if (is_array($intervals)) {
+            $interval_params['options'] = array();
+            foreach ($intervals as $id => $interval) {
+                if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
+                    $days = array_filter(ifset($interval['day'], array()));
+                    $days = array_keys($days);
+                    $start_date = ifset($interval['start_date'], false);
+                    $start_timestamp = $start_date ? strtotime($start_date) : 0;
 
-                        $value = sprintf(
-                            '%d:%02d-%d:%02d',
-                            $interval['from'],
-                            ifset($interval['from_m'], 0),
-                            $interval['to'],
-                            ifset($interval['to_m'], 0)
-                        );
-                        $interval_params['options'][$value] = array(
-                            'value'       => $value,
-                            'title'       => empty($value) ? _ws('Time') : $value,
-                            'description' => $start_date ? $start_date : $value,
-                            'data'        => compact('days', 'value', 'start_date', 'start_timestamp'),
-                        );
-                        $available_days = array_merge($days, $available_days);
-                    } else {
-                        $interval_params['options'][$id] = array(
+                    $value = sprintf(
+                        '%d:%02d-%d:%02d',
+                        $interval['from'],
+                        ifset($interval['from_m'], 0),
+                        $interval['to'],
+                        ifset($interval['to_m'], 0)
+                    );
+                    $interval_params['options'][$value] = array(
+                        'value'       => $value,
+                        'title'       => empty($value) ? _ws('Time') : $value,
+                        'description' => $start_date ? $start_date : $value,
+                        'data'        => compact('days', 'value', 'start_date', 'start_timestamp'),
+                    );
+                    $available_days = array_merge($days, $available_days);
+                } else {
+                    $interval_params['options'][$id] = array(
+                        'value' => $id,
+                        'title' => empty($id)?_ws('Time'):$id,
+                        'data'  => array(
+                            'days'  => $interval,
                             'value' => $id,
-                            'title' => empty($id)?_ws('Time'):$id,
-                            'data'  => array(
-                                'days'  => $interval,
-                                'value' => $id,
-                            ),
-                        );
-                        $available_days = array_merge(array_keys($interval), $available_days);
-                    }
+                        ),
+                    );
+                    $available_days = array_merge(array_keys($interval), $available_days);
                 }
-
-                $available_days = array_values(array_unique($available_days));
             }
 
+            $available_days = array_values(array_unique($available_days));
+        }
+
+        if (!empty($params['params']['interval'])) {
             $interval_name = preg_replace('@([^\]]+)(\]?)$@', '$1.interval$2', $name);
             if (isset($params['description_interval'])) {
                 $interval_params['description'] = $this->_wp($params['description_interval'], $params);
@@ -1239,12 +1239,11 @@ HTML;
                     var tooltip = [];
                     var available = true;
                     var date_formatted = $.datepicker.formatDate('yy-mm-dd', date);
+                    var day_type = dayType(date);
+                    var day = (date.getDay() + 6) % 7;
                     if (interval && interval.length) {
                         /** @var int day week day */
                         var timestamp = date.getTime();
-                        var day = (date.getDay() + 6) % 7;
-                        var day_type = dayType(date);
-                        
                         available = false;
                         interval_options.each(function(){
                             if(this.value.length && intervalAllowed($(this), timestamp, day, day_type)){
@@ -1258,6 +1257,8 @@ HTML;
                         if (index >= 0) {
                             css_class.push("{$selected_class}");
                         }
+                    } else {
+                        available = intervalAllowed(input_date, null, day, day_type);
                     }
                     
                     return [available, css_class.length?css_class.join(' '):'', tooltip.length?tooltip.join('\\n'):null]

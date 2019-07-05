@@ -342,7 +342,9 @@ abstract class waPayment extends waSystemPlugin
                 'code'      => $ex->getCode(),
             );
             self::log($module ? $module->getId() : 'general', $log);
-            self::endDebugCallback($module ? $module->getId() : 'general');
+            if (class_exists('waPaymentDebug')) {
+                waPaymentDebug::endDebugCallback($module ? $module->getId() : 'general');
+            }
             if ($module) {
                 return $module->callbackExceptionHandler($ex);
             } else {
