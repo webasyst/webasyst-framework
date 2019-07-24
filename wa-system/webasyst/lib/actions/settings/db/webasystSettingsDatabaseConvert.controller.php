@@ -93,7 +93,20 @@ class webasystSettingsDatabaseConvertController extends waJsonController
             return;
         }
 
-        $sql = "ALTER TABLE `{$this->table}` MODIFY `{$column_data['Field']}` {$column_data['Type']} CHARACTER SET ".self::CHARSET." COLLATE ".self::COLLATION;
+        $field = $column_data['Field'];
+        $type = $column_data['Type'];
+
+        $null = 'NULL';
+        if (strtoupper($column_data['Null']) === 'NO') {
+            $null = 'NOT NULL';
+        }
+
+        $default = $column_data['Default'];
+        if ($default !== null) {
+            $default = "DEFAULT '{$this->getModel()->escape($default)}'";
+        }
+
+        $sql = "ALTER TABLE `{$this->table}` MODIFY `{$field}` {$type} CHARACTER SET ".self::CHARSET." COLLATE ".self::COLLATION." {$null} {$default}";
 
         $this->getModel()->exec($sql);
     }
