@@ -246,24 +246,28 @@ class courierShipping extends waShipping
                     }
                 }
             }
+        }
 
+        $delivery += array(
+            'delivery_date' => self::formatDatetime($delivery_times['timestamp']),
+        );
+
+        if (!empty($setting['intervals'])) {
             $custom_data = array(
                 'offset'      => $offset,
                 'intervals'   => $intervals,
-                'placeholder' => waDateTime::format($date_format, $delivery['delivery_date']),
+                'placeholder' => waDateTime::format($date_format, is_array($delivery['delivery_date']) ? reset($delivery['delivery_date']) : $delivery['delivery_date']),
                 'holidays'    => '',
                 'workdays'    => '',
             );
+
             $delivery += array(
                 'custom_data' => array(
                     self::TYPE_TODOOR => $custom_data,
                 ),
             );
-
         }
-        $delivery += array(
-            'delivery_date' => self::formatDatetime($delivery_times['timestamp']),
-        );
+
         $services['delivery'] = $delivery;
 
         return $services;
