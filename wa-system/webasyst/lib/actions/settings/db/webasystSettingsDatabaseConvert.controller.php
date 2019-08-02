@@ -103,7 +103,11 @@ class webasystSettingsDatabaseConvertController extends waJsonController
 
         $default = $column_data['Default'];
         if ($default !== null) {
-            $default = "DEFAULT '{$this->getModel()->escape($default)}'";
+            if ($default == 'CURRENT_TIMESTAMP') {
+                $default = "DEFAULT ".$default;
+            } else {
+                $default = "DEFAULT '{$this->getModel()->escape($default)}'";
+            }
         }
 
         $sql = "ALTER TABLE `{$this->table}` MODIFY `{$field}` {$type} CHARACTER SET ".self::CHARSET." COLLATE ".self::COLLATION." {$null} {$default}";

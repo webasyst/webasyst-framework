@@ -89,7 +89,7 @@ class Smarty_Security {
         'disk_free_space', 'disk_total_space', 'diskfreespace', 'getcwd', 'getlastmo', 'gid',
         'array_map', 'array_walk', 'array_reduce', 'array_filter', 'usort', 'uksort', 'uasort', 'array_diff_uassoc', 'array_diff_ukey',
         'array_udiff_assoc', 'array_udiff_uassoc', 'array_udiff', 'array_uintersect_assoc', 'array_uintersect_uassoc',
-        'array_intersect_uassoc', 'array_intersect_ukey', 'extract', 'parse_str',
+        'array_intersect_uassoc', 'array_intersect_ukey', 'extract', 'parse_str', 'filter_input',
         'array_uintersect', 'array_walk', 'array_walk_recursive', 'pfsockopen', 'fsockopen',
         'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply', 'iptcembed',
         'forward_static_call', 'forward_static_call_array', 'get_defined_functions',

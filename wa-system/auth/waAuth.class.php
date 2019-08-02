@@ -448,7 +448,7 @@ class waAuth implements waiAuth
 
         $user_info = $this->getByLogin($login);
         if (!$user_info || ($this->options['is_user'] && $user_info['is_user'] <= 0)) {
-            throw new waAuthException(_ws("No user with these data was found."));
+            throw new waAuthException(_ws("Invalid login name or password."));
         }
 
         if ($this->isOnetimePasswordMode()) {

@@ -145,10 +145,40 @@ abstract class waDbAdapter
      *
      * @param null|string $after_column
      *
+     * @param boolean $emulate
+     * @return string|false
+     * @throws waDbException
+     *
      */
-    public function addColumn($table, $column, $table_schema, $after_column = null)
+    public function addColumn($table, $column, $table_schema, $after_column = null, $emulate = false)
     {
         // override
         // TODO: ADD to all adapters
+
+        return false;
+    }
+
+    /**
+     * Modify column by db.php schema for current table
+     *
+     * @param string $table
+     * @param string $column
+     *
+     * @param string $table_schema - db.php config TABLE schema
+     * See db.php format
+     *
+     * @param null|string $after_column
+     *
+     * @param boolean $emulate
+     * @return string|false
+     * @throws waDbException
+     *
+     */
+    public function modifyColumn($table, $column, $table_schema, $after_column = null, $emulate = false)
+    {
+        // override
+        // TODO: ADD to all adapters
+
+        return false;
     }
 }

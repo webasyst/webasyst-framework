@@ -223,7 +223,7 @@ class waBackendAuthConfig extends waAuthConfig
      */
     public function getLoginPlaceholder()
     {
-        return $this->getScalarValue('login_placeholder', _ws('Login'));
+        return $this->getScalarValue('login_placeholder', _ws('Login or email'));
     }
 
     /**

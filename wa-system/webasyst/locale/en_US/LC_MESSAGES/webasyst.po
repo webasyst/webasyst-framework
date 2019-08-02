@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-06-28 10:14+0300\n"
+"PO-Revision-Date: 2019-07-29 17:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2267,10 +2267,6 @@ msgstr ""
 msgid "Auth exception"
 msgstr ""
 
-#: /wa-system/auth/waAuth.class.php:380
-msgid "No user with these data was found."
-msgstr ""
-
 #: /wa-system/auth/waAuth.class.php:427
 msgid "Contact can't be authorized"
 msgstr ""
@@ -4157,4 +4153,36 @@ msgstr ""
 
 #: /wa-system/design/templates/ThemeDialogs.inc.html:307
 msgid "To delete this theme, first select another theme in the following settlements’ settings:"
+msgstr ""
+
+#: /wa-system/plugin/waSystemPlugin.class.php:355
+msgid "Shipping plugin class “%s” not found."
+msgstr ""
+
+#: /wa-system/plugin/waSystemPlugin.class.php:356
+msgid "Payment plugin class “%s” not found."
+msgstr ""
+
+#: /wa-system/plugin/waSystemPlugin.class.php:357
+msgid "SMS plugin class “%s” not found."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:33
+msgid "Connection charset"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:18
+msgid "Some tables and fields will not be converted. Do not try to run the conversion again to fix it."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:19
+msgid "Repeat the conversion after the installation of apps or plugins whenever you need to add emoji support for them."
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/settings/general/webasystSettingsClearCache.controller.php:43
+msgid "Some files could not be deleted."
+msgstr ""
+
+#: /wa-system/config/waBackendAuthConfig.class.php:226
+msgid "Login or email"
 msgstr ""

@@ -83,9 +83,7 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
             waUtils::varExportToFile($config, $config_path);
         }
         if ($flush) {
-            $path_cache = waConfig::get('wa_path_cache');
-            waFiles::delete($path_cache, true);
-            waFiles::protect($path_cache);
+            wa()->getConfig()->clearCache();
         }
     }
 }

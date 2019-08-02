@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Webasyst repair tools</title>
+</head>
+<body>
+<h2>List available repair tolls</h2>
+<ul>
+    {foreach $actions as $action=>$description}
+        <li><a href="./{$action}/">{$description}</a></li>
+    {/foreach}
+</ul>
+</body>
+</html>

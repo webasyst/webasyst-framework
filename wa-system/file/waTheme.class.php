@@ -1417,7 +1417,7 @@ XML;
      */
     public function flush()
     {
-        //wa-cache/apps/$app_id/templates/
+        //<cache-dir>/apps/$app_id/templates/
         waFiles::delete(wa()->getAppCachePath('templates', $this->app));
     }
 

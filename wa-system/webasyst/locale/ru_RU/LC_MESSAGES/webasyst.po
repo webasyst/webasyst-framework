@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-06-28 10:14+0300\n"
+"PO-Revision-Date: 2019-07-29 17:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1353,6 +1353,9 @@ msgstr "рабочий"
 
 msgid "personal"
 msgstr "личный"
+
+msgid "other"
+msgstr "другое"
 
 # Contact fields
 msgid "Title"
@@ -5533,10 +5536,6 @@ msgstr "Ошибка подтверждения email-адреса"
 msgid "Auth exception"
 msgstr "Ошибка авторизации"
 
-#: /wa-system/auth/waAuth.class.php:380
-msgid "No user with these data was found."
-msgstr "Пользователь с такими данными не найден."
-
 #: /wa-system/auth/waAuth.class.php:427
 msgid "Contact can't be authorized"
 msgstr "Контакт не может быть авторизован"
@@ -6123,3 +6122,16 @@ msgstr "Некоторые таблицы и поля не будут конве
 
 msgid "Repeat the conversion after the installation of apps or plugins whenever you need to add emoji support for them."
 msgstr "Повторите конвертацию после установки приложений или плагинов, когда понадобится добавить для них поддержку эмодзи."
+
+msgid "Shipping plugin class “%s” not found."
+msgstr "Не найден класс «%s» плагина доставки."
+
+msgid "Payment plugin class “%s” not found."
+msgstr "Не найден класс «%s» плагина оплаты."
+
+msgid "SMS plugin class “%s” not found."
+msgstr "Не найден класс «%s» SMS-плагина."
+
+#: /wa-system/webasyst/lib/actions/settings/general/webasystSettingsClearCache.controller.php:43
+msgid "Some files could not be deleted."
+msgstr "Не удалось удалить некоторые файлы."

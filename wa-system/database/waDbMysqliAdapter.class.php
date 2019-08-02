@@ -26,6 +26,8 @@ class waDbMysqliAdapter extends waDbAdapter
      */
     protected $handler;
 
+    private $charset;
+
     public function connect($settings)
     {
         $host = $settings['host'];
@@ -38,12 +40,12 @@ class waDbMysqliAdapter extends waDbAdapter
         $mysql_version = mysqli_get_server_info($handler);
         $mb4_is_supported = version_compare($mysql_version, self::MB4_SUPPORTED_VERSION, '>=');
 
-        $charset = isset($settings['charset']) ? $settings['charset'] : 'utf8';
+        $this->charset = isset($settings['charset']) ? $settings['charset'] : 'utf8';
         if (!isset($settings['charset']) && $mb4_is_supported) {
-            $charset = 'utf8mb4';
+            $this->charset = 'utf8mb4';
         }
 
-        $charset_result = @$handler->set_charset($charset);
+        $charset_result = @$handler->set_charset($this->charset);
         if (!$charset_result) {
             $handler->set_charset('utf8'); // fallback
         }
@@ -249,7 +251,21 @@ class waDbMysqliAdapter extends waDbAdapter
             $sql .= ", ".implode(",\n", $keys);
         }
 
-        $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8";
+        $sql .= ") ";
+
+        #setup engine
+        $engine = ifset($data, ':options', 'engine', 'MyISAM');
+        $engine = $this->engineIsAllowed($engine);
+        $sql .= " ENGINE={$engine}";
+
+        #setup charset
+        $charset = ifset($data, ':options', 'charset', 'utf8');
+        if ($this->charsetIsAllowed($charset)) {
+            $sql .= " DEFAULT CHARSET={$charset}";
+        } else {
+            $sql .= " DEFAULT CHARSET=utf8";
+        }
+
         if (!$this->query($sql)) {
             $this->exception();
         }
@@ -258,17 +274,19 @@ class waDbMysqliAdapter extends waDbAdapter
     /**
      * Add column by db.php schema for current table
      *
-     * @param string $table
-     * @param string $column
+     * @param string      $table
+     * @param string      $column
      *
-     * @param string $table_schema - db.php config TABLE schema
-     * See db.php format
+     * @param string      $table_schema - db.php config TABLE schema
+     *                                  See db.php format
      *
      * @param null|string $after_column
      *
+     * @param bool        $emulate
+     * @return string|false
      * @throws waDbException
      */
-    public function addColumn($table, $column, $table_schema, $after_column = null)
+    public function addColumn($table, $column, $table_schema, $after_column = null, $emulate = false)
     {
         $statements = $this->buildStatements($table_schema);
         $fields = $statements['fields'];
@@ -289,8 +307,58 @@ class waDbMysqliAdapter extends waDbAdapter
             $sql .= " AFTER `{$after_column}`";
         }
 
-        if (!$this->query($sql)) {
+        if ($emulate) {
+            return $sql;
+        } elseif (!$this->query($sql)) {
             $this->exception();
+        } else {
+            return $sql;
+        }
+    }
+
+    /**
+     * Modify column by db.php schema for current table
+     *
+     * @param string      $table
+     * @param string      $column
+     *
+     * @param string      $table_schema - db.php config TABLE schema
+     *                                  See db.php format
+     *
+     * @param null|string $after_column
+     *
+     * @param bool        $emulate
+     * @return string|false
+     * @throws waDbException
+     */
+    public function modifyColumn($table, $column, $table_schema, $after_column = null, $emulate = false)
+    {
+        $statements = $this->buildStatements($table_schema);
+        $fields = $statements['fields'];
+
+        if (!isset($fields[$column])) {
+            return;
+        }
+
+        if (!$this->query("SELECT `{$column}` FROM `{$table}` WHERE 0")) {
+            return $this->addColumn($table, $column, $table_schema, $after_column, $emulate);
+        } else {
+
+            $statement = $fields[$column];
+
+            $sql = "ALTER TABLE `{$table}` MODIFY COLUMN {$statement}";
+
+            if ($after_column && isset($fields[$after_column])) {
+                $sql .= " AFTER `{$after_column}`";
+            }
+
+            if ($emulate) {
+                return $sql;
+            } elseif (!$this->query($sql)) {
+                $this->exception();
+            } else {
+                return $sql;
+            }
         }
     }
 
@@ -305,6 +373,19 @@ class waDbMysqliAdapter extends waDbAdapter
                         $type .= ' '.strtoupper($k);
                     }
                 }
+
+                if (isset($field['charset'])) {
+                    if ($this->charsetIsAllowed($field['charset'])) {
+                        $type .= ' CHARACTER SET '.$field['charset'];
+                    } else {
+                        unset($field['collation']);
+                    }
+                }
+
+                if (isset($field['collation'])) {
+                    $type .= ' COLLATE '.$field['collation'];
+                }
+
                 if (isset($field['null']) && !$field['null']) {
                     $type .= ' NOT NULL';
                 } elseif (in_array(strtolower($field['type']), array('timestamp'))) {
@@ -351,6 +432,30 @@ class waDbMysqliAdapter extends waDbAdapter
             'fields' => $fields,
             'keys' => $keys
         );
+    }
+
+    private function charsetIsAllowed($charset)
+    {
+        return (
+            ($this->charset == $charset) // same as connection utf8 or utf8mb4
+            || (strpos($this->charset, $charset) === 0) // part of
+        );
+    }
+
+    private function engineIsAllowed($engine)
+    {
+        static $engines;
+        if ($engines === null) {
+            $engines = array();
+            $result = $this->query('SHOW ENGINES');
+            while ($row = $this->fetch_assoc($result)) {
+                if (in_array($row['Support'], array('YES', 'DEFAULT'), true)) {
+                    $engines[strtolower($row['Engine'])] = $row['Engine'];
+                }
+            }
+        }
+
+        return ifset($engines, strtolower($engine), 'MyISAM');
     }
 
     protected function exception()

@@ -1157,10 +1157,11 @@ HTML;
 
     /**
      * @param string $name
-     * @param array  $params
+     * @param array $params
      * @return string
-     * @deprecated use waHtmlControl::DATETIME instead
+     * @throws waException
      * @since      installer 1.5.14
+     * @deprecated use waHtmlControl::DATETIME instead
      */
     public static function settingCustomDeliveryIntervalControl($name, $params = array())
     {
@@ -1375,10 +1376,11 @@ HTML;
     /**
      *
      * Get shipping plugin
-     * @param string               $id
-     * @param null                 $key
+     * @param string $id
+     * @param null $key
      * @param waAppShipping|string $app_adapter
      * @return waShipping
+     * @throws waException
      */
     public static function factory($id, $key = null, $app_adapter = null)
     {

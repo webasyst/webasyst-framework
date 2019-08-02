@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Common interface for system plugins: shipping and payment.
  *
@@ -69,8 +70,8 @@ abstract class waSystemPlugin
     /**
      * List of available plugins of given type.
      *
-     * @param array $options    reserved for future use
-     * @param string $type      'shipping' or 'payment'
+     * @param array $options reserved for future use
+     * @param string $type 'shipping' or 'payment'
      * @return array            plugin class id => plugin info: see waSystemPlugin::info()
      */
     public static function enumerate($options = array(), $type = null)
@@ -322,9 +323,9 @@ abstract class waSystemPlugin
      * Helper to properly instantiate a system plugin. Should never be used directly,
      * see `waShipping::factory()` and `waPayment::factory()` instead.
      *
-     * @param string $id            plugin class id
-     * @param int $key              application-defined unique identifier to distuinguish between plugin entities
-     * @param string $type          plugin type (i.e. shipping or payment)
+     * @param string $id plugin class id
+     * @param int $key application-defined unique identifier to distuinguish between plugin entities
+     * @param string $type plugin type (i.e. shipping or payment)
      * @return waSystemPlugin
      * @throws waException
      */
@@ -350,7 +351,13 @@ abstract class waSystemPlugin
             $plugin->id = $id;
             $plugin->type = $type;
         } else {
-            throw new waException(sprintf("%s plugin class %s not found ", $type, $class));
+            $exception_messages = array(
+                'shipping' => _ws('Shipping plugin class “%s” not found.'),
+                'payment' => _ws('Payment plugin class “%s” not found.'),
+                'sms' => _ws('SMS plugin class “%s” not found.'),
+            );
+
+            throw new waException(sprintf(ifset($exception_messages, $type, ucfirst($type) . ' plugin class “%s” not found.'), $class));
         }
         return $plugin;
     }
@@ -366,7 +373,7 @@ abstract class waSystemPlugin
     /**
      * Register user input control. See waHtmlControl::registerControl().
      *
-     * @param string   $type
+     * @param string $type
      * @param callback $callback
      * @return self Current object
      * @throws Exception
@@ -512,8 +519,8 @@ abstract class waSystemPlugin
      * Helper to retrieve app adapter.
      * See waShipping and waPayment for actual implementation.
      *
-     * @throws waException
      * @return waiPluginApp
+     * @throws waException
      */
     abstract protected function getAdapter();
 }

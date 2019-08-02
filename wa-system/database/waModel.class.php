@@ -1117,7 +1117,7 @@ class waModel
      *
      * @param string $column
      *
-     * @param string $db_schema - db.php config schema
+     * @param string[][] $db_schema - db.php config schema
      *   Schema is associative array for each table with name of table as a key and table-schema as value
      *    <table_name> => array(
      *      ...
@@ -1138,6 +1138,35 @@ class waModel
         $table = $table !== null ? $table : $this->table;
         if (isset($schema[$table])) {
             $this->adapter->addColumn($table, $column, $schema[$table], $after_column);
+        }
+    }
+
+    /**
+     * modify column by db.php schema for current table
+     *
+     * @param string $column
+     *
+     * @param string[][] $db_schema - db.php config schema
+     *   Schema is associative array for each table with name of table as a key and table-schema as value
+     *    <table_name> => array(
+     *      ...
+     *    )
+     * See db.php format
+     *
+     * @param null|string $after_column
+     *
+     * @param null|string $table - name of table for which need add this column.
+     *   If null - get table from model $this->table
+     *   Current table must exists in passed $db_schema
+     *
+     *
+     */
+    public function modifyColumn($column, $db_schema, $after_column = null, $table = null, $emulate = false)
+    {
+        $schema = $this->formatSchema($db_schema);
+        $table = $table !== null ? $table : $this->table;
+        if (isset($schema[$table])) {
+            return $this->adapter->modifyColumn($table, $column, $schema[$table], $after_column, $emulate);
         }
     }
 

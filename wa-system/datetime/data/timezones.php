@@ -835,7 +835,6 @@ return array(
             1 =>
                 array(
                     0 => 'Moscow',
-                    1 => 'Volgograd',
                 ),
         ),
     'Europe/Samara'              =>
@@ -844,6 +843,7 @@ return array(
             1 =>
                 array(
                     0 => 'Samara',
+                    1 => 'Volgograd',
                 ),
         ),
     'Indian/Mahe'                =>

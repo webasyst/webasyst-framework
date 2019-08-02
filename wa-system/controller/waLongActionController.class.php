@@ -250,6 +250,9 @@ abstract class waLongActionController extends waController
      */
     protected $_read_attempt_limit = 5;
 
+    /**
+     * @throws waException
+     */
     public function execute()
     {
         $this->initEnv();

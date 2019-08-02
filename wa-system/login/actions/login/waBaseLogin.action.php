@@ -259,7 +259,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
                 $this->afterAuth();
             } else {
                 // almost never happens -- may be contact is not registered
-                $errors['auth'] = _ws("No user with these data was found.");
+                $errors['auth'] = _ws("Invalid login name or password.");
                 // diagnostic print
                 $this->logError(
                     "Almost never happens -- may be contact is not registered or exist",

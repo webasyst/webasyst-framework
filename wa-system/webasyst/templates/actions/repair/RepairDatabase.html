@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Webasyst database repair tool</title>
+    {$wa->css()}
+</head>
+<body>
+<div class="sidebar left200px" style="position: fixed; top: 0;">
+    <div class="block">
+
+        <ul class="menu-v with-icons">
+
+            {foreach $apps as $app_id=>$app}
+                <li><span class="count">{$app.errors|default:''}</span><a href="./#{$app_id}"><i class="icon16 apps"></i>{$app.name}</a></li>
+            {/foreach}
+        </ul>
+
+    </div>
+
+</div>
+
+<div class="content left200px">
+    <div class="block">
+        <form method="post">
+        <table class="zebra">
+            <thead>
+            <tr>
+                <th>Table</th>
+                <th></th>
+                <th>Field</th>
+                <th>Default</th>
+                <th>Nullable</th>
+                <th>Type</th>
+                <th>Encoding/Collation</th>
+            </tr>
+            </thead>
+            <tfoot>
+            {if !empty($sync)}
+                <tr><th colspan="7">
+            <textarea style="width: 90%;height: 600px">
+{foreach $apps as $app_id=>$app}{foreach $app.sql as $table=>$columns}{foreach $columns as $column=>$sql}
+#{$app_id}: {$table}.{$column}
+{$sql}
+
+{/foreach}{/foreach}{/foreach}
+</textarea></th>
+                </tr>
+                {/if}
+                {if $run_sql}
+                    <tr><th colspan="7"><a href="./">View other tables</a></th></tr>
+                {elseif !empty($sync)}
+                <tr><th colspan="7"><input type="submit" value="Run SQL queries"><input name="run" type="hidden" value="1">{$wa->csrf()} [`or`] <a href="./">[`cancel`]</a></th></tr>
+                {else}
+                <tr><th colspan="7"><input type="submit" value="View SQL queries">{$wa->csrf()}</th></tr>
+            {/if}
+
+            </tfoot>
+            <tbody>
+            {foreach $apps as $app_id=>$app}
+                {$app_anchor_done = false}
+                {foreach $app.default_tables as $table=>$fields}
+                    {strip}
+                        {if empty($sync)||isset($sync[$table])}
+
+                        {if !empty($sync)}
+                            {$flds = []}
+                            {foreach $fields as $column=>$info}
+                                {if isset($sync[$table][$column])}
+                                    {$flds[$column] = $info}
+                                {/if}
+                            {/foreach}
+                            {$fields = $flds}
+                        {/if}
+                    {/strip}
+
+                    {foreach $fields as $column=>$info}
+                        {if empty($sync)||isset($sync[$table][$column])}
+                        {if strpos($column,':') === 0}
+                            {foreach $info as $key=>$key_fields}
+                                <tr>
+                                    <td>
+                                        {if !$app_anchor_done}<a name="{$app_id}"></a>{$app_anchor_done=true}{/if}
+                                        {if $info@first}<i class="icon16 folder"></i>{$table}{/if}
+                                    </td>
+                                    <td><i class="icon16 lightning"></i></td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>{$key}</td>
+                                    <td>{if is_array($key_fields)}{$key_fields|implode:', '}{else}{$key_fields}{/if}</td>
+                                </tr>
+                            {/foreach}
+                        {else}
+                            {$current_info = $app.current_tables[$table][$column]}
+                            <tr{if $info.status} class="error" title="{$info.status|implode:', '}" {else}{/if}>
+
+                                <td>
+                                    {if !$app_anchor_done}<a name="{$app_id}"></a>{$app_anchor_done=true}{/if}
+                                    {if $info@first}<i class="icon16 folder"></i>{$table}{/if}
+                                </td>
+                                <td>{if $info.status}<i class="icon10 status-red"></i>{else}{/if}</td>
+                                <td>{if !empty($info.status.name)}
+                                        <label>
+                                            <input type="checkbox" name="sync[{$table}][{$column}][name]" {if empty($sync) || !empty($sync[$table][$column]['name'])} checked{/if}>
+                                            {$column}
+                                        </label>
+                                    {else}
+                                        {$column}
+                                    {/if}
+                                </td>
+                                <td>{if !empty($info.status.default)}
+                                        <label class="error-message">
+                                            <input type="checkbox" name="sync[{$table}][{$column}][default]" {if empty($sync) || !empty($sync[$table][$column]['default'])} checked{/if}>
+                                            {$current_info.default|var_export:true|escape}&rarr;{$info.default|var_export:true|escape}
+                                        </label>
+                                    {else}
+                                        {$current_info.default|var_export:true|escape}
+                                    {/if}
+                                </td>
+                                <td>
+                                    {if !empty($info.status.null)}
+                                        <label class="error-message">
+                                            <input type="checkbox" name="sync[{$table}][{$column}][null]" {if empty($sync) || !empty($sync[$table][$column]['null'])} checked{/if}>
+                                            {$current_info.null}&rarr;{$info.null}
+                                        </label>
+                                    {else}
+                                        {if $info.null}NULL{else}NOT NULL{/if}
+                                    {/if}
+                                </td>
+                                <td class="hint min-width">
+                                    {if !empty($info.status.type)}<i class="icon10 status-yellow-tiny sync" title="{$info.type}"></i>{/if}{$current_info.type}{if $current_info.params}({if !empty($info.status.params)}
+                                        <i class="icon10 status-yellow-tiny sync" title="{$info.params}"></i>
+                                    {/if}{$current_info.params}){/if}{if !empty($current_info.autoincrement)}(autoincrement){/if}
+                                </td>
+                                <td class="hint">
+                                    {if !empty($current_info.charset)}
+                                    {$current_info.charset}/{$current_info.collation}
+                                    {/if}
+                                </td>
+                            </tr>
+                        {/if}
+                        {/if}
+                    {/foreach}
+                    {/if}
+                {/foreach}
+            {/foreach}
+            </tbody>
+
+        </table>
+
+
+
+        </form>
+    </div>
+</div>
+</body>
+</html>

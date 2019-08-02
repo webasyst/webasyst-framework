@@ -203,7 +203,7 @@ abstract class waRightConfig
         if ($addScriptForSelect) {
             $html .= '
                 // Change resulting column for selects
-                var updateIndicator = function() {
+                var updateIndicatorForSelect = function() {
                     var self = $(this);
                     var tr = self.closest("table.c-access-app tr");
                     var group_value = tr.find("input.g-value").val()-0;
@@ -212,7 +212,7 @@ abstract class waRightConfig
                     var name = self.find("option[value=\""+result+"\"]").text();
                     tr.find("strong").text(name);
                 };
-                $("table.c-access-app select").change(updateIndicator);';
+                $("table.c-access-app select").change(updateIndicatorForSelect);';
         }
 
         if ($addScriptForCB) {
@@ -240,7 +240,7 @@ abstract class waRightConfig
                         .find("select[name^=\""+cb.attr("name").replace(/\.all]/,"")+"\"]").each(function (k,cb2) {
                             cb2 = $(cb2);
                             cb2.val(cb.val());
-                            updateIndicator.call(cb2[0]);
+                            updateIndicatorForSelect.call(cb2[0]);
                         });
                     }
                 };

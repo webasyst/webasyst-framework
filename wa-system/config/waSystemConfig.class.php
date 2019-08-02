@@ -36,18 +36,20 @@ class waSystemConfig
 
     public function __construct($environment = null, $root_path = null)
     {
-        self::$time = microtime(true);
+        if (empty(self::$time)) {
+            self::$time = microtime(true);
+        }
         if (self::$active == null || $this instanceof waAppConfig) {
             self::$active = $this;
         }
 
-
         if ($root_path === null) {
-            $this->root_path = realpath(dirname(__FILE__).'/../..');
-        } else {
-            $this->root_path = realpath($root_path);
+            $root_path = dirname(__FILE__).'/../..';
         }
-        $this->setPath($this->root_path);
+        $this->root_path = realpath($root_path);
+        if (!waConfig::has('wa_path_root')) {
+            $this->setPath($this->root_path);
+        }
 
         if (!self::$helpers) {
             self::$helpers = true;
@@ -282,6 +284,10 @@ class waSystemConfig
             foreach ($config as $name => $value) {
                 self::$system_options[$name] = $value;
             }
+
+            if (!empty(self::$system_options['cache_versioning'])) {
+                $this->enableCacheVersioning();
+            }
         }
     }
 
@@ -315,6 +321,38 @@ class waSystemConfig
             'wa_path_installer' => $root_path.DIRECTORY_SEPARATOR.'wa-installer',
             'wa_path_widgets'   => $root_path.DIRECTORY_SEPARATOR.'wa-widgets',
         ));
+    }
+
+    protected function enableCacheVersioning()
+    {
+        $wa_cache = waConfig::get('wa_path_cache_root');
+        if (!$wa_cache) {
+            $wa_cache = waConfig::get('wa_path_cache', $this->root_path.DIRECTORY_SEPARATOR.'wa-cache');
+            waConfig::set('wa_path_cache_root', $wa_cache);
+        }
+        $wa_cache .= DIRECTORY_SEPARATOR;
+
+        $versioning_file = $wa_cache.'versioning';
+        if (file_exists($versioning_file)) {
+            $filemtime = filemtime($versioning_file);
+        } else {
+            waFiles::create($wa_cache, true);
+            if (touch($versioning_file)) {
+                $filemtime = time();
+            } else {
+                self::$system_options['cache_versioning'] = false;
+                $filemtime = false;
+            }
+        }
+        waConfig::set('wa_path_cache', $wa_cache.$this->getVersionedCacheDir($filemtime));
+    }
+
+    protected function getVersionedCacheDir($reset_time)
+    {
+        if (!$reset_time) {
+            return '';
+        }
+        return DIRECTORY_SEPARATOR.substr(dechex($reset_time), -6);
     }
 
     public function getPath($name, $file = null)
@@ -543,4 +581,68 @@ class waSystemConfig
         return waLocale::getAll($type);
     }
 
+    public function clearCache()
+    {
+        $new_cache_dir = $old_cache_dir = waConfig::get('wa_path_cache');
+        $wa_cache = waConfig::get('wa_path_cache_root');
+        if (!$wa_cache) {
+            self::$system_options['cache_versioning'] = false;
+            $wa_cache = $old_cache_dir;
+        }
+
+        // When cache versioning is enabled, switch to new cache directory
+        if (!empty(self::$system_options['cache_versioning'])) {
+            if (touch($wa_cache.DIRECTORY_SEPARATOR.'versioning')) {
+                $filemtime = time();
+            } else {
+                self::$system_options['cache_versioning'] = false;
+                $filemtime = false;
+            }
+
+            $new_cache_dir = $wa_cache.$this->getVersionedCacheDir($filemtime);
+            waConfig::set('wa_path_cache', $new_cache_dir);
+        }
+
+        // Delete all dirs inside wa-cache
+        $clean = true;
+        foreach (waFiles::listdir($wa_cache) as $path) {
+            $path = $wa_cache.DIRECTORY_SEPARATOR.$path;
+            if (!waSystemConfig::isDebug() && !empty(self::$system_options['cache_versioning']) && ($old_cache_dir == $path || $new_cache_dir == $path)) {
+                // When cache versioning is enabled, do not delete current (both old and new) cache dirs.
+                // Old because there might still be scripts running. New because it is supposed to be empty.
+                continue;
+            }
+            if (!is_dir($path)) {
+                continue;
+            }
+            try {
+                waFiles::delete($path, true);
+            } catch (waException $ex) {
+                if (empty(self::$system_options['cache_versioning'])) {
+                    // we only care about leftovers here
+                    // if cache versioning is disabled
+                    $clean = false;
+                }
+            }
+        }
+
+        // Clear non-file-based app caches
+        $apps = wa()->getApps(true);
+        foreach ($apps as $app_id => $app) {
+            try {
+                $cache = wa()->getCache('default', $app_id);
+                if ($cache) $cache->deleteAll();
+            } catch (waException $ex) {
+                $clean = false;
+            }
+        }
+
+        // Make sure opcache and filesystem are aware of changes
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+        @clearstatcache();
+
+        return $clean;
+    }
 }

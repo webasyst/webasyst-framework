@@ -246,10 +246,10 @@ class waArchiveTar
             }
             switch ($this->compress_type) {
                 case 'gz':
-                    $this->file = @gzclose($this->path);
+                    @gzclose($this->file);
                     break;
                 default:
-                    $this->file = @fclose($this->path);
+                    @fclose($this->file);
                     break;
             }
             $this->file = 0;

@@ -1302,10 +1302,11 @@ class waSystem
     /**
      * Returns a setting value for specified app.
      *
-     * @param  string       $name     Settings field string id.
-     * @param  mixed        $default  Default value, which is returned if requested settings field contains no value.
-     * @param  string|null  $app_id   Optional app id. If not specified, then current app's id is used by default.
+     * @param string $name Settings field string id.
+     * @param mixed $default Default value, which is returned if requested settings field contains no value.
+     * @param string|null $app_id Optional app id. If not specified, then current app's id is used by default.
      * @return  mixed
+     * @throws waDbException
      */
     public static function getSetting($name, $default = '', $app_id = null)
     {

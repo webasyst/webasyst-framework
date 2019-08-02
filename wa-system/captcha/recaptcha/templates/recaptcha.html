@@ -20,7 +20,7 @@
             $('.g-recaptcha:not(.initialized)').each(function() {
                 var wrapper = $(this).addClass('initialized');
                 var widget_id = grecaptcha.render(wrapper[0], { sitekey: sitekey });
-                wrapper.siblings('.wa-captcha-refresh, wa-captcha-img').click(function() {
+                wrapper.siblings('.wa-captcha-refresh, .wa-captcha-img').click(function() {
                     try {
                         grecaptcha.reset(widget_id);
                         $(window).trigger('wa_recaptcha_loaded');

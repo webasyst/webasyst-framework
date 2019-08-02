@@ -14,4 +14,8 @@ return array(
     'settings/field/?'                          => 'settingsField',
     'settings/db/?'                             => 'settingsDatabase',
     'settings/?'                                => 'settings/',
+    'repair'                                    => array(
+        'url'    => 'repair/<action:(\w+)?>/?',
+        'module' => 'repair',
+    ),
 );
