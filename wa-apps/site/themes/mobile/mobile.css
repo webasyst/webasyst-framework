@@ -574,8 +574,47 @@ input[type="button"].gray-button,
 input[type="submit"].gray-button {
   background: #eee linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
 }
+.general-button[disabled],
+button[disabled],
+input[type="button"][disabled],
+input[type="submit"][disabled],
+.general-button.is-disabled,
+button.is-disabled,
+input[type="button"].is-disabled,
+input[type="submit"].is-disabled {
+  background: #eee;
+  color: #808080;
+  cursor: default;
+}
+.general-button[disabled]:hover,
+button[disabled]:hover,
+input[type="button"][disabled]:hover,
+input[type="submit"][disabled]:hover,
+.general-button.is-disabled:hover,
+button.is-disabled:hover,
+input[type="button"].is-disabled:hover,
+input[type="submit"].is-disabled:hover {
+  background: #eee;
+  color: #808080;
+}
 /* END BUTTONS STYLES */
 /* SITE APP LAYOUT STYLES */
+i.icon16 {
+  position: relative;
+  top: 2px;
+  display: inline-block;
+  vertical-align: baseline;
+  height: 16px;
+  width: 16px;
+  margin: 0 4px;
+  text-indent: -9999px;
+  text-decoration: none !important;
+}
+i.icon16.loading {
+  background-image: url("./img/icons/loading32.gif");
+  background-position: 0 0;
+  background-size: 16px 16px;
+}
 .site-wrapper {
   margin: 0;
   padding: 3.5em 0 0 0;

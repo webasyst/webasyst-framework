@@ -456,3 +456,28 @@ h2.title { font-size: 300%; letter-spacing: 0.2em; }
 /* FOOTER NOTICE */
 .s-footer-notice { margin: 1em 0; font-size: .9em; line-height: 1.3em; color: #bbb; text-align: center; }
 .s-footer-notice a { color: inherit; text-decoration: underline; }
+
+i.icon16.loading {
+    background-image: url("./img/icons/loading32.gif");
+    background-position: 0 0;
+    background-size: 16px 16px;
+}
+
+button[disabled],
+input[type="button"][disabled],
+input[type="submit"][disabled],
+button.is-disabled,
+input[type="button"].is-disabled,
+input[type="submit"].is-disabled {
+    color: #808080;
+    cursor: default;
+}
+
+button[disabled]:hover,
+input[type="button"][disabled]:hover,
+input[type="submit"][disabled]:hover,
+button.is-disabled:hover,
+input[type="button"].is-disabled:hover,
+input[type="submit"].is-disabled:hover {
+    color: #808080;
+}
