@@ -1066,17 +1066,17 @@ class waSystem
                         }
                         if (isset($app_info['img'])) {
                             $app_info['img'] = 'wa-apps/'.$app.'/'.$app_info['img'];
-                        } elseif (isset($app_info['icon'][48])) {
+                        } elseif (isset($app_info, 'icon', 48, null)) {
                             $app_info['img'] = $app_info['icon'][48];
                         }
                         if (isset($app_info['img'])) {
-                            if (!isset($app_info['icon'][48])) {
+                            if (!isset($app_info, 'icon', 48, null)) {
                                 $app_info['icon'][48] = $app_info['img'];
                             }
-                            if (!isset($app_info['icon'][24])) {
+                            if (!isset($app_info, 'icon', 24, null])) {
                                 $app_info['icon'][24] = $app_info['icon'][48];
                             }
-                            if (!isset($app_info['icon'][16])) {
+                            if (!isset($app_info, 'icon', 16, null)) {
                                 $app_info['icon'][16] = $app_info['icon'][24];
                             }
                         }
@@ -1100,7 +1100,7 @@ class waSystem
                                 }
                                 if (isset($params['img'])) {
                                     $params['img'] = $path_to_app.'/'.$params['img'];
-                                } elseif (isset($params['icon'][48])) {
+                                } elseif (isset($params, 'icon', 48, null)) {
                                     $params['img'] = $params['icon'][48];
                                 }
                             }
