@@ -793,7 +793,7 @@ class yandexdeliveryShipping extends waShipping
                         $text = 'Отправление оформлено.';
                         break;
                     case 'DELIVERY_LOADED':
-                        $text = 'Отправление подтвержденно службой доставки и ожидает отгрузки.';
+                        $text = 'Отправление подтверждено службой доставки и ожидает отгрузки.';
                         break;
                     case 'CANCELED':
                         $text = 'Заказ отменен.';
@@ -1058,14 +1058,25 @@ class yandexdeliveryShipping extends waShipping
 
             case 'todoor': //Курьерская
                 $rate['type'] = self::TYPE_TODOOR;
-                $schedules = ifset($service['delivery']['courier']['schedules'], array());
+
                 $rate['custom_data']['courier'] = array(
                     'intervals' => array(),
                     'offset'    => intval($service['minDays']),
+                    'payment'   => array(),
                 );
+
+                $payment = &$rate['custom_data']['courier']['payment'];
+                if (!empty($service['settings']['cash_service_in_cost'])) {
+                    $payment[self::PAYMENT_TYPE_CARD] = "Оплата картой";
+                    $payment[self::PAYMENT_TYPE_CASH] = "Оплата наличными";
+                } else {
+                    $payment[self::PAYMENT_TYPE_PREPAID] = "Предоплата";
+                }
+                unset($payment);
 
                 $intervals = &$rate['custom_data']['courier']['intervals'];
 
+                $schedules = ifset($service['delivery']['courier']['schedules'], array());
                 foreach ($schedules as $schedule) {
                     $schedule['from'] = preg_replace('@\:00$@', '', $schedule['from']);
                     $schedule['from'] = preg_replace('@^(\d:)@', '0$1', $schedule['from']);
@@ -1091,6 +1102,8 @@ class yandexdeliveryShipping extends waShipping
                 $date_format = waDateTime::getFormat('date');
                 $offset = sprintf('+ %d days', $rate['custom_data']['courier']['offset']);
                 $rate['custom_data']['courier']['placeholder'] = waDateTime::format($date_format, $offset);
+
+                $rate['custom_data'][waShipping::TYPE_TODOOR] = &$rate['custom_data']['courier'];
                 break;
 
             case 'pickup': //В пункт самовывоза
