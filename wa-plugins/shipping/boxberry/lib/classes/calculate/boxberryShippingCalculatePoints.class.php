@@ -57,7 +57,7 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculate
 
             $payment = $default_payment;
             if ($point['only_prepaid_orders'] === 'yes') {
-                $payment = [waShipping::PAYMENT_TYPE_PREPAID];
+                $payment = [waShipping::PAYMENT_TYPE_PREPAID => true];
             }
 
             $result[$c] =

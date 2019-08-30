@@ -125,9 +125,15 @@ abstract class boxberryShippingCalculate
         $mode = $this->getMode();
 
         if ($mode === 'all') {
-            $result = [waShipping::PAYMENT_TYPE_CARD, waShipping::PAYMENT_TYPE_CASH, waShipping::PAYMENT_TYPE_PREPAID];
+            $result = [
+                waShipping::PAYMENT_TYPE_CARD    => true,
+                waShipping::PAYMENT_TYPE_CASH    => true,
+                waShipping::PAYMENT_TYPE_PREPAID => true,
+            ];
         } elseif ($mode === 'prepayment') {
-            $result = [waShipping::PAYMENT_TYPE_PREPAID];
+            $result = [
+                waShipping::PAYMENT_TYPE_PREPAID => true,
+            ];
         }
 
         return $result;
