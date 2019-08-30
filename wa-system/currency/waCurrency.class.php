@@ -113,9 +113,6 @@ class waCurrency
     /**
      * Returns formatted amount value with currency.
      *
-     * @see wa_currency()
-     * @see wa_currency_html()
-     *
      * @param string $format Amount format. The format string must begin with % character and may contain the following
      *     optional parts in the specified order:
      *     - Precision (number of digits after decimal separator) expressed as an arbitrary integer value. If not
@@ -135,6 +132,10 @@ class waCurrency
      * @param string $currency Currency's ISO3 code
      * @param string $locale Locale id
      * @return string E.g., 'en_US'
+     * @throws waException
+     * @see wa_currency()
+     * @see wa_currency_html()
+     *
      */
     public static function format($format, $n, $currency, $locale = null)
     {
@@ -223,6 +224,7 @@ class waCurrency
             // When not present then round() is used.
             // 'w' option implies 'i'
             if (strstr($format_lower, 'i') !== false || strstr($format_lower, 'w') !== false) {
+                $n = round($n, $precision + 2);
                 $n = floor($n * pow(10, $precision)) / ((float) pow(10, $precision));
             } else {
                 $n = round($n, $precision);

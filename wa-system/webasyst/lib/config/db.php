@@ -303,6 +303,7 @@ return array(
         'code' => array('varchar', 8, 'null' => 0),
         'name' => array('varchar', 255, 'null' => 0),
         'fav_sort' => array('int', 11),
+        'region_center' => array('varchar', 255),
         ':keys' => array(
             'PRIMARY' => array('country_iso3', 'code'),
         ),
@@ -368,7 +369,7 @@ return array(
             'PRIMARY' => 'id',
             'address' => 'address'
         )
-    ),
+        ),
     'wa_verification_channel_params' => array(
         'channel_id' => array('int', 11, 'null' => 0),
         'name' => array('varchar', 64, 'null' => 0),

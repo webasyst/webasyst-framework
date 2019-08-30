@@ -13,7 +13,7 @@ class waRegionModel extends waModel
         if (empty($cache[$country][$code])) {
             $cache[$country][$code] = $this->getByField(array(
                 'country_iso3' => $country,
-                'code' => $code,
+                'code'         => $code,
             ));
         }
         return $cache[$country][$code];
@@ -42,7 +42,7 @@ class waRegionModel extends waModel
             $all = $country_or_regions;
         }
         $fav = array();
-        foreach($all as $r) {
+        foreach ($all as $r) {
             if ($r['fav_sort']) {
                 $fav[] = array('fav_sort' => $r['fav_sort'], 'name' => $r['name']) + $r;
             }
@@ -58,18 +58,23 @@ class waRegionModel extends waModel
     {
         $this->deleteByField('country_iso3', $country);
         $data = array();
-        foreach($regions as $code => $name) {
-            if (is_array($name)) {
-                $fav_sort = $name['fav_sort'];
-                $name = $name['name'];
-            } else {
-                $fav_sort = null;
+        foreach ($regions as $code => $region) {
+            $fav_sort = null;
+            $region_center = null;
+            $region_name = $region;
+
+            if (is_array($region)) {
+                $fav_sort = $region['fav_sort'];
+                $region_name = $region['name'];
+                $region_center = ifset($region, 'region_center', null);
             }
+
             $data[] = array(
-                'code' => $code,
-                'name' => $name,
-                'country_iso3' => $country,
-                'fav_sort' => $fav_sort,
+                'code'          => $code,
+                'name'          => $region_name,
+                'country_iso3'  => $country,
+                'fav_sort'      => $fav_sort,
+                'region_center' => $region_center
             );
         }
         if ($data) {

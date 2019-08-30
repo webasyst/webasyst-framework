@@ -40,54 +40,58 @@
                             <tr>
                                 <th>[s`Region name`]</th>
                                 <th>[s`Region code`]</th>
+                                <th>[s`Administrative center`]</th>
                                 <th class="min-width"></th>
                             </tr>
                             </thead>
                             <tbody>
-                                {foreach $regions as $r}
-                                    <tr data-orig-code="{$r.code|escape}">
-                                        <td><input type="text" name="region_names[]" placeholder="[s`Region name`]" value="{$r.name|escape}" rel="{$r.name|escape}"></td>
-                                        <td><input type="text" name="region_codes[]" placeholder="[s`Region code`]" value="{$r.code|escape}"></td>
-                                        <td class="min-width"><a class="nowrap" href="javascript:void(0)">
-                                                {if $r.fav_sort === null}
-                                                    <input type="hidden" name="region_favs[]" value="">
-                                                    <i class="icon16 fav star-empty" title="[s`Clone on top of the list`]"></i>
-                                                {else}
-                                                    <input type="hidden" name="region_favs[]" value="{ifset($r.fav_sort, '')}">
-                                                    <i class="icon16 fav star" title="[s`Clone on top of the list`]"></i>
-                                                {/if}
-                                                <i class="icon16 no"></i>
-                                            </a></td>
-                                    </tr>
-                                    {foreachelse}
-                                    <tr class="empty-stub">
-                                        <td colspan="3">
-                                            <em class="grey">[s`No regions (states, provinces) are defined for this country.`]</em>
-                                        </td>
-                                    </tr>
-                                {/foreach}
-
-                                <tr class="white">
-                                    <td colspan="3"><a href="javascript:void(0)" class="js-add-region-link inline-link"><i class="icon16 add"></i><b><i>[s`Add region`]</i></b></a></td>
+                            {foreach $regions as $r}
+                                <tr data-orig-code="{$r.code|escape}">
+                                    <td><input type="text" class="js-input-required" name="region_names[]" placeholder="[s`Region name`]" value="{$r.name|escape}"
+                                               rel="{$r.name|escape}"></td>
+                                    <td><input type="text" class="js-input-required" name="region_codes[]" placeholder="[s`Region code`]" value="{$r.code|escape}"></td>
+                                    <td><input type="text" name="region_centers[]" placeholder="[s`Administrative center`]" value="{$r.region_center|escape}"></td>
+                                    <td class="min-width"><a class="nowrap" href="javascript:void(0)">
+                                            {if $r.fav_sort === null}
+                                                <input type="hidden" name="region_favs[]" value="">
+                                                <i class="icon16 fav star-empty" title="[s`Clone on top of the list`]"></i>
+                                            {else}
+                                                <input type="hidden" name="region_favs[]" value="{ifset($r.fav_sort, '')}">
+                                                <i class="icon16 fav star" title="[s`Clone on top of the list`]"></i>
+                                            {/if}
+                                            <i class="icon16 no"></i>
+                                        </a></td>
                                 </tr>
+                                {foreachelse}
+                                <tr class="empty-stub">
+                                    <td colspan="3">
+                                        <em class="grey">[s`No regions (states, provinces) are defined for this country.`]</em>
+                                    </td>
+                                </tr>
+                            {/foreach}
 
-                                {* Template for new rows *}
-                                <tr class="hidden highlighted just-added js-template-new">
-                                    <td><input type="text" name="region_names[]" value="" placeholder="[s`Region name`]"></td>
-                                    <td><input type="text" name="region_codes[]" value="" placeholder="[s`Region code`]"></td>
-                                    <td class="min-width"><a href="javascript:void(0)">
+                            <tr class="white">
+                                <td colspan="3"><a href="javascript:void(0)" class="js-add-region-link inline-link"><i class="icon16 add"></i><b><i>[s`Add region`]</i></b></a></td>
+                            </tr>
+
+                            {* Template for new rows *}
+                            <tr class="hidden highlighted just-added js-template-new">
+                                <td><input type="text" class="js-input-required" name="region_names[]" value="" placeholder="[s`Region name`]"></td>
+                                <td><input type="text" class="js-input-required" name="region_codes[]" value="" placeholder="[s`Region code`]"></td>
+                                <td><input type="text" name="region_centers[]" value="" placeholder="[s`Administrative center`]"></td>
+                                <td class="min-width"><a href="javascript:void(0)">
                                         <input type="hidden" name="region_favs[]" value="">
                                         <i class="icon16" style="background: none;"></i>
                                         <i class="icon16 no"></i>
                                     </a></td>
-                                </tr>
+                            </tr>
 
-                                {* Template for deleted rows *}
-                                <tr class="gray hidden highlighted js-template-deleted">
-                                    <td class="bold strike insert-name-here"></td>
-                                    <td><em class="small">[s`Click “Save” button below to commit the delete.`]</em></td>
-                                    <td class="min-width"></td>
-                                </tr>
+                            {* Template for deleted rows *}
+                            <tr class="gray hidden highlighted js-template-deleted">
+                                <td class="bold strike insert-name-here"></td>
+                                <td><em class="small">[s`Click “Save” button below to commit the delete.`]</em></td>
+                                <td class="min-width"></td>
+                            </tr>
 
                             </tbody>
                         </table>
@@ -109,7 +113,7 @@
     </div>
 </div>
 <script type="text/javascript">
-    (function($) {
+    (function ($) {
         new WASettingsRegions({
             $wrapper: $("#s-regions-settings-page"),
             country_iso3letter: '{$country.iso3letter}',

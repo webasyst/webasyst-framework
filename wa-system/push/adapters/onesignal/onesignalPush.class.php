@@ -135,12 +135,15 @@ class onesignalPush extends waPushAdapter
 
         $subscriber_list = $this->getSubscriberListByField('contact_id', $contact_id);
 
+        $result = array();
         foreach ($subscriber_list as $app_id => $user_ids) {
             $push_data = $request_data;
             $push_data['app_id'] = $app_id;
             $push_data['include_player_ids'] = $user_ids;
-            $this->request('notifications', $push_data, waNet::METHOD_POST);
+            $result[] = $this->request('notifications', $push_data, waNet::METHOD_POST);
         }
+
+        return $result;
     }
 
     protected function prepareRequestData(array $data)
@@ -153,7 +156,7 @@ class onesignalPush extends waPushAdapter
                 'en' => (string)ifempty($data, 'message', null)
             ),
             'url'      => (string)ifempty($data, 'url', null),
-            'data'     => array(1 => 1), // required field for OneSignal
+            'data'     => (array)ifempty($data, 'data', array(1 => 1)),
         );
 
         if (!empty($data['image_url'])) {

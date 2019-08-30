@@ -55,6 +55,7 @@ class waFrontController
                 $routing = new waRouting($this->system, array(
                     'default' => array(
                         array(
+                            'is_backend_route' => true,
                             'url' => wa()->getConfig()->systemOption('backend_url').'/'.$app.'/*',
                             'app' => $app,
                         ),

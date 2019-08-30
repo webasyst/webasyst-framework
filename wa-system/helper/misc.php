@@ -275,7 +275,7 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     if (is_resource($value)) {
         return print_r($value, 1).' ('.get_resource_type($value).')';
     } else if (is_float($value)) {
-        $result = print_r($value, 1);
+        $result = var_export($value, 1);
         if (false === strpos($result, '.') && false === strpos($result, ',')) {
             $result .= '.0';
         }

@@ -9,6 +9,7 @@ var ContentRouter = ( function($) {
 
         // VARS
         that.app_url = options["app_url"];
+        that.base_href = (options["base_href"] || null);
         that.api_enabled = !!(window.history && window.history.pushState);
 
         // DYNAMIC VARS
@@ -21,8 +22,28 @@ var ContentRouter = ( function($) {
 
     ContentRouter.prototype.initClass = function() {
         var that = this;
+
+        //
+        that.setupBaseHref();
         //
         that.bindEvents();
+    };
+
+    ContentRouter.prototype.setupBaseHref = function() {
+        var that = this;
+
+        if (!that.base_href) {
+            return false;
+        }
+
+        var $base = $('base');
+        if (!$base.length) {
+            var base = document.createElement("base");
+            document.getElementsByTagName("head")[0].appendChild(base);
+            $base = $(base);
+        }
+
+        $base.attr("href", that.base_href);
     };
 
     ContentRouter.prototype.bindEvents = function() {

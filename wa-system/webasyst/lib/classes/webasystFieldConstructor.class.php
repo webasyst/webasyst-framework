@@ -64,12 +64,12 @@ class webasystFieldConstructor
     }
 
     /**
-     * @throws waException
      * @param waContactField|null $field
      * @param array|null $data
      * @return array of two items
      *          0 - null|waContactField
      *          1 - array of errors
+     * @throws waException
      */
     public function updateField($field, $data = array())
     {
@@ -456,7 +456,11 @@ class webasystFieldConstructor
         }
         if ($info && $field_id === 'address') {
             $info['original_sub_field_ids'] = array(
-                'street', 'city', 'region', 'zip', 'country'
+                'street',
+                'city',
+                'region',
+                'zip',
+                'country'
             );
         }
         return $info;
@@ -702,7 +706,6 @@ class webasystFieldConstructor
             foreach ($main_fields as $id) {
                 $field = waContactFields::get($id, 'all');
                 if ($field) {
-                    waContactFields::updateField($field);
                     waContactFields::enableField($field, $type, $sort);
                     $sort += 1;
                 }
@@ -712,7 +715,6 @@ class webasystFieldConstructor
             foreach ($fields as $id) {
                 $field = waContactFields::get($id, 'all');
                 if ($field) {
-                    waContactFields::updateField($field);
                     waContactFields::enableField($field, $type, $sort);
                     $sort += 1;
                 }

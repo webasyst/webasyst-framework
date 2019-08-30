@@ -464,7 +464,12 @@ HELP;
                 unset($token);
             }
 
+            $skip = array();
+
             foreach ($tokens as $id => $token) {
+                if (isset($skip[$id])) {
+                    continue;
+                }
                 if (is_array($token)) {
                     if (in_array($token[0], $list)) {
                         if ($result) {
@@ -479,6 +484,23 @@ HELP;
                         $result = false;
                         $this->tracef("\tPHP short open tag not allowed on line %d", $token[2]);
                     } elseif (($token[0] === T_STRING) && !in_array($token[1], array('true', 'false', 'null'), true)) {
+                        $next_token = $tokens[$id + 1];
+                        if (is_array($next_token) && ($next_token[0] === T_DOUBLE_COLON)) {
+                            $next_token = $tokens[$id + 2];
+                            if (is_array($next_token) && ($next_token[0] === T_STRING)) {
+                                $constant = "{$token[1]}::{$next_token[1]}";
+                                if (!defined($constant)) {
+                                    if ($result) {
+                                        $this->tracef("\nERROR encountered in config file %s:", $name);
+                                    }
+                                    $result = false;
+                                    $this->tracef("\tUndefined constant '%s' on line %d", $constant, $token[2]);
+                                }
+                                $skip[$id + 1] = true;
+                                $skip[$id + 2] = true;
+                                continue;
+                            }
+                        }
                         if ($result) {
                             $this->tracef("\nERROR encountered in config file %s:", $name);
                         }
@@ -803,6 +825,7 @@ HELP;
                                 'importexport',
                                 'export_profile',
                                 'printforms',
+                                'emailprintform',
                             )
                         );
                         break;

@@ -155,7 +155,7 @@ var WASettingsRegions = ( function($) {
                 var self = $(this),
                     value = $.trim(self.val());
 
-                if (!value || value == '0') {
+                if (self.hasClass('js-input-required') && (!value || value == '0')) {
                     self.addClass('error').one('focus', function() {
                         self.removeClass('error');
                     });

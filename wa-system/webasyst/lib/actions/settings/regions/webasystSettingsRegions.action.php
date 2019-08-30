@@ -37,6 +37,11 @@ class webasystSettingsRegionsAction extends webasystSettingsViewAction
         ));
     }
 
+    /**
+     * @param waRegionModel $rm
+     * @param waCountryModel $cm
+     * @param $country
+     */
     protected function saveFromPost($rm, $cm, $country)
     {
         if ($this->getFav()) {
@@ -48,7 +53,7 @@ class webasystSettingsRegionsAction extends webasystSettingsViewAction
             if ($region) {
                 $rm->updateByField(array(
                     'country_iso3' => $country,
-                    'code' => $region,
+                    'code'         => $region,
                 ), array(
                     'fav_sort' => $fav_sort,
                 ));
@@ -68,29 +73,27 @@ class webasystSettingsRegionsAction extends webasystSettingsViewAction
         }
 
         $region_codes = $this->getRegionCodes();
-        if (!$region_codes || !is_array($region_codes)) {
-            $region_codes = array();
-        }
         $region_names = $this->getRegionNames();
-        if (!$region_names || !is_array($region_names)) {
-            $region_names = array();
-        }
         $region_favs = $this->getRegionFavs();
-        if (!$region_favs || !is_array($region_favs)) {
-            $region_favs = array();
-        }
+        $region_centers = $this->getRegionCenters();
 
         $regions = array();
-        foreach($region_codes as $i => $code) {
+        foreach ($region_codes as $i => $code) {
             $code = trim($code);
             $name = trim(ifempty($region_names[$i], ''));
-            $fav = trim(ifempty($region_favs[$i], ''));
+
             if (!$name || !$code) {
                 continue;
             }
-            $regions[$code] = empty($fav) ? $name : array(
-                'name' => $name,
-                'fav_sort' => $fav,
+
+            // Because the empty string in mysql turns to 0
+            $fav_sort = trim(ifempty($region_favs, $i, null));
+            $fav_sort = $fav_sort ? $fav_sort : null;
+
+            $regions[$code] = array(
+                'name'          => $name,
+                'fav_sort'      => $fav_sort,
+                'region_center' => trim(ifset($region_centers, $i, null)),
             );
         }
 
@@ -129,17 +132,25 @@ class webasystSettingsRegionsAction extends webasystSettingsViewAction
 
     protected function getRegionCodes()
     {
-        return $this->getRequest()->post('region_codes');
+        return waRequest::post('region_codes', [], waRequest::TYPE_ARRAY);
     }
 
+    /**
+     * @return array
+     */
     protected function getRegionNames()
     {
-        return $this->getRequest()->post('region_names');
+        return waRequest::post('region_names', [], waRequest::TYPE_ARRAY);
+    }
+
+    protected function getRegionCenters()
+    {
+        return waRequest::post('region_centers', [], waRequest::TYPE_ARRAY);
     }
 
     protected function getRegionFavs()
     {
-        return $this->getRequest()->post('region_favs');
+        return waRequest::post('region_favs', [], waRequest::TYPE_ARRAY);
     }
 
     protected function getCountryFav()

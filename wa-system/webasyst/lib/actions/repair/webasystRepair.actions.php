@@ -212,8 +212,16 @@ SQL;
                     if (isset($current_tables[$table][$column])) {
 
                         foreach ($check_fields as $check_field => $check_message) {
-                            if ($default_column[$check_field] != $current_tables[$table][$column][$check_field]) {
-                                $default_column['status'][$check_field] = sprintf($check_message, var_export($default_column[$check_field], true));
+                            $default_value = $default_column[$check_field];
+                            $current_value = $current_tables[$table][$column][$check_field];
+                            $strict = in_array(null, array($default_value,$current_value));
+                            if ($strict ? ($default_value !== $current_value) : ($default_value != $current_value)) {
+
+                                $default_column['status'][$check_field] = sprintf(
+                                    $check_message,
+                                    var_export($default_column[$check_field], true)
+                                );
+
                                 if (!empty($sync_columns[$table][$column][$check_field])) {
                                     $sync_column[$check_field] = $default_column[$check_field];
                                 }
@@ -227,7 +235,7 @@ SQL;
                     if (!empty($sync_columns[$table][$column])) {
                         $sync_column += $current_tables[$table][$column];
 
-                        if (isset($sync_column['default']) && ($sync_column['default'] == 'NULL')) {
+                        if (isset($sync_column['default']) && ($sync_column['default'] === 'NULL')) {
                             $sync_column['default'] = null;
                         }
 

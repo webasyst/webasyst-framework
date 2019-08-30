@@ -266,6 +266,24 @@ abstract class waShipping extends waSystemPlugin
         return $this->getPackageProperty('raw_price');
     }
 
+    /**
+     * Service variant id (key) returned by self::calculate method
+     * @return string|null
+     */
+    public function getSelectedServiceId()
+    {
+        return $this->getPackageProperty('service_variant_id');
+    }
+
+    /**
+     * Array of waShipping::PAYMENT_TYPE_* constants; may be empty
+     * @return string[]
+     */
+    public function getSelectedPaymentTypes()
+    {
+        return (array)$this->getPackageProperty('payment_type');
+    }
+
     protected function getAddress($field = null)
     {
         return ($field === null) ? $this->address : (isset($this->address[$field]) ? $this->address[$field] : null);
