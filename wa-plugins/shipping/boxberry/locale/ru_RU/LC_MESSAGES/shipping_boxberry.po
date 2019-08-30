@@ -1,0 +1,261 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-plugins/shipping/boxberry\n"
+"POT-Creation-Date: 2019-08-26 09:21+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wa-plugins/shipping/boxberry\n"
+"Language-Team: wa-plugins/shipping/boxberry\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Real-time shipping quotes with <a href=\"https://boxberry.ru/en/\">Boxberry</a> service."
+msgstr "Расчет стоимости доставки сервисом <a href=\"https://boxberry.ru/\">Boxberry</a>."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_cost.html:5
+msgid "Shipping cost"
+msgstr "Стоимость доставки"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_cost.html:9
+msgid "Minimum order cost for free delivery"
+msgstr "Минимальная стоимость заказа для бесплатной доставки"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_cost.html:13
+msgid "Shipping rates provided by Boxberry service are ignored when free shipping is applied."
+msgstr "Стоимость доставки, рассчитанная сервисом Boxberry, игнорируется, когда применяется бесплатная доставка."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_cost.html:19
+msgid "Declared value of parcel (insurance cost)"
+msgstr "Объявленная стоимость посылки (страховая стоимость)"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_cost.html:36
+msgid "Set up markup costs in your Boxberry account."
+msgstr "Настройте стоимость наценок в своем личном кабинете Boxberry."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_options.html:5
+msgid "Shipping options"
+msgstr "Варианты доставки"
+
+msgid "Select values corresponding to your contract’s conditions."
+msgstr "Выберите значения в соответствии с условиями своего договора."
+
+msgid "If “With prepayment only” option is selected, then in Shop-Script, with “In-cart checkout” mode enabled, only prepayment options are available after shipping option selection."
+msgstr "Если выбран вариант «Только предоплата», то в приложении Shop-Script в режиме «Оформление заказа в корзине» после выбора варианта доставки будут доступны только варианты предоплаты."
+
+msgid "If “All” option is selected, then in Shop-Script, with “In-cart checkout” mode enabled, minimum shipping cost for prepayment is displayed by default. Once a shipping and a payment option are selected, the displayed shipping cost is updated accordingly."
+msgstr "Если выбран вариант «Все», то в приложении Shop-Script в режиме «Оформление заказа в корзине» по умолчанию будет показана минимальная стоимость доставки с расчетом на предоплату, а после выбора вариантов доставки и оплаты стоимость доставки будет уточнена."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_options.html:9
+msgid "Pickup points"
+msgstr "Пункты выдачи заказов"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_options.html:21
+msgid "Courier delivery"
+msgstr "Курьерская доставка"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_options.html:32
+msgid "Courier name"
+msgstr "Название курьера"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:11
+msgid "Russian Federation"
+msgstr "Российская Федерация"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:4
+msgid "Availability settings"
+msgstr "Условия доступности"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:10
+msgid "Country"
+msgstr "Страна"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:18
+msgid "Region"
+msgstr "Регион"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:26
+msgid "Shipping will be restricted to the selected region."
+msgstr "Доставка будет ограничена выбранным регионом."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:32
+msgid "Localities"
+msgstr "Населенные пункты"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:35
+msgid "Separate locality names with a comma."
+msgstr "Разделяйте названия населенных пунктов запятой."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:41
+msgid "Max weight"
+msgstr "Максимальный вес"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:45
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:67
+msgid "g"
+msgstr "г"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:48
+msgid "Max length"
+msgstr "Максимальная длина"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:54
+msgid "Max width"
+msgstr "Максимальная ширина"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:60
+msgid "Max height"
+msgstr "Максимальная высота"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_available_shipping.html:67
+msgid "Max dimensions"
+msgstr "Максимальные размеры"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:5
+msgid "Basic settings"
+msgstr "Основные настройки"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:8
+msgid "Service name"
+msgstr "Название службы"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:14
+msgid "API URL"
+msgstr "Адрес API"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:20
+msgid "Token"
+msgstr "Токен"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:27
+msgid "Parcel office city"
+msgstr "Город приема посылок"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:30
+msgid "Start typing a city name"
+msgstr "Начните искать город"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:33
+msgid "To select a parcel office, please enter a token and save the settings."
+msgstr "Чтобы выбрать пункт приема посылок, введите токен и сохраните настройки."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:42
+msgid "There are no parcel offices in your city."
+msgstr "В вашем городе нет пункта приема посылок."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:45
+msgid "Parcel office"
+msgstr "Пункт приема посылок"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:59
+msgid "Default weight"
+msgstr "Вес по умолчанию"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:67
+msgid "Default length"
+msgstr "Длина по умолчанию"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:75
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:83
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:86
+msgid "m"
+msgstr "м"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:75
+msgid "Default width"
+msgstr "Ширина по умолчанию"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:83
+msgid "Default height"
+msgstr "Высота по умолчанию"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:86
+msgid "Used only if order dimensions have not been calculated by a special plugin. If no value is specified, shipping rate and terms will not be calulated."
+msgstr "Используется, только если габариты заказа не были рассчитаны специальным плагином. Если значение не указано, то сроки и стоимость доставки в пункт выдачи заказов не рассчитываются."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_integration.html:5
+msgid "Integration settings"
+msgstr "Настройки интеграции"
+
+msgid "Upon checkout, a dellivery draft is created in your Boxberry account. Should you edit an order in your Webasyst backend, the corresponding draft is updated automatically."
+msgstr "После оформления заказа в вашем личном кабинете Boxberry создается посылка (черновик отгрузки). В случае редактирования заказа в бекенде Webasyst этот черновик автоматически обновляется."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_integration.html:9
+msgid "Type of parcel delivery"
+msgstr "Вид выдачи посылок"
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_integration.html:16
+msgid "If nothing is selected, a default value from the store profile’s “Services” section of your Boxberry account is used."
+msgstr "Если ничего не выбрано, то используется значение по умолчанию, установленное в разделе «Услуги» профиля магазина в вашем личном кабинете Boxberry."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_integration.html:23
+msgid "Store name for SMS and email notifications"
+msgstr "Наименование магазина для SMS- и email-оповещений"
+
+msgid "Notifications are sent by Boxberry service."
+msgstr "Оповещения отправляются сервисом Boxberry."
+
+#: /wa-plugins/shipping/boxberry/lib/boxberryShipping.class.php:61
+msgid "Delivery is not available. Please check the shipping address and the selected payment type."
+msgstr "Доставка недоступна. Проверьте адрес доставки и выбранный вариант оплаты."
+
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:115
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:138
+msgid "Do not use"
+msgstr "Не использовать"
+
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:120
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:143
+msgid "All"
+msgstr "Все"
+
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:123
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:147
+msgid "With prepayment only"
+msgstr "Только с предоплатой"
+
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:160
+msgid "Delivery without parcel opening"
+msgstr "Выдача без вскрытия"
+
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:164
+msgid "Delivery with parcel opening and completeness check"
+msgstr "Выдача со вскрытием и проверкой комплектности"
+
+#: /wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php:169
+msgid "Delivery of a parcel part"
+msgstr "Выдача части вложения"
+
+#: /wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateCourier.class.php:58
+msgid "from"
+msgstr "oт"
+
+#: /wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateCourier.class.php:69
+msgid "Delivery is not available for specified ZIP code."
+msgstr "Доставка для указаного индекса недоступна."
+
+#: /wa-plugins/shipping/boxberry/lib/config/settings.php:7
+msgid "Courier"
+msgstr "Курьер"
+
+msgid "The sum of length, width, and height values must not exceed 0.25 m."
+msgstr "Сумма значений длины, ширины и высоты не должна превышать 0,25 м."
+
+msgid "Specify either a fixed value expressed in a currency or percentage of the order total, or their sum or difference."
+msgstr "Укажите фиксированную стоимость в валюте или долю от суммы заказа в процентах, либо их сумму или разность."
+
+msgid "Examples:"
+msgstr "Примеры:"
+
+msgid "The result must not exceed 300,000 rubles."
+msgstr "Итоговая стоимость не может превышать 300 000 рублей."
+
+#: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:18
+msgid "Switch the plugin to normal operation mode by changing the test API URL to <em>https://api.boxberry.ru/json.php</em>"
+msgstr "Переключите плагин в рабочий режим, изменив тестовый адрес API на <em>https://api.boxberry.ru/json.php</em>"

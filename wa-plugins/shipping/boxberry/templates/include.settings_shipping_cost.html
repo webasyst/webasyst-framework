@@ -1,0 +1,36 @@
+<div class="field-group">
+    {*COST*}
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Shipping cost')}</h3></div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Minimum order cost for free delivery')}</div>
+        <div class="value">
+            <input name="{$namespace}[free_price]" value="{$settings.free_price|default:''|escape}" type="number" min="0" step="any">
+            <span>RUB</span>
+            <p class="hint">{$obj->_w('Shipping rates provided by Boxberry service are ignored when free shipping is applied.')}</p>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Declared value of parcel (insurance cost)')}</div>
+        <div class="value">
+            <input name="{$namespace}[declared_price]" value="{$settings.declared_price|default:''|escape}" type="text">
+            <span>RUB</span>
+            <p class="hint" style="white-space: pre-line">
+                {$obj->_w('Specify either a fixed value expressed in a currency or percentage of the order total, or their sum or difference.')}
+                {$obj->_w('Examples:')}
+                0
+                123.45
+                12.23%
+                123.45+12.23%
+                123.45-12.23%
+
+                {$obj->_w('The result must not exceed 300,000 rubles.')}
+            </p>
+            <p class="hint"><em>{$obj->_w('Set up markup costs in your Boxberry account.')}</em></p>
+        </div>
+    </div>
+</div>

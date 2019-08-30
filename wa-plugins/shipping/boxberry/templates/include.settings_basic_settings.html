@@ -1,0 +1,96 @@
+{$token = ifset($settings, 'token', '')}
+<div class="field-group">
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Basic settings')}</h3></div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Service name')}</div>
+        <div class="value">
+            <input type="text" name="{$namespace}[service]" value="{ifset($settings, 'service', '')}">
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('API URL')}</div>
+        <div class="value">
+            <input type="text" name="{$namespace}[api_url]" value="{ifset($settings, 'api_url', '')}">
+            <br>
+            <span class="hint">{$obj->_w('Switch the plugin to normal operation mode by changing the test API URL to <em>https://api.boxberry.ru/json.php</em>')}</span>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Token')}</div>
+        <div class="value">
+            <input type="text" class="js-boxberry-token" name="{$namespace}[token]" value="{$token}" required>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Parcel office city')}</div>
+        <div class="value">
+            <input class="ui-autocomplete-input js-boxberry-targetstart-autocomplete" autocomplete="off" value="{$points_by_settings['city']}"
+                   placeholder="{$obj->_w('Start typing a city name')}" {if !$token}style="display: none"{/if}>
+            <span class="s-js-boxberry-targetstart-start-message">
+                {$obj->_w('To select a parcel office, please enter a token and save the settings.')}
+            </span>
+            <br>
+            <span class="errormsg s-js-boxberry-targetstart-autocomplete">
+                {$obj->_w('There are no parcel offices in your city.')}
+            </span>
+        </div>
+    </div>
+
+    <div class="field js-boxberry-parcel-points-wrapper" {if !$points_by_settings['targetstart']}style="display: none"{/if}>
+        <div class="name">{$obj->_w('Parcel office')}</div>
+        <div class="value no-shift">
+            <select name="{$namespace}[targetstart]" class="js-boxberry-parcel-points-list">
+                {foreach $points_by_settings['points'] as $code => $name}
+                    <option value="{$code}" {if $points_by_settings['targetstart'] == $code}selected{/if}>
+                        {$name}
+                    </option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    {* Default attributes *}
+    <div class="field">
+        <div class="name">{$obj->_w('Default weight')}</div>
+        <div class="value">
+            <input max="{$settings.max_weight|default:'30000'|escape}" min="5" name="{$namespace}[default_weight]" step="any" type="number"
+                   value="{$settings.default_weight|default:''|escape}">
+            {$obj->_w('g')}
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Default length')}</div>
+        <div class="value">
+            <input max="{$settings.max_length|default:'1.2'|escape}" min="0.1" name="{$namespace}[default_length]" required step="0.01" type="number"
+                   value="{$settings.default_length|default:''|escape}">
+            {$obj->_w('m')}
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Default width')}</div>
+        <div class="value">
+            <input max="{$settings.max_width|default:'0.8'|escape}" min="0.1" name="{$namespace}[default_width]" required step="0.01" type="number"
+                   value="{$settings.default_width|default:''|escape}">
+            {$obj->_w('m')}
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Default height')}</div>
+        <div class="value">
+            <input max="{$settings.max_height|default:'0.5'|escape}" min="0.1" name="{$namespace}[default_height]" required step="0.01" type="number"
+                   value="{$settings.default_height|default:''|escape}">
+            {$obj->_w('m')}
+            <p class="hint">{$obj->_w('Used only if order dimensions have not been calculated by a special plugin. If no value is specified, shipping rate and terms will not be calulated.')}</p>
+        </div>
+    </div>
+    
+    <div class="field">
+        <div class="value">
+            <p class="hint bold">{$obj->_w('The sum of length, width, and height values must not exceed 0.25 m.')}</p>
+        </div>
+    </div>
+</div>

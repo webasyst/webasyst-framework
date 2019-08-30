@@ -1,0 +1,42 @@
+<div class="field-group">
+    {*COST*}
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Shipping options')}</h3></div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Pickup points')}</div>
+        <div class="value">
+            <select name="{$namespace}[point_mode]">
+                {foreach $point_modes as $option}
+                    <option value="{$option.value}" {if $option.value === $settings.point_mode}selected{/if}>{$option.title}</option>
+                {/foreach}
+            </select>
+        </div>
+        <div class="value">
+            <p class="hint">{$obj->_w('Select values corresponding to your contract’s conditions.')}
+                <br>
+                {$obj->_w('If “With prepayment only” option is selected, then in Shop-Script, with “In-cart checkout” mode enabled, only prepayment options are available after shipping option selection.')}
+                <br>
+                {$obj->_w('If “All” option is selected, then in Shop-Script, with “In-cart checkout” mode enabled, minimum shipping cost for prepayment is displayed by default. Once a shipping and a payment option are selected, the displayed shipping cost is updated accordingly.')}</p>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Courier delivery')}</div>
+        <div class="value">
+            <select name="{$namespace}[courier_mode]">
+                {foreach $courier_modes as $option}
+                    <option value="{$option.value}" {if $option.value === $settings.courier_mode}selected{/if}>{$option.title}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Courier name')}</div>
+        <div class="value">
+            <input type="text" name="{$namespace}[courier_title]" value="{ifset($settings, 'courier_title', '')}">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="field-group">
+    {*COST*}
+    <div class="field">
+        <div class="name"></div>
+        <div class="value"><h3>{$obj->_w('Integration settings')}</h3></div>
+        <div class="value"><p class="hint"><em>{$obj->_w('Upon checkout, a dellivery draft is created in your Boxberry account. Should you edit an order in your Webasyst backend, the corresponding draft is updated automatically.')}</em></p></div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Type of parcel delivery')}</div>
+        <div class="value">
+            <select name="{$namespace}[issuance]">
+                {foreach $issuance_options as $option}
+                    <option value="{$option.value}" {if $option.value === $settings.issuance}selected{/if}>{$option.title}</option>
+                {/foreach}
+            </select>
+            <p class="hint">{$obj->_w('If nothing is selected, a default value from the store profile’s “Services” section of your Boxberry account is used.')}</p>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">{$obj->_w('Store name for SMS and email notifications')}</div>
+        <div class="value">
+            <input type="text" name="{$namespace}[notification_name]" value="{$settings.notification_name}">
+            <br>
+            <span class="hint">{$obj->_w('Notifications are sent by Boxberry service.')}</span>
+        </div>
+    </div>
+</div>

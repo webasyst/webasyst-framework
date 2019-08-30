@@ -1,0 +1,29 @@
+<script type="text/javascript" src="{$wa_url}wa-plugins/shipping/boxberry/js/settings.js?{$wa->version(true)}"></script>
+<link rel="stylesheet" href="{$wa_url}wa-plugins/shipping/boxberry/css/boxberry.css?{$wa->version(true)}">
+
+<div id="js-shipping-boxberry-settings">
+    {*BASIC SETTINGS*}
+    {include file='./include.settings_basic_settings.html' inline}
+
+    {*AVAILABLE SETTINGS*}
+    {include file='./include.settings_available_shipping.html' inline}
+
+    {*COST SETTINGS*}
+    {include file='./include.settings_shipping_cost.html' inline}
+
+    {*SHIPPING OPTIONS*}
+    {include file='./include.settings_shipping_options.html' inline}
+
+    {*SHIPPING OPTIONS*}
+    {include file='./include.settings_integration.html' inline}
+</div>
+
+<script>
+    (function ($) {
+        new systemShippingBoxberryPluginSettings({
+            $wrapper: $("#js-shipping-boxberry-settings"),
+            points_for_parcel: {$points_for_parcel|json_encode},
+            saved_token: {ifset($settings, 'token', '')|json_encode},
+        });
+    })(jQuery);
+</script>
