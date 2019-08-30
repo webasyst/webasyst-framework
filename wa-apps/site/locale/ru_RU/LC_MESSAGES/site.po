@@ -1884,3 +1884,6 @@ msgstr "Включите только для <strong>временного</stron
 
 msgid "Disable for <strong>permanent</strong> redirecting with server response code 301, which is used to inform search engines that the new URL should be indexed instead of the old one."
 msgstr "Выключите для использования <strong>постоянного</strong> перенаправления с кодом ответа сервера 301 — он сообщает поисковым системам, что новый URL должен индексироваться вместо старого."
+
+msgid "Move rule %s/* to the bottom of the rule list."
+msgstr "Перенесите правило %s/* в конец списка правил."

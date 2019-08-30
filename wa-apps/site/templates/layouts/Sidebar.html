@@ -80,9 +80,6 @@
 {* System block *}
 <div class="s-system-block">
 	<ul class="menu-v with-icons s-links">
-        {if $rights.admin}
-            <li id="s-link-system-settings"><a href="{$wa_backend_url}webasyst/settings/"><i class="icon16 settings"></i>[`System settings`]</a></li>
-        {/if}
 		{if $rights.blocks}<li id="s-link-blocks"><a href="#/blocks/"><i class="icon16 zone"></i>[`Blocks`]</a></li>{/if}
 		{if $rights.files}<li id="s-link-files"><a href="#/files/"><i class="icon16 upload"></i>[`File manager`]</a></li>{/if}
 		{if $rights.admin}

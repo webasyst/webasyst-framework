@@ -49,8 +49,12 @@ class siteHelper
                         $incorrect_ids[$app_id] = _w('Redirect');
                     }
                 }
+                $domain = ifset(self::$domains, $domain_id, 'name', '');
+
                 $incorrect_text = sprintf(_w('Some rules of %s app are incorrect.', 'Some rules of %s apps are incorrect.',
-                    count($routing_error['apps'][$domain_id]['incorrect']), false), implode(_w('”, “'), $incorrect_ids));
+                    count($routing_error['apps'][$domain_id]['incorrect']), false), implode(_w('”, “'), $incorrect_ids))
+                    . ' '
+                    . sprintf(_w('Move rule %s/* to the bottom of the rule list.'), $domain);
             }
         }
 

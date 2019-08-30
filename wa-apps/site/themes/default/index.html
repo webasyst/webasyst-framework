@@ -28,8 +28,8 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge">
 
     <title>{$wa->title()|escape}</title>
-    <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
-    <meta name="Description" content="{$wa->meta('description')|escape}" />
+    <meta name="keywords" content="{$wa->meta('keywords')|escape}" />
+    <meta name="description" content="{$wa->meta('description')|escape}" />
 
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
     <link rel="shortcut icon" href="/favicon.ico"/>
