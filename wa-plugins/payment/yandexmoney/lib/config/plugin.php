@@ -5,7 +5,8 @@ return array(
     'icon'        => 'img/yandexmoney16.png',
     'logo'        => 'img/yandexmoney.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.4.1',
+    'version'     => '1.4.2',
     'offline'     => true,
     'discount'    => false,
+    'type'        => waPayment::TYPE_ONLINE,
 );

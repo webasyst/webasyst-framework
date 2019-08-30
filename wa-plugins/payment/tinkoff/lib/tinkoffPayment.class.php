@@ -365,7 +365,6 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             waLog::log('Old transaction found', 'payment/tinkoffCallback.log');
             return; // exclude transactions duplicates
         }
-        $transaction_data['recurrent_id'] = ifset($data['RebillId']);
 
         $transaction_data = $this->saveTransaction($transaction_data, $data);
 
@@ -512,7 +511,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         $args = array(
             'TerminalKey' => $this->terminal_key,
             'PaymentId'   => $this->payment_id,
-            'RebillId'    => $order_data['recurrent_id'],
+            'RebillId'    => $order_data['card_native_id'],
         );
         if ($this->getSettings('atolonline_on')) {
             $receipt = $this->getReceiptData($order_data);
@@ -613,8 +612,8 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     /**
      * Convert transaction raw data to formatted data
      * @param array $data - transaction raw data
-     * @throws waException
      * @return array $transaction_data
+     * @throws waException
      */
     protected function formalizeData($data)
     {
@@ -690,7 +689,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
         }
         if (!empty($data['Pan'])) {
-            $transaction_data['view_data'] = 'Card: '.$data['Pan'];
+            $transaction_data['view_data'] = $data['Pan'];
         }
         $transaction_data['amount'] = ifset($data['Amount']) / 100;
         $transaction_data['currency_id'] = $this->currency_id;
@@ -699,10 +698,19 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         $error_code = intval(ifset($data['ErrorCode']));
         $transaction_data['error'] = $this->translateError($error_code);
         if (!empty($transaction_data['error'])) {
-            $transaction_data['view_data'] = (isset($transaction_data['view_data']) ? ($transaction_data['view_data'].'; ') : '').$transaction_data['error'];
+            $transaction_data['view_data'] = (
+                isset($transaction_data['view_data']) ? ($transaction_data['view_data'].'; ') : ''
+                ).$transaction_data['error'];
         }
-        $transaction_data['recurrent_id'] = ifset($data['RebillId']);
 
+        if ($data['RebillId']) {
+            $transaction_data['card_native_id'] = $data['RebillId'];
+            $transaction_data['card_view'] = $data['Pan'];
+            if (!empty($data['ExpDate']) && preg_match('/^(\d{2})(\d{2})$/', $data['ExpDate'], $m)) {
+                $expire_date = '20'.$m[2].'-'.$m[1].'-'.date('t', strtotime('20'.$m[2].'-'.$m[1].'-01'));
+                $transaction_data['card_expire_date'] = $expire_date;
+            }
+        }
         return $transaction_data;
     }
 

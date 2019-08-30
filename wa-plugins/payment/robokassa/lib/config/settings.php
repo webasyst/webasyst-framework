@@ -134,7 +134,6 @@ HTML
             selector.push(':input[name$="\[' + name[i] + '\]"]');
         }
         selector = selector.join(', ');
-        console.log('selector', selector);
         $(this).parents('form').find(selector).each(function () {
             if (show) {
                 $(this).parents('div.field').show(400);
