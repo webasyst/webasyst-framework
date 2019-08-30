@@ -1,0 +1,33 @@
+{if !$is_api_key_ok}
+    {if $api_token_error}
+        <p class="errormsg">{$api_token_error}</p>
+    {/if}
+    <p>[s`A OneSignal account is required to notify backend users.`]</p>
+    <p>{sprintf_wp("Please sign up at %s and copy <b>User Auth Key</b> from <b>Account &amp; API Keys</b> page.",
+        '<a href="https://onesignal.com/" target="_blank">onesignal.com<i class="icon16 new-window"></i></a>'
+        )}</p>
+{else}
+    <div class="js-hide-when-api-key-modified">
+        <p class="hint">
+            [s`Each domain used by your backend users has to be configured separately in OneSignal account.`]
+        </p>
+
+        <table class="light" style="max-width: 200px; margin: 0 0 10px 0;">
+            {foreach $domains as $d}
+                <tr>
+                    <td style="color: black;">{$d.name|escape}</td>
+                    {if $d.connected}
+                        <td style="color: green;">[`Connected`]</td>
+                        <td></td>
+                    {else}
+                        <td style="color: red;">[`Not connected`]</td>
+                    {/if}
+                </tr>
+            {/foreach}
+        </table>
+
+        <p class="hint">
+            [s`To add a different domain, open Webasyst backend on that domain and save settings again.`]
+        </p>
+    </div>
+{/if}

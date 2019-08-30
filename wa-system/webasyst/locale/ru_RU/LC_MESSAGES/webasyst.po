@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-07-29 17:56+0300\n"
+"PO-Revision-Date: 2019-07-19 17:36+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -6131,6 +6131,48 @@ msgstr "Не найден класс «%s» плагина оплаты."
 
 msgid "SMS plugin class “%s” not found."
 msgstr "Не найден класс «%s» SMS-плагина."
+
+msgid "Web push notifications"
+msgstr "Push-уведомления"
+
+msgid "Web push notifications settings"
+msgstr "Настройки push-уведомлений"
+
+msgid "Select and configure a service for sending web push notifications."
+msgstr "Выберите и настройте сервис для отправки push-уведомлений."
+
+msgid "No web push notifications services available"
+msgstr "Нет доступных сервисов отправки push-уведомлений"
+
+msgid "Web push notifications service"
+msgstr "Сервис push-уведомлений"
+
+msgid "Get an account ID <a href=\"https://pushcrew.com/admin/app.php#/settings/account/general\" target=\"_blank\">in your profile</a>."
+msgstr "Получите account ID <a href=\"https://pushcrew.com/admin/app.php#/settings/account/general\" target=\"_blank\">в своем профиле</a>."
+
+msgid "Get an API token <a href=\"https://pushcrew.com/admin/app.php#/settings/account/general\" target=\"_blank\">in your profile</a>."
+msgstr "Получите API token <a href=\"https://pushcrew.com/admin/app.php#/settings/account/general\" target=\"_blank\">в своем профиле</a>."
+
+msgid "A OneSignal account is required to notify backend users."
+msgstr "Для уведомления пользователей бекенда требуется аккаунт в сервисе OneSignal."
+
+msgid "Please sign up at %s and copy <b>User Auth Key</b> from <b>Account &amp; API Keys</b> page."
+msgstr "Зарегистрируйтесь по адресу %s и скопируйте <b>User Auth Key</b> со страницы <b>Account &amp; API Keys</b>."
+
+msgid "OneSignal User Auth Key is required."
+msgstr "Требуется User Auth Key из аккаунта OneSignal."
+
+msgid "Each domain used by your backend users has to be configured separately in OneSignal account."
+msgstr "Для каждого домена, на котором работают ваши пользователи, нужна отдельная настройка в аккаунте OneSignal."
+
+msgid "To add a different domain, open Webasyst backend on that domain and save settings again."
+msgstr "Чтобы добавить другой домен, войдите в бекенд Webasyst на этом домене и сохраните настройки ещё раз."
+
+msgid "Connected"
+msgstr "Подключен"
+
+msgid "Not connected"
+msgstr "Не подключен"
 
 #: /wa-system/webasyst/lib/actions/settings/general/webasystSettingsClearCache.controller.php:43
 msgid "Some files could not be deleted."

@@ -48,6 +48,10 @@ class webasystHelper
                 'name' => _ws('Captcha'),
                 'url'  => $app_url.'captcha/',
             ),
+            'push'    => array(
+                'name' => _ws('Web push notifications'),
+                'url'  => $app_url.'push/',
+            ),
             'email'   => array(
                 'name' => _ws('Email settings'),
                 'url'  => $app_url.'email/',

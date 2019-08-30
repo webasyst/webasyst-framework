@@ -6,7 +6,7 @@
     {$_styles[] = "background: `$_event.bg_color`;"}
 {/if}
 {if !empty($_event.font_color)}
-    {$_styles[] = "color: `_event.font_color`;"}
+    {$_styles[] = "color: `$_event.font_color`;"}
 {/if}
 {$_user_name = $formatted_user_name|default:$user.name|default:''|escape}
 

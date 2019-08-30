@@ -123,6 +123,7 @@ class Smarty_Security {
         '~^ini_~i',
         '~^xmlrpc_~i',
         '~^mb_ereg~i',
+        '~^wddx_~i',
     );
     /**
      * This is an array of trusted PHP modifiers.

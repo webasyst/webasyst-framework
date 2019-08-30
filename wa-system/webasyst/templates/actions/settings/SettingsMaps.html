@@ -11,10 +11,11 @@
                     {if !empty($map_adapters)}
                         {foreach $map_adapters as $_adapter}
                             {$_adapter_id = $_adapter->getId()}
+                            {$_adapter_name = $_adapter->getName()}
                             {$_adapter_settings = $_adapter->getSettingsHtml(['namespace'=>'map_settings'])}
                             <div class="value no-shift">
                                 <label>
-                                    <input type="radio" name="map_adapter" {if $_adapter_id == $selected_map_adapter}checked{/if} value="{$_adapter_id}"> {$_adapter->getName()}
+                                    <input type="radio" name="map_adapter" {if $_adapter_id == $selected_map_adapter}checked{/if} value="{$_adapter_id}"> {$_adapter_name|escape}
                                 </label>
                                 {if !empty($_adapter_settings)}
                                     <div class="js-map-adapter-settings" data-adapter-id="{$_adapter_id}" style="display: none;">

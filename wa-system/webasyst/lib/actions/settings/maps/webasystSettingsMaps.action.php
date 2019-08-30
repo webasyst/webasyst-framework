@@ -10,8 +10,8 @@ class webasystSettingsMapsAction extends webasystSettingsViewAction
         $map_adapters = wa()->getMapAdapters();
 
         $this->view->assign(array(
-            'map_adapters'         => $map_adapters,
             'selected_map_adapter' => $selected_map_adapter,
+            'map_adapters'         => $map_adapters,
         ));
     }
 }

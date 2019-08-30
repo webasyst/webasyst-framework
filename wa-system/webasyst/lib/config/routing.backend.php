@@ -9,6 +9,7 @@ return array(
     'settings/email/?'                          => 'settingsEmail',
     'settings/maps/?'                           => 'settingsMaps',
     'settings/captcha/?'                        => 'settingsCaptcha',
+    'settings/push/?'                           => 'settingsPush',
     'settings/auth/?'                           => 'settingsAuth',
     'settings/regions/?'                        => 'settingsRegions',
     'settings/field/?'                          => 'settingsField',

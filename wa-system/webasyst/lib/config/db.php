@@ -23,6 +23,21 @@ return array(
             'contact_client' => array('contact_id', 'client_id', 'unique' => 1),
         ),
     ),
+    'wa_push_subscribers' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'provider_id' => array('varchar', 64, 'null' => 0),
+        'domain' => array('varchar', 255, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'contact_id' => array('int', 11), // optional (eg. for frontend users)
+        'subscriber_data' => array('text', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'provider_id' => 'provider_id',
+            'domain' => 'domain',
+            'contact_id' => 'contact_id',
+            'create_datetime' => 'create_datetime',
+        ),
+    ),
     'wa_announcement' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'app_id' => array('varchar', 32, 'null' => 0),

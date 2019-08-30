@@ -485,6 +485,13 @@ table.zebra tr.selected .s-single-line:after {
   background-size: contain;
   background-position: center;
 }
+.icon16.ws.push {
+  background-image: url("../../img/wa-settings/ws-push.svg");
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  background-size: contain;
+  background-position: center;
+}
 .s-email-settings-page .s-settings-items .s-item:hover > .s-remove {
   opacity: 0.6;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
@@ -951,6 +958,9 @@ table.zebra tr.selected .s-single-line:after {
 }
 .s-field-settings-page .s-field-constructor a.star:hover i.icon16 {
   background-position: -352px -64px;
+}
+.s-field-settings-page .s-field-constructor .wa-edit-field-link:not(:hover) > i.edit {
+  visibility: hidden;
 }
 .s-field-settings-page .s-new-field {
   margin: 1px 0 20px 0;

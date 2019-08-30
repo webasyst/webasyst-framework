@@ -887,7 +887,7 @@ HTML;
 
 
         $interval_params = $params;
-        $interval_params['value'] = ifset($params['value']['interval']);
+        $interval_params['value'] = ifset($params, 'value', 'interval', null);
         $interval_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
         $interval_params['title'] = ifset($params['title_interval'], _ws('Request preferred delivery time'));
         $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'interval', $interval_params);
@@ -895,7 +895,7 @@ HTML;
         $html .= ifset($params['control_separator'], '<br/>');
 
         $date_params = $params;
-        $date_params['value'] = ifset($params['value']['date']);
+        $date_params['value'] = ifset($params, 'value', 'date', null);
         $date_params['title'] = ifset($params['title_date'], _ws('Request preferred delivery date'));
         $date_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
         $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'date', $date_params);
@@ -916,7 +916,9 @@ HTML;
 
         $intervals_params = $params;
         $intervals_params['value'] = ifempty(
-            $params['value']['intervals'],
+            $params,
+            'value',
+            'intervals',
             array(
                 0 => $default_interval,
             )

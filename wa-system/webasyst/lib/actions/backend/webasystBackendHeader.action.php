@@ -51,24 +51,40 @@ class webasystBackendHeaderAction extends waViewAction
             }
         }
 
+        $push_params = array(
+            'current_app_info' => wa()->getAppInfo(),
+        );
+        $backend_push = wa()->event(array('webasyst', 'backend_push'), $push_params);
+        $include_wa_push = false;
+
+        if (!empty($backend_push) && is_array($backend_push)) {
+            foreach ($backend_push as $product_id => $value) {
+                if (!empty($value)) {
+                    $include_wa_push = true;
+                    break;
+                }
+            }
+        }
+
         $app_settings_model = new waAppSettingsModel();
 
         $this->view->assign(array(
-            'root_url'      => wa()->getRootUrl(),
-            'backend_url'   => wa()->getConfig()->getBackendUrl(true),
-            'company_name'  => htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8'),
-            'company_url'   => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
-            'date'          => $date,
-            'user'          => $user,
-            'header_items'  => $this->getHeaderItems(),
-            'reuqest_uri'   => waRequest::server('REQUEST_URI'),
-            'current_app'   => $current_app,
-            'counts'        => $counts,
-            'wa_version'    => wa()->getVersion('webasyst'),
-            'announcements' => $announcements,
-            'header_top'    => $header_top,
-            'header_middle' => $header_middle,
-            'header_bottom' => $header_bottom,
+            'root_url'        => wa()->getRootUrl(),
+            'backend_url'     => wa()->getConfig()->getBackendUrl(true),
+            'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8'),
+            'company_url'     => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
+            'date'            => $date,
+            'user'            => $user,
+            'header_items'    => $this->getHeaderItems(),
+            'reuqest_uri'     => waRequest::server('REQUEST_URI'),
+            'current_app'     => $current_app,
+            'counts'          => $counts,
+            'wa_version'      => wa()->getVersion('webasyst'),
+            'announcements'   => $announcements,
+            'header_top'      => $header_top,
+            'header_middle'   => $header_middle,
+            'header_bottom'   => $header_bottom,
+            'include_wa_push' => $include_wa_push,
         ));
 
         $this->setTemplate(wa()->getAppPath('templates/actions/backend/BackendHeader.html', 'webasyst'));

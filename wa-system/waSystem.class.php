@@ -281,7 +281,6 @@ class waSystem
         return $this->getCommonFactory('auth_user', 'waAuthUser', array(), null);
     }
 
-
     /**
      * @param string $adapter
      * @return waMapAdapter
@@ -338,6 +337,74 @@ class waSystem
                     }
                 } catch (Exception $e) {
                 }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param null|string $adapter Push notification adapter name
+     * @return waPushAdapter
+     * @throws waException
+     */
+    public function getPush($adapter = null)
+    {
+        if (empty($adapter)) {
+            $adapter = wa()->getSetting('push_adapter', 'onesignal', 'webasyst');
+        }
+
+        if (empty($adapter)) {
+            throw new waException('Push provider are not configured');
+        }
+
+        $file = $this->config->getPath('system').'/push/adapters/'.$adapter.'/'.$adapter.'Push.class.php';
+        if (!file_exists($file)) {
+            $file = $this->config->getPath('plugins').'/push/adapters/'.$adapter.'/'.$adapter.'Push.class.php';
+        }
+
+        if (file_exists($file)) {
+            require_once($file);
+            $class = $adapter.'Push';
+            if (class_exists($class)) {
+                $adapter_object = new $class();
+                if ($adapter_object instanceof waPushAdapter) {
+                    return $adapter_object;
+                }
+            }
+        }
+
+        throw new waException(sprintf("Push provider %s not found.", var_export($adapter, true)));
+    }
+
+    /**
+     * @return waPushAdapter[]
+     */
+    public function getPushAdapters()
+    {
+        $result = array();
+        $paths = array(
+            $this->config->getPath('system').'/push/adapters/',
+            $this->config->getPath('plugins').'/push/adapters/',
+        );
+        foreach ($paths as $path) {
+            foreach (waFiles::listdir($path, true) as $f) {
+                try {
+                    list($dir, $adapter_file) = explode('/', $f);
+                    if (substr($adapter_file, -14) == 'Push.class.php') {
+                        $adapter = substr($adapter_file, 0, -14);
+                        $class = $adapter.'Push';
+                        require_once($path.$f);
+                        if (class_exists($class)) {
+                            $adapter_object = new $class();
+                            /**
+                             * @var waPushAdapter $adapter_object
+                             */
+                            if ($adapter_object instanceof waPushAdapter) {
+                                $result[$adapter_object->getId()] = $adapter_object;
+                            }
+                        }
+                    }
+                } catch (Exception $e) {}
             }
         }
         return $result;
@@ -648,6 +715,19 @@ class waSystem
             }
             $app_system->getFrontController()->execute(null, 'OAuth');
             return;
+        }
+
+        // Push?
+        if (preg_match('~^push\.php\/([a-z0-9_]+)\/~i', $request_url, $m)) {
+            $push_adapters = wa()->getPushAdapters();
+            if (!empty($m[1]) && !empty($push_adapters[$m[1]])) {
+                $action = preg_replace('~^push\.php\/([a-z0-9_]+)\/~i', '', $request_url);
+                $push = $push_adapters[$m[1]];
+                $push->dispatch($action);
+                return;
+            }
+
+            throw new waException("Page not found", 404);
         }
 
         // One-time auth app token?
