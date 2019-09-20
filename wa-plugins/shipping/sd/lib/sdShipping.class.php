@@ -9,6 +9,7 @@
  * @property string $storage_days
  * @property string $additional
  * @property string service
+ * @property array payment_type
  *
  * //Weight
  * @property string $weight_unit
@@ -92,6 +93,7 @@ class sdShipping extends waShipping
                         'additional'  => $this->additional,
                         'description' => $this->address,
                         'storage'     => $this->getStorageInfo(),
+                        'payment'     => $this->getPayment(),
                     )
                 ),
             )
@@ -753,6 +755,7 @@ class sdShipping extends waShipping
 
         $view->assign(array(
             'obj'          => $this,
+            'payment_type' => $this->getPaymentTypeSettings(),
             'currencies'   => $this->getCurrencies(),
             'countries'    => $this->getCountries(),
             'regions'      => $this->getRegions($settings),
@@ -769,6 +772,27 @@ class sdShipping extends waShipping
         $html .= $view->fetch($this->path.'/templates/settings.html');
         $html .= parent::getSettingsHTML($params);
         return $html;
+    }
+
+    /**
+     * @return array
+     */
+    public function getPaymentTypeSettings()
+    {
+        return array(
+            array(
+                'value' => self::PAYMENT_TYPE_CASH,
+                'title' => $this->_w('cash on receipt'),
+            ),
+            array(
+                'value' => self::PAYMENT_TYPE_CARD,
+                'title' => $this->_w('card on receipt'),
+            ),
+            array(
+                'value' => self::PAYMENT_TYPE_PREPAID,
+                'title' => $this->_w('prepayment'),
+            ),
+        );
     }
 
     protected function getCurrencies()
@@ -971,5 +995,28 @@ class sdShipping extends waShipping
         } else {
             return $date_time->format($format);
         }
+    }
+
+    /**
+     * Returns settings for filtering payment types
+     * @return array
+     */
+    protected function getPayment()
+    {
+        $saved_payment = $this->payment_type;
+        $result = [];
+        if (in_array(self::PAYMENT_TYPE_PREPAID, $saved_payment)) {
+            $result[self::PAYMENT_TYPE_PREPAID] = true;
+        }
+
+        if (in_array(self::PAYMENT_TYPE_CARD, $saved_payment)) {
+            $result[self::PAYMENT_TYPE_CARD] = true;
+        }
+
+        if (in_array(self::PAYMENT_TYPE_CASH, $saved_payment)) {
+            $result[self::PAYMENT_TYPE_CASH] = true;
+        }
+
+        return $result;
     }
 }

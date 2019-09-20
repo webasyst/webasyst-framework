@@ -1,7 +1,10 @@
 <?php
 return array(
-    'currency'            => array(
+    'currency'     => array(
         'value' => 'USD',
+    ),
+    'payment_type' => array(
+        'value' => array(),
     ),
     'weight_unit'         => array(
         'value' => 'kg',
@@ -9,7 +12,7 @@ return array(
     'length_unit'         => array(
         'value' => 'm',
     ),
-    'service'        => array(
+    'service'             => array(
         'value' => ''
     ),
     'storage_days'        => array(

@@ -225,3 +225,24 @@ msgstr "Значения в столбце «%s» обозначают посл�
 
 msgid "Order pickup point available to customers from specified localities or region."
 msgstr "Пункт выдачи заказов для покупателей из указанного региона или населённых пунктов."
+
+msgid "Please select a country."
+msgstr "Необходимо выбрать страну."
+
+msgid "cash on receipt"
+msgstr "наличными при получении"
+
+msgid "card on receipt"
+msgstr "картой при получении"
+
+msgid "prepayment"
+msgstr "предоплата"
+
+msgid "Supported payment types"
+msgstr "Поддерживаемые типы оплаты"
+
+msgid "Select payment types which must be supported by a shipping option selected by a customer."
+msgstr "Выберите типы оплаты, которые должен поддерживать вариант доставки, выбранный покупателем."
+
+msgid "This setting is not used for multi-step checkout."
+msgstr "Эта настройка не используется при пошаговом оформлении заказа."

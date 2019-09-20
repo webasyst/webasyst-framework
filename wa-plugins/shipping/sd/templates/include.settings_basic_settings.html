@@ -18,6 +18,24 @@
     </div>
 
     <div class="field">
+        <div class="name">{$obj->_w('Supported payment types')}</div>
+        <div class="value">
+            {if !empty($payment_type)}
+            {$payment_types = ifset($settings, 'payment_type', [])}
+                {foreach $payment_type as $type}
+                    <input type="checkbox" name="{$namespace}[payment_type][]" value="{$type['value']|escape}"
+                           {if in_array($type['value']|escape, $payment_types)}checked{/if}> {$type['title']}
+                    <br>
+                {/foreach}
+            {/if}<br>
+            <p class="hint">
+                {$obj->_w('Select payment types which must be supported by a shipping option selected by a customer.')} <br>
+                {$obj->_w('This setting is not used for multi-step checkout.')}
+            </p>
+        </div>
+    </div>
+
+    <div class="field">
         <div class="name">{$obj->_w('Weight dimension unit')}</div>
         <div class="value">
             <select name="{$namespace}[weight_unit]" class="js-sd-select-weight">

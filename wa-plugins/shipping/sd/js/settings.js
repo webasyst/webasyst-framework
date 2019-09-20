@@ -39,6 +39,7 @@ var systemShippingSDPluginSettings = (function ($) {
         that.initImages();
         that.initSubmit();
         that.initDatepicker();
+        that.preSaveEvent();
     };
 
     systemShippingSDPluginSettings.prototype.initCurrency = function () {
@@ -104,6 +105,7 @@ var systemShippingSDPluginSettings = (function ($) {
             $countries = that.$wrapper.find('.js-sd-select-country'),
             $regions_wrapper = that.$wrapper.find('.js-sd-regions'),
             $regions_msg_wrapper = that.$wrapper.find('.js-sd-regions-msg'),
+            $errormsg =  that.$wrapper.find('.js-sd-country-errormsg'),
             $region = that.$wrapper.find('.js-sd-select-region'),
             $loader = that.$wrapper.find('.js-sd-country-loader');
 
@@ -120,6 +122,7 @@ var systemShippingSDPluginSettings = (function ($) {
 
             $regions_wrapper.hide();
             $regions_msg_wrapper.hide();
+            $errormsg.hide();
 
             if (country_code) {
                 $loader.show();
@@ -339,6 +342,23 @@ var systemShippingSDPluginSettings = (function ($) {
 
             $date.trigger('change');
             $time.trigger('change');
+        });
+    };
+
+    systemShippingSDPluginSettings.prototype.preSaveEvent = function () {
+        var that = this,
+            $form = that.$wrapper.closest('form'),
+            $errormsg =  that.$wrapper.find('.js-sd-country-errormsg'),
+            $country_selector =  that.$wrapper.find('.js-sd-select-country');
+
+        $form.on('shop_save_shipping', function ($event) {
+            $errormsg.hide();
+
+            if (!$country_selector.val()) {
+                $errormsg.show();
+            }
+
+            return !!$country_selector.val()
         });
     };
 
