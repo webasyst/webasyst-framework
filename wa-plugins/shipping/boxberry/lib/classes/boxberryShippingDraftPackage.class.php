@@ -41,7 +41,7 @@ class boxberryShippingDraftPackage
         $data = [
             'order_id'     => $this->getOrderId(),
             'delivery_sum' => $this->order->shipping,
-            'payment_sum'  => $this->order->total,
+            'payment_sum'  => $this->getPaysum(),
             'vid'          => $this->getDeliveryType(),
             'items'        => $this->getItems(),
             'weights'      => [
@@ -211,7 +211,7 @@ class boxberryShippingDraftPackage
                 $result = [
                     'original_track_number' => $send['track'],
                     'tracking_number'       => $send['track'],
-                    'view_data'             => $this->getViewData($send['track']),
+                    'view_data'             => $this->getViewData($send),
                 ];
             }
         }
@@ -220,21 +220,26 @@ class boxberryShippingDraftPackage
     }
 
     /**
-     * @param string $track
+     * @param array $request
      * @return string
      */
-    protected function getViewData($track)
+    protected function getViewData($request)
     {
-        $url = $this->bxb->api_url;
-        $url = parse_url($url, PHP_URL_HOST);
-        $url = 'https://'.$url."?act=send&sub=info&F_SEARCH=%s";
+        $url = 'https://account.boxberry.ru/parcel/info?parcel_id=%s';
+
+        $track = $request['track'];
 
         $template = "Создан заказ в личном кабинете Boxberry <a href='{$url}' target='_blank'>№%s<i class='icon16 new-window'></i></a>";
         if (!empty($this->order->shipping_data['original_track_number'])) {
-            $template = "Обновлен заказ в личном кабинете Boxberry <a href='{$url}' target='_blank'>№%s<i class='icon16 new-window'></i></a>";
+            $template = "Обновлен заказ в личном кабинете Boxberry <a href='{$url}' target='_blank'>№%s.<i class='icon16 new-window'></i></a>";
         }
 
         $template = str_replace('%s', $track, $template);
+
+        $label = ifset($request, 'label', false);
+        if ($label) {
+            $template .= "<a href='{$label}' target='_blank'>Этикетка<i class='icon16 new-window'></i></a> ";
+        }
         return $template;
     }
 
@@ -291,5 +296,26 @@ class boxberryShippingDraftPackage
         $result = substr($result, 0, 35);
 
         return $result;
+    }
+
+    /**
+     * @return float|int
+     */
+    protected function getPaysum()
+    {
+        $paysum = $this->order->total;
+        $is_courier_prepayment = $this->isCourierShipping() && $this->bxb->courier_mode === 'prepayment';
+        $is_point_prepayment = $this->isPointShipping() && $this->bxb->point_mode === 'prepayment';
+
+        if ($is_courier_prepayment || $is_point_prepayment || $this->order->paid_datetime) {
+            $paysum = 0;
+        }
+
+        $payment_type = $this->bxb->getSelectedPaymentTypes();
+        if ($payment_type && in_array(waShipping::PAYMENT_TYPE_PREPAID, $payment_type)) {
+            $paysum = 0;
+        }
+
+        return $paysum;
     }
 }

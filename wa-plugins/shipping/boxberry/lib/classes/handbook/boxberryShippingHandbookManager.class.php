@@ -6,6 +6,11 @@
 abstract class boxberryShippingHandbookManager
 {
     /**
+     * The folder in which data is stored
+     */
+    const CACHE_PATH = 'webasyst/shipping/boxberry';
+
+    /**
      * The method should implement receiving data from the Boxberry server and writing it to the cache
      *
      * @return array
@@ -61,7 +66,7 @@ abstract class boxberryShippingHandbookManager
     protected function setToCache($data)
     {
         if (!empty($data['key']) && !empty($data['ttl']) && !empty($data['value'])) {
-            $cache = new waVarExportCache($data['key'], $data['ttl'], 'webasyst/shipping/boxberry');
+            $cache = new waVarExportCache($data['key'], $data['ttl'], self::CACHE_PATH);
             $cache->set($data['value']);
         }
     }
@@ -72,7 +77,7 @@ abstract class boxberryShippingHandbookManager
      */
     protected function getFromCache($key)
     {
-        $cache = new waVarExportCache($key, -1, 'webasyst/shipping/boxberry');
+        $cache = new waVarExportCache($key, -1, self::CACHE_PATH);
         $result = $cache->get();
         return $result;
     }

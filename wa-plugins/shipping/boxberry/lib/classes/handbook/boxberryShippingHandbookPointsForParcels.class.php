@@ -18,7 +18,7 @@ class boxberryShippingHandbookPointsForParcels extends boxberryShippingHandbookM
      */
     protected function getFromAPI()
     {
-        $points = $this->api_manager->downloadPointsForParcels();
+        $points = $this->api_manager->downloadPointsForParcels([boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
 
         if (!empty($points)) {
             $points = $this->parsePointsForParcels($points);
@@ -51,6 +51,17 @@ class boxberryShippingHandbookPointsForParcels extends boxberryShippingHandbookM
             $result[$city][$code] = $name;
         }
 
-        return $result;
+        // sort by street name
+        $sorted_result = [];
+        foreach ($result as $city => &$city_points) {
+            asort($city_points);
+
+            // Sort for JS json encode
+            foreach ($city_points as $point_code => $city_point) {
+                $sorted_result[$city][] = ['code' => $point_code, 'name' => $city_point];
+            }
+        }
+
+        return $sorted_result;
     }
 }

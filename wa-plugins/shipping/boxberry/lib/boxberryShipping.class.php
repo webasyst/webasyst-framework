@@ -28,6 +28,8 @@ boxberry_autoload();
  * @property-read string region
  * @property-read string cities
  *
+ * @property string point_mode
+ * @property string courier_mode
  *
  */
 class boxberryShipping extends waShipping
@@ -46,13 +48,13 @@ class boxberryShipping extends waShipping
         $errors = (new boxberryShippingCalculateValidate($this))->getErrors();
 
         // Get pickup points
-        if (!$errors && $this->getSettings('point_mode') !== 'off') {
+        if (!$errors && $this->point_mode !== 'off') {
             $points = new boxberryShippingCalculatePoints($this);
             $result += $points->getVariants();
         }
 
         // Get courier variants
-        if (!$errors && $this->getSettings('courier_mode') !== 'off') {
+        if (!$errors && $this->courier_mode !== 'off') {
             $points = new boxberryShippingCalculateCourier($this);
             $result += $points->getVariants();
         }

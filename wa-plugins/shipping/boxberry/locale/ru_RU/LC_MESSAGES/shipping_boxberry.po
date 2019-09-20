@@ -244,8 +244,8 @@ msgstr "Доставка для указаного индекса недосту
 msgid "Courier"
 msgstr "Курьер"
 
-msgid "The sum of length, width, and height values must not exceed 0.25 m."
-msgstr "Сумма значений длины, ширины и высоты не должна превышать 0,25 м."
+msgid "The sum of length, width, and height values must not exceed 2.5 m."
+msgstr "Сумма значений длины, ширины и высоты не должна превышать 2,5 м."
 
 msgid "Specify either a fixed value expressed in a currency or percentage of the order total, or their sum or difference."
 msgstr "Укажите фиксированную стоимость в валюте или долю от суммы заказа в процентах, либо их сумму или разность."
@@ -257,5 +257,5 @@ msgid "The result must not exceed 300,000 rubles."
 msgstr "Итоговая стоимость не может превышать 300 000 рублей."
 
 #: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:18
-msgid "Switch the plugin to normal operation mode by changing the test API URL to <em>https://api.boxberry.ru/json.php</em>"
-msgstr "Переключите плагин в рабочий режим, изменив тестовый адрес API на <em>https://api.boxberry.ru/json.php</em>"
+msgid "To switch to the test mode, request a test API address and token from Boxberry support team."
+msgstr "Чтобы переключиться в тестовый режим, запросите тестовый адрес API и токен у службы поддержки Boxberry."

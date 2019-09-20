@@ -63,10 +63,12 @@ class boxberryShippingGetSettings
 
         if ($targetstart) {
             foreach ($points_for_parcel as $city => $points) {
-                if (isset($points[$targetstart])) {
-                    $result['city'] = $city;
-                    $result['points'] = $points;
-                    break;
+                foreach ($points as $point_data) {
+                    if (ifset($point_data, 'code', false) == $targetstart) {
+                        $result['city'] = $city;
+                        $result['points'] = $points;
+                        break 2;
+                    }
                 }
             }
         }

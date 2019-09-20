@@ -26,7 +26,7 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
      */
     protected function getFromAPI()
     {
-        $points = $this->api_manager->downloadListPoints();
+        $points = $this->api_manager->downloadListPoints([boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
 
         if (!empty($points)) {
             $points = $this->parseAvailablePoints($points);

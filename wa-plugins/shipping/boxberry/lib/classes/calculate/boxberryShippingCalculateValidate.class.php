@@ -24,7 +24,23 @@ class boxberryShippingCalculateValidate
      */
     public function getErrors()
     {
-        $errors = $this->validateRegions();
+        $errors = false;
+
+        if (!$this->bxb->api_url) {
+            $errors = true;
+        }
+
+        if (!$this->bxb->token) {
+            $errors = true;
+        }
+
+        if (!$this->bxb->targetstart) {
+            $errors = true;
+        }
+
+        if (!$errors && $this->validateRegions()) {
+            $errors = true;
+        }
 
         // Weight not specified
         if ($errors && $this->bxb->getParcelWeight() == 0) {
@@ -39,6 +55,7 @@ class boxberryShippingCalculateValidate
         if (!$errors) {
             $errors = $this->validateDimensions();
         }
+
 
         return $errors;
     }

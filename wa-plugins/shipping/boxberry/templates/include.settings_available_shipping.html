@@ -47,21 +47,21 @@
     <div class="field">
         <div class="name">{$obj->_w('Max length')}</div>
         <div class="value">
-            <input name="{$namespace}[max_length]" value="{$settings.max_length|default:''|escape}" type="number" min="0" step="0.01" max="1.2">
+            <input name="{$namespace}[max_length]" value="{$settings.max_length|default:''|escape}" type="number" min="0" step="0.001" max="1.2">
             {$obj->_w('m')}
         </div>
     </div>
     <div class="field">
         <div class="name">{$obj->_w('Max width')}</div>
         <div class="value">
-            <input name="{$namespace}[max_width]" value="{$settings.max_width|default:''|escape}" type="number" min="0" step="0.01" max="0.8">
+            <input name="{$namespace}[max_width]" value="{$settings.max_width|default:''|escape}" type="number" min="0" step="0.0001" max="0.8">
             {$obj->_w('m')}
         </div>
     </div>
     <div class="field">
         <div class="name">{$obj->_w('Max height')}</div>
         <div class="value">
-            <input name="{$namespace}[max_height]" value="{$settings.max_height|default:''|escape}" type="number" min="0" step="0.01" max="0.5">
+            <input name="{$namespace}[max_height]" value="{$settings.max_height|default:''|escape}" type="number" min="0" step="0.0001" max="0.5">
             {$obj->_w('m')}
         </div>
     </div>
@@ -69,14 +69,14 @@
     <div class="field">
         <div class="name">{$obj->_w('Max dimensions')}</div>
         <div class="value">
-            <input name="{$namespace}[max_dimensions]" value="{$settings.max_dimensions|default:''|escape}" type="number" min="0" step="0.01" max="2.5">
+            <input name="{$namespace}[max_dimensions]" value="{$settings.max_dimensions|default:''|escape}" type="number" min="0" step="0.0001" max="2.5">
             {$obj->_w('m')}
         </div>
     </div>
     
     <div class="field">
         <div class="value">
-            <p class="hint bold">{$obj->_w('The sum of length, width, and height values must not exceed 0.25 m.')}</p>
+            <p class="hint bold">{$obj->_w('The sum of length, width, and height values must not exceed 2.5 m.')}</p>
         </div>
     </div>
 </div>

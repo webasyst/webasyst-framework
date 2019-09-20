@@ -1,7 +1,7 @@
 <?php
 return array(
     'service'           => array(
-        'value' => ''
+        'value' => 'Boxberry'
     ),
     'courier_title'     => array(
         'value' => _wp('Courier')
@@ -10,7 +10,7 @@ return array(
         'value' => ''
     ),
     'api_url'           => array(
-        'value' => 'https://api.boxberry.de/json.php'
+        'value' => 'https://api.boxberry.ru/json.php'
     ),
     'country'           => array(
         'value' => 'rus',

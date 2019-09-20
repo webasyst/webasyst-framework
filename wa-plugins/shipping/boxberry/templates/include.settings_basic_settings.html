@@ -15,7 +15,7 @@
         <div class="value">
             <input type="text" name="{$namespace}[api_url]" value="{ifset($settings, 'api_url', '')}">
             <br>
-            <span class="hint">{$obj->_w('Switch the plugin to normal operation mode by changing the test API URL to <em>https://api.boxberry.ru/json.php</em>')}</span>
+            <span class="hint">{$obj->_w('To switch to the test mode, request a test API address and token from Boxberry support team.')}</span>
         </div>
     </div>
     <div class="field">
@@ -44,9 +44,9 @@
         <div class="name">{$obj->_w('Parcel office')}</div>
         <div class="value no-shift">
             <select name="{$namespace}[targetstart]" class="js-boxberry-parcel-points-list">
-                {foreach $points_by_settings['points'] as $code => $name}
-                    <option value="{$code}" {if $points_by_settings['targetstart'] == $code}selected{/if}>
-                        {$name}
+                {foreach $points_by_settings['points'] as $point_data}
+                    <option value="{$point_data['code']}" {if $points_by_settings['targetstart'] == $point_data['code']}selected{/if}>
+                       {$point_data['name']}
                     </option>
                 {/foreach}
             </select>
@@ -65,7 +65,7 @@
     <div class="field">
         <div class="name">{$obj->_w('Default length')}</div>
         <div class="value">
-            <input max="{$settings.max_length|default:'1.2'|escape}" min="0.1" name="{$namespace}[default_length]" required step="0.01" type="number"
+            <input max="{$settings.max_length|default:'1.2'|escape}" min="0.0001" name="{$namespace}[default_length]" required step="0.0001" type="number"
                    value="{$settings.default_length|default:''|escape}">
             {$obj->_w('m')}
         </div>
@@ -73,7 +73,7 @@
     <div class="field">
         <div class="name">{$obj->_w('Default width')}</div>
         <div class="value">
-            <input max="{$settings.max_width|default:'0.8'|escape}" min="0.1" name="{$namespace}[default_width]" required step="0.01" type="number"
+            <input max="{$settings.max_width|default:'0.8'|escape}" min="0.0001" name="{$namespace}[default_width]" required step="0.0001" type="number"
                    value="{$settings.default_width|default:''|escape}">
             {$obj->_w('m')}
         </div>
@@ -81,7 +81,7 @@
     <div class="field">
         <div class="name">{$obj->_w('Default height')}</div>
         <div class="value">
-            <input max="{$settings.max_height|default:'0.5'|escape}" min="0.1" name="{$namespace}[default_height]" required step="0.01" type="number"
+            <input max="{$settings.max_height|default:'0.5'|escape}" min="0.0001" name="{$namespace}[default_height]" required step="0.0001" type="number"
                    value="{$settings.default_height|default:''|escape}">
             {$obj->_w('m')}
             <p class="hint">{$obj->_w('Used only if order dimensions have not been calculated by a special plugin. If no value is specified, shipping rate and terms will not be calulated.')}</p>
@@ -90,7 +90,7 @@
     
     <div class="field">
         <div class="value">
-            <p class="hint bold">{$obj->_w('The sum of length, width, and height values must not exceed 0.25 m.')}</p>
+            <p class="hint bold">{$obj->_w('The sum of length, width, and height values must not exceed 2.5 m.')}</p>
         </div>
     </div>
 </div>

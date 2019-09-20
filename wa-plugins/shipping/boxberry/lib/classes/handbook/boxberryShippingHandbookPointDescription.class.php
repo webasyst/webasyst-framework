@@ -42,7 +42,7 @@ class boxberryShippingHandbookPointDescription extends boxberryShippingHandbookM
      */
     protected function getFromAPI()
     {
-        $raw_description = $this->api_manager->downloadPointDescription(['code' => $this->code, 'photo' => 1]);
+        $raw_description = $this->api_manager->downloadPointDescription(['code' => $this->code, 'photo' => 1, boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
         $description = [];
 
         if (!empty($raw_description)) {

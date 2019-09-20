@@ -105,7 +105,7 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculate
     public function getAdditionalInfoByPoint($code)
     {
         // Get the cost and delivery time
-        $delivery_costs = $this->getDeliveryCostsAPI(['code' => $code, 'paysum' => $this->getPaysum()]);
+        $delivery_costs = $this->getDeliveryCostsAPI(['target' => $code, 'paysum' => $this->getPaysum()]);
         $result = false;
 
         if ($delivery_costs['price'] !== false) {

@@ -40,9 +40,10 @@ var systemShippingBoxberryPluginSettings = (function ($) {
                 $errormsg.hide();
             } else {
                 $autocomplete.show();
+                $message.hide();
             }
         });
-        $token.on('change');
+        $token.trigger('change');
     };
 
     systemShippingBoxberryPluginSettings.prototype.initPreSaveEvent = function () {
@@ -120,10 +121,10 @@ var systemShippingBoxberryPluginSettings = (function ($) {
                 $points_list.html('');
                 $points_wrapper.show();
 
-                $.each(points, function (code, name) {
+                $.each(points, function (i, point_data) {
                     var option = $('<option value=""></option>');
-                    option.val(code);
-                    option.text(name);
+                    option.val(point_data.code);
+                    option.text(point_data.name);
 
                     $points_list.append(option);
                 });

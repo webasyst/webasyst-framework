@@ -18,7 +18,7 @@ class boxberryShippingHandbookCityRegions extends boxberryShippingHandbookManage
      */
     protected function getFromAPI()
     {
-        $cities = $this->api_manager->downloadListCitiesFull();
+        $cities = $this->api_manager->downloadListCitiesFull([boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
         $city_with_regions = [];
 
         if (!empty($cities)) {

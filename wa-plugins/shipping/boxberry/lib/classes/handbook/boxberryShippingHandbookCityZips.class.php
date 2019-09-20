@@ -18,7 +18,7 @@ class boxberryShippingHandbookCityZips extends boxberryShippingHandbookManager
      */
     protected function getFromAPI()
     {
-        $zips = $this->api_manager->downloadListZips();
+        $zips = $this->api_manager->downloadListZips([boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
         $parsed_regions = $this->parseZips($zips);
 
         if ($parsed_regions) {

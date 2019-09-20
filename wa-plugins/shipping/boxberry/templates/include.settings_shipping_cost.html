@@ -18,7 +18,6 @@
         <div class="name">{$obj->_w('Declared value of parcel (insurance cost)')}</div>
         <div class="value">
             <input name="{$namespace}[declared_price]" value="{$settings.declared_price|default:''|escape}" type="text">
-            <span>RUB</span>
             <p class="hint" style="white-space: pre-line">
                 {$obj->_w('Specify either a fixed value expressed in a currency or percentage of the order total, or their sum or difference.')}
                 {$obj->_w('Examples:')}
