@@ -425,11 +425,13 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
                 $start_time = strtotime($app_event['start']);
                 if ($is_allday) {
                     $google_event['start'] = array(
-                        'date' => date(self::DATE_YMD, $start_time)
+                        'date' => date(self::DATE_YMD, $start_time),
+                        'dateTime' => null
                     );
                 } else {
                     $google_event['start'] = array(
-                        'dateTime' => date(self::DATE_TIME_RFC3339, $start_time)
+                        'dateTime' => date(self::DATE_TIME_RFC3339, $start_time),
+                        'date' => null
                     );
                 }
             }
@@ -438,11 +440,13 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
                 if ($is_allday) {
                     $end_time = strtotime('+1 day', $end_time);
                     $google_event['end'] = array(
-                        'date' => date(self::DATE_YMD, $end_time)
+                        'date' => date(self::DATE_YMD, $end_time),
+                        'dateTime' => null
                     );
                 } else {
                     $google_event['end'] = array(
-                        'dateTime' => date(self::DATE_TIME_RFC3339, $end_time)
+                        'dateTime' => date(self::DATE_TIME_RFC3339, $end_time),
+                        'date' => null
                     );
                 }
 
@@ -456,6 +460,7 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
      * @param array $options
      * @return bool
      * @throws teamCalendarExternalTokenInvalidException
+     * @throws waException
      */
     public function updateEvent($event, $options = array())
     {
