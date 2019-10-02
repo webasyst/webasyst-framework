@@ -17,6 +17,11 @@
     {/if}
 {/if}
 
+{$_is_order_page = $wa->globals("isOrderPage")}
+{if !empty($_is_order_page)}
+    {$html_class_array[] = "is-order-page"}
+{/if}
+
 {/strip}
 <html{if !empty($html_class_array)} class="{join(' ', $html_class_array)}"{/if}>
 

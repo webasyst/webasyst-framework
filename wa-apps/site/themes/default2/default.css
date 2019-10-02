@@ -54,6 +54,28 @@ input:-moz-placeholder,
 input::-moz-placeholder { color: #bbb; }
 input:-ms-input-placeholder { color: #bbb; }
 
+/* FontsFamily&Size from Settings
+--------------------------------- */
+html.font_size_12,
+html.font_size_12 body { font-size: 12px; }
+html.font_size_13,
+html.font_size_13 body { font-size: 13px; }
+html.font_size_14,
+html.font_size_14 body { font-size: 14px; }
+html.font_size_15,
+html.font_size_15 body { font-size: 15px; }
+html.font_size_16,
+html.font_size_16 body { font-size: 16px; }
+
+html.font_family_trebuchet,
+html.font_family_trebuchet * { font-family: "Trebuchet MS", sans-serif; }
+html.font_family_verdana,
+html.font_family_verdana * { font-family: Verdana, sans-serif; }
+html.font_family_georgia,
+html.font_family_georgia * { font-family: Georgia, Times, serif; }
+html.font_family_helvetica,
+html.font_family_helvetica * { font-family: 'Helvetica Neue', Arial, sans-serif; }
+
 /* Misc elements
 ---------------- */
 
@@ -243,7 +265,6 @@ ul.tree ul a { padding: 3px 6px; font-size: 90%; }
 .wa-form .wa-field .wa-value p input[type="checkbox"] { display: inline; }
 .wa-form .wa-field .wa-value p .field.wa-required span:after { content: " *"; color: #faa; }
 .wa-form .wa-field.wa-required .wa-name:after { content: " *"; color: #faa; }
-.wa-signup-form .wa-form .wa-field.wa-field-email { margin-top: 20px; }
 .wa-signup-form .wa-form .wa-field.wa-field-email .wa-value input { min-width: 300px; }
 .wa-signup-form .wa-form .wa-field.wa-field-password .wa-value input,
 .wa-signup-form .wa-form .wa-field.wa-field-password_confirm .wa-value input { min-width: 200px; width: 200px; }
