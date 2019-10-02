@@ -1,6 +1,6 @@
 <?php
 
-class boxberryShippingCalculatePoints extends boxberryShippingCalculate
+class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper implements boxberryShippingCalculate
 {
     const VARIANT_PREFIX = 'pickup';
 
@@ -105,7 +105,7 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculate
     public function getAdditionalInfoByPoint($code)
     {
         // Get the cost and delivery time
-        $delivery_costs = $this->getDeliveryCostsAPI(['target' => $code, 'paysum' => $this->getPaysum()]);
+        $delivery_costs = $this->getDeliveryCostsAPI(['target' => $code]);
         $result = false;
 
         if ($delivery_costs['price'] !== false) {
@@ -191,7 +191,15 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculate
         }
 
         // Add days that boxberry gives
-        $delivery->modify("+ {$period} days");
+        // Ignore saturday and sunday
+        while ($period) {
+            $delivery->modify("+ 1 days");
+            $day = $delivery->format('N');
+
+            if ($day != 6 && $day != 7) {
+                $period--;
+            }
+        }
 
         //We only go 7 days, because we do not have information about additional working days
         for ($i = 0; $i <= 6; $i++) {

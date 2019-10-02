@@ -32,8 +32,8 @@ msgid "Shipping rates provided by Boxberry service are ignored when free shippin
 msgstr "Стоимость доставки, рассчитанная сервисом Boxberry, игнорируется, когда применяется бесплатная доставка."
 
 #: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_cost.html:19
-msgid "Declared value of parcel (insurance cost)"
-msgstr "Объявленная стоимость посылки (страховая стоимость)"
+msgid "Declared value for prepaid delivery (insurance cost)"
+msgstr "Объявленная стоимость для отправлений с предоплатой (страховая стоимость)"
 
 #: /wa-plugins/shipping/boxberry/templates/include.settings_shipping_cost.html:36
 msgid "Set up markup costs in your Boxberry account."
@@ -253,9 +253,15 @@ msgstr "Укажите фиксированную стоимость в валю
 msgid "Examples:"
 msgstr "Примеры:"
 
-msgid "The result must not exceed 300,000 rubles."
-msgstr "Итоговая стоимость не может превышать 300 000 рублей."
+msgid "Declared value must not exceed 300,000 rubles."
+msgstr "Объявленная стоимость не может превышать 300 000 рублей."
 
 #: /wa-plugins/shipping/boxberry/templates/include.settings_basic_settings.html:18
 msgid "To switch to the test mode, request a test API address and token from Boxberry support team."
 msgstr "Чтобы переключиться в тестовый режим, запросите тестовый адрес API и токен у службы поддержки Boxberry."
+
+msgid "Error during automatic shipment creation. Please create a shipment manually in your personal account on Boxberry website. See detailed error-related information in log file <em>wa-log/wa-plugins/shipping/boxberry/api_requests.log</em>."
+msgstr "Ошибка при автоматическом создании отправления. Создайте отправление вручную в личном кабинете на сайте Boxberry. Подробную информацию об ошибке смотрите в лог-файле <em>wa-log/wa-plugins/shipping/boxberry/api_requests.log</em>."
+
+msgid "In case of payment on delivery, the declared value passed to the shipping service is equal to the order total less the shipping cost, i.e. pure cost of delivered items with discount applied."
+msgstr "В случае оплаты заказа при получении в службу доставки передается объявленная стоимость отправления, равная стоимости заказа за вычетом стоимости доставки, т. е. стоимость товаров с учетом скидки."

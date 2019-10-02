@@ -265,54 +265,6 @@ class boxberryShipping extends waShipping
         return $this->path;
     }
 
-    /**
-     * @return float
-     */
-    public function getAssessedPrice()
-    {
-        $declared_price = $this->declared_price;
-
-        if (!$declared_price) {
-            return 0;
-        }
-
-        $cost = 0.0;
-        //delete whitespaces
-        $clear_conditions = preg_replace('@\\s+@', '', $declared_price);
-
-        //divide the expression into parts and save it in an array. Also keep the position of the separator
-        $conditions_list = preg_split('@\+|(-)@', $clear_conditions, null, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
-        foreach ($conditions_list as $condition) {
-            //Delete commas
-            $float_value = str_replace(',', '.', trim($condition[0]));
-
-            if (strpos($float_value, '%')) {
-                $price = max([$this->getTotalRawPrice(), $this->getTotalPrice()]);
-
-                // recalculate interest to actual values
-                $float_value = $price * floatval($float_value) / 100;
-                $float_value = round($float_value, 2);
-            } else {
-                $float_value = floatval($float_value);
-            }
-
-            //We perform mathematical operations according to the separator
-            if ($condition[1] && (substr($clear_conditions, $condition[1] - 1, 1) == '-')) {
-                $cost -= $float_value;
-            } else {
-                $cost += $float_value;
-            }
-        }
-
-        // price may not exceed 300,000
-        if ($cost > self::MAX_DECLARED_PRICE) {
-            $cost = self::MAX_DECLARED_PRICE;
-        }
-
-        return round(max(0.0, $cost), 2);
-    }
-
     ###############
     # MAKE PUBLIC #
     ###############
@@ -384,7 +336,8 @@ function boxberry_autoload()
     $autoload->add('boxberryShippingHandbookAvailablePoints', 'wa-plugins/shipping/boxberry/lib/classes/handbook/boxberryShippingHandbookAvailablePoints.class.php');
 
     //Calculate
-    $autoload->add('boxberryShippingCalculate', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculate.class.php');
+    $autoload->add('boxberryShippingCalculate', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculate.interface.php');
+    $autoload->add('boxberryShippingCalculateHelper', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateHelper.class.php');
     $autoload->add('boxberryShippingCalculatePoints', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculatePoints.class.php');
     $autoload->add('boxberryShippingCalculateCourier', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateCourier.class.php');
     $autoload->add('boxberryShippingCalculateValidate', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateValidate.class.php');

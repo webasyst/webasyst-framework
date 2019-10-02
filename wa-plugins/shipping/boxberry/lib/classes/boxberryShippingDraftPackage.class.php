@@ -58,7 +58,7 @@ class boxberryShippingDraftPackage
 
         $declared_price = $this->bxb->declared_price;
         if ($declared_price) {
-            $data['price'] = $this->bxb->getAssessedPrice();
+            $data['price'] = $this->getDeclaredPrice();
         }
 
         if ($this->isCourierShipping()) {
@@ -214,6 +214,10 @@ class boxberryShippingDraftPackage
                     'view_data'             => $this->getViewData($send),
                 ];
             }
+
+            if ($api_manager->getErrors()) {
+                $result['view_data'] = $this->bxb->_w('Error during automatic shipment creation. Please create a shipment manually in your personal account on Boxberry website. See detailed error-related information in log file <em>wa-log/wa-plugins/shipping/boxberry/api_requests.log</em>.');
+            }
         }
 
         return $result;
@@ -318,4 +322,21 @@ class boxberryShippingDraftPackage
 
         return $paysum;
     }
+
+    /**
+     * @return float|int
+     */
+    protected function getDeclaredPrice()
+    {
+        $helper = new boxberryShippingCalculateHelper($this->bxb);
+
+        // Because you need to transfer only the value of goods in declared value.
+        $paysum = $this->getPaysum();
+        if ($paysum > 0) {
+            $paysum = $this->order->total - $this->order->shipping;
+        }
+
+        return $helper->getOrderSum($paysum);
+    }
+
 }

@@ -3,7 +3,7 @@
 /**
  * Class boxberryShippingCalculateCourier
  */
-class boxberryShippingCalculateCourier extends boxberryShippingCalculate
+class boxberryShippingCalculateCourier extends boxberryShippingCalculateHelper implements boxberryShippingCalculate
 {
     const VARIANT_PREFIX = 'toodor';
 
@@ -130,7 +130,7 @@ class boxberryShippingCalculateCourier extends boxberryShippingCalculate
      */
     protected function getAdditionalInfo($zip)
     {
-        $delivery_costs = $this->getDeliveryCostsAPI(['zip' => $zip, 'paysum' => $this->getPaysum()]);
+        $delivery_costs = $this->getDeliveryCostsAPI(['zip' => $zip]);
 
         $result = false;
         if ($delivery_costs['price'] !== false) {
@@ -138,7 +138,18 @@ class boxberryShippingCalculateCourier extends boxberryShippingCalculate
 
             try {
                 $delivery = new DateTime($this->bxb->getPackageProperty('departure_datetime'));
-                $delivery->modify("+{$delivery_days} days");
+
+                // Add days that boxberry gives
+                // Ignore saturday and sunday
+                while ($delivery_days) {
+                    $delivery->modify("+ 1 days");
+                    $day = $delivery->format('N');
+
+                    if ($day != 6 && $day != 7) {
+                        $delivery_days--;
+                    }
+                }
+
                 $delivery_date = $delivery->format("Y-m-d H:i:s");
             } catch (Exception $e) {
                 $day_to_second = $delivery_days * 3600;

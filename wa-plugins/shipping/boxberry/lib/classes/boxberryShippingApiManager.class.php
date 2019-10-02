@@ -26,6 +26,12 @@ class boxberryShippingApiManager
     protected $url = '';
 
     /**
+     * Errors from request
+     * @var string
+     */
+    protected $errors = null;
+
+    /**
      * boxberryShippingApiManager constructor.
      * @param string $token
      * @param string $url
@@ -162,10 +168,11 @@ class boxberryShippingApiManager
             $result = [];
         }
 
+        $errors = $this->setErrors($result);
         $this->logApiQuery($data, $result, $log_path);
 
         // if the error returned, then clear the array
-        if (count($result) <= 0 || isset($result[0]['err'])) {
+        if (count($result) <= 0 || $errors) {
             $result = [];
         }
 
@@ -186,15 +193,7 @@ class boxberryShippingApiManager
         }
 
         $string_data = var_export($data, true);
-        $errors = 'Successful';
-
-        if (isset($result[0]['err'])) {
-            $errors = $result[0]['err'];
-        }
-
-        if (isset($result['err'])) {
-            $errors = $result['err'];
-        }
+        $errors = $this->getErrors() ? $this->getErrors() : 'Successful';
 
         $delivery_costs = '';
         if (waSystemConfig::isDebug() && $method == self::METHOD_DELIVERY_COSTS) {
@@ -219,8 +218,33 @@ Error:
 _________________________________
 HTML;
 
-        waLog::log($message, 'wa-plugins/shipping/api_requests.log');
+        waLog::log($message, 'wa-plugins/shipping/boxberry/api_requests.log');
 
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param $result
+     * @return bool
+     */
+    protected function setErrors($result)
+    {
+        if (isset($result[0]['err'])) {
+            $this->errors = $result[0]['err'];
+        }
+
+        if (isset($result['err'])) {
+            $this->errors = $result['err'];
+        }
+
+        return (bool)$this->errors;
     }
 }

@@ -15,7 +15,7 @@
     </div>
 
     <div class="field">
-        <div class="name">{$obj->_w('Declared value of parcel (insurance cost)')}</div>
+        <div class="name">{$obj->_w('Declared value for prepaid delivery (insurance cost)')}</div>
         <div class="value">
             <input name="{$namespace}[declared_price]" value="{$settings.declared_price|default:''|escape}" type="text">
             <p class="hint" style="white-space: pre-line">
@@ -27,8 +27,9 @@
                 123.45+12.23%
                 123.45-12.23%
 
-                {$obj->_w('The result must not exceed 300,000 rubles.')}
+                {$obj->_w('Declared value must not exceed 300,000 rubles.')}
             </p>
+            <p class="hint">{$obj->_w('In case of payment on delivery, the declared value passed to the shipping service is equal to the order total less the shipping cost, i.e. pure cost of delivered items with discount applied.')}</p>
             <p class="hint"><em>{$obj->_w('Set up markup costs in your Boxberry account.')}</em></p>
         </div>
     </div>

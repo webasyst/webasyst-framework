@@ -3,20 +3,12 @@
 /**
  * Class boxberryShippingCalculate
  */
-abstract class boxberryShippingCalculate
+class boxberryShippingCalculateHelper
 {
     /**
      * To make FROM prices in the new checkout
      */
     const MAGIC_NUMBER_TO_MAKE_RANGE = 1;
-
-    /**
-     * @return array
-     */
-    abstract function getVariants();
-
-    abstract public function getPrefix();
-
 
     /**
      * @var boxberryShipping|null
@@ -38,9 +30,11 @@ abstract class boxberryShippingCalculate
      */
     public function getDeliveryCostsAPI($data)
     {
+        $data['paysum'] = $this->getPaysum();
         $data['targetstart'] = $this->bxb->targetstart;
         $data['weight'] = $this->bxb->getParcelWeight();
-        $data['ordersum'] = $this->bxb->getAssessedPrice();
+        $data['ordersum'] = $this->getOrderSum($data['paysum']);
+
         $data = array_merge($data, $this->getDimensions());
 
         $api_manager = $this->getApiManager();
@@ -66,6 +60,71 @@ abstract class boxberryShippingCalculate
         ];
 
         return $result;
+    }
+
+
+    /**
+     * @param float|int $paysum
+     * @return float|int
+     */
+    public function getOrderSum($paysum = 0)
+    {
+        // Если у покупателя нужно принять оплату, то объявленная стоимость всегда должна равняться стоимости заказа
+        if ($paysum > 0) {
+            $result = $paysum;
+        } else {
+            $result = $this->getAssessedPrice();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAssessedPrice()
+    {
+        $declared_price = $this->bxb->declared_price;
+
+        if (!$declared_price) {
+            return 0;
+        }
+
+        $cost = 0.0;
+        //delete whitespaces
+        $clear_conditions = preg_replace('@\\s+@', '', $declared_price);
+
+        //divide the expression into parts and save it in an array. Also keep the position of the separator
+        $conditions_list = preg_split('@\+|(-)@', $clear_conditions, null, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY);
+
+        foreach ($conditions_list as $condition) {
+            //Delete commas
+            $float_value = str_replace(',', '.', trim($condition[0]));
+
+            if (strpos($float_value, '%')) {
+                $price = $this->bxb->getTotalPrice();
+
+                // recalculate interest to actual values
+                $float_value = $price * floatval($float_value) / 100;
+                $float_value = round($float_value, 2);
+            } else {
+                $float_value = floatval($float_value);
+            }
+
+            //We perform mathematical operations according to the separator
+            if ($condition[1] && (substr($clear_conditions, $condition[1] - 1, 1) == '-')) {
+                $cost -= $float_value;
+            } else {
+                $cost += $float_value;
+            }
+        }
+
+        // price may not exceed 300,000
+        if ($cost > boxberryShipping::MAX_DECLARED_PRICE) {
+            $cost = boxberryShipping::MAX_DECLARED_PRICE;
+        }
+
+        return round(max(0.0, $cost), 2);
     }
 
     /**
