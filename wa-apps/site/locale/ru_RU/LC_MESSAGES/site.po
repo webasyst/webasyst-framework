@@ -1887,3 +1887,9 @@ msgstr "Выключите для использования <strong>посто�
 
 msgid "Move rule %s/* to the bottom of the rule list."
 msgstr "Перенесите правило %s/* в конец списка правил."
+
+msgid "Rule cannot be saved"
+msgstr "Невозможно сохранить правило"
+
+msgid "Rule address contains unsupported character <strong class=\"highlighted\">%s</strong>."
+msgstr "В адресе правила содержится недопустимый символ <strong class=\"highlighted\">%s</strong>."

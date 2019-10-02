@@ -4,6 +4,16 @@
         <i class="icon10 no s-cdn-remove js-cdn-remove" title="[`Remove`]" style="display: none;"></i>
     </div>
 {/function}
+{function name="_renderRobotsControl"}
+    <div class="field">
+        <div class="name">robots.txt</div>
+        <div class="value">
+            <textarea name="robots">{$robots|escape}</textarea>
+            <br />
+            {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
+        </div>
+    </div>
+{/function}
 <script type="text/javascript">
     document.title = '[`Site setup`] — ' + {json_encode($domain_idn)};
 </script>
@@ -113,6 +123,11 @@
             {/if}
             </div>
 
+            {if !empty($domain_alias)}
+            {* ROBOTS.TXT *}
+            {_renderRobotsControl}
+            {/if}
+
             {if empty($domain_alias)}
             <div class="field-group">
                 <div class="field">
@@ -205,14 +220,7 @@
                 </div>
 
                 {* ROBOTS.TXT *}
-                <div class="field">
-                    <div class="name">robots.txt</div>
-                    <div class="value">
-                        <textarea name="robots">{$robots|escape}</textarea>
-                        <br />
-                        {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
-                    </div>
-                </div>
+                {_renderRobotsControl}
 
                 {* CDN *}
                 <div class="field">

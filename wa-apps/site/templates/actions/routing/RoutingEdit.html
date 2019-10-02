@@ -29,7 +29,7 @@
                 <div class="s-route-block" id="s-route-where">
                     <span class="gray">
                         {$domain_decoded}/
-                    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="js-url bold large" placeholder="*" />
                 </div>
 
                 {if empty($route.redirect) && !isset($route.static_content) && !$app}
@@ -46,7 +46,7 @@
                 <div class="s-route-block" id="s-route-where">
                     <span class="gray">
                         {$domain_decoded}/
-                    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="js-url bold large" placeholder="*" />
                 </div>
 
                 {if empty($route.redirect)}
@@ -429,8 +429,10 @@ $(function () {
         return false;
     });
 
-    $("#s-settings-form").submit(function () {
-        var f = $(this);
+    $("#s-settings-form").on('submit', function () {
+        var $form = $(this),
+            $url_input = $form.find('.js-url');
+
         $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
         var callback = function (response) {
             if (response.status === 'ok') {
@@ -474,13 +476,40 @@ $(function () {
                     });
             } else if (response.status === 'fail') {
                 $("#s-settings-form-status").html('<span class="small" style="color: #f00;">' + response.errors + '</span>');
-                f.find('input.button:submit').removeClass('green').addClass('red');
+                $form.find('input.button:submit').removeClass('green').addClass('red');
             }
         };
-        $.post(f.attr('action'), f.serialize(), function (response) {
+
+        // Validating unsupported characters in url
+        if ($url_input.length) {
+            var url = $url_input.val(),
+                res = url.match(/(\&|\$|\+|\,|\:|\;|\=|\?|\@|\#|\<|\>|\[|\]|\}|\||\^|\%)/);
+
+            if (res) {
+
+                $("#s-settings-form-status").html('');
+
+                var title = '[`Rule cannot be saved`]',
+                    content = '[`Rule address contains unsupported character <strong class="highlighted">%s</strong>.`]';
+
+                content = content.replace(/\%s/, res[0]);
+
+                $().waDialog({
+                    'title': title,
+                    'content': '<p>'+ content +'</p>',
+                    'height': '140px',
+                    'width': '400px',
+                    'buttons': '<a class="button red cancel">[s`Close`]</a>'
+                });
+
+                return false;
+            }
+        }
+
+        $.post($form.attr('action'), $form.serialize(), function (response) {
             if (response.status === 'ok' && response.data.confirm) {
                 if (confirm(response.data.confirm)) {
-                    $.post(f.attr('action') + '&replace=' + response.data.replace, f.serialize(), callback, 'json')
+                    $.post($form.attr('action') + '&replace=' + response.data.replace, $form.serialize(), callback, 'json')
                 } else {
                     $("#s-settings-form-status").empty();
                 }

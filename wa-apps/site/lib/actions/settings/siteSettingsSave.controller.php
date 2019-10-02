@@ -171,8 +171,8 @@ class siteSettingsSaveController extends waJsonController
             $event_params['config'] = $domain_config;
             $this->saveFavicon();
             $this->saveTouchicon();
-            $this->saveRobots();
         }
+        $this->saveRobots();
 
         waUtils::varExportToFile($routes, $path);
 
