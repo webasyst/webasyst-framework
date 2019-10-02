@@ -6,13 +6,14 @@
  * @link https://tech.yandex.ru/maps/jsapi/
  *
  *
- * @property-read string    $client_id   идентификатор аккаунта в сервисе
- * @property-read string    $sender_id   идентификаторы и URL магазинов из аккаунта в сервисе
+ * @property-read string    $client_id    идентификатор аккаунта в сервисе
+ * @property-read string    $sender_id    идентификаторы и URL магазинов из аккаунта в сервисе
  * @property-read string    $warehouse_id
- * @property-read string[]  $method_keys ключи для использования каждого ресурса openAPI
- * @property-read string[]  $city        город отправления
- * @property-read array[]   $size        настройки размеров
+ * @property-read string[]  $method_keys  ключи для использования каждого ресурса openAPI
+ * @property-read string[]  $city         город отправления
+ * @property-read array[]   $size         настройки размеров
  * @property-read string    $insurance
+ * @property-read boolean   $cash_service комиссия за перечисление денежных средств
  * @property-read boolean[] $integration
  * @property-read string    $shipping_type
  * @property-read boolean   $yd_warehouse
@@ -178,9 +179,22 @@ class yandexdeliveryShipping extends waShipping
         if ($service) {
             $intervals = ifset($service, 'custom_data', 'courier', 'intervals', array());
         } else {
+            $service_variant_id = ifset($shipping_params, '%service_variant_id', null);
+            if (($service_variant_id !== null) && ($key = $this->getCacheKey())) {
+                $cache = new waVarExportCache($key.'.data', 600, 'webasyst', true);
+                $data = $cache->get();
+                if (isset($data[$service_variant_id])) {
+                    $service = array(
+                        'custom_data' => $data[$service_variant_id],
+                    );
+                }
+            }
+
             $intervals = array(
                 null => array(0, 1, 2, 3, 4, 5, 6),
             );
+
+            $intervals = ifset($service, 'custom_data', 'courier', 'intervals', $intervals);
         }
 
         return array(
@@ -392,10 +406,11 @@ class yandexdeliveryShipping extends waShipping
                 $template = 'Обновлен заказ в статусе %s <a href="https://delivery.yandex.ru/order/create?id=%d" target="_blank">№%s<i class="icon16 new-window"></i></a>';
             }
             $shipping_data = array(
-                'order_id'  => $response['order']['id'],
-                'status'    => $response['order']['status'],
-                'client_id' => $this->client_id,
-                'view_data' => sprintf($template, $response['order']['status_label'], $response['order']['id'], $response['order']['full_num']),
+                'order_id'        => $response['order']['id'],
+                'status'          => $response['order']['status'],
+                'client_id'       => $this->client_id,
+                'view_data'       => sprintf($template, $response['order']['status_label'], $response['order']['id'], $response['order']['full_num']),
+                'tracking_number' => $response['order']['id'],
             );
 
             return $shipping_data;
@@ -852,6 +867,7 @@ class yandexdeliveryShipping extends waShipping
 
             try {
                 $callback = array($this, 'handleCalculateResponse');
+
                 $services = $this->apiQuery('searchDeliveryList', $params, $callback);
 
                 return $this->handleCalculateResponse(null, $services);
@@ -1040,6 +1056,12 @@ class yandexdeliveryShipping extends waShipping
             'rate'          => (float)str_replace(',', '.', ifset($service['costWithRules'], $service['cost'])),
             'currency'      => 'RUB',
         );
+
+        # recalc cost WithRules
+        $payment_types = $this->getSelectedPaymentTypes();
+        if (!empty($payment_types) && $this->cash_service) {
+            $rate['rate'] += $this->calculateServiceCost($service, compact('payment_types'));
+        }
 
         $rate['name'] = implode(': ', array_unique($rate['name']));
 
@@ -1870,7 +1892,6 @@ HTML;
                 if (empty($this->api_callback)) {
                     return $response['data'];
                 } else {
-                    $callback = $this->api_callback['callback'];
                     if (empty($cache) && isset($this->api_callback['cache'])) {
                         $cache = $this->api_callback['cache'];
                     }
@@ -1879,7 +1900,7 @@ HTML;
                         $cache->set($response['data']);
                     }
 
-                    return call_user_func_array($callback, array($net, $response['data'], $cache));
+                    return call_user_func_array($this->api_callback['callback'], array($net, $response['data'], $cache));
                 }
 
             } catch (waException $ex) {
@@ -1915,6 +1936,29 @@ HTML;
         }
 
         return null;
+    }
+
+    private function calculateServiceCost($service, $options)
+    {
+        $cost = 0;
+        foreach ($service['services'] as $_service) {
+            if ($_service['code'] === 'CASH_SERVICE') {
+                if (!empty($_service['possibility'])) {
+                    $payment_types = array(
+                        waShipping::PAYMENT_TYPE_CASH,
+                        waShipping::PAYMENT_TYPE_CARD,
+                    );
+
+                    $required = array_intersect($payment_types, (array)$options['payment_types']);
+                    if ($required && empty($_service['optional'])) {
+                        $cost += floatval($_service['cost']);
+                    } elseif (!$required && !empty($_service['optional'])) {
+                        $cost -= floatval($_service['cost']);
+                    }
+                }
+            }
+        }
+        return $cost;
     }
 
     private function getAssessedPrice($string)
