@@ -65,50 +65,6 @@ class waSystemConfig
             $url = $url[0];
             $this->environment = $url === $this->getSystemOption('backend_url') ? 'backend' : 'frontend';
         }
-
-        if ($this->environment !== 'cli') {
-            $url = $this->getRequestUrl();
-            if ($url === 'robots.txt' || $url === 'favicon.ico' || $url == 'apple-touch-icon.png') {
-                $this->responseStatic($url);
-            }
-        }
-    }
-
-    protected function responseStatic($file)
-    {
-        $domain = waRequest::server('HTTP_HOST');
-        $u = trim($this->getRootUrl(false, true), '/');
-        if ($u) {
-            $domain .= '/'.$u;
-        }
-        $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
-        if (!file_exists($path)) {
-            if (substr($domain, 0, 4) == 'www.') {
-                $domain2 = substr($domain, 4);
-            } else {
-                $domain2 = 'www.'.$domain;
-            }
-            $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain2.'/'.$file;
-        }
-
-        // check alias
-        if (!file_exists($path)) {
-            $routes = $this->getConfigFile('routing');
-            if (!empty($routes[$domain]) && is_string($routes[$domain])) {
-                $path = waConfig::get('wa_path_data').'/public/site/data/'.$routes[$domain].'/'.$file;
-            } elseif (!empty($routes[$domain2]) && is_string($routes[$domain2])) {
-                $path = waConfig::get('wa_path_data').'/public/site/data/'.$routes[$domain2].'/'.$file;
-            }
-        }
-
-        if (file_exists($path)) {
-            $file_type = waFiles::getMimeType($file);
-            header("Content-type: {$file_type}");
-            @readfile($path);
-        } else {
-            header("HTTP/1.0 404 Not Found");
-        }
-        exit;
     }
 
     public static function getTime($diff = true)
@@ -352,7 +308,7 @@ class waSystemConfig
         if (!$reset_time) {
             return '';
         }
-        return DIRECTORY_SEPARATOR.substr(dechex($reset_time), -6);
+        return substr(dechex($reset_time), -6);
     }
 
     public function getPath($name, $file = null)
@@ -599,7 +555,7 @@ class waSystemConfig
                 $filemtime = false;
             }
 
-            $new_cache_dir = $wa_cache.$this->getVersionedCacheDir($filemtime);
+            $new_cache_dir = $wa_cache.DIRECTORY_SEPARATOR.$this->getVersionedCacheDir($filemtime);
             waConfig::set('wa_path_cache', $new_cache_dir);
         }
 

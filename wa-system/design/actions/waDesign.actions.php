@@ -901,17 +901,35 @@ HTACCESS;
         $app_id = $this->getAppId();
         $app = wa()->getAppInfo($app_id);
 
+        $used_app_themes = [];
+        $app_themes = wa()->getThemes($app_id);
+        $app_routes = wa()->getRouting()->getByApp($app_id);
+        $route_themes = ['theme', 'theme_mobile'];
+        foreach ($app_routes as $domain => $domain_routes) {
+            foreach ($domain_routes as $route) {
+                foreach ($route_themes as $route_theme_key) {
+                    $route_theme = ifempty($route, $route_theme_key, null);
+                    if (!empty($route_theme) && !empty($app_themes[$route_theme])) {
+                        $used_app_themes[] = $route_theme;
+                    }
+                }
+            }
+        }
+        $used_app_themes = array_unique($used_app_themes);
+
         $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/Themes.html';
 
         $this->display(array(
-            'routes'        => $this->getRoutes(),
-            'domains'       => wa()->getRouting()->getDomains(),
-            'design_url'    => $this->design_url,
-            'themes_url'    => $this->themes_url,
-            'template_path' => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
-            'app_id'        => $app_id,
-            'app'           => $app,
-            'options'       => $this->options,
+            'routes'          => $this->getRoutes(),
+            'domains'         => wa()->getRouting()->getDomains(),
+            'design_url'      => $this->design_url,
+            'themes_url'      => $this->themes_url,
+            'template_path'   => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
+            'app_id'          => $app_id,
+            'app'             => $app,
+            'app_themes'      => $app_themes,
+            'used_app_themes' => $used_app_themes,
+            'options'         => $this->options,
         ), $template);
     }
 

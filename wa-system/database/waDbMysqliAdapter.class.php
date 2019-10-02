@@ -346,19 +346,41 @@ class waDbMysqliAdapter extends waDbAdapter
 
             $statement = $fields[$column];
 
-            $sql = "ALTER TABLE `{$table}` MODIFY COLUMN {$statement}";
+            $field = $table_schema[$column];
+
+            $sqls = array();
+
+            if (isset($field['null']) && !$field['null']) {
+                $default = null;
+                if (isset($field['default'])) {
+                    if ($field['default'] == 'CURRENT_TIMESTAMP') {
+                        $default = 'NOW()';
+                    } else {
+                        $default = "'".$field['default']."'";
+                    }
+                    $sqls['update'] = "UPDATE `{$table}` SET `{$column}` = {$default} WHERE `{$column}` IS NULL";
+                } elseif (in_array(strtolower($field['type']), array('datetime'), true)) {
+                    //Handle incorrect datetime value: '0000-00-00 00:00:00' for column at strict mode
+                    $default = 'NOW()';
+                    $sqls['update'] = "UPDATE `{$table}` SET `{$column}` = {$default} WHERE (`{$column}` IS NULL) OR (`{$column}` = '0000-00-00 00:00:00')";
+                }
+            }
+
+            $sqls['alter'] = "ALTER TABLE `{$table}` MODIFY COLUMN {$statement}";
 
             if ($after_column && isset($fields[$after_column])) {
-                $sql .= " AFTER `{$after_column}`";
+                $sqls['alter'] .= " AFTER `{$after_column}`";
             }
 
-            if ($emulate) {
-                return $sql;
-            } elseif (!$this->query($sql)) {
-                $this->exception();
-            } else {
-                return $sql;
+            if (!$emulate) {
+                foreach ($sqls as $sql) {
+                    if (!$this->query($sql)) {
+                        $this->exception();
+                    }
+                }
             }
+
+            return implode(";\n", $sqls);
         }
     }
 

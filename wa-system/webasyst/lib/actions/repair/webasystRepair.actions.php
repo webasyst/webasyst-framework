@@ -214,7 +214,7 @@ SQL;
                         foreach ($check_fields as $check_field => $check_message) {
                             $default_value = $default_column[$check_field];
                             $current_value = $current_tables[$table][$column][$check_field];
-                            $strict = in_array(null, array($default_value,$current_value));
+                            $strict = in_array(null, array($default_value, $current_value), true);
                             if ($strict ? ($default_value !== $current_value) : ($default_value != $current_value)) {
 
                                 $default_column['status'][$check_field] = sprintf(

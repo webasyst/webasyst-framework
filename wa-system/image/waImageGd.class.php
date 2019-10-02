@@ -313,9 +313,9 @@ class waImageGd extends waImage
 
             $margin = round($font_size / 3.6);
             $font_color = array(
-                'r' => '0x' . substr($font_color, 0, 2),
-                'g' => '0x' . substr($font_color, 2, 2),
-                'b' => '0x' . substr($font_color, 4, 2),
+                'r' => hexdec(substr($font_color, 0, 2)),
+                'g' => hexdec(substr($font_color, 2, 2)),
+                'b' => hexdec(substr($font_color, 4, 2)),
                 'a' => floor((1 - $opacity) * 127)
             );
 

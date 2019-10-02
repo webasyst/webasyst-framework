@@ -112,6 +112,12 @@ class webasystLoginFirstAction extends waViewAction
                                 );
 
                                 if (!empty($app['routing_params']) && is_array($app['routing_params'])) {
+                                    wa($app_id);
+                                    foreach ($app['routing_params'] as $routing_param => $routing_param_value) {
+                                        if (is_callable($routing_param_value)) {
+                                            $app['routing_params'][$routing_param] = call_user_func($routing_param_value);
+                                        }
+                                    }
                                     $routing = array_merge($routing, $app['routing_params']);
                                 }
                                 $data[$domain][] = $routing;

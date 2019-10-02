@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-08-26 11:45+0300\n"
+"PO-Revision-Date: 2019-09-26 15:06+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -6180,3 +6180,41 @@ msgstr "Не удалось удалить некоторые файлы."
 
 msgid "Administrative center"
 msgstr "Административный центр"
+
+msgid "Do not use"
+msgstr "Не использовать"
+
+msgid "Server key"
+msgstr "Ключ сервера"
+
+msgid "Sender ID"
+msgstr "Идентификатор отправителя"
+
+msgid "Copy a <strong>Server key</strong> and a <strong>Sender ID</strong> under “Cloud Messaging” tab in <a href=\"https://console.firebase.google.com/project/\" target=\"_blank\">project settings<i class=\"icon16 new-window\"></i></a>."
+msgstr "Скопируйте <strong>Ключ сервера</strong> и <strong>Идентификатор отправителя</strong> на вкладке «Cloud Messaging» в <a href=\"https://console.firebase.google.com/project/\" target=\"_blank\">настройках проекта<i class=\"icon16 new-window\"></i></a>."
+
+msgid "Installed themes"
+msgstr "Установленные"
+
+msgid "No installed themes."
+msgstr "Установленных тем нет."
+
+#: /wa-system/push/adapters/pushcrew/pushcrewPush.class.php:35
+msgid "Account ID"
+msgstr ""
+
+#: /wa-system/push/adapters/pushcrew/pushcrewPush.class.php:40
+msgid "API token"
+msgstr ""
+
+#: /wa-system/push/adapters/onesignal/onesignalPush.class.php:107
+msgid "OneSignal User Auth Key"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.installed_themes.html:32
+msgid "Used"
+msgstr "Используется"
+
+#: /wa-system/design/templates/Themes.installed_themes.html:34
+msgid "Not used"
+msgstr "Не используется"

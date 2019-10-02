@@ -12,7 +12,7 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
         if (strlen($id) > 0) {
             $field = $constructor->getField($id);
             if (!$field) {
-                $this->notFound();
+                throw new waException(_w('Page not found'), 404);
             }
         }
 
@@ -75,6 +75,7 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
     }
 
     /**
+     * @throws waException
      * @var waContactField $subfield
      */
     public function setOptions($options)
@@ -90,6 +91,9 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
             $field = waContactFields::get($field_id);
 
             $old_fields = array();
+            /**
+             * @var waContactField $subfield
+             */
             foreach($field->getParameter('fields') as $subfield) {
                 $old_fields[$subfield->getId()] = $subfield;
             }
@@ -213,6 +217,7 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
      * @param array $opts
      * @param array $occupied_keys
      * @return null|waContactField
+     * @throws waException
      */
     public static function createFromOpts($opts, $occupied_keys = array())
     {
@@ -262,6 +267,7 @@ class webasystSettingsFieldSaveController extends webasystSettingsJsonController
      * @param string $str Specified string
      * @param boolean $strict Whether a default value must be generated if provided string results in an empty URL
      * @return string
+     * @throws waException
      */
     public static function transliterate($str, $strict = true)
     {

@@ -631,11 +631,17 @@ class waFiles
                         }
 
                         $header_matches = null;
-                        //check server response codes (500/404/403/302/301/etc)
+                        //check server response codes (500/404/403/etc)
                         foreach ($headers as $header) {
+                            if (strtolower(substr($header, 0, 10)) == 'location: ') {
+                                self::$size = self::upload(substr($header, 10), $path, $options);
+                            }
                             if (preg_match('@http/\d+\.\d+\s+(\d+)\s+(.+)$@i', $header, $header_matches)) {
                                 $response_code = intval($header_matches[1]);
                                 $status_description = trim($header_matches[2]);
+                                if ($response_code == 301 || $response_code == 302 ) {
+                                    continue;
+                                }
                                 if ($response_code != 200) {
                                     throw new waException("Invalid server response with code {$response_code} ($status_description) while request {$url}");
                                 }

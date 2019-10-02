@@ -854,13 +854,14 @@ abstract class waLongActionController extends waController
         $retry = 5;
         while (true) {
             $retry--;
-            $success = file_put_contents($filename, $data);
+            $success = @file_put_contents($filename, $data);
             if ($success !== false) {
                 return $success;
-            } else if ($retry <= 0) {
+            } elseif ($retry <= 0) {
                 return false;
             } else {
                 sleep(1);
+                waFiles::create(dirname($filename), true);
             }
         }
     }
@@ -868,7 +869,7 @@ abstract class waLongActionController extends waController
     protected function get($filename)
     {
         $retry = 5;
-        while (($res = file_get_contents($filename)) === false) {
+        while (($res = @file_get_contents($filename)) === false) {
             if (!$retry--) {
                 break;
             }

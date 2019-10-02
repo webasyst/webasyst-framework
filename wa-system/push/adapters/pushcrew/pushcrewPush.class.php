@@ -67,22 +67,33 @@ class pushcrewPush extends waPushAdapter
 
     public function send($id, $data)
     {
-        $request_data = $this->prepareRequestData($data);
-
         $subscriber_list = $this->getSubscriberListByField('id', $id);
-        $request_data['subscriber_list'] = $subscriber_list;
-
-        return $this->request('send/list', $request_data, waNet::METHOD_POST);
+        return $this->sendPush($data, $subscriber_list);
     }
 
     public function sendByContact($contact_id, $data)
     {
-        $request_data = $this->prepareRequestData($data);
-
         $subscriber_list = $this->getSubscriberListByField('contact_id', $contact_id);
-        $request_data['subscriber_list'] = $subscriber_list;
+        return $this->sendPush($data, $subscriber_list);
+    }
 
-        return $this->request('send/list', $request_data, waNet::METHOD_POST);
+    protected function sendPush($data, $subscriber_list)
+    {
+        $errors = array();
+        $request_data = $this->prepareRequestData($data);
+        if (!empty($subscriber_list)) {
+            foreach ($subscriber_list as $subscriber) {
+                try {
+                    $request_data['subscriber_id'] = $subscriber;
+                    $this->request('send/individual', $request_data, waNet::METHOD_POST);
+                } catch (Exception $e) {
+                    waLog::log("PushCrew: invalid subscriber_id: ".$subscriber."\n".$e->getMessage(), 'push/pushcrew_errors.log');
+                    $errors[$subscriber] = $e->getMessage();
+                }
+            }
+        }
+
+        return $errors;
     }
 
     protected function prepareRequestData(array $data)
@@ -114,11 +125,12 @@ class pushcrewPush extends waPushAdapter
         );
         $rows = $this->getPushSubscribersModel()->getByField($fields, 'id');
 
+        $api_account_id = $this->getSettings(self::API_ACCOUNT_ID);
         $subscriber_list = array();
         foreach ($rows as $row) {
             if (!empty($row['subscriber_data'])) {
                 $subscriber_data = json_decode($row['subscriber_data'], true);
-                if (!empty($subscriber_data) && $this->getSettings(self::API_ACCOUNT_ID) == $subscriber_data['account_id']) {
+                if (!empty($subscriber_data) && $api_account_id == $subscriber_data['account_id']) {
                     $subscriber_list[] = (string)$subscriber_data['subscriber_id'];
                 }
             }

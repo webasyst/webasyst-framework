@@ -1,0 +1,91 @@
+.icon16.ss {
+  background-image: url("../../../../wa-apps/shop/img/ss-icon16.png?v=2019-09-23");
+}
+.icon16.ss.confirmed,
+.icon16.ss.processing {
+  background-position: -16px -32px;
+}
+.s-installed-themes-section {
+  margin-top: 20px;
+}
+.s-installed-themes-section:not(.is-extended) .s-hidden {
+  display: none;
+}
+.s-installed-themes-section .s-section-header .s-title {
+  display: inline-block;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: bold;
+  color: #808080;
+  cursor: pointer;
+}
+.s-installed-themes-section .s-section-header .s-title .s-icon {
+  display: inline-block;
+  position: relative;
+  line-height: 0;
+  padding-left: 2px;
+}
+.s-installed-themes-section .s-section-header .s-title .s-icon:before {
+  content: "";
+  display: inline-block;
+  vertical-align: 2px;
+  border: solid transparent;
+}
+.s-installed-themes-section .s-section-header .s-title .s-icon.darr:before {
+  border-width: 8px 5px 0;
+  border-top-color: #888;
+}
+.s-installed-themes-section .s-section-header .s-title .s-icon.rarr:before {
+  border-width: 5px 0 5px 8px;
+  border-left-color: #888;
+}
+.s-installed-themes-section .s-themes-list {
+  margin: 13px 0 0;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 20px 20px 0;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-image-wrapper {
+  display: inline-block;
+  margin-bottom: 10px;
+  background: #fff;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-image-wrapper img {
+  display: inline-block;
+  vertical-align: top;
+  width: 300px;
+  height: 330px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 15px 35px -10px rgba(40,40,80,0.13), 0 5px 10px 0 rgba(0,0,0,0.07);
+  box-shadow: 0 15px 35px -10px rgba(40,40,80,0.13), 0 5px 10px 0 rgba(0,0,0,0.07);
+  -webkit-transition: 0.2s box-shadow;
+  -moz-transition: 0.2s box-shadow;
+  -o-transition: 0.2s box-shadow;
+  -ms-transition: 0.2s box-shadow;
+  transition: 0.2s box-shadow;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-image-wrapper img:hover {
+  -webkit-box-shadow: 0 18px 35px -10px rgba(40,40,80,0.33), 0 5px 10px 0 rgba(0,0,0,0.013);
+  box-shadow: 0 18px 35px -10px rgba(40,40,80,0.33), 0 5px 10px 0 rgba(0,0,0,0.013);
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-name-wrapper {
+  font-size: 17px;
+  line-height: 20px;
+  font-family: 'StemText-Bold', sans-serif;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-name-wrapper .s-name {
+  color: inherit;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-statuses {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 17px;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-statuses .s-status.green {
+  color: #008000;
+}
+.s-installed-themes-section .s-themes-list .s-theme-wrapper .s-statuses .s-status.gray {
+  color: #777;
+}

@@ -68,7 +68,7 @@ class webasystSettingsDatabaseConvertController extends waJsonController
     protected function convertTable()
     {
         $table_name = $this->getModel()->escape($this->table);
-        $sql = "ALTER TABLE {$table_name} CONVERT TO CHARACTER SET ".self::CHARSET." COLLATE ".self::COLLATION;
+        $sql = "ALTER TABLE `{$table_name}` CONVERT TO CHARACTER SET ".self::CHARSET." COLLATE ".self::COLLATION;
         $this->getModel()->exec($sql);
     }
 
@@ -78,7 +78,7 @@ class webasystSettingsDatabaseConvertController extends waJsonController
     protected function convertColumn()
     {
         $table_name = $this->getModel()->escape($this->table);
-        $table_columns = $this->getModel()->query('SHOW FULL COLUMNS FROM '.$table_name)->fetchAll('Field');
+        $table_columns = $this->getModel()->query('SHOW FULL COLUMNS FROM `'.$table_name.'`')->fetchAll('Field');
 
         $column_data = ifempty($table_columns, $this->column, null);
         if (empty($column_data)) {

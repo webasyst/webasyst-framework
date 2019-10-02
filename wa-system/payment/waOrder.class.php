@@ -18,6 +18,7 @@
  * @property bool $tax_included
  *
  * @property bool $recurrent
+ * @property bool $save_card
  *
  * @property string description
  * @property string description_en
@@ -91,6 +92,7 @@
  * @property string $comment
  * @property array $params
  * @property array[string]mixed $params[]
+ * @property string $card_native_id
  *
  *
  */

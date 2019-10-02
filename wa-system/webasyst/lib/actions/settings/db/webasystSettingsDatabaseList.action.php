@@ -16,7 +16,7 @@ class webasystSettingsDatabaseListAction extends webasystSettingsViewAction
         $field_count = 0;
         foreach ($tables as &$table) {
             $table['is_mb4'] = preg_match('~^(utf8mb4_)~ui', $table['Collation']) ? true : false;
-            $table['columns'] = $model->query('SHOW FULL COLUMNS FROM '.$table['Name'])->fetchAll('Field');
+            $table['columns'] = $model->query('SHOW FULL COLUMNS FROM `'.$table['Name'].'`')->fetchAll('Field');
 
             $field_count += count($table['columns']);
 

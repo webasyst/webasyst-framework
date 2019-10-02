@@ -53,7 +53,7 @@ class waGettextParser
 
     public function getWords($file)
     {
-        static $debug = false;
+        static $first_run = true;
         $counter = 0;
         $text = file_get_contents($file);
         $file = substr($file, strlen(realpath(dirname(__FILE__)."/../../")));
@@ -65,39 +65,53 @@ class waGettextParser
                 $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
             }
         }
-        if ($this->config['debug'] && !$debug) {
+        if ($this->config['debug'] && $first_run) {
             print "Template pattern:\n".$pattern."\n";
         }
 
         $function_pattern = array("\\\$_");
+        $open_function_pattern = array();
         if ($this->config['project'] == 'webasyst') {
             $function_pattern[] = '_ws';
         } elseif (strpos($this->config['project'], 'wa-plugins') !== false) {
             $function_pattern[] = '_wp';
             $function_pattern[] = '->_w';
-            $function_pattern[] = 'sprintf_wp';
+            $open_function_pattern[] = 'sprintf_wp';
         } elseif (strpos($this->config['project'], '/plugins/')) {
             $function_pattern[] = '_wp';
-            $function_pattern[] = 'sprintf_wp';
+            $open_function_pattern[] = 'sprintf_wp';
         } elseif (strpos($this->config['project'], '/widgets/')) {
             $function_pattern[] = '_wp';
             $function_pattern[] = 'sprintf_wp';
         } else {
             $function_pattern[] = '_w';
-            $function_pattern[] = 'sprintf_wp';
+            $open_function_pattern[] = 'sprintf_wp';
         }
-        if ($this->config['debug'] && !$debug) {
-            print "Search functions:\n\t".implode("\n\t", $function_pattern)."\n";
+        if ($this->config['debug'] && $first_run) {
+            print "Search functions:\n\t".implode("\n\t", $function_pattern+$open_function_pattern)."\n";
         }
         $commas = array('"', "'");
-        $word_pattern = '[\\r\\n\\s]*%1$s\\s*((?:\\\\%s|[^%1$s\\r\\n])+?)\\s*%1$s\\s*';
+        $word_pattern = '[\\r\\n\\s]*'
+            .'%1$s'
+            .'[\\s]*'
+            .'((?:\\\\%s|[^%1$s\\r\\n])+?)'
+            .'[\\s]*'
+            .'%1$s'
+            .'[\\s]*';
+
         foreach ($commas as $comma) {
 
-            $plural_pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/[\\r\\n]*)?\\s*\\('.sprintf($word_pattern, $comma).','.sprintf($word_pattern,
-                    $comma).'(,\\s*|[\\r\\n\\s]*\))@mus';
-            if ($this->config['debug'] && !$debug) {
+            $comma_word_pattern = sprintf($word_pattern, $comma);
+            $plural_pattern = '@'
+                .'(?:'.implode('|', $function_pattern).')'
+                .'(?:\\s*\\*/[\\r\\n]*)?\\s*\\'
+                .'('.$comma_word_pattern.','.$comma_word_pattern.'(,\\s*|[\\r\\n\\s]*\))'
+                .'@mus';
+
+            if ($this->config['debug'] && $first_run) {
                 print "Plural forms pattern:\n".$plural_pattern."\n";
             }
+
             #plural forms support
             if (preg_match_all($plural_pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
                 foreach ($matches[1] as $i => $match) {
@@ -108,23 +122,53 @@ class waGettextParser
                 }
             }
         }
+
         foreach ($commas as $comma) {
-            $pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/[\\r\\n]*)?\\s*\\('.sprintf($word_pattern, $comma).'\\)@mus';
+            $comma_word_pattern = sprintf($word_pattern, $comma);
+            $pattern = '@'
+                .'(?:('.implode('|', $function_pattern).'))'
+                .'(?:\\s*\\*/[\\r\\n]*)?\\s*'
+                .'\\('.$comma_word_pattern.'\\)'
+                .'@mus';
+
+            if ($this->config['debug'] && $first_run) {
+                print "Single forms pattern:\n".$pattern."\n";
+            }
+
             if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
-                foreach ($matches[1] as $match) {
+                foreach ($matches[2] as $match) {
                     $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);
                     $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
                 }
             }
+        }
 
-            if ($this->config['debug'] && !$debug) {
-                print "Single forms pattern:\n".$pattern."\n";
-                $debug = true;
+        if ($open_function_pattern) {
+            foreach ($commas as $comma) {
+                $comma_word_pattern = sprintf($word_pattern, $comma);
+                $pattern = '@'
+                    .'(?:('.implode('|', $open_function_pattern).'))'
+                    .'(?:\\s*\\*/[\\r\\n]*)?\\s*'
+                    .'\\('.$comma_word_pattern.','
+                    .'@mus';
+
+                if ($this->config['debug'] && $first_run) {
+                    print "Single forms pattern:\n".$pattern."\n";
+                }
+
+                if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
+                    foreach ($matches[2] as $match) {
+                        $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);
+                        $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
+                    }
+                }
             }
         }
 
-        return $counter;
 
+        $first_run = false;
+
+        return $counter;
     }
 
     protected function getLine($text, $pos)

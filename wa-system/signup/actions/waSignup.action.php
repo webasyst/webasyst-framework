@@ -342,6 +342,8 @@ class waSignupAction extends waViewAction
     {
         if (!waRequest::param('secure')) {
             $referer = waRequest::server('HTTP_REFERER');
+            $referer = is_string($referer) ? $referer : '';
+
             $root_url = wa()->getRootUrl(true);
             if ($root_url != substr($referer, 0, strlen($root_url))) {
                 $this->getStorage()->del('auth_referer');
@@ -357,6 +359,9 @@ class waSignupAction extends waViewAction
             );
 
             foreach ($ignore_urls as $ignore_url) {
+
+                $ignore_url = is_string($ignore_url) ? $ignore_url : '';
+
                 // if referer "looks like" ignorable url
                 if (strpos($referer, $ignore_url) !== false || strpos($ignore_url, $referer) !== false) {
                     // Suck url not consider as referer

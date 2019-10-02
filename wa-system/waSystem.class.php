@@ -350,7 +350,7 @@ class waSystem
     public function getPush($adapter = null)
     {
         if (empty($adapter)) {
-            $adapter = wa()->getSetting('push_adapter', 'onesignal', 'webasyst');
+            $adapter = wa()->getSetting('push_adapter', null,'webasyst');
         }
 
         if (empty($adapter)) {
@@ -564,7 +564,15 @@ class waSystem
 
             // Request URL with no '?' and GET parameters
             $request_url = $this->config->getRequestUrl(true, true);
-            if ($this->getEnv() == 'backend') {
+
+            $environment = $this->getEnv();
+            if ($environment !== 'cli') {
+                if ($request_url === 'robots.txt' || $request_url === 'favicon.ico' || $request_url == 'apple-touch-icon.png') {
+                    $this->dispatchStatic($request_url);
+                }
+            }
+
+            if ($environment == 'backend') {
                 $this->dispatchBackend($request_url);
             } else {
                 $this->dispatchFrontend($request_url);
@@ -591,15 +599,61 @@ class waSystem
         }
     }
 
-    private function dispatchBackend($request_url)
+    /**
+     * Redirect to HTTPS if set up in domain or route params
+     * @param mixed $ssl_all
+     */
+    private function redirectToHttps($ssl_all)
     {
-        // Redirect to HTTPS if set up in domain params
-        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
+        if (!waRequest::isHttps() && $ssl_all) {
             $domain = $this->getRouting()->getDomain(null, true);
             $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
             $this->getResponse()->redirect($url, 301);
             return;
         }
+    }
+
+    private function dispatchStatic($file)
+    {
+        $this->redirectToHttps(waRouting::getDomainConfig('ssl_all'));
+        $domain = waRequest::server('HTTP_HOST');
+        $u = trim($this->getRootUrl(false, true), '/');
+        if ($u) {
+            $domain .= '/'.$u;
+        }
+        $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
+        if (!file_exists($path)) {
+            if (substr($domain, 0, 4) == 'www.') {
+                $domain2 = substr($domain, 4);
+            } else {
+                $domain2 = 'www.'.$domain;
+            }
+            $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain2.'/'.$file;
+        }
+
+        // check alias
+        if (!file_exists($path)) {
+            $routes = $this->getConfig()->getConfigFile('routing');
+            if (!empty($routes[$domain]) && is_string($routes[$domain])) {
+                $path = waConfig::get('wa_path_data').'/public/site/data/'.$routes[$domain].'/'.$file;
+            } elseif (!empty($routes[$domain2]) && is_string($routes[$domain2])) {
+                $path = waConfig::get('wa_path_data').'/public/site/data/'.$routes[$domain2].'/'.$file;
+            }
+        }
+
+        if (file_exists($path)) {
+            $file_type = waFiles::getMimeType($file);
+            header("Content-type: {$file_type}");
+            @readfile($path);
+        } else {
+            header("HTTP/1.0 404 Not Found");
+        }
+        exit;
+    }
+
+    private function dispatchBackend($request_url)
+    {
+        $this->redirectToHttps(waRouting::getDomainConfig('ssl_all'));
 
         // Publicly available dashboard?
         $url = explode("/", $request_url);
@@ -680,13 +734,7 @@ class waSystem
             return;
         }
 
-        // Redirect to HTTPS if set up in domain params
-        if (!waRequest::isHttps() && waRouting::getDomainConfig('ssl_all')) {
-            $domain = $this->getRouting()->getDomain(null, true);
-            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
-            $this->getResponse()->redirect($url, 301);
-            return;
-        }
+        $this->redirectToHttps(waRouting::getDomainConfig('ssl_all'));
 
         // Captcha?
         if (preg_match('/^([a-z0-9_]+)?\/?captcha\.php$/i', $request_url, $m)) {
@@ -758,13 +806,7 @@ class waSystem
             return;
         }
 
-        // Redirect to HTTPS if set up in routing params
-        if (!waRequest::isHttps() && waRequest::param('ssl_all')) {
-            $domain = $this->getRouting()->getDomain(null, true);
-            $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
-            $this->getResponse()->redirect($url, 301);
-            return;
-        }
+        $this->redirectToHttps(waRequest::param('ssl_all'));
 
         // Active application determined by the routing
         $app = waRequest::param('app', null, 'string');

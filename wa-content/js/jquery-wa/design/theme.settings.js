@@ -197,7 +197,6 @@ var WAThemeSettings = ( function($) {
             $dialog_wrapper = that.$wrapper.find('#wa-theme-update-dialog'),
             href = '?module=design&action=themeUpdate&theme='+that.theme_id;
 
-
         $link.on('click', function () {
             if (!$(this).hasClass('disabled'))  {
                 $dialog_wrapper.waDialog({
@@ -352,6 +351,7 @@ var WAThemeSettings = ( function($) {
         $link.on('click', function () {
             if (!$(this).hasClass('disabled'))  {
                 $dialog_wrapper.waDialog({
+                    height: '420px',
                     disableButtonsOnSubmit: true,
                     onSubmit: function () {
                         $.post(href, $(this).serialize(), function (response) {

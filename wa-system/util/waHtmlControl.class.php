@@ -1009,10 +1009,9 @@ HTML;
 
             $date_name = preg_replace('@([^\]]+)(\]?)$@', '$1.date$2', $name);
 
-            $date_formatted_params['style'] = "display: none;";
             $date_formatted_params['value'] = ifset($params, 'value', 'date', '');
 
-            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
+            $html .= waHtmlControl::getControl(waHtmlControl::HIDDEN, $date_name, $date_formatted_params);
             self::makeId($date_formatted_params, $date_name);
 
             $calendar_id = $date_params['id'];
@@ -1118,7 +1117,7 @@ HTML;
         var multiple_dates_formatted = {$multiple};
         var holidays = {$holidays};
         var workdays = {$workdays};
-        
+
         if (multiple_dates !== false){
             multiple_dates = input_date.val().split(';');
         }
@@ -1126,6 +1125,13 @@ HTML;
         if (multiple_dates_formatted !== false) {
             multiple_dates_formatted = input_date_formatted.val().split(';');
         }
+        
+        // remove bad date from hidden input
+        input_date.on('change', function() {
+            if (this.value === '') {
+                input_date_formatted.val('')
+            }
+        });
         
         input_date.data('available_days', {$available_days});
         

@@ -45,10 +45,10 @@ abstract class waPushAdapter
 
     }
 
-    public function getActionsUrl($absolute = false)
+    public function getActionUrl($action = null, $absolute = false)
     {
         $root_url = wa()->getRootUrl($absolute);
-        return $root_url.'push.php/'.$this->getId().'/';
+        return $root_url.'push.php/'.$this->getId().'/'.$action;
     }
 
     //

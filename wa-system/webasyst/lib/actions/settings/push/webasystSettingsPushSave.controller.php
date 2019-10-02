@@ -11,10 +11,12 @@ class webasystSettingsPushSaveController extends webasystSettingsJsonController
         $settings = waRequest::post('push_settings', array(), waRequest::TYPE_ARRAY);
 
         // Save push adapter settings
-        if (isset($push_adapters[$adapter])) {
+        if (!empty($adapter) && isset($push_adapters[$adapter])) {
             $model->set('webasyst', 'push_adapter', $adapter);
             $push_adapters[$adapter]->saveSettings(ifset($settings, $adapter, array()));
             $res = $push_adapters[$adapter]->setup();
+        } else {
+            $model->del('webasyst', 'push_adapter');
         }
 
         if (!empty($res['errors'])) {

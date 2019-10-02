@@ -184,10 +184,11 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * Get payment plugin instance
-     * @param string              $id          plugin identity (e.g. cash, paypal, etc.)
-     * @param int                 $merchant_id Merchant settings key
+     * @param string $id plugin identity (e.g. cash, paypal, etc.)
+     * @param int $merchant_id Merchant settings key
      * @param string|waAppPayment $app_adapter app_id or application adapter
      * @return waPayment
+     * @throws waException
      */
     public static function factory($id, $merchant_id = null, $app_adapter = null)
     {
@@ -239,6 +240,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * @return waPayment
+     * @throws waException
      */
     protected function init()
     {
@@ -248,11 +250,15 @@ abstract class waPayment extends waSystemPlugin
         if (!$this->app_id) {
             $this->app_id = wa()->getApp();
         }
-
         if ($this->key) {
             $this->setSettings($this->getAdapter()->getSettings($this->id, $this->key));
             if (($this->merchant_id === '*') || is_callable($this->merchant_id)) {
                 $this->merchant_id = $this->getAdapter()->getMerchantId();
+
+                $log = array(
+                    'merchant_id' => $this->merchant_id,
+                );
+                self::log($this->id, $log);
             }
         }
         $this->merchant_id =& $this->key;
@@ -641,6 +647,7 @@ abstract class waPayment extends waSystemPlugin
      * Get WA transaction by ID
      * @param int $wa_transaction_id
      * @return array $transaction
+     * @throws waException
      */
     final public static function getTransaction($wa_transaction_id)
     {
@@ -673,6 +680,7 @@ abstract class waPayment extends waSystemPlugin
      * Returns available post-payment transaction types
      * @param int $wa_transaction_id
      * @return array
+     * @throws waException
      */
     final public static function allowedTransaction($wa_transaction_id)
     {
@@ -743,6 +751,7 @@ abstract class waPayment extends waSystemPlugin
      * Get transactions list
      * @param array $conditions - $key=>$value pairs
      * @return array $transactions - transactions list
+     * @throws waException
      */
     final public static function getTransactionsByFields($conditions)
     {
@@ -1008,6 +1017,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      * @param $order_id
      * @return null|false|array last transaction
+     * @throws waException
      */
     public function isRefundAvailable($order_id)
     {
@@ -1125,7 +1135,7 @@ interface waIPaymentRecurrent
 {
     /**
      *
-     * @param array $order_data
+     * @param waOrder $order_data
      */
     public function recurrent($order_data);
 }

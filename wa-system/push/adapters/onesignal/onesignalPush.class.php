@@ -2,9 +2,9 @@
 
 class onesignalPush extends waPushAdapter
 {
-    const PROVIDER_NAME = 'One Signal';
-    const API_TOKEN = 'api_token';
+    const PROVIDER_NAME = 'OneSignal';
     const API_URL = 'https://onesignal.com/api/v1/';
+    const API_TOKEN = 'api_token';
 
     protected $net_api_token;
     protected $lock_fd = null;
@@ -41,7 +41,7 @@ class onesignalPush extends waPushAdapter
             return null;
         }
 
-        $actions_url = $this->getActionsUrl();
+        $actions_url = $this->getActionUrl();
         $webasyst_app_url = wa()->getConfig()->getBackendUrl(true).'webasyst/';
 
         $app = $this->getAppByDomain();
@@ -405,7 +405,6 @@ class onesignalPush extends waPushAdapter
         $res = null;
         try {
             $url = self::API_URL.$api_method;
-
             $content = !empty($request_data) ? json_encode($request_data) : null;
             $res = $this->getNet()->query($url, $content, $request_method);
         } catch (Exception $e) {

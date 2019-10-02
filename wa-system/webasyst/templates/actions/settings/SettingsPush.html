@@ -8,6 +8,11 @@
             <div class="field-group">
                 <div class="field">
                     <div class="name">[s`Web push notifications service`]</div>
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="push_adapter" {if !$selected_push_adapter}checked{/if} value=""> [s`Do not use`]
+                        </label>
+                    </div>
                     {if !empty($push_adapters)}
                         {foreach $push_adapters as $_adapter}
                             {$_adapter_id = $_adapter->getId()}

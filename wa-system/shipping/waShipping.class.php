@@ -161,10 +161,10 @@ abstract class waShipping extends waSystemPlugin
             case 'price':
                 if (isset($this->params['total_'.$property])) {
                     $property_value = $this->params['total_'.$property];
+                    $property_value -= $this->getPackageProperty('total_discount');
                 } else {
                     foreach ($this->items as $item) {
                         $property_value += ($item['price'] - $item['discount']) * $item['quantity'];
-
                     }
                 }
                 break;
@@ -380,7 +380,7 @@ abstract class waShipping extends waSystemPlugin
     {
         $this->addItems($order->items);
         $this->setAddress($order->shipping_address);
-        $params['total_price'] = $order->total;
+        $params['total_price'] = $order->subtotal;
         $params['total_discount'] = $order->discount;
         $shipping_data = array();
         if (isset($params['shipping_data'])) {
@@ -1444,7 +1444,7 @@ HTML;
      * @return array['icon'][int]string
      * @return array['img']string
      */
-    final public static function info($id, $options = array(), $type = null)
+    public static function info($id, $options = array(), $type = null)
     {
         return parent::info($id, $options, self::PLUGIN_TYPE);
     }

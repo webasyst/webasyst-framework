@@ -608,6 +608,10 @@ class waRequest
         if (!empty($_SERVER['HTTP_X_SCHEME']) && strtolower($_SERVER['HTTP_X_SCHEME']) == 'https') {
             return true;
         }
+        $http_cf_visitor = json_decode(self::server('HTTP_CF_VISITOR'), true);
+        if (!empty($http_cf_visitor['scheme']) && $http_cf_visitor['scheme'] == 'https') {
+            return true;
+        }
         return false;
     }
 
