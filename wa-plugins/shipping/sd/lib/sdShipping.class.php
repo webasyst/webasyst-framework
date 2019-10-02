@@ -752,13 +752,19 @@ class sdShipping extends waShipping
         $view = wa()->getView();
 
         $settings = $this->getSettings();
+        $countries = $this->getCountries();
+        $saved_country = ifset($settings, 'country', null);
+
+        if (!$saved_country) {
+            $saved_country = ifset($countries, 0, 'iso3letter', false);
+        }
 
         $view->assign(array(
             'obj'          => $this,
             'payment_type' => $this->getPaymentTypeSettings(),
             'currencies'   => $this->getCurrencies(),
-            'countries'    => $this->getCountries(),
-            'regions'      => $this->getRegions($settings),
+            'countries'    => $countries,
+            'regions'      => $this->getRegions($saved_country),
             'weight_units' => $this->getWeightUnits(),
             'length_units' => $this->getAdapter()->getAvailableLinearUnits(),
             'namespace'    => waHtmlControl::makeNamespace($params),
@@ -822,10 +828,10 @@ class sdShipping extends waShipping
         return $countries;
     }
 
-    protected function getRegions($settings)
+    protected function getRegions($country)
     {
         $rm = new waRegionModel();
-        $regions = $rm->getByCountry($settings['country']);
+        $regions = $rm->getByCountry($country);
 
         return $regions;
     }
