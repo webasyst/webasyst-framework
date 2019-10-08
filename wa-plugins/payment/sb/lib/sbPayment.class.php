@@ -69,7 +69,6 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         if ($auto_submit && $this->TESTMODE) {
             $auto_submit = false;
-            $this->logError($this->id, var_export($order_data, true));
         }
 
         $gateway_info = $this->getGatewayTransactionStatus($order_data['order_id']);
@@ -399,7 +398,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
         // If settings error
         if ($order_info && ($order_status == 3 || $order_status == 6)) {
-            $this->logError($this->id, ifset($order_info, 'errorCode', '').': '.ifset($order_info, 'errorMessage', ''));
+            $this->logError(ifset($order_info, 'errorCode', '').': '.ifset($order_info, 'errorMessage', ''));
             $error = 'Ошибка платежа. Обратитесь в службу поддержки.';
         } elseif ($order_info && $order_status == 1) {
             $error = 'Деньги заблокированы.';
@@ -755,7 +754,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $data = $this->getUserData($waOrder['contact_id']);
 
         if (!$data['email'] && !$data['phone']) {
-            $this->logError($this->id, 'Не установлен системный Email.');
+            $this->logError( 'Не установлен системный Email.');
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
@@ -777,10 +776,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
         if ($country && $city && $post_address) {
             $order_bundle['customerDetails']['deliveryInfo'] = array(
-                'deliveryType' => $waOrder['shipping_name'],
-                'country'      => $country,
-                'city'         => $city,
-                'postAddress'  => $post_address,
+                'country'     => $country,
+                'city'        => $city,
+                'postAddress' => $post_address,
             );
         }
 
@@ -838,10 +836,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         } elseif ($tax === null) {
             $tax_type = 0;
         } else {
-            $this->logError(
-                $this->id,
-                "Unknown VAT rate: {$tax}. The list of available bets: see Sberbank documentation."
-            );
+            $this->logError("Unknown VAT rate: {$tax}. The list of available bets: see Sberbank documentation.");
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
@@ -879,7 +874,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             foreach ($order_data->items as $data) {
                 $item_number++;
                 if (!$data['tax_included'] && (int)$data['tax_rate'] > 0) {
-                    $this->logError($this->id, sprintf('НДС не включён в цену товара: %s.', var_export($data, true)));
+                    $this->logError(sprintf('НДС не включён в цену товара: %s.', var_export($data, true)));
                     throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
                 }
 
@@ -889,7 +884,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
         if (!empty($order_data['shipping'])) {
             if (!$order_data->shipping_tax_included && (int)$order_data->shipping_tax_rate > 0) {
-                $this->logError($this->id, sprintf('НДС не включён в стоимость доставки (%s).', $order_data->shipping_name));
+                $this->logError(sprintf('НДС не включён в стоимость доставки (%s).', $order_data->shipping_name));
                 throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
             }
             $data = array(
@@ -1016,7 +1011,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     protected function validateRegisterResponse($response)
     {
         if (!empty($response['errorCode']) && $response['errorCode'] != '0') {
-            $this->logError($this->id, array(
+            $this->logError( array(
                 'errorMessage' => ifset($response['errorMessage']),
                 'errorCode'    => ifset($response['errorCode']),
             ));
@@ -1025,7 +1020,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         if (empty($response['formUrl'])) {
-            $this->logError($this->id, 'formUrl not received');
+            $this->logError( 'formUrl not received');
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
@@ -1143,20 +1138,39 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         try {
             $response = $net->query($url, $data, waNet::METHOD_POST);
         } catch (Exception $e) {
-            $response = array();
-            $message = sprintf('%s: %s', $e->getMessage(), var_export(array(
-                'response' => $net->getResponse(true),
-                'headers'  => $net->getResponseHeader(),
-            ), true));
-            $this->logError($this->id, $message);
+
         }
 
-        if (!empty($response['errorCode'])) {
-            $this->logError($this->id, $response['errorCode'].': '.$response['errorMessage']);
-            throw new waPaymentException($response['errorMessage']);
+        if (empty($response) || !empty($response['errorCode'])) {
+            $this->logRequest($net, $data);
+            throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
         return $response;
+    }
+
+    /**
+     * @param waNet $net
+     * @param $data
+     */
+    protected function logRequest($net, $data)
+    {
+        unset($data['userName']);
+        unset($data['password']);
+
+        $request = var_export($data, true);
+        $response = $net->getResponse(true);
+        $headers =  var_export($net->getResponseHeader('http_code'),true);
+
+        $log = <<<HTML
+_________________________________
+Request: {$request}
+Headers: {$headers}
+Response: {$response}
+_________________________________
+HTML;
+
+        $this->logError( $log);
     }
 
     /**
@@ -1245,12 +1259,11 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
     /**
      * need for tests. Delete when we go to the version of php> 5.3 and use static::log();
-     * @param $module_id
      * @param $data
      */
-    protected function logError($module_id, $data)
+    protected function logError($data)
     {
-        self::log($module_id, $data);
+        self::log($this->id, $data);
     }
 
     /** @noinspection PhpUnused */
