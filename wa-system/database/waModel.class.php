@@ -67,6 +67,7 @@ class waModel
     /**
      * @param string $type
      * @param bool $writable
+     * @throws waDbException|waException
      */
     public function __construct($type = null, $writable = false)
     {
@@ -81,6 +82,7 @@ class waModel
     /**
      * Get meta description of the table and generate fields array
      * @return array
+     * @throws waDbException|waException
      */
     public function getMetadata()
     {
@@ -106,6 +108,7 @@ class waModel
     /**
      * Update and return description of table columns (like getMetadata()), bypassing all caches.
      * @return array
+     * @throws waDbException
      */
     public function clearMetadataCache()
     {
@@ -122,6 +125,7 @@ class waModel
      * description file.
      *
      * @return array
+     * @throws waDbException|waException
      */
     public function getEmptyRow()
     {
@@ -136,6 +140,10 @@ class waModel
         return $result;
     }
 
+    /**
+     * @return array|mixed
+     * @throws waDbException|waException
+     */
     private function getFields()
     {
         return $this->describe();
@@ -175,6 +183,7 @@ class waModel
      * @param string $table
      * @param bool $keys
      * @return array
+     * @throws waDbException
      */
     public function describe($table = null, $keys = false)
     {

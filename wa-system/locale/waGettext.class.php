@@ -36,14 +36,43 @@ class waGettext
         }
     }
 
+    public function getMessagesMetaPlurals()
+    {
+        $parsed = $this->parseFile();
+        $messages = ifset($parsed, 'messages', []);
+
+        $meta = $this->meta2array(isset($messages['']) ? $messages[''] : '', true);
+        unset($messages['']);
+        return array(
+            'meta'     => $meta,
+            'messages' => $messages,
+            'plurals'  => ifset($parsed, 'plurals', [])
+        );
+    }
+
     protected function readPo()
+    {
+        $parsed = $this->parseFile();
+        $messages = ifset($parsed, 'messages', []);
+
+        $meta = $this->meta2array(isset($messages['']) ? $messages[''] : '');
+        unset($messages['']);
+        return array(
+            'meta'     => $meta,
+            'messages' => $messages,
+        );
+    }
+
+    protected function parseFile()
     {
         $file = $this->file;
         if (!$contents = @file($file)) {
-            return array();
+            return [];
         }
-        $messages = array();
-        $buffer = array();
+        $messages = [];
+        $plurals = [];
+        $buffer = [];
+
         foreach ($contents as $string) {
             $string = trim($string);
             if (!$string || substr($string, 0, 1) == '#') {
@@ -55,7 +84,10 @@ class waGettext
             } elseif (substr($string, 0, 5) == 'msgid') {
                 if ($buffer) {
                     if (isset($buffer['msgid']) && (!empty($buffer['msgstr']) || $this->all)) {
-                        $messages[$buffer['msgid']] = isset($buffer['msgstr']) ? $buffer['msgstr'] : '';;
+                        $messages[$buffer['msgid']] = isset($buffer['msgstr']) ? $buffer['msgstr'] : '';
+                        if (isset($buffer['msgid_plural'])) {
+                            $plurals[$buffer['msgid']] = $buffer;
+                        }
                     }
                     $buffer = array();
                 }
@@ -85,20 +117,21 @@ class waGettext
                     }
                 }
             }
-
         }
-
 
         if (isset($buffer['msgid']) && (!empty($buffer['msgstr']) || $this->all)) {
             $messages[$buffer['msgid']] = isset($buffer['msgstr']) ? $buffer['msgstr'] : '';
+            if (isset($buffer['msgstr'])) {
+                $plurals[$buffer['msgid']] = $buffer;
+            }
         }
 
-        $meta = $this->meta2array(isset($messages['']) ? $messages[''] : '');
-        unset($messages['']);
-        return array(
-            'meta'     => $meta,
+        $result = [
             'messages' => $messages,
-        );
+            'plurals'  => $plurals,
+        ];
+
+        return $result;
     }
 
     protected function readMo()
@@ -117,7 +150,7 @@ class waGettext
         return str_replace($smap, $rmap, $string);
     }
 
-    function meta2array($meta)
+    public function meta2array($meta, $default_plural = false)
     {
         $array = array();
         foreach (explode("\n", $meta) as $info) {
@@ -135,7 +168,10 @@ class waGettext
                     $array['Plural-Forms'][$s[0]] = $s[1];
                 }
             }
-            $array['Plural-Forms']['plural'] = 'return '.str_replace('n', '$n', $array['Plural-Forms']['plural']).';';
+
+            if (!$default_plural) {
+                $array['Plural-Forms']['plural'] = 'return '.str_replace('n', '$n', $array['Plural-Forms']['plural']).';';
+            }
         }
 
         return $array;

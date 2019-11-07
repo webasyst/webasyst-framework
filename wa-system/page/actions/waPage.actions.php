@@ -186,7 +186,11 @@ class waPageActions extends waActions
     {
         foreach ($pages as $page_id => $page) {
             if ($page['parent_id']) {
-                $pages[$page['parent_id']]['childs'][] = &$pages[$page_id];
+                if (!empty($pages[$page['parent_id']])) {
+                    $pages[$page['parent_id']]['childs'][] = &$pages[$page_id];
+                } else {
+                    $pages[$page_id]['parent_id'] = null;
+                }
             }
         }
 

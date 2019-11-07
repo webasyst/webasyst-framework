@@ -10,7 +10,7 @@
  * of a plugin with separate sets of settings.
  *
  * System plugins do not store their own settings. Instead, they use app adapter
- * to save and load key-value pairs. Plugin copies are distuingished by a unique $key
+ * to save and load key-value pairs. Plugin copies are distinguished by a unique $key
  * passed to a plugin constructor.
  *
  * System plugins and applications communicate via an adapter class that belongs to an app.
@@ -19,7 +19,6 @@
  */
 abstract class waSystemPlugin
 {
-
     /**
      * key=>value settings from adapter storage.
      * See $this->getSettings().
@@ -67,6 +66,88 @@ abstract class waSystemPlugin
     {
     }
 
+    protected function init()
+    {
+        waAutoload::getInstance()->add(self::getPluginClasses($this->type, $this->id));
+        $this->checkUpdates();
+    }
+
+    protected static function getPluginClasses($type, $id)
+    {
+        $app_id = sprintf('webasyst/%s/%s', $type, $id);
+        $cache_file = waConfig::get('wa_path_cache').'/apps/'.$app_id.'/config/autoload.php';
+
+        $result = null;
+
+        if (!waSystemConfig::isDebug() && file_exists($cache_file)) {
+            $result = @include($cache_file);
+            if (!is_array($result)) {
+                $result = null;
+            }
+        }
+
+        if ($result === null) {
+
+            $lib_path = self::getPath($type, $id, 'lib');
+
+
+            $autoload = waAutoload::getInstance();
+
+            $base_path = waConfig::get('wa_path_root');
+
+            $result = array();
+            $length = strlen($base_path) + 1;
+
+            $paths = waFiles::listdir($lib_path);
+            foreach ($paths as $path) {
+                if (!in_array($path, array('vendor', 'vendors', 'updates', 'config'))) {
+                    $path = $lib_path.'/'.$path;
+                    if (@is_dir($path) && ($files = self::getPHPFiles($path.'/'))) {
+                        foreach ($files as $file) {
+                            $class = $autoload->getClassByFilename(basename($file), '');
+                            if ($class) {
+                                $result[$class] = substr($file, $length);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!waSystemConfig::isDebug()) {
+                waFiles::create($cache_file);
+                waUtils::varExportToFile($result, $cache_file);
+            } else {
+                waFiles::delete($cache_file);
+            }
+        }
+
+        return $result;
+    }
+
+    protected static function getPHPFiles($path)
+    {
+        if (!($dh = opendir($path))) {
+            throw new waException('Filed to open dir: '.$path);
+        }
+        $result = array();
+        while (($f = readdir($dh)) !== false) {
+            if (self::isIgnoreFile($f)) {
+                continue;
+            } elseif (is_dir($path.$f)) {
+                $result = array_merge($result, self::getPHPFiles($path.$f.'/'));
+            } elseif (substr($f, -4) == '.php') {
+                $result[] = $path.$f;
+            }
+        }
+        closedir($dh);
+        return $result;
+    }
+
+    protected static function isIgnoreFile($f)
+    {
+        return $f === '.' || $f === '..' || $f === '.svn' || $f === '.git';
+    }
+
     /**
      * List of available plugins of given type.
      *
@@ -86,7 +167,7 @@ abstract class waSystemPlugin
         return $plugins;
     }
 
-    protected static function getPath($type, $id = null)
+    protected static function getPath($type, $id = null, $path_tail = null)
     {
         if (!$type) {
             throw new waException('Invalid method usage');
@@ -99,6 +180,9 @@ abstract class waSystemPlugin
             }
             $path .= DIRECTORY_SEPARATOR.$id;
 
+        }
+        if ($path_tail) {
+            $path .= DIRECTORY_SEPARATOR.$path_tail;
         }
         return $path;
     }
@@ -271,6 +355,11 @@ abstract class waSystemPlugin
         return $this->getProperties('type');
     }
 
+    public function getPluginKey()
+    {
+        return $this->key;
+    }
+
     public function __get($name)
     {
         return $this->getSettings($name);
@@ -331,6 +420,9 @@ abstract class waSystemPlugin
      */
     public static function factory($id, $key = null, $type = null)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         $id = strtolower($id);
         $base_path = self::getPath($type, $id);
         if (!$base_path) {
@@ -387,20 +479,10 @@ abstract class waSystemPlugin
         return $this;
     }
 
-    /**
-     * Used by application to draw plugin settongs page.
-     *
-     * @param array [string]mixed $params
-     * @param array [string]string $params['namespace']
-     * @param array [string]string $params['value']'
-     * @return string
-     */
-    public function getSettingsHTML($params = array())
+    protected function getSettingsDefaultParams($params = array())
     {
-        $this->initControls();
-        $controls = array();
         $default = array(
-            'instance'            => & $this,
+            'instance'            => &$this,
             'title_wrapper'       => '%s',
             'description_wrapper' => '<br><span class="hint">%s</span>',
             'translate'           => array(&$this, '_w'),
@@ -412,9 +494,26 @@ abstract class waSystemPlugin
 ',
             'control_separator'   => '</div><div class="value">',
         );
+
+        return array_merge($default, $params);
+    }
+
+    /**
+     * Used by application to draw plugin settings page.
+     *
+     * @param array [string]mixed $params
+     * @param array [string]string $params['namespace']
+     * @param array [string]string $params['value']'
+     * @return string
+     */
+    public function getSettingsHTML($params = array())
+    {
+        $this->initControls();
+        $controls = array();
+
+        $params = $this->getSettingsDefaultParams($params);
         $options = ifempty($params['options'], array());
         unset($params['options']);
-        $params = array_merge($default, $params);
 
         foreach ($this->config() as $name => $row) {
             $row = array_merge($row, $params);
@@ -500,6 +599,9 @@ abstract class waSystemPlugin
                     // Check if file is uploaded properly
                     case waHtmlControl::FILE:
                         $file = waRequest::file($name);
+                        if (!empty($file)) {
+                            $settings[$name] = $file;
+                        }
                         break;
                 }
             }
@@ -513,6 +615,349 @@ abstract class waSystemPlugin
         }
         return $settings;
     }
+
+    private function getGeneralSettingsKey()
+    {
+        return sprintf('webasyst.%s.%s', $this->type, $this->id);
+    }
+
+    /**
+     * @param string $name
+     * @param string $default
+     * @return string[]|string
+     * @throws waDbException
+     * @since 1.13 framework version
+     */
+    public function getGeneralSettings($name = null, $default = '')
+    {
+        $app_settings_model = new waAppSettingsModel();
+        return $app_settings_model->get($this->getGeneralSettingsKey(), $name, $default);
+    }
+
+    /**
+     * @param string $name
+     * @param string $value
+     * @throws waDbException
+     * @since 1.13 framework version
+     */
+    public function setGeneralSettings($name, $value)
+    {
+        $app_settings_model = new waAppSettingsModel();
+        $app_settings_model->set($this->getGeneralSettingsKey(), $name, $value);
+    }
+
+    /**
+     * @param string $table
+     * @return waModel
+     * @throws waException
+     * @since 1.13 framework version
+     */
+    public function getModel($table = null)
+    {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
+
+        /** @var string $class mypluginPaymentMytableModel or mypluginShippingMytableModel */
+        $class = $this->id.ucfirst($this->type).($table ? ucfirst($table) : '').'Model';
+
+        if (!class_exists($class)) {
+            $class = 'waSystemPluginModel';
+        }
+
+        $model = new $class();
+
+        if ($model instanceof waSystemPluginModel) {
+            $model->setPlugin($this, $table);
+            $model->getMetadata();
+        }
+
+        return $model;
+    }
+
+    private function getControllerInstance($class_name)
+    {
+        $controller = null;
+        if (class_exists($class_name)) {
+            $controller = new $class_name();
+            if ($controller instanceof waSystemPluginActions) {
+                $controller->setPlugin($this);
+            } elseif ($controller instanceof waSystemPluginAction) {
+                $controller->setPlugin($this);
+            }
+        }
+
+        return $controller;
+    }
+
+    /**
+     * @param string $module
+     * @param string $action
+     * @return waSystemPluginActions|waSystemPluginAction|waController|waJsonActions|waJsonController
+     * @throws waException
+     * @since 1.13 framework version
+     */
+    public function getController($module = 'backend', $action = 'Default')
+    {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
+
+        $params = null;
+        if (empty($controller)) {
+            // Single Controller (recommended)
+            /** @var string $class_name e.g. mypluginPaymentBackendDefaultController or  mypluginShippingBackendDefaultController */
+            $class_name = sprintf('%s%s%s%sController', $this->id, ucfirst($this->type), ucfirst($module), ucfirst($action));
+            $class_names[] = $class_name;
+
+            $controller = $this->getControllerInstance($class_name);
+        }
+
+        if (empty($controller)) {
+            // Single Action
+            /** @var string $class_name e.g. mypluginPaymentBackendDefaultAction or  mypluginShippingBackendDefaultAction */
+            $class_name = sprintf('%s%s%s%sAction', $this->id, ucfirst($this->type), ucfirst($module), ucfirst($action));
+            $class_names[] = $class_name;
+
+            if ($instance = $this->getControllerInstance($class_name)) {
+                /** @var $controller waDefaultViewController */
+                $controller = wa()->getDefaultController();
+                $controller->setAction($instance);
+            }
+        }
+
+        if (empty($controller)) {
+            // Controller Multi Actions, Zend/Symfony style
+            /** @var string $class_name e.g. mypluginPaymentBackendActions or  mypluginShippingBackendActions */
+            $class_name = sprintf('%s%s%sActions', $this->id, ucfirst($this->type), ucfirst($module));
+            $class_names[] = $class_name;
+
+            if ($controller = $this->getControllerInstance($class_name)) {
+                $params = $action;
+            }
+        }
+
+        if (empty($controller)) {
+            $message = sprintf(
+                'Empty module and/or action after parsing the URL "%s" (%s/%s).<br />Not found classes: %s',
+                wa()->getConfig()->getCurrentUrl(),
+                $module,
+                $action,
+                implode(', ', $class_names)
+            );
+            throw new waException($message);
+        }
+
+        waRequest::setParam('plugin_params', $params);
+
+        return $controller;
+    }
+
+    /**
+     * @param string|null $path   Optional path to a subdirectory in main directory with user data files.
+     * @param bool        $public Flag requiring to return path to the subdirectory used for storing files publicly
+     *                            accessible without authorization, by direct link. If 'false' (default value), then method returns path to
+     *                            subdirectory used for storing files accessible only upon authorization in the backend.
+     * @param bool        $create Flag requiring to create a new directory directory at the specified path if it is
+     *                            missing. New directories are created by default if 'false' is not specified.
+     * @return string
+     * @since 1.13 framework version
+     */
+    public function getDataPath($path = null, $public = false, $create = true)
+    {
+        $app_id = sprintf('webasyst/%s/%s', $this->type, $this->id);
+        return wa()->getDataPath($path, $public, $app_id, $create);
+    }
+
+    /**
+     * @param string|null $path     Optional path to a subdirectory in main directory with user data files.
+     * @param bool        $absolute Return absolute URL instead of the relative one (default value).
+     * @return string
+     * @since 1.13 framework version
+     */
+    public function getDataUrl($path = null, $absolute = false)
+    {
+        $app_id = sprintf('webasyst/%s/%s', $this->type, $this->id);
+        return wa()->getDataUrl($path, true, $app_id, $absolute);
+    }
+
+    private function install()
+    {
+        // Create database scheme
+        $file_db = self::getPath($this->type, $this->id, 'lib/config/db.php');
+        if (file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            $model->createSchema($schema);
+        }
+
+        // Mark localization files as recently changed.
+        // This forces use of PHP localization adapter that does not get stuck in apache cache.
+        $locale_path = self::getPath($this->type, $this->id, 'locale');
+        if (file_exists($locale_path)) {
+            $all_files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($locale_path));
+            $po_files = new RegexIterator($all_files, '~(\.po)$~i');
+            foreach ($po_files as $f) {
+                @touch($f->getPathname());
+            }
+        }
+
+        // Installation script of the app
+        $file = self::getPath($this->type, $this->id, 'lib/config/install.php');
+        if (file_exists($file)) {
+            $id = $this->id;
+            /** @var string $id */
+            include($file);
+        }
+    }
+
+
+    protected function checkUpdates()
+    {
+        $time = $this->getGeneralSettings('update_time', null);
+
+        // Install the plugin and remember to skip all updates
+        // if this is the first launch.
+        $is_first_launch = false;
+        $is_from_template = waConfig::get('is_template');
+        if (empty($time)) {
+            $time = null;
+            $is_first_launch = true;
+
+            try {
+                waConfig::set('is_template', null);
+                $this->install();
+                waConfig::set('is_template', $is_from_template);
+            } catch (waException $e) {
+                waLog::log("Error installing {$this->type} plugin {$this->id} at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                waConfig::set('is_template', $is_from_template);
+                throw $e;
+            }
+        }
+
+        // Use cache to skip slow filesystem-based scanning for updates
+        if (!SystemConfig::isDebug()) {
+            $cache = new waVarExportCache('updates', -1, $this->getGeneralSettingsKey());
+            if ($time && $cache->isCached() && $cache->get() <= $time) {
+                return;
+            }
+        }
+
+        // Scan for app updates
+        $files = $this->getUpdateFiles(self::getPath($this->type, $this->id, 'lib/updates'), $time);
+        if ($files) {
+            $keys = array_keys($files);
+            $last_update_ts = end($keys);
+        } else {
+            $last_update_ts = 1;
+        }
+
+        // Remember last update file in cache
+        if (!empty($cache)) {
+            $cache->set($last_update_ts);
+        }
+
+        if ($is_first_launch) {
+            // Updates are all skipped on app's first launch with install.php
+            $this->setGeneralSettings('update_time', $last_update_ts);
+
+        } elseif ($files) {
+            waConfig::set('is_template', null);
+            $cache_database_dir = wa()->getConfig()->getPath('cache').'/db';
+            foreach ($files as $t => $file) {
+                try {
+
+                    if (SystemConfig::isDebug()) {
+                        waLog::dump(sprintf('Try include file %s by %s plugin %s', $file, $this->type, $this->id), 'meta_update.log');
+                    }
+
+                    $this->includeCode($file);
+                    waFiles::delete($cache_database_dir, true);
+                    $this->setGeneralSettings('update_time', $t);
+                } catch (Exception $e) {
+                    if (SystemConfig::isDebug()) {
+                        echo $e;
+                    }
+                    // log errors
+                    waLog::log("Error running update of {$this->type} plugin {$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                    break;
+                }
+            }
+            waConfig::set('is_template', $is_from_template);
+        }
+    }
+
+    /**
+     * @param bool $force
+     * @throws waDbException
+     * @throws waException
+     * @todo  call it at installer app
+     * @since 1.13 framework version
+     */
+    public function uninstall($force = false)
+    {
+        // uninstall script of the plugin
+        $file = self::getPath($this->type, $this->id, 'lib/config/uninstall.php');
+        if (file_exists($file)) {
+            try {
+                $this->includeCode($file);
+            } catch (Exception $ex) {
+                if ($force) {
+                    waLog::log(sprintf("Error while uninstall %s plugin %s at %s: %s", $this->type, $this->id, $ex->getMessage(), 'installer.log'));
+                } else {
+                    throw $ex;
+                }
+            }
+        }
+        $file_db = self::getPath($this->type, $this->id, 'lib/config/db.php');
+        if (file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            foreach ($schema as $table => $fields) {
+                $sql = "DROP TABLE IF EXISTS ".$table;
+                $model->exec($sql);
+            }
+        }
+
+        $app_settings_model = new waAppSettingsModel();
+        $app_settings_model->del($this->getGeneralSettingsKey());
+
+        waFiles::delete($this->getDataPath('', true, false), true);
+        waFiles::delete($this->getDataPath('', false, false), true);
+    }
+
+    protected function getUpdateFiles($path, $time)
+    {
+        if (!file_exists($path)) {
+            return array();
+        }
+
+        $files = array();
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+        foreach ($iterator as $file) {
+            /** @var SplFileInfo $file */
+            if (!$file->isFile()) {
+                continue;
+            }
+            $filename = $file->getFilename();
+            if (preg_match('/^[0-9]+\.php$/', $filename)) {
+                $t = substr($filename, 0, -4);
+                if ($t > $time) {
+                    $files[$t] = $file->getPathname();
+                }
+            }
+        }
+        ksort($files);
+        return $files;
+    }
+
+    private function includeCode($file)
+    {
+        return include($file);
+    }
+
+    /** @since 1.13 framework version */
+    abstract public function getInteractionUrl($action = 'default', $module = 'backend');
 
 
     /**

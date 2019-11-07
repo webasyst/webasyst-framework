@@ -50,15 +50,113 @@ abstract class waShipping extends waSystemPlugin
             $this->app_id = wa()->getApp();
         }
 
+        parent::init();
+
         if ($this->key) {
             $this->setSettings($this->getAdapter()->getSettings($this->id, $this->key));
         }
+        return $this;
     }
 
     protected function initControls()
     {
         $this->registerControl('DeliveryIntervalControl');
         parent::initControls();
+    }
+
+    public static function getClasses()
+    {
+        $plugins = self::enumerate();
+        $result = array();
+        foreach ($plugins as $id => $plugin) {
+            $result += self::getPluginClasses(self::PLUGIN_TYPE, $id);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $params
+     * @return string
+     * @throws waException
+     * @todo доработать тексты предупреждений
+     */
+    protected function getNoticeHtml($params)
+    {
+        $html = '';
+        $info = self::info($this->id);
+        if (!empty($info['sync'])) {
+            $value = $this->getAdapter()->getAppProperties('sync');//флаг или time последнего запуска
+            $interval = max(1, intval($info['sync']));
+            $interval_str = _ws('%d hour', '%d hours', $interval);
+            $interval *= 3600;
+
+
+            $hint = array(
+                'title'       => 'TODO: Задачи по расписанию',
+                'value'       => '',
+                'description' => '',
+            );
+
+            if (empty($value)) {
+                $hint['value'] .= _ws('TODO: Приложение не поддерживает обновление справочников плагинов по расписанию. Это может замедлить работу плагина.');
+            } else {
+                $sync_time = $this->getGeneralSettings('sync_time');
+                if ($sync_time) {
+                    $sync_success_time = (int)$this->getGeneralSettings('sync_success_time');
+                    $sync_failure_time = (int)$this->getGeneralSettings('sync_failure_time');
+                    if ($sync_failure_time > $sync_success_time) {
+                        $hint['value'] .= sprintf(
+                            _ws('TODO: Последнее обновление справочников %s завершилось с ошибкой.'),
+                            waDateTime::format('humandatetime', $sync_failure_time)
+                        );
+
+                    } elseif ((time() - $sync_success_time) > (2 * $interval)) {
+                        $hint['value'] .= sprintf(
+                            _ws("TODO: Нарушен рекомендуемый интервал обновления справочников (%s)"),
+                            $interval_str
+                        );
+
+                        $hint['value'] .= sprintf(
+                            _ws('TODO: Дата последней попытки обновления: %s.'),
+                            waDateTime::format('humandatetime', (int)$value)
+                        );
+                    }
+                    if ($sync_success_time) {
+                        $hint['value'] .= sprintf(
+                            _ws('TODO: Дата последнего обновления %s.'),
+                            waDateTime::format('humandatetime', $sync_success_time)
+                        );
+                    }
+
+                } else {
+                    if (($value < 2) //
+                        || ((time() - $value) > (2 * $interval))
+                    ) {
+                        $hint['value'] .= _ws('TODO: Для плагина ни разу не запускалось обновление справочников. Следует проверить настройки планировщика задач.');
+                    } else {
+                        $hint['value'] .= _ws('TODO: Для плагина еще ни разу не запускалось обновление справочников.');
+                        $hint['value'] .= "\n";
+                        $hint['value'] .= sprintf(
+                            _ws('TODO: Дата последней попытки обновления: %s.'),
+                            waDateTime::format('humandatetime', (int)$value)
+                        );
+                    }
+                }
+            }
+
+            $hint = array_merge($this->getSettingsDefaultParams($params), $hint);
+            $html .= waHtmlControl::getControl(waHtmlControl::HELP, 'sync', $hint);
+        }
+        return $html;
+    }
+
+    public function getSettingsHTML($params = array())
+    {
+        $html = '';
+        $html .= parent::getSettingsHTML($params);
+        $html .= $this->getNoticeHtml($params);
+        return $html;
     }
 
     /**
@@ -402,9 +500,9 @@ abstract class waShipping extends waSystemPlugin
     }
 
     /**
-     * @param string       $state one of waShipping::STATE_*
+     * @param string $state one of waShipping::STATE_*
      * @param waOrder|null $order
-     * @param array        $params
+     * @param array $params
      * @return array
      */
     public function getStateFields($state, waOrder $order = null, $params = array())
@@ -419,7 +517,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_DRAFT
      * @param waOrder $order
-     * @param array   $shipping_data
+     * @param array $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function draftPackage(waOrder $order, $shipping_data = array())
@@ -430,7 +528,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_CANCELED
      * @param waOrder $order
-     * @param array   $shipping_data
+     * @param array $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function cancelPackage(waOrder $order, $shipping_data = array())
@@ -441,7 +539,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_SHIPPING
      * @param waOrder $order
-     * @param array   $shipping_data
+     * @param array $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function shippingPackage(waOrder $order, $shipping_data = array())
@@ -452,7 +550,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * Set package state into waShipping::STATE_READY
      * @param waOrder $order
-     * @param array   $shipping_data
+     * @param array $shipping_data
      * @return null|string|string[] null, error or shipping data array
      */
     protected function readyPackage(waOrder $order, $shipping_data = array())
@@ -474,9 +572,9 @@ abstract class waShipping extends waSystemPlugin
     /**
      *
      * Displays printable form content (HTML) by id
-     * @param string  $id
+     * @param string $id
      * @param waOrder $order
-     * @param array   $params
+     * @param array $params
      * @return string HTML code
      */
     public function displayPrintForm($id, waOrder $order, $params = array())
@@ -576,9 +674,76 @@ abstract class waShipping extends waSystemPlugin
 
     }
 
-    public function sync()
+    /**
+     * @return bool|null
+     */
+    public function runSync()
     {
+        if ($this->syncRequired()) {
+            $result = $this->sync();
+        } else {
+            $result = null;
+        }
 
+        $this->handleSync($result);
+        return $result;
+    }
+
+    /**
+     * @return null|boolean if there no data to sync just return null, otherwise return boolean
+     * @since 1.13 framework version
+     */
+    protected function sync()
+    {
+        return null;
+    }
+
+    /**
+     * @return bool|null
+     */
+    protected function syncRequired()
+    {
+        $required = null;
+        $info = self::info($this->id);
+        if (!empty($info['sync'])) {
+            $sync_time = $this->getGeneralSettings('sync_time');
+            $sync_success_time = (int)$this->getGeneralSettings('sync_success_time');
+            $sync_failure_time = (int)$this->getGeneralSettings('sync_failure_time');
+            $required = false;
+            $interval = max(1, $info['sync']) * 3600;
+            $time = time();
+            if (($time - $interval) > $sync_time) {
+                $required = true;
+            } elseif (($time - 0.5 * $interval) > $sync_time) {
+
+                if ($sync_failure_time > $sync_success_time) {
+                    $required = true;
+                }
+            } elseif (empty($sync_failure_time) && empty($sync_success_time)) {
+                $required = true;
+            }
+        }
+
+        return $required;
+    }
+
+    protected function handleSync($result = null)
+    {
+        $time = time();
+        $update = array(
+            'sync_time' => $time,
+        );
+
+        if ($result) {
+            $update['sync_success_time'] = $time;
+        } elseif ($result !== null) {
+            $update['sync_failure_time'] = $time;
+        }
+
+        foreach ($update as $name => $value) {
+            $this->setGeneralSettings($name, $value);
+        }
+        return $result;
     }
 
 
@@ -591,17 +756,6 @@ abstract class waShipping extends waSystemPlugin
     public function tracking($tracking_id = null)
     {
         return null;
-    }
-
-    /**
-     *
-     * External shipping service callback handler
-     * @param array  $params
-     * @param string $module_id
-     */
-    public static function execCallback($params, $module_id)
-    {
-        ;
     }
 
     public static function settingCurrencySelect()
@@ -662,7 +816,7 @@ abstract class waShipping extends waSystemPlugin
      * Country/region dependent select boxes [+ city input]
      *
      * @param string $name
-     * @param array  $params
+     * @param array $params
      * @return string
      * @example
      * Sample of params defined in proper settings.php
@@ -1420,7 +1574,7 @@ HTML;
     /**
      * The list of available shipping options
      * @param      $options array
-     * @param null $type    will be ignored
+     * @param null $type will be ignored
      * @return array
      */
     final public static function enumerate($options = array(), $type = null)
@@ -1433,8 +1587,8 @@ HTML;
      *
      * Get plugin description
      * @param string $id
-     * @param array  $options
-     * @param null   $type will be ignored
+     * @param array $options
+     * @param null $type will be ignored
      * @return array[string]string
      * @return array['name']string
      * @return array['description']string
@@ -1494,5 +1648,67 @@ HTML;
             $data = date($format, strtotime($data));
         }
         return $data;
+    }
+
+    public function uninstall($force = false)
+    {
+        $current_app_id = $this->app_id;
+        $apps = wa()->getApps();
+        foreach ($apps as $app_id => $info) {
+            if (!empty($info[$this->type])) {
+                $this->app_adapter = null;
+                $this->app_id = $app_id;
+                try {
+                    $this->getAdapter()->uninstall($this->id);
+                } catch (waException $ex) {
+                    ;
+                }
+            }
+        }
+        $this->app_adapter = null;
+        $this->app_id = $current_app_id;
+
+        parent::uninstall($force);
+    }
+
+    public function getInteractionUrl($action = 'default', $module = 'backend')
+    {
+        $url = null;
+        switch (wa()->getEnv()) {
+            case 'backend':
+                $template = 'webasyst/shipping/%s/%s/%s/?app_id=%s';
+                $url = wa()->getAppUrl('webasyst').sprintf($template, $this->id, $module, $action, $this->app_id);
+                break;
+            case 'frontend':
+                $url_params = array(
+                    'action_id' => $action,
+                    'plugin_id' => $this->key,
+                );
+                $url = wa()->getRouteUrl(sprintf('%s/frontend/shippingPlugin', $this->app_id), $url_params, true);
+                break;
+        }
+
+        return $url;
+    }
+
+    protected static function log($module_id, $data)
+    {
+        static $id;
+        if (empty($id)) {
+            $id = uniqid();
+        }
+        $rec = '#'.$id."\n";
+        $module_id = strtolower($module_id);
+        if (!preg_match('@^[a-z][a-z0-9]+$@', $module_id)) {
+            $rec .= 'Invalid module_id: '.$module_id."\n";
+            $module_id = 'general';
+        }
+        $filename = 'shipping/'.$module_id.'Shipping.log';
+        $rec .= "data:\n";
+        if (!is_string($data)) {
+            $data = var_export($data, true);
+        }
+        $rec .= "$data\n";
+        waLog::log($rec, $filename);
     }
 }

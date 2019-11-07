@@ -176,6 +176,12 @@ class waDbMysqliAdapter extends waDbAdapter
         return $this->handler->errno;
     }
 
+    /**
+     * @param string $table
+     * @param bool $keys
+     * @return array
+     * @throws waDbException
+     */
     public function schema($table, $keys = false)
     {
         $res = $this->query("DESCRIBE ".$table);

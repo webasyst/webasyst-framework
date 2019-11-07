@@ -441,6 +441,8 @@ class waContactFields
                 } else {
                     self::$personFields[$id] = clone $field;
                 }
+                unset(self::$personDisabled[$id]);
+
                 break;
             case 'company':
                 if (isset(self::$companyFields[$id])) {
@@ -448,6 +450,8 @@ class waContactFields
                 } else {
                     self::$companyFields[$id] = clone $field;
                 }
+                unset(self::$companyDisabled[$id]);
+
                 break;
             default:
                 throw new waException('Unknown contact type: '.$type);

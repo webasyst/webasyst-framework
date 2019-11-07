@@ -63,7 +63,20 @@ abstract class waAppPayment implements waiPluginApp
         array_shift($args);
         $method_name = "callback".ucfirst($method)."Handler";
         if (!method_exists($this, $method_name)) {
-            throw new waException('Unsupported callback handler method '.$method);
+            if ($method == waPayment::CALLBACK_AUTH) {
+                switch ($this->app_id) {
+                    case 'shop':
+                        $method = waPayment::CALLBACK_NOTIFY;
+                        break;
+                    default:
+                        $method = waPayment::CALLBACK_PAYMENT;
+                        break;
+                }
+                $method_name = "callback".ucfirst($method)."Handler";
+            }
+            if (!method_exists($this, $method_name)) {
+                throw new waException('Unsupported callback handler method '.$method);
+            }
         }
         return call_user_func_array(array($this, $method_name), $args);
     }
@@ -209,4 +222,9 @@ abstract class waAppPayment implements waiPluginApp
      * @return array|null
      */
     abstract public function callbackConfirmationHandler($wa_transaction_data);
+
+    public function uninstall($plugin_id)
+    {
+        ;
+    }
 }

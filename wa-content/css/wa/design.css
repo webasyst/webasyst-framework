@@ -86,7 +86,7 @@ h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: upper
 
 .wa-theme-actions { }
 .wa-theme-actions.wa-theme-latest { background: #dfc; }
-.wa-theme-actions.wa-theme-update-available { background: #ffc; }
+.wa-theme-actions.wa-theme-update-available, .wa-theme-actions.wa-theme-trial { background: #ffc; }
 .wa-theme-actions.wa-theme-orphan { background: #eee; }
 .wa-theme-actions.wa-theme-warning { background: #ffe7e7; margin-bottom: 30px; }
 .wa-theme-actions.wa-theme-warning ul { margin: 0; }
@@ -121,6 +121,7 @@ ul.with-icons.wa-theme li a { padding-left: 33px; }
 .wa-theme-globalnav li.wa-theme-globalnav-switch a { font-size: 1.2em; color: #03c; padding: 13px 10px 10px; text-align: left; line-height: 1.3em; }
 .wa-theme-globalnav li.wa-theme-globalnav-switch a img { width: 48px; height: 48px; float: left; margin-right: 8px; margin-top: -4px; }
 .wa-theme-globalnav li.wa-theme-globalnav-switch ul.menu-v li:hover { background: #eee !important; }
+.wa-theme-globalnav li.wa-theme-globalnav-switch ul.menu-v li.is-trial { background: #ffc; }
 
 .wa-theme-globalnav li a i.icon48 { width: 48px; height: 48px; display: block; background: url('../../img/design-globalnav.png') no-repeat; background-size: 288px 96px; margin: 0 auto; opacity: 0.65; }
 .wa-theme-globalnav li a:hover i.icon48 { opacity: 1; }
@@ -137,7 +138,7 @@ ul.with-icons.wa-theme li a { padding-left: 33px; }
 .wa-theme-globalnav li.selected a i.icon48.preview { background-position: -192px -48px; }
 .wa-theme-globalnav li.selected a i.icon48.appearance { background-position: -240px -48px; }
 
-.wa-theme-globalnav li ul.menu-v { width: 250px; }
+.wa-theme-globalnav li ul.menu-v { width: auto; min-width: 250px; }
 .wa-theme-globalnav li ul.menu-v li { min-width: 208px; padding-left: 34px; }
 .wa-theme-globalnav li ul.menu-v li a { padding: 7px 8px; font-size: 1em; }
 .wa-theme-globalnav li ul.menu-v li.no-icon { padding-left: 14px; padding-right: 28px; }

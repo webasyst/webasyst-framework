@@ -45,4 +45,10 @@ interface waiPluginApp
      * @return mixed
      */
     public function execCallbackHandler($method);
+
+    /**
+     * @param $plugin_id
+     * @return mixed
+     */
+    public function uninstall($plugin_id);
 }

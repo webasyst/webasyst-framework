@@ -1293,7 +1293,7 @@ class waContact implements ArrayAccess
      */
     public static function generatePassword($len = 11)
     {
-        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789!@#$%^&*-_.?';
+        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789!@#$%^&*-?';
         $alphabet = str_split($alphabet, 1);
         shuffle($alphabet);
         $password = array();

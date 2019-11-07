@@ -248,6 +248,14 @@ class waAppConfig extends SystemConfig
         $this->info = include($this->getAppPath().'/lib/config/app.php');
         waAutoload::getInstance()->add($this->getClasses());
 
+        if (!empty($this->info['payment_plugins'])) {
+            waAutoload::getInstance()->add(waPayment::getClasses());
+        }
+
+        if (!empty($this->info['shipping_plugins'])) {
+            waAutoload::getInstance()->add(waShipping::getClasses());
+        }
+
         if (file_exists($this->getAppPath().'/lib/config/factories.php')) {
             $this->factories = include($this->getAppPath().'/lib/config/factories.php');
         }
@@ -348,11 +356,12 @@ class waAppConfig extends SystemConfig
                 $this->setLocale(wa()->getLocale());
             }
             waConfig::set('is_template', null);
+            waConfig::get('disable_exception_log', true);
             $cache_database_dir = $this->getPath('cache').'/db';
             foreach ($files as $t => $file) {
                 try {
 
-                    if (self::isDebug()) {
+                    if (waSystemConfig::isDebug()) {
                         waLog::dump(sprintf('Try include file %s by app %s', $file, $this->application), 'meta_update.log');
                     }
 
@@ -368,6 +377,7 @@ class waAppConfig extends SystemConfig
                     break;
                 }
             }
+            waConfig::get('disable_exception_log', false);
             waConfig::set('is_template', $is_from_template);
         }
 
@@ -432,6 +442,10 @@ class waAppConfig extends SystemConfig
         // Installation script of the app
         $file = $this->getAppConfigPath('install');
         if (file_exists($file)) {
+            if (!$this->loaded_locale) {
+                // Force load locale
+                $this->setLocale(wa()->getLocale());
+            }
             $app_id = $this->application;
             /** @var string $app_id */
             include($file);
@@ -593,31 +607,7 @@ class waAppConfig extends SystemConfig
 
     protected function getClassByFilename($filename)
     {
-        $file_parts = explode('.', $filename);
-        if (count($file_parts) <= 2) {
-            return false;
-        }
-        array_pop($file_parts);
-        $class = null;
-        switch (end($file_parts)) {
-            case 'handler':
-                $class = $this->application;
-                for ($i = 0; $i < count($file_parts); $i++) {
-                    $class .= ucfirst($file_parts[$i]);
-                }
-                break;
-            case 'class':
-                $class = $file_parts[0];
-                break;
-            case 'trait':
-            case 'interface':
-            default:
-                $class = $file_parts[0];
-                for ($i = 1; $i < count($file_parts); $i++) {
-                    $class .= ucfirst($file_parts[$i]);
-                }
-                break;
-        }
+        $class = waAutoload::getInstance()->getClassByFilename($filename, $this->application);
         return $class;
     }
 

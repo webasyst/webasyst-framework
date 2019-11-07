@@ -150,6 +150,7 @@ abstract class waViewActions extends waController
      * Return current theme
      *
      * @return waTheme
+     * @throws waException
      */
     public function getTheme()
     {

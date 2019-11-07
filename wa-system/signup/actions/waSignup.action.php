@@ -733,7 +733,7 @@ class waSignupAction extends waViewAction
      */
     protected function getData($fields = null)
     {
-        $data = $this->getRequest()->post($this->namespace);
+        $data = $this->getRequest()->post($this->namespace, array(), waRequest::TYPE_ARRAY_TRIM);
         $data = is_array($data) ? $data : array();
 
         // filter off some fields

@@ -185,4 +185,36 @@ class waAutoload
         }
         return $result;
     }
+
+
+
+    public function getClassByFilename($filename, $namespace)
+    {
+        $file_parts = explode('.', $filename);
+        if (count($file_parts) <= 2) {
+            return false;
+        }
+        array_pop($file_parts);
+        $class = null;
+        switch (end($file_parts)) {
+            case 'handler':
+                $class = $namespace;
+                for ($i = 0; $i < count($file_parts); $i++) {
+                    $class .= ucfirst($file_parts[$i]);
+                }
+                break;
+            case 'class':
+                $class = $file_parts[0];
+                break;
+            case 'trait':
+            case 'interface':
+            default:
+                $class = $file_parts[0];
+                for ($i = 1; $i < count($file_parts); $i++) {
+                    $class .= ucfirst($file_parts[$i]);
+                }
+                break;
+        }
+        return $class;
+    }
 }

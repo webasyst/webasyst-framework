@@ -362,7 +362,8 @@ class waResponse
      *
      * @param  bool  $html   Determines whether method must return an HTML string for including JavaScript files or an array of URLs
      * @param  bool  $strict  Determines whether XHTML format must be used instead of default HTML
-     * @return  string|array  HTML string or array of URLs
+     * @return string|array  HTML string or array of URLs
+     * @throws waDbException
      */
     public function getJs($html = true, $strict = false)
     {
@@ -376,65 +377,7 @@ class waResponse
         }
 
         if (wa()->getEnv() == 'frontend') {
-            $app_id =  wa()->getApp();
-            $key = wa()->getRouting()->getDomain().'/theme';
-            $hash = false;
-            if (waRequest::get('theme_hash') && ($theme = waRequest::get('set_force_theme')) !== null) {
-                $hash = waRequest::get('theme_hash');
-            } elseif (($theme = wa()->getStorage()->get($app_id.'/'.$key)) || ($theme = wa()->getStorage()->get($key))) {
-                $app_settings_model = new waAppSettingsModel();
-                $hash = $app_settings_model->get($app_id, 'theme_hash');
-                if (!$hash) {
-                    $hash = $app_settings_model->get('webasyst', 'theme_hash');
-                }
-                if ($hash) {
-                    $hash = md5($hash);
-                }
-            }
-            if (!$hash || !$theme || !waTheme::exists($theme)) {
-                return $result;
-            }
-            $theme = new waTheme($theme, $app_id);
-            $theme = $theme['name'];
-            $url = '?theme_hash='.$hash.'&set_force_theme=';
-            $result .= '
-<script type="text/javascript">
-$(function () {
-    var div = $(\'<div class="theme-preview"></div>\');
-    div.css({
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        opacity: 0.9,
-        padding: "15px",
-        "text-align": "center",
-        background: "#ffd",
-        "border-top": "4px solid #eea",
-        "border-image": "url(\''.wa()->getUrl().'wa-content/img/recovery-mode-background.png\') 10 10 10 10 repeat",
-        "font-family": "Lucida Grande",
-        "font-size": "14px",
-        "z-index": 100500
-    });
-    div.html("'.sprintf(_ws('<strong>%s</strong> theme preview in action'), $theme).'");';
-            if (wa()->getUser()->isAuth() && wa()->getUser()->getRights('shop')) {
-                $result .= '
-    div.prepend(\'<a href="'.$url.'" style="float: right;">'._ws('Stop preview session').'</a>\');
-    div.find("a").click(function () {
-        $("body").append($(\'<iframe style="display:none" src="\' + $(this).attr("href") + \'" />\').load(function () {
-            $(this).remove();
-            div.remove();
-            if (location.href.indexOf("theme_hash") != -1) {
-                location.href = location.href.replace(/(theme_hash|set_force_theme)=[^&]*&?/g, "");
-            }
-        }));
-        return false;
-    });';
-            }
-            $result .= '
-    $("body").append(div);
-});
-</script>';
+            $result .= $this->getPreviewTemplate();
         }
 
         return $result;
@@ -488,5 +431,52 @@ $(function () {
             $result .= '<link href="'.$url.'" rel="stylesheet"'.($strict ? ' type="text/css" /' : '').'>'.PHP_EOL;
         }
         return $result;
+    }
+
+    /**
+     * @return string|null
+     * @throws waDbException|waException|SmartyException
+     * @see waRequest::getTheme();
+     * @see waDesignActions::getThemeHash();
+     */
+    private function getPreviewTemplate()
+    {
+        $app_id =  wa()->getApp();
+
+        $key = waRequest::getThemeStorageKey();
+        $theme_hash = waRequest::get('theme_hash');
+        $theme = waRequest::get('set_force_theme');
+
+        $hash = false;
+
+        if ($theme_hash && $theme !== null) {
+            $hash = $theme_hash;
+        } elseif ($theme = wa()->getStorage()->get($key)) {
+            $app_settings_model = new waAppSettingsModel();
+            $hash = $app_settings_model->get('webasyst', 'theme_hash');
+            if ($hash) {
+                $hash = md5($hash);
+            }
+        }
+
+        if ($hash === false || !$theme || !waTheme::exists($theme)) {
+            return null;
+        }
+
+        $theme = new waTheme($theme, $app_id);
+
+        if ($theme->type === waTheme::TRIAL && wa()->getUser()->get('is_user') != 1) {
+            return null;
+        }
+
+        $url = '?theme_hash='.$hash.'&set_force_theme=';
+
+        $view = wa('webasyst')->getView();
+        $view->assign([
+            'theme' => $theme,
+            'url'   => $url,
+        ]);
+        $template = wa()->getConfig()->getRootPath().'/wa-system/webasyst/templates/actions/preview/preview.html';
+        return $view->fetch($template);
     }
 }

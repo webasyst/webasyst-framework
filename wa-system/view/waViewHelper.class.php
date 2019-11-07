@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage view
  */
+
 class waViewHelper
 {
     /**
@@ -28,8 +29,10 @@ class waViewHelper
         $this->view = $view;
         $this->app_id = wa()->getApp();
     }
+
     /**
      * @return waAppConfig
+     * @throws waException
      */
     protected function getConfig()
     {
@@ -85,10 +88,10 @@ class waViewHelper
      *     'helpdesk' => 'helpdesk my nav html...',
      *     ...
      * )
+     * @throws waException
      */
     public function myNav($ul_class = true)
     {
-
         $domain = wa()->getRouting()->getDomain(null, true);
         $domain_config_path = wa()->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
         if (file_exists($domain_config_path)) {
@@ -97,15 +100,7 @@ class waViewHelper
             $domain_config = array();
         }
 
-        $routes = wa()->getRouting()->getRoutes();
-        $apps = wa()->getApps();
-        $result = array();
-        foreach ($routes as $r) {
-            if (isset($r['app']) && !empty($apps[$r['app']]['my_account'])) {
-                $result[$r['app']] = $r;
-            }
-        }
-
+        $result = $this->getRoutesByApps();
 
         if (isset($domain_config['personal'])) {
             $tmp = array();
@@ -120,7 +115,7 @@ class waViewHelper
                 }
             }
             foreach ($result as $app_id => $r) {
-                $tmp[$app_id]  = $r;
+                $tmp[$app_id] = $r;
             }
             $result = array_reverse($tmp, true);
         }
@@ -139,7 +134,6 @@ class waViewHelper
             }
             $class_name = $app_id.'MyNavAction';
             if (class_exists($class_name)) {
-
                 try {
                     // Because in waMyNavAction we call static method with check on is_template var
                     $is_from_template = waConfig::get('is_template');
@@ -180,6 +174,21 @@ class waViewHelper
         } else {
             return $result;
         }
+    }
+
+    protected function getRoutesByApps()
+    {
+        $routes = wa()->getRouting()->getRoutes();
+        $apps = wa()->getApps();
+        $result = [];
+
+        foreach ($routes as $r) {
+            if (isset($r['app']) && !empty($apps[$r['app']]['my_account'])) {
+                $result[$r['app']] = $r;
+            }
+        }
+
+        return $result;
     }
 
     public function myUrl()
@@ -276,7 +285,7 @@ HTML;
         return $is_enabled;
     }
 
-    public function user($field=null, $format='html')
+    public function user($field = null, $format = 'html')
     {
         $user = wa()->getUser();
         if ($field !== null) {
@@ -345,8 +354,9 @@ HTML;
 <!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
 <link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
 
-            if ( !waRequest::isMobile(false) )
-                $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n"; //for handling iPad and tablet computer default view properly
+            if (!waRequest::isMobile(false)) {
+                $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n";
+            } //for handling iPad and tablet computer default view properly
 
         } else {
             $css = '';
@@ -524,18 +534,18 @@ HTML;
             return waRequest::isMobile(false);
         } elseif ($type == 'platform' || $type == 'os') {
             $patterns = array(
-                'android' => 'android',
+                'android'    => 'android',
                 'blackberry' => 'blackberry',
-                'linux' => 'Linux',
-                'ios' => '(ipad|iphone|ipod)',
-                'mac' => '(Macintosh|Mac\sOS)',
-                'windows' => 'Windows',
+                'linux'      => 'Linux',
+                'ios'        => '(ipad|iphone|ipod)',
+                'mac'        => '(Macintosh|Mac\sOS)',
+                'windows'    => 'Windows',
             );
         } elseif ($type == 'device') {
             $patterns = array(
-                'ipad' => 'ipad',
-                'ipod' => 'ipod',
-                'iphone' => 'iphone',
+                'ipad'    => 'ipad',
+                'ipod'    => 'ipod',
+                'iphone'  => 'iphone',
                 'android' => 'android'
             );
         }
@@ -594,7 +604,7 @@ HTML;
 
     public function block($id, $params = array())
     {
-        if ($id &&  wa()->appExists('site')) {
+        if ($id && wa()->appExists('site')) {
             wa('site');
             $model = new siteBlockModel();
             $block = $model->getById($id);
@@ -622,7 +632,7 @@ HTML;
                     return $this->view->fetch('string:'.$block['content']);
                 } catch (Exception $e) {
                     if (waSystemConfig::isDebug()) {
-                        return '<pre class="error">'.htmlentities($e->getMessage(),ENT_QUOTES,'utf-8')."</pre>";
+                        return '<pre class="error">'.htmlentities($e->getMessage(), ENT_QUOTES, 'utf-8')."</pre>";
                     } else {
                         waLog::log($e->__toString());
                         return '<div class="error">'._ws('Syntax error at block').' '.$id.'</div>';
@@ -692,7 +702,7 @@ HTML;
 
         $body = nl2br(htmlspecialchars($body));
         $body = _ws('Name').': '.htmlspecialchars($this->post('name'))."<br>\n".
-                _ws('Email').': '.htmlspecialchars($email)."<br><br>\n".$body;
+            _ws('Email').': '.htmlspecialchars($email)."<br><br>\n".$body;
         $m = new waMailMessage($subject, $body);
         $m->setTo($to);
         $m->setReplyTo(array($email => $this->post('name')));
@@ -775,7 +785,7 @@ HTML;
      *
      *   string 'url' - custom url of login action. Default (if skip option) - login_url from proper auth config. You can also pass empty string ''
      *
-     *  @return string
+     * @return string
      */
     public function loginForm($errors = array(), $options = array())
     {
@@ -833,7 +843,6 @@ HTML;
      *   bool   'need_redirects' - need or not server trigger redirects. Default - TRUE
      *
      *   bool   'include_css' - include or not default css. Default - TRUE
-
      * @return string
      *
      */
@@ -927,18 +936,19 @@ HTML;
     }
 
     /**
-     * @deprecated since version 1.10
      * @param array $errors
      * @return array
+     * @throws waException
+     * @deprecated since version 1.10
      */
     public function signupFields($errors = array())
     {
         $config = wa()->getAuthConfig();
-        $config_fields = isset($config['fields']) ? $config['fields']: array(
+        $config_fields = isset($config['fields']) ? $config['fields'] : array(
             'firstname',
             'lastname',
             '',
-            'email' => array('required' => true),
+            'email'    => array('required' => true),
             'password' => array('required' => true),
         );
 
@@ -1044,7 +1054,7 @@ HTML;
 
             $html = $form->render($data, $errors);
         } catch (Exception $e) {
-            waLog::log($e->getMessage() . PHP_EOL . $e->getTraceAsString());
+            waLog::log($e->getMessage().PHP_EOL.$e->getTraceAsString());
             $html = '';
         }
 
@@ -1111,7 +1121,7 @@ HTML;
         $row = $contact_data_model->getByField(array(
             'field' => $data['source'].'_id',
             'value' => $data['source_id'],
-            'sort' => 0
+            'sort'  => 0
         ));
         if ($row) {
             $contact_id = $row['contact_id'];
@@ -1127,9 +1137,9 @@ HTML;
             if ($contact_id) {
                 $contact_data_model->insert(array(
                     'contact_id' => $contact_id,
-                    'field' => $data['source'].'_id',
-                    'value' => $data['source_id'],
-                    'sort' => 0
+                    'field'      => $data['source'].'_id',
+                    'value'      => $data['source_id'],
+                    'sort'       => 0
                 ));
             }
         }
@@ -1204,10 +1214,10 @@ HTML;
         $view = wa()->getView();
         $view->assign(array(
             'profile_content_layout_template' => wa()->getAppPath('templates/actions/profile/ProfileContent.html', 'webasyst'),
-            'uniqid' => str_replace('.', '-', uniqid('s', true)),
-            'selected_tab' => $selected_tab,
-            'contact_id' => $id,
-            'tabs' => $tabs,
+            'uniqid'                          => str_replace('.', '-', uniqid('s', true)),
+            'selected_tab'                    => $selected_tab,
+            'contact_id'                      => $id,
+            'tabs'                            => $tabs,
         ));
 
         $template_file = $this->getConfig()->getConfigPath('ProfileTabs.html', true, 'webasyst');
@@ -1220,7 +1230,7 @@ HTML;
 
     public function getContactTabs($id)
     {
-        $id = (int) $id;
+        $id = (int)$id;
         if (!$id || wa()->getEnv() !== 'backend') {
             return array();
         }
@@ -1241,8 +1251,8 @@ HTML;
 
         if (!empty($event_result['team'])) {
             $event_result = array(
-                'team' => $event_result['team'],
-            ) + $event_result;
+                    'team' => $event_result['team'],
+                ) + $event_result;
         }
 
         $links = array();
@@ -1270,11 +1280,11 @@ HTML;
                 }
 
                 $links[$link['id']] = $link + array(
-                    'url' => '',
-                    'title' => '',
-                    'count' => '',
-                    'html' => '',
-                );
+                        'url'   => '',
+                        'title' => '',
+                        'count' => '',
+                        'html'  => '',
+                    );
             }
         }
 

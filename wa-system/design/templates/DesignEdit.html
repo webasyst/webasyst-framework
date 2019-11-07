@@ -8,11 +8,11 @@
         {/if}
         <ul class="menu-v with-icons wa-theme wa-theme-templates">
             {foreach $theme_files as $f_id => $f}
-            <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
-                <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}"{if !empty($f.parent_exists)} title="[s`parent theme file`]"{/if}>
-                <i class="icon16 {if !empty($f.parent_exists)}link{else}script{if substr($f_id, -4)=='.css'}-css{elseif substr($f_id, -3)=='.js'}-js{/if}{/if}"></i>{$f_id|escape|truncate:25:'...':false:true}
-                </a>
-            </li>
+                <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
+                    <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
+                    <i class="icon16 {if !empty($f.parent_exists)}link{else}script{if substr($f_id, -4)=='.css'}-css{elseif substr($f_id, -3)=='.js'}-js{/if}{/if}"></i>{$f_id|escape|truncate:25:'...':false:true}
+                    </a>
+                </li>
             {/foreach}
             <li class="add-file top-padded"><a href="{$design_url}theme={$theme.id}&file=" class="small"><i class="icon10 add"></i>[s`New file`] </a> </li>
         </ul>

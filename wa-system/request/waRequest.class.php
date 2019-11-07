@@ -547,23 +547,20 @@ class waRequest
      * Returns id of design theme used in current frontend page.
      *
      * @return string
+     * @throws waException
      */
     public static function getTheme()
     {
-        $app_id = wa()->getConfig()->getApplication();
-        $key = wa()->getRouting()->getDomain().'/theme';
-        if (($theme_hash = self::get('theme_hash')) && ($theme = self::get('set_force_theme')) !== null) {
-            $app_settings_model = new waAppSettingsModel();
-            $hash = $app_settings_model->get($app_id, 'theme_hash');
-            $global_hash = $app_settings_model->get('webasyst', 'theme_hash');
+        $key = self::getThemeStorageKey();
+        $theme_hash = self::get('theme_hash');
+        $theme = self::get('set_force_theme');
+
+        $session_theme = wa()->getStorage()->get($key);
+
+        if ($theme_hash !== null && $theme !== null) {
+            $asm = new waAppSettingsModel();
+            $hash = $asm->get('webasyst', 'theme_hash');
             if ($theme_hash == md5($hash)) {
-                if ($theme && waTheme::exists($theme)) {
-                    wa()->getStorage()->set($app_id.'/'.$key, $theme);
-                    return $theme;
-                } else {
-                    wa()->getStorage()->del($app_id.'/'.$key);
-                }
-            } elseif ($global_hash && $theme_hash == md5($global_hash)) {
                 if ($theme && waTheme::exists($theme)) {
                     wa()->getStorage()->set($key, $theme);
                     return $theme;
@@ -571,16 +568,34 @@ class waRequest
                     wa()->getStorage()->del($key);
                 }
             } else {
-                wa()->getStorage()->del($app_id.'/'.$key);
                 wa()->getStorage()->del($key);
             }
-        } elseif ((($theme = wa()->getStorage()->get($app_id.'/'.$key)) || ($theme = wa()->getStorage()->get($key))) && waTheme::exists($theme)) {
+        } elseif ($session_theme && waTheme::exists($session_theme)) {
+            $session_theme_type = (new waTheme($session_theme))->type;
+            if ($session_theme_type !== waTheme::TRIAL || $session_theme_type === waTheme::TRIAL && wa()->getUser()->get('is_user') == 1) {
+                return $session_theme;
+            }
+        }
+
+        $theme = self::param('theme', 'default');
+        if (self::isMobile()) {
+            $theme = self::param('theme_mobile', 'default');
+        }
+
+        if (waTheme::exists($theme) && (new waTheme($theme))->type !== waTheme::TRIAL) {
             return $theme;
         }
-        if (self::isMobile()) {
-            return self::param('theme_mobile', 'default');
-        }
-        return self::param('theme', 'default');
+
+        return 'default';
+    }
+
+    /**
+     * @return string
+     * @throws waException
+     */
+    public static function getThemeStorageKey()
+    {
+        return wa()->getRouting()->getDomain().'/theme';
     }
 
     public static function isHttps()

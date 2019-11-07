@@ -185,11 +185,7 @@ abstract class waLoginModuleController extends waViewAction
 
     protected function getData($name = null)
     {
-        if ($this->namespace !== null) {
-            $post = $this->getRequest()->post($this->namespace);
-        } else {
-            $post = $this->getRequest()->post();
-        }
+        $post = $this->getRequest()->post($this->namespace, array(), waRequest::TYPE_ARRAY_TRIM);
         $post = $this->prepareData($post);
         if ($name !== null) {
             return isset($post[$name]) ? $post[$name] : null;

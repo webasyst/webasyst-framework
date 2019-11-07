@@ -426,6 +426,9 @@ class waContactsCollection
 
                     // array_values just in case
                     foreach ($data as $contact_id => &$contact) {
+                        // ensure that emails for contact in order of sort field
+                        ksort($contact['email'], SORT_NUMERIC);
+                        // ensure 0 .. n indexing
                         $contact['email'] = array_values($contact['email']);
                     }
                     unset($contact);

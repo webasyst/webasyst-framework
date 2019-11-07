@@ -22,6 +22,8 @@
  * @property string $support
  * @property string $version
  * @property string $vendor
+ * @property string $locale_domain
+ * @property string $locale_path
  * @property int $edition Incremental counter of theme changes
  * @property string $parent_theme_id Parent theme ID
  * @property-read string $id
@@ -30,6 +32,7 @@
  * @property-read string $app
  * @property-read string $app_id
  * @property-read string $cover
+ * @property-read string $path_trial
  * @property-read string $path
  * @property-read string $path_custom
  * @property-read string $custom
@@ -60,6 +63,12 @@ class waTheme implements ArrayAccess
     const CUSTOM = 'custom';
 
     /**
+     * Trial theme
+     * @var string
+     */
+    const TRIAL = 'trial';
+
+    /**
      * Overridden theme
      * @var string
      */
@@ -83,6 +92,7 @@ class waTheme implements ArrayAccess
     protected $extra_info;
     protected $path_original;
     protected $path_custom;
+    protected $path_trial;
     protected $path;
     protected $type;
     protected $url;
@@ -108,6 +118,7 @@ class waTheme implements ArrayAccess
      * @param bool|string $app_id
      * @param bool|string $force true to create new custom theme or self::ORIGINAL to get original theme instance
      * @param bool $readonly
+     * @throws waException
      */
     public function __construct($id, $app_id = true, $force = false, $readonly = false)
     {
@@ -128,6 +139,7 @@ class waTheme implements ArrayAccess
      * @param bool|string $app_id Application id
      * @param boolean $check_only_path skip verify theme description
      * @return boolean
+     * @throws waException
      */
     public static function exists($id, $app_id = true, $check_only_path = false)
     {
@@ -136,8 +148,14 @@ class waTheme implements ArrayAccess
         }
         $app_id = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
         self::verify($id);
+        $path_trial = self::getTrialPath('themes/', $app_id).$id;
         $path_custom = wa()->getDataPath('themes/', true, $app_id).$id;
         $path_original = wa()->getAppPath('themes/', $app_id).$id;
+
+        if (!file_exists($path_trial) || (!$check_only_path && !file_exists($path_trial.'/'.self::PATH))) {
+            $path_trial = false;
+        }
+
         if (!file_exists($path_custom) || (!$check_only_path && !file_exists($path_custom.'/'.self::PATH))) {
             $path_custom = false;
         }
@@ -145,7 +163,8 @@ class waTheme implements ArrayAccess
         if (!file_exists($path_original) || (!$check_only_path && !file_exists($path_original.'/'.self::PATH))) {
             $path_original = false;
         }
-        return ($path_custom || $path_original) ? true : false;
+
+        return ($path_custom || $path_original || $path_trial) ? true : false;
     }
 
     private function initPath($force = false)
@@ -156,8 +175,13 @@ class waTheme implements ArrayAccess
          * $this->url = null;
          */
 
+        $this->path_trial = self::getTrialPath('themes/', $this->app).$this->id;
         $this->path_custom = wa()->getDataPath('themes/', true, $this->app).$this->id;
         $this->path_original = wa()->getAppPath('themes/', $this->app).$this->id;
+
+        if (!file_exists($this->path_trial) || (!$force && !file_exists($this->path_trial.'/'.self::PATH))) {
+            $this->path_trial = false;
+        }
 
         if (!file_exists($this->path_custom) || (!$force && !file_exists($this->path_custom.'/'.self::PATH))) {
             $this->path_custom = false;
@@ -172,7 +196,10 @@ class waTheme implements ArrayAccess
             $this->path_custom = false;
         }
 
-        if ($this->path_custom && $this->path_original) {
+        if ($this->path_trial) {
+            $this->type = self::TRIAL;
+            $this->path = $this->path_trial;
+        } elseif ($this->path_custom && $this->path_original) {
             $this->type = self::OVERRIDDEN;
             $this->path = $this->path_custom;
         } elseif ($this->path_custom) {
@@ -292,7 +319,7 @@ class waTheme implements ArrayAccess
 
                     $this->info['settings'] = array();
                     if ($settings = $xml->{'settings'}) {
-                        $id=0;
+                        $id = 0;
                         $settings_group = null;
                         /** @var SimpleXMLElement $settings */
                         foreach ($settings->children() as $setting) {
@@ -463,8 +490,8 @@ class waTheme implements ArrayAccess
      * @param string $path
      * @param array|string $description
      * @param array $options
-     * @throws waException
      * @return waTheme
+     * @throws waException
      */
     public function addFile($path, $description = null, $options = array())
     {
@@ -488,8 +515,8 @@ class waTheme implements ArrayAccess
      *
      * Remove file from theme
      * @param string $path
-     * @throws waException
      * @return waTheme
+     * @throws waException
      */
     public function removeFile($path)
     {
@@ -533,12 +560,12 @@ class waTheme implements ArrayAccess
 
     /**
      * @param bool $as_dom
-     * @throws waException
      * @return DOMDocument|SimpleXMLElement
+     * @throws waException
      */
     private function getXML($as_dom = false)
     {
-        $xml_options = LIBXML_NOCDATA|LIBXML_NOENT|LIBXML_NONET;
+        $xml_options = LIBXML_NOCDATA | LIBXML_NOENT | LIBXML_NONET;
         libxml_use_internal_errors(true);
         libxml_disable_entity_loader(false);
         libxml_clear_errors();
@@ -1044,8 +1071,8 @@ XML;
      * Copy existing theme
      * @param string $id
      * @param array $params
-     * @throws waException
      * @return waTheme
+     * @throws waException
      */
     public function copy($id = null, $params = array())
     {
@@ -1121,7 +1148,7 @@ XML;
 
         // Check original files for reading
         foreach ($files as $file_name) {
-            $source_file_path = $source_path . '/' . $file_name;
+            $source_file_path = $source_path.'/'.$file_name;
             if (!is_readable($source_file_path)) {
                 $errors['not_readable'][] = $source_file_path;
             }
@@ -1134,7 +1161,7 @@ XML;
 
         // Check the availability of editing files (if any) in the target directory
         foreach ($files as $file_name) {
-            $target_file_path = $target_path . '/' . $file_name;
+            $target_file_path = $target_path.'/'.$file_name;
             if (file_exists($target_file_path) && !is_dir($target_file_path) && !is_writable($target_file_path)) {
                 $errors['not_writable'][] = $target_file_path;
             }
@@ -1191,7 +1218,7 @@ XML;
                 continue;
             }
 
-            $critical_theme_files = array('theme.xml');
+            $critical_theme_files = array(self::PATH);
 
             if (in_array($f, $critical_theme_files)) {
                 // save backups of theme critical files
@@ -1311,7 +1338,7 @@ XML;
                 'en_US' => 'Obsolete settings',
                 'ru_RU' => 'Устаревшие настройки',
             ),
-            'tooltip' => array(
+            'tooltip'      => array(
                 'en_US' => 'Settings are not used in the new version of the design theme, but are used in templates.',
                 'ru_RU' => 'Настройки не используются в новой версии темы дизайна, но используются в шаблонах.',
             ),
@@ -1340,8 +1367,8 @@ XML;
      * Fork theme into custom user theme with current id as theme_parent_id
      * @param string $id
      * @param array $params
-     * @throws waException
      * @return waTheme
+     * @throws waException
      */
     public function fork($id, $params = array())
     {
@@ -1353,8 +1380,8 @@ XML;
      * Rename existing theme
      * @param string $id
      * @param array $params
-     * @throws waException
      * @return waTheme
+     * @throws waException
      */
     public function move($id, $params = array())
     {
@@ -1507,10 +1534,36 @@ HTACCESS;
         return "{$this->app}/themes/{$this->id}";
     }
 
+    protected function getLocaleDomain()
+    {
+        $parts = [
+            $this->app_id,
+            'themes',
+            $this->id,
+        ];
+
+        $name = implode('_', $parts);
+        return $name;
+    }
+
+    protected function getLocalePath()
+    {
+        $parts = [
+            $this->path,
+            'locale',
+        ];
+
+        $name = implode(DIRECTORY_SEPARATOR, $parts);
+        return $name;
+    }
+
     public function getUrl()
     {
         if (is_null($this->url)) {
             switch ($this->type) {
+                case self::TRIAL:
+                    $this->url = self::getTrialUrl('themes', $this->app).'/'.$this->id.'/';
+                    break;
                 case self::CUSTOM:
                 case self::OVERRIDDEN:
                     $this->url = wa()->getDataUrl('themes', true, $this->app).'/'.$this->id.'/';
@@ -1618,19 +1671,30 @@ HTACCESS;
 
     private static function prepareField($field, $full = false)
     {
+        $result = null;
         if (is_array($field)) {
+            // Return all fields that were transferred
             if ($full) {
-                return $field;
+                $result = $field;
             } else {
+                // Return field only under current locale
                 $locale = self::getLocale($field);
-                return !empty($field[$locale]) ? $field[$locale] : current($field);
+
+                if (!empty($field[$locale])) {
+                    $result = $field[$locale];
+                } else {
+                    $result = current($field);
+                }
             }
         } elseif ($full) {
+            // Return field with locale key
             $locale = self::getLocale();
-            return array($locale => $field);
+            $result = array($locale => $field);
         } else {
-            return $field;
+            // Return the passed string and do nothing with it
+            $result = $field;
         }
+        return $result;
     }
 
     private static function preparePath($path)
@@ -1923,6 +1987,9 @@ HTACCESS;
         return $this->settings;
     }
 
+    /**
+     * @return array
+     */
     public function getLocales()
     {
         $this->init();
@@ -1957,7 +2024,7 @@ HTACCESS;
         $wa_installer_apps = 'wa-installer/lib/classes/wainstallerapps.class.php';
         $wa_installer_requirements = 'wa-installer/lib/classes/wainstallerrequirements.class.php';
 
-        if (!class_exists('waInstallerApps') && file_exists(wa()->getConfig()->getRootPath() .'/'. $wa_installer_apps)) {
+        if (!class_exists('waInstallerApps') && file_exists(wa()->getConfig()->getRootPath().'/'.$wa_installer_apps)) {
             $autoload = waAutoload::getInstance();
             $autoload->add('waInstallerApps', $wa_installer_apps);
             $autoload->add('waInstallerRequirements', $wa_installer_requirements);
@@ -2166,8 +2233,8 @@ HTACCESS;
     /**
      *
      * @param string $slug
-     * @throws waException
      * @return waTheme
+     * @throws waException
      */
     public static function getInstance($slug)
     {
@@ -2211,6 +2278,7 @@ HTACCESS;
     public function purge()
     {
         $this->init();
+        waFiles::delete($this->path_trial);
         waFiles::delete($this->path_custom);
         if (!$this->system) {
             waFiles::delete($this->original);
@@ -2248,12 +2316,12 @@ HTACCESS;
 
     /**
      *
-     * @throws waException
      * @param bool $related duplicate all related themes
      * @param mixed [string] $options
      * @param string [string] $options['id']
      * @param string [string] $options['name']
      * @return waTheme
+     * @throws waException
      */
     public function duplicate($related = false, $options = array())
     {
@@ -2356,10 +2424,10 @@ HTACCESS;
 
     /**
      * Extract theme from archive
-     * @throws Exception
      * @param string $source_path archive path
      *
      * @return waTheme
+     * @throws Exception
      */
     public static function extract($source_path)
     {
@@ -2435,7 +2503,8 @@ HTACCESS;
                             }
                         }
                     } else {
-                        $message = sprintf(_ws('Theme “%s” is for %s app, which is not installed in your Webasyst. Install the app and upload the theme once again.'), $id, $app_id);
+                        $message = sprintf(_ws('Theme “%s” is for %s app, which is not installed in your Webasyst. Install the app and upload the theme once again.'), $id,
+                            $app_id);
                         throw new waException($message);
                     }
                 }
@@ -2492,7 +2561,7 @@ HTACCESS;
                                 self::throwThemeException('INVALID_HTACCESS', $file['filename']);
                             }
                         } elseif (!in_array(pathinfo($file['filename'], PATHINFO_EXTENSION), $white_list)) {
-                            if (!in_array(strtolower(basename($file['filename'])), array('theme.xml', 'build.php', '.htaccess', 'readme',))) {
+                            if (!in_array(strtolower(basename($file['filename'])), array(self::PATH, 'build.php', '.htaccess', 'readme',))) {
                                 self::throwThemeException('UNEXPECTED_FILE_TYPE', $file['filename']);
                             }
                         }
@@ -2626,7 +2695,7 @@ HTACCESS;
 
         $temp_dir = "{$path}/{$this->app}/{$name}/";
         $target_file = "{$path}/{$this->app}/{$name}.tar.gz";
-        $settings_file = $temp_dir . self::SETTINGS_PATH;
+        $settings_file = $temp_dir.self::SETTINGS_PATH;
 
         if (file_exists($this->path)) {
             // Write all theme settings in json file
@@ -2792,7 +2861,7 @@ HTACCESS;
             $image_list = array();
             foreach ($images_from_values as $image) {
                 $image_list[] = $image['filename'];
-                $image_path = $this->path . str_replace($wa_path, '', $image['filename']);
+                $image_path = $this->path.str_replace($wa_path, '', $image['filename']);
                 $image_backup_path = $image_path.'.backup';
 
                 if (file_exists($image_path)) {
@@ -2872,5 +2941,33 @@ HTACCESS;
             }
         }
         return $this->_version;
+    }
+
+    public static function getTrialPath($path = null, $app_id = null)
+    {
+        $trial_path = waConfig::get('wa_path_data').'/trial/';
+        if ($path) {
+            $path = preg_replace('!\.\.[/\\\]!', '', $path);
+        }
+        if ($app_id) {
+            $trial_path .= $app_id.($path ? '/'.$path : '');
+        }
+
+        return $trial_path;
+    }
+
+    public static function getTrialUrl($path = null, $app_id = null, $absolute = false)
+    {
+        $trial_url = self::getTrialPath($path, $app_id);
+        $base = waConfig::get('wa_path_root');
+        if (strpos($trial_url, $base) === 0) {
+            $trial_url = substr($trial_url, strlen($base) + 1);
+        } else {
+            $trial_url = 'wa-data/trial/';
+            if ($app_id) {
+                $trial_url .= $app_id.($path ? '/'.$path : '');
+            }
+        }
+        return wa()->getRootUrl($absolute).$trial_url;
     }
 }

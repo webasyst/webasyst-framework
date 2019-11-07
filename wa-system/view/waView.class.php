@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Abstract View.
  *
@@ -26,10 +27,15 @@ abstract class waView
     protected $helper;
 
     /**
-	 * Initialize view properties.
-	 *
-     * @param  waSystem $system  Instance of system object
-     * @param  array    $options Configuration options
+     * @var string[] locale_domain
+     */
+    protected $themes = [];
+
+    /**
+     * Initialize view properties.
+     *
+     * @param waSystem $system Instance of system object
+     * @param array $options Configuration options
      * @return void
      */
     public function __construct(waSystem $system, $options = array())
@@ -38,23 +44,23 @@ abstract class waView
     }
 
     /**
-	 * Get helper object.
-	 *
+     * Get helper object.
+     *
      * @return waViewHelper
      */
     public function getHelper()
     {
-		if (!isset($this->helper)) {
-			// Lazy load
-			$this->helper = new waViewHelper($this);
-		}
+        if (!isset($this->helper)) {
+            // Lazy load
+            $this->helper = new waViewHelper($this);
+        }
         return $this->helper;
     }
 
     /**
-	 * Set view options.
-	 *
-     * @param  array $options New configuration options
+     * Set view options.
+     *
+     * @param array $options New configuration options
      * @return waView
      */
     public function setOptions($options)
@@ -62,13 +68,13 @@ abstract class waView
         foreach ($options as $k => $v) {
             $this->options[$k] = $v;
         }
-		// "Chainable" method
-		return $this;
+        // "Chainable" method
+        return $this;
     }
 
     /**
-	 * Get template extension.
-	 *
+     * Get template extension.
+     *
      * @return string
      */
     public function getPostfix()
@@ -85,15 +91,16 @@ abstract class waView
     abstract public function getVars($name = null);
 
     /**
-	 * Execute prepare render temaplate.
-	 *
+     * Execute prepare render temaplate.
+     *
      * @return waView
+     * @throws waException
      */
     protected function prepare()
     {
-		$wa = wa();
+        $wa = wa();
 
-		// Add global variables
+        // Add global variables
         $this->assign(array(
             'wa_url'                 => $wa->getRootUrl(),
             'wa_static_url'          => $this->getStaticUrl($wa->getRootUrl()),
@@ -105,8 +112,8 @@ abstract class waView
             'wa'                     => $this->getHelper()
         ));
 
-		// "Chainable" method
-		return $this;
+        // "Chainable" method
+        return $this;
     }
 
     protected function getStaticUrl($url)
@@ -149,20 +156,20 @@ abstract class waView
 
     public function clearCache($template, $cache_id = null)
     {
-		// "Chainable" method
-		return $this;
+        // "Chainable" method
+        return $this;
     }
 
     public function clearAllCache($exp_time = null, $type = null)
     {
-		// "Chainable" method
-		return $this;
+        // "Chainable" method
+        return $this;
     }
 
     public function cache($lifetime)
     {
-		// "Chainable" method
-		return $this;
+        // "Chainable" method
+        return $this;
     }
 
     public function getCacheId()
@@ -172,37 +179,42 @@ abstract class waView
 
     public function autoescape($value = null)
     {
-		// "Chainable" method
-		return $this;
+        // "Chainable" method
+        return $this;
     }
 
     public function setTemplateDir($path)
     {
-		// "Chainable" method
-		return $this;
+        // "Chainable" method
+        return $this;
     }
 
     /**
-	 * Set template directory and global valiables.
-	 *
-     * @param  waTheme $theme    Instance of theme object
-     * @param  string  $template Path to template or resource string specifying template
+     * Set template directory and global valiables.
+     *
+     * @param waTheme $theme Instance of theme object
+     * @param string $template Path to template or resource string specifying template
      * @return bool
+     * @throws waException
      */
     public function setThemeTemplate($theme, $template)
     {
+        // Upstairs because the topic can be redefined
         $this->assign('wa_active_theme_path', $theme->path);
         $this->assign('wa_active_theme_url', $this->getStaticUrl($theme->url));
         $this->assign('wa_real_active_theme_url', $theme->url);
+
         $theme_settings = $theme->getSettings(true);
         $theme_settings_config = $theme->getSettings();
-
-        $locales = $theme->getLocales();
-
         $version = $theme->version(true);
-
         $file = $theme->getFile($template);
-        if ($parent_theme = $theme->parent_theme) {
+        $parent_theme = $theme->parent_theme;
+
+        $this->setActiveTheme($theme->locale_domain);
+        $this->setLocales($theme, $parent_theme);
+
+        if ($parent_theme) {
+            $this->setActiveTheme($parent_theme->locale_domain);
             $edition = $theme->edition + $parent_theme->edition;
             if (!empty($file['parent'])) {
                 if ($parent_theme->version($edition) > $version) {
@@ -210,33 +222,98 @@ abstract class waView
                 } else {
                     $version = $theme->version($edition);
                 }
+                // !!! Reset main theme !!!
                 $theme = $parent_theme;
             }
-            $this->assign('wa_parent_theme_url', $this->getStaticUrl($parent_theme->url));
-            $this->assign('wa_real_parent_theme_url', $parent_theme->url);
-            $this->assign('wa_parent_theme_path', $parent_theme->path);
-            if ($parent_settings = $parent_theme->getSettings(true)) {
+            $parent_settings = $parent_theme->getSettings(true);
+            if ($parent_settings) {
                 $theme_settings = $theme_settings + $parent_settings;
-                foreach ($parent_theme->getSettings() as $k => $v) {
-                    if (!isset($theme_settings_config[$k])) {
-                        $v['parent'] = 1;
-                        $theme_settings_config[$k] = $v;
+                foreach ($parent_theme->getSettings() as $setting_name => $setting_data) {
+                    if (!isset($theme_settings_config[$setting_name])) {
+                        $setting_data['parent'] = 1;
+                        $theme_settings_config[$setting_name] = $setting_data;
                     }
                 }
             }
-            if ($parent_theme->getLocales()) {
-                $locales += $parent_theme->getLocales();
-            }
+
+            $this->assign('wa_parent_theme_url', $this->getStaticUrl($parent_theme->url));
+            $this->assign('wa_real_parent_theme_url', $parent_theme->url);
+            $this->assign('wa_parent_theme_path', $parent_theme->path);
         }
         $this->assign('wa_theme_version', $version);
-        waLocale::setStrings($locales);
         $this->assign('theme_settings', $theme_settings);
         $this->assign('theme_settings_config', $theme_settings_config);
-
         $this->assign('wa_theme_url', $this->getStaticUrl($theme->url));
         $this->assign('wa_real_theme_url', $theme->url);
 
         $this->setTemplateDir($theme->path);
         return file_exists($theme->path.'/'.$template);
     }
+
+    /**
+     * Here are the strings in the domain format for gettext
+     * @return string[]
+     */
+    public function getActiveThemes()
+    {
+        return $this->themes;
+    }
+
+    /**
+     * @param string $theme_domain
+     */
+    public function setActiveTheme($theme_domain)
+    {
+        $this->themes[] = $theme_domain;
+    }
+
+    /**
+     * @param waTheme $theme
+     * @param waTheme $parent_theme
+     * @throws waException
+     */
+    protected function setLocales(waTheme $theme, $parent_theme = null)
+    {
+        $locales = $theme->getLocales();
+        $locale = wa()->getLocale();
+
+        if ($parent_theme instanceof waTheme) {
+            $parent_locales = $parent_theme->getLocales();
+
+            if ($parent_locales) {
+                $locales += $parent_locales;
+            }
+            $this->loadWrapper($locale, $parent_theme->locale_path, $parent_theme->locale_domain, false);
+        }
+
+        // load main theme locale
+        $this->loadWrapper($locale, $theme->locale_path, $theme->locale_domain, false);
+
+        // set lines from xml file
+        $this->setStringsWrapper($locales);
+    }
+
+    /**
+     * waLocale::load wrapper
+     * Need for unitTests
+     * @param $locale
+     * @param $locale_path
+     * @param $domain
+     * @param bool $textdomain
+     */
+    protected function loadWrapper($locale, $locale_path, $domain, $textdomain = true)
+    {
+        waLocale::load($locale, $locale_path, $domain, $textdomain);
+    }
+
+    /**
+     * waLocale::setStrings wrapper
+     * Need for unit Tests
+     * @param $locales
+     */
+    protected function setStringsWrapper($locales)
+    {
+        waLocale::setStrings($locales);
+    }
+
 }

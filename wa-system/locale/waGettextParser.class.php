@@ -2,368 +2,448 @@
 
 class waGettextParser
 {
-    protected $config = array(
-        'include' => '.*',
-        'project' => 'WebAsyst',
-        'path'    => '/',
-        'locales' => array(),
-        'debug'   => false,
-        'verify'  => false,
-    );
+    /**
+     * @var waLocaleParseEntityInterface
+     */
+    protected $entity;
 
-    protected $words = array();
+    protected $options = [];
+
+    protected $report = [];
+
 
     /**
-     * @param array $config
-     * @param string[] $config ['path']
-     * @param string[] $config ['project']
-     * @param string[] $config ['include']
-     * @param string[] $config ['locales']
-     * @param string[] $config ['debug']
-     * @param string[] $config ['verify']
+     * waLocaleParse constructor.
+     * @param waLocaleParseEntityInterface $entity
      */
-    public function __construct($config)
+    public function __construct(waLocaleParseEntityInterface $entity, $options = [])
     {
-        foreach ($config as $name => $value) {
-            $this->config[$name] = $value;
+        $this->entity = $entity;
+        $this->options = $options;
+    }
+
+    /**
+     * TL;DR Why is waFiles used:
+     * For tests, the largest "Shop" application was selected. Max memory usage: 1.2MB. Time: 1.6 sec;
+     * With such loads and considering how rarely this script is used, the code was simplified by writing to the file 1 time.
+     *
+     * @throws waException
+     */
+    public function exec()
+    {
+        $this->createHtaccess();
+
+        $locales = $this->entity->getLocales();
+        $messages = $this->entity->getMessages();
+
+        if (!$messages) {
+            throw new waException('No messages found to save');
+        }
+
+        foreach ($locales as $locale) {
+            // Need to clone to save different translations
+            $clone_msg = $messages;
+            $file = $this->getFile($locale);
+            $gettext_data = (new waGettext($file, true))->getMessagesMetaPlurals();
+
+            $clone_msg = $this->extendBySavedData($clone_msg, $gettext_data);
+            $this->entity->preSave($clone_msg, $locale);
+
+            // Get metadata for file
+            $text = $this->getOldMeta($gettext_data['meta']);
+            foreach ($clone_msg as $msgid => $msg_data) {
+                $translates = ifset($msg_data, 'translate', '');
+                $plural = ifset($msg_data, 'msgid_plural', false);
+                $comments = '';
+
+                // Add comments for debug
+                if ($this->getOptions('debug')) {
+                    $comments = ifset($msg_data, 'comments', '');
+                }
+
+                if ($plural !== false) {
+                    $text .= $this->getPluralsText($msgid, $translates, $comments, $plural);
+                } else {
+                    $text .= $this->getStringsText($msgid, $translates, $comments);
+                }
+            }
+
+            $save_result = $this->write($file, $text);
+            $this->setReport($save_result, $locale, $clone_msg, $gettext_data['messages']);
         }
     }
 
-    public function getFiles($dir, $context = "/")
+    /**
+     * @return array
+     */
+    public function getReport()
     {
-        if (!file_exists($dir)) {
-            return array();
-        }
-        $result = array();
-        $handler = opendir($dir);
-        while ($file = readdir($handler)) {
-            if ($file == '.' || $file == '..') {
-                continue;
-            }
-            if (is_dir($dir."/".$file)) {
-                $result = array_merge($result, $this->getFiles($dir."/".$file, $context.$file."/"));
+        return $this->report;
+    }
+
+    /**
+     * @param $new_msgs
+     * @param $gettext_data
+     * @return mixed
+     */
+    protected function extendBySavedData($new_msgs, $gettext_data)
+    {
+        $old_messages = [];
+
+        /**
+         * @var $translate string|string[]
+         * If an array, then it contains plural forms
+         */
+        foreach ($gettext_data['messages'] as $saved_msgid => $translate) {
+            // If the saved is not found in the new ones, we check whether it is a plural
+            // Need to save plural form
+            $saved_data = [
+                'translate'    => $translate,
+                'msgid_plural' => ifset($gettext_data, 'plurals', $saved_msgid, 'msgid_plural', false),
+            ];
+
+            if (!isset($new_msgs[$saved_msgid])) {
+                // If the saved is not found in the new ones, add a comment
+                $saved_data['comments'][] = 'Not found';
             } else {
-                if (preg_match("/^".$this->config['include']."$/ui", $file)) {
-                    $result[] = array($context, $file);
+                $saved_data['comments'] = $new_msgs[$saved_msgid]['comments'];
+
+                // If old plural not find try find new plural
+                if ($saved_data['msgid_plural'] === false) {
+                    $saved_data['msgid_plural'] = ifset($new_msgs, $saved_msgid, 'msgid_plural', false);
                 }
             }
+
+            if ($saved_data['msgid_plural'] !== false && !is_array($saved_data['translate'])) {
+                $saved_data['translate'] = (array)$saved_data['translate'];
+            }
+
+            $old_messages[$saved_msgid] = $saved_data;
+            unset($new_msgs[$saved_msgid]);
         }
+
+        $new_msgs = $old_messages + $new_msgs;
+
+        return $new_msgs;
+    }
+
+    /**
+     * Get strings text fo PO file
+     * @example
+     * #: /wa-apps/shop/themes/dummy/reviews.html:248
+     * msgid "Adding"
+     * msgstr ""
+     *
+     * @param $msgid
+     * @param string $msgstr
+     * @param null $comments
+     * @return string
+     * @throws waException
+     */
+    protected function getStringsText($msgid, $msgstr = '', $comments = null)
+    {
+        $result = "\n";
+        $result .= $this->getComments($comments);
+        $result .= "msgid ".$this->getStrings($msgid);
+        $result .= "msgstr ".$this->getStrings($msgstr);
+
         return $result;
     }
 
-    public function getWords($file)
+    /**
+     * Get plural text for PO file
+     * @example
+     *
+     *  #: /wa-apps/shop/themes/dummy/reviews.html:264
+     *  msgid "%d review for"
+     *  msgid_plural "%d reviews for"
+     *  msgstr[0] "%d отзыв о"
+     *  msgstr[1] "%d отзыва о"
+     *  msgstr[2] "%d отзывов о"
+     *
+     * @param $msgid
+     * @param array $msgstr
+     * @param null $comments
+     * @param null $plural
+     * @return string
+     * @throws waException
+     */
+    protected function getPluralsText($msgid, $msgstr = [], $comments = null, $plural = null)
     {
-        static $first_run = true;
-        $counter = 0;
-        $text = file_get_contents($file);
-        $file = substr($file, strlen(realpath(dirname(__FILE__)."/../../")));
-        $matches = array();
-        $pattern = "/\\[".($this->config['project'] == 'webasyst' ? "s?" : "")."`((?:\\\\`|[^`])+?)`\\]/usi";
-        if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[1] as $match) {
-                $word = $match[0];
-                $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
-            }
-        }
-        if ($this->config['debug'] && $first_run) {
-            print "Template pattern:\n".$pattern."\n";
+        $msg_str = (array)$msgstr;
+
+        $result = "\n";
+        $result .= $this->getComments($comments);
+        $result .= "msgid ".$this->getStrings($msgid);
+        $result .= "msgid_plural ".$this->getStrings($plural);
+
+        // Create plural forms
+        for ($i = 0; $i < 3; $i++) {
+            $form = ifset($msg_str, $i, '');
+            $result .= "msgstr[{$i}] ".$this->getStrings($form);
         }
 
-        $function_pattern = array("\\\$_");
-        $open_function_pattern = array();
-        if ($this->config['project'] == 'webasyst') {
-            $function_pattern[] = '_ws';
-        } elseif (strpos($this->config['project'], 'wa-plugins') !== false) {
-            $function_pattern[] = '_wp';
-            $function_pattern[] = '->_w';
-            $open_function_pattern[] = 'sprintf_wp';
-        } elseif (strpos($this->config['project'], '/plugins/')) {
-            $function_pattern[] = '_wp';
-            $open_function_pattern[] = 'sprintf_wp';
-        } elseif (strpos($this->config['project'], '/widgets/')) {
-            $function_pattern[] = '_wp';
-            $function_pattern[] = 'sprintf_wp';
+        return $result;
+    }
+
+    /**
+     * Create comments string
+     *
+     * @param null $comments
+     * @return string
+     */
+    protected function getComments($comments = null)
+    {
+        $result = '';
+
+        if (is_array($comments)) {
+            $comments = implode("\n#: ", $comments);
+        }
+
+        if ($comments) {
+            $result .= "#: {$comments}\n";
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get stings with escaped double quote
+     * If the string is multi-line, it collects it into one
+     *
+     * @param $string
+     * @return string
+     * @throws waException
+     */
+    protected function getStrings($string)
+    {
+        if (!is_numeric($string) && !is_string($string)) {
+            throw new waException('The input should be a scalar. Received: '.var_export($string, true));
+        }
+
+        $new_string = (string)str_replace('"', '\\"', $string);
+        $result = '';
+
+        // find multline
+        // Example: "foo \nbar"
+        if (preg_match('/[\n]/', $new_string)) {
+            $parts = explode("\n", $new_string);
+
+            //last not need line transfer
+            $last = end($parts);
+            array_pop($parts);
+
+            // Create new string
+            // Example msgid: "foo \n"
+            //                "bar"
+            foreach ($parts as $part) {
+                $part .= '\n';
+                $part = "\"{$part}\"\n";
+                $result .= $part;
+            }
+
+            $result .= "\"{$last}\"\n";
         } else {
-            $function_pattern[] = '_w';
-            $open_function_pattern[] = 'sprintf_wp';
-        }
-        if ($this->config['debug'] && $first_run) {
-            print "Search functions:\n\t".implode("\n\t", $function_pattern+$open_function_pattern)."\n";
-        }
-        $commas = array('"', "'");
-        $word_pattern = '[\\r\\n\\s]*'
-            .'%1$s'
-            .'[\\s]*'
-            .'((?:\\\\%s|[^%1$s\\r\\n])+?)'
-            .'[\\s]*'
-            .'%1$s'
-            .'[\\s]*';
-
-        foreach ($commas as $comma) {
-
-            $comma_word_pattern = sprintf($word_pattern, $comma);
-            $plural_pattern = '@'
-                .'(?:'.implode('|', $function_pattern).')'
-                .'(?:\\s*\\*/[\\r\\n]*)?\\s*\\'
-                .'('.$comma_word_pattern.','.$comma_word_pattern.'(,\\s*|[\\r\\n\\s]*\))'
-                .'@mus';
-
-            if ($this->config['debug'] && $first_run) {
-                print "Plural forms pattern:\n".$plural_pattern."\n";
-            }
-
-            #plural forms support
-            if (preg_match_all($plural_pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
-                foreach ($matches[1] as $i => $match) {
-                    $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);
-                    $words = preg_replace("@\\\\{$comma}@", $comma, $matches[2][$i][0]);
-                    $line = $this->getLine($text, $match[1]);
-                    $counter += $this->cache(array($word, $words), $file.":".$line);
-                }
-            }
+            $result .= "\"{$new_string}\"\n";
         }
 
-        foreach ($commas as $comma) {
-            $comma_word_pattern = sprintf($word_pattern, $comma);
-            $pattern = '@'
-                .'(?:('.implode('|', $function_pattern).'))'
-                .'(?:\\s*\\*/[\\r\\n]*)?\\s*'
-                .'\\('.$comma_word_pattern.'\\)'
-                .'@mus';
-
-            if ($this->config['debug'] && $first_run) {
-                print "Single forms pattern:\n".$pattern."\n";
-            }
-
-            if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
-                foreach ($matches[2] as $match) {
-                    $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);
-                    $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
-                }
-            }
-        }
-
-        if ($open_function_pattern) {
-            foreach ($commas as $comma) {
-                $comma_word_pattern = sprintf($word_pattern, $comma);
-                $pattern = '@'
-                    .'(?:('.implode('|', $open_function_pattern).'))'
-                    .'(?:\\s*\\*/[\\r\\n]*)?\\s*'
-                    .'\\('.$comma_word_pattern.','
-                    .'@mus';
-
-                if ($this->config['debug'] && $first_run) {
-                    print "Single forms pattern:\n".$pattern."\n";
-                }
-
-                if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
-                    foreach ($matches[2] as $match) {
-                        $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);
-                        $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
-                    }
-                }
-            }
-        }
-
-
-        $first_run = false;
-
-        return $counter;
+        return $result;
     }
 
-    protected function getLine($text, $pos)
+    /**
+     * Get path to PO file
+     * @param $locale
+     * @return string
+     */
+    protected function getLocaleFilePath($locale)
     {
-        $lines = explode("\n", mb_substr($text, 0, $pos));
-        return count($lines);
+        return $this->entity->getLocalePath().'/'.$locale."/"."LC_MESSAGES"."/".$this->entity->getDomain().".po";
     }
 
-    public function cache($words_info, $line = null)
+    /**
+     * Get path to PO file. Create if not exists
+     * @param $locale
+     * @return string
+     * @throws waException
+     */
+    protected function getFile($locale)
     {
-        $new = 0;
-        $msg_id = reset($words_info);
-        if (!isset($this->words[$msg_id])) {
-            $new = 1;
-            $this->words[$msg_id] = array('lines' => array());
-            if (isset($words_info[1])) {
-                $this->words[$msg_id]['plural'] = $words_info[1];
-            }
-        }
-        if (!empty($line)) {
-            $this->words[$msg_id]['lines'][] = $line;
-        }
-        return $new;
-    }
+        $file_path = $this->getLocaleFilePath($locale);
 
-
-    public function exec($sources)
-    {
-        foreach ($sources as $source) {
-            if ($files = $this->getFiles($source)) {
-                echo sprintf("Scan %s\n", $source);
-                foreach ($files as $file) {
-                    $count = $this->getWords($source.$file[0].$file[1]);
-                    if ($this->config['debug']) {
-                        echo $file[0].$file[1].': '.$count."\r\n";
-                    }
-                }
+        if (!file_exists($file_path)) {
+            $create = $this->create($locale, $file_path);
+            if (!$create) {
+                throw new waException('Unable to create file on path: '.$file_path);
             }
         }
 
-        $this->save();
+        return $file_path;
     }
 
-    public function save()
+    /**
+     * Create new PO file
+     *
+     * @param $locale
+     * @param $path
+     * @return false|int
+     * @throws waException
+     */
+    protected function create($locale, $path)
     {
-        $htaccess_path = $this->config['path']."/.htaccess";
-        if (!file_exists($htaccess_path)) {
-            if (!file_exists($this->config['path'])) {
-                mkdir($this->config['path'], 0777, true);
-            }
-            file_put_contents($htaccess_path, "Deny from all\n");
-        }
-        foreach ($this->config['locales'] as $locale => $domain) {
-            $locale_path = $this->config['path']."/".$locale."/"."LC_MESSAGES"."/".$domain.".po";
-            if ($this->config['verify']) {
-                $locale_path_log = $locale_path.'.log';
-                if (file_exists($locale_path)) {
-                    if ($fh = fopen($locale_path_log, "w")) {
-                        $counter = 0;
-                        flock($fh, LOCK_EX);
-                        $gettext = new waGettext($locale_path, true);
-                        $strings = $gettext->read();
-                        $strings = $strings['messages'];
-                        $words = $this->words;
-                        foreach ($strings as $msg_id => $info) {
-                            if (!isset($this->words[$msg_id])) {
-                                fputs($fh, "msgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
-                                ++$counter;
-                            } else {
-                                unset($words[$msg_id]);
-                            }
-                        }
+        $meta = [
+            'create'  => date("Y-m-d H:iO"),
+            'project' => $this->entity->getProject(),
+            'locale'  => $locale,
+            'plural'  => $this->getPluralByLocale($locale),
+        ];
 
-                        if ($counter) {
-                            echo "\r\n{$counter} string(s) out of date for {$locale} at {$domain}\r\n";
-                        }
-                        if ($words) {
-                            fputs($fh, "\n\n#Missed:\n\n\n");
-                            foreach ($words as $msg_id => $info) {
-                                if (isset($strings[$msg_id])) {
-                                    unset($words[$msg_id]);
-                                    continue;
-                                }
-                                fputs($fh, "msgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
-                            }
-                            $counter = count($words);
-                            echo "\r\n{$counter} string(s) missing or not translated for {$locale} at {$domain}\r\n";
-                        }
-
-                        fflush($fh);
-                        flock($fh, LOCK_UN);
-                        fclose($fh);
-
-                    } else {
-                        echo "\r\nError while opening {$locale_path} in a+ mode\r\n";
-                    }
-                } else {
-                    echo "\r\nMissing locale file {$locale_path}\r\n";
-                }
-            } else {
-
-                if (!file_exists($locale_path)) {
-                    $this->create($locale);
-                    $strings = array();
-                } else {
-                    $gettext = new waGettext($locale_path, true);
-                    $strings = $gettext->read();
-                    $strings = $strings['messages'];
-                }
-                $counter = 0;
-                $exists_counter = 0;
-                if ($fh = fopen($locale_path, "a+")) {
-                    if ($this->config['debug']) {
-                        echo "\r\n".$locale_path." - ".count($this->words)." records\r\n";
-                    }
-                    flock($fh, LOCK_EX);
-                    foreach ($this->words as $msg_id => $info) {
-                        // Looking for current phrase matches
-                        if (isset($strings[$msg_id])) {
-                            ++$exists_counter;
-                            continue;
-                        }
-                        // If not found, save
-                        foreach ((array)$info['lines'] as $line) {
-                            fputs($fh, "\n#: ".$line);
-                        }
-                        fputs($fh, "\nmsgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
-                        if (!empty($info['plural'])) {
-                            fputs($fh, "msgid_plural \"".str_replace('"', '\\"', $info['plural'])."\"\n");
-                            $n = ($locale == 'ru_RU') ? 3 : 2;
-                            for ($i = 0; $i < $n; $i++) {
-                                fputs($fh, "msgstr[{$i}] \"\"\n");
-                            }
-                        } else {
-                            fputs($fh, "msgstr \"\"\n");
-                        }
-                        ++$counter;
-                    }
-                    fflush($fh);
-                    flock($fh, LOCK_UN);
-                    fclose($fh);
-                } else {
-                    echo "\r\nError while opening {$locale_path} in a+ mode\r\n";
-                }
-
-                if ($counter) {
-                    echo "\r\nAdded {$counter} string(s) for locale {$locale} at {$domain}\r\n";
-                } elseif ($exists_counter) {
-                    echo "\r\nExisting {$exists_counter} string(s) for locale {$locale} at {$domain}\r\n";
-                } else {
-                    echo "\r\nNo strings found for locale {$locale} at {$domain}\r\n";
-                }
-            }
-        }
+        $text = $this->getMeta($meta);
+        return $this->write($path, $text);
     }
 
-
-    public function create($locale)
+    protected function getPluralByLocale($locale)
     {
-        $time = date("Y-m-d H:iO");
         if ($locale == 'ru_RU') {
-            $plural = '
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"';
+            $plural = '"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"';
         } else {
             $plural = '';
         }
+
+        return $plural;
+    }
+
+    /**
+     * @param $meta
+     * @return string
+     * @throws waException
+     */
+    protected function getMeta($meta)
+    {
+        $meta += [
+            'revision'     => '',
+            'mime'         => '1.0',
+            'content_type' => 'text/plain; charset=utf-8',
+            'encoding'     => '8bit',
+            'charset'      => 'utf-8',
+            'basepath'     => '.',
+            'path0'        => '.',
+            'path1'        => '.',
+        ];
+
+        foreach ($meta as $value) {
+            if (!is_string($value)) {
+                throw new waException("Meta value must be a string. Received: ".var_export($value, true));
+            }
+        }
+
+        return <<<TEXT
+msgid ""
+msgstr ""
+"Project-Id-Version: {$meta['project']}\\n"
+"POT-Creation-Date: {$meta['create']}\\n"
+"PO-Revision-Date: {$meta['revision']}\\n"
+"Last-Translator:  {$meta['project']}\\n"
+"Language-Team:  {$meta['project']}\\n"
+"MIME-Version: {$meta['mime']}\\n"
+"Content-Type: {$meta['content_type']}\\n"
+"Content-Transfer-Encoding: {$meta['encoding']}\\n{$meta['plural']}"
+"X-Poedit-Language: {$meta['locale']}\\n"
+"X-Poedit-SourceCharset: {$meta['charset']}\\n"
+"X-Poedit-Basepath: {$meta['charset']}\\n"
+"X-Poedit-SearchPath-0: {$meta['path0']}\\n"
+"X-Poedit-SearchPath-1: {$meta['path1']}\\n"
+
+TEXT;
+    }
+
+    /**
+     * Collect previous meta description
+     * @param $meta
+     * @return string
+     */
+    protected function getOldMeta($meta)
+    {
         $text = <<<TEXT
 msgid ""
 msgstr ""
-"Project-Id-Version: {$this->config['project']}\\n"
-"POT-Creation-Date: {$time}\\n"
-"PO-Revision-Date: \\n"
-"Last-Translator:  {$this->config['project']}\\n"
-"Language-Team:  {$this->config['project']}\\n"
-"MIME-Version: 1.0\\n"
-"Content-Type: text/plain; charset=utf-8\\n"
-"Content-Transfer-Encoding: 8bit\\n"{$plural}
-"X-Poedit-Language: {$locale}\\n"
-"X-Poedit-SourceCharset: utf-8\\n"
-"X-Poedit-Basepath: .\\n"
-"X-Poedit-SearchPath-0: .\\n"
-"X-Poedit-SearchPath-1: .\\n"
 
 TEXT;
+        foreach ($meta as $key => $value) {
+            // open quote
+            $text .= '"';
+            $text .= $key.': ';
 
-        $locale_path = $this->config['path']."/".$locale."/"."LC_MESSAGES";
-        if (!file_exists($locale_path)) {
-            mkdir($locale_path, 0777, true);
+            if (is_string($value)) {
+                $text .= $value;
+            } elseif (is_array($value)) {
+                $plural_string = '';
+                foreach ($value as $plural => $plural_value) {
+                    if (is_string($plural) && is_string($plural_value)) {
+                        $plural_string .= $plural.'='.$plural_value.'; ';
+                    }
+                }
+                $text .= trim($plural_string);
+            }
+
+            $text .= '\n';
+            // close quote
+            $text .= "\"\n";
         }
-        $locale_file = $locale_path."/".$this->config['locales'][$locale].".po";
-        $f = fopen($locale_file, "w+");
-        if (!$f) {
-            throw new waException("Could not create locale: ".$locale_file);
-        }
-        fwrite($f, $text);
-        fclose($f);
+
+        return $text;
     }
+
+    /**
+     * Create apache file if not exists
+     * @throws waException
+     */
+    protected function createHtaccess()
+    {
+        $path = $this->entity->getLocalePath().'/.htaccess';
+
+        if (!file_exists($path)) {
+            if (!$this->write($path, "Deny from all\n")) {
+                throw new waException('Unable to create file on path: '.$path);
+            };
+        }
+    }
+
+    protected function getOptions($name)
+    {
+        return ifset($this->options, $name, null);
+    }
+
+    /**
+     * @param $save_result
+     * @param $locale
+     * @param $messages
+     * @param $old_messages
+     */
+    protected function setReport($save_result, $locale, $messages, $old_messages)
+    {
+        $messages = (array)$messages;
+        $old_messages = (array)$old_messages;
+
+        $report = [
+            'result'  => $save_result,
+            'locale'  => $locale,
+            'total'   => count($messages),
+            'updated' => count($old_messages),
+        ];
+        $report['new'] = $report['total'] - $report['updated'];
+
+        $this->report[] = $report;
+    }
+
+    /**
+     * waFiles Wrapper
+     * @param $file
+     * @param $text
+     * @return bool
+     */
+    protected function write($file, $text)
+    {
+        return (bool)waFiles::write($file, $text);
+    }
+
 }

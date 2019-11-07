@@ -104,6 +104,12 @@ abstract class waDbAdapter
 
     abstract public function affected_rows();
 
+    /**
+     * @param $table
+     * @param bool $keys
+     * @return array
+     * @throws waDbException
+     */
     abstract public function schema($table, $keys = false);
     
     public function getIterator($result)

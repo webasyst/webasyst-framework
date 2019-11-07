@@ -123,6 +123,9 @@ class waPlugin
                     $cache->set($time ? $time : 1);
                 }
             }
+            $is_from_template = waConfig::get('is_template');
+            waConfig::set('is_template', null);
+            waConfig::get('disable_exception_log', true);
             foreach ($files as $t => $file) {
                 try {
                     if (!$ignore_all) {
@@ -139,6 +142,8 @@ class waPlugin
                     break;
                 }
             }
+            waConfig::get('disable_exception_log', false);
+            waConfig::set('is_template', $is_from_template);
         } else {
             $t = 1;
         }

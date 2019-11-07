@@ -35,7 +35,6 @@ class waLocaleAdapter implements waiLocaleAdapter
 
     public function load($locale, $locale_path, $domain, $textdomain = true)
     {
-
         $adapter = $this->getAdapter($domain, $locale, $locale_path);
         $adapter->load($locale, $locale_path, $domain, $textdomain);
 

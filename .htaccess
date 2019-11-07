@@ -11,16 +11,28 @@ AddDefaultCharset utf-8
 
 <ifModule mod_rewrite.c>
     RewriteEngine On
+    
     # Uncomment the following line, if you are having trouble
     #RewriteBase /
 
+    # if request js file from ROOT
+    RewriteCond %{REQUEST_URI} ^\/?[^\/]+\.js$ [or]
+    # or if NOT request certain static file from anywhere
     RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|gif|png|svg|ttf|eot|otf|woff|woff2)$ [or]
+    # or if request apple-touch-icon.png icon
     RewriteCond %{REQUEST_URI} apple-touch-icon\.png$ [or]
+
+    # or if other conditions for webdav and caldav are passed
     RewriteCond %{REQUEST_METHOD} ^(POST|PUT|COPY|MOVE|DELETE|PROPFIND|OPTIONS|MKCOL)$ [or]
     RewriteCond %{HTTP:Translate} ^.+$ [or]
     RewriteCond %{HTTP_USER_AGENT} ^(DavClnt|litmus|gvfs|davfs|wdfs|WebDAV|cadaver|Cyberduck)
+
+    # or if file doesnt' exist
     RewriteCond %{REQUEST_FILENAME} !-f
+    # or if directory doesnt' exist
     RewriteCond %{REQUEST_FILENAME} !-d
+
+    # dispatch it to index.php
     RewriteRule ^(.*)$ index.php [L,QSA]
 </ifModule>
 

@@ -16,6 +16,18 @@ class waDesignActions extends waActions
         'is_ajax'    => false
     );
 
+    /**
+     * The action includes a preview of the design theme for the admin on all settlements of the site.
+     * At the moment, this mechanism is used only for trial design themes.
+     */
+    public function setPreviewAction()
+    {
+        $key = waRequest::getThemeStorageKey();
+        $theme_id = waRequest::post('theme_id', null, waRequest::TYPE_STRING_TRIM);
+        wa()->getStorage()->set($key, $theme_id);
+        $this->displayJson(true);
+    }
+
     public function defaultAction()
     {
         $app_id = $this->getAppId();
@@ -25,7 +37,7 @@ class waDesignActions extends waActions
             throw new waException('App does not support themes.');
         }
 
-        $themes = wa()->getThemes($app_id);
+        $themes = wa()->getThemes($app_id, true);
         $routes = $this->getRoutes();
 
         $themes_routes = $this->getThemesRoutes($themes, $routes);
@@ -84,6 +96,9 @@ class waDesignActions extends waActions
         $app = wa()->getAppInfo($app_id);
         $theme_id = waRequest::get('theme');
         $theme = new waTheme($theme_id, $app_id);
+        if ($theme['type'] == waTheme::TRIAL) {
+            throw new waException('Access denied', 403);
+        }
         $theme_files = $theme['files'];
 
         if ($theme->parent_theme_id) {
@@ -208,66 +223,76 @@ class waDesignActions extends waActions
     protected function getThemesRoutes(&$themes, $routes)
     {
         $hash = $this->getThemeHash();
-        $themes_routes = array();
-        $preview_url = '';
+        $preview_url = $routing_url = '';
+        $domains = $themes_routes = array();
+
         if (wa()->appExists('site')) {
             wa('site');
             $model = new siteDomainModel();
             $domains = $model->select('id,name')->fetchAll('name', true);
             $routing_url = wa()->getAppUrl('site');
-        } else {
-            $domains = array();
         }
+
         $domain = wa()->getRouting()->getDomain();
-        foreach ($routes as $r) {
-            $t_id = isset($r['theme']) ? $r['theme'] : 'default';
-            if (!isset($themes[$t_id])) {
-                $t_id = 'default';
+        foreach ($routes as $route) {
+            $theme_id = (string)ifempty($route, 'theme', 'default');
+            if (!isset($themes[$theme_id])) {
+                $theme_id = 'default';
             }
-            $r['theme'] = $t_id;
-            $themes[$t_id]['is_used'] = true;
-            if (isset($r['theme_mobile']) && isset($themes[$r['theme_mobile']])) {
-                $themes[$r['theme_mobile']]['is_used'] = true;
+            $route['theme'] = $theme_id;
+
+            $themes[$theme_id]['is_used'] = true;
+            if (isset($route['theme_mobile']) && isset($themes[$route['theme_mobile']])) {
+                $themes[$route['theme_mobile']]['is_used'] = true;
             }
-            $url = $r['_url'];
-            if (!$preview_url && $r['_domain'] == $domain) {
+            $url = $route['_url'];
+            if (!$preview_url && $route['_domain'] == $domain) {
                 $preview_url = $url;
             }
-            $r['_preview_url'] = $url;
+            $route['_preview_url'] = $url;
 
-
-            if (isset($domains[$r['_domain']]) && $this->getUser()->getRights('site', 'domain.'.$domains[$r['_domain']])) {
-                $r['_routing_url'] = $routing_url.'?module=routing&action=edit&domain_id='.$domains[$r['_domain']].'&route='.$r['_id'];
+            if (isset($domains[$route['_domain']]) && $this->getUser()->getRights('site', 'domain.'.$domains[$route['_domain']])) {
+                $route['_routing_url'] = $routing_url.'?module=routing&action=edit&domain_id='.$domains[$route['_domain']].'&route='.$route['_id'];
             }
-            $themes_routes[] = $r;
+            $themes_routes[] = $route;
         }
         $preview_params = strpos($preview_url, '?') === false ? '?' : '&';
         $preview_params .= 'theme_hash='.$hash.'&set_force_theme=';
-        foreach ($themes as $t_id => $theme) {
+        foreach ($themes as $t_id => &$theme) {
             if (!isset($theme['preview_url'])) {
-                $themes[$t_id]['preview_url'] = $preview_url ? $preview_url.$preview_params.$t_id : '';
+                $theme['preview_url'] = $preview_url;
+                if ($preview_url && $theme['type'] !== waTheme::TRIAL) {
+                    $theme['preview_url'] .= $preview_params.$t_id;
+                }
             }
-            $themes[$t_id]['preview_name'] = preg_replace('/^.*?\/\/(.*?)\?.*$/', '$1', $themes[$t_id]['preview_url']);
+            $theme['preview_name'] = preg_replace('/^.*?\/\/(.*?)\?.*$/', '$1', $theme['preview_url']);
             if (!$theme['is_used']) {
                 $themes_routes[] = $t_id;
             }
         }
+        unset($theme);
         return $themes_routes;
     }
 
+    /**
+     *
+     * @return string
+     * @throws waDbException
+     * @throws waException
+     */
     protected function getThemeHash()
     {
-        $hash = $this->appSettings('theme_hash');
-        if ($hash) {
+        $asm = new waAppSettingsModel();
+        $hash = $asm->get('webasyst', 'theme_hash');
+        if ($hash && strpos($hash, '.') !== false) {
             $hash_parts = explode('.', $hash);
-            if (time() - $hash_parts[1] > 14400) {
-                $hash = '';
+            if (time() - $hash_parts[1] > 14400) { // 24 hours
+                $hash = null;
             }
         }
         if (!$hash) {
-            $hash = uniqid().'.'.time();
-            $app_settings_model = new waAppSettingsModel();
-            $app_settings_model->set($this->getAppId(), 'theme_hash', $hash);
+            $hash = md5(uniqid().mt_rand().time().mt_rand()).'.'.time();
+            $asm->set('webasyst', 'theme_hash', $hash);
         }
 
         return md5($hash);
@@ -454,7 +479,6 @@ HTACCESS;
         return true;
     }
 
-
     public function deleteAction()
     {
         $theme = waRequest::post('theme_id', 'default');
@@ -472,6 +496,9 @@ HTACCESS;
     {
         $theme_id = waRequest::get('theme');
         $theme = new waTheme($theme_id);
+        if ($theme['type'] == waTheme::TRIAL) {
+            throw new waException('Access denied', 403);
+        }
 
         if (waRequest::method() == 'post') {
             if (!waRequest::post("parent_only")) {
@@ -519,6 +546,10 @@ HTACCESS;
     public function themeUseAction()
     {
         $theme_id = waRequest::post('theme');
+        $theme = new waTheme($theme_id);
+        if ($theme['type'] == waTheme::TRIAL) {
+            throw new waException('Access denied', 403);
+        }
         $route = waRequest::post('route');
 
         $path = $this->getConfig()->getPath('config', 'routing');
@@ -581,7 +612,6 @@ HTACCESS;
         ));
     }
 
-
     public function themeAction()
     {
         $app_id = $this->getAppId();
@@ -594,7 +624,7 @@ HTACCESS;
         $current_theme = null;
 
         foreach ($apps as $theme_app_id => $app) {
-            if (!empty($app['themes']) && ($themes = wa()->getThemes($theme_app_id))) {
+            if (!empty($app['themes']) && ($themes = wa()->getThemes($theme_app_id, true))) {
                 $themes_data = array();
                 foreach ($themes as $id => $theme) {
                     if (($app_id == $theme_app_id) && ($theme_id == $id)) {
@@ -627,7 +657,10 @@ HTACCESS;
                     $current_locale = $r['locale'];
                 }
                 if (!$preview_url && $r['app'] == $app_id) {
-                    $preview_url = $r['_url'].'?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
+                    $preview_url = $r['_url'];
+                    if ($current_theme->type !== waTheme::TRIAL) {
+                        $preview_url .= '?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
+                    }
                 }
             }
             $settings = $current_theme->getSettings(false, $current_locale);
@@ -768,7 +801,6 @@ HTACCESS;
             ), $this->getConfig()->getRootPath().'/wa-system/design/templates/Theme.html');
         }
     }
-
 
     /**
      * Convert flat list of theme settings into hierarchical tree structure
@@ -1016,6 +1048,8 @@ HTACCESS;
      */
     protected function isImageValid(waRequestFile $f, &$error = '')
     {
+        // If you add svg here, then on sites with cdn such pictures will not be loaded.
+        // Design themes must use the $wa_real_theme_url variable for settings with the image type.
         $allowed = array('jpg', 'jpeg', 'png', 'gif');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $error = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
@@ -1029,6 +1063,9 @@ HTACCESS;
         $theme_id = waRequest::get('theme');
         $app_id = waRequest::get('app_id', $this->getAppId());
         $theme = new waTheme($theme_id, $app_id);
+        if ($theme['type'] == waTheme::TRIAL) {
+            throw new waException('Access denied', 403);
+        }
         $this->logAction('theme_download', $theme_id);
         $target_file = $theme->compress(wa()->getTempPath("themes"));
         waFiles::readFile($target_file, basename($target_file), false);
@@ -1099,6 +1136,9 @@ HTACCESS;
     {
         try {
             $theme = new waTheme(waRequest::post('theme'));
+            if ($theme['type'] == waTheme::TRIAL) {
+                throw new waException('Access denied', 403);
+            }
             $id = $theme->move(waRequest::post('id'), array(
                 'name' => waRequest::post('name')
             ))->id;
@@ -1114,6 +1154,9 @@ HTACCESS;
         try {
             if ($id = waRequest::post('id')) {
                 $theme = new waTheme($id);
+                if ($theme['type'] == waTheme::TRIAL) {
+                    throw new waException('Access denied', 403);
+                }
                 $theme->parent_theme_id = waRequest::post('parent_theme_id');
                 $theme->save();
                 $this->displayJson(array('parent_theme_id' => $theme->parent_theme_id));
@@ -1128,6 +1171,9 @@ HTACCESS;
     {
         try {
             $theme = new waTheme(waRequest::post('theme'));
+            if ($theme['type'] == waTheme::TRIAL) {
+                throw new waException('Access denied', 403);
+            }
             $duplicate = $theme->duplicate(!!waRequest::post('related'), (array)waRequest::post('options'));
             $this->logAction('theme_duplicate', $theme->id);
             $data = array(
@@ -1143,6 +1189,9 @@ HTACCESS;
     {
         try {
             $theme = new waTheme(waRequest::post('theme'));
+            if ($theme['type'] == waTheme::TRIAL) {
+                throw new waException('Access denied', 403);
+            }
             $file = waRequest::post('file');
             $theme->revertFile($file);
             $this->displayJson(array());
@@ -1155,6 +1204,9 @@ HTACCESS;
     {
         try {
             $theme = new waTheme(waRequest::post('theme'));
+            if ($theme['type'] == waTheme::TRIAL) {
+                throw new waException('Access denied', 403);
+            }
             $parent = $theme->parent_theme;
             $theme->brush();
             // reset parent theme

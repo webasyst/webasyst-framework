@@ -79,4 +79,9 @@ abstract class waAppShipping implements waiPluginApp
             'ft' => 'ft',
         );
     }
+
+    public function uninstall($plugin_id)
+    {
+        ;
+    }
 }

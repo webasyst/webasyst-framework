@@ -1,0 +1,45 @@
+{strip}
+{capture assign="_theme_preview"}
+<div class="theme-preview" style="position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity: 0.9;
+    padding: 15px;
+    text-align: center;
+    background: #ffd;
+    border-top: 4px solid #eea;
+    font-size: 14px;
+    border-image: url('{$wa_url}wa-content/img/recovery-mode-background.png') 10 10 10 10 repeat;
+    z-index: 100500;
+    font-family: Arial;">
+
+    {sprintf(_ws('<strong>%s</strong> theme preview in action'), $theme.name)}
+
+    {if $wa->user()->isAuth()}
+        <div class="theme-links" style="display: inline; position: absolute; right: 14px;">
+            {if $theme.type === waTheme::TRIAL && $wa->user()->isAdmin('installer')}
+                <a href="{$wa_backend_url}installer/store/theme/{$theme.id}/" style="margin-right: 16px;"><b>[s`Buy theme`]</b></a>
+            {/if}
+            <a class="js-stop-preview-theme" href="javascript:void(0);">[s`Stop preview session`]</a>
+        </div>
+    {/if}
+</div>
+{/capture}
+{/strip}
+<script>
+    $(function () {
+        var $preview_div = $({$_theme_preview|json_encode});
+        $("body").append($preview_div);
+        {if $wa->user()->isAuth()}
+        $preview_div.on('click', '.js-stop-preview-theme', function () {
+            var stop_preview_url = {$url|json_encode};
+            $("body").append($('<iframe style="display: none;" src="' + stop_preview_url + '" />').load(function () {
+                $preview_div.remove();
+                location.href = location.href.replace(/(\?)?(theme_hash|set_force_theme)=[^&]*&?/g, "");
+            }));
+            return false;
+        });
+        {/if}
+    });
+</script>

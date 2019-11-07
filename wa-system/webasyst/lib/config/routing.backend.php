@@ -1,5 +1,5 @@
 <?php
-
+$__id = '(\w[\w\d_]*)';
 return array(
     'settings/sms/template/<id>/?'              => 'settingsTemplateSMS',
     'settings/sms/template/?'                   => 'settingsTemplateSMS',
@@ -18,5 +18,9 @@ return array(
     'repair'                                    => array(
         'url'    => 'repair/<action:(\w+)?>/?',
         'module' => 'repair',
+    ),
+    'pluginActions'                             => array(
+        'url'    => "<module:(payments|shipping)>/<plugin_id:{$__id}>/<plugin_module:{$__id}>/<plugin_action:{$__id}?>/?",
+        'action' => 'actions',
     ),
 );
