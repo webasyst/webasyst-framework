@@ -4,17 +4,18 @@
 {* @event frontend_layout.%plugin_id%.header *}
 {foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
 
+{$_is_page = !empty($page)}
 {$back_link_url = $wa->getUrl('photos/frontend')}
-{if $wa->currentUrl() != $back_link_url}
-<nav class="content-nav-wrapper" role="navigation">
-    <div class="nav-group">
-        <div class="nav-list">
-            <div class="nav-item back-nav-item">
-                <a href="{$back_link_url}">[`All photos`]</a>
+{if ($wa->currentUrl() != $back_link_url) && !$_is_page}
+    <nav class="content-nav-wrapper" role="navigation">
+        <div class="nav-group">
+            <div class="nav-list">
+                <div class="nav-item back-nav-item">
+                    <a href="{$back_link_url}">[`All photos`]</a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 {/if}
 
 <article class="page-content" itemscope itemtype="http://schema.org/{if $action == 'photo'}Photograph{else}WebPage{/if}">

@@ -1,3 +1,5 @@
+$.ajaxSetup({ cache: false });
+
 /**
  * User Script for Mobile Theme
  * */

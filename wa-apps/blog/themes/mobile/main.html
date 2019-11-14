@@ -1,6 +1,10 @@
+{$_is_page = !empty($page)}
+
 <main class="wa-blog-wrapper" role="main">
 
-    {include file="`$wa_active_theme_path`/layout-nav.html" inline}
+    {if !$_is_page}
+        {include file="`$wa_active_theme_path`/layout-nav.html" inline}
+    {/if}
 
     <div itemscope itemtype="http://schema.org/WebPage">
         {if empty($posts) && $wa->currentUrl() == $wa_app_url}
@@ -10,7 +14,7 @@
                 <p>{sprintf('[`Start by <a href="%s">writing a post</a> in your blog backend.`]', $wa_backend_url|cat:'blog/')}</p>
             </div>
         {else}
-            {if isset($breadcrumbs)}
+            {if !empty($breadcrumbs) && !$_is_page}
                 <div class="breadcrumbs" itemprop="breadcrumb">
                     {if $wa->globals('isMyAccount')}
                         {* within My Account we exclude first node from navigation because links are on the page already *}

@@ -1,5 +1,5 @@
 {if $post.comment_count}
-<section class="comment-list-wrapper" itemscope itemtype="http://schema.org/UserComments">
+<section class="comment-list-wrapper" id="b-comments-wrapper" itemscope itemtype="http://schema.org/UserComments">
     <a name="comments"></a>
     <h3 class="comment-count">{_w('%d comment','%d comments',$post.comment_count)}</h3>
     {$depth=-1}

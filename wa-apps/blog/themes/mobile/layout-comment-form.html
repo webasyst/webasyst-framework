@@ -1,93 +1,73 @@
-<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-    ( function($) {
-        var bindEvents = function() {
-            $("#user-auth-provider a").on("click", function () {
-                var $link = $(this),
-                    provider = $link.parents('li:first').attr('data-provider');
+{strip}
 
-                if (provider != 'guest' && provider != 'signup') {
-                    window.open( $link.attr('href'){if !$require_authorization} + "&guest=1"{/if},"oauth","status=no,toolbar=no,menubar=no");
-                    return false;
-                }
-            });
-        };
-        
-        $(document).ready( function() {
-            //
-            bindEvents();        
-        });
-        
-    })(jQuery);
-</script>
+{$current_user_id = $wa->userId()}
 
-<section class="comment-form-wrapper">
+<section class="b-comment-form" id="b-comment-form">
     <a name="comment0"></a>
-
     <form action="{$post.comment_link}" method="post">
-        <h3>[`Add comment`]</h3>
-        {$current_user_id = $wa->userId()}
+        <h4 class="b-form-header">[`Add comment`]</h4>
 
-        <div class="comment-form-fields">
+        <div class="b-form-auth">
 
-            {if empty($current_user_id) && $require_authorization}
-                <div class="field-line">
-                    {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
-                </div>
-                <div class="field-line">
-                    <a class="general-button" href="{$wa->loginUrl()}">[`Login`]</a>
-                </div>
-                <div class="field-line">
-                    <a class="general-button" href="{$wa->signupUrl()}">[`Sign up`]</a>
+            {if !empty($current_user_id)}
+                <div class="b-auth-user">
+                    <img src="{$wa->user()->getPhoto(20)}" class="userpic" alt="">
+                    <strong>{$wa->user('name')}</strong> (<a class="b-logout-link" href="{$wa_app_url}logout">[`log out`]</a>)
                 </div>
             {else}
-
-                {if empty($current_user_id) && $auth_adapters}
-                    <ul class="auth-type wa-auth-adapters" id="user-auth-provider">
-                        <li data-provider="guest" {if !$current_auth_source}class="selected"{/if}><a href="javascript:void(0);">[`Guest`]</a></li>
+                <ul class="b-auth-providers">
+                    {if $require_authorization}
+                        <li data-provider="signup" class="b-signup-link"><a href="{$wa->signupUrl()}" target="_blank">[`Sign up`]</a></li>
+                    {else}
+                        <li data-provider="guest" class="b-guest-provider {if !$current_auth_source}is-selected{/if}"><a href="javascript:void(0);">[`Guest`]</a></li>
+                    {/if}
+                    {if $auth_adapters}
                         {foreach $auth_adapters as $adapter}
                             {$adapter_id = $adapter->getId()}
-                            <li data-provider="{$adapter_id}" {if $current_auth_source == $adapter_id}class="selected"{/if}>
-                                <a href="{$adapter->getCallbackUrl(0)}&app=blog"><img src="{$adapter->getIcon()}" alt="">{$adapter->getName()}</a>
-                            </li>
+                            <li data-provider="{$adapter_id}" class="b-provider-link {if $current_auth_source == $adapter_id}is-selected{/if}"><a href="{$adapter->getCallbackUrl(0)}&app=blog"><img src="{$adapter->getIcon()}" alt="">{$adapter->getName()}</a></li>
                         {/foreach}
-                    </ul>
-                {else}
-                    {*
-                        {foreach $auth_adapters as $adapter}
-                        <div class="field-line" data-provider="{$adapter->getId()}" {if $current_auth_source != $adapter->getId()}style="display:none"{/if}>
+                    {/if}
+                </ul>
+
+                <div class="b-guest-auth {if $current_auth_source}is-hidden{/if}" data-provider="guest">
+                    <input type="text" name="name" value="" placeholder="[`Your name`]">
+                    <input type="text" name="email" placeholder="[`Email`]">
+                    <input type="text" name="site" id="comment_site" placeholder="[`Website`]">
+                </div>
+
+                {foreach $auth_adapters as $adapter}
+                    {if $current_auth_source == $adapter->getId()}
+                        <div class="b-auth-user">
                             <img src="{$adapter->getIcon()}" class="userpic" />
-                            {$current_auth.name}
-                            <a href="{$wa_app_url}logout">[`log out`]</a>
+                            {if !empty($current_auth)}
+                                <strong>{$current_auth.name}</strong>
+                            {/if}
+                            <a class="b-logout-link" href="{$wa_app_url}logout">[`log out`]</a>
                         </div>
-                        {/foreach}
-                    *}
-
-                    <div class="field-line">
-                        <img src="{$wa->user()->getPhoto(20)}" class="userpic" alt="">
-                        <strong>{$wa->user('name')}</strong>
-                        <a href="{$wa_app_url}logout">[`log out`]</a>
-                    </div>
-
-                {/if}
-
-                <div class="field-line">
-                    <textarea id="comment_text" name="text" rows="10" cols="45" placeholder="[`Comment`]"></textarea>
-                </div>
-
-                {if $request_captcha && empty($current_user_id)}
-                    <div class="field-line">
-                        {$wa->captcha()}
-                    </div>
-                {/if}
-
-                <div class="field-line comment-submit">
-                    <input type="submit" value="[`Add comment`]">
-                </div>
+                    {/if}
+                {/foreach}
             {/if}
-            
         </div>
 
-        <input type="hidden" name="auth_provider" value="{$current_auth_source|default:blogCommentModel::AUTH_GUEST}">
-        <input type="hidden" name="parent" value="0">
+        <div class="b-comment-body">
+            <textarea id="comment_text" name="text" rows="10" cols="45" placeholder="[`Comment`]"></textarea>
+        </div>
+
+        <div class="b-form-buttons">
+            {if $request_captcha && empty($current_user_id)}
+                {$wa->captcha()}
+            {/if}
+
+            <div class="b-add-wrapper">
+                <input class="b-cancel-button white" type="button" value="[`Cancel`]">
+                <input type="submit" value="[`Add comment`]">
+                <img src="{$wa_static_url}wa-content/img/loading16.gif" style="display: none;" alt="">
+            </div>
+
+            <input type="hidden" name="auth_provider" value="{$current_auth_source|default:blogCommentModel::AUTH_GUEST}">
+            <input type="hidden" name="parent" value="0">
+        </div>
     </form>
 </section>
+
+{/strip}

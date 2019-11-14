@@ -1,4 +1,4 @@
-<div class="comment-item" id="comment-{$comment.id}" data-comment-id="{$comment.id}">
+<div class="comment-item b-comment" id="comment-{$comment.id}" data-comment-id="{$comment.id}">
     <meta itemprop="commentTime" content="{$comment.datetime|date_format:'Y-m-d\TH:i'}">
 
     <div class="credentials">
@@ -23,12 +23,16 @@
                 {else}
                     <a href="{$comment.site}" class="username" itemprop="creator">{$comment.user.firstname}</a>
                 {/if}
+
+                {if $comment.user.id}
+                    <span class="b-staff">{$wa->accountName()}</span>
+                {/if}
             </div>
             <div class="date-block">
                 <span class="hint date" title="{$comment.datetime|wa_datetime}" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
             </div>
             <div class="actions">
-                <a class="reply-link reply-comment-link" href="javascript:void(0);"></a>
+                <a class="reply-link reply-comment-link comment-reply" href="javascript:void(0);"></a>
             </div>
         </div>
     </div>

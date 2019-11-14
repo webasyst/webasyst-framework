@@ -1,78 +1,99 @@
-<article class="article-wrapper" id="post-{$post.id}" itemscope itemtype="http://schema.org/BlogPosting">
-    <meta itemprop="datePublished" content="{$post.datetime|date_format:'Y-m-d\TH:i'}">
+{strip}
 
-    <header class="article-header">
-        <h1>
-            <span itemprop="name">{$post.title}</span>
-            {* @event prepare_posts_frontend.%plugin_id%.post_title *}
-            {if !empty($post.plugins.post_title)}
-                {foreach $post.plugins.post_title as $plugin => $output}{$output}{/foreach}
-            {/if}
-        </h1>
-        <div class="date-block">{$post.datetime|wa_datetime:"humandate"}</div>
-    </header>
+<div class="b-post-wrapper">
 
-    {* @event prepare_posts_frontend.%plugin_id%.before *}
-    {if !empty($post.plugins.before)}
-        <div class="text_before">
-            {foreach $post.plugins.before as $plugin => $output}{$output}{/foreach}
+    <article class="article-wrapper b-post" id="post-{$post.id}" itemscope itemtype="http://schema.org/BlogPosting">
+        <meta itemprop="datePublished" content="{$post.datetime|date_format:'Y-m-d\TH:i'}">
+
+        <header class="article-header">
+            <h1>
+                <span itemprop="name">{$post.title}</span>
+                {* @event prepare_posts_frontend.%plugin_id%.post_title *}
+                {if !empty($post.plugins.post_title)}
+                    {foreach $post.plugins.post_title as $plugin => $output}{$output}{/foreach}
+                {/if}
+            </h1>
+            <div class="date-block">{$post.datetime|wa_datetime:"humandate"}</div>
+        </header>
+
+        {* @event prepare_posts_frontend.%plugin_id%.before *}
+        {if !empty($post.plugins.before)}
+            <div class="text_before">
+                {foreach $post.plugins.before as $plugin => $output}{$output}{/foreach}
+            </div>
+        {/if}
+
+        <div class="article-content" itemprop="articleBody">
+            {$post.text}
         </div>
-    {/if}
 
-    <div class="article-content" itemprop="articleBody">
-        {$post.text}
-    </div>
+        {if $post.album_id && $post.album.id && $post.album.photos}
+            {include 'post.album.html' album=$post.album inline}
+        {/if}
 
-    {if $post.album_id && $post.album.id && $post.album.photos}
-        {include 'post.album.html' album=$post.album inline}
-    {/if}
+        {* @event prepare_posts_frontend.%plugin_id%.after *}
+        {if !empty($post.plugins.after)}
+            <div class="text_after">
+                {foreach $post.plugins.after as $plugin => $output}{$output}{/foreach}
+            </div>
+        {/if}
 
-    {* @event prepare_posts_frontend.%plugin_id%.after *}
-    {if !empty($post.plugins.after)}
-        <div class="text_after">
-            {foreach $post.plugins.after as $plugin => $output}{$output}{/foreach}
-        </div>
-    {/if}
-
-    <footer class="credentials-wrapper">
-        <div class="author-block">
-            {if $post.contact_id}
-                <div class="userpic-block">
-                    <a href="{$post.user.posts_link}">
+        <footer class="credentials-wrapper">
+            <div class="author-block">
+                {if $post.contact_id}
+                    <div class="userpic-block">
+                        <a href="{$post.user.posts_link}">
+                            <img src="{$post.user.photo_url_20}" class="userpic" alt="">
+                        </a>
+                    </div>
+                    <div class="author-name">
+                        <a href="{$post.user.posts_link}" class="username" itemprop="author">{$post.user.firstname}</a>
+                    </div>
+                {else}
+                    <div class="userpic-block">
                         <img src="{$post.user.photo_url_20}" class="userpic" alt="">
-                    </a>
-                </div>
-                <div class="author-name">
-                    <a href="{$post.user.posts_link}" class="username" itemprop="author">{$post.user.firstname}</a>
-                </div>
-            {else}
-                <div class="userpic-block">
-                    <img src="{$post.user.photo_url_20}" class="userpic" alt="">
-                </div>
-                <div class="author-name">
-                    <span class="username" itemprop="author">{$post.user.name}</span>
-                </div>
-            {/if}
-        </div>
-    </footer>
+                    </div>
+                    <div class="author-name">
+                        <span class="username" itemprop="author">{$post.user.name}</span>
+                    </div>
+                {/if}
+            </div>
+        </footer>
 
-    {* @event frontend_post.%plugin_id%.footer *}
-    {foreach $frontend_post as $plugin => $output}
-        {if !empty($output.footer)}{$output.footer}{/if}
-    {/foreach}
+        {* @event frontend_post.%plugin_id%.footer *}
+        {foreach $frontend_post as $plugin => $output}
+            {if !empty($output.footer)}{$output.footer}{/if}
+        {/foreach}
 
-</article>
+    </article>
 
-{if $show_comments && $post.comments_allowed}
-    {if $post.status eq blogPostModel::STATUS_PUBLISHED}
-        <!-- COMMENT LIST -->
-        {include file="layout-comment-list.html" inline}
-        <!-- END COMMENT LIST -->
+    {if $show_comments && $post.comments_allowed}
+        {if $post.status eq blogPostModel::STATUS_PUBLISHED}
 
-        <!-- COMMENT FORM -->
-        {include file="layout-comment-form.html" inline}
-        <!-- END COMMENT FORM -->
-    {else}
-        <h4>[`Comments for non published posts are disabled`]</h4>
+            <!-- COMMENT FORM -->
+            {include file="layout-comment-form.html" inline}
+            <!-- END COMMENT FORM -->
+
+            <!-- COMMENT LIST -->
+            {include file="layout-comment-list.html" inline}
+            <!-- END COMMENT LIST -->
+
+            <script>
+                ( function($) {
+                    new CommentForm({
+                        $formWrapper: $("#b-comment-form"),
+                        $commentsWrapper: $("#b-comments-wrapper"),
+                        require_auth: {if $require_authorization}true{else}false{/if},
+                        auth_source: "{$current_auth_source}",
+                        authorized: {if !empty($current_user_id)}true{else}false{/if}
+                    });
+                })(jQuery);
+            </script>
+        {else}
+            <h4>[`Comments for non published posts are disabled`]</h4>
+        {/if}
     {/if}
-{/if}
+
+</div>
+
+{/strip}

@@ -1,193 +1,240 @@
-$(function(){
+// Blog :: CommentForm
+var CommentForm = ( function($) {
 
-    $.blog_utils.highlight('#post-stream')
+    CommentForm = function(options) {
+        var that = this;
 
-    var move_form_add = function(target, id, setfocus) {
-        form_refresh();
-        $('.comment-form').find('input[name=parent]').val( id );
-        var textarea = $('.comment-form').show().insertAfter(target).find('[name=text]').val('');
-        if(setfocus) {
-            textarea.focus();
+        // DOM
+        that.$formWrapper = options["$formWrapper"];
+        that.$commentsWrapper = options["$commentsWrapper"];
+        that.$form = that.$formWrapper.find("form");
+        that.$guestAuth = that.$form.find(".b-guest-auth");
+        that.$authProviders = that.$form.find(".b-auth-providers");
+        that.$textarea = that.$formWrapper.find("textarea");
+        that.$postWrapper = that.$form.closest(".b-post-wrapper");
+        that.$post = that.$postWrapper.find(".b-post");
+
+        // VARS
+        that.selected_class = "is-selected";
+        that.authorized = options["authorized"];
+        that.auth_source = options["auth_source"];
+        that.require_auth = options['$require_auth'];
+
+        // DYNAMIC VARS
+        that.is_locked = false;
+        that.$activeProvider = false;
+
+        // INIT
+        that.bindEvents();
+    };
+
+    CommentForm.prototype.bindEvents = function() {
+        var that = this;
+
+        $(document).on("click", ".comment-reply", function () {
+            that.onReply( $(this) );
+            return false;
+        });
+
+        that.$form.on("click", ".b-cancel-button", function() {
+            that.moveForm( that.$post, "", false);
+            return false;
+        });
+
+        that.$form.on("submit", function() {
+            if (!that.is_locked) {
+                that.onSubmit();
+            }
+            return false;
+        });
+
+        that.$form.on("click", ".b-guest-provider a", function() {
+            that.onProviderClick( $(this), true );
+            return false;
+        });
+
+        that.$form.on("click", ".b-provider-link a", function() {
+            that.onProviderClick( $(this) );
+            return false;
+        });
+    };
+
+    CommentForm.prototype.moveForm = function(target, id, set_focus) {
+        var that = this;
+        id = (id) ? id : "";
+
+        $(".b-comment").removeClass("in-reply-to");
+
+        // Refresh
+        that.refreshForm( true );
+        // Id
+        that.$form.find("input[name=parent]").val( id );
+        // Move
+        that.$formWrapper.insertAfter(target);
+        // Focus
+        if (set_focus) {
+            // @hint timeout need for focus after reload captcha
+            setTimeout( function() {
+                that.$textarea.focus();
+            }, 200);
         }
     };
 
-    var form_refresh = function(empty) {
-    
-        //comment form submit refresh
-        var form = $('.comment-form');
-        form.find('.errormsg').remove();
-        form.find('.error').removeClass('error');
-        form.find('.wa-captcha-refresh').click();
+    CommentForm.prototype.refreshForm = function(empty) {
+        var that = this,
+            $form = that.$form;
+
+        $form.find(".errormsg").remove();
+        $form.find(".error").removeClass("error");
+        $form.find(".wa-captcha-refresh").click();
 
         if (empty) {
-            form.find('textarea').val('');
+            $form[0].reset();
+            $form.find("textarea").val("");
         }
     };
 
-    $('.comment-reply').live('click', function(){
-    
-        // reply to a comment
-        var item = $(this).parents('.comment');
-        var id = item.length?parseInt($(item).attr('id').replace(/^[\D]+/,'')):0;
-        move_form_add($(this).parent(), id, true);
-        $('.comment').removeClass('in-reply-to');
-        item.addClass('in-reply-to');
-        return false;
-    });
+    CommentForm.prototype.onSubmit = function() {
+        var that = this,
+            $form = that.$form,
+            href = $form.attr('action')+'?json=1',
+            data = $form.serialize();
 
-    $('.comment-form input:submit').click(function(){
-    
-        //save comment
-        var button = $(this);
-        button.attr('disabled', true).next().show();
+        that.is_locked = true;
 
-        var container = $('.comment-form');
-        var form = $('.comment-form form');
-        $.post(form.attr('action')+'?json=1', form.serialize(), function(response){
-
-            button.attr('disabled', false).next().hide();
-
-            if (response.status && response.status == 'ok' && response.data.redirect) {
-                window.location.replace(response.data.redirect);
-                window.location.href = response.data.redirect;
-                return;
-            }
+        $.post(href, data, function(response){
             if ( response.status && response.status == 'ok' && response.data) {
-            
-                // saved
-                var template = $(response.data.template);
-                var count_str = response.data.count_str;
-
-                var target;
-                if (container.prev().is('.comments')) {
-                    target = container.prev('.comments').children('ul');
+                if (response.data.redirect) {
+                    window.location.replace(response.data.redirect);
+                    window.location.href = response.data.redirect;
                 } else {
-                    target = container.parent();
-                    if (!target.next('ul').size()) {
-                        target.after('<ul></ul>');
+
+                    window.location.reload();
+                    return false;
+
+                    var $comment = $(response.data.template),
+                        count_str = response.data["count_str"],
+                        hidden_class = "is-hidden",
+                        new_class = "is-new",
+                        $target;
+
+                    $target = that.$form.closest(".b-comment-wrapper");
+
+                    // If first comment
+                    if (!$target.length) {
+                        that.$commentsWrapper.removeClass(hidden_class);
+                        $target = that.$commentsWrapper.find(".b-comments");
                     }
-                    target = target.next('ul');
+
+                    // Render new comment
+                    $target.append( $("<div class='b-comment-wrapper' />").append($comment) );
+
+                    // marking
+                    $comment.addClass(new_class);
+                    setTimeout( function () {
+                        $comment.removeClass(new_class);
+                    }, 10000);
+
+                    // scroll
+                    $("html, body").animate({
+                        scrollTop: $comment.offset().top - 100
+                    }, 800);
+
+                    // Reset comment form
+                    that.refreshForm(true);
+                    that.moveForm( that.$post, "", false);
+
+                    // Change counter
+                    $("#b-comments-count").html(count_str);
+
+                    // Plugins
+                    $comment.trigger("plugin.comment_add");
                 }
-
-                target.append( $('<li />').append(template) );
-                move_form_add('.comments', 0);
-
-                if ( response.data.comment_id )
-                    $('#comment-' + response.data.comment_id).addClass('new');
-                    
-                $('.not-comment').remove();
-                $('.comment').removeClass('in-reply-to');
-                $('.comment-count').show().html(count_str);
-
-                template.trigger('plugin.comment_add');
-                form_refresh(true);
-                
-            } else if( response.status && response.status == 'fail' ) {
-            
+            } else if ( response.status && response.status == 'fail' ) {
                 // error
-                form_refresh();
+                that.refreshForm();
+
                 var errors = response.errors;
-                $(errors).each(function($name){
+                $(errors).each( function(){
                     var error = this;
-                    for (name in error) {
-                        var elem = $('.comment-form form').find('[name='+name+']');
-                        elem.after($('<em class="errormsg"></em>').text(error[name])).addClass('error');
+                    for (var name in error) {
+                        if (error.hasOwnProperty(name)) {
+                            var elem = that.$form.find('[name='+name+']');
+                            elem.after( $('<em class="errormsg"></em>').text(error[name]) ).addClass('error');
+                        }
                     }
                 });
-            }
-            else {
-                form_refresh(false);
+            } else {
+                that.refreshForm( false );
             }
 
-        }, "json")
-        .error(function(){
-            form_refresh(false);
+            that.is_locked = false;
+
+        }, "json").error(function(){
+            that.refreshForm(false);
         });
-        return false;
-    });
 
-    // view current auth profile
-    var provider = 'guest';
-    var selected = $('ul#user-auth-provider li.selected');
-    if(selected.length){
-        provider = selected.attr('data-provider') || provider;
-    } else {
-        selected = $('#user-auth-provider');
-        if(selected.length){
-            provider = selected.attr('data-provider') || provider;
+    };
+
+    CommentForm.prototype.onReply = function( $link ) {
+        var that = this;
+
+        var $comment = $link.closest(".b-comment"),
+            comment_id = $comment.data("comment-id"),
+            reply_class = "in-reply-to";
+
+        that.moveForm( $link.closest(".b-comment"), comment_id, true);
+
+        $(".b-comment").removeClass(reply_class);
+
+        $comment.addClass(reply_class);
+    };
+
+    CommentForm.prototype.onProviderClick = function( $link, is_guest ) {
+        var that = this,
+            selected_class = that.selected_class,
+            $li = $link.closest("li"),
+            $captcha = that.$form.find(".wa-captcha"),
+            $guestAuth = that.$guestAuth,
+            $user = that.$form.find(".b-auth-user"),
+            provider = $li.data("provider"),
+            is_selected = $li.hasClass(selected_class);
+
+        // Show window
+        if (!is_selected && !is_guest &&  provider) {
+            var width = 600,
+                height = 400,
+                left = (screen.width - width) / 2,
+                top = (screen.height - height) / 2,
+                href = (that.require_auth) ? $link.attr("href") + "&guest=1" : $link.attr("href");
+
+            window.open(href,"oauth", "width=" + width + ",height=" + height + ",left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
         }
 
-    }
-    if(provider) {
-        $('.tab').hide();
-        if(provider == 'signup') {
-            $('.comment-submit, .comment-body').hide();
+        // Show captcha
+        if (is_guest) {
+            $guestAuth.show();
+            $captcha.show();
+            $user.hide();
         } else {
-            $('.comment-submit, .comment-body').show();
+            $guestAuth.hide();
+            $captcha.hide();
+            $user.show();
         }
 
-        $('div.tab[data-provider=\''+provider+'\']').show();
-        $('input[name=auth_provider]').val(provider);
-        if (provider == 'guest') {
-            $('.wa-captcha').show();
+        // Render link
+        if (that.$activeProvider) {
+            that.$activeProvider.removeClass(selected_class);
         } else {
-            $('.wa-captcha').hide();
+            that.$authProviders.find("." + selected_class).removeClass(selected_class);
         }
-    }
+        $li.addClass(selected_class);
+        that.$activeProvider = $li;
 
-    $('ul#user-auth-provider li.selected a, ul#user-auth-provider li:eq(0) a').click(function(){
-        if ( $(this).parent().hasClass('selected') ) {
-            return false;
-        }
-        var provider = $(this).parent().attr('data-provider');
+        // Set data
+        that.$form.find("input[name=auth_provider]").val(provider);
+    };
 
-        $(this).parent().addClass('selected').siblings().removeClass('selected');
+    return CommentForm;
 
-        $('.tab').hide();
-        $('div.tab[data-provider=\''+provider+'\']').show();
-        if (provider == 'guest') {
-            $('.wa-captcha').show();
-        } else {
-            $('.wa-captcha').hide();
-        }
-
-
-        if(provider == 'signup') {
-            $('.comment-submit, .comment-body').hide();
-        } else {
-            $('.comment-submit, .comment-body').show();
-        }
-
-        $('input[name=auth_provider]').val(provider);
-
-        return false;
-    });
-
-});
-
-$.blog_utils = {
-    query: '',
-    init: function() {
-        // search highlight
-        if (location.href.indexOf('?') !== -1) {
-            var pos = location.href.indexOf('?');
-            var params = location.href.slice(pos + 1).split('&');
-            for (var i = 0; i < params.length; i += 1) {
-                if (params[i].indexOf('query=') !== -1) {
-                    this.query = params[i].slice(params[i].indexOf('query=') + 6);
-                    break;
-                }
-            }
-        }
-    },
-    highlight: function(container) {
-        if (this.query) {
-            $(container).find('.search-match').find('h3 a, p').each(function() {
-                var text = $(this).html();
-                text = text.replace(new RegExp('(' + $.blog_utils.query + ')', 'i'), '<span class="highlighted">$1</span>');
-                $(this).html(text);
-            });
-        }
-    }
-};
-$.blog_utils.init();
+})(jQuery);

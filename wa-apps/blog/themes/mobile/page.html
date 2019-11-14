@@ -1,19 +1,52 @@
-<article class="article-wrapper">
-    <header>
-        <h1>{$page.name}</h1>
-    </header>
+{strip}
 
-    {$subpages = $wa->blog->pages($page.id)}
-    {if $subpages}
-        <ul class="sub-links">
-            {foreach $subpages as $p}
-                <li><a href="{$p.url}">{$p.name}</a></li>
-            {/foreach}
-        </ul>
+{$_breadcrumbs = []}
+{$_breadcrumbs[] = [
+    "url" => $wa->blog->url(),
+    "name" => "[`All posts`]",
+    "is_back" => true
+]}
+{$subpages = $wa->blog->pages($page.id)}
+{if $page.parent_id}
+    {$parent_page = $wa->blog->page( $page.parent_id )}
+    {if $parent_page}
+        {$_breadcrumbs[] = [
+            "url" => "`$wa_app_url``$parent_page.full_url`",
+            "name" => $parent_page.name|escape,
+            "is_back" => true
+        ]}
     {/if}
+{/if}
+{if !empty($subpages)}
+    {foreach $subpages as $_page}
+        {$_breadcrumbs[] = [
+            "url" => $_page.url,
+            "name" => $_page.name|escape,
+            "is_back" => false
+        ]}
+    {/foreach}
+{/if}
 
-    <div class="article-content">
+{if !empty($_breadcrumbs)}
+    <nav class="content-nav-wrapper" role="navigation">
+        <div class="nav-group">
+            <div class="nav-list" itemprop="breadcrumb">
+                {foreach $_breadcrumbs as $breadcrumb}
+                    <div class="nav-item {if $breadcrumb.is_back}back-nav-item{/if}">
+                        <a href="{$breadcrumb.url}">{$breadcrumb.name}</a>
+                    </div>
+                {/foreach}
+            </div>
+        </div>
+    </nav>
+{/if}
+
+<article class="article-wrapper">
+    <h1>{$page.name}</h1>
+
+    <div class="s-page-content article-content" id="page" role="main">
         {$page.content}
     </div>
-
 </article>
+
+{/strip}
