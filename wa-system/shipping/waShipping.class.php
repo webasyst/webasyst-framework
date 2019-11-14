@@ -93,13 +93,13 @@ abstract class waShipping extends waSystemPlugin
 
 
             $hint = array(
-                'title'       => 'TODO: Задачи по расписанию',
+                'title'       => _ws('Scheduled tasks'),
                 'value'       => '',
                 'description' => '',
             );
 
             if (empty($value)) {
-                $hint['value'] .= _ws('TODO: Приложение не поддерживает обновление справочников плагинов по расписанию. Это может замедлить работу плагина.');
+                $hint['value'] .= _ws('The app does not support scheduled updating of plugin data. This may slow down the plugin operation.');
             } else {
                 $sync_time = $this->getGeneralSettings('sync_time');
                 if ($sync_time) {
@@ -107,24 +107,24 @@ abstract class waShipping extends waSystemPlugin
                     $sync_failure_time = (int)$this->getGeneralSettings('sync_failure_time');
                     if ($sync_failure_time > $sync_success_time) {
                         $hint['value'] .= sprintf(
-                            _ws('TODO: Последнее обновление справочников %s завершилось с ошибкой.'),
+                            _ws('The data update of %s failed.'),
                             waDateTime::format('humandatetime', $sync_failure_time)
                         );
 
                     } elseif ((time() - $sync_success_time) > (2 * $interval)) {
                         $hint['value'] .= sprintf(
-                            _ws("TODO: Нарушен рекомендуемый интервал обновления справочников (%s)"),
+                            _ws("Recommended data updating interval (%s) was disrupted."),
                             $interval_str
                         );
 
                         $hint['value'] .= sprintf(
-                            _ws('TODO: Дата последней попытки обновления: %s.'),
+                            _ws('Most recent data update was attempted on %s.'),
                             waDateTime::format('humandatetime', (int)$value)
                         );
                     }
                     if ($sync_success_time) {
                         $hint['value'] .= sprintf(
-                            _ws('TODO: Дата последнего обновления %s.'),
+                            _ws('Most recent data update occurred on %s.'),
                             waDateTime::format('humandatetime', $sync_success_time)
                         );
                     }
@@ -133,12 +133,12 @@ abstract class waShipping extends waSystemPlugin
                     if (($value < 2) //
                         || ((time() - $value) > (2 * $interval))
                     ) {
-                        $hint['value'] .= _ws('TODO: Для плагина ни разу не запускалось обновление справочников. Следует проверить настройки планировщика задач.');
+                        $hint['value'] .= _ws('Data update was never run for this plugin. Check the server scheduler settings.');
                     } else {
-                        $hint['value'] .= _ws('TODO: Для плагина еще ни разу не запускалось обновление справочников.');
+                        $hint['value'] .= _ws('Data update was never run for this plugin.');
                         $hint['value'] .= "\n";
                         $hint['value'] .= sprintf(
-                            _ws('TODO: Дата последней попытки обновления: %s.'),
+                            _ws('Most recent data update was attempted on %s.'),
                             waDateTime::format('humandatetime', (int)$value)
                         );
                     }

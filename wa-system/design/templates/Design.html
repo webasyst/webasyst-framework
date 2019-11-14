@@ -230,7 +230,7 @@
             }
         });
 
-        $(document).on('click', ".wa-theme-preview", function (e) {
+        $('#wa-design-menu,#wa-design-container').on('click', ".wa-theme-preview", function (e) {
             var $self = $(this),
                 theme_id = $self.data('theme-id'),
                 url = $self.attr('href'),

@@ -66,7 +66,7 @@ abstract class waPayment extends waSystemPlugin
     const CALLBACK_CANCEL = 'cancel';
     /**
      *
-     * Changeback handler
+     * Chargeback handler
      * @var string
      */
     const CALLBACK_CHARGEBACK = 'chargeback';
@@ -335,6 +335,11 @@ abstract class waPayment extends waSystemPlugin
             if (class_exists('waPaymentDebug')) {
                 waPaymentDebug::endDebugCallback($module_id, $response);
             }
+
+            $log = array(
+                'response' => $response,
+            );
+            self::log($module_id, $log);
             return $response;
         } catch (Exception $ex) {
 
@@ -441,7 +446,14 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * @param $request array
-     * @return mixed
+     * @return array
+     * @return array['redirect']string redirect URI (if non empty other data is ignored)
+     * @return array['template']string path to Smarty template, used to display, entire result will be passed into template
+     * @return array['data']mixed proper data storage
+     * @return array['header']array key-value response header
+     * @return array['status']int HTTP response code status
+     * @return array['message']string optional response message
+     * @return array['error']string error message
      */
     protected function callbackHandler($request)
     {
@@ -460,10 +472,18 @@ abstract class waPayment extends waSystemPlugin
      */
     protected function execAppCallback($method, $transaction_data)
     {
+        $original_method = $method;
         try {
+            $method = $this->isRepeatedCallback($method, $transaction_data);
             $params = $transaction_data;
             $params['payment_plugin_instance'] = &$this;
-            $result = $this->getAdapter()->execCallbackHandler($method, $params);
+
+            if (!empty($method)) {
+                $result = $this->getAdapter()->execCallbackHandler($method, $params);
+            } else {
+                $method = '~CALLBACK IGNORED AS REPEATED~';
+                $result = false;
+            }
         } catch (Exception $e) {
             $result = array(
                 'error' => $e->getMessage(),
@@ -472,12 +492,17 @@ abstract class waPayment extends waSystemPlugin
         }
 
         $log = array(
-            'method'           => __METHOD__,
-            'app_id'           => $this->app_id,
-            'callback_method'  => $method,
-            'transaction_data' => $transaction_data,
-            'result'           => $result,
+            'method'                   => __METHOD__,
+            'app_id'                   => $this->app_id,
+            'callback_method'          => $method,
+            'original_callback_method' => $original_method,
+            'transaction_data'         => $transaction_data,
+            'result'                   => $result,
         );
+
+        if ($log['callback_method'] === $log['original_callback_method']) {
+            unset($log['original_callback_method']);
+        }
         self::log($this->id, $log);
 
         if ($result) {
@@ -488,11 +513,75 @@ abstract class waPayment extends waSystemPlugin
                     $data[$k] = $result[$k];
                 }
             }
+
+            if ($original_method !== $method) {
+                $data['result'] = 'is_repeated';
+            }
+
             if ($data && !empty($transaction_data['id'])) {
                 $transaction_model->updateById($transaction_data['id'], $data);
             }
         }
         return $result;
+    }
+
+    /**
+     * @param       $method
+     * @param array $transaction_data
+     * @param bool  $strict
+     * @return string
+     * @throws waDbException
+     * @throws waException
+     * @since 1.13 framework version
+     */
+    protected function isRepeatedCallback($method, &$transaction_data, $strict = false)
+    {
+        if ($method !== self::CALLBACK_NOTIFY) {
+            $transaction_model = new waTransactionModel();
+
+            $search = array(
+                'plugin'      => $this->id,
+                'app_id'      => $this->app_id,
+                'merchant_id' => $this->merchant_id,
+                'native_id'   => $transaction_data['native_id'],
+                'type'        => $method,
+            );
+
+            if (empty($strict)) {
+                unset($search['merchant_id']);
+            }
+
+            $wa_transactions = $transaction_model->getByFields($search);
+
+            if (!empty($transaction_data['id'])) {
+                //ignore current transaction
+                unset($wa_transactions[$transaction_data['id']]);
+            }
+
+            foreach ($wa_transactions as $id => $transaction) {
+                //ignore other repeated requests
+                if ($transaction['result'] === 'is_repeated') {
+                    unset($wa_transactions[$id]);
+                }
+            }
+
+            switch ($method) {
+                case self::CALLBACK_REFUND:
+                    if ($this->getProperties('partial_refund')) {
+                        foreach ($wa_transactions as $id => $transaction) {
+                            if ($transaction['state'] === self::STATE_PARTIAL_REFUNDED) {
+                                unset($wa_transactions[$id]);
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            if ($wa_transactions) {
+                $method = self::CALLBACK_NOTIFY;
+            }
+        }
+        return $method;
     }
 
     /**

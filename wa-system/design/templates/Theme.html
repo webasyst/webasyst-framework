@@ -214,13 +214,23 @@
             <div class="block double-padded wa-theme-actions wa-theme-trial align-center">
                 <ul class="menu-v with-icons">
                     <li style="text-align: center;">
-                        <b><i class="icon16 exclamation"></i>{_ws('Trial version')}</b>
+                        <b><i class="icon16 exclamation"></i>{_ws('Trial theme')}</b>
                     </li>
                 </ul>
 
+                {if !empty($preview_url)}
+                    <div style="margin: 16px 0 22px 0;">
+                        <a class="wa-theme-preview button blue" data-theme-id="{$theme.id|escape}" target="_blank" href="{$preview_url}">[s`Preview on my website`]</a>
+                        <p class="hint" style=" margin:16px 0 0 0">
+                            <strong>[s`Your website will display this trial theme for you only.`]</strong>
+                            [s`Other visitors will keep seeing existing theme with no change.`]
+                        </p>
+                    </div>
+                {/if}
+
                 {if $wa->user()->isAdmin('installer')}
-                    <div style="margin: 16px 0 12px 0;">
-                        <a href="{$wa_backend_url}installer/store/theme/{$theme.id|escape}/" class="button blue">[s`Buy theme`]</a>
+                    <div style="margin:16px 0 12px 0;">
+                        <a href="{$wa_backend_url}installer/store/theme/{$theme.id|escape}/" class="button green">[s`Buy theme`]</a>
                     </div>
                 {/if}
             </div>

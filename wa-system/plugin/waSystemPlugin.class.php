@@ -420,9 +420,6 @@ abstract class waSystemPlugin
      */
     public static function factory($id, $key = null, $type = null)
     {
-        if (waConfig::get('is_template')) {
-            throw new waException('access from template is not allowed');
-        }
         $id = strtolower($id);
         $base_path = self::getPath($type, $id);
         if (!$base_path) {
