@@ -836,7 +836,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                         $data['amount'] = floatval($transaction_raw_data['refund']['amount']['value']);
                         if (!empty($transaction_raw_data['refund']['description'])) {
                             $view[] = sprintf(
-                                'Основание для возврата денег клиету: %s',
+                                'Основание для возврата денег клиенту: %s',
                                 htmlentities($transaction_raw_data['refund']['description'], ENT_QUOTES, 'utf-8')
                             );
                         }
