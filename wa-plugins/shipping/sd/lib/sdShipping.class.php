@@ -53,13 +53,17 @@ class sdShipping extends waShipping
     protected $days = array();
     protected $est_delivery = null;
 
+    /**
+     * @return array|string
+     * @throws waException
+     */
     protected function calculate()
     {
         if (!$this->isCompletedAddress()) {
             return array();
         }
         if (!$this->isValidAddress()) {
-            return $this->_w('Pickup is not available for this address.');
+            return false;
         }
         if (!$this->isValidWeight()) {
             return $this->_w('Weight values above the limit.');
@@ -747,6 +751,12 @@ class sdShipping extends waShipping
     # SETTINGS BLOCK #
     ##################
 
+    /**
+     * @param array $params
+     * @return string
+     * @throws SmartyException
+     * @throws waException
+     */
     public function getSettingsHTML($params = array())
     {
         $view = wa()->getView();
@@ -801,6 +811,10 @@ class sdShipping extends waShipping
         );
     }
 
+    /**
+     * @return array
+     * @throws waException
+     */
     protected function getCurrencies()
     {
         $app_config = wa()->getConfig();
@@ -883,6 +897,11 @@ class sdShipping extends waShipping
         return parent::saveSettings($saved_settings);
     }
 
+    /**
+     * @param $saved_settings
+     * @return mixed
+     * @throws waException
+     */
     protected function parseSettings($saved_settings)
     {
         $required_fields = $this->getRequiredFields();
@@ -911,6 +930,12 @@ class sdShipping extends waShipping
         return $saved_settings;
     }
 
+    /**
+     * @param $key
+     * @param $settings
+     * @return mixed|null
+     * @throws waException
+     */
     protected function parseDays($key, $settings)
     {
         $days = ifset($settings, $key, array());
@@ -943,6 +968,11 @@ class sdShipping extends waShipping
         return $days;
     }
 
+    /**
+     * @param $date
+     * @return string
+     * @throws waException
+     */
     protected function parseDayFormat($date)
     {
         $date = trim($date);
@@ -959,6 +989,11 @@ class sdShipping extends waShipping
         return $new_date;
     }
 
+    /**
+     * @param $time
+     * @return bool
+     * @throws waException
+     */
     protected function isValidateTimeFormat($time)
     {
         if ($time && !preg_match('/(^[01]?[0-9]|2[0-3])($|:([0-5][0-9]$))/ui', $time)) {
