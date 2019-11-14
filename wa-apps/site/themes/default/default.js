@@ -1,3 +1,5 @@
+$.ajaxSetup({ cache: false });
+
 // Show Menu on Hover
 ( function($) {
 

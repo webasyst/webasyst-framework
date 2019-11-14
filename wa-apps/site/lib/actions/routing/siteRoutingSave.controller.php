@@ -306,6 +306,21 @@ class siteRoutingSaveController extends waJsonController
             unset($r['locale']);
         }
 
+        if (!empty($r['app'])) {
+            if (!empty($r['theme'])) {
+                $theme = new waTheme($r['app'].':'.$r['theme']);
+                if ($theme['type'] == waTheme::TRIAL) {
+                    $r['theme'] = 'default';
+                }
+            }
+            if (!empty($r['theme_mobile'])) {
+                $theme_mobile = new waTheme($r['app'].':'.$r['theme_mobile']);
+                if ($theme_mobile['type'] == waTheme::TRIAL) {
+                    $r['theme_mobile'] = 'default';
+                }
+            }
+        }
+
         return $r;
     }
 }

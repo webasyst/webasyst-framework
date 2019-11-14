@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.11">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.14">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -420,30 +420,27 @@
                 <name locale="ru_RU">Ссылки на соц. сети</name>
             </setting>
                 <setting var="facebook" control_type="text">
-                    <value locale="en_US">https://www.facebook.com/Webasyst</value>
-                    <value locale="ru_RU">https://www.facebook.com/Webasyst.RU</value>
+                    <value>#</value>
                     <name locale="en_US">Facebook page URL</name>
                     <name locale="ru_RU">Адрес страницы в Фейсбуке</name>
                 </setting>
                 <setting var="twitter" control_type="text">
-                    <value locale="en_US">https://twitter.com/webasyst</value>
-                    <value locale="ru_RU">https://twitter.com/webasyst_ru</value>
+                    <value>#</value>
                     <name locale="en_US">Twitter URL</name>
                     <name locale="ru_RU">Адрес в Твиттере</name>
                 </setting>
                 <setting var="vk" control_type="text">
-                    <value locale="en_US"></value>
-                    <value locale="ru_RU">https://vk.com/webasyst_ru</value>
+                    <value>#</value>
                     <name locale="en_US">VK.com page URL</name>
                     <name locale="ru_RU">Адрес страницы или группы во Вконтакте</name>
                 </setting>
                 <setting var="instagram" control_type="text">
-                    <value>https://instagram.com/webasyst.ru</value>
+                    <value>#</value>
                     <name locale="en_US">Instagram feed URL</name>
                     <name locale="ru_RU">Адрес в Инстаграме</name>
                 </setting>
                 <setting var="youtube" control_type="text">
-                    <value>https://www.youtube.com/user/webasyst</value>
+                    <value>#</value>
                     <name locale="en_US">Youtube channel URL</name>
                     <name locale="ru_RU">Адрес канала YouTube</name>
                 </setting>
@@ -454,93 +451,21 @@
             <name locale="ru_RU">Виджеты соцсетей</name>
         </setting>
             <setting var="facebook_likebox_code" control_type="text">
-                <value locale="en_US"><![CDATA[
-    <div id="fb-root"></div>
-    <script>
-        setTimeout(function () {
-            (function (d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) return;
-                js = d.createElement(s);
-                js.id = id;
-                js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.12&appId=157158478329004&autoLogAppEvents=1';
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
-        }, 100)
-    </script>
-    <div class="fb-page" data-href="https://www.facebook.com/Webasyst" data-tabs="timeline" data-width="200" data-height="300" data-small-header="false"
-         data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
-        <blockquote cite="https://www.facebook.com/Webasyst" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Webasyst">Webasyst</a></blockquote>
-    </div>
-    ]]></value>
-                <value locale="ru_RU"><![CDATA[
-    <div id="fb-root"></div>
-    <script>
-        setTimeout(function () {
-            (function (d, s, id) {
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) return;
-                js = d.createElement(s);
-                js.id = id;
-                js.src = 'https://connect.facebook.net/ru_RU/sdk.js#xfbml=1&version=v2.12&appId=157158478329004&autoLogAppEvents=1';
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
-        }, 100)
-    </script>
-    <div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-tabs="timeline" data-width="200" data-height="300" data-small-header="false"
-         data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true">
-        <blockquote cite="https://www.facebook.com/Webasyst.RU" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/Webasyst.RU">Webasyst</a></blockquote>
-    </div>
-    ]]></value>
+                <value></value>
                 <name locale="en_US">Facebook Page Plugin code</name>
                 <name locale="ru_RU">Виджет Фейсбука</name>
                 <description locale="en_US">Embed your Facebook page badge code here. Code can be obtained on Facebook website: https://developers.facebook.com/docs/plugins/page-plugin</description>
                 <description locale="ru_RU">Поместите в это поле код виджета вашей страницы на Фейсбуке. Код можно получить в Фейсбуке на странице https://developers.facebook.com/docs/plugins/page-plugin</description>
             </setting>
             <setting var="twitter_timeline_code" control_type="text">
-                <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="625947505319124993">Tweets by @webasyst</a>
-            <script>
-                setTimeout(function () {
-                    !function (d, s, id) {
-                        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
-                        if (!d.getElementById(id)) {
-                            js = d.createElement(s);
-                            js.id = id;
-                            js.src = p + "://platform.twitter.com/widgets.js";
-                            fjs.parentNode.insertBefore(js, fjs);
-                        }
-                    }(document, "script", "twitter-wjs");
-
-                }, 100)
-            </script>]]></value>
-                <value locale="ru_RU"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst_ru" data-widget-id="624283167772528641">Tweets by @webasyst_ru</a>
-            <script>
-                setTimeout(function () {
-                    !function (d, s, id) {
-                        var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
-                        if (!d.getElementById(id)) {
-                            js = d.createElement(s);
-                            js.id = id;
-                            js.src = p + "://platform.twitter.com/widgets.js";
-                            fjs.parentNode.insertBefore(js, fjs);
-                        }
-                    }(document, "script", "twitter-wjs");
-                }, 100)
-            </script>]]></value>
+                <value></value>
                 <name locale="en_US">Twitter Timeline code</name>
                 <name locale="ru_RU">Виджет Твиттера</name>
                 <description locale="en_US">Embed your Twitter Timeline code here. Code can be obtained on Twitter website: https://twitter.com/settings/widgets</description>
                 <description locale="ru_RU">Поместите в это поле код ленты Твиттера. Код можно получить на сайте Твиттера: https://twitter.com/settings/widgets</description>
             </setting>
             <setting var="vk_widget_code" control_type="text">
-                <value locale="en_US"></value>
-                <value locale="ru_RU"><![CDATA[<script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
-
-    <!-- VK Widget -->
-    <div id="vk_groups"></div>
-    <script type="text/javascript">
-    setTimeout(function (){ VK.Widgets.Group("vk_groups", { mode: 2, width: "{$width}", height: "{$height}" }, 21415010) }, 0);
-    </script>]]></value>
+                <value></value>
                 <name locale="en_US">VK Page Widget code</name>
                 <name locale="ru_RU">Виджет Вконтакте</name>
                 <description locale="en_US">Embed your VK community widget code here. Code can be obtained on VK website: http://vk.com/dev/Community</description>
