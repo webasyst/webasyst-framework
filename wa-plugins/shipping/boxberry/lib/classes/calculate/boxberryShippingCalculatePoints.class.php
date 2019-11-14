@@ -332,6 +332,10 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper im
         if ($codes_by_cities) {
             $result = array_intersect_key($points['points'], $codes_by_cities);
         }
+
+        // sort by street address
+        uasort($result, wa_lambda('$a, $b', 'return strcasecmp($a["name"], $b["name"]);'));
+
         return $result;
     }
 

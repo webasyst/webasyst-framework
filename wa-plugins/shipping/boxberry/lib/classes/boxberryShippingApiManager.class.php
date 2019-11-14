@@ -43,6 +43,36 @@ class boxberryShippingApiManager
     }
 
     /**
+     * @param $method
+     * @param $data
+     * @return array
+     */
+    public function getByApiMethod($method, $data)
+    {
+        if ($method === self::METHOD_LIST_POINT) {
+            $result = $this->downloadListPoints($data);
+        } elseif ($method === self::METHOD_POINTS_FOR_PARCELS) {
+            $result = $this->downloadPointsForParcels($data);
+        } elseif ($method === self::METHOD_POINTS_DESCRIPTION) {
+            $result = $this->downloadPointDescription($data);
+        } elseif ($method === self::METHOD_LIST_ZIPS) {
+            $result = $this->downloadListZips($data);
+        } elseif ($method === self::METHOD_LIST_CITIES_FULL) {
+            $result = $this->downloadListCitiesFull($data);
+        } elseif ($method === self::METHOD_DELIVERY_COSTS) {
+            $result = $this->getDeliveryCosts($data);
+        } elseif ($method === self::METHOD_CREATE_DRAFT) {
+            $result = $this->createDraft($data);
+        } elseif ($method === self::METHOD_REMOVE_DRAFT) {
+            $result = $this->removeDraft($data);
+        } else {
+            $result = [];
+        }
+
+        return $result;
+    }
+
+    /**
      * @param $data
      * @return array
      */
@@ -124,7 +154,7 @@ class boxberryShippingApiManager
     public function createDraft($data)
     {
         $data['method'] = self::METHOD_CREATE_DRAFT;
-        $data['partner_token'] = 'Webasyst';
+        $data['partner_token'] = 'Webasyst001';
 
         $result = $this->sendRequest($data);
         return $result;
@@ -146,7 +176,7 @@ class boxberryShippingApiManager
      * @param $data
      * @return array
      */
-    public function sendRequest($data)
+    protected function sendRequest($data)
     {
         $options = [
             'request_format' => 'default',

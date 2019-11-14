@@ -22,11 +22,19 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
     }
 
     /**
+     * @return string
+     */
+    protected function getAPIMethod()
+    {
+        return boxberryShippingApiManager::METHOD_LIST_POINT;
+    }
+
+    /**
      * @return array
      */
     protected function getFromAPI()
     {
-        $points = $this->api_manager->downloadListPoints([boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
+        $points = $this->api_manager->getByApiMethod($this->getAPIMethod(), [boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
 
         if (!empty($points)) {
             $points = $this->parseAvailablePoints($points);
@@ -52,9 +60,15 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
         $new_points = [];
         $cities = [];
         $city_and_regions = $this->getCitiesWithRegions();
+        $invalid_points = [];
 
         foreach ($points as $point) {
-            $region = ifset($city_and_regions, $point['CityCode'], '');
+            $region = trim(ifset($city_and_regions, trim($point['CityCode']), ''));
+
+            if (!$region) {
+                $invalid_points[] = $point;
+                continue;
+            }
 
             $parsed_point = $this->parsePoint($point);
             $parsed_point['region'] = $region;
@@ -73,6 +87,8 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
             'cities' => $cities,
         ];
 
+        $this->logInvalidPoints($invalid_points);
+
         return $result;
     }
 
@@ -83,7 +99,7 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
     protected function parsePoint($point)
     {
         $result = [
-            'name'                => ifset($point, 'Name', ''),
+            'name'                => ifset($point, 'AddressReduce', ''),
             'code'                => ifset($point, 'Code', ''),
             'raw_region'          => mb_strtolower(ifset($point, 'Area', '')),
             'city'                => mb_strtolower(ifset($point, 'CityName', '')),
@@ -120,8 +136,8 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
         if ($gps) {
             $explode = explode(',', $gps);
             if (is_array($explode) && count($explode) >= 2) {
-                $result['lat'] = $explode[0];
-                $result['lng'] = $explode[1];
+                $result['lat'] = str_replace(' ', '', $explode[0]);
+                $result['lng'] = str_replace(' ', '', $explode[1]);
             }
         }
 
@@ -135,6 +151,24 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
     {
         $handbook = new boxberryShippingHandbookCityRegions($this->api_manager);
         return $handbook->getHandbook();
+    }
+
+    /**
+     * @param $points
+     */
+    protected function logInvalidPoints($points)
+    {
+        $log = 'The region could not be found for the following points of delivery: '."\n";
+
+        foreach ($points as $point) {
+            $city_string = 'City name: '.ifset($point, 'Name', '').
+                '. Area:'.ifset($point, 'Area', '').
+                '. City code:'.ifset($point, 'CityCode', '');
+
+            $log .= $city_string."\n";
+        }
+
+        $this->log($log, $this->getAPIMethod());
     }
 }
 

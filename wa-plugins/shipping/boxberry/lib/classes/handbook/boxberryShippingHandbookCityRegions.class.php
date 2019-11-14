@@ -14,11 +14,19 @@ class boxberryShippingHandbookCityRegions extends boxberryShippingHandbookManage
     }
 
     /**
+     * @return string
+     */
+    protected function getAPIMethod()
+    {
+        return boxberryShippingApiManager::METHOD_LIST_CITIES_FULL;
+    }
+
+    /**
      * @return array
      */
     protected function getFromAPI()
     {
-        $cities = $this->api_manager->downloadListCitiesFull([boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
+        $cities = $this->api_manager->getByApiMethod($this->getAPIMethod(), [boxberryShippingApiManager::LOG_PATH_KEY => $this->getCacheKey()]);
         $city_with_regions = [];
 
         if (!empty($cities)) {
@@ -50,6 +58,15 @@ class boxberryShippingHandbookCityRegions extends boxberryShippingHandbookManage
             if ($kladr && $city_code) {
                 $region_code = mb_substr($kladr, 0, 2);
                 $result[$city_code] = $region_code;
+            } else {
+                $city_name = ifset($city, 'Name', '');
+                $log = "Error getting information about the city of {$city_name}({$city_code}). ";
+
+                if (!$kladr) {
+                    $log .= 'KLADR not transferred.';
+                }
+
+                $this->log($log, $this->getAPIMethod());
             }
         }
 

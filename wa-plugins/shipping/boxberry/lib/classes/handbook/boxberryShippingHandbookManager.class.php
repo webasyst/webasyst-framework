@@ -81,4 +81,32 @@ abstract class boxberryShippingHandbookManager
         $result = $cache->get();
         return $result;
     }
+
+    /**
+     * @param $data
+     * @param null $method
+     */
+    protected function log($data, $method = null)
+    {
+        $info = $data;
+        if (is_array($data)) {
+            $info = var_export($data, true);
+        }
+
+        $api_method = 'Not specified';
+        if ($method) {
+            $api_method = $method;
+        }
+
+
+       $log = <<<HTML
+_____________________       
+API METHOD: {$api_method}
+INFO: {$info}
+_____________________
+HTML;
+
+        waLog::log($log, 'wa-plugins/shipping/boxberry/handbook_info.log');
+
+    }
 }
