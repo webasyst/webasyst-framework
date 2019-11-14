@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.2.5">
+<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.2.6">
     <name locale="en_US">Nifty</name>
     <name locale="ru_RU">Nifty</name>
     <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -62,6 +62,18 @@
             <description locale="ru_RU">Внутренняя навигация по витрине магазина</description>
         </file>
     </files>
+    <about locale="en_US">
+        <![CDATA[
+<p><b>Nifty</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Nifty (i.e. this) theme for the Site application. All Nifty design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.</p>
+<p>Nifty design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
+]]>
+    </about>
+    <about locale="ru_RU">
+        <![CDATA[
+<p><b>Nifty</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Nifty для приложения «Сайт» (данная тема). Все темы дизайна Nifty для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p>Темы дизайна семейства Nifty оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
+]]>
+    </about>
     <settings>
         <setting var="color_scheme" control_type="select">
             <value>purple</value>
@@ -99,12 +111,12 @@
             </options>
         </setting>
         <setting var="facebook_url" control_type="text">
-            <value>http://www.facebook.com/</value>
+            <value>#</value>
             <name locale="en_US">Facebook Page URL</name>
             <name locale="ru_RU">Адрес страницы в Фейсбуке</name>
         </setting>
         <setting var="twitter_url" control_type="text">
-            <value>http://twitter.com/</value>
+            <value>#</value>
             <name locale="en_US">Twitter URL</name>
             <name locale="ru_RU">Адрес страницы на Твиттере</name>
         </setting>
@@ -133,16 +145,4 @@
             <description locale="en_US">Example: Mo—Sa 08:00–18:00</description>
         </setting>
     </settings>
-    <about locale="en_US">
-        <![CDATA[
-<p><b>Nifty</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Nifty (i.e. this) theme for the Site application. All Nifty design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.</p>
-<p>Nifty design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
-]]>
-    </about>
-    <about locale="ru_RU">
-        <![CDATA[
-<p><b>Nifty</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Nifty для приложения «Сайт» (данная тема). Все темы дизайна Nifty для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
-<p>Темы дизайна семейства Nifty оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
-]]>
-    </about>
 </theme>
