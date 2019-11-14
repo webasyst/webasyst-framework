@@ -616,11 +616,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         switch ($status) {
             //Amount Hold
             case 1:
-                $app_payment_method = self::CALLBACK_CAPTURE;
-                //Shop App Solution
-                if ($this->app_id == 'shop') {
-                    $app_payment_method = self::CALLBACK_NOTIFY;
-                };
+                $app_payment_method = self::CALLBACK_AUTH;
                 break;
             //Order paid
             case 2:
@@ -754,7 +750,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $data = $this->getUserData($waOrder['contact_id']);
 
         if (!$data['email'] && !$data['phone']) {
-            $this->logError( 'Не установлен системный Email.');
+            $this->logError('Не установлен системный email-адрес.');
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
@@ -1011,7 +1007,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     protected function validateRegisterResponse($response)
     {
         if (!empty($response['errorCode']) && $response['errorCode'] != '0') {
-            $this->logError( array(
+            $this->logError(array(
                 'errorMessage' => ifset($response['errorMessage']),
                 'errorCode'    => ifset($response['errorCode']),
             ));
@@ -1020,7 +1016,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         if (empty($response['formUrl'])) {
-            $this->logError( 'formUrl not received');
+            $this->logError('formUrl not received');
             throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
         }
 
@@ -1160,7 +1156,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
         $request = var_export($data, true);
         $response = $net->getResponse(true);
-        $headers =  var_export($net->getResponseHeader('http_code'),true);
+        $headers = var_export($net->getResponseHeader('http_code'), true);
 
         $log = <<<HTML
 _________________________________
@@ -1170,7 +1166,7 @@ Response: {$response}
 _________________________________
 HTML;
 
-        $this->logError( $log);
+        $this->logError($log);
     }
 
     /**
@@ -1266,26 +1262,6 @@ HTML;
         self::log($this->id, $data);
     }
 
-    /** @noinspection PhpUnused */
-    public static function settingsPaymentSubjectOptions()
-    {
-        return array(
-            '1'  => 'товар',
-            '2'  => 'подакцизный товар',
-            '3'  => 'работа',
-            '4'  => 'услуга',
-            '5'  => 'ставка в азартной игре',
-            '6'  => 'выигрыш в азартной игре',
-            '7'  => 'лотерейный билет',
-            '8'  => 'выигрыш в лотерею',
-            '9'  => 'результаты интеллектуальной деятельности',
-            '10' => 'платёж',
-            '11' => 'агентское вознаграждение',
-            '12' => 'несколько вариантов',
-            '13' => 'другое',
-        );
-    }
-
     /**
      * Parse Sberbank format YYYYMM to Sql Date format
      *
@@ -1333,4 +1309,96 @@ HTML;
 
         return $iso2;
     }
+
+
+    /**
+     * @param array $params
+     * @return string
+     * @throws SmartyException
+     * @throws waException
+     */
+    public function getSettingsHTML($params = array())
+    {
+        $view = wa()->getView();
+        $settings = $this->getSettings();
+
+        $view->assign(array(
+            'obj'             => $this,
+            'namespace'       => waHtmlControl::makeNamespace($params),
+            'settings'        => $settings,
+            'currencies'      => $this->settingsCurrency(),
+            'payment_methods' => $this->settingsPaymentMethods(),
+            'payment_subject' => $this->settingsPaymentSubjectOptions(),
+            'tax_systems'     => $this->settingsTaxSystem(),
+            'credit_types'    => $this->settingsCreditTypes(),
+        ));
+
+        return $view->fetch($this->path.'/templates/settings.html');
+    }
+
+    protected function settingsCurrency()
+    {
+        return [['title' => 'RUB', 'value' => 'RUB']];
+    }
+
+    /** @noinspection PhpUnused */
+    public function settingsPaymentSubjectOptions()
+    {
+        return array(
+            ['title' => 'товар', 'value' => '1'],
+            ['title' => 'подакцизный товар', 'value' => '2'],
+            ['title' => 'работа', 'value' => '3'],
+            ['title' => 'услуга', 'value' => '4'],
+            ['title' => 'ставка в азартной игре', 'value' => '5'],
+            ['title' => 'выигрыш в азартной игре', 'value' => '6'],
+            ['title' => 'лотерейный билет', 'value' => '7'],
+            ['title' => 'выигрыш в лотерею', 'value' => '8'],
+            ['title' => 'результаты интеллектуальной деятельности', 'value' => '9'],
+            ['title' => 'платёж', 'value' => '10'],
+            ['title' => 'агентское вознаграждение', 'value' => '11'],
+            ['title' => 'несколько вариантов', 'value' => '12'],
+            ['title' => 'другое', 'value' => '13'],
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public function settingsPaymentMethods()
+    {
+        return [
+            ['title' => 'полная предоплата', 'value' => '1'],
+            ['title' => 'частичная предоплата', 'value' => '2'],
+            ['title' => 'аванс', 'value' => '3'],
+            ['title' => 'полный расчёт', 'value' => '4'],
+            ['title' => 'частичный расчёт и кредит', 'value' => '5'],
+            ['title' => 'кредит', 'value' => '6'],
+            ['title' => 'выплата по кредиту', 'value' => '7'],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function settingsTaxSystem()
+    {
+        return [
+            ['title' => 'Общая', 'value' => '0'],
+            ['title' => 'Упрощённая, доход', 'value' => '1'],
+            ['title' => 'Упрощённая, доход минус расход', 'value' => '2'],
+            ['title' => 'Единый налог на вменённый доход', 'value' => '3'],
+            ['title' => 'Единый сельскохозяйственный налог', 'value' => '4'],
+            ['title' => 'Патентная система налогообложения', 'value' => '5'],
+        ];
+    }
+
+    public function settingsCreditTypes()
+    {
+        return [
+            ['title' => 'кредит без переплаты', 'value' => 'INSTALLMENT'],
+            ['title' => 'кредит', 'value' => 'CREDIT'],
+        ];
+    }
+
+
 }

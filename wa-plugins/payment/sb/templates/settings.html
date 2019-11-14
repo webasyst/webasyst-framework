@@ -1,0 +1,23 @@
+{$prefix = 'sb_payment_'}
+
+<div class="js-payment-sb-settings">
+    {* BASIC *}
+    {include file='./include.settings_basic.html' inline}
+    <br>
+    <br>
+    {* CREDIT *}
+    {include file='./include.settings_credit.html' inline}
+    <br>
+    <br>
+    {* FISCALIZATION *}
+    {include file='./include.settings_fiscalization.html' inline}
+
+    <script src="{$wa_url}wa-plugins/payment/sb/js/settings.js?{$wa->version(true)}"></script>
+    <script>
+        ( function($) {
+            new SystemPaymentSBPluginSettings({
+                $wrapper: $(".js-payment-sb-settings")
+            });
+        })(jQuery);
+    </script>
+</div>

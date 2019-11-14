@@ -1,0 +1,99 @@
+<div class="field">
+    <div class="name"></div>
+    <div class="value"><h3>{$obj->_w('Фискализация платежей')}</h3></div>
+</div>
+
+<div class="field">
+    <div class="name">
+        <label for="{$prefix}fiscalization">{$obj->_w('Фискализация')}</label>
+    </div>
+    <div class="value">
+        <input type="checkbox" class="js-payment-sb-fiscalization" name="{$namespace}[fiscalization]"
+               id="{$prefix}fiscalization" value="1" {if ifset($settings, 'fiscalization', '')}checked{/if}>
+        <br>
+        <span class="hint">{$obj->_w('Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:<br>— к элементам заказа и стоимости доставки не применяются налоги<br>— налог составляет 0%, 10% либо 20% и <em>включён</em> в стоимость элементов заказа и стоимость доставки')}</span>
+    </div>
+</div>
+
+<div class="js-payment-sb-subjects-wrapper">
+    <div class="field">
+        <div class="name">
+            <label for="{$prefix}payment_method">{$obj->_w('Признак способа расчёта в чеках')}</label>
+        </div>
+        <div class="value">
+            <select name="{$namespace}[payment_method]" autocomplete="off" id="{$prefix}payment_method">
+                {$current_payment_method= ifset($settings, 'payment_method', '')}
+                {foreach $payment_methods as $method}
+                    <option value="{$method['value']}" {if $current_payment_method === {$method['value']}}selected{/if}>{$method['title']}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            <label for="{$prefix}payment_subject_product">{$obj->_w('Признак предмета расчёта для товаров в чеках')}</label>
+        </div>
+        <div class="value">
+            <select name="{$namespace}[payment_subject_product]" autocomplete="off" id="{$prefix}payment_subject_product">
+                {$current_product = ifset($settings, 'payment_subject_product', '')}
+                {foreach $payment_subject as $subject}
+                    <option value="{$subject['value']}" {if $current_product === {$subject['value']}}selected{/if}>{$subject['title']}</option>
+                {/foreach}
+            </select>
+            <br>
+            <span class="hint">{$obj->_w('Категория ваших товаров в чеке — для передачи в налоговую инспекцию.')}</span>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            <label for="{$prefix}payment_subject_service">{$obj->_w('Признак предмета расчёта для доставки в чеках')}</label>
+        </div>
+        <div class="value">
+            <select name="{$namespace}[payment_subject_service]" autocomplete="off" id="{$prefix}payment_subject_service">
+                {$current_service = ifset($settings, 'payment_subject_service', '')}
+                {foreach $payment_subject as $subject}
+                    <option value="{$subject['value']}" {if $current_service === {$subject['value']}}selected{/if}>{$subject['title']}</option>
+                {/foreach}
+            </select>
+            <br>
+            <span class="hint">{$obj->_w('Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.')}</span>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">
+            <label for="{$prefix}payment_subject_shipping">{$obj->_w('Признак предмета расчёта для доставки в чеках')}</label>
+        </div>
+        <div class="value">
+            <select name="{$namespace}[payment_subject_shipping]" autocomplete="off" id="{$prefix}payment_subject_shipping">
+                {$current_shipping = ifset($settings, 'payment_subject_shipping', '')}
+                {foreach $payment_subject as $subject}
+                    <option value="{$subject['value']}" {if $current_shipping === {$subject['value']}}selected{/if}>{$subject['title']}</option>
+                {/foreach}
+            </select>
+            <br>
+            <span class="hint">{$obj->_w('Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.')}</span>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="field js-payment-sb-tax-wrapper">
+    <div class="name">
+        <label for="{$prefix}tax_system">{$obj->_w('Система налогообложения')}</label>
+    </div>
+    <div class="value">
+        <select name="{$namespace}[tax_system]" autocomplete="off" id="{$prefix}tax_system">
+            {$current_tax = ifset($settings, 'tax_system', '')}
+            {foreach $tax_systems as $tax}
+                <option value="{$tax['value']}" {if $current_tax === {$tax['value']}}selected{/if}>{$tax['title']}</option>
+            {/foreach}
+        </select>
+        <br>
+        <span class="hint">{$obj->_w('Категория способа оплаты всех позиций в чеке — для передачи в налоговую инспекцию.')}</span>
+    </div>
+</div>
+
