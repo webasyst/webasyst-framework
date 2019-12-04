@@ -75,6 +75,17 @@ class siteFrontendAction extends waPageAction
 
     public function display($clear_assign = true)
     {
+        /**
+         * @event frontend_nav
+         * @return array[string]string $return[%plugin_id%] html output for navigation section
+         */
+        $this->view->assign('frontend_nav', wa()->event('frontend_nav'));
+
+        /**
+         * @event frontend_nav_aux
+         * @return array[string]string $return[%plugin_id%] html output for navigation section
+         */
+        $this->view->assign('frontend_nav_aux', wa()->event('frontend_nav_aux'));
         return parent::display(false);
     }
 
