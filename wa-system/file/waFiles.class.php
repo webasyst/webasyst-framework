@@ -243,10 +243,7 @@ class waFiles
      */
     public static function extension($file)
     {
-        if (($i = strrpos($file, '.')) !== false) {
-            return strtolower(substr($file, $i + 1));
-        }
-        return '';
+        return strtolower(pathinfo($file, PATHINFO_EXTENSION));
     }
 
     /**
@@ -257,9 +254,25 @@ class waFiles
      */
     public static function getMimeType($filename)
     {
-        $type = self::extension($filename);
-
-        switch ($type) {
+		$extension = self::extension($filename);
+        
+		if (in_array($extension, array('jpg', 'jpeg', 'png', 'gif', 'tiff', 'bmp', 'swf'))) {
+			$file = getimagesize($filename);
+			if (isset($file['mime'])) {
+				return $file['mime'];
+            }
+		}
+        if (class_exists('finfo', false)) {
+            $info = new finfo(defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME);
+			if ($info) {
+				return $info->file($filename);
+			}
+		}
+        if (ini_get('mime_magic.magicfile') && function_exists('mime_content_type')) {
+			return mime_content_type($filename);
+		}
+        
+        switch ($extension) {
             case 'jpg':
             case 'jpeg':
             case 'jpe':
@@ -268,7 +281,7 @@ class waFiles
             case 'gif':
             case 'bmp':
             case 'tiff':
-                return 'image/'.strtolower($type);
+                return 'image/' . $extension;
             case 'ico':
                 return 'image/x-icon';
             case 'doc':
