@@ -254,7 +254,7 @@ class waModel
      */
     private function run($sql, $unbuffer = false)
     {
-        $sql = trim($sql);
+        $sql = str_replace(':table', $this->table, trim($sql));
         $result = $this->adapter->query($sql);
         if (!$result) {
             $error = sprintf(
@@ -272,6 +272,7 @@ class waModel
      * Executes a SQL query without returning its result.
      *
      * @param string $sql SQL query, optionally containing placeholders:
+     *     - :table - placeholder for table name ($this->table)
      *     - simple placeholders in the form of '?' characters
      *     - named placeholders in the form type:name
      *         Named placeholder 'type' must be one of the following:
@@ -286,7 +287,7 @@ class waModel
      * @param mixed $params One or more optional parameters to insert actual values instead of placeholders into SQL query.
      *     For simple placeholders marked as '?', specify additional parameters for exec() method, each parameter per
      *     placeholder, their order matching that of placeholders used in SQL query.
-     * @example $model->exec('UPDATE table_name SET name = ? WHERE id = ?', $name, $id);
+     * @example $model->exec('UPDATE :table SET name = ? WHERE id = ?', $name, $id);
      *
      *     For named placeholders, $params must contain an associative array of items corresponding to the following coniditions:
      *     a) The key of array item must match one of placeholder names specified in SQL query
@@ -294,7 +295,7 @@ class waModel
      *        the key of this array item.
      *     The order of array items has no importance for named placeholders.
      * @example $data = array('name' => 'John', 'id' => 25,);
-     *     $model->exec('UPDATE table_name SET name = s:name WHERE id = i:id', $data);
+     *     $model->exec('UPDATE :table SET name = s:name WHERE id = i:id', $data);
      *
      * @return resource|bool
      */
@@ -1029,6 +1030,7 @@ class waModel
      */
     public function prepare($sql)
     {
+        $sql = str_replace(':table', $this->table, $sql);
         return new waDbStatement($this, $sql);
     }
 
