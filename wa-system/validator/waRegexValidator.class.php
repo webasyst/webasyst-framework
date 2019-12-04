@@ -22,7 +22,9 @@ class waRegexValidator extends waStringValidator
     protected function init()
     {
         parent::init();
-        $this->setMessage('not_match', _ws('Not match.'));
+        if(empty($this->messages['not_match'])) {
+            $this->setMessage('not_match', _ws('Not match.'));
+        }
     }
 
     public function setPattern($pattern)
