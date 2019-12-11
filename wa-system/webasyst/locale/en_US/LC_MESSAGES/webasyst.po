@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-07-29 17:55+0300\n"
+"PO-Revision-Date: 2019-11-27 18:08+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: en\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4016,7 +4016,7 @@ msgid "To add emoji support enable <b>Debug mode</b> in <b>General settings</b>.
 msgstr ""
 
 #: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:9
-msgid "Database tables and fields"
+msgid "Add emoji support"
 msgstr ""
 
 #: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:12
@@ -4025,10 +4025,6 @@ msgstr ""
 
 #: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:13
 msgid "Old encoding"
-msgstr ""
-
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:18
-msgid "You may also use phpMyAdmin to change database tables and fields encoding."
 msgstr ""
 
 #: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:27

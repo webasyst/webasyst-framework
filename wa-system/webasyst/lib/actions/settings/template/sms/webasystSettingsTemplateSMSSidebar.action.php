@@ -4,9 +4,6 @@ class webasystSettingsTemplateSMSSidebarAction extends webasystSettingsTemplateA
 {
     public function execute()
     {
-        if (!webasystHelper::smsTemplateAvailable()) {
-            throw new waException(_ws('Page not found'), 404);
-        }
         $channels = $this->getVerificationChannelModel()->getByType(waVerificationChannelModel::TYPE_SMS);
 
         if (!$this->channel instanceof waVerificationChannelSMS) {

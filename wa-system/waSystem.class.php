@@ -294,14 +294,23 @@ class waSystem
     }
 
     /**
-     * @param string $adapter
+     * Get map by adapter
+     *
+     * @param string|null $adapter Id of adapter map. Empty id (null) is google adapter for historical reasons
      * @return waMapAdapter
      * @throws waException
      */
     public function getMap($adapter = null)
     {
         if (empty($adapter)) {
+
             $adapter = wa()->getSetting('map_adapter', 'google', 'webasyst');
+
+            // map is disabled
+            if ($adapter === 'disabled') {
+                return new waDisabledMapAdapter();
+            }
+
         }
 
         $file = $this->config->getPath('system').'/map/adapters/'.$adapter.'Map.class.php';
@@ -352,6 +361,16 @@ class waSystem
                 }
             }
         }
+
+        // no adapters in system - disable map right away
+        if (!$result) {
+            $model = new waAppSettingsModel();
+            $adapter = $model->get('webasyst', 'map_adapter');
+            if ($adapter !== 'disabled') {
+                $model->set('webasyst', 'map_adapter', 'disabled');
+            }
+        }
+
         return $result;
     }
 

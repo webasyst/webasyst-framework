@@ -198,33 +198,25 @@
 
                 var hash = location.hash;
                 if (hash.indexOf('theme=') !== -1) {
-                    if (hash.indexOf('action=settings') !== -1) {
-                        if (!params['route']) {
-                            location.href = href;
-                        } else {
-                            hash = hash.replace(/route=[^&]+/, 'route=' + params['route']);
-                            $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
-                        }
+                    if (!params['route']) {
+                        hash = hash.replace(/&route=[^&]+/, '');
+                    } else if (hash.indexOf('route=') !== -1) {
+                        hash = hash.replace(/route=[^&]+/, 'route=' + params['route']);
                     } else {
-                        if (!params['route']) {
-                            hash = hash.replace(/&route=[^&]+/, '');
-                        } else if (hash.indexOf('route=') != -1) {
-                            hash = hash.replace(/route=[^&]+/, 'route=' + params['route']);
-                        } else {
-                            hash = hash + '&route=' + params['route'];
-                        }
-                        if (!params['domain']) {
-                            hash = hash.replace(/&domain=[^&]+/, '');
-                        } else if (hash.indexOf('domain=') != -1) {
-                            hash = hash.replace(/domain=[^&]+/, 'domain=' + params['domain']);
-                        } else {
-                            hash = hash + '&domain=' + params['domain'];
-                        }
-                        $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                        hash = hash + '&route=' + params['route'];
                     }
+                    if (!params['domain']) {
+                        hash = hash.replace(/&domain=[^&]+/, '');
+                    } else if (hash.indexOf('domain=') !== -1) {
+                        hash = hash.replace(/domain=[^&]+/, 'domain=' + params['domain']);
+                    } else {
+                        hash = hash + '&domain=' + params['domain'];
+                    }
+                    $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
                 } else {
                     location.href = href;
                 }
+
                 {if !$options.is_ajax}waDesignLoad();{/if}
                 return false;
             }

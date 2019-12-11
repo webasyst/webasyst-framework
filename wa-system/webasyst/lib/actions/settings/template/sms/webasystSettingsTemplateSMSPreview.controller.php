@@ -9,9 +9,6 @@ class webasystSettingsTemplateSMSPreviewController extends webasystSettingsJsonC
 
     public function execute()
     {
-        if (!webasystHelper::smsTemplateAvailable()) {
-            throw new waException(_ws('Page not found'), 404);
-        }
         /**
          * @var waVerificationChannelSMS $channel
          */

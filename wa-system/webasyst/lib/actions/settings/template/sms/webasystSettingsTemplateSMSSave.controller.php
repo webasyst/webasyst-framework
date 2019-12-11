@@ -4,9 +4,6 @@ class webasystSettingsTemplateSMSSaveController extends webasystSettingsTemplate
 {
     public function execute()
     {
-        if (!webasystHelper::smsTemplateAvailable()) {
-            throw new waException(_ws('Page not found'), 404);
-        }
         if (!$this->channel) {
             return;
         }

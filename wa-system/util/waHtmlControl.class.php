@@ -1112,7 +1112,6 @@ HTML;
         var input_date = $('#{$date_params['id']}');
         var input_date_formatted = $('#{$date_formatted_params['id']}');
         var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
-        var interval_options = interval? interval.find('option'):[];
         var multiple_dates = {$multiple};
         var multiple_dates_formatted = {$multiple};
         var holidays = {$holidays};
@@ -1248,6 +1247,7 @@ HTML;
                     var day_type = dayType(date);
                     var day = (date.getDay() + 6) % 7;
                     if (interval && interval.length) {
+                        var interval_options = interval? interval.find('option'):[]
                         /** @var int day week day */
                         var timestamp = date.getTime();
                         available = false;

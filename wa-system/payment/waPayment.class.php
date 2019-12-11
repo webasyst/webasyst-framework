@@ -277,7 +277,7 @@ abstract class waPayment extends waSystemPlugin
                 $log = array(
                     'merchant_id' => $this->merchant_id,
                 );
-                self::log($this->id, $log);
+                static::log($this->id, $log);
             }
         }
         $this->merchant_id =& $this->key;
@@ -327,8 +327,8 @@ abstract class waPayment extends waSystemPlugin
             if (class_exists('waPaymentDebug')) {
                 waPaymentDebug::startDebugCallback();
             }
-            $module = self::factory($module_id);
-            self::log($module_id, $log);
+            $module = static::factory($module_id);
+            static::log($module_id, $log);
 
 
             $response = $module->callbackInit($request)->init()->callbackHandler($request);
@@ -339,7 +339,7 @@ abstract class waPayment extends waSystemPlugin
             $log = array(
                 'response' => $response,
             );
-            self::log($module_id, $log);
+            static::log($module_id, $log);
             return $response;
         } catch (Exception $ex) {
 
@@ -353,7 +353,7 @@ abstract class waPayment extends waSystemPlugin
                 'code'      => $ex->getCode(),
             );
 
-            self::log($module ? $module->getId() : 'general', $log);
+            static::log($module ? $module->getId() : 'general', $log);
             if (class_exists('waPaymentDebug')) {
                 waPaymentDebug::endDebugCallback($module ? $module->getId() : 'general');
             }
@@ -375,7 +375,7 @@ abstract class waPayment extends waSystemPlugin
                 'exception' => $ex->getMessage(),
                 'code'      => $ex->getCode(),
             );
-            self::log($module ? $module->getId() : 'general', $log);
+            static::log($module ? $module->getId() : 'general', $log);
             if (class_exists('waPaymentDebug')) {
                 waPaymentDebug::endDebugCallback($module ? $module->getId() : 'general');
             }
@@ -439,7 +439,7 @@ abstract class waPayment extends waSystemPlugin
         if (!empty($suggested_app_id)) {
             $log['_magic'] = 'APP_ID suggested';
         }
-        self::log($this->id, $log);
+        static::log($this->id, $log);
         return $this;
     }
 
@@ -473,22 +473,43 @@ abstract class waPayment extends waSystemPlugin
     protected function execAppCallback($method, $transaction_data)
     {
         $original_method = $method;
+
+        $update = array();
+
         try {
             $method = $this->isRepeatedCallback($method, $transaction_data);
-            $params = $transaction_data;
-            $params['payment_plugin_instance'] = &$this;
-
             if (!empty($method)) {
+                $params = $transaction_data;
+                $params['payment_plugin_instance'] = &$this;
                 $result = $this->getAdapter()->execCallbackHandler($method, $params);
             } else {
                 $method = '~CALLBACK IGNORED AS REPEATED~';
                 $result = false;
             }
-        } catch (Exception $e) {
+        } catch (Exception $ex) {
             $result = array(
-                'error' => $e->getMessage(),
-                'code'  => $e->getCode(),
+                'error' => $ex->getMessage(),
+                'code'  => $ex->getCode(),
             );
+        }
+
+        if ($result) {
+            foreach (array('order_id', 'customer_id', 'result', 'error') as $k) {
+                if (isset($result[$k])) {
+                    $transaction_data[$k] = $result[$k];
+                    $update = true;
+                }
+            }
+        }
+
+        if ($original_method != $method) {
+            $transaction_data['result'] = 'is_repeated';
+            $update = true;
+        }
+
+        if ($update && !empty($transaction_data['id'])) {
+            $transaction_model = new waTransactionModel();
+            $transaction_model->updateById($transaction_data['id'], $transaction_data);
         }
 
         $log = array(
@@ -498,30 +519,19 @@ abstract class waPayment extends waSystemPlugin
             'original_callback_method' => $original_method,
             'transaction_data'         => $transaction_data,
             'result'                   => $result,
+            'update'                   => $update,
         );
+
+        if (!empty($ex)) {
+            $log['trace'] = $ex->getTraceAsString();
+        }
 
         if ($log['callback_method'] === $log['original_callback_method']) {
             unset($log['original_callback_method']);
         }
-        self::log($this->id, $log);
 
-        if ($result) {
-            $transaction_model = new waTransactionModel();
-            $data = array();
-            foreach (array('order_id', 'customer_id', 'result', 'error') as $k) {
-                if (isset($result[$k])) {
-                    $data[$k] = $result[$k];
-                }
-            }
+        static::log($this->id, $log);
 
-            if ($original_method !== $method) {
-                $data['result'] = 'is_repeated';
-            }
-
-            if ($data && !empty($transaction_data['id'])) {
-                $transaction_model->updateById($transaction_data['id'], $data);
-            }
-        }
         return $result;
     }
 
@@ -544,7 +554,7 @@ abstract class waPayment extends waSystemPlugin
                 'app_id'      => $this->app_id,
                 'merchant_id' => $this->merchant_id,
                 'native_id'   => $transaction_data['native_id'],
-                'type'        => $method,
+                'type'        => $transaction_data['type'],
             );
 
             if (empty($strict)) {
@@ -559,8 +569,11 @@ abstract class waPayment extends waSystemPlugin
             }
 
             foreach ($wa_transactions as $id => $transaction) {
-                //ignore other repeated requests
                 if ($transaction['result'] === 'is_repeated') {
+                    //ignore repeated requests
+                    unset($wa_transactions[$id]);
+                } elseif (!empty($transaction['error'])) {
+                    //ignore failed requests
                     unset($wa_transactions[$id]);
                 }
             }
@@ -579,7 +592,11 @@ abstract class waPayment extends waSystemPlugin
 
             if ($wa_transactions) {
                 $method = self::CALLBACK_NOTIFY;
+                $transaction_data['type'] = '';
             }
+        } else {
+
+            $transaction_data['type'] = '';
         }
         return $method;
     }
@@ -800,7 +817,7 @@ abstract class waPayment extends waSystemPlugin
         $transaction_raw_data = $transaction['raw_data'];
         unset($transaction['raw_data']);
 
-        $instance = self::factory($transaction['plugin'], $transaction['merchant_id'], $transaction['app_id']);
+        $instance = static::factory($transaction['plugin'], $transaction['merchant_id'], $transaction['app_id']);
 
         $result = $instance->allowedTransactionCustomized($transaction, $transaction_raw_data);
         if ($result) {
@@ -1129,7 +1146,7 @@ abstract class waPayment extends waSystemPlugin
      * @param string $order_id
      * @param array  $expected_transaction_types
      * @param bool   $strict
-     * @return array
+     * @return array[string] key is one of waPayment::TRANSACTION_*
      * @throws waException
      * @since 1.13 framework version
      */
@@ -1188,10 +1205,8 @@ abstract class waPayment extends waSystemPlugin
         $transactions = self::filterTransactionsByDate($transactions);
 
         foreach ($transactions as $transaction) {
-            $type = $map[$transaction['state']];
-            $state_transactions[$type] = $transaction;
+            $state_transactions[$map[$transaction['state']]] = $transaction;
         }
-
 
         return $state_transactions;
     }
@@ -1229,7 +1244,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      * @param      $order_id
      * @param bool $strict
-     * @return string[]
+     * @return array[string] transactions array with key one of waPayment::TRANSACTION_
      * @throws waException
      * @since 1.13 framework version
      */
@@ -1247,7 +1262,7 @@ abstract class waPayment extends waSystemPlugin
             $transactions[waPayment::TRANSACTION_CAPTURE] = $state_transactions[waPayment::TRANSACTION_AUTH];
             $transactions[waPayment::TRANSACTION_CANCEL] = $state_transactions[waPayment::TRANSACTION_AUTH];
         } elseif (isset($state_transactions[waPayment::TRANSACTION_CONFIRM])) {
-            //
+            $transactions[waPayment::TRANSACTION_PAYMENT] = $state_transactions[waPayment::TRANSACTION_CONFIRM];
         }
         return $transactions;
     }
@@ -1298,11 +1313,16 @@ abstract class waPayment extends waSystemPlugin
                     break;
                 } elseif (in_array($transaction['state'], $last, true)) {
                     $this->capture_transaction = $transaction;
-                } elseif ($transaction['state'] === waPayment::STATE_PARTIAL_REFUNDED) {
+                } elseif (($transaction['state'] === waPayment::STATE_PARTIAL_REFUNDED)
+                    && ($transaction['type'] === waPayment::OPERATION_REFUND)
+                ) {
                     if (!empty($transaction['raw_data'])) {
                         try {
                             $data = $this->formalizeData($transaction['raw_data']);
                             $refunded_amount += floatval($data['amount']);
+                            if (isset($data['refunded_amount'])) {
+                                $refunded_amount = $data['refunded_amount'];
+                            }
                         } catch (waException $ex) {
                             $refunded_amount += floatval($transaction['amount']);
                         }

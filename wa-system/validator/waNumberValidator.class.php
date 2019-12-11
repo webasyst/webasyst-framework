@@ -18,6 +18,7 @@ class waNumberValidator extends waRegexValidator
 
     protected function init()
     {
+        parent::init();
         $this->setMessage('not_match', _ws('Incorrect numerical value'));
         $this->setPattern(self::REGEX_NUMBER);
     }

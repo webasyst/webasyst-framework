@@ -1,0 +1,56 @@
+{$wrapper_id = "yandex-map-wrapper-{$id}"}
+{$map_id = "yandex-map-{$id}"}
+
+<div id="{$wrapper_id}">
+
+    {* MAP DOM *}
+    <div id="{$map_id}" class="map js-map-block" style="width:{$options.width}; height: {$options.height}"></div>
+
+    {* ERROR DOM *}
+    <div class="js-wa-yandex-map-error-block wa-yandex-map-error-block" style="display: none">
+        <div class="js-text wa-text"></div>
+    </div>
+
+    {$locales = [
+        'error_400' => _ws('Yandex.Maps returns error “%s”'),
+        'error_403' => _ws('Yandex.Maps returns error “%s”, API key is invalid. Try to fix it in the <a href="https://developer.tech.yandex.ru/services/">developer dashboard</a>.'),
+        'error_429' => _ws('Yandex.Maps returns error “%s”, daily rate limit is exceeded.'),
+        'error' => _ws('Yandex.Maps returns error “%s”, probably API key invalid or daily rate limit is exceeded.')
+    ]}
+
+    {$script_url = "{$wa_url}wa-content/js/map/yandex/map.js?v={$wa->version()}"}
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            var init = function () {
+                var options = {$options|json_encode};
+
+                {* Meta programming magic, prepare callback for js *}
+                {if $options.on_error.type === 'callback'}
+                    {* NOTICE: without quotes - it is not string - it is callback *}
+                    options.on_error.callback = {$options.on_error.callback};
+                {/if}
+
+                new waYandexMap({
+                    $wrapper: $('#{$wrapper_id}'),
+                    $map: $('#{$map_id}'),
+                    url: {$url|json_encode},
+                    address: {$address|default:''|json_encode},
+                    options: options,
+                    type: {$type|json_encode},     // query type of point: 'address', 'coords'
+                    locales: {$locales|json_encode}
+                });
+            };
+
+            if (window.waYandexMap) {
+                init();
+            } else {
+                $.getScript("{$script_url}", init);
+            }
+
+
+        });
+    </script>
+</div>

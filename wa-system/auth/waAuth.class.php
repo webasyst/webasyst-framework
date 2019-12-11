@@ -681,6 +681,9 @@ class waAuth implements waiAuth
             throw new waAuthInvalidCredentialsException();
         }
 
+        // was phone was transformed during the sms sending
+        $phone_transformed = $csm->getOne($contact->getId(), 'webasyst', 'onetime_password_phone_transformed');
+
         if ($this->isValidEmail($login)) {
             $priority = waVerificationChannelModel::TYPE_EMAIL;
         } elseif ($this->isValidPhoneNumber($login)) {
@@ -694,18 +697,35 @@ class waAuth implements waiAuth
             throw new waAuthInvalidCredentialsException();
         }
 
+        $recipient = array(
+            'id' => $contact->getId(),
+            'phone' => $contact->get('phone', 'default'),
+            'email' => $contact->get('email', 'default')
+        );
+        $recipient['phone'] = waContactPhoneField::cleanPhoneNumber($recipient['phone']);
+
+        if ($phone_transformed) {
+            $transformation_result = $this->auth_config->transformPhone($recipient['phone']);
+            if ($transformation_result['status']) {
+                // actually transformed successfully
+                $recipient['phone'] = $transformation_result['phone'];
+            }
+        }
+
         $verified = false;
         $results = array();
         foreach ($channels as $channel_id => $channel) {
             $channel = waVerificationChannel::factory($channel);
+
             $res = $channel->validateOnetimePassword($password, array(
-                'recipient' => $contact,
+                'recipient' => $recipient,
                 'asset_id' => $asset_id,
                 'check_tries' => array(
                     'count' => $this->auth_config->getVerifyCodeTriesCount(),
                     'clean' => true
                 )
             ));
+
             $results[$channel->getType()] = $res;
             if ($res['status']) {
                 $verified = true;

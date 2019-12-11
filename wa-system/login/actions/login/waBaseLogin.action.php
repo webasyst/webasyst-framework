@@ -23,6 +23,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
     /**
      * waBaseLoginAction constructor.
      * @param null $params
+     * @throws waException
      */
     public function __construct($params = null)
     {
@@ -71,6 +72,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * Validate login. Login can be one of these: email, phone or wa_contact.login
      * @param $login
      * @return string|null
+     * @throws waException
      */
     protected function validateLogin($login)
     {
@@ -86,6 +88,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * Validate password
      * @param string $password
      * @return string|null
+     * @throws waException
      */
     protected function validatePassword($password)
     {
@@ -100,6 +103,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
     /**
      * Validate captcha
      * @return string|null
+     * @throws waException
      */
     protected function validateCaptcha()
     {
@@ -123,6 +127,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      *      If status is FALSE, details has keys
      *        - string|null 'error_code' some string ID of error, that will be send to client as a controller response
      *        - string      'error_msg'  message about error
+     * @throws waException
      */
     protected function validateCode($code, $phone)
     {
@@ -149,6 +154,19 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
         $channel = $this->auth_config->getSMSVerificationChannelInstance();
 
+        //
+        $is_international = substr($phone, 0, 1) === '+';
+
+        // phone was transformed while sent sms
+        $phone_transformed = $this->wasPhoneTransformedForSMS();
+
+        // input phone is not international and was transformed while sent sms means in DB we has transformed phone, so validation must be on transformed phone
+        if (!$is_international && $phone_transformed) {
+            $transformation_result = $this->auth_config->transformPhone($phone);
+            $phone = $transformation_result['phone'];
+        }
+
+        // validate code itself
         $result = $channel->validateSignUpConfirmation($code, array(
             'recipient' => $phone,
             'check_tries' => array(
@@ -178,6 +196,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * @param $data
      * @param null|array $fields What fields to validate. Null is all input fields
      * @return array
+     * @throws waException
      */
     protected function validate($data, $fields = null)
     {
@@ -209,6 +228,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
                 }
             }
         }
+
         return $errors;
     }
 
@@ -235,9 +255,24 @@ abstract class waBaseLoginAction extends waLoginModuleController
         // Confirmation code posted and in validation step already validated, so update phone status
         if (isset($data['confirmation_code'])) {
             $contact_info = $auth->getByLogin($data['login'], waAuth::LOGIN_FIELD_PHONE);
+
             if ($contact_info) {
+
+                // non-international phone try to convert to international
+                $phone = $data['login'];
+                $is_international = substr($phone, 0, 1) === '+';
+                if (!$is_international) {
+                    $result = $this->auth_config->transformPhone($phone);
+                    $phone = $result['phone'];
+                }
+
                 $dm = new waContactDataModel();
-                $dm->updateContactPhoneStatus($contact_info['id'], $data['login'], waContactDataModel::STATUS_CONFIRMED);
+                $status_updated = $dm->updateContactPhoneStatus($contact_info['id'], $phone, waContactDataModel::STATUS_CONFIRMED);
+                if (!$status_updated) {
+                    // rollback to phone before transformation
+                    $dm->updateContactPhoneStatus($contact_info['id'], $data['login'], waContactDataModel::STATUS_CONFIRMED);
+                }
+
             }
         }
 
@@ -311,17 +346,43 @@ abstract class waBaseLoginAction extends waLoginModuleController
 
                 // Ok timeout is passed - resent code
 
+                $phone = waContactPhoneField::cleanPhoneNumber($data['login']);
+                $is_international = substr($phone, 0, 1) === '+';
+                $phone_transformed = false;
+
                 $channel = $this->auth_config->getSMSVerificationChannelInstance();
-                $sent = $channel->sendSignUpConfirmationMessage($data['login'], array(
+
+                $sent = $channel->sendSignUpConfirmationMessage($phone, array(
                     'use_session' => true
                 ));
+
+                // Not sent, maybe because of sms adapter not work correct with not international phones
+                if (!$sent && !$is_international) {
+                    // If not international phone number - transform 8 to code (country prefix)
+                    $transform_result = $this->auth_config->transformPhone($phone);
+                    if ($transform_result['status']) {
+                        $phone_transformed = true;
+                        $phone = $transform_result['phone'];
+                        $sent = $channel->sendSignUpConfirmationMessage($phone, array(
+                            'use_session' => true
+                        ));
+                    }
+                }
 
                 if (!$sent) {
                     $errors['auth'] = "Sorry, we cannot sent confirmation code. Please refer to your system administrator.";
                 } else {
 
+                    $this->markPhoneWasTransformedForSMS($phone_transformed);
+
+                    $phone_formatted = $phone;
+                    $phone_field = waContactFields::get('phone');
+                    if ($phone_field) {
+                        $phone_formatted = $phone_field->format($phone_formatted, 'value');
+                    }
+
                     $msg = _ws('An SMS message has been sent to phone number <strong>%s</strong> for you to confirm signup.');
-                    $msg = sprintf($msg, waContactPhoneField::cleanPhoneNumber($data['login']));
+                    $msg = sprintf($msg, $phone_formatted);
 
                     $this->assign(array(
                         'code_sent' => true,
@@ -374,6 +435,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * Need to prevent to ofter request of confirmation code
      * See usage of method for details
      * @return bool
+     * @throws waException
      */
     protected function isSentCodeTimeoutPassed()
     {
@@ -387,6 +449,28 @@ abstract class waBaseLoginAction extends waLoginModuleController
         $result = $now_time - $last_time > $timeout;
         wa()->getStorage()->set($key, $now_time);
         return $result;
+    }
+
+    /**
+     * Mark phone was transformed due the sending of sms with confirmation_code
+     * @param bool $transformed
+     * @throws waException
+     */
+    protected function markPhoneWasTransformedForSMS($transformed)
+    {
+        $key = 'wa/login/sent_code/phone_was_transformed/';
+        wa()->getStorage()->set($key, (bool)$transformed);
+    }
+
+    /**
+     * Was phone transformed due the sending sms with confirmation_code
+     * @return bool
+     * @throws waException
+     */
+    protected function wasPhoneTransformedForSMS()
+    {
+        $key = 'wa/login/sent_code/phone_was_transformed/';
+        return (bool)wa()->getStorage()->get($key);
     }
 
     /**
@@ -517,18 +601,50 @@ abstract class waBaseLoginAction extends waLoginModuleController
         $asset_id = null;
         $channel_type = null;
 
+        // phone was transformed during the sms sending
+        $phone_transformed = false;
+
+        $recipient = array(
+            'id' => $contact->getId(),
+            'phone' => $contact->get('phone', 'default'),
+            'email' => $contact->get('email', 'default')
+        );
+        $recipient['phone'] = waContactPhoneField::cleanPhoneNumber($recipient['phone']);
+
+        $send_options = array(
+            'site_url' => $this->auth_config->getSiteUrl(),
+            'site_name' => $this->auth_config->getSiteName(),
+            'login_url' => $this->auth_config->getLoginUrl(array(), true),
+        );
+
         // look through channels and try send onetime password, first success - break loop
         foreach ($channels as $channel) {
 
-            $asset_id = $channel->sendOnetimePasswordMessage($contact, array(
-                'site_url' => $this->auth_config->getSiteUrl(),
-                'site_name' => $this->auth_config->getSiteName(),
-                'login_url' => $this->auth_config->getLoginUrl(array(), true),
-            ));
+            $asset_id = $channel->sendOnetimePasswordMessage($recipient, $send_options);
 
             if ($asset_id > 0) {
                 $channel_type = $channel->getType();
                 break;
+            }
+
+            // fail on sending SMS, try convert from local phone prefix to international phone prefix (for Russia is 8 => 7)
+            if ($channel->isSMS() && !empty($recipient['phone'])) {
+                $transformation_result = $this->auth_config->transformPhone($recipient['phone']);
+                if ($transformation_result['status']) {
+
+                    // actually converted
+                    $recipient['phone'] = $transformation_result['phone'];
+
+                    // try send again
+                    $asset_id = $channel->sendOnetimePasswordMessage($recipient, $send_options);
+
+                    // successful sms sending
+                    if ($asset_id > 0) {
+                        $phone_transformed = true;
+                        $channel_type = $channel->getType();
+                        break;
+                    }
+                }
             }
 
             // diagnostic log prints
@@ -567,9 +683,10 @@ abstract class waBaseLoginAction extends waLoginModuleController
             return array(false, array());
         }
 
-        // remember onetime password asset for this user
+        // remember onetime password asset for this user (not in session cause we will validate onetime password in waAuth class)
         $csm = new waContactSettingsModel();
         $csm->set($user_info['id'], 'webasyst', 'onetime_password_id', $asset_id);
+        $csm->set($user_info['id'], 'webasyst', 'onetime_password_phone_transformed', $phone_transformed);
 
         // prepare message for user
         if ($channel_type == waVerificationChannelModel::TYPE_EMAIL) {
@@ -595,6 +712,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
      * Need to prevent to ofter request of onetime password
      * See usage of method for details
      * @return bool
+     * @throws waException
      */
     protected function isTimeoutPassed()
     {

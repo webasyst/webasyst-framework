@@ -396,6 +396,7 @@ class waSignupAction extends waViewAction
      *
      * @param null|string $priority waVerificationChannelModel::TYPE_* const
      * @return array(0 => <status>, 1 => <details>)
+     * @throws waException
      */
     protected function sendSignupNotify($addresses, $priority = null)
     {
@@ -412,18 +413,10 @@ class waSignupAction extends waViewAction
         $used_address = null;
 
         foreach ($channels as $channel) {
-            if ($channel->isEmail() && !empty($addresses['email'])) {
-                $address = $addresses['email'];
-            } elseif ($channel->isSMS() && !empty($addresses['phone'])) {
-                $address = $addresses['phone'];
-            } else {
-                $address = null;
-            }
 
-            if (!$address) {
-                continue;
-            }
+            $address = null;
 
+            // options for send method
             $options = array(
                 'site_url' => $this->auth_config->getSiteUrl(),
                 'site_name' => $this->auth_config->getSiteName(),
@@ -432,8 +425,35 @@ class waSignupAction extends waViewAction
             if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD) {
                 $options['password'] = $this->getGeneratePassword();
             }
-            $sent = $channel->sendSignUpSuccessNotification($address, $options);
 
+            if ($channel->isEmail() && !empty($addresses['email'])) {
+                $address = $addresses['email'];
+                $sent = $channel->sendSignUpSuccessNotification($address, $options);
+            } elseif ($channel->isSMS() && !empty($addresses['phone'])) {
+
+                $phone = $addresses['phone'];
+                $is_international = substr($phone, 0, 1) === '+';
+
+                $sent = $channel->sendSignUpSuccessNotification($phone, $options);
+
+                // Not sent, maybe because of sms adapter not work correct with not international phones
+                if (!$sent && !$is_international) {
+                    // If not international phone number - transform 8 to code (country prefix)
+                    $transform_result = $this->auth_config->transformPhone($phone);
+                    if ($transform_result['status']) {
+                        $phone = $transform_result['phone'];
+                        $sent = $channel->sendSignUpSuccessNotification($phone, $options);
+                    }
+                }
+
+                $address = $phone;
+            }
+
+            if (!$address) {
+                continue;
+            }
+
+            // successful send
             if ($sent) {
                 $used_address = $address;
                 $used_channel_type = $channel->getType();
@@ -540,8 +560,19 @@ class waSignupAction extends waViewAction
 
         if (!empty($details['confirmation_code_sent'])) {
 
+            if (!empty($details['phone_transformed'])) {
+                $this->markPhoneWasTransformedForSMS($details['phone_transformed']);
+            }
+
             $msg = _ws('An SMS message has been sent to phone number <strong>%s</strong> for you to confirm signup.');
-            $msg = sprintf($msg, waContactPhoneField::cleanPhoneNumber($data['phone']));
+
+            $phone_formatted = waContactPhoneField::cleanPhoneNumber($data['phone']);
+            $phone_field = waContactFields::get('phone');
+            if ($phone_field) {
+                $phone_formatted = $phone_field->format($phone_formatted, 'value');
+            }
+
+            $msg = sprintf($msg, $phone_formatted);
 
             $this->assign(array(
                 'code_sent' => true,
@@ -879,7 +910,6 @@ class waSignupAction extends waViewAction
             return $errors;
         }
 
-
         // Ok, no errors => check uniqueness
         $uniqueness_errors = $this->validateUniqueness($data);
         foreach ($uniqueness_errors as $field_id => $error_msg) {
@@ -918,8 +948,23 @@ class waSignupAction extends waViewAction
                 if (isset($data['email'])) {
                     $addresses['email'] = $data['email'];
                 }
+
                 if (isset($data['phone'])) {
-                    $addresses['phone'] = $data['phone'];
+                    $phone = $data['phone'];
+
+                    //
+                    $is_international = substr($phone, 0, 1) === '+';
+
+                    // phone was transformed while sent sms with onetime password
+                    $phone_transformed = $this->wasPhoneTransformedForSMS('onetime_password');
+
+                    // input phone is not international and was transformed while sent sms means in DB we has transformed phone, so validation must be on transformed phone
+                    if (!$is_international && $phone_transformed) {
+                        $transformation_result = $this->auth_config->transformPhone($phone);
+                        $phone = $transformation_result['phone'];
+                    }
+
+                    $addresses['phone'] = $phone;
                 }
 
                 list($valid, $details) = $this->validateOnetimePassword($data['onetime_password'], $addresses);
@@ -934,8 +979,24 @@ class waSignupAction extends waViewAction
             if (empty($data['confirmation_code'])) {
                 $errors['confirmation_code']['required'] = _ws('Enter a confirmation code to complete signup');
             } else {
+
+                // phone in input (in post data)
+                $phone = $data['phone'];
+
+                //
+                $is_international = substr($phone, 0, 1) === '+';
+
+                // phone was transformed while sent sms with confirmation code
+                $phone_transformed = $this->wasPhoneTransformedForSMS();
+
+                // input phone is not international and was transformed while sent sms means in DB we has transformed phone, so validation must be on transformed phone
+                if (!$is_international && $phone_transformed) {
+                    $transformation_result = $this->auth_config->transformPhone($phone);
+                    $phone = $transformation_result['phone'];
+                }
+
                 // Validate verification code
-                list($valid, $details) = $this->validateConfirmationCode($data['confirmation_code'], $data['phone']);
+                list($valid, $details) = $this->validateConfirmationCode($data['confirmation_code'], $phone);
                 if (!$valid) {
                     $errors['confirmation_code'][$details['error_code']] = $details['error_msg'];
                 }
@@ -1048,6 +1109,30 @@ class waSignupAction extends waViewAction
     }
 
     /**
+     * Mark phone was transformed due the sending of sms with confirmation_code or onetime_password
+     * @param bool $transformed
+     * @param string $type 'confirmation_code', 'onetime_password'
+     * @throws waException
+     */
+    protected function markPhoneWasTransformedForSMS($transformed, $type = 'confirmation_code')
+    {
+        $key = 'wa/signup/sent_sms/phone_was_transformed/' . $type;
+        wa()->getStorage()->set($key, (bool)$transformed);
+    }
+
+    /**
+     * Was phone transformed due the sending sms with confirmation_code or onetime_password
+     * @param string $type 'confirmation_code', 'onetime_password'
+     * @return bool
+     * @throws waException
+     */
+    protected function wasPhoneTransformedForSMS($type = 'confirmation_code')
+    {
+        $key = 'wa/signup/sent_sms/phone_was_transformed/' . $type;
+        return (bool)wa()->getStorage()->get($key);
+    }
+
+    /**
      * Core of signing up action
      *
      * Consist of 2 parts:
@@ -1151,6 +1236,9 @@ class waSignupAction extends waViewAction
         // Confirm need - try send confirmation message
         $confirmation_sent = null;
 
+        // phone was transformed?
+        $phone_transformed = false;
+
         $channels = $this->auth_config->getVerificationChannelInstances();
         $contact = null;
 
@@ -1197,9 +1285,11 @@ class waSignupAction extends waViewAction
 
             // then try sms
             if ($channel->isSMS() && !empty($data['phone'])) {
+
                 list($ok, $details) = $this->sendCode($data['phone']);
                 if ($ok) {
                     $confirmation_sent = waVerificationChannelModel::TYPE_SMS;
+                    $phone_transformed = !empty($details['phone_transformed']);
                     break;
                 } elseif (isset($details['timeout'])) {
                     // Tell user about timeout error right aways - so return
@@ -1213,7 +1303,6 @@ class waSignupAction extends waViewAction
                     );
                 }
             }
-
         }
 
 
@@ -1228,7 +1317,8 @@ class waSignupAction extends waViewAction
         // Confirmation sent by sms
         if ($confirmation_sent === waVerificationChannelModel::TYPE_SMS) {
             return array(self::SIGNED_UP_STATUS_IN_PROCESS, array(
-                'confirmation_code_sent' => true
+                'confirmation_code_sent' => true,
+                'phone_transformed' => $phone_transformed
             ));
         }
 
@@ -1477,16 +1567,19 @@ class waSignupAction extends waViewAction
     }
 
     /**
-     * @param $phone
-     * @return array
-     *   0 - status
-     *   1 - details
+     * Send code
+     * @param string $phone
+     * @return array $result
+     *   - bool  $result[0] status
+     *   - array $result[1] details
+     *        bool $result[1]['phone_transformed'] was or not phone transformed for sms sending
      */
     protected function sendCode($phone)
     {
         if (!$this->auth_config->getSignUpConfirm()) {
             return array(false, array());
         }
+
         if (!$this->isSentCodeTimeoutPassed()) {
             return array(false, array(
                 'timeout' => array(
@@ -1496,11 +1589,34 @@ class waSignupAction extends waViewAction
             ));
         }
 
+        $phone_transformed = false;
+
+        $is_international = substr($phone, 0, 1) === '+';
+
         $channel = $this->auth_config->getSMSVerificationChannelInstance();
+
         $result = $channel->sendSignUpConfirmationMessage($phone, array(
             'use_session' => true
         ));
-        return array((bool)$result, array());
+
+        // Not sent, maybe because of sms adapter not work correct with not international phones
+        if (!$result && !$is_international) {
+            // If not international phone number - transform 8 to code (country prefix)
+            $transform_result = $this->auth_config->transformPhone($phone);
+            if ($transform_result['status']) {
+                $phone_transformed = true;
+                $phone = $transform_result['phone'];
+                $result = $channel->sendSignUpConfirmationMessage($phone, array(
+                    'use_session' => true
+                ));
+            }
+        }
+
+        $result = (bool)$result;
+
+        return array($result, array(
+            'phone_transformed' => $result && $phone_transformed
+        ));
     }
 
     /**
@@ -1509,6 +1625,7 @@ class waSignupAction extends waViewAction
      * @return array
      *   0 - bool <status>
      *   1 - array <details>
+     * @throws waException
      */
     protected function sendOnetimePassword($addresses, $priority = null)
     {
@@ -1531,28 +1648,53 @@ class waSignupAction extends waViewAction
         $used_address = null;
         $used_channel_type = null;
 
-
         foreach ($channels as $channel) {
+
+            $address = null;
 
             // choose address
             if ($channel->isEmail() && !empty($addresses['email'])) {
                 $address = $addresses['email'];
+
+                $sent = $channel->sendOnetimePasswordMessage($address, array(
+                    'site_url' => $this->auth_config->getSiteUrl(),
+                    'site_name' => $this->auth_config->getSiteName(),
+                    'login_url' => $this->auth_config->getLoginUrl(array(), true)
+                ));
+
             } elseif ($channel->isSMS() && !empty($addresses['phone'])) {
-                $address = $addresses['phone'];
-            } else {
-                $address = null;
+                $phone = $addresses['phone'];
+                $is_international = substr($phone, 0, 1) === '+';
+                $phone_transformed = false;
+
+                $sent = (bool)$channel->sendOnetimePasswordMessage($phone, array(
+                    'use_session' => true
+                ));
+
+                // Not sent, maybe because of sms adapter not work correct with not international phones
+                if (!$sent && !$is_international) {
+                    // If not international phone number - transform 8 to code (country prefix)
+                    $transform_result = $this->auth_config->transformPhone($phone);
+                    if ($transform_result['status']) {
+                        $phone_transformed = true;
+                        $phone = $transform_result['phone'];
+                        $sent = (bool)$channel->sendOnetimePasswordMessage($phone, array(
+                            'use_session' => true
+                        ));
+                    }
+                }
+
+                $address = $phone;
+
+                if ($sent) {
+                    $this->markPhoneWasTransformedForSMS($phone_transformed, 'onetime_password');
+                }
+
             }
 
             if (!$address) {
                 continue;
             }
-
-            $sent = $channel->sendOnetimePasswordMessage($address, array(
-                'site_url' => $this->auth_config->getSiteUrl(),
-                'site_name' => $this->auth_config->getSiteName(),
-                'login_url' => $this->auth_config->getLoginUrl(array(), true),
-                'use_session' => true
-            ));
 
             // successful send
             if ($sent) {

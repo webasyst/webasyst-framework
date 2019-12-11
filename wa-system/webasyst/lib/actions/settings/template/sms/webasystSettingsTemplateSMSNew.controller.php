@@ -4,9 +4,6 @@ class webasystSettingsTemplateSMSNewController extends webasystSettingsJsonContr
 {
     public function execute()
     {
-        if (!webasystHelper::smsTemplateAvailable()) {
-            throw new waException(_ws('Page not found'), 404);
-        }
         $data = waRequest::post('data', null, waRequest::TYPE_ARRAY_TRIM);
         $errors = $this->validateData($data);
         if (!empty($errors)) {

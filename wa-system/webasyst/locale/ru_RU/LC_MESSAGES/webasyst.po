@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-11-13 09:54+0300\n"
+"PO-Revision-Date: 2019-11-27 18:08+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -5527,11 +5527,8 @@ msgstr "не поддерживает эмодзи"
 msgid "Tables and fields without emoji support"
 msgstr "Таблицы и поля без поддержки эмодзи"
 
-msgid "You may also use phpMyAdmin to change database tables and fields encoding."
-msgstr "Для смены кодировки таблиц и полей в базе данных можно также использовать phpMyAdmin."
-
-msgid "Database tables and fields"
-msgstr "Таблицы и поля базы данных"
+msgid "Add emoji support"
+msgstr "Добавить поддержку эмодзи"
 
 msgid "New encoding"
 msgstr "Новая кодировка"
@@ -5760,3 +5757,24 @@ msgstr "Для плагина ни разу не запускалось обно
 
 msgid "Data update was never run for this plugin."
 msgstr "Для плагина еще ни разу не запускалось обновление справочников."
+
+msgid "Yandex.Maps returns error “%s”"
+msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s»"
+
+msgid "Yandex.Maps returns error “%s”, API key is invalid. Try to fix it in the <a href=\"https://developer.tech.yandex.ru/services/\">developer dashboard</a>."
+msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — неверный ключ API. Попробуйте исправить это в <a href=\"https://developer.tech.yandex.ru/services/\">кабинете разрабтчика</a>."
+
+msgid "Yandex.Maps returns error “%s”, daily rate limit is exceeded."
+msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — превышен суточный лимит."
+
+msgid "Yandex.Maps returns error “%s”, probably API key invalid or daily rate limit is exceeded."
+msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — возможно, неверный ключ API или превышен суточный лимит."
+
+msgid "Cache is temporary data that help reduce extensive load on your server. Clear cache to update those data, if you have encountered a malfunction."
+msgstr "Кеш — это временные данные, которые помогают снизить нагрузку на сервер. Очистите кеш, чтобы обновить данные, если вы обнаружили неполадку."
+
+msgid "For emoji support to be enabled, tables in your database need to be converted to another encoding."
+msgstr "Для добавления поддержки эмодзи таблицы вашей базы данных должны быть конвертированы в другую кодировку."
+
+msgid "Click the button below to start the conversion."
+msgstr "Запустите смену кодировки с помощью кнопки внизу."

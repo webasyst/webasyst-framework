@@ -886,7 +886,7 @@ abstract class waAuthConfig
      * @param bool $is_reverse Reverse (<=) or direct (=>) transformation
      * @return array $result
      *   bool   $result['status'] if TRUE phone is changed (transformed)
-     *   string $result['phone']  Resulted phone
+     *   string $result['phone']  Resulted phone. If status is false original (input) phone will be return here
      */
     public function transformPhone($phone, $is_reverse = false)
     {
@@ -913,8 +913,9 @@ abstract class waAuthConfig
      * @param array $options - options of transformation:
      *   - string 'input_code', for example 8 for Russia
      *   - string 'output_code', for example 7 for Russia
-     *   - bool 'is_reverse' - reverse transformation (for example for Russia, 8 => 7) or direct (for example for Russia, 7 => 8).
-     *      By default is false, so direction of transformation is direct
+     *   - bool 'is_reverse' - reverse transformation of direct. By default is false, so direct
+     *          Reverse is transformation from output_code to input_code (for example for Russia, 7 => 8)
+     *          Direct is transformation from input_code to output_code (for example for Russia, 8 => 7)
      *
      * @return array
      */

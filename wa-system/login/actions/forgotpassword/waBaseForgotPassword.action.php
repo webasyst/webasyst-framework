@@ -139,7 +139,14 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             $sent_message = sprintf($sent_message, $details['address']);
         } else {
             $sent_message = _ws('Done! An SMS message with a new password has been sent to phone number <strong>%s</strong>.');
-            $sent_message = sprintf($sent_message, $details['address']);
+
+            $phone_formatted = $details['address'];
+            $phone_field = waContactFields::get('phone');
+            if ($phone_field) {
+                $phone_formatted = $phone_field->format($details['address'], 'value');
+            }
+
+            $sent_message = sprintf($sent_message, $phone_formatted);
         }
 
         // Assign result vars - always assign even if we do call redirect.
@@ -280,6 +287,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         $is_user = $auth->getOption('is_user');
 
         $login = is_scalar($login) ? (string)$login : '';
+
         if (strlen($login) <= 0) {
             return false;
         }
@@ -299,6 +307,49 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         }
 
         return false;
+    }
+
+    /**
+     * Try find contact helper, see findContact
+     * @param string $login
+     * @param waAuth $auth
+     *
+     * @param string $login
+     * @param waAuth $auth
+     * @return array
+     *   - 0: bool $status
+     *   - 1: array $details
+     *       - waContact $details['contact'] [optional] If $status == TRUE here we have waContact
+     *       - string $details['error_code'] [optional] If $status == FALSE here we have reason why
+     *       - string $details['error_msg'] [optional] If $status == FALSE here we have reason why
+     *
+     * @see findContact
+     * @throws waAuthException
+     * @throws waException
+     */
+    protected function tryFindContact($login, $auth)
+    {
+        $contact = $this->findContact($login, $auth);
+
+        if (!$contact) {
+            return array(false, array(
+                'error_code' => 'login',
+                'error_msg' => _ws('No user with this login name has been found.')
+            ));
+        }
+
+        if ($contact->get('is_banned')) {
+            $msg = _ws('Password recovery for “%s” has been banned.');
+            $msg = sprintf($msg, $login);
+            return array(false, array(
+                'error_code' => 'ban',
+                'error_msg' => $msg,
+            ));
+        }
+
+        return array(true, array(
+            'contact' => $contact
+        ));
     }
 
     /**
@@ -426,31 +477,32 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
                     return;
                 }
 
-                if ($contact = $this->findContact($login, $auth)) {
-                    if ($contact->get('is_banned')) {
-                        $msg = _ws('Password recovery for “%s” has been banned.');
-                        $msg = sprintf($msg, $login);
-                        $errors['ban'] = $msg;
+                list($find_contact_status, $find_contact_details) = $this->tryFindContact($login, $auth);
+
+                if ($find_contact_status) {
+                    /**
+                     * @var waContact $contact
+                     */
+                    $contact = $find_contact_details['contact'];
+
+                    // diagnostic already printed inside
+                    list($ok, $details) = $this->sendPasswordRecoveryMessage($contact, array('login' => $login));
+
+                    if ($ok) {
+                        $details['sent_ok'] = true;
+
+                        // Need in Set-Password Form mode
+                        $this->saveLastSendDetails($details);
+
+                        $this->assign($details);
                     } else {
-
-                        // diagnostic already printed inside
-                        list($ok, $details) = $this->sendPasswordRecoveryMessage($contact, array('login' => $login));
-
-                        if ($ok) {
-                            $details['sent_ok'] = true;
-
-                            // Need in Set-Password Form mode
-                            $this->saveLastSendDetails($details);
-
-                            $this->assign($details);
-                        } else {
-                            $errors = $details;
-                        }
-
+                        $errors = $details;
                     }
+
                 } else {
-                    $errors['login'] = _ws('No user with this login name has been found.');
+                    $errors[$find_contact_details['error_code']] = $find_contact_details['error_msg'];
                 }
+
             }
         }
 
@@ -470,11 +522,12 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      * @return array
      *   + 0 - bool status
      *   + 1 - array details
+     * @throws waException
      */
     protected function sendPasswordRecoveryMessage(waContact $contact, $options = array())
     {
         $login = isset($options['login']) && is_scalar($options['login']) ? (string)$options['login'] : '';
-
+        
         $priority = $this->getChannelPriorityByLogin($login);
 
         $channels = $this->auth_config->getVerificationChannelInstances($priority);
@@ -494,6 +547,8 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             return array(false, $errors);
         }
 
+        $recipient = $contact;
+
         $sent = false;
         $channel_type = null;
         foreach ($channels as $channel) {
@@ -507,15 +562,49 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             );
 
             if ($channel_type == waVerificationChannelModel::TYPE_EMAIL) {
+
                 $url = $this->auth_config->getRecoveryPasswordUrl(array(
                     'get' => 'key={$secret_hash}'
                 ), true);
-                $options['recovery_url'] = $url;
-            } else {
-                $options['use_session'] = true;
-            }
 
-            $sent = $channel->sendRecoveryPasswordMessage($contact, $options);
+                $sent = $channel->sendRecoveryPasswordMessage($contact, array_merge($options, array(
+                    'recovery_url' => $url
+                )));
+
+            } elseif ($channel_type === waVerificationChannelModel::TYPE_SMS) {
+
+                $phone = (string)$login;
+                $is_international = substr($phone, 0, 1) === '+';
+
+                // Try send, if not sent try transformation and then send again
+                $recipient = array(
+                    'id' => $contact->getId(),
+                    'address' => $phone,
+                );
+
+                $sent = $channel->sendRecoveryPasswordMessage($recipient, array_merge($options, array(
+                    'use_session' => true
+                )));
+
+                // Not sent, maybe because of sms adapter not work correct with not international phones
+                if (!$sent && !$is_international) {
+                    // If not international phone number - transform 8 to code (country prefix)
+                    $transform_result = $this->auth_config->transformPhone($phone);
+                    if ($transform_result['status']) {
+                        $recipient = array(
+                            'id' => $contact->getId(),
+                            'address' => $transform_result['phone']
+                        );
+                        $sent = $channel->sendRecoveryPasswordMessage($recipient, array_merge($options, array(
+                            'use_session' => true
+                        )));
+                    }
+                }
+
+            } else {
+                // unknown
+                $sent = false;
+            }
 
             if ($sent) {
                 break;
@@ -564,8 +653,19 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             'sent_message' => '',
             'timeout_message' => '',
             'timeout' => 0,
-            'address' => ''
+            'address' => '',
+            'contact_id' => 0,
+            'login' => $login
         );
+
+        if (is_array($recipient)) {
+            if (isset($recipient['address'])) {
+                $details['address'] = $recipient['address'];
+            }
+            if (isset($recipient['id'])) {
+                $details['contact_id'] = $recipient['id'];
+            }
+        }
 
         $login_type = $priority;    // type of login - email, phone, or NULL (wa_contact.login)
 
@@ -592,14 +692,21 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
 
 
             $details['sent_message'] = $sent_message;
-            $details['address'] = $contact->get('email', 'default');
+            if ($recipient instanceof waContact) {
+                $details['address'] = $contact->get('email', 'default');
+                $details['contact_id'] = $contact->getId();
+            }
 
         } elseif ($channel_type === waVerificationChannelModel::TYPE_SMS) {
 
             $details['sent_message'] = _ws('Confirm your phone number');
             $details['timeout_message'] = $this->auth_config->getRecoveryPasswordTimeoutMessage();
             $details['timeout'] = $this->auth_config->getRecoveryPasswordTimeout();
-            $details['address'] = $contact->get('phone', 'default');
+
+            if ($recipient instanceof waContact) {
+                $details['address'] = $contact->get('phone', 'default');
+                $details['contact_id'] = $contact->getId();
+            }
 
         }
 
@@ -617,11 +724,39 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
     {
         $password = waContact::generatePassword();
 
-        $result = $channel->sendPassword($contact, $password, array(
+        $recipient = array(
+            'id' => $contact->getId(),
+            'email' => $contact->get('email', 'default'),
+            'phone' => $contact->get('phone', 'default')
+        );
+
+        $recipient['phone'] = waContactPhoneField::cleanPhoneNumber($recipient['phone']);
+
+        $options = array(
             'site_url' => $this->auth_config->getSiteUrl(),
             'site_name' => $this->auth_config->getSiteName(),
             'login_url' => $this->auth_config->getLoginUrl(array(), true),
-        ));
+        );
+
+        $result = $channel->sendPassword($recipient, $password, $options);
+
+        if (!$result && $channel->isSMS() && !empty($recipient['phone'])) {
+            $transform_result = $this->auth_config->transformPhone($recipient['phone']);
+
+            if ($transform_result['status']) {
+
+                // actually transformed successfully
+                $recipient['phone'] = $transform_result['phone'];
+
+                // just in case, check found contact with phone with "+" is the same as that who try restore password
+                $found_contact = $this->findContact("+" . $recipient['phone'], wa()->getAuth());
+
+                if ($found_contact && $found_contact->getId() == $contact->getId()) {
+                    // try again sent
+                    $result = $channel->sendPassword($recipient, $password, $options);
+                }
+            }
+        }
 
         if (!$result) {
 
@@ -659,6 +794,8 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
      * @param string $to - email
      * @param string $url - url to reset password
      * @return bool
+     * @throws SmartyException
+     * @throws waException
      */
     protected function send($to, $url)
     {
@@ -699,15 +836,46 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         }
         $channel = waVerificationChannel::factory($channel);
 
+        $auth = wa()->getAuth();
+        list($find_contact_status, $find_contact_details) = $this->tryFindContact($phone, $auth);
+
+        if (!$find_contact_status) {
+            return array(false, array(
+                'error_code' => $find_contact_details['error_code'],
+                'error_msg' => $find_contact_details['error_msg']
+            ));
+        }
+
+        /**
+         * @var waContact $contact
+         */
+        $contact = $find_contact_details['contact'];
+
+        // Check ID of recipient and ID of found by login (phone) contact
+        $last_send_details = $this->getLastSendDetails();
+        if ($contact->getId() != $last_send_details['contact_id']) {
+
+            $diagnostic_message = "ID of recipient contact is it not the same as ID of contact found by login.\n%s";
+            $this->logError(
+                sprintf($diagnostic_message, $channel->getDiagnostic()),
+                array('line' => __LINE__, 'file' => __FILE__)
+            );
+
+            $msg = _ws('Incorrect or expired confirmation code. Try again or request a new code.');
+            return array(false, array(
+                'error_code' => waVerificationChannelSMS::VERIFY_ERROR_INVALID,
+                'error_msg' => $msg
+            ));
+        }
+
         $validation_result = $channel->validateRecoveryPasswordSecret($code, array(
-            'recipient' => $phone,
             'check_tries' => array(
                 'count' => $this->auth_config->getVerifyCodeTriesCount(),
                 'clean' => true
             )
         ));
 
-        // Validation is failed
+        // Validation is ok
         if ($validation_result['status']) {
             return array(true, null);
         }
@@ -767,10 +935,12 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
 
         // ADDRESS where message has sent to
         // IF it is known than pass to validator to STRENGTHEN validation
-        $options = array();
-        if (isset($send_details['address'])) {
-            $options['recipient'] = $send_details['address'];
-        }
+        $options = array(
+            'recipient' => array(
+                'id' => $send_details['contact_id'],
+                'address' => $send_details['address'],
+            )
+        );
 
         $validation_result = $channel->validateRecoveryPasswordSecret($secret, $options);
 
@@ -779,55 +949,30 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             return array(false, array());
         }
 
-        // Ok we have address
-        $validated_address = $validation_result['details']['address'];
+        // Try find contact by login
+        list($find_contact_status, $find_contact_details) = $this->tryFindContact($send_details['login'], wa()->getAuth());
 
-        // Define contact by address (or contact_id)
-        if ($channel->getType() === waVerificationChannelModel::TYPE_SMS) {
+        // Not found - maybe it was deleted during the recover password process?
+        if (!$find_contact_status) {
+            $this->logError(
+                sprintf("Validate hash failed. There is no contact associated with login that was input - contact was deleted maybe during password restoring"),
+                array('line' => __LINE__, 'file' => __FILE__)
+            );
+            return array(false, array());
+        }
 
-            $cdm = new waContactDataModel();
+        /**
+         * @var waContact $contact
+         */
+        $contact = $find_contact_details['contact'];
 
-            $contact_id = $cdm->getContactWithPasswordByPhone($validated_address);
-            $contact = new waContact($contact_id);
-            if (!$contact->exists()) {
-                $this->logError(
-                    sprintf("Validate hash failed. Contact not found by phone"),
-                    array('line' => __LINE__, 'file' => __FILE__)
-                );
-                return array(false, array());
-            }
-
-        } else {
-
-            // With current validation process must be bind certain contact
-            $contact_id = $validation_result['details']['contact_id'];
-            $contact = new waContact($contact_id);
-
-            // Contact doesn't exist or not have been bind with validation process
-            if (!$contact->exists()) {
-                $this->logError(
-                    sprintf("Validate hash failed. There is no contact associated with that hash - contact not exists or hash is invalid"),
-                    array('line' => __LINE__, 'file' => __FILE__)
-                );
-                return array(false, array());
-            }
-
-            // Check existing email and its binding with contact
-            $cem = new waContactEmailsModel();
-            $email_row = $cem->getByField(array(
-                'contact_id' => $contact->getId(),
-                'email' => $validated_address
-            ));
-
-            // Email has been deleted from this contact
-            if (!$email_row) {
-                $this->logError(
-                    sprintf("Validate hash failed. Email row doesn't exist in DB"),
-                    array('line' => __LINE__, 'file' => __FILE__)
-                );
-                return array(false, array());
-            }
-
+        // With current validation process must be bind certain contact id
+        if ($validation_result['details']['contact_id'] != $contact->getId()) {
+            $this->logError(
+                sprintf("Validate hash failed. There is no contact associated with that hash - contact not exists or hash is invalid"),
+                array('line' => __LINE__, 'file' => __FILE__)
+            );
+            return array(false, array());
         }
 
         // set contact locale
@@ -836,12 +981,23 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             waLocale::loadByDomain('webasyst', wa()->getLocale());
         }
 
+        // Ok we have address
+        $validated_address = $validation_result['details']['address'];
+
         // return success status with some details of result
-        return array(true, array(
+        $details = array(
             'contact' => $contact,
             'address' => $validated_address,
             'channel_type' => $channel->getType()
-        ));
+        );
+
+        // phone must be as saved in contact, cause we will show it input
+        // if in validated phone with 7 and in contact is with 8 we need with 8
+        if ($channel->isSMS()) {
+            $details['address'] = $contact->get('phone', 'default');
+        }
+
+        return array(true, $details);
     }
 
     /**

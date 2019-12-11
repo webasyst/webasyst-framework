@@ -19,6 +19,8 @@ class waVerificationChannelSMS extends waVerificationChannel
      * @return bool|int
      *   If 'use_session' == True - return bool
      *   Otherwise return int > 0 OR bool (if was failure)
+     * @throws waDbException
+     * @throws waException
      */
     public function sendSignUpConfirmationMessage($recipient, $options = array())
     {
@@ -39,6 +41,7 @@ class waVerificationChannelSMS extends waVerificationChannel
         $asset_id = $vca->set($this->getId(), $recipient['phone'],
             waVerificationChannelAssetsModel::NAME_SIGNUP_CONFIRM_CODE,
             waContact::getPasswordHash($code), '5min');
+
         if ($asset_id <= 0) {
             return false;
         }
@@ -50,7 +53,7 @@ class waVerificationChannelSMS extends waVerificationChannel
         $result = $this->sendSMS($recipient['phone'], $message);
 
         // clean asset in failed sending
-        if (!$result && $asset_id > 0) {
+        if (!$result) {
             $vca->deleteById($asset_id);
             return false;
         }
@@ -210,6 +213,9 @@ class waVerificationChannelSMS extends waVerificationChannel
                     if (isset($recipient['name']) && is_scalar($recipient['name'])) {
                         $result['name'] = (string)$recipient['name'];
                     }
+                    if (isset($recipient['id']) && wa_is_int($recipient['id'])) {
+                        $result['id'] = $recipient['id'];
+                    }
                     return $result;
                 }
             }
@@ -218,6 +224,7 @@ class waVerificationChannelSMS extends waVerificationChannel
             $phone = $recipient->get('phone', 'default');
             if ($this->isValidPhoneNumber($phone)) {
                 return array(
+                    'id' => $recipient->getId(),
                     'phone' => waContactPhoneField::cleanPhoneNumber($phone),
                     'address' => waContactPhoneField::cleanPhoneNumber($phone),
                     'name' => $recipient->getName()
@@ -252,6 +259,8 @@ class waVerificationChannelSMS extends waVerificationChannel
      * @return bool|int
      *   If 'use_session' == True - return bool
      *   Otherwise return int > 0 OR bool (if was failure)
+     * @throws waDbException
+     * @throws waException
      */
     public function sendOnetimePasswordMessage($recipient, $options = array())
     {
@@ -290,6 +299,7 @@ class waVerificationChannelSMS extends waVerificationChannel
 
         $result = $this->sendSMS($recipient['phone'], $message);
         if (!$result) {
+            $vca->deleteById($asset_id);
             return false;
         }
 
@@ -322,6 +332,8 @@ class waVerificationChannelSMS extends waVerificationChannel
      * @return bool|int
      *   If 'use_session' == True - return bool
      *   Otherwise return int > 0 OR bool (if was failure)
+     * @throws waDbException
+     * @throws waException
      */
     public function sendConfirmationCodeMessage($recipient, $options = array())
     {
@@ -351,6 +363,7 @@ class waVerificationChannelSMS extends waVerificationChannel
 
         $result = $this->sendSMS($recipient['phone'], $message);
         if (!$result) {
+            $vca->deleteById($asset_id);
             return false;
         }
 
@@ -370,7 +383,7 @@ class waVerificationChannelSMS extends waVerificationChannel
     }
 
     /**
-     * Send message about recovery procedure with {$conirmation_code}
+     * Send message about recovery procedure with {$confirmation_code}
      * @param string|array|waContact|id $recipient recipient to send confirmation
      *
      * @param array $options
@@ -379,6 +392,8 @@ class waVerificationChannelSMS extends waVerificationChannel
      * @return bool|int
      *   If 'use_session' == True - return bool
      *   Otherwise return int > 0 OR bool (if was failure)
+     * @throws waDbException
+     * @throws waException
      */
     public function sendRecoveryPasswordMessage($recipient, $options = array())
     {
@@ -386,6 +401,7 @@ class waVerificationChannelSMS extends waVerificationChannel
         if (!$template) {
             return false;
         }
+
         $recipient = $this->typecastInputRecipient($recipient);
         if (!$recipient) {
             return false;
@@ -394,9 +410,18 @@ class waVerificationChannelSMS extends waVerificationChannel
         $code = $this->generateCode();
 
         $vca = new waVerificationChannelAssetsModel();
-        $asset_id = $vca->set($this->getId(), $recipient['phone'],
-            waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE,
-            waContact::getPasswordHash($code), '10min');
+
+        $asset_data = array(
+            'channel_id' => $this->getId(),
+            'address' => $recipient['phone'],
+            'name' => waVerificationChannelAssetsModel::NAME_PASSWORD_RECOVERY_CODE,
+            'value' => waContact::getPasswordHash($code)
+        );
+        if (isset($recipient['id'])) {
+            $asset_data['contact_id'] = $recipient['id'];
+        }
+
+        $asset_id = $vca->setAsset($asset_data, '10min');
         if ($asset_id <= 0) {
             return false;
         }
@@ -407,6 +432,7 @@ class waVerificationChannelSMS extends waVerificationChannel
 
         $result = $this->sendSMS($recipient['phone'], $message);
         if (!$result) {
+            $vca->deleteById($asset_id);
             return false;
         }
 
@@ -481,11 +507,19 @@ class waVerificationChannelSMS extends waVerificationChannel
      *  - 'asset_id' int
      *       If isset than use it AS asset ID that says where secret placed in DB
      *       Otherwise try asset ID from session
-     *              ( @see sendRecoveryPasswordMessage and @see validateRecoveryPasswordSecret )
+     *              (see sendRecoveryPasswordMessage, validateRecoveryPasswordSecret )
      *
      *   - 'recipient' If need to extra STRENGTHEN validation
      *
+     *
+     * @throws waDbException
+     * @throws waException
+     *
+     * @see sendRecoveryPasswordMessage
+     * @see validateRecoveryPasswordSecret
+     *
      * @return void
+     *
      */
     public function invalidateRecoveryPasswordSecret($secret, $options = array())
     {

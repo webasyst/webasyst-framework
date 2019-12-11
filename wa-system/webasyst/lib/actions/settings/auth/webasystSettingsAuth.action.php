@@ -79,7 +79,6 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             'images_path'                => $images_path,
             'custom_image'               => $custom_image,
             'demo_captcha'               => wa()->getCaptcha(),
-            'phone_available'            => webasystHelper::smsTemplateAvailable(),
         ));
     }
 

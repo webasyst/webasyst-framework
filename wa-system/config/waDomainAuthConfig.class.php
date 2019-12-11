@@ -1167,6 +1167,7 @@ class waDomainAuthConfig extends waAuthConfig
      * @param bool $is_reverse
      * @param null|array $domains - NULL - for all domains, otherwise for specified domains
      * @return array
+     * @throws waException
      */
     public static function transformPhonePrefixForDomains($phone, $is_reverse = false, $domains = null)
     {

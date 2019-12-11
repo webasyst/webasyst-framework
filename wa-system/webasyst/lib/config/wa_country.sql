@@ -176,7 +176,7 @@ INSERT IGNORE INTO `wa_country` (`name`, `iso3letter`, `iso2letter`, `isonumeric
 ('Qatar', 'qat', 'qa', '634', NULL),
 ('Réunion', 'reu', 're', '638', NULL),
 ('Romania', 'rou', 'ro', '642', NULL),
-('Russian Federation', 'rus', 'ru', '643', NULL),
+('Russian Federation', 'rus', 'ru', '643', 1),
 ('Rwanda', 'rwa', 'rw', '646', NULL),
 ('Saint Helena, Ascension and Tristan da Cunha', 'shn', 'sh', '654', NULL),
 ('Saint Kitts and Nevis', 'kna', 'kn', '659', NULL),

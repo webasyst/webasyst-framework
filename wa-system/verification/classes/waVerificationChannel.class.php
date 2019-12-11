@@ -865,7 +865,7 @@ abstract class waVerificationChannel
         if (!array_key_exists('clean', $options)) {
             $options['clean'] = true;
         } else {
-            $options['clean'] = !!ifset($options['clean_on_success']);
+            $options['clean'] = (bool)ifset($options['clean']);
         }
 
         // clean asset

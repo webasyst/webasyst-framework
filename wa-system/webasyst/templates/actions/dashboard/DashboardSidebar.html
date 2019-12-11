@@ -2,7 +2,7 @@
     <header class="widgets-list-header-wrapper">
         <h4 class="widgets-list-header">
             [`Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]
-            {if $wa->user()->getRights('installer', 'backend')} <a href="./installer/#/widgets/">[`Install new widgets`]</a>{/if}
+            {if $wa->user()->getRights('installer', 'backend')} <a href="./installer/store/?filters%5Btype%5D=widget">[`Install new widgets`]</a>{/if}
         </h4>
         <div class="cl"></div>
     </header>

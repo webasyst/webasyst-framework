@@ -20,7 +20,7 @@ class webasystHelper
     public static function backgroundClearCache($limit = 20)
     {
         $cache_model = new waCacheModel();
-        $cache_model->deleteInvalid(array('limit' => (int) $limit));
+        $cache_model->deleteInvalid(array('limit' => (int)$limit));
     }
 
     public static function getSettingsSidebarItems()
@@ -28,31 +28,31 @@ class webasystHelper
         $app_url = wa('webasyst')->getAppUrl().'webasyst/settings/';
 
         $items = array(
-            'general' => array(
+            'general'        => array(
                 'name' => _ws('General settings'),
                 'url'  => $app_url,
             ),
-            'field' => array(
+            'field'          => array(
                 'name' => _ws('Contact fields'),
                 'url'  => $app_url.'field/',
             ),
-            'regions' => array(
+            'regions'        => array(
                 'name' => _ws('Countries & regions'),
                 'url'  => $app_url.'regions/',
             ),
-            'maps'    => array(
+            'maps'           => array(
                 'name' => _ws('Maps'),
                 'url'  => $app_url.'maps/',
             ),
-            'captcha' => array(
+            'captcha'        => array(
                 'name' => _ws('Captcha'),
                 'url'  => $app_url.'captcha/',
             ),
-            'push'    => array(
+            'push'           => array(
                 'name' => _ws('Web push notifications'),
                 'url'  => $app_url.'push/',
             ),
-            'email'   => array(
+            'email'          => array(
                 'name' => _ws('Email settings'),
                 'url'  => $app_url.'email/',
             ),
@@ -60,15 +60,19 @@ class webasystHelper
                 'name' => _ws('Email templates'),
                 'url'  => $app_url.'email/template/',
             ),
-            'sms' => array(
+            'sms'            => array(
                 'name' => _ws('SMS providers'),
                 'url'  => $app_url.'sms/',
             ),
-            'auth' => array(
+            'sms-template'   => array(
+                'name' => _ws('SMS templates'),
+                'url'  => $app_url.'sms/template/',
+            ),
+            'auth'           => array(
                 'name' => _ws('Backend authorization'),
                 'url'  => $app_url.'auth/',
             ),
-            'db' => array(
+            'db'             => array(
                 'name' => _w('Database'),
                 'url'  => $app_url.'db/',
             ),
@@ -83,9 +87,16 @@ class webasystHelper
         return $items;
     }
 
+    /**
+     * A method that returns the flag for the availability of editing system SMS templates.
+     *
+     * Previously used in the Site app (sitePersonalSettingsAction).
+     *
+     * Needed for backward compatibility. It will be possible to delete the in 2021 year.
+     * @return true
+     */
     public static function smsTemplateAvailable()
     {
-        $sidebar_items = self::getSettingsSidebarItems();
-        return isset($sidebar_items['sms-template']);
+        return true;
     }
 }

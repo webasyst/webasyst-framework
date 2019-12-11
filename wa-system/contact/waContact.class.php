@@ -358,8 +358,20 @@ class waContact implements ArrayAccess
 
             // Multi field access by extension
             if ($field->isMulti() && $ext) {
+
+                // In some cases like $contact->get('address.shipping', 'html')
+                // or $contact->get('address.shipping', 'value')
+                // 'ext' key is not present in $result: $result is a list of strings.
+                // To extract values by extension, we need to fetch them separately.
+                // This does not make any DB queries since data for this contact is already in cache.
+                $row_result = $field->get($this);
+
                 foreach ($result as $sort => $row) {
-                    if (empty($row['ext']) || $row['ext'] !== $ext) {
+                    $assoc_row = $row;
+                    if (is_scalar($row)) {
+                        $assoc_row = isset($row_result[$sort]) ? $row_result[$sort] : array();
+                    }
+                    if (empty($assoc_row['ext']) || $assoc_row['ext'] !== $ext) {
                         unset($result[$sort]);
                     }
                 }

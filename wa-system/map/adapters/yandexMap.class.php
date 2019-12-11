@@ -20,11 +20,8 @@ class yandexMap extends waMapAdapter
         return 'Яндекс.Карты';
     }
 
-    private function getBaseHTML($id, $script, $options)
+    protected function buildUrl()
     {
-        $width = ifset($options['width'], '100%');
-        $height = ifset($options['height'], '400px');
-
         $url = 'https://api-maps.yandex.ru/2.1/';
         $params = array(
             'lang' => wa()->getLocale(),
@@ -35,88 +32,82 @@ class yandexMap extends waMapAdapter
 
         $url .= '?' . http_build_query($params);
 
-        $html = <<<HTML
-<div id="yandex-map-{$id}" class="map" style="width:{$width}; height: {$height}"></div>
-<script type="text/javascript">
-    $(function () {
-        var init = function () {
-            {$script}
-        };
-        if (!(window.ymaps)) {
-            $.getScript('{$url}', init)
-        } else {
-            init();
-        }
-    })
-</script>
-HTML;
-        return $html;
+        return $url;
     }
 
+    /**
+     * @param array|string $address
+     * @param array $options
+     *   string  $options['on_error'] [optional]         What to do on error
+     *     - 'show' - show error as it right on map html block
+     *     - 'function(e) { ... }' - anonymous js function
+     *     - any other NOT EMPTY string that is javascript function name in global scope (for example, console.log)
+     *     - <empty> - not handle map error
+     *
+     * @return string
+     * @throws waException
+     */
     protected function getByAddress($address, $options = array())
     {
-        $id = uniqid();
-        $address = json_encode($address);
-        $zoom = ifset($options['zoom'], 10);
+        $options = is_array($options) ? $options : array();
 
-        $script = <<<JS
-ymaps.ready(function () {
-    ymaps.geocode({$address}, {
-        results: 1
-    }).then(function (res) {
-        var map = new ymaps.Map('yandex-map-{$id}', {
-            center: [55.753994, 37.622093],
-            zoom: {$zoom},
-            controls: [
-                'zoomControl',
-                'fullscreenControl'
-            ]
-        });
-        var firstGeoObject = res.geoObjects.get(0),
-            coords = firstGeoObject.geometry.getCoordinates(),
-            bounds = firstGeoObject.properties.get('boundedBy');
-        map.geoObjects.add(firstGeoObject);
-        map.setCenter(coords);
-        /*
-        map.setBounds(bounds, {
-            checkZoomRange: true
-        });
-        */
-    });
-});
-JS;
-        return $this->getBaseHTML($id, $script, $options);
+        $id = uniqid();
+
+        $template = waConfig::get('wa_path_system') . '/map/templates/yandex/map.html';
+
+        $options['width'] = ifset($options['width'], '100%');
+        $options['height'] = ifset($options['height'], '400px');
+        $options['zoom'] = ifset($options['zoom'], 10);
+
+        $this->typecastOnErrorOption($options);
+
+        return $this->renderTemplate($template, array(
+            'id' => $id,
+            'address' => json_encode($address),
+            'options' => $options,
+            'url' => $this->buildUrl(),
+            'type' => 'address'
+        ));
     }
 
+    /**
+     * @param float $lat
+     * @param float $lng
+     * @param array $options
+     *   string  $options['on_error'] [optional]         What to do on error
+     *     - 'show' - show error as it right on map html block
+     *     - 'function(e) { ... }' - anonymous js function
+     *     - any other NOT EMPTY string that is javascript function name in global scope (for example, console.log)
+     *     - <empty> - not handle map error
+     * @return string
+     */
     protected function getByLatLng($lat, $lng, $options = array())
     {
-        $id = uniqid();
-        $zoom = ifset($options['zoom'], 10);
-        $center = json_encode(array($lat, $lng));
+        $options = is_array($options) ? $options : array();
 
-        $script = <<<JS
-ymaps.ready(function () {
-    var map = new ymaps.Map('yandex-map-{$id}', {
-        center: {$center},
-        zoom: {$zoom},
-        controls: ['smallMapDefaultSet']
-    });
-});
-JS;
-        return $this->getBaseHTML($id, $script, $options);
+        $id = uniqid();
+
+        $template = waConfig::get('wa_path_system') . '/map/templates/yandex/map.html';
+
+        $options['width'] = ifset($options['width'], '100%');
+        $options['height'] = ifset($options['height'], '400px');
+        $options['zoom'] = ifset($options['zoom'], 10);
+
+        $this->typecastOnErrorOption($options);
+
+        return $this->renderTemplate($template, array(
+            'id' => $id,
+            'center' => array($lat, $lng),
+            'options' => $options,
+            'url' => $this->buildUrl(),
+            'type' => 'coords'
+        ));
     }
 
     public function getJs($html = true)
     {
-        $url = 'https://api-maps.yandex.ru/2.1/';
-        $params = array(
-            'lang' => wa()->getLocale(),
-        );
-        if ($key = $this->getSettings('apikey')) {
-            $params['apikey'] = $key;
-        }
+        $url = $this->buildUrl();
 
-        $url .= '?' . http_build_query($params);
         if ($html) {
             return <<<HTML
 <script type="text/javascript" src="{$url}"></script>
@@ -217,5 +208,54 @@ HTML;
             'description'  => _ws('Obtain an API key on the <a href="https://developer.tech.yandex.ru/" target="_blank">developer dashboard</a>. Select “JavaScript API, Geocoding API” option.'),
             'control_type' => waHtmlControl::INPUT,
         );
+    }
+
+    /**
+     * Inner helper
+     * Find 'on_error' option in options array and convert value to array with keys
+     *   - string 'type' - with possible values: 'show', '', 'callback'
+     *   - string 'callback' - js callback or empty string (for 'show' and '' types)
+     * @param array &$options
+     *
+     */
+    private function typecastOnErrorOption(&$options)
+    {
+        $options = is_array($options) ? $options : array();
+
+        $on_error_type = trim(ifset($options['on_error'], ''));
+
+        if (preg_match('/^function\s*\(/', $on_error_type)) {
+            $on_error_type = 'callback';
+            $on_error_callback = $options['on_error'];
+        } elseif ($on_error_type === 'show') {
+            $on_error_type = 'show';
+            $on_error_callback = '';
+        } else if ($on_error_type) {
+            $on_error_type = 'callback';
+            $on_error_callback = $options['on_error'];
+        } else {
+            $on_error_type = '';
+            $on_error_callback = '';
+        }
+
+        $options['on_error'] = array(
+            'type' => $on_error_type,
+            'callback' => $on_error_callback
+        );
+    }
+
+    protected function renderTemplate($template, $assign = array())
+    {
+        if (!is_scalar($template) || !file_exists($template)) {
+            return '';
+        }
+        $view = wa()->getView();
+        $old_vars = $view->getVars();
+        $view->clearAllAssign();
+        $view->assign($assign);
+        $html = $view->fetch($template);
+        $view->clearAllAssign();
+        $view->assign($old_vars);
+        return $html;
     }
 }

@@ -13,9 +13,17 @@ abstract class waMapAdapter
     /**
      * @param string|array $address - string or array(LAT, LNG)
      * @param array $options - map options
-     *             'width' => '50%',
-     *             'height' => '200px',
-     *             'zoom' => 12
+     *    int|string $option['width'] [optional] - width of map html dom element, for example '50%',
+     *    int|string $option['height'] [optional] - height of map html dom element, for example '200px',
+     *    int $option['zoom'] [optional] - zoom of map, for example 12
+     *
+     *
+     *   string  $options['on_error'] [optional] - What to do on error (for now supports only by yandex map adapter)
+     *     - 'show' - show error as it right on map html block
+     *     - 'function(e) { ... }' - anonymous js function
+     *     - any other NOT EMPTY string that is javascript function name in global scope (for example, console.log)
+     *     - <empty> - not handle map error
+     *
      * @return string
      */
     public function getHTML($address, $options = array())

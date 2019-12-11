@@ -8,6 +8,13 @@
             <div class="field-group">
                 <div class="field">
                     <div class="name">[s`Map service`]</div>
+
+                    <div class="value no-shift">
+                        <label>
+                            <input type="radio" name="map_adapter" {if $is_map_disabled}checked{/if} value="disabled"> [`Do not use`]
+                        </label>
+                    </div>
+
                     {if !empty($map_adapters)}
                         {foreach $map_adapters as $_adapter}
                             {$_adapter_id = $_adapter->getId()}
@@ -25,7 +32,9 @@
                             </div>
                         {/foreach}
                     {else}
-                        [s`No map services available`]
+                        <div class="value no-shift">
+                            [s`No map services available`]
+                        </div>
                     {/if}
                 </div>
             </div>

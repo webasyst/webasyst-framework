@@ -161,16 +161,21 @@ class waGettextParser
      *  msgstr[1] "%d отзыва о"
      *  msgstr[2] "%d отзывов о"
      *
-     * @param $msgid
+     * @param $msgid                        e.g. '%d review for'
      * @param array $msgstr
      * @param null $comments
-     * @param null $plural
+     * @param null|string|array $plural     plural form or a list of plural forms found (if more than one), e.g. '%d reviews for'
      * @return string
      * @throws waException
      */
     protected function getPluralsText($msgid, $msgstr = [], $comments = null, $plural = null)
     {
         $msg_str = (array)$msgstr;
+        if (is_array($plural)) {
+            // More than one plural form for single $msgid is not supported,
+            // we only export a single message id to .po file
+            $plural = reset($plural);
+        }
 
         $result = "\n";
         $result .= $this->getComments($comments);
