@@ -1012,6 +1012,8 @@ class waAppConfig extends SystemConfig
 
     public function throwFrontControllerDispatchException()
     {
+        // Called when route is not found in backend routing, see waFrontController.
+        // Overriden in webasystConfig because of backend dashboard logic.
         throw new waException('Page not found', 404);
     }
 }

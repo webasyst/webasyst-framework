@@ -182,5 +182,19 @@ class webasystBackendActions extends waViewActions
         }
     }
 
+    public function run($params = null)
+    {
+        $action = $params;
+        if (!$action) {
+            $action = 'default';
+        }
+
+        wa('webasyst')->event('backend_dashboard_before_action', ref([
+            'action' => $action,
+        ]));
+
+        return parent::run($action);
+    }
+
 }
 

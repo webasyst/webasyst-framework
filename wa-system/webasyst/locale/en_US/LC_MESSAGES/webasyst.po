@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-11-27 18:08+0300\n"
+"PO-Revision-Date: 2019-12-13 09:24+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: en\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -147,815 +147,609 @@ msgid_plural "1000000000000"
 msgstr[0] "trillion"
 msgstr[1] "trillion"
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:4
 msgid "Welcome"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:11
 msgid "Hi %s!"
 msgstr "Hi, %s!"
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:13
 msgid "This is your Dashboard."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:15
 msgid "So far it is empty, but soon it will have useful content."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:16
 msgid "Until then use icons on the top of this page to work with available applications."
 msgstr "Until then use icons at the top of this page to work with available applications."
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:18
 msgid "Thank you for using Webasyst!"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDefaultMobile.html:30
 msgid "Logout"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:22
 msgid "Login Webasyst"
 msgstr "Log in to Webasyst"
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:24
 msgid "Create the first user in your Webasyst installation."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:25
 msgid "The information provided in this form will be stored in your local Webasyst installation only, and will not be sent anywhere outside your server."
 msgstr "The information provided in this form will be stored in your local Webasyst installation only and will not be sent anywhere outside your server."
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:34
 msgid "Login name"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:588
 msgid "Password"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:590
 msgid "Confirm password"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:63
 msgid "First name"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:71
 msgid "Last name"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:508
 msgid "Email"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:88
 msgid "Company name"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:103
 msgid "Enter"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:6
 msgid "Webasyst"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:586
 msgid "Login"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginMobile.html:38
 msgid "Remember me"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:496
 msgid "Sign In"
 msgstr "Sign in"
 
-#: /wa-system/view/waViewHelper.class.php:496
 msgid "Forgot password?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:19
 msgid "MySQL database"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:20
 msgid "Enter connection credentials for the MySQL database which will be used by Webasyst to store system and application data."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:28
 msgid "Host"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:36
 msgid "User"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:52
 msgid "Database Name"
 msgstr "Database name"
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:60
 msgid "If you do not know what should be entered here, please contact your hosting provider technical support."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:66
 msgid "Continue"
 msgstr ""
 
-#: /wa-system/helper/view.php:90
 msgid "[close]"
 msgstr ""
 
-#: /wa-system/contact/waContactCompositeField.class.php:78
 msgid "%s subfield is required."
 msgstr "%s is a required subfield."
 
-#: /wa-system/contact/waContactField.class.php:424
 msgid "This field is required"
 msgstr "This is a required field"
 
-#: /wa-system/contact/waContactField.class.php:348
 msgid "Duplicates are not allowed for this field."
 msgstr ""
 
-#: /wa-system/contact/waContactField.class.php:349
 msgid "This field must be unique. The value entered is already set for %NAME_LINK%."
 msgstr ""
 
-#: /wa-system/contact/waContactField.class.php:350
 msgid "This field must be unique. The value entered is already set for another contact."
 msgstr ""
 
-#: /wa-system/contact/waContactNameField.class.php:24
 msgid "At least one of these fields must be filled"
 msgstr ""
 
-#: /wa-system/contact/waContactsCollection.class.php:285
 msgid "All contacts"
 msgstr ""
 
-#: /wa-system/contact/waContactsCollection.class.php:449
 msgid "All users"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:478
 msgid "Files with extensions %s are allowed only."
 msgstr "Only files with name extensions %s are allowed."
 
-#: /wa-system/page/actions/waPage.actions.php:174
 msgid "draft"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:218
 msgid "META Keywords"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:219
 msgid "META Description"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:265
 msgid "no-title"
 msgstr "no title"
 
-#: /wa-system/page/actions/waPage.actions.php:311
 msgid "Error saving web page"
 msgstr ""
 
-#: /wa-system/controller/waLoginAction.class.php:48
 msgid "Page not found"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:121
 msgid "https://developers.webasyst.com/templates/pages/"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:285
 msgid "An error occurred while saving"
 msgstr ""
 
-#: /wa-system/config/waRightConfig.class.php:139
 msgid "Effective<br/>rights"
 msgstr ""
 
-#: /wa-system/config/waRightConfig.class.php:140
 msgid "Granted<br/>personally"
 msgstr ""
 
-#: /wa-system/config/waRightConfig.class.php:141
 msgid "Inherited<br/>from groups"
 msgstr ""
 
-#: /wa-system/config/waRightConfig.class.php:144
 msgid "Group"
 msgstr ""
 
-#: /wa-system/config/waRightConfig.class.php:284
 msgid "all"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:178
 msgid "Yesterday"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:182
 msgid "Today"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:186
 msgid "Tomorrow"
 msgstr ""
 
-#: /wa-system/controller/waForgotPasswordAction.class.php:127
 msgid "Password recovery"
 msgstr ""
 
-#: /wa-system/controller/waSignupAction.class.php:65
 msgid "Password can not be empty."
 msgstr "Password cannot be empty."
 
-#: /wa-system/controller/waSignupAction.class.php:60
 msgid "Passwords do not match"
 msgstr "Passwords do not match."
 
-#: /wa-system/controller/waForgotPasswordAction.class.php:101
 msgid "Password recovery for this email has been banned."
 msgstr "Password recovery for this email address has been disabled."
 
-#: /wa-system/controller/waForgotPasswordAction.class.php:111
-msgid "Sorry, we cannot recover password for this login name or email. Please refer to your system administrator."
-msgstr ""
-
-#: /wa-system/controller/waForgotPasswordAction.class.php:116
 msgid "No user with this email has been found."
 msgstr "No user with this email address has been found."
 
-#: /wa-system/controller/waForgotPasswordAction.class.php:118
 msgid "No user with this login name or email has been found."
 msgstr "No user with this login name or email address has been found."
 
-#: /wa-system/controller/waSignupAction.class.php:71
 msgid "%s is required"
 msgstr ""
 
-#: /wa-system/controller/waSignupAction.class.php:30
 msgid "Sign up"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:402
 msgid "Invalid captcha"
 msgstr ""
 
-#: /wa-system/controller/waFrontController.class.php:85
 msgid "Access denied."
 msgstr "Access denied"
 
-#: /wa-system/controller/waFrontController.class.php:100
 msgid "Access denied"
 msgstr ""
 
-#: /wa-system/controller/waLoginAction.class.php:40
 msgid "Log in"
 msgstr ""
 
-#: /wa-system/controller/waLoginAction.class.php:92
 msgid "Session has expired. Please reload current page and log in again."
 msgstr "Session has expired. Please reload this page and log in again."
 
-#: /wa-system/helper/view.php:98
 msgid "logout"
 msgstr "log out"
 
-#: /wa-system/helper/view.php:108
 msgid "more"
 msgstr ""
 
-#: /wa-system/captcha/waCaptcha.class.php:31
 msgid "Refresh CAPTCHA"
 msgstr ""
 
-#: /wa-system/design/actions/waDesign.actions.php:98
 msgid "Theme %s for “%s” app not found."
 msgstr "Theme %s for the “%s” app not found"
 
-#: /wa-system/design/actions/waDesign.actions.php:254
 msgid "Insufficient file access permissions to save theme settings"
 msgstr ""
 
-#: /wa-system/design/actions/waDesign.actions.php:293
 msgid "Insufficient access permissions to save the file"
 msgstr ""
 
-#: /wa-system/design/actions/waDesign.actions.php:320
 msgid "Please enter a filename"
 msgstr ""
 
-#: /wa-system/design/actions/waDesign.actions.php:327
 msgid "Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
 msgstr "Only Latin characters (a—z, A—Z), numbers (0—9), and the underline character (_) are allowed."
 
-#: /wa-system/design/actions/waDesign.actions.php:334
 msgid "File should have one of the allowed extensions:"
 msgstr "File name should have one of the allowed extensions:"
 
-#: /wa-system/auth/waAuth.class.php:118
 msgid "You are banned!"
 msgstr ""
 
-#: /wa-system/auth/waDemoAuth.class.php:39
 msgid "Login is required"
 msgstr "Login name is required"
 
-#: /wa-system/auth/waAuth.class.php:161
 msgid "Invalid email or password"
 msgstr "Invalid email address or password"
 
-#: /wa-system/api/waAPIController.class.php:20
 msgid "Application \"%s\" not exists"
 msgstr "Application ”%s” does not exist."
 
-#: /wa-system/api/waAPIController.class.php:29
 msgid "Unknown response format"
 msgstr ""
 
-#: /wa-system/request/waRequestFile.class.php:190
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
 msgstr "The size of the uploaded file exceeds the upload_max_filesize value in php.ini."
 
-#: /wa-system/request/waRequestFile.class.php:192
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
 msgstr "The size of the uploaded file exceeds the max_file_size value specified in the HTML form."
 
-#: /wa-system/request/waRequestFile.class.php:194
 msgid "The uploaded file was only partially uploaded."
 msgstr "Only a part of the selected file has been uploaded."
 
-#: /wa-system/request/waRequestFile.class.php:196
 msgid "No file was uploaded."
 msgstr "No files have been uploaded."
 
-#: /wa-system/request/waRequestFile.class.php:198
 msgid "Missing a temporary folder."
 msgstr "Missing temporary folder"
 
-#: /wa-system/request/waRequestFile.class.php:200
 msgid "Failed to write file to disk."
 msgstr ""
 
-#: /wa-system/request/waRequestFile.class.php:202
 msgid "A PHP extension stopped the file upload."
 msgstr ""
 
-#: /wa-system/request/waRequestFile.class.php:204
 msgid "Unknown upload error"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:536
 msgid "Theme %s already exists"
 msgstr "Theme %s already exists."
 
-#: /wa-system/file/waTheme.class.php:988
 msgid "Invalid theme id %s"
 msgstr "Invalid theme id “%s”"
 
-#: /wa-system/database/waModel.class.php:653
 msgid "Unknown field %s"
 msgstr "Unknown field “%s”"
 
-#: /wa-system/image/waImage.class.php:64
 msgid "Not an image or invalid image: "
 msgstr ""
 
-#: /wa-system/image/waImage.class.php:110
 msgid "Not %s image adapter"
 msgstr "Not a %s image adapter"
 
-#: /wa-system/image/waImage.class.php:303
 msgid "File must be writable: "
 msgstr ""
 
-#: /wa-system/image/waImageGd.class.php:348
 msgid "Can't read font file $font_file"
 msgstr ""
 
-#: /wa-system/image/waImageGd.class.php:252
 msgid "GD does not support %s images"
 msgstr "GD does not support %s images."
 
-#: /wa-system/image/waImageGd.class.php:62
 msgid "GD is not installed"
 msgstr "GD is not installed."
 
-#: /wa-system/image/waImageGd.class.php:69
 msgid "Need GD version of the above 2.0.1"
 msgstr "Need GD version above 2.0.1"
 
-#: /wa-system/image/waImageImagick.class.php:31
 msgid "ImageMagick is not installed."
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:695
 msgid "Authorize either by entering your contact information, or through one of the websites listed above."
 msgstr "Authorize either by entering your contact information or using one of the services listed above."
 
-#: /wa-system/view/waViewHelper.class.php:378
 msgid "Syntax error at block"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:516
 msgid "Reset password"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:516
 msgid "I remember it now!"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:529
 msgid "Enter a new password"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:535
 msgid "Re-enter password"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:543
 msgid "Save and log in"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:639
 msgid "\"Sign up\""
 msgstr "“Sign up”"
 
-#: /wa-system/view/waViewHelper.class.php:639
 msgid "or <a href=\"%s\">login</a> if you already have an account"
 msgstr "or <a href=\"%s\">log in</a> if you already have an account"
 
-#: /wa-system/validator/waValidator.class.php:38
 msgid "Required"
 msgstr ""
 
-#: /wa-system/validator/waValidator.class.php:99
 msgid "Invalid"
 msgstr ""
 
-#: /wa-system/validator/waRegexValidator.class.php:25
 msgid "Not match."
 msgstr "No match."
 
-#: /wa-system/validator/waEmailValidator.class.php:30
 msgid "Invalid Email"
 msgstr "Invalid email address"
 
-#: /wa-system/exception/data/error.php:27
 msgid "Error"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:110
 msgid "or"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:110
 msgid "cancel"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:3
 msgid "Recover password for"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:31
 msgid "Password recovery instructions have been sent to your email address."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:33
 msgid "Back to login page"
 msgstr "Back to the login page"
 
-#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:36
 msgid "Please enter your email:"
 msgstr "Please enter your email address:"
 
-#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:38
 msgid "Please enter your login name or email:"
 msgstr "Please enter your login name or email address:"
 
-#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:47
 msgid "Send"
 msgstr ""
 
-#: /wa-system/webasyst/templates/mail/RecoveringPassword.html:1
 msgid "To recover your password please follow this link:"
 msgstr "To recover your password, please follow this link:"
 
-#: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
 msgid "IMPORTANT NOTE: If you did not request your password recovery, someone else might be trying to log in using your email address. For security purposes we recommend you to log in to your account and to change your password."
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:10
 msgid "Page settings"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:31
 msgid "Delete"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:16
 msgid "This will delete entire page. Are you sure?"
 msgstr "This will delete the entire page. Are you sure?"
 
-#: /wa-system/page/templates/Page.html:217
 msgid "New page"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:12
 msgid "Preview"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:88
 msgid "This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes."
 msgstr "This page is not settled (not published), i.e. not connected to any of your site’s routing rules. Drag this page from the Unpublished section in the left sidebar to connect it to any of your existing site’s routes."
 
-#: /wa-system/page/templates/PageEdit.html:61
 msgid "Page name"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:69
 msgid "Draft"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:71
 msgid "Published"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:78
 msgid "Page URL"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:101
 msgid "<strong class=\"title\">Title</strong>"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:117
 msgid "Page custom parameters"
 msgstr "Custom page parameters"
 
-#: /wa-system/page/templates/PageEdit.html:121
 msgid "Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line."
 msgstr "Optional set of custom <em>key=value</em> parameters, which can be used in page.html template or in this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair must be on a separate line."
 
-#: /wa-system/page/templates/PageEdit.html:121
 msgid "Help"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:140
 msgid "WYSIWYG"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:153
 msgid "Cheat sheet"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:109
 msgid "Save"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:254
 msgid "Saving..."
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:257
 msgid "Saved"
 msgstr ""
 
-#: /wa-system/page/templates/Page.html:87
 msgid "Unpublished"
 msgstr ""
 
-#: /wa-system/page/templates/Page.html:94
 msgid "There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages which are not connected to any of the site’s routing rules. These pages are not displayed on your site. To publish these pages now, select the new route for them:"
 msgstr "There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages which are not connected to any of the site’s routing rules. These pages are not displayed on your site. To publish these pages now, select a new route for them:"
 
-#: /wa-system/page/templates/Page.html:112
 msgid "Unpublished pages"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:105
 msgid "Loading"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:113
 msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
 msgstr "Non-saved changes will be lost if you leave this page now. Are you sure?"
 
-#: /wa-system/design/templates/DesignEdit.html:9
 msgid "View original"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:19
 msgid "Close"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:29
 msgid "Template settings"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:34
 msgid "File will be deleted without the ability to recover. Are you sure?"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:66
 msgid "Create new file"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:67
 msgid "Link from parent theme"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:74
 msgid "File name"
 msgstr "Filename"
 
-#: /wa-system/design/templates/DesignEdit.html:78
 msgid "File should have one of the allowed extensions: .html, .css, .js"
 msgstr "Filename should have one of the allowed extensions: .html, .css, .js."
 
-#: /wa-system/design/templates/DesignEdit.html:83
 msgid "Description"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:87
 msgid "Optional template description"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:95
 msgid "Select file"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:107
 msgid "all available parent theme files are already linked"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:112
 msgid "Select a file and click Save button below."
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:210
 msgid "Theme preview"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:211
 msgid "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you normally do. Other users don't see that you are previewing this design theme."
 msgstr "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks in your frontend. You can navigate through your website as you normally do. Other users cannot see that you are previewing this design theme."
 
-#: /wa-system/design/templates/DesignEdit.html:216
 msgid "Finish preview session"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:5
 msgid "All"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:6
 msgid "Paid"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:7
 msgid "Free"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:13
 msgid "All categories"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:14
 msgid "Installed themes only"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:29
 msgid "All colors"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:41
 msgid "Design themes for %s"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:42
 msgid "Theme list is downloaded from webasyst.com website."
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:20
 msgid "not in use"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:31
 msgid "New file"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:32
 msgid "Theme settings"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:34
 msgid "About"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:44
 msgid "Design themes"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:56
 msgid "Upload theme"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:58
 msgid "Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file)."
 msgstr "A theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and a theme.xml manifest file)."
 
-#: /wa-system/design/templates/Sidebar.html:61
 msgid "Uploading..."
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:67
 msgid "Upload"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:5
 msgid "Last modified"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:5
 msgid "not modified"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:8
 msgid "This design theme is in use on"
 msgstr "This design theme is in use at"
 
-#: /wa-system/design/templates/Theme.html:15
 msgid "This design theme is not in use. Apply this theme in your website <span class=\"js-theme-routing-url\">Routing settings</span>."
 msgstr "This design theme is not in use. Apply this theme in your website’s <span class=\"js-theme-routing-url\">Routing settings</span>."
 
-#: /wa-system/design/templates/Theme.html:21
 msgid "Download"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:22
 msgid "Duplicate"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:23
 msgid "This will reset all customizations you applied to this design theme. Are you sure?"
 msgstr "This will reset all changes you have applied to this design theme. Are you sure?"
 
-#: /wa-system/design/templates/Theme.html:23
 msgid "Revert theme to original"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:38
 msgid "Rename"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:84
 msgid "Parent theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:25
 msgid "not set"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:25
 msgid "Change theme"
 msgstr "Change"
 
-#: /wa-system/design/templates/Theme.html:26
 msgid "This will permanently delete theme without the ability to recover. Are you sure?"
 msgstr "This will permanently delete the theme without the ability to recover. Are you sure?"
 
-#: /wa-system/design/templates/Theme.html:26
 msgid "Delete theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:43
 msgid "Theme name"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:51
 msgid "Theme ID"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:55
 msgid "IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error."
 msgstr "IMPORTANT: Change the Theme ID only if you are sure what you are doing. If this theme is used on any of your websites, you will have to manually update those websites’ settings to use this or another theme after the Theme ID parameter is changed. Otherwise websites may become inaccessible and will return the “Unable to load template file” error."
 
-#: /wa-system/design/templates/Theme.html:89
 msgid "Not set"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:100
 msgid "IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme."
 msgstr "IMPORTANT: Theme inheritance allows use of HTML templates, CSS files, and images of other design themes. If you are about to change the parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have only one parent theme."
 
@@ -968,895 +762,664 @@ msgstr ""
 msgid "Powered by Webasyst"
 msgstr ""
 
-#: /wa-system/contact/waContactCheckboxField.class.php:36
 msgid "Yes"
 msgstr ""
 
-#: /wa-system/contact/waContactCheckboxField.class.php:36
 msgid "No"
 msgstr ""
 
-#: /wa-system/contact/waContactRegionField.class.php:134
 msgid "select region"
 msgstr ""
 
-#: /wa-system/contact/waContactsCollection.class.php:378
 msgid "Category"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:129
 msgid "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme."
 msgstr "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks in your frontend. You can navigate through your website as you usually do. Other users cannot see that you are previewing this design theme."
 
-#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:30
 msgid "<strong>%s</strong> requests access to your apps data:"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:42
 msgid "Allow"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/api/ApiAuth.html:25
 msgid "deny"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:45
 msgid "Deny"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:425
 msgid "Recipient (administrator) email is not valid"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:436
 msgid "Please define your request"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:439
 msgid "Email is required"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:448
 msgid "An error occurred while attempting to send your request. Please try again in a minute."
 msgstr ""
 
-#: /wa-system/contact/waContactSelectField.class.php:93
 msgid "Select value"
 msgstr ""
 
-#: /wa-system/controller/waSignupAction.class.php:140
 msgid "Thank you for signing up!"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:59
 msgid "parent theme file"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:30
 msgid "This theme is in use on"
 msgstr ""
 
-#: /wa-system/design/templates/Sidebar.html:36
 msgid "This theme is currently not in use. Connect this theme in your site <a href=\"%s\">Routing settings</a>."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:15
 msgid "Display settings"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:72
 msgid "Manage theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:74
 msgid "Download theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:81
 msgid "You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:83
 msgid "This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:88
 msgid "Default theme cannot be deleted"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:94
 msgid "Thumbnails"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:95
 msgid "This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-fly thumbnail generation is allowed, thumbnails will be generated automatically."
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:43
 msgid "Cancel"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:47
 msgid "Design themes for %s app"
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:48
 msgid "Click on a design theme to download and install it from the Webasyst Store"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:506
 msgid "URL of this Webasyst installation (relative)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:507
 msgid "URL of the current app settlement (relative)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:508
 msgid "URL to access Webasyst backend (relative)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:509
 msgid "URL of the current app design theme folder (relative)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:511
 msgid "Title"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:512
 msgid "Assigns a new title"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:513
 msgid "Returns name of this Webasyst installation (name is specified in “Installer” app settings)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:514
 msgid "Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:515
 msgid "Returns current page URL (either absolute or relative)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:516
 msgid "Returns this domain’s root URL (absolute)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:517
 msgid "Returns value of the global var by <em>key</em>. Global var array is initially empty, and can be used arbitrarily."
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:518
 msgid "Assigns global var a new value"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:519
 msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:520
 msgid "Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:521
 msgid "Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, locale is retrieved from “Contacts” app user record, or detected automatically otherwise"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:522
 msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:523
 msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:524
 msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:525
 msgid "Embeds HTML snippet by ID"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:526
 msgid "Returns authorized user data from associated record in “Contacts” app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized"
 msgstr "Returns authorized user data from associated record in Contacts app. <code>'field'</code> parameter is optional and indicates the field id whose value must be returned. This function accepts any parameters acceptable for method <code><a href=\"http://www.webasyst.com/developers/docs/basics/classes/waContact#method-get\" target=\"_blank\">get()</a></code> of system class <code>waContact</code>. Returns <code>false</code>, if user is not authorized."
 
-#: /wa-system/page/actions/waPage.actions.php:527
 msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:528
 msgid "— <em>\"platform\"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:529
 msgid "— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:530
 msgid "— not specified: returns entire User Agent string;"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:531
 msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:576
 msgid "Displays a simple variable (non array/object)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:577
 msgid "Displays the 5th element of a zero-indexed array"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:578
 msgid "Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo[\"bar\"]"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:579
 msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:580
 msgid "Displays the object property named <em>bar</em>"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:581
 msgid "Displays the return value of object method named <em>bar()</em>"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:582
 msgid "Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:583
 msgid "Escapes a variable for safe display in HTML"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:584
 msgid "Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:585
 msgid "Outputs the sum of <em>$x</em> and <em>$y</em>"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:587
 msgid "Assigns variable a value"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:587
 msgid "Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:588
 msgid "Content between {literal} tags will not be parsed by Smarty"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:589
 msgid "Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:590
 msgid "Similar to PHP if statements"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:591
 msgid "{foreach} is for looping over arrays of data"
 msgstr ""
 
-#: /wa-system/validator/waStringValidator.class.php:21
 msgid "No more than %d character please"
 msgid_plural "No more than %d characters please"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /wa-system/validator/waStringValidator.class.php:22
 msgid "No less than %d character please"
 msgid_plural "No less than %d characters please"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /wa-system/view/waViewHelper.class.php:763
 msgid "Sign Up"
 msgstr ""
 
-#: /wa-system/webasyst/templates/mail/Signup.html:1
 msgid "Thank you for registering on %s!"
 msgstr ""
 
-#: /wa-system/webasyst/templates/mail/Signup.html:3
 msgid "Login to your account"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:115
 msgid "Revert to original"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:118
 msgid "Drop all customizations and revert parent theme <strong>%s</strong> to the original version too"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:126
 msgid "Revert"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:531
 msgid "Request from website"
 msgstr ""
 
-#: /wa-system/contact/waContactCompositeField.class.php:84
-#: /wa-system/contact/waContactField.class.php:339
-#: /wa-system/contact/waContactField.class.php:457
 msgid "Data must be an array."
 msgstr ""
 
-#: /wa-system/contact/waContactAddressField.class.php:207
 msgid "show on map"
 msgstr ""
 
-#: /wa-system/image/waImage.class.php:64
 msgid "Not an image or invalid image:"
 msgstr ""
 
-#: /wa-system/image/waImage.class.php:322
 msgid "File must be writable:"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:66
 msgid "added a new template"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:69
 msgid "edited template"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:72
 msgid "deleted template"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:75
 msgid "uploaded a new theme"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:78
 msgid "downloaded theme"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:81
 msgid "deleted theme"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:84
 msgid "reset theme settings"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:87
 msgid "create theme duplicate"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:90
 msgid "renamed theme"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:102
 msgid "added a new page"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:105
 msgid "edited a website page"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:108
 msgid "deleted page"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:111
 msgid "moved page"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:121
 msgid "logged in"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:124
 msgid "logged out"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:127
 msgid "signed up"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:130
 msgid "edited profile in customer portal"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:133
 msgid "enabled access for contact"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:136
 msgid "disabled access for contact"
 msgstr ""
 
-#: /wa-system/validator/waDateValidator.class.php:21
 msgid "Incorrect date"
 msgstr ""
 
-#: /wa-system/validator/waNumberValidator.class.php:21
 msgid "Incorrect numerical value"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:157
 msgid "January"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:158
 msgid "February"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:159
 msgid "March"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:160
 msgid "April"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:161
 msgid "May"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:162
 msgid "June"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:163
 msgid "July"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:164
 msgid "August"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:165
 msgid "September"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:166
 msgid "October"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:167
 msgid "November"
 msgstr ""
 
-#: /wa-system/contact/waContactBirthdayField.class.php:168
 msgid "December"
 msgstr ""
 
-#: /wa-system/contact/waContactForm.class.php:344
 msgid "New password"
 msgstr ""
 
-#: /wa-system/contact/waContactForm.class.php:364
-#: /wa-system/controller/waMyProfileAction.class.php:145
 msgid "Photo"
 msgstr ""
 
-#: /wa-system/contact/waContactsCollection.class.php:417
 msgid "Name"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:58
 msgid "Site"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:62
 msgid "Appearance"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:64
 msgid "Pages"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:66
 msgid "Templates"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:67
 msgid "Themes"
 msgstr ""
 
-#: /wa-system/design/templates/Design.html:68
 msgid "Settings"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:130
 msgid "This list represent all parent theme (<strong>%s</strong>) templates which are currently not linked in this design theme."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:9
 msgid "Download theme backup"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:10
 msgid "Clone theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:11
-#: /wa-system/design/templates/Theme.html:296
 msgid "Rename theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:14
 msgid "You did not apply customizations to this theme yet, and thus there is nothing to revert."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:47
-#: /wa-system/design/templates/Theme.html:281
 msgid "Start using %s theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:50
 msgid "preview this theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:59
 msgid "Theme path"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:73
 msgid "Theme usage"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:84
 msgid "All listed routes are linking %s design theme right now."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:178
 msgid "%s design theme does not offer customizable display settings. Please use template editor for customizing the theme."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:185
 msgid "About this theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:240
 msgid "Start using this theme on one of your existing %s app routes, or create a new route:"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:244
 msgid "Existing route"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:256
 msgid "New route"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:36
 msgid "%s design theme has been successfully installed. Start using this theme by clicking the button below."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:39
 msgid "%s design theme is currently not in use on your websites."
 msgstr ""
 
-#: /wa-system/design/templates/Themes.html:43
 msgid "Upload theme archive"
 msgstr ""
 
-#: /wa-system/page/templates/Help.html:8
 msgid "Blocks"
 msgstr ""
 
-#: /wa-system/webasyst/templates/mail/Signup.html:7
 msgid "Confirm your email by clicking this link"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:36
 msgid "Roll back my file to the original version"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:41
 msgid "This will reset all your changes. Are you sure?"
 msgstr ""
 
-#: /wa-system/response/waResponse.class.php:405
 msgid "<strong>%s</strong> theme preview in action."
 msgstr ""
 
-#: /wa-system/response/waResponse.class.php:408
 msgid "Stop preview session"
 msgstr ""
 
-#: /wa-system/response/waResponse.class.php:407
 msgid "<strong>%s</strong> theme preview in action"
 msgstr ""
 
-#: /wa-system/auth/waAuth.class.php:180
 msgid "A confirmation link has been sent to your email address provided during the signup. Please click this link to confirm your email and to sign in. <a class=\"send-email-confirmation\" href=\"%s\">Resend the link</a>"
 msgstr ""
 
-#: /wa-system/controller/waLoginAction.class.php:58
 msgid "Confirmation link has been resent"
 msgstr ""
 
-#: /wa-system/controller/waLoginAction.class.php:63
 msgid "Invalid login"
 msgstr ""
 
-#: /wa-system/design/templates/DesignEdit.html:6
 msgid "This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:3
 msgid "%s design theme"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:182
 msgid "Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:263
-#: /wa-system/design/templates/Themes.html:114
 msgid "There are no routes for %s app on this site yet."
 msgstr ""
 
-#: /wa-system/file/waFiles.class.php:111
 msgid "Error copying file from %s to %s"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:20
 msgid "Original version <strong>%s</strong>"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:21
 msgid "No customizations have been made to theme settings and template files."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:34
 msgid "Latest version <strong>%s</strong>"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:35
 msgid "Your customized version of %s theme is up to date."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:48
 msgid "Update to version %s is available"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:49
 msgid "Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update."
 msgstr "Theme update requires your confirmation because it may affect changes which you previously applied to template files and thus alter your site layout. Click to review the list of files and update."
 
-#: /wa-system/design/templates/Theme.html:63
 msgid "This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>)."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:219
 msgid "Theme version"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:303
 msgid "This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdate.html:4
 msgid "Update theme"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdate.html:5
 msgid "Confirm the list of files which will be replaced with their newest versions from theme version %s."
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdate.html:6
 msgid "Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)"
 msgstr "Files shown in <strong>bold</strong> were previously modified by you; select them only if you’d like to drop all changes you’ve made to those files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically roll back this update. (If you are not sure about some files, do not select them now; you will be able to update them manually one by one later on.)"
 
-#: /wa-system/design/templates/ThemeUpdate.html:8
-#: /wa-system/design/templates/ThemeUpdate.html:31
 msgid "Theme appearance settings will be updated automatically"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdate.html:8
-#: /wa-system/design/templates/ThemeUpdate.html:31
 msgid "Theme appearance settings (theme.xml)"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdate.html:17
-#: /wa-system/design/templates/ThemeUpdate.html:40
 msgid "You did not modify this file"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdate.html:17
-#: /wa-system/design/templates/ThemeUpdate.html:40
 msgid "%s and %d more unmodified files"
 msgstr "%s and %d more non-modified files"
 
-#: /wa-system/design/templates/ThemeUpdate.html:21
-#: /wa-system/design/templates/ThemeUpdate.html:44
 msgid "You modified this file"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdate.html:54
 msgid "Update all to %s"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/login/Login.html:17
 msgid "Email or login name"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:373
 msgid "Apply this theme for mobile devices only"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:635
 msgid "All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:48
 msgid "Update is available"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:667
 msgid "All customizations you’ve made to this file will be lost!"
 msgstr ""
 
-#: /wa-system/helper/view.php:130
 msgid "Customize dashboard"
 msgstr ""
 
-#: /wa-system/helper/view.php:131
 msgid "Done editing"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:121
 msgid "Can't save plugin settings: unknown plugin id"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:16
 msgid "Incorrect size"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:161
 msgid "Widget not found"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:108
 msgid "Earlier"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:110
 msgid "7 Days"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:112
 msgid "30 Days"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:114
 msgid "90 Days"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:116
 msgid "365 Days"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:4
 msgid "Dashboard"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:18
 msgid "Live Stream"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:22
 msgid "Everything"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardActivity.html:34
 msgid "Load more"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:2
 msgid "Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:27
 msgid "Click or drag this widget to install it on your dashboard"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:31
 msgid "Delete Widget"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:36
 msgid "Set small size"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:39
 msgid "Set medium size"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:42
 msgid "Set big size"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:48
 msgid "Show settings"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidgets.html:36
 msgid "Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top."
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:120
 msgid "Social sharing"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:122
 msgid "Use these meta tags for social sharing too"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:129
 msgid "Social sharing title"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:135
 msgid "Social sharing image URL"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:139
 msgid "If not set, a social network will attempt to determine preview image on it’s own."
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:143
 msgid "Social sharing video URL"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:149
 msgid "Social sharing description"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:155
 msgid "Social sharing type"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:163
 msgid "Please refer to <a href=\"http://ogp.me\" target=\"_blank\">Open Graph</a> protocol site for more information on social sharing meta tags and available values."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:37
 msgid "All apps"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:37
 msgid "Selected apps"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:49
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:53
 msgid "No events in the live stream yet."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:64
 msgid "Welcome to your personal dashboard!"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:65
 msgid "Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:68
 msgid "Ok, thanks"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:55
 msgid "Live stream collects all events from installed apps and presents them in a chronological order."
 msgstr ""
 
@@ -1866,231 +1429,174 @@ msgstr ""
 msgid "Widgets"
 msgstr ""
 
-#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:57
 msgid "The secret parameter is missing."
 msgstr ""
 
-#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:60
 msgid "The secret parameter is invalid or malformed."
 msgstr ""
 
-#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:63
 msgid "The response parameter is missing."
 msgstr ""
 
-#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:66
 msgid "The response parameter is invalid or malformed."
 msgstr ""
 
-#: /wa-system/controller/waFrontController.class.php:66
 msgid "You don’t have permissions to view this widget"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:483
 msgid "%s theme (version %s) for %s app"
 msgstr ""
 
-#: /wa-system/plugin/templates/Plugins.html:20
 msgid "Popular plugins"
 msgstr ""
 
-#: /wa-system/plugin/templates/Plugins.html:39
 msgid "No plugins are installed."
 msgstr ""
 
-#: /wa-system/plugin/templates/Plugins.html:47
-#: /wa-system/plugin/templates/Plugins.html:320
 msgid "Loading..."
 msgstr ""
 
-#: /wa-system/plugin/templates/Plugins.html:165
 msgid "Plugins"
 msgstr ""
 
-#: /wa-system/plugin/templates/Settings.html:26
 msgid "Plugin %s is installed and working."
 msgstr ""
 
-#: /wa-system/plugin/templates/Settings.html:29
 msgid "No configuration options are available for this plugin."
 msgstr ""
 
-#: /wa-system/plugin/templates/Settings.html:36
 msgid "Unknown plugin"
 msgstr ""
 
-#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:278
 msgid "Hello world"
 msgstr ""
 
-#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:283
 msgid "Navigation"
 msgstr ""
 
-#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:286
 msgid "Menu item 1"
 msgstr ""
 
-#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:289
 msgid "Menu item 2"
 msgstr ""
 
-#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:292
 msgid "Menu item 3"
 msgstr ""
 
-#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:301
 msgid "Woohoo, Webasyst app is ready!"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:107
 msgid "My dashboard"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:108
 msgid "Webasyst TV"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:112
 msgid "New Webasyst TV dashboard..."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:124
 msgid "New dashboard"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:127
 msgid "Dashboard title"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:131
 msgid "Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:34
 msgid "Dashboard public link"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
 msgid "You are about to permanently delete this dashboard. Are you sure?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
 msgid "Delete dashboard"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:16
 msgid "Add widgets"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:485
 msgid "All %s themes (recommended)"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:486
 msgid "Only %s theme for this app (%s)"
 msgstr ""
 
 msgid "Themes to clone"
 msgstr ""
 
-#: /wa-system/plugin/templates/Plugins.html:31
 msgid "Installed"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:5
 msgid "Install new widgets"
 msgstr ""
 
-#: /wa-system/controller/waFrontController.class.php:140
 msgid "Plugin not found"
 msgstr ""
 
-#: /wa-system/file/waNet.class.php:421 /wa-system/file/waNet.class.php:425
 msgid "Error cUrl init"
 msgstr ""
 
-#: /wa-system/image/waImage.class.php:140
 msgid "No image adapters found. Install ImageMagick or GD extension to enable image-processing functionality."
 msgstr ""
 
-#: /wa-system/map/adapters/googleMap.class.php:91
 msgid "Google Maps API key"
 msgstr ""
 
-#: /wa-system/map/adapters/googleMap.class.php:92
 msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> to display a map within the Webasyst backend. Without a key, only a link to the map will be displayed."
 msgstr ""
 
-#: /wa-system/map/adapters/googleMap.class.php:94
 msgid "To be able to use an API key, <a href=\"https://console.developers.google.com/apis/api/static_maps_backend/\">enable Static Maps API</a> in your Google account."
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:596
 msgid "Request preferred delivery time"
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:603
 msgid "Request preferred delivery date"
 msgstr ""
 
-#: /wa-system/user/templates/NameAndStatus.html:14
 msgid "%s is now online"
 msgstr ""
 
-#: /wa-system/user/templates/NameAndStatus.html:25
 msgid "%s's birthday — %s"
 msgstr ""
 
-#: /wa-system/webasyst/lib/config/webasystConfig.class.php:19
 msgid "edited contact"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:45
 msgid "Log out"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/profile/ProfilePage.html:12
 msgid "Change photo"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/profile/ProfilePage.html:28
 msgid "@"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:25
 msgid "Drop photo here"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:30
 msgid "To change drop another photo or upload file (JPG, GIF, or PNG):"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:33
 msgid "Or upload file (JPG, GIF or PNG):"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:42
 msgid "Delete photo"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:57
 msgid "Are you sure you want to delete this photo?"
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:632
 msgid "from"
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:647
 msgid "till"
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:698
 msgid "Delivery intervals"
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:699
 msgid "Add interval"
 msgstr ""
 
@@ -2118,1860 +1624,1281 @@ msgstr "ID"
 msgid "Yandex app secret"
 msgstr "Password"
 
-#: /wa-system/file/waTheme.class.php:2603
 msgid "These images were not found in archive:"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:1041
-#: /wa-system/file/waTheme.class.php:1046
 msgid "Copy"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2085
-#: /wa-system/file/waTheme.class.php:2124
 msgid "Cannot create a theme copy with specified ID. A theme with this ID already exists."
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2554
 msgid "Empty archive."
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2566
 msgid "No valid settings.json file in archive."
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2572
 msgid "These settings are not for selected app’s design theme."
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2577
 msgid "No settings found in archive."
 msgstr ""
 
-#: /wa-system/login/templates/login/backend/form_wrapper.html:30
-#: /wa-system/login/templates/login/frontend/form_wrapper.html:28
-#: /wa-system/login/templates/forgotpassword/backend/form_wrapper.html:26
-#: /wa-system/login/templates/forgotpassword/frontend/form_wrapper.html:26
-#: /wa-system/signup/templates/form_wrapper.html:18
 msgid "Field is required"
 msgstr ""
 
-#: /wa-system/login/templates/login/backend/form_wrapper.html:32
-#: /wa-system/login/templates/login/frontend/form_wrapper.html:30
-#: /wa-system/login/actions/login/waBaseLogin.action.php:72
 msgid "Password is required"
 msgstr ""
 
-#: /wa-system/login/templates/login/backend/form_wrapper.html:33
-#: /wa-system/login/templates/login/frontend/form_wrapper.html:31
-#: /wa-system/login/templates/setpassword/backend/form_wrapper.html:17
-#: /wa-system/login/templates/setpassword/frontend/form_wrapper.html:23
-#: /wa-system/login/templates/forgotpassword/backend/form_wrapper.html:30
-#: /wa-system/login/templates/forgotpassword/frontend/form_wrapper.html:32
 msgid "Captcha is required"
 msgstr ""
 
-#: /wa-system/login/templates/login/frontend/captcha.html:3
-#: /wa-system/login/templates/setpassword/frontend/captcha.html:3
-#: /wa-system/login/templates/forgotpassword/frontend/captcha.html:3
-#: /wa-system/signup/templates/captcha.html:3
 msgid "Spam protection"
 msgstr ""
 
-#: /wa-system/login/templates/login/frontend/form.html:64
 msgid "For the first time with us?"
 msgstr ""
 
-#: /wa-system/login/templates/login/frontend/field.html:41
-#: /wa-system/login/templates/forgotpassword/backend/form.html:18
-#: /wa-system/login/templates/forgotpassword/frontend/form.html:27
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:44
-#: /wa-system/signup/templates/field.html:28
 msgid "Edit"
 msgstr ""
 
-#: /wa-system/login/templates/setpassword/frontend/form.html:35
-#: /wa-system/login/templates/forgotpassword/frontend/form.html:59
 msgid "Found the password?"
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:212
 msgid "One-time password was not sent."
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:296
 msgid "One-time password has been sent."
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:298
 msgid "One-time password has been sent to your email address."
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:304
 msgid "One-time password has been sent to you as an SMS."
 msgstr ""
 
-#: /wa-system/login/classes/login/waLoginForm.class.php:215
-#: /wa-system/webasyst/lib/actions/settings/field/webasystSettingsFieldConditionalValuesDialog.action.php:9
-#: /wa-system/webasyst/lib/actions/settings/field/webasystSettingsFieldConditionalValuesSave.controller.php:14
-#: /wa-system/signup/classes/waSignupForm.class.php:254
 msgid "Unknown field"
 msgstr ""
 
-#: /wa-system/exception/data/error.php:44
 msgid "Please contact app developer."
 msgstr ""
 
-#: /wa-system/exception/data/error.php:46
 msgid "Please contact server administrator."
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:173
-#: /wa-system/page/templates/PageEdit.html:201
 msgid "Upload image"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:227
 msgid "<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:293
 msgid "WYSIWYG editor is disabled because page source contains Smarty code tags."
 msgstr ""
 
-#: /wa-system/page/templates/Help.html:115
 msgid "<strong>id</strong>: block ID.<br><strong>$params</strong>: associative array of additional parameters passed to a block (example: <code>['myparam' => 100]</code>). A parameter is available by its name as a Smarty variable within a block (example: <code>$myparam</code>)."
 msgstr ""
 
-#: /wa-system/page/templates/Page.html:182
 msgid "These pages are not connected to any of the site’s structure rules and are therefore not displayed on your site. To publish these pages now, select a site structure rule for them:"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:445
 msgid "Unknown page domain"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:446
 msgid "Unknown page route"
 msgstr ""
 
-#: /wa-system/page/actions/waPage.actions.php:454
 msgid "Page URL is in conflict with the website structure."
 msgstr ""
 
-#: /wa-system/auth/exceptions/waAuthConfirmEmailException.class.php:9
 msgid "Confirm email exception"
 msgstr ""
 
-#: /wa-system/auth/exceptions/waAuthException.class.php:9
 msgid "Auth exception"
 msgstr ""
 
-#: /wa-system/auth/waAuth.class.php:427
 msgid "Contact can't be authorized"
 msgstr ""
 
-#: /wa-system/map/adapters/googleMap.class.php:88
 msgid "Link to map"
 msgstr ""
 
-#: /wa-system/view/waViewHelper.class.php:645
-#: /wa-system/signup/actions/waSignup.action.php:698
 msgid "Please confirm your agreement"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/backend/BackendHeader.html:109
 msgid "Only you can see this dashboard."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:43
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:55
 msgid "Backend authorization"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:20
 msgid "B,KB,MB"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:37
 msgid "Stretch to fill entire screen"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:44
 msgid "Set up how users will log into your Webasyst backend."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:50
 msgid "Passwords type"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:69
 msgid "Re-sending of verification code"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:72
 msgid "Waiting period in seconds before sending next verification code:"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:80
 msgid "User notifications"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:89
 msgid "Email notification templates"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:95
 msgid "Edit the list in “<a href=\"%s\">Email&nbsp;templates</a>” section."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:103
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:309
 msgid "Phone"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:106
 msgid "SMS notification templates"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:108
 msgid "Select template"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:114
 msgid "Edit the list in “<a href=\"%s\">SMS&nbsp;templates</a>” section."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:126
 msgid "Login form"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:130
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:35
 msgid "Captcha"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:130
 msgid "A user must enter characters shown in an image"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:147
 msgid "Select Webasyst default captcha or Google reCAPTCHA"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:156
 msgid "Auto-login"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:157
 msgid "“Remember me” option"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:162
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:306
 msgid "enabled"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:162
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:307
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldRow.inc.html:8
 msgid "disabled"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:169
 msgid "Login form background"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:218
 msgid "Edit field label"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:225
 msgid "Edit hint for this placeholder"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:248
 msgid "Invisible captcha will be used"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:282
 msgid "Delete background?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:312
 msgid "Login or phone"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsSMS.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsSMS.html:3
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:47
 msgid "SMS providers"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsSMS.html:14
 msgid "Sender IDs"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsSMS.html:21
 msgid "Enter sender IDs to use with this SMS gateway. A sender ID is either your phone number or up-to-11-characters text label. Enter * to use the default sender ID issued for your account by the gateway."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsSMS.html:33
 msgid "password"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditor.html:41
 msgid "Add item"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditor.html:58
 msgid "Radio selector advanced settings"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditor.html:59
 msgid "Depending on the current radio selector value, other contact form fields may be set to be omitted (become hidden). Manage form fields visibility settings using checkboxes below for each radio selector value."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditor.html:134
 msgid "Please specify options for multiple choice field."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditor.html:158
 msgid "Manage conditions"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditor.html:160
 msgid "Click “Save” button below to commit changes."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditor.html:169
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:212
 msgid "This field is required."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldDeleteConfirm.html:13
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldDeleteConfirm.html:37
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:169
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:188
 msgid "Delete field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldDeleteConfirm.html:19
 msgid "No data in the field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldDeleteConfirm.html:20
 msgid "Deleting this field will not cause a loss of any contact information."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldDeleteConfirm.html:23
 msgid "%d contact have data in the field"
 msgid_plural "%d contacts have data in the field"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldDeleteConfirm.html:28
 msgid "Deleting the field will cause a loss of this contact information."
 msgid_plural "Deleting the field will cause a loss of these contacts information."
 msgstr[0] ""
 msgstr[1] ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:3
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:27
 msgid "Countries & regions"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:8
-#: /wa-system/contact/waContactFields.class.php:587
 msgid "Country"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:15
 msgid "Select a country"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:25
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:54
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:57
 msgid "Clone on top of the list"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:35
 msgid "Regions"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:41
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:49
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:76
 msgid "Region name"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:42
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:50
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:77
 msgid "Region code"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:65
 msgid "No regions (states, provinces) are defined for this country."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:71
 msgid "Add region"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:88
 msgid "Click “Save” button below to commit the delete."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsRegions.html:117
 msgid "Regions are not saved. Are you sure you want to leave current page?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:201
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:39
 msgid "Email settings"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:9
 msgid "Remove"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:16
 msgid "Email or domain"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:20
 msgid "Default"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:25
 msgid "Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:31
 msgid "Transport"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:54
 msgid "Options"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:71
 msgid "Port"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:89
 msgid "Encryption"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:92
 msgid "None"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:93
 msgid "SSL/TLS"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:94
 msgid "STARTTLS"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:120
 msgid "Command"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:138
 msgid "Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:139
 msgid "Enter an email address in “Sender” field to use DKIM."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:144
 msgid "You need to install openssl php extention to use DKIM"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:147
 msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:156
 msgid "Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:161
 msgid "Host "
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:174
 msgid "Domain"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:178
 msgid "Record type"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:184
 msgid "Value"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:208
 msgid "Email address for notifications"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:212
 msgid "Main account administrative email where system notification will be sent."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:219
 msgid "Sender email address"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:223
 msgid "Reply-To address for system email notifications sent by Webasyst."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:231
 msgid "Select how email messages must be sent by default from your Webasyst."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:239
 msgid "If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:242
 msgid "Add email sending rule"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:19
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:23
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:52
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:103
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarSMS.html:40
 msgid "Sender"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:22
 msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"icon10 settings\"></i> for entire template group"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:29
 msgid "Letter subject"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:37
 msgid "Text of the letter"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:62
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:64
 msgid "Check sending"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:67
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:70
 msgid "Restore default text"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:69
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:72
 msgid "Reset"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:80
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:93
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:183
 msgid "Templates not found"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:82
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:95
 msgid "No templates"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:97
 msgid "Checking the sending of Email message"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:101
 msgid "Recipient's email"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:130
 msgid "Save your template"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateEmail.html:131
 msgid "To check whether you send email message, you must save the changes you made."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:27
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:28
 msgid "Field name"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:53
-#: /wa-system/contact/waContactFields.class.php:570
-#: /wa-system/contact/waContactFields.class.php:571
-#: /wa-system/contact/waContactFields.class.php:575
-#: /wa-system/contact/waContactFields.class.php:577
-#: /wa-system/contact/waContactFields.class.php:578
-#: /wa-system/contact/waContactFields.class.php:579
-#: /wa-system/contact/waContactFields.class.php:580
 msgid "Text (input)"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:54
-#: /wa-system/contact/waContactFields.class.php:574
 msgid "Text (textarea)"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:55
 msgid "Number (input)"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:56
-#: /wa-system/contact/waContactFields.class.php:573
 msgid "Selectable (radio)"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:57
 msgid "Selectable (select)"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:58
 msgid "Conditional (select/input)"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:59
-#: /wa-system/contact/waContactFields.class.php:584
 msgid "Checkbox"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:67
 msgid "Set default fixed value"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:69
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldFormRow.html:73
 msgid "Default fixed value:"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:21
 msgid "Edit field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:21
-#: /wa-system/webasyst/templates/actions/settings/SettingsField.html:30
 msgid "New field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:55
 msgid "Add name in another language"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:72
 msgid "Field ID"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:85
 msgid "Type of field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:101
 msgid "List items"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:103
 msgid "Enter each new item on new line"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:110
 msgid "Applied to"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:118
 msgid "Person"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:126
-#: /wa-system/contact/waContactsCollection.class.php:678
 msgid "Company"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:134
 msgid "Address fields"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:148
 msgid "Add field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:171
 msgid "Enable field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:173
 msgid "Disable field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:191
 msgid "This will remove field and all its data from all existing contacts. Are you sure?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:17
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:43
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:93
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarSMS.html:31
 msgid "Template group name"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:30
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarSMS.html:51
 msgid "Senders are edited in “<a class=\"js-disable-router\" href=\"%s\">SMS&nbsp;providers</a>” section."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:42
 msgid "Preview template"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:75
 msgid "Duplicate templates"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:80
 msgid "Delete templates"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:110
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:144
 msgid "Delete template group?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:132
 msgid "Preview SMS-message \"<span class=\"js-template-name\"></span>\""
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:160
 msgid "Checking the sending of SMS-messages"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:164
 msgid "Recipient's phone number"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:195
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:237
 msgid "Send %s SMS"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:210
 msgid "Save your templates"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:211
 msgid "To check the sending of SMS-messages, you must save the changes you made."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldRow.inc.html:10
-#: /wa-system/webasyst/templates/actions/settings/SettingsField.html:14
 msgid "person"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldRow.inc.html:11
-#: /wa-system/webasyst/templates/actions/settings/SettingsField.html:15
 msgid "company"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:3
 msgid "Captcha settings"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:4
 msgid "Select a type of captcha to be used on your websites."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:9
 msgid "Captcha type"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:12
 msgid "Webasyst Captcha"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:17
 msgid "Google reCAPTCHA"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:21
 msgid "Site Key"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:27
 msgid "Secret"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:30
 msgid "Get site key and secret for your website"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsCaptcha.html:35
 msgid "Invisible mode"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:1
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:3
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:19
-#: /wa-system/design/actions/waDesign.actions.php:775
 msgid "General settings"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:15
 msgid "May be displayed on websites and in email notifications."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:24
 msgid "Website address"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:29
 msgid "May be used on websites and in email notifications."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:39
 msgid "Locale of software available for installation"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:54
 msgid "Localization engine"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:66
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:68
 msgid "Clear cache"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:76
 msgid "For developers"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:80
 msgid "Developer mode"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:81
 msgid "Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsField.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsField.html:4
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:23
 msgid "Contact fields"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsField.html:23
 msgid "Main contact fields cannot be modified or disabled."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:5
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarSMS.html:5
 msgid "New template group"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:18
 msgid "Edit channel"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:39
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarSMS.html:26
 msgid "Creating new templates"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:63
-#: /wa-system/webasyst/templates/actions/settings/sidebar/SidebarEmail.html:114
 msgid "Senders are edited in “<a class=\"js-disable-router\" href=\"%s\">Email&nbsp;settings</a>” section."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:10
 msgid "Enter available options for %s depending on it’s parent field value."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:11
 msgid "http://www.shop-script.com/help/conditional-contact-fields/"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:12
 msgid "Get help"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:19
 msgid "<strong>IF</strong> parent field"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:39
 msgid "Prompt to select %s from the following list:"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:58
 msgid "Add option"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:69
 msgid "Add rule"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:73
 msgid "<strong>ELSE</strong>, in case parent field value does not match any of the listed above"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:76
 msgid "Display &lt;input&gt; (custom text) field for %s"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldConditionalValuesDialog.html:77
 msgid "Do not prompt for %s"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsMaps.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsMaps.html:3
 msgid "Maps settings"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsMaps.html:4
 msgid "Select an online map service to display maps."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsMaps.html:9
 msgid "Map service"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsMaps.html:26
 msgid "No map services available"
 msgstr ""
 
-#: /wa-system/webasyst/lib/updates/dev/1535442590.php:12
 msgid "System"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsGenerateDkim.controller.php:8
 msgid "Extension openssl is not installed"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsGenerateDkim.controller.php:18
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsGenerateDkim.controller.php:24
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsGenerateDkim.controller.php:30
 msgid "Failed to create DKIM signature"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsEmail.action.php:38
 msgid "SMTP"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsEmail.action.php:39
 msgid "A special server for sending email messages. You can send email via any SMTP server for which you have connection credentials: host, port, user name, and password. It may belong either to your web-hosting company or to a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsEmail.action.php:45
 msgid "php mail() function"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsEmail.action.php:46
 msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsEmail.action.php:52
 msgid "Sendmail"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/email/webasystSettingsEmail.action.php:53
 msgid "This is a default command for sending email in UNIX-like operating systems. You can edit it to use a different command for sending messages if you are an experienced server administrator."
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/auth/webasystSettingsAuthSave.controller.php:21
 msgid "File could not be saved due to the insufficient file write permissions for the \"%s\" folder."
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/general/webasystSettingsClearCache.controller.php:10
 msgid "Cache cleared"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/general/webasystSettingsClearCache.controller.php:12
 msgid "But with errors:"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/template/webasystSettingsTemplateDuplicate.controller.php:10
 msgid "Channel not found"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/template/webasystSettingsTemplateDuplicate.controller.php:35
 msgid "(Copy %s)"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/template/webasystSettingsTemplateCheckSending.controller.php:29
 msgid "Channel not exists"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/template/webasystSettingsTemplateCheckSending.controller.php:47
 msgid "Select at least one template to send"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/template/webasystSettingsTemplateCheckSending.controller.php:138
 msgid "Error sending message"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/template/sms/webasystSettingsTemplateSMSPreview.controller.php:49
 msgid "Invalid value"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/field/webasystSettingsFieldConditionalValuesDialog.action.php:58
 msgid "Conditional field"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/field/webasystSettingsFieldSave.controller.php:31
 msgid "Can't construct field"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/field/webasystSettingsFieldConditionalValuesSave.controller.php:19
 msgid "Unknown parent field"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:31
 msgid "Maps"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:43
 msgid "Email templates"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/sidebar/webasystSettingsSidebar.action.php:51
 msgid "SMS templates"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:280
 msgid "We have found %d duplicate for this field"
 msgid_plural "We have found %d duplicates for this field"
 msgstr[0] ""
 msgstr[1] ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:186
 msgid "Unknown locale: %s"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:195
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:205
 msgid "Required field"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:211
 msgid "Only English alphanumeric, hyphen and underline symbols are allowed"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:220
 msgid "This ID is already in use"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:254
 msgid "Unknown field type:"
 msgstr ""
 
-#: /wa-system/captcha/phpcaptcha/templates/captcha2.html:10
 msgid "Refresh code"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:19
 msgid "Expand"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:255
 msgid "Export theme settings"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:257
-#: /wa-system/design/templates/ThemeDialogs.inc.html:270
 msgid "Import theme settings"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:269
 msgid "not selected"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:271
-#: /wa-system/contact/waContactFields.class.php:576
 msgid "Select"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:271
 msgid "You can change the theme in settlement settings."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:359
 msgid "Support"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:364
 msgid "User manual"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:389
 msgid "Find setting"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:395
 msgid "Show hidden settings"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:406
-#: /wa-system/design/templates/Theme.html:490
 msgid "Images thumbnails"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:452
 msgid "Search results:"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:454
 msgid "No settings found"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:515
 msgid "Expand all"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:516
 msgid "Collapse all"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:517
-#: /wa-system/design/templates/Theme.html:520
 msgid "Collapse"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:266
 msgid "Current design settings will be lost during import. Export current settings before import to restore them later, if necessary."
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:274
 msgid "Select archive"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:279
 msgid "Select a TAR.GZ archive file"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:291
 msgid "Import"
 msgstr ""
 
-#: /wa-system/design/actions/waDesign.actions.php:1024
 msgid "Invalid archive"
 msgstr ""
 
-#: /wa-system/signup/templates/form.html:37
 msgid "Already registered?"
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:167
-#: /wa-system/signup/actions/waSignup.action.php:180
 msgid "Email confirmation failed"
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:419
 msgid "Signup failed."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:645
-#: /wa-system/validator/waPhoneNumberValidator.class.php:23
 msgid "Incorrect phone number value"
 msgstr ""
 
-#: /wa-system/contact/waContactFields.class.php:572
 msgid "Address"
 msgstr ""
 
-#: /wa-system/contact/waContactFields.class.php:581
-#: /wa-system/contact/waContactFields.class.php:582
-#: /wa-system/shipping/waShipping.class.php:1102
 msgid "Date"
 msgstr ""
 
-#: /wa-system/contact/waContactFields.class.php:583
 msgid "Composite field group"
 msgstr ""
 
-#: /wa-system/contact/waContactFields.class.php:585
 msgid "Number"
 msgstr ""
 
-#: /wa-system/contact/waContactFields.class.php:586
 msgid "Region"
 msgstr ""
 
-#: /wa-system/contact/waContactFields.class.php:588
 msgid "Hidden field"
 msgstr ""
 
-#: /wa-system/contact/waContactFields.class.php:589
 msgid "Full name"
 msgstr ""
 
-#: /wa-system/config/waDomainAuthConfig.class.php:332
 msgid "A user enters a password during signup"
 msgstr ""
 
-#: /wa-system/config/waDomainAuthConfig.class.php:335
 msgid "A password is generated during signup and sent in a notification"
 msgstr ""
 
-#: /wa-system/config/waDomainAuthConfig.class.php:338
 msgid "A one-time password (4-digit code) is sent to a user for each login"
 msgstr ""
 
-#: /wa-system/config/waAppConfig.class.php:193
 msgid "login failed"
 msgstr ""
 
-#: /wa-system/config/waBackendAuthConfig.class.php:18
 msgid "Permanent user password"
 msgstr ""
 
-#: /wa-system/config/waBackendAuthConfig.class.php:21
 msgid "One-time password (4-digit code)"
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:276
 msgid "Never require"
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:279
 msgid "Require at once"
 msgstr ""
 
-#: /wa-system/validator/waTimeValidator.class.php:22
 msgid "Incorrect time"
 msgstr ""
 
-#: /wa-system/verification/models/waVerificationChannel.model.php:251
 msgid "SMS"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:607
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:612
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:618
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:624
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:630
 msgid "Name of site that has sent a message"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:608
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:613
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:619
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:625
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:631
 msgid "Address of site that has sent a message"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:609
 msgid "Signup confirmation link URL"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:614
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:620
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:626
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:632
 msgid "Login page URL"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:615
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:621
-#: /wa-system/verification/classes/waVerificationChannel.class.php:725
 msgid "One-time password"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:627
 msgid "Password recovery page URL"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:633
 msgid "User email address"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:634
 msgid "Generated password"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannel.class.php:713
 msgid "Successful signup"
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannel.class.php:716
 msgid "Signup confirmation"
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:848
 msgid "This setting must be supported by the app; e.g., Shop-Script ver. 8.0 or higher."
 msgstr ""
 
-#: /wa-system/shipping/waShipping.class.php:1168
-#: /wa-system/shipping/waShipping.class.php:1174
 msgid "Time"
 msgstr ""
 
-#: /wa-system/login/templates/login/backend/field.html:68
-#: /wa-system/login/templates/login/frontend/field.html:31
-#: /wa-system/login/templates/forgotpassword/backend/form.html:35
-#: /wa-system/login/templates/forgotpassword/frontend/form.html:39
-#: /wa-system/signup/templates/confirmation_block.inc.html:19
-#: /wa-system/signup/templates/onetime_password_field.inc.html:15
 msgid "Re-send"
 msgstr ""
 
-#: /wa-system/login/templates/login/backend/onetime_password_form.inc.html:22
 msgid "Receive confirmation code"
 msgstr ""
 
-#: /wa-system/login/templates/login/frontend/form_wrapper.html:34
 msgid "Enter a one-time code to log in."
 msgstr ""
 
-#: /wa-system/login/templates/login/frontend/oauth_adapters.html:17
-#: /wa-system/signup/templates/oauth_adapters.html:17
 msgid "Via social media"
 msgstr ""
 
-#: /wa-system/login/templates/setpassword/frontend/form.html:16
 msgid "Repeat new password"
 msgstr ""
 
-#: /wa-system/login/templates/forgotpassword/backend/form_wrapper.html:31
-#: /wa-system/login/templates/forgotpassword/frontend/form_wrapper.html:33
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:236
 msgid "Enter a confirmation code to complete the operation."
 msgstr ""
 
-#: /wa-system/login/templates/forgotpassword/backend/form.html:26
 msgid "Code"
 msgstr ""
 
-#: /wa-system/login/templates/forgotpassword/backend/form.html:31
-#: /wa-system/login/templates/forgotpassword/frontend/form.html:33
-#: /wa-system/signup/templates/confirmation_block.inc.html:13
 msgid "Confirmation code"
 msgstr ""
 
-#: /wa-system/login/templates/forgotpassword/backend/form.html:52
-#: /wa-system/login/templates/forgotpassword/frontend/form.html:45
 msgid "Confirm and change password"
 msgstr ""
 
-#: /wa-system/login/templates/forgotpassword/frontend/form_wrapper.html:29
-#: /wa-system/login/templates/forgotpassword/frontend/form_wrapper.html:30
 msgid "You can’t restore password too often. Try again in %s seconds."
 msgstr ""
 
-#: /wa-system/login/templates/forgotpassword/frontend/form.html:20
 msgid "Recover password"
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:130
-#: /wa-system/login/actions/login/waBaseLogin.action.php:249
 msgid "Couldn’t sign in via “%s”."
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:150
-#: /wa-system/signup/actions/waSignup.action.php:737
 msgid "Incorrect or expired one-time password. Try again or request a new one-time password."
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:240
 msgid "Contact does not exist. <a href=\"%s\">Sign up</a> first."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:359
 msgid "Contact doesn't exist."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:98
 msgid "Done! A message with a new password has been sent to email address <strong>%s</strong>."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:101
 msgid "Done! An SMS message with a new password has been sent to phone number <strong>%s</strong>."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:239
 msgid "Incorrect confirmation code. Try again or request a new code."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:299
 msgid "Password recovery for “%s” has been banned."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:319
 msgid "No user with this login name has been found."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:351
 msgid "Couldn’t recover password via “%s”."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:417
 msgid "Please check new mail at <strong>%s</strong>, we have sent you a message with a password recovery link to confirm the password change. After confirmation, we will send you your password in the next message."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:419
 msgid "Please check new mail at <strong>%s</strong>, we have sent you a message with a password recovery link."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:428
 msgid "Confirm your phone number"
 msgstr ""
 
-#: /wa-system/login/classes/login/waFrontendLoginForm.class.php:29
-#: /wa-system/signup/templates/email_confirmed.html:10
 msgid "Signup completed"
 msgstr ""
 
-#: /wa-system/login/classes/login/waFrontendLoginForm.class.php:32
 msgid "Passwords changed"
 msgstr ""
 
-#: /wa-system/login/classes/setpassword/waFrontendSetPasswordForm.class.php:17
 msgid "Password recovery for %s"
 msgstr ""
 
-#: /wa-system/page/templates/PageEdit.html:232
 msgid "Switch"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:33
 msgid "File not found."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:116
 msgid "Add SMS templates in <a href=\"%s\">Settings</a> app."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsSMS.html:47
 msgid "To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway.<br> <a href=\"%s\">Browse for SMS gateway plugins</a> in Installer app."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:100
 msgid "POP3 host name"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsEmail.html:108
 msgid "POP3 port"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsTemplateSMS.html:169
 msgid "+1XXXXXXXXXX, 1XXXXXXXXXX"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:89
 msgid "Webasyst version"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/template/webasystSettingsTemplateDuplicate.controller.php:35
 msgid "(Copy of %s)"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:692
 msgid "one-line text"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:693
 msgid "multi-line text"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:694
 msgid "number"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:695
 msgid "radio select"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:696
 msgid "drop-down list"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:697
 msgid "checkbox"
 msgstr ""
 
-#: /wa-system/webasyst/lib/classes/webasystFieldConstructor.class.php:698
 msgid "date"
 msgstr ""
 
-#: /wa-system/captcha/phpcaptcha/templates/captcha2.html:2
 msgid "Enter characters from an image"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:42
 msgid "Show all group’s settings"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:223
-#: /wa-system/design/templates/Theme.html:249
 msgid "Update not available"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:591
 msgid "Scroll up"
 msgstr ""
 
-#: /wa-system/signup/templates/form_wrapper.html:19
-#: /wa-system/signup/actions/waSignup.action.php:723
-#: /wa-system/signup/actions/waSignup.action.php:745
 msgid "Enter a confirmation code to complete signup"
 msgstr ""
 
-#: /wa-system/signup/templates/form.html:31
 msgid "Done"
 msgstr ""
 
-#: /wa-system/signup/templates/email_confirmed.html:14
 msgid "You have successfully signed up."
 msgstr ""
 
-#: /wa-system/signup/templates/email_confirmed.html:19
 msgid "Open website →"
 msgstr ""
 
-#: /wa-system/signup/templates/confirmation_block.inc.html:26
 msgid "Confirm signup"
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:611
 msgid "At least one of these fields is required"
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:381
 msgid "You have successfully signed up. Please check new mail at <strong>%s</strong>, we have sent you a message with your password."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:384
 msgid "You have successfully signed up. An SMS message with your password has been sent to phone number <strong>%s</strong>."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:415
 msgid "Please check new mail at <strong>%s</strong>, we have sent a message for you to confirm signup."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:437
 msgid "An SMS message has been sent to phone number <strong>%s</strong> for you to confirm signup."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:750
 msgid "Incorrect or expired confirmation code. Try again or request a new code."
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:408
-#: /wa-system/config/waAuthConfig.class.php:429
-#: /wa-system/config/waAuthConfig.class.php:473
 msgid "You can request a code in <strong>%s:%s</strong>."
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:414
-#: /wa-system/config/waAuthConfig.class.php:435
-#: /wa-system/config/waAuthConfig.class.php:479
 msgid "You have been requesting code too frequently. Try again in <strong>%s:%s</strong>."
 msgstr ""
 
-#: /wa-system/verification/models/waVerificationChannel.model.php:45
 msgid "System template"
 msgstr ""
 
-#: /wa-system/verification/models/waVerificationChannel.model.php:73
 msgid "New channel %s"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2468
 msgid "Invalid theme archive structure (%s). <a href=\"%s\" target=\"_blank\">See help</a> for details"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2115
 msgid "Theme %s not found"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:1019
 msgid "Missing theme files: %s."
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2112
 msgid "Invalid theme slug"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2132
 msgid "Brush custom theme not available"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2366
 msgid "Theme “%s” is for %s app, which is not installed in your Webasyst. Install the app and upload the theme once again."
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2467
-#: /wa-system/file/waTheme.class.php:2482
 msgid "http://www.webasyst.com/framework/docs/site/themes/#%s"
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2468
 msgid "Invalid theme archive structure (%s). <a href=\"%s\" target=\"_blank\">See help</a> for details."
 msgstr ""
 
-#: /wa-system/file/waTheme.class.php:2482
 msgid "Failed to extract files from theme archive (%s). <a href=\"%s\" target=\"_blank\">See help</a> for details."
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:229
 msgid "Change parent theme"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/login/webasystLoginFirst.action.php:44
 msgid "Password required"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:430
 msgid "Month"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:431
 msgid "Mth"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:432
 msgid "M"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:433
 msgid "MM"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:436
 msgid "YYYY"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:437
 msgid "YY"
 msgstr ""
 
-#: /wa-system/login/templates/forgotpassword/frontend/form.html:25
-#: /wa-system/login/templates/forgotpassword/backend/form.html:18
-#: /wa-system/login/templates/login/backend/field.html:80
 msgid "Change"
 msgstr ""
 
-#: /wa-system/login/templates/login/backend/onetime_password_form.inc.html:22
 msgid "Receive code"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:426
 msgid "DD"
 msgstr ""
 
-#: /wa-system/datetime/waDateTime.class.php:427
 msgid "D"
 msgstr ""
 
-#: /wa-system/auth/waAuth.class.php:533
 msgid "Please confirm your phone number to sign in."
 msgstr ""
 
-#: /wa-system/auth/exceptions/waAuthConfirmPhoneException.class.php:9
 msgid "Phone number confirmation error."
 msgstr ""
 
-#: /wa-system/login/templates/login/frontend/form_wrapper.html:35
-#: /wa-system/signup/templates/form_wrapper.html:25
 msgid "(sent by email)"
 msgstr ""
 
-#: /wa-system/login/templates/login/frontend/form_wrapper.html:36
-#: /wa-system/signup/templates/form_wrapper.html:26
 msgid "(sent in SMS)"
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:560
 msgid "Please check new mail, we have sent you a message with a link to confirm the password change. After confirmation, we will send you your password in the next message."
 msgstr ""
 
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:562
 msgid "Please check new mail, we have sent you a message with a password recovery link."
 msgstr ""
 
-#: /wa-system/auth/waDemoAuth.class.php:134
-#: /wa-system/auth/exceptions/waAuthInvalidCredentialsException.class.php:9
 msgid "Invalid login name or password."
 msgstr ""
 
-#: /wa-system/map/adapters/yandexMap.class.php:217
 msgid "API key"
 msgstr ""
 
-#: /wa-system/map/adapters/yandexMap.class.php:217
 msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “JavaScript API, Geocoding API” option."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:93
 msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsFieldEditDialog.html:133
 msgid "“Address” is a complex field, which cannot be completely disabled; you can only edit its components listed below."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:190
 msgid "Design theme user manual"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:195
 msgid "User support"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:520
 msgid "Minimum 3 characters"
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:604
 msgid "Contact is singed up, but password has not sent. Contact with admin"
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:869
-#: /wa-system/contact/waContactEmailField.class.php:65
-#: /wa-system/contact/waContactEmailField.class.php:72
-#: /wa-system/contact/waContactPhoneField.class.php:118
-#: /wa-system/contact/waContactPhoneField.class.php:125
 msgid "User with the same “%s” field value is already registered."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:1039
 msgid "Send error"
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:468
 msgid "You can request password recovery in <strong>%s:%s</strong>."
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:474
 msgid "You have been requesting password recovery too frequently. Try again in <strong>%s:%s</strong>."
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:489
 msgid "You can request a one-time password in <strong>%s:%s</strong>."
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:495
 msgid "You have been requesting a one-time password too frequently. Try again in <strong>%s:%s</strong>."
 msgstr ""
 
-#: /wa-system/config/waAuthConfig.class.php:539
 msgid "You have been requesting a code too frequently. Try again in <strong>%s:%s</strong>."
 msgstr ""
 
-#: /wa-system/mail/waMailPOP3.class.php:54
 msgid "Server address is required"
 msgstr ""
 
-#: /wa-system/mail/waMailPOP3.class.php:56
 msgid "Port is required"
 msgstr ""
 
-#: /wa-system/webasyst/lib/config/webasystConfig.class.php:227
 msgid "<strong>%s</strong> in <strong>%s</strong> template."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:605
 msgid "Password has not been sent. Please contact your administrator."
 msgstr ""
 
-#: /wa-system/signup/actions/waSignup.action.php:1092
 msgid "Sending error"
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:165
-#: /wa-system/login/actions/forgotpassword/waBaseForgotPassword.action.php:689
-#: /wa-system/signup/actions/waSignup.action.php:1646
 msgid "You have run out of available attempts. Please request a new code."
 msgstr ""
 
-#: /wa-system/login/actions/login/waBaseLogin.action.php:492
 msgid "User does not exist."
 msgstr ""
 
-#: /wa-system/auth/exceptions/waAuthRunOutOfTriesException.class.php:9
 msgid "You have run out of available attempts."
 msgstr ""
 
-#: /wa-system/auth/waAuth.class.php:689
-#: /wa-system/signup/actions/waSignup.action.php:1713
 msgid "You have run out of available attempts. Please request a new one-time password."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:98
 msgid "Specify email sender address"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:103
 msgid "Please be sure to correctly set up a sender. It will be used to restore a lost password or to regain access to the backend should the one-time password authentication fail."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsAuth.html:124
 msgid "No email template group is selected."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:8
 msgid "Set one-time password authentication?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:10
 msgid "This authentication type means that a backend user is sent a new one-time password every time they log into the backend. Therefore, you must ensure that at least either email or SMS notifications, or both, are being sent and delivered so that your backend users can always log in with their one-time passwords."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:13
 msgid "Please check in “<a href=\"%s\">%s</a>” section that email notifications based on “%s“ template are correctly sent."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:16
 msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending mignt not work occasionally; e.g., due to low SMS balance."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:23
 msgid "I'm aware"
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/auth/webasystSettingsAuthSave.controller.php:56
-#: /wa-system/webasyst/lib/actions/settings/auth/webasystSettingsAuthSave.controller.php:65
 msgid "Email notifications must be enabled."
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/sms/webasystSettingsSMSSave.controller.php:55
-#: /wa-system/webasyst/lib/actions/settings/sms/webasystSettingsSMSSave.controller.php:56
 msgid "Sender ID “%s” is already in use by “%s” provider. You can save each sender ID for one provider only."
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:967
 msgid "Email address is not valid."
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:983
 msgid "Sender address %s is not configured."
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:984
 msgid "Configure a sender in “<a href=\"%s\">%s</a>” section."
 msgstr ""
 
-#: /wa-system/verification/classes/waVerificationChannelEmail.class.php:995
 msgid "Notification sending is not working."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsOnetimePasswordAuthConfirmDialog.inc.html:24
 msgid "OK"
 msgstr ""
 
@@ -3981,204 +2908,298 @@ msgstr ""
 msgid "Georgia State"
 msgstr "Georgia"
 
-#: /wa-system/page/templates/PageEdit.html:204
 msgid "Only image files can be uploaded"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:1
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:3
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:21
 msgid "Database"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:11
 msgid "MySQL version"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:14
 msgid "supports emoji"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:14
 msgid "does not support emoji"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:32
 msgid "Tables and fields without emoji support"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:37
 msgid "Proceed to adding emoji support"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:39
 msgid "To add emoji support enable <b>Debug mode</b> in <b>General settings</b>."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:9
 msgid "Add emoji support"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:12
 msgid "New encoding"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:13
 msgid "Old encoding"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:27
 msgid "Total tables"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:28
 msgid "Total fields"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:29
 msgid "Converted tables"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:30
 msgid "Converted fields"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:31
 msgid "Not converted tables"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:32
 msgid "Not converted fields"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:33
 msgid "Path to log file"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:42
 msgid "Change encoding"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:46
 msgid "Do not close this form until the conversion is completed."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:59
 msgid "Start changing encoding for tables and fields?"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:64
 msgid "This will start the conversion of your database tables and fields to <code>utf8mb4</code> encoding."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:65
 msgid "It will enable you and your website visitors use emoji (smilies), hieroglyphs, and other Unicode symbols."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:66
 msgid "The encoding change may last a few seconds or minutes."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:67
 msgid "It is essential to wait until the process completion to ensure that no tables or fields with outdated encoding remain."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:68
 msgid "Do not close this browser tab until the process is completed. It is recommended to start conversion during a period of minimum load on your website."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:75
 msgid "Run"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:6
 msgid "Table"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:7
 msgid "Fields"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:8
 msgid "Collation"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseList.html:42
 msgid "Tables not found."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:97
 msgid "PHP version"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/Settings.html:101
 msgid "Webasyst is moving to PHP versions 5.6 and higher."
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:4
 msgid "Design theme update failure"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:6
 msgid "This design theme cannot be updated."
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:9
 msgid "Insufficient permissions to read files"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeUpdateProblemDialog.html:28
 msgid "Insufficient permissions to write to files"
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:365
 msgid "Design theme deleted."
 msgstr ""
 
-#: /wa-system/design/templates/Theme.html:352
 msgid "Design theme was not installed from Webasyst Store."
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:304
 msgid "Unable to delete design theme"
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:306
 msgid "This design theme is still in use on your website."
 msgstr ""
 
-#: /wa-system/design/templates/ThemeDialogs.inc.html:307
 msgid "To delete this theme, first select another theme in the following settlements’ settings:"
 msgstr ""
 
-#: /wa-system/plugin/waSystemPlugin.class.php:355
 msgid "Shipping plugin class “%s” not found."
 msgstr ""
 
-#: /wa-system/plugin/waSystemPlugin.class.php:356
 msgid "Payment plugin class “%s” not found."
 msgstr ""
 
-#: /wa-system/plugin/waSystemPlugin.class.php:357
 msgid "SMS plugin class “%s” not found."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabase.html:33
 msgid "Connection charset"
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:18
 msgid "Some tables and fields will not be converted. Do not try to run the conversion again to fix it."
 msgstr ""
 
-#: /wa-system/webasyst/templates/actions/settings/SettingsDatabaseListDialog.html:19
 msgid "Repeat the conversion after the installation of apps or plugins whenever you need to add emoji support for them."
 msgstr ""
 
-#: /wa-system/webasyst/lib/actions/settings/general/webasystSettingsClearCache.controller.php:43
 msgid "Some files could not be deleted."
 msgstr ""
 
-#: /wa-system/config/waBackendAuthConfig.class.php:226
 msgid "Login or email"
+msgstr ""
+
+msgid "Account ID"
+msgstr ""
+
+msgid "Get an account ID <a href=\"https://pushcrew.com/admin/app.php#/settings/account/general\" target=\"_blank\">in your profile</a>."
+msgstr ""
+
+msgid "API token"
+msgstr ""
+
+msgid "Get an API token <a href=\"https://pushcrew.com/admin/app.php#/settings/account/general\" target=\"_blank\">in your profile</a>."
+msgstr ""
+
+msgid "Server key"
+msgstr ""
+
+msgid "Sender ID"
+msgstr ""
+
+msgid "Copy a <strong>Server key</strong> and a <strong>Sender ID</strong> under “Cloud Messaging” tab in <a href=\"https://console.firebase.google.com/project/\" target=\"_blank\">project settings<i class=\"icon16 new-window\"></i></a>."
+msgstr ""
+
+msgid "OneSignal User Auth Key"
+msgstr ""
+
+msgid "OneSignal User Auth Key is required."
+msgstr ""
+
+msgid "A OneSignal account is required to notify backend users."
+msgstr ""
+
+msgid "Each domain used by your backend users has to be configured separately in OneSignal account."
+msgstr ""
+
+msgid "Connected"
+msgstr ""
+
+msgid "Not connected"
+msgstr ""
+
+msgid "To add a different domain, open Webasyst backend on that domain and save settings again."
+msgstr ""
+
+msgid "Please sign up at %s and copy <b>User Auth Key</b> from <b>Account &amp; API Keys</b> page."
+msgstr ""
+
+msgid "Yandex.Maps returns error “%s”"
+msgstr ""
+
+msgid "Yandex.Maps returns error “%s”, API key is invalid. Try to fix it in the <a href=\"https://developer.tech.yandex.ru/services/\">developer dashboard</a>."
+msgstr ""
+
+msgid "Yandex.Maps returns error “%s”, daily rate limit is exceeded."
+msgstr ""
+
+msgid "Yandex.Maps returns error “%s”, probably API key invalid or daily rate limit is exceeded."
+msgstr ""
+
+msgid "Buy theme"
+msgstr ""
+
+msgid "Show %d more"
+msgstr ""
+
+msgid "Administrative center"
+msgstr ""
+
+msgid "For emoji support to be enabled, tables in your database need to be converted to another encoding."
+msgstr ""
+
+msgid "Click the button below to start the conversion."
+msgstr ""
+
+msgid "Cache is temporary data that help reduce extensive load on your server. Clear cache to update those data, if you have encountered a malfunction."
+msgstr ""
+
+msgid "Web push notifications settings"
+msgstr ""
+
+msgid "Web push notifications"
+msgstr ""
+
+msgid "Select and configure a service for sending web push notifications."
+msgstr ""
+
+msgid "Web push notifications service"
+msgstr ""
+
+msgid "Do not use"
+msgstr ""
+
+msgid "No web push notifications services available"
+msgstr ""
+
+msgid "Preview on my website"
+msgstr ""
+
+msgid "Your website will display this trial theme for you only."
+msgstr ""
+
+msgid "Other visitors will keep seeing existing theme with no change."
+msgstr ""
+
+msgid "Trial theme"
+msgstr ""
+
+msgid "Installed themes"
+msgstr ""
+
+msgid "Used"
+msgstr ""
+
+msgid "Not used"
+msgstr ""
+
+msgid "No installed themes."
+msgstr ""
+
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Scheduled tasks"
+msgstr ""
+
+msgid "The app does not support scheduled updating of plugin data. This may slow down the plugin operation."
+msgstr ""
+
+msgid "The data update of %s failed."
+msgstr ""
+
+msgid "Most recent data update was attempted on %s."
+msgstr ""
+
+msgid "Most recent data update occurred on %s."
+msgstr ""
+
+msgid "Data update was never run for this plugin. Check the server scheduler settings."
+msgstr ""
+
+msgid "Data update was never run for this plugin."
+msgstr ""
+
+msgid "Recommended data updating interval (%s) was disrupted."
 msgstr ""

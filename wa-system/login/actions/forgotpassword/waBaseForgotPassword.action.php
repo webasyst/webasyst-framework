@@ -527,7 +527,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
     protected function sendPasswordRecoveryMessage(waContact $contact, $options = array())
     {
         $login = isset($options['login']) && is_scalar($options['login']) ? (string)$options['login'] : '';
-        
+
         $priority = $this->getChannelPriorityByLogin($login);
 
         $channels = $this->auth_config->getVerificationChannelInstances($priority);
@@ -634,7 +634,7 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         }
 
         if (!$sent) {
-            $sent_error = _ws('Sorry, we cannot recover password for this login name or email. Please refer to your system administrator.');
+            $sent_error = _ws('Sorry, we cannot recover a password for these contact data. Please refer to your system administrator.');
 
             // Looks like all channels failed
             $this->logError(

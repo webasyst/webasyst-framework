@@ -144,7 +144,10 @@ class webasystConfig extends waAppConfig
 
     public function throwFrontControllerDispatchException()
     {
-        //
+        // see waFrontController
+        // When route is not found in backend routing, usually app throws exception.
+        // But since internal webasyst app is also responsible for dashboard,
+        // we skip here to use defaults. Complicated.
     }
 
     /**

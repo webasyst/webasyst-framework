@@ -91,10 +91,7 @@ abstract class waViewActions extends waController
         $this->execute($this->action);
         $this->postExecute();
 
-        //if ($this->action == $action) {
-            $this->display();
-        //}
-
+        $this->display();
     }
 
     protected function getTemplate()

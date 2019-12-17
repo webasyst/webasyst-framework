@@ -787,7 +787,11 @@ class waFiles
                     }
                     $response->addHeader("Content-type", "{$file_type}");
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\"");
-                    $response->addHeader("Last-Modified", filemtime($file));
+
+                    // wanna has possibility set own value of this header from outside (for example by update_datetime in DB record)
+                    if (!$response->getHeader("Last-Modified")) {
+                        $response->addHeader("Last-Modified", filemtime($file));
+                    }
 
                     $response->addHeader("Accept-Ranges", "bytes");
                     $response->addHeader("Connection", "close");

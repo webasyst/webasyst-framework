@@ -47,6 +47,18 @@ class webasystSettingsTemplateCheckSendingController extends webasystSettingsJso
             $errors[] = array('field' => 'template', 'message' => _ws('Select at least one template to send'));
         }
 
+        if (empty($errors)) {
+            $result = wa('webasyst')->event('backend_before_email_send_test', ref([
+                'channel' => $this->channel,
+                'data' => $data,
+            ]));
+            foreach($result as $source => $res) {
+                if (!empty($res['errors'])) {
+                    $errors = array_merge(ifset($errors, []), $res['errors']);
+                }
+            }
+        }
+
         return array($errors, $valid_templates);
     }
 
