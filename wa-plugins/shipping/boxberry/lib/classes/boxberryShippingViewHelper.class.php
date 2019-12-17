@@ -74,5 +74,4 @@ class boxberryShippingViewHelper
     {
         return new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url);
     }
-
 }

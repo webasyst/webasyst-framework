@@ -72,5 +72,4 @@ class boxberryShippingHandbookCityRegions extends boxberryShippingHandbookManage
 
         return $result;
     }
-
 }

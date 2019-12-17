@@ -204,7 +204,17 @@ class boxberryShippingDraftPackage
 
         if (!$error) {
             $api_manager = new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url);
-            $request = ['sdata' => json_encode($data)];
+
+            $sdata = array();
+            foreach ($data as $key => $value) {
+                $sdata[$key] = $value;
+                if ($key === 'order_id') {
+                    // partner_token goes right after 'order_id' key
+                    $sdata['partner_token'] = 'Webasyst001';
+                }
+            }
+
+            $request = ['sdata' => json_encode($sdata)];
             $send = $api_manager->createDraft($request);
 
             if (!empty($send['track'])) {
@@ -338,5 +348,4 @@ class boxberryShippingDraftPackage
 
         return $helper->getOrderSum($paysum);
     }
-
 }

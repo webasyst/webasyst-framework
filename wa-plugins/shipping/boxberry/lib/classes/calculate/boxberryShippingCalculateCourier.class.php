@@ -3,7 +3,7 @@
 /**
  * Class boxberryShippingCalculateCourier
  */
-class boxberryShippingCalculateCourier extends boxberryShippingCalculateHelper implements boxberryShippingCalculate
+class boxberryShippingCalculateCourier extends boxberryShippingCalculateHelper implements boxberryShippingCalculateInterface
 {
     const VARIANT_PREFIX = 'toodor';
 

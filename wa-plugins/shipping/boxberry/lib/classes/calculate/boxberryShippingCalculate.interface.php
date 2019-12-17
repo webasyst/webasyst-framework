@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Interface boxberryShippingCalculate
+ * Interface boxberryShippingCalculateInterface
  */
-interface boxberryShippingCalculate
+interface boxberryShippingCalculateInterface
 {
     /**
      * @return array

@@ -1,5 +1,4 @@
 <?php
-boxberry_autoload();
 
 /**
  * Class boxberryShipping
@@ -124,10 +123,18 @@ class boxberryShipping extends waShipping
      */
     public function allowedAddress()
     {
+        $region = $this->getSettings('region');
+
+        $address = [
+            'country' => 'rus',
+        ];
+
+        if ($region) {
+            $address['region'] = $region;
+        }
+
         return [
-            [
-                'country' => 'rus',
-            ],
+            $address
         ];
     }
 
@@ -313,32 +320,4 @@ class boxberryShipping extends waShipping
     {
         return parent::getAddress($field);
     }
-}
-
-/**
- * Connect classes. Delete when add autoload
- */
-function boxberry_autoload()
-{
-    $autoload = waAutoload::getInstance();
-
-    $autoload->add('boxberryShippingGetSettings', 'wa-plugins/shipping/boxberry/lib/classes/boxberryShippingGetSettings.class.php');
-    $autoload->add('boxberryShippingDraftPackage', 'wa-plugins/shipping/boxberry/lib/classes/boxberryShippingDraftPackage.class.php');
-    $autoload->add('boxberryShippingViewHelper', 'wa-plugins/shipping/boxberry/lib/classes/boxberryShippingViewHelper.class.php');
-
-    //Handbook
-    $autoload->add('boxberryShippingApiManager', 'wa-plugins/shipping/boxberry/lib/classes/boxberryShippingApiManager.class.php');
-    $autoload->add('boxberryShippingHandbookManager', 'wa-plugins/shipping/boxberry/lib/classes/handbook/boxberryShippingHandbookManager.class.php');
-    $autoload->add('boxberryShippingHandbookPointsForParcels', 'wa-plugins/shipping/boxberry/lib/classes/handbook/boxberryShippingHandbookPointsForParcels.class.php');
-    $autoload->add('boxberryShippingHandbookPointDescription', 'wa-plugins/shipping/boxberry/lib/classes/handbook/boxberryShippingHandbookPointDescription.class.php');
-    $autoload->add('boxberryShippingHandbookCityZips', 'wa-plugins/shipping/boxberry/lib/classes/handbook/boxberryShippingHandbookCityZips.class.php');
-    $autoload->add('boxberryShippingHandbookCityRegions', 'wa-plugins/shipping/boxberry/lib/classes/handbook/boxberryShippingHandbookCityRegions.class.php');
-    $autoload->add('boxberryShippingHandbookAvailablePoints', 'wa-plugins/shipping/boxberry/lib/classes/handbook/boxberryShippingHandbookAvailablePoints.class.php');
-
-    //Calculate
-    $autoload->add('boxberryShippingCalculate', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculate.interface.php');
-    $autoload->add('boxberryShippingCalculateHelper', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateHelper.class.php');
-    $autoload->add('boxberryShippingCalculatePoints', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculatePoints.class.php');
-    $autoload->add('boxberryShippingCalculateCourier', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateCourier.class.php');
-    $autoload->add('boxberryShippingCalculateValidate', 'wa-plugins/shipping/boxberry/lib/classes/calculate/boxberryShippingCalculateValidate.class.php');
 }

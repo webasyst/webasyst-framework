@@ -216,5 +216,4 @@ class boxberryShippingHandbookPointDescription extends boxberryShippingHandbookM
     {
         return 'webasyst/shipping/'.$this->data['id'];
     }
-
 }

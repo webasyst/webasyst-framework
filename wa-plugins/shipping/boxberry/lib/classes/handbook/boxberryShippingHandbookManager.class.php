@@ -99,7 +99,7 @@ abstract class boxberryShippingHandbookManager
         }
 
 
-       $log = <<<HTML
+        $log = <<<HTML
 _____________________       
 API METHOD: {$api_method}
 INFO: {$info}

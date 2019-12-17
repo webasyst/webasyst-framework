@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class boxberryShippingCalculate
+ * Class boxberryShippingCalculateHelper
  */
 class boxberryShippingCalculateHelper
 {
@@ -16,7 +16,7 @@ class boxberryShippingCalculateHelper
     protected $bxb = null;
 
     /**
-     * boxberryShippingCalculate constructor.
+     * boxberryShippingCalculateHelper constructor.
      * @param boxberryShipping $bxb
      */
     public function __construct(boxberryShipping $bxb)

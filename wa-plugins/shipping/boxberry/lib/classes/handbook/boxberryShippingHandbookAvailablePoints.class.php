@@ -171,4 +171,3 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
         $this->log($log, $this->getAPIMethod());
     }
 }
-

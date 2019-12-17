@@ -154,8 +154,6 @@ class boxberryShippingApiManager
     public function createDraft($data)
     {
         $data['method'] = self::METHOD_CREATE_DRAFT;
-        $data['partner_token'] = 'Webasyst001';
-
         $result = $this->sendRequest($data);
         return $result;
     }

@@ -1,6 +1,6 @@
 <?php
 
-class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper implements boxberryShippingCalculate
+class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper implements boxberryShippingCalculateInterface
 {
     const VARIANT_PREFIX = 'pickup';
 
@@ -333,10 +333,12 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper im
             $result = array_intersect_key($points['points'], $codes_by_cities);
         }
 
-        // sort by street address
-        uasort($result, wa_lambda('$a, $b', 'return strcasecmp($a["name"], $b["name"]);'));
+        // register insensitive sort by street address with taking into account that strings are mb strings
+        $comparator = function ($a, $b) {
+            return strcmp(mb_strtoupper($a['name']), mb_strtoupper($b['name']));
+        };
+        uasort($result, $comparator);
 
         return $result;
     }
-
 }
