@@ -25,11 +25,33 @@
             {if !empty($_show_cart)}
                 {$cart_total = $wa->shop->cart->total()}
                 {$cart_count = $wa->shop->cart->count()}
-                <a class="{if $cart_total}is-active{/if}" href="{$_cart_url|escape}">
+                <a class="{if $cart_total}is-active{/if}" id="js-cart-link" href="{$_cart_url|escape}">
                     {if $cart_total && $cart_count}
                         <span class="basket-count">{$cart_count}</span>
                     {/if}
                 </a>
+
+                {strip}
+                {capture assign="_loading_template"}
+                    <div class="s-loading-section">
+                        <div class="s-loading-content">
+                            <i class="icon16 loading"></i>
+                        </div>
+                    </div>
+                {/capture}
+                {/strip}
+
+                <script>
+                    ( function($) {
+                        var is_loading = false;
+                        $("#js-cart-link").on("click", function() {
+                            if (!is_loading) {
+                                is_loading = true;
+                                $("body").append({$_loading_template|json_encode});
+                            }
+                        });
+                    })(jQuery);
+                </script>
             {/if}
         {/if}
     </div>
