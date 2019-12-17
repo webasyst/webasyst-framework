@@ -20,12 +20,70 @@ class courierShipping extends waShipping
     {
         $fields = array_keys(array_filter(ifset($settings['rate_zone'], array())));
         $settings['contact_fields'] = array_merge(ifset($settings['contact_fields'], array_combine($fields, $fields)));
+
+        if ($error = $this->validateAdditionalAddressFields($settings)) {
+            throw new waException($error);
+        }
+
         return parent::saveSettings($settings);
+    }
+
+    /**
+     * @param array &$settings
+     *   By ref, cause method delete 'empty' values
+     * @return string $error
+     *   If empty validate is OK
+     * @throws waException
+     */
+    protected function validateAdditionalAddressFields(&$settings = array())
+    {
+
+        if (!isset($settings['additional_address_fields']) || !is_array($settings['additional_address_fields'])) {
+            return '';
+        }
+
+        foreach ($settings['additional_address_fields'] as $add_field => $addr_field) {
+            if (!$addr_field) {
+                unset($settings['additional_address_fields'][$add_field]);
+            }
+        }
+
+        $additional_address_field_ids = $this->getAddressAdditionalFieldIds();
+
+        $address_subfields = self::getAddressSubfields();
+        $address_oneline_string_subfields = self::extractOneLineFields($address_subfields['other']);
+
+        foreach ($settings['additional_address_fields'] as $add_field => $addr_field) {
+            if (!isset($address_oneline_string_subfields[$addr_field])) {
+                $add_field_name = $additional_address_field_ids[$add_field];
+                return sprintf($this->_w('You have disabled address field, selected for additional field %s, in system settings. Please either enable again the selected address field or select another field.'), $add_field_name);
+            }
+        }
+
+        $assign_map = array();
+        foreach ($settings['additional_address_fields'] as $add_field => $addr_field) {
+            if (!empty($assign_map[$addr_field])) {
+                $add_field_names = array(
+                    sprintf($this->_w('“%s”'), $additional_address_field_ids[$add_field]),
+                    sprintf($this->_w('“%s”'), $additional_address_field_ids[$assign_map[$addr_field]])
+                );
+                return sprintf(
+                    $this->_w('Please select different address fields for additional fields %s.'),
+                    join(', ', $add_field_names)
+                );
+            }
+            $assign_map[$addr_field] = $add_field;
+        }
+
+        return '';
     }
 
     /**
      * @param array $params
      * @return string HTML
+     * @throws SmartyException
+     * @throws waDbException
+     * @throws waException
      * @see waShipping::getSettingsHTML()
      */
     public function getSettingsHTML($params = array())
@@ -89,18 +147,107 @@ class courierShipping extends waShipping
                 $namespace = $params['namespace'];
             }
         }
+
+        $address_subfields = self::getAddressSubfields();
+
         $view->assign('namespace', $namespace);
         $view->assign('values', $values);
         $view->assign('p', $this);
-        $html = '';
-
         $view->assign('xhr_url', wa()->getAppUrl('webasyst').'?module=backend&action=regions');
-
         $view->assign('map_adapters', wa()->getMapAdapters());
+        $view->assign('address_subfields', $address_subfields);
+        $view->assign('address_oneline_string_subfields', self::extractOneLineFields($address_subfields['other']));
+        $view->assign('webasyst_app_url', wa()->getAppUrl('webasyst') . 'webasyst/');
+        $view->assign('additional_address_field_ids', $this->getAddressAdditionalFieldIds());
 
+        $js = file_get_contents($this->path.'/js/settings.js');
+        $js_code = sprintf('<script type="text/javascript">%s</script>', $js);
+
+        $view->assign('js_code', $js_code);
+
+        $html = '';
         $html .= $view->fetch($this->path.'/templates/settings.html');
         $html .= parent::getSettingsHTML($params);
+
         return $html;
+    }
+
+    /**
+     * @param waContactField[] $fields
+     * @return waContactField[]
+     */
+    private static function extractOneLineFields($fields)
+    {
+        $result = array();
+        foreach ($fields as $index => $field) {
+            if (self::isOneLineStringField($field)) {
+                $result[$index] = $field;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param waContactField $field
+     * @return bool
+     */
+    private static function isOneLineStringField($field)
+    {
+        return $field->getType() === 'String' && $field->getParameter('input_height') == 1;
+    }
+
+    /**
+     * @param bool $grouped
+     * @return array|waContactField
+     * @throws waException
+     */
+    private static function getAddressSubfields($grouped = true)
+    {
+        $address = waContactFields::get('address');
+        $fields = $address->getFields();
+
+        if (!$grouped) {
+            return $fields;
+        }
+
+        $main_address_subfield_ids = array(
+            'country', 'region', 'city', 'street', 'zip'
+        );
+
+        $all_fields = array(
+            'main' => array(),
+            'other' => array()
+        );
+
+        // fill main sub-array
+        foreach ($main_address_subfield_ids as $address_subfield_id) {
+            if (isset($fields[$address_subfield_id])) {
+                $all_fields['main'][$address_subfield_id] = $fields[$address_subfield_id];
+            }
+        }
+
+        /**
+         * fill other sub-array
+         * @var waContactField[] $fields
+         */
+        foreach ($fields as $field_id => $field) {
+            $is_disabled = $field->getParameter('_disabled');
+            if (!isset($all_fields['main'][$field_id]) && !$is_disabled) {
+                $all_fields['other'][$field_id] = $field;
+            }
+        }
+
+        return $all_fields;
+
+    }
+
+    private function getAddressAdditionalFieldIds()
+    {
+        return [
+            'entrance'      => $this->_w('Entrance'),
+            'intercom_code' => $this->_w('Intercom number'),
+            'floor'         => $this->_w('Floor')
+        ];
     }
 
     /**
@@ -414,20 +561,67 @@ class courierShipping extends waShipping
             }
         }
 
-        uksort($fields, array($this, 'sortAddressFields'));
+        if ($this->getSettings('additional_address_fields') && is_array($this->getSettings('additional_address_fields'))) {
+            $additional_address_fields = $this->getSettings('additional_address_fields');
+            foreach ($additional_address_fields as $additional_field_id) {
+                $fields[$additional_field_id] = array();
+            }
+        }
+
+        $fields = $this->sortAddressFields($fields);
+        
         return $fields;
     }
 
-    private function sortAddressFields($a, $b)
+    protected function sortAddressFields($fields)
     {
         $order = array(
             'country',
             'region',
             'city',
             'street',
+            'zip',
         );
-        $order = array_flip($order);
-        return max(1, min(-1, ifset($order[$b], 0) - ifset($order[$a], 0)));
+
+        // mix-in additional fields into $order map
+        $additional_address_fields = $this->getSettings('additional_address_fields');
+        if (!is_array($additional_address_fields)) {
+            $additional_address_fields = array();
+        }
+
+        $address_subfields = self::getAddressSubfields();
+        $address_oneline_string_subfields = self::extractOneLineFields($address_subfields['other']);
+
+        foreach ($additional_address_fields as $add_field => $addr_field) {
+            if ($addr_field && isset($address_oneline_string_subfields[$addr_field])) {
+                $order[] = $addr_field;
+            }
+        }
+
+        return $this->ksortAsSuggested($fields, $order);
+    }
+
+    /**
+     * uksort and etc is not stable, so it is bummer
+     * This method has stability property
+     * Key that are not found in order array will be set in the end of result array with saving original sorting (stability)
+     * @param $array
+     * @param array $order
+     * @return array
+     */
+    function ksortAsSuggested($array, $order = array())
+    {
+        $result = array();
+        foreach ($order as $key) {
+            if (isset($array[$key])) {
+                $result[$key] = $array[$key];
+                unset($array[$key]);
+            }
+        }
+        foreach ($array as $key => $value) {
+            $result[$key] = $value;
+        }
+        return $result;
     }
 
     public function customFields(waOrder $order)

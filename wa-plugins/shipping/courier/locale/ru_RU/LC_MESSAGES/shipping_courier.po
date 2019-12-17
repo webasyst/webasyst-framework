@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -219,3 +219,33 @@ msgstr "Выберите даты дополнительных выходных 
 
 msgid "Select dates of extra workdays and enable at least one checkbox in “Extra workdays” column of the “Delivery intervals” table. Delivery intervals are valid for all extra workdays."
 msgstr "Выберите даты дополнительных рабочих дней и в таблице «Интервалы доставки» минимум для одного интервала включите флажок в столбце «Доп. рабочий день». Интервалы действуют на все дополнительные рабочие дни."
+
+msgid "Additional address fields"
+msgstr "Дополнительные поля адреса"
+
+msgid "Entrance"
+msgstr "Подъезд"
+
+msgid "Intercom number"
+msgstr "Номер домофона"
+
+msgid "Floor"
+msgstr "Этаж"
+
+msgid "Add extra subfields of “<em>Text (input)</em>” type for the “Address” field via <a href=\"%s\">Settings</a> app to enable these additional address fields."
+msgstr "Добавьте собственные поля типа «<em>Текст (input)</em>» для поля «Адрес» в приложении «<a href=\"%s\">Настройки</a>», чтобы включить эти дополнительные поля адреса."
+
+msgid "Enable extra address fields which you want to be offered for completion to customers during checkout."
+msgstr "Включите дополнительные поля адреса, чтобы они предлагались для заполнения клиентам во время оформления заказа."
+
+msgid "You have disabled address field, selected for additional field %s, in system settings. Please either enable again the selected address field or select another field."
+msgstr "Вы отключили в системных настройках поле адреса, выбранное для дополнительного поля «%s». Либо снова включите это поле адреса, либо выберите другое поле."
+
+msgid "Please select different address fields for additional fields %s."
+msgstr "Выберите разные поля адреса для каждого из дополнительных полей %s."
+
+msgid "Please select different address fields for each additional field."
+msgstr "Выберите разные поля адреса для каждого из дополнительных полей."
+
+msgid "“%s”"
+msgstr "«%s»"
