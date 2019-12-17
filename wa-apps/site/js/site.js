@@ -722,8 +722,9 @@ $.wa.site = {
 
             //Update text
             $('#not-install-error').text(routing_errors.not_install);
-            $('#incorrect-install-error').text(routing_errors.incorrect);
-
+            $('#incorrect-install-error').html(
+                $.wa.encodeHTML(routing_errors.incorrect || '').replace(/\n/g, '<br>')
+            );
             this.updateIncorrectRouting(routing_errors.incorrect_ids)
         }
     },

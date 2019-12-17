@@ -298,6 +298,7 @@
 $(function () {
 
     var $disabled_toggle = $("#js-ibutton-disabled");
+    var is_new_route = {if strlen($route_id)}false{else}true{/if};
 
     function updateRoutingErrors(routing_errors)
     {
@@ -308,6 +309,9 @@ $(function () {
             console.log(routing_errors);
         }
     }
+
+    // Rule address contains unsupported character, regexp for define it
+    var invalid_url_regexp = /(\&|\$|\+|\,|\:|\;|\=|\?|\@|\#|\<|\>|\[|\]|\}|\||\^|\%)/;
 
     {if isset($route.redirect)}
         $disabled_toggle.iButton({
@@ -324,6 +328,22 @@ $(function () {
             }
         });
     {/if}
+
+    function checkUrlInput() {
+        var $form = $("#s-settings-form"),
+            $url_input = $form.find('.js-url'),
+            url = $url_input.val(),
+            res = url.match(invalid_url_regexp),
+            is_valid = !res;
+        if (url.length && !is_valid) {
+            $url_input.attr('disabled', true);
+            $url_input.append($('<input type="hidden" name="params[url]">').val(url));
+        }
+    }
+
+    if (!is_new_route) {
+        checkUrlInput();
+    }
 
     function checkSSLProtocol() {
         //Disabled ssl checkbox
@@ -431,7 +451,7 @@ $(function () {
 
     $("#s-settings-form").on('submit', function () {
         var $form = $(this),
-            $url_input = $form.find('.js-url');
+            $url_input = $form.find('.js-url').last();
 
         $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
         var callback = function (response) {
@@ -481,9 +501,9 @@ $(function () {
         };
 
         // Validating unsupported characters in url
-        if ($url_input.length) {
+        if (!$url_input.attr('disabled') && $url_input.length) {
             var url = $url_input.val(),
-                res = url.match(/(\&|\$|\+|\,|\:|\;|\=|\?|\@|\#|\<|\>|\[|\]|\}|\||\^|\%)/);
+                res = url.match(invalid_url_regexp);
 
             if (res) {
 

@@ -36,25 +36,46 @@ class siteHelper
 
             $incorrect = ifset($routing_error, 'apps', $domain_id, 'incorrect', null);
             if ($incorrect) {
-                foreach ($incorrect as $app_id => $app_name) {
+
+                $incorrect_apps = array();
+                $incorrect_text_rules = array();
+                $incorrect_redirect_rules = array();
+                $incorrect_text_parts = array();
+
+                foreach ($incorrect as $rule_id => $app_name) {
                     if (isset($apps[$app_name]['name'])) {
-                        $incorrect_ids[$app_id] = $apps[$app_name]['name'];
+                        $incorrect_ids[$rule_id] = $apps[$app_name]['name'];
+                        $incorrect_apps[$rule_id] = $apps[$app_name]['name'];
                     }
 
                     if ($app_name == ':text') {
-                        $incorrect_ids[$app_id] = _w('Custom text');
+                        $incorrect_ids[$rule_id] = _w('Custom text');
+                        $incorrect_text_rules[$rule_id] = _w('Custom text');
                     }
 
                     if ($app_name == ':redirect') {
-                        $incorrect_ids[$app_id] = _w('Redirect');
+                        $incorrect_ids[$rule_id] = _w('Redirect');
+                        $incorrect_redirect_rules[$rule_id] = _w('Redirect');
                     }
                 }
+
                 $domain = ifset(self::$domains, $domain_id, 'name', '');
 
-                $incorrect_text = sprintf(_w('Some rules of %s app are incorrect.', 'Some rules of %s apps are incorrect.',
-                    count($routing_error['apps'][$domain_id]['incorrect']), false), implode(_w('”, “'), $incorrect_ids))
-                    . ' '
-                    . sprintf(_w('Move rule %s/* to the bottom of the rule list.'), $domain);
+                if ($incorrect_apps) {
+                    $incorrect_text_parts[] = sprintf(_w('Some rules of %s app are incorrect.', 'Some rules of %s apps are incorrect.',
+                        count($incorrect_apps), false), implode(_w('”, “'), $incorrect_apps));
+                }
+                if ($incorrect_text_rules) {
+                    $incorrect_text_parts[] = _w('“Custom text” rule is incorrect.', '%d “Custom text” rules are incorrect.', count($incorrect_text_rules));
+                }
+                if ($incorrect_redirect_rules) {
+                    $incorrect_text_parts[] = _w('“Redirect” rule is incorrect.', '%d “Redirect” rules are incorrect.', count($incorrect_redirect_rules));
+                }
+
+                $incorrect_text_parts[] = sprintf(_w('Move rule %s/* to the bottom of the rule list.'), $domain);
+
+                $incorrect_text = join(PHP_EOL, $incorrect_text_parts);
+
             }
         }
 

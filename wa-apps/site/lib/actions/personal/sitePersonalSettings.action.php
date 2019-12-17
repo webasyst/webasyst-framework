@@ -59,7 +59,6 @@ class sitePersonalSettingsAction extends waViewAction
             'domain'                     => waIdna::dec($domain),
             'domain_id'                  => siteHelper::getDomainId(),
             'personal_sidebar'           => $personal_sidebar,
-            'phone_available'            => webasystHelper::smsTemplateAvailable(),
         ));
     }
 }

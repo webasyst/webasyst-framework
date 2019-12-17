@@ -197,6 +197,28 @@
                                         [s`View cart`]
                                     </a>
                                 </div>
+
+                                {strip}
+                                {capture assign="_loading_template"}
+                                    <div class="s-loading-section">
+                                        <div class="s-loading-content">
+                                            <i class="icon16 loading"></i>
+                                        </div>
+                                    </div>
+                                {/capture}
+                                {/strip}
+
+                                <script>
+                                    ( function($) {
+                                        var is_loading = false;
+                                        $("#cart").on("click", function() {
+                                            if (!is_loading) {
+                                                is_loading = true;
+                                                $("body").append({$_loading_template|json_encode});
+                                            }
+                                        });
+                                    })(jQuery);
+                                </script>
                             {/if}
 
                             {if $wa->isAuthEnabled()}
@@ -375,6 +397,5 @@
     {if $theme_settings.admin_sidebar}
         {if $wa->user()->isAdmin()}{include file="admin-sidebar.html" inline}{/if}
     {/if}
-
 </body>
 </html>
