@@ -27,14 +27,14 @@ var SystemPaymentSBPluginSettings = ( function($) {
 
         var $_replica_checkbox = $('<input type="checkbox" checked disabled>');
 
-        $credit.on('change', function () {
+        $credit.on('change', function (event) {
             var $self = $(this);
 
             if ($self.prop('checked')) {
                 $credit_type.show();
 
                 $fiscalization.prop('checked', true).change().hide();
-                    $_replica_checkbox.insertAfter($fiscalization);
+                $_replica_checkbox.insertAfter($fiscalization);
 
                 $subjects.hide();
                 $two_step.prop('checked', false);
@@ -42,10 +42,12 @@ var SystemPaymentSBPluginSettings = ( function($) {
             } else {
                 $credit_type.hide();
 
-                $fiscalization.prop('checked', false).change().show();
+                if (event.originalEvent) {
+                    $fiscalization.prop('checked', false).change().show();
                     $_replica_checkbox.detach();
 
-                $two_step.prop('disabled', false);
+                    $two_step.prop('disabled', false);
+                }
             }
         });
 

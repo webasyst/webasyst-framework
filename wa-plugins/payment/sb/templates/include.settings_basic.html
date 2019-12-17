@@ -1,26 +1,26 @@
 <div class="field">
     <div class="name"></div>
-    <div class="value"><h3>{$obj->_w('Основные настройки')}</h3></div>
+    <div class="value"><h3>Основные настройки</h3></div>
 </div>
 
 <div class="field">
     <div class="name">
-        <label for="{$prefix}userName">{$obj->_w('Логин магазина')}</label>
+        <label for="{$prefix}userName">Логин магазина</label>
     </div>
     <div class="value">
-        <input id="{$prefix}userName" type="text" name="{$namespace}[userName]" value="{ifset($settings, 'userName', '')}">
+        <input id="{$prefix}userName" type="text" name="{$namespace}[userName]" value="{ifset($settings, 'userName', '')|escape}">
         <br>
-        <span class="hint">{$obj->_w('Выдаётся при подключении к платёжному шлюзу, для тестового и рабочего режима используются разные учётные данные.')}</span>
+        <span class="hint">Выдаётся при подключении к платёжному шлюзу, для тестового и рабочего режима используются разные учётные данные.</span>
     </div>
 </div>
 <div class="field">
     <div class="name">
-        <label for="{$prefix}password">{$obj->_w('Пароль')}</label>
+        <label for="{$prefix}password">Пароль</label>
     </div>
     <div class="value">
-        <input type="password" name="{$namespace}[password]" id="{$prefix}password" value="{ifset($settings, 'password', '')}">
+        <input type="password" name="{$namespace}[password]" id="{$prefix}password" value="{ifset($settings, 'password', '')|escape}">
         <br>
-        <span class="hint">{$obj->_w('Выдаётся при подключении к платёжному шлюзу, для тестового и рабочего режима используются разные учётные данные.')}</span>
+        <span class="hint">Выдаётся при подключении к платёжному шлюзу, для тестового и рабочего режима используются разные учётные данные.</span>
     </div>
 </div>
 
@@ -29,60 +29,60 @@
         <label for="{$prefix}currency_id">Валюта</label>
     </div>
     <div class="value">
-        <select name="{$namespace}[currency_id]" autocomplete="off" id="{$prefix}currency_id" title="{$obj->_w('Валюта')}">
+        <select name="{$namespace}[currency_id]" autocomplete="off" id="{$prefix}currency_id" title="Валюта">
             {$currency_id = ifset($settings, 'currency_id', '')}
             {foreach $currencies as $currency}
                 <option value="{$currency['value']}" {if $currency_id === {$currency['value']}}selected{/if}>{$currency['title']}</option>
             {/foreach}
         </select>
         <br>
-        <span class="hint">{$obj->_w('Валюта, в которой будут выполняться платежи.')}</span>
+        <span class="hint">Валюта, в которой будут выполняться платежи.</span>
     </div>
 </div>
 
 <div class="field">
     <div class="name">
-        <label for="{$prefix}TESTMODE">{$obj->_w('Тестовый режим')}</label>
+        <label for="{$prefix}TESTMODE">Тестовый режим</label>
     </div>
     <div class="value">
         <input type="checkbox" name="{$namespace}[TESTMODE]" id="{$prefix}password" value="1" {if ifset($settings, 'TESTMODE', '')}checked{/if}>
         <br>
-        <span class="hint">{$obj->_w('Использует тестовый шлюз 3dsec.sberbank.ru и отключает автоматическое перенаправление покупателя на страницу оплаты. <br> Для выполнения тестового платежа нужно перейти на сайт «Сбербанка» с помощью кнопки.')}</span>
+        <span class="hint">Использует тестовый шлюз 3dsec.sberbank.ru и отключает автоматическое перенаправление покупателя на страницу оплаты. <br> Для выполнения тестового платежа нужно перейти на сайт «Сбербанка» с помощью кнопки.</span>
     </div>
 </div>
 
 <div class="field">
     <div class="name">
-        <label for="{$prefix}sessionTimeoutSecs">{$obj->_w('Продолжительность жизни заказа в часах')}</label>
+        <label for="{$prefix}sessionTimeoutSecs">Продолжительность жизни заказа в часах</label>
     </div>
     <div class="value">
         <input id="{$prefix}sessionTimeoutSecs" type="text" name="{$namespace}[sessionTimeoutSecs]"
                value="{ifset($settings, 'sessionTimeoutSecs', '')}" placeholder="24">
         <br>
-        <span class="hint">{$obj->_w('Заказ можно будет оплатить только в течение указанного времени.')}</span>
+        <span class="hint">Заказ можно будет оплатить только в течение указанного времени.</span>
     </div>
 </div>
 
 <div class="field">
     <div class="name">
-        <label for="{$prefix}two_step">{$obj->_w('Двухстадийная оплата')}</label>
+        <label for="{$prefix}two_step">Двухстадийная оплата</label>
     </div>
     <div class="value">
         <input type="checkbox" class="js-sb-payment-two-step" name="{$namespace}[two_step]" id="{$prefix}two_step" value="1" {if ifset($settings, 'two_step', '')}checked{/if}>
         <br>
-        <span class="hint">{$obj->_w('Включите, только если ваш договор предусматривает необходимость ручного потверждения платежей.')}</span>
+        <span class="hint">Включите, только если ваш договор предусматривает необходимость ручного потверждения платежей.</span>
         <br>
-        <span class="hint"><em>{$obj->_w('Этот способ обработки платежей недоступен, если включён режим «Кредит».')}</em></span>
+        <span class="hint"><em>Этот способ обработки платежей недоступен, если включён режим «Кредит».</em></span>
     </div>
 </div>
 
 <div class="field">
     <div class="name">
-        <label for="{$prefix}cancel">{$obj->_w('Отмена платежей')}</label>
+        <label for="{$prefix}cancel">Отмена платежей</label>
     </div>
     <div class="value">
         <input type="checkbox" name="{$namespace}[cancel]" id="{$prefix}cancel" value="1" {if ifset($settings, 'cancel', '')}checked{/if}>
         <br>
-        <span class="hint">{$obj->_w('Отмена платежей для двухстадийной оплаты должна поддерживаться приложением.')}</span>
+        <span class="hint">Отмена платежей для двухстадийной оплаты должна поддерживаться приложением.</span>
     </div>
 </div>

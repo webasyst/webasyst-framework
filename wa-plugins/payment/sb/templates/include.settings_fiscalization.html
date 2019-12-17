@@ -1,24 +1,24 @@
 <div class="field">
     <div class="name"></div>
-    <div class="value"><h3>{$obj->_w('Фискализация платежей')}</h3></div>
+    <div class="value"><h3>Фискализация платежей</h3></div>
 </div>
 
 <div class="field">
     <div class="name">
-        <label for="{$prefix}fiscalization">{$obj->_w('Фискализация')}</label>
+        <label for="{$prefix}fiscalization">Фискализация</label>
     </div>
     <div class="value">
         <input type="checkbox" class="js-payment-sb-fiscalization" name="{$namespace}[fiscalization]"
                id="{$prefix}fiscalization" value="1" {if ifset($settings, 'fiscalization', '')}checked{/if}>
         <br>
-        <span class="hint">{$obj->_w('Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:<br>— к элементам заказа и стоимости доставки не применяются налоги<br>— налог составляет 0%, 10% либо 20% и <em>включён</em> в стоимость элементов заказа и стоимость доставки')}</span>
+        <span class="hint">Если включена фискализация, то клиенты смогут использовать этот способ оплаты только в следующих случаях:<br>— к элементам заказа и стоимости доставки не применяются налоги<br>— налог составляет 0%, 10% либо 20% и <em>включён</em> в стоимость элементов заказа и стоимость доставки</span>
     </div>
 </div>
 
 <div class="js-payment-sb-subjects-wrapper">
     <div class="field">
         <div class="name">
-            <label for="{$prefix}payment_method">{$obj->_w('Признак способа расчёта в чеках')}</label>
+            <label for="{$prefix}payment_method">Признак способа расчёта в чеках</label>
         </div>
         <div class="value">
             <select name="{$namespace}[payment_method]" autocomplete="off" id="{$prefix}payment_method">
@@ -32,7 +32,7 @@
 
     <div class="field">
         <div class="name">
-            <label for="{$prefix}payment_subject_product">{$obj->_w('Признак предмета расчёта для товаров в чеках')}</label>
+            <label for="{$prefix}payment_subject_product">Признак предмета расчёта для товаров в чеках</label>
         </div>
         <div class="value">
             <select name="{$namespace}[payment_subject_product]" autocomplete="off" id="{$prefix}payment_subject_product">
@@ -42,13 +42,13 @@
                 {/foreach}
             </select>
             <br>
-            <span class="hint">{$obj->_w('Категория ваших товаров в чеке — для передачи в налоговую инспекцию.')}</span>
+            <span class="hint">Категория ваших товаров в чеке — для передачи в налоговую инспекцию.</span>
         </div>
     </div>
 
     <div class="field">
         <div class="name">
-            <label for="{$prefix}payment_subject_service">{$obj->_w('Признак предмета расчёта для доставки в чеках')}</label>
+            <label for="{$prefix}payment_subject_service">Признак предмета расчёта для услуг в чеках</label>
         </div>
         <div class="value">
             <select name="{$namespace}[payment_subject_service]" autocomplete="off" id="{$prefix}payment_subject_service">
@@ -58,13 +58,13 @@
                 {/foreach}
             </select>
             <br>
-            <span class="hint">{$obj->_w('Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.')}</span>
+            <span class="hint">Категория ваших услуг для товаров в чеке — для передачи в налоговую инспекцию.</span>
         </div>
     </div>
 
     <div class="field">
         <div class="name">
-            <label for="{$prefix}payment_subject_shipping">{$obj->_w('Признак предмета расчёта для доставки в чеках')}</label>
+            <label for="{$prefix}payment_subject_shipping">Признак предмета расчёта для доставки в чеках</label>
         </div>
         <div class="value">
             <select name="{$namespace}[payment_subject_shipping]" autocomplete="off" id="{$prefix}payment_subject_shipping">
@@ -74,7 +74,7 @@
                 {/foreach}
             </select>
             <br>
-            <span class="hint">{$obj->_w('Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.')}</span>
+            <span class="hint">Категория услуги по доставке заказа в чеке — для передачи в налоговую инспекцию.</span>
         </div>
     </div>
 
@@ -83,7 +83,7 @@
 
 <div class="field js-payment-sb-tax-wrapper">
     <div class="name">
-        <label for="{$prefix}tax_system">{$obj->_w('Система налогообложения')}</label>
+        <label for="{$prefix}tax_system">Система налогообложения</label>
     </div>
     <div class="value">
         <select name="{$namespace}[tax_system]" autocomplete="off" id="{$prefix}tax_system">
@@ -93,7 +93,7 @@
             {/foreach}
         </select>
         <br>
-        <span class="hint">{$obj->_w('Категория способа оплаты всех позиций в чеке — для передачи в налоговую инспекцию.')}</span>
+        <span class="hint">Категория способа оплаты всех позиций в чеке — для передачи в налоговую инспекцию.</span>
     </div>
 </div>
 
