@@ -767,7 +767,12 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     break;
             }
 
-            $transaction_data['view_data'][] = sprintf('Неуспешная операция %s', $operation_name);
+            $error =  sprintf('Неуспешная операция %s', $operation_name);
+
+            $transaction_data['view_data'][] = $error;
+            $transaction_data['error'] = $error;
+            $transaction_data['state'] = null;
+            $transaction_data['type'] = null;
             $method = self::CALLBACK_NOTIFY;
         } else {
             switch ($operation) {
@@ -893,7 +898,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         } else {
             switch ($transaction_data['type']) {
                 case self::OPERATION_CHECK:
-                    $app_payment_method = self::CALLBACK_CONFIRMATION;
+                    $app_payment_method = true;
                     $transaction_data['state'] = self::STATE_VERIFIED;
                     break;
                 case self::OPERATION_AUTH_ONLY:
