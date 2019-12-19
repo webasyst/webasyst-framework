@@ -63,7 +63,7 @@ class yandexMap extends waMapAdapter
 
         return $this->renderTemplate($template, array(
             'id' => $id,
-            'address' => json_encode($address),
+            'address' => $address,
             'options' => $options,
             'url' => $this->buildUrl(),
             'type' => 'address'

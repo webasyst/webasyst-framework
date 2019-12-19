@@ -20,13 +20,13 @@
                                 <div class="field">
                                     <div class="name">[s`Site Key`]</div>
                                     <div class="value">
-                                        <input type="text" name="captcha_options[sitekey]" value="{ifset($captcha_options.sitekey)}">
+                                        <input type="text" name="captcha_options[sitekey]" value="{$captcha_options.sitekey|default:''|escape}">
                                     </div>
                                 </div>
                                 <div class="field">
                                     <div class="name">[s`Secret`]</div>
                                     <div class="value">
-                                        <input type="text" name="captcha_options[secret]" value="{ifset($captcha_options.secret)}"><br>
+                                        <input type="text" name="captcha_options[secret]" value="{$captcha_options.secret|default:''|escape}"><br>
                                         <span class="hint"><a href="https://www.google.com/recaptcha" target="_blank">[s`Get site key and secret for your website`]</a> <i class="icon16 new-window"></i></span>
                                     </div>
                                 </div>
@@ -36,7 +36,7 @@
                                     </div>
                                     <div class="value no-shift">
                                         <label>
-                                            <input id="invisible" type="checkbox" name="captcha_options[invisible]" value="true" {if ifset($captcha_options.invisible)}checked{/if}>
+                                            <input id="invisible" type="checkbox" name="captcha_options[invisible]" value="true"{if ifset($captcha_options.invisible)} checked{/if}>
                                         </label>
                                     </div>
                                 </div>

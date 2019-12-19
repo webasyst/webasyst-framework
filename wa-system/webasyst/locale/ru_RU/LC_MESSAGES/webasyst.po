@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-12-13 09:25+0300\n"
+"PO-Revision-Date: 2019-12-18 09:52+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5767,7 +5767,7 @@ msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s�
 msgid "Yandex.Maps returns error “%s”, daily rate limit is exceeded."
 msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — превышен суточный лимит."
 
-msgid "Yandex.Maps returns error “%s”, probably API key invalid or daily rate limit is exceeded."
+msgid "Yandex.Maps returns error “%s”, probably API key is invalid or daily rate limit is exceeded."
 msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — возможно, неверный ключ API или превышен суточный лимит."
 
 msgid "Cache is temporary data that help reduce extensive load on your server. Clear cache to update those data, if you have encountered a malfunction."
