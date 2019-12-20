@@ -370,7 +370,16 @@ abstract class waShipping extends waSystemPlugin
      */
     public function getSelectedServiceId()
     {
-        return $this->getPackageProperty('service_variant_id');
+        if(($service_variant_id = $this->getPackageProperty('service_variant_id')) !== null) {
+            return $service_variant_id;
+        }
+        if(($shipping_params = (array)$this->getPackageProperty('shipping_params')) && 
+           ($service_variant_id = ifset($shipping_params, 'service', 'variant_id', null)) 
+           && preg_match("/^\d+\.{$this->key}\./")) {
+            return $service_variant_id;
+        }
+        
+        return null;
     }
 
     /**
