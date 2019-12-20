@@ -375,7 +375,7 @@ abstract class waShipping extends waSystemPlugin
         }
         if(($shipping_params = (array)$this->getPackageProperty('shipping_params')) && 
            ($service_variant_id = ifset($shipping_params, 'service', 'variant_id', null)) 
-           && preg_match("/^\\d+\\.{$this->key}\\./", $service_variant_id)) {
+           && preg_match("/^{$this->key}\\./", $service_variant_id)) {
             return $service_variant_id;
         }
         
