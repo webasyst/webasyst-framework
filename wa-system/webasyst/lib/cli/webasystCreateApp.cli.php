@@ -169,7 +169,7 @@ HELP;
         parent::showHelp();
     }
 
-    protected function showReport($config = array())
+    protected function showReport($config = array(), $params = array())
     {
         $report = <<<REPORT
 App with id "{$this->app_id}" created!
@@ -179,7 +179,7 @@ Useful commands:
     php wa.php generateDb {$this->app_id}
 
     # generate app's locale files
-    php wa-system/locale/locale.php {$this->app_id}
+    php wa.php locale {$this->app_id}
 
     # generate layouts, controllers and actions
     php wa.php createLayout {$this->app_id} backend

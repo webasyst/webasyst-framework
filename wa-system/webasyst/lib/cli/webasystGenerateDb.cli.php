@@ -158,9 +158,6 @@ HELP;
                         }
                     }
                 } elseif ($app_id) {
-                    if (strpos($app_id, '/*') !== false) {
-                        //TODO
-                    }
                     $this->generateSchema($app_id, $tables);
                 }
             } catch (waDbException $ex) {
@@ -183,8 +180,15 @@ HELP;
     {
         $plugin_id = false;
         if (strpos($app_id, '/') !== false) {
-            list($app_id, $plugin_id) = explode('/', $app_id, 2);
-            $path = wa()->getConfig()->getAppsPath($app_id, 'plugins/'.$plugin_id.'/lib/config/db.php');
+            if (preg_match('@^(wa-plugins/)(shipping|payment)/(.+)$@', $app_id, $matches)) {
+                $type = $matches[2];
+                $app_id = $matches[1].$matches[2];
+                $plugin_id = $matches[3];
+                $path = wa()->getConfig()->getPath('plugins', $type.'/'.$plugin_id.'/lib/config/db.php');
+            } else {
+                list($app_id, $plugin_id) = explode('/', $app_id, 2);
+                $path = wa()->getConfig()->getAppsPath($app_id, 'plugins/'.$plugin_id.'/lib/config/db.php');
+            }
         } else {
             $path = wa()->getConfig()->getAppsPath($app_id, 'lib/config/db.php');
         }
@@ -218,6 +222,7 @@ HELP;
             } else {
                 $prefix = $app_id;
                 if ($plugin_id) {
+                    $prefix = preg_replace('@wa-plugins/(shipping|payment)@', 'wa_$1', $prefix);
                     $prefix .= '_'.$plugin_id;
                 } else {
 
@@ -244,7 +249,6 @@ HELP;
                     }
                 }
             }
-
             $tables = $this->getTables($prefix);
             $tables = array_diff($tables, $exclude);
         }

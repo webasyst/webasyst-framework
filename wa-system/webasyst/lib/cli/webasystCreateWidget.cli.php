@@ -87,7 +87,7 @@ HELP;
     }
 
 
-    protected function showReport($data = array())
+    protected function showReport($data = array(), $params = array())
     {
         echo <<<REPORT
 Widget with id "$this->widget_id" created!
@@ -95,7 +95,7 @@ Widget with id "$this->widget_id" created!
 Useful commands:
 
     #generate widget's locale files
-    php wa-system/locale/locale.php $this->app_id/widgets/$this->widget_id
+    php wa.php locale $this->app_id/widgets/$this->widget_id
 REPORT;
     }
 

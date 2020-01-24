@@ -65,7 +65,7 @@ class webasystLocaleCli extends webasystCreateCliController
     protected function showHelp()
     {
         $help = <<<HELP
-Usage: php locale.php slug [params]
+Usage: php wa.php locale slug [params]
 Slug examples:
     myapp
     someapp/plugins/myplugin
@@ -81,10 +81,11 @@ HELP;
     }
 
     /**
-     * @see waGettextParser->getReport();
      * @param array $config
+     * @param array $params
+     * @see waGettextParser->getReport();
      */
-    protected function showReport($config = array())
+    protected function showReport($config = array(), $params = array())
     {
         $text = '';
         foreach ($config as $report) {
@@ -105,9 +106,9 @@ TEXT;
     }
 
     /**
-     * @see $this->showHelp();
      * @param $path
      * @return array
+     * @see $this->showHelp();
      */
     protected function parsePath($path)
     {

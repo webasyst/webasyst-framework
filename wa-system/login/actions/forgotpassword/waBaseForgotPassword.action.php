@@ -935,12 +935,15 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
 
         // ADDRESS where message has sent to
         // IF it is known than pass to validator to STRENGTHEN validation
-        $options = array(
-            'recipient' => array(
-                'id' => $send_details['contact_id'],
-                'address' => $send_details['address'],
-            )
-        );
+        $options = array();
+        if (isset($send_details['address'])) {
+            $options = array(
+                'recipient' => array(
+                    'id' => $send_details['contact_id'],
+                    'address' => $send_details['address'],
+                )
+            );
+        }
 
         $validation_result = $channel->validateRecoveryPasswordSecret($secret, $options);
 
@@ -949,30 +952,76 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             return array(false, array());
         }
 
-        // Try find contact by login
-        list($find_contact_status, $find_contact_details) = $this->tryFindContact($send_details['login'], wa()->getAuth());
+        // Has login in session - try find contact by login
+        if (!empty($send_details['login'])) {
 
-        // Not found - maybe it was deleted during the recover password process?
-        if (!$find_contact_status) {
-            $this->logError(
-                sprintf("Validate hash failed. There is no contact associated with login that was input - contact was deleted maybe during password restoring"),
-                array('line' => __LINE__, 'file' => __FILE__)
-            );
-            return array(false, array());
-        }
+            list($find_contact_status, $find_contact_details) = $this->tryFindContact($send_details['login'], wa()->getAuth());
 
-        /**
-         * @var waContact $contact
-         */
-        $contact = $find_contact_details['contact'];
+            // Not found - maybe it was deleted during the recover password process?
+            if (!$find_contact_status) {
+                $this->logError(
+                    "Validate hash failed. There is no contact associated with login that was input - contact was deleted maybe during password restoring",
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+                return array(false, array());
+            }
 
-        // With current validation process must be bind certain contact id
-        if ($validation_result['details']['contact_id'] != $contact->getId()) {
-            $this->logError(
-                sprintf("Validate hash failed. There is no contact associated with that hash - contact not exists or hash is invalid"),
-                array('line' => __LINE__, 'file' => __FILE__)
-            );
-            return array(false, array());
+            /**
+             * @var waContact $contact
+             */
+            $contact = $find_contact_details['contact'];
+
+            // With current validation process must be bind certain contact id
+            if ($validation_result['details']['contact_id'] != $contact->getId()) {
+                $this->logError(
+                    "Validate hash failed. There is no contact associated with that hash - contact not exists or hash is invalid",
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+                return array(false, array());
+            }
+
+        } else {
+
+            // We has not login in session, this case works only for recover by link
+            if ($channel->getType() === waVerificationChannelModel::TYPE_SMS) {
+                $this->logError(
+                    "Missed login (phone) in session, password recovery stops",
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+                return array(false, array());
+            }
+
+            // With current validation process must be bind certain contact id
+            $contact_id = $validation_result['details']['contact_id'];
+            $contact = new waContact($contact_id);
+
+            // Contact doesn't exist or not have been bind with validation process
+            if (!$contact->exists()) {
+                $this->logError(
+                    "Validate hash failed. There is no contact associated with that hash - contact not exists or hash is invalid",
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+                return array(false, array());
+            }
+
+            // Ok we have address
+            $validated_address = $validation_result['details']['address'];
+
+            // Check existing email and its binding with contact
+            $cem = new waContactEmailsModel();
+            $email_row = $cem->getByField(array(
+                'contact_id' => $contact->getId(),
+                'email' => $validated_address
+            ));
+
+            // Email has been deleted from this contact
+            if (!$email_row) {
+                $this->logError(
+                    sprintf("Validate hash failed. Email row doesn't exist in DB"),
+                    array('line' => __LINE__, 'file' => __FILE__)
+                );
+                return array(false, array());
+            }
         }
 
         // set contact locale

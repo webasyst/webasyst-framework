@@ -839,6 +839,7 @@ HELP;
                                 'services_by_type',
                                 'type',
                                 'multi_curl',
+                                'sync',
                             )
                         );
                         break;
@@ -954,6 +955,7 @@ HELP;
         switch ($this->type) {
             case 'plugin':
                 $namespace = waRequest::param('prefix', sprintf('%s_%s', $this->app_id, $this->extension_id));
+                $namespace = preg_replace('@wa-plugins/(shipping|payment)@', 'wa_$1', $namespace);
                 $deprecated = 'lib/config/plugin.sql';
                 break;
             case 'app':
@@ -1421,7 +1423,7 @@ HELP;
         } else {
             if (class_exists('waLog')) {
                 waLog::log(
-                    sprintf("Error while create checksum file [%d] %s at", strlen(basename($path)), $path, __METHOD__)
+                    sprintf("Error while create checksum file [%d] %s at %s", strlen(basename($path)), $path, __METHOD__)
                 );
             }
             throw new waException('Error while create checksum file', 500);

@@ -269,7 +269,7 @@ HELP;
         return $theme_files;
     }
 
-    protected function showReport($themes = array())
+    protected function showReport($themes = array(), $params = array())
     {
         /** @var waTheme|string[] $themes */
         foreach ($themes as $app_id => $theme) {

@@ -216,7 +216,7 @@ class waNet
     protected function buildRequest(&$url, &$content, &$method)
     {
         $format = ifempty($this->options['request_format'], $this->options['format']);
-        if ($content && in_array($format, array(self::FORMAT_XML, self::FORMAT_XML), true)) {
+        if ($content && in_array($format, array(self::FORMAT_XML, self::FORMAT_JSON), true)) {
             $method = self::METHOD_POST;
         }
 

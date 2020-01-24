@@ -156,7 +156,7 @@ PHP;
         return $code;
     }
 
-    protected function showReport($data = array())
+    protected function showReport($data = array(), $params = array())
     {
         echo <<<REPORT
 Plugin with id "$this->plugin_id" created!
@@ -166,7 +166,7 @@ Useful commands:
     php wa.php generateDb $this->app_id/$this->plugin_id table1 table2 table3
 
     #generate plugin's locale files
-    php wa-system/locale/locale.php $this->app_id/plugins/$this->plugin_id
+    php wa.php locale $this->app_id/plugins/$this->plugin_id
 REPORT;
     }
 
