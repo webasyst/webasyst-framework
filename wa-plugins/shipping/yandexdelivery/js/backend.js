@@ -22,20 +22,22 @@ function ShippingYandexdeliveryBackend(key, id) {
     this.$date = this.$scope.find(':input[name$="\[desired_delivery\.date_str\]"]');
 
     this.datepicker = function (input, courier, forced) {
-        if (typeof(input.datepicker) !== 'function') {
+        if (typeof (input.datepicker) !== 'function') {
             setTimeout(function () {
                 instance.datepicker(input, courier);
             }, 100);
         } else {
             input.data('available_days', courier.available_days);
             input.datepicker('option', 'minDate', courier.offset);
-            input.datepicker('hide');
             input.datepicker('refresh');
             if (!forced) {
                 setTimeout(function () {
                     instance.datepicker(input, courier, true);
                 }, 200);
             }
+
+            input.datepicker('hide');
+            input.datepicker('widget').hide();
         }
     };
 
@@ -62,7 +64,11 @@ function ShippingYandexdeliveryBackend(key, id) {
             .data('days', courier.available_days)
             .text(''));
 
-        this.$interval.val(this.$interval.data('value'));
+        var interval_value = this.$interval.data('value');
+        if (interval_value !== undefined) {
+            this.$interval.val(interval_value);
+        }
+
         this.$date.attr('placeholder', courier.placeholder);
         this.datepicker(this.$date, courier);
 
