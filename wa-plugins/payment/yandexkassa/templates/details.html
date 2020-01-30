@@ -1,0 +1,14 @@
+<form id="paymentFormDetails" action="" method="post" target="_top">
+    {foreach $controls as $control}{$control}{/foreach}
+    {$wa->csrf()}
+    <input id="paymentFormDetailsSubmit" type="submit" value="Выбрать вариант оплаты"/>
+</form>
+
+<script type="text/javascript">
+    (function () {
+        var form = document.getElementById('paymentFormDetails');
+        form.addEventListener("submit", function () {
+            document.getElementById('paymentFormDetailsSubmit').setAttribute('disabled', 'disabled');
+        });
+    })();
+</script>

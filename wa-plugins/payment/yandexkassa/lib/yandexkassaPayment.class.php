@@ -5,6 +5,8 @@
  *
  * @property-read string  $shop_id
  * @property-read string  $shop_password
+ * @property-read string  $payment_type
+ * @property-read string  $customer_payment_type
  * @property-read bool    $receipt
  * @property-read int     $tax_system_code
  * @property-read string  $taxes
@@ -32,12 +34,103 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         return $html;
     }
 
+    /**
+     * @param waOrder $order
+     * @return string HTML
+     * @throws SmartyException
+     * @throws waException
+     */
+    public function displayPaymentForm($order)
+    {
+        $view = wa()->getView();
+
+        $custom_fields = $this->customFields($order);
+
+        $params = array();
+        /*
+        $params['namespace'] = 'payment_'.$m['id'];
+        $params['title_wrapper'] = '%s';
+        $params['description_wrapper'] = '<br><span class="hint">%s</span>';
+        $params['control_wrapper'] = '<div class="name">%s</div><div class="value">%s %s</div>';
+        $params['control_separator'] = '</div><div class="value>"';
+
+        */
+        $values = $order->billing_params;
+        foreach ($custom_fields as $name => $row) {
+            $row = array_merge($row, $params);
+
+            if (!empty($row['control_type'])) {
+                if (isset($values[$name])) {
+                    $row['value'] = $values[$name];
+                }
+                $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
+            }
+        }
+
+        $view->assign('controls', $controls);
+
+        return $view->fetch($this->path.'/templates/details.html');
+    }
+
+    public function customFields(waOrder $order)
+    {
+        $fields = array();
+
+        $type = $this->payment_type;
+        if ($type === 'customer') {
+            $available_options = $this->customer_payment_type;
+            $options = self::settingsCustomerPaymentTypeOptions();
+            foreach ($options as $id => $option) {
+                if (empty($available_options[$id])) {
+                    unset($options[$id]);
+                }
+            }
+
+            $params = $order->billing_params;
+            $value = ifset($params, 'payment_type', null);;
+
+            if (empty($value) || empty($available_types[$value])) {
+                $value = null;
+            }
+
+            if (wa()->getEnv() === 'backend') {
+                array_unshift($options, array(
+                    'value' => '',
+                    'title' => 'TODO:на выбор покупателя',
+                    'group' => 'TODO group: на выбор покупателя',
+                ));
+            }
+
+
+            $fields['payment_type'] = array(
+                'value'        => $value,
+                'name'         => 'TODO: Вид оплаты',
+                'description'  => 'TODO: Выберите желаемый вариант оплаты',
+                'control_type' => waHtmlControl::SELECT,
+                'options'      => $options,
+            );
+        }
+
+        return parent::customFields($order) + $fields;
+    }
+
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         try {
             $order = waOrder::factory($order_data);
 
-            $payment = $this->createPayment($order);
+            $type = $this->payment_type;
+            if ($type === 'customer') {
+                $params = $order->billing_params;
+                $default = ifset($params, 'payment_type', null);
+                $type = ifset($payment_form_data, 'payment_type', $default);
+                $available_types = $this->customer_payment_type;
+                if (empty($type) || empty($available_types[$type])) {
+                    return $this->displayPaymentForm($order);
+                }
+            }
+
+            $payment = $this->createPayment($order, $type);
 
             switch ($payment['status']) {
                 case 'succeeded':
@@ -159,10 +252,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
     /**
      * @param waOrder $order
+     * @param string  $type
      * @return array
      * @throws waPaymentException
      */
-    private function formatPaymentData(waOrder $order)
+    private function formatPaymentData(waOrder $order, $type)
     {
         $data = array(
             'amount'       => array(
@@ -188,6 +282,12 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 'order_id'    => $order->id,
             ),
         );
+
+        if (!empty($type)) {
+            $data['payment_method'] = array(
+                'type' => $type,
+            );
+        }
 
         if (empty($data['receipt'])) {
             unset($data['receipt']);
@@ -273,6 +373,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             $headers = array();
         }
 
+        if (is_array($data) && isset($data['%params'])) {
+            $params = $data['%params'];
+            unset($data['%params']);
+        }
+
         $actions = array(
             //'cancel',
             'create',
@@ -290,7 +395,10 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         $debug['app_id'] = $this->app_id;
         if (!empty($data)) {
             $debug['data'] = $data;
+            $debug['headers'] = $headers;
+            $debug['params'] = $params;
         }
+
         try {
             $net = $this->getTransport($headers);
 
@@ -307,20 +415,39 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 throw new waPaymentException($message);
             }
             if (in_array($action, $actions)) {
-                $wa_transaction_data = $this->formalizeData($response);
+
                 $raw_data = array(
                     'response' => waUtils::jsonEncode($response),
                 );
+
+                switch ($action) {
+                    case 'refunds':
+                        if (!empty($params['refundable'])) {
+                            $response['refundable'] = true;
+                        }
+                        $response['refunded_amount'] = $response['amount'];
+
+                        break;
+                }
+
+                $wa_transaction_data = $this->formalizeData($response);
+                if (!empty($params['parent_id'])) {
+                    $wa_transaction_data['parent_id'] = $params['parent_id'];
+                    $wa_transaction_data['parent_state'] = $wa_transaction_data['state'];
+                }
+
                 if (!empty($data['receipt']['customer'])) {
                     foreach ($data['receipt']['customer'] as $customer_field => $value) {
                         $raw_data[$customer_field] = $value;
                     }
                 }
-                $this->saveTransaction($wa_transaction_data, $raw_data);
+                $debug['transaction'] = $this->saveTransaction($wa_transaction_data, $raw_data);
             }
             $debug['response'] = $response;
 
-            //self::log($this->id, $debug);
+            if (waSystemConfig::isDebug()) {
+                self::log($this->id, $debug);
+            }
             return $response;
         } catch (waException $ex) {
             $debug['message'] = $ex->getMessage();
@@ -338,13 +465,14 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
     /**
      * @param waOrder $order
+     * @param string  $type
      * @return array
      * @throws waException
      */
-    private function createPayment(waOrder $order)
+    private function createPayment(waOrder $order, $type)
     {
         #Payment data
-        $data = $this->formatPaymentData($order);
+        $data = $this->formatPaymentData($order, $type);
         $hash = md5(var_export($order, true).var_export($this->getSettings(), true));
 
         return $this->apiQuery('create', $data, $hash);
@@ -462,8 +590,18 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $app_payment_method = self::CALLBACK_PAYMENT;
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 break;
+            case self::OPERATION_CANCEL:
+                $app_payment_method = self::CALLBACK_CANCEL;
+                $transaction_data['state'] = self::STATE_CANCELED;
+                break;
             case self::OPERATION_REFUND:
-                $app_payment_method = self::CALLBACK_NOTIFY;
+                if ($transaction_data['state'] == self::STATE_REFUNDED) {
+                    //XXX update parent state;
+                    $app_payment_method = self::CALLBACK_REFUND;
+                    $app_payment_method = self::CALLBACK_NOTIFY;
+                } else {
+                    $app_payment_method = self::CALLBACK_NOTIFY;
+                }
                 break;
             case self::OPERATION_AUTH_ONLY:
                 $app_payment_method = self::CALLBACK_AUTH;
@@ -655,6 +793,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 //TODO format ITU-T E.164
                 $customer['phone'] = sprintf('%s', preg_replace('@^8@', '7', $phone));
             }
+
+            $customer = array_filter($customer);
 
             if (!empty($customer)) {
                 $receipt = array(
@@ -944,8 +1084,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     $view[] = sprintf('Из общей суммы %s', $value);
 
                 } else {
-                    $data['state'] = self::STATE_CANCELED;
-                    $data['type'] = self::OPERATION_CANCEL;
+                    $data['state'] = self::STATE_VERIFIED;
+                    $data['type'] = self::OPERATION_CHECK;
                 }
                 $view[] = self::getCancelDescription(ifset($transaction_raw_data['cancellation_details']));
                 break;
@@ -1130,6 +1270,181 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         return $available;
     }
 
+    /**
+     * @link https://kassa.yandex.ru/developers/payment-methods/overview
+     * @return array
+     */
+    public static function settingsCustomerPaymentTypeOptions()
+    {
+        $options = array(
+            'bank_card'      => array(
+                'value'     => 'bank_card',
+                'title'     => 'Банковская карта',
+                'ttl'       => '1 час',
+                'hold'      => '7 дней',
+                'code'      => 'AC',
+                'refund'    => true,
+                'recurrent' => true,
+            ),
+            'apple_pay'      => array(
+                'value'     => 'apple_pay',
+                'title'     => 'Apple Pay',
+                'disabled'  => 'disabled',
+                'ttl'       => '1 час',
+                'hold'      => '7 дней',
+                'code'      => 'AC',
+                'refund'    => true,
+                'recurrent' => false,
+            ),
+            'google_pay'     => array(
+                'value'     => 'google_pay',
+                'title'     => 'Google Pay',
+                'disabled'  => 'disabled',
+                'ttl'       => '1 час',
+                'hold'      => '7 дней',
+                'code'      => 'AC',
+                'refund'    => true,
+                'recurrent' => false,
+            ),
+            //Электронные деньги
+            'yandex_money'   => array(
+                'value'     => 'yandex_money',
+                'title'     => 'Яндекс.Деньги',
+                'ttl'       => '1 час',
+                'hold'      => '7 дней',
+                'code'      => 'PC',
+                'refund'    => true,
+                'recurrent' => true,
+                'group'     => 'Электронные деньги',
+            ),
+            'qiwi'           => array(
+                'value'     => 'qiwi',
+                'title'     => 'QIWI Кошелек',
+                'ttl'       => '1 час',
+                'hold'      => '6 часов',
+                'code'      => 'QW',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Электронные деньги',
+            ),
+            'webmoney'       => array(
+                'value'     => 'webmoney',
+                'title'     => 'WebMoney',
+                'ttl'       => '1 час',
+                'hold'      => '6 часов',
+                'code'      => 'WM',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Электронные деньги',
+            ),
+            'wechat'         => array(
+                'value'     => 'wechat',
+                'title'     => 'WeChat',
+                'ttl'       => '2 минуты',
+                'hold'      => '—',
+                'code'      => 'WP',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Электронные деньги',
+            ),
+            //Интернет-банкинг
+            'sberbank'       => array(
+                'value'     => 'sberbank',
+                'title'     => 'Сбербанк Онлайн',
+                'ttl'       => '8 часов',
+                'hold'      => '6 часов',
+                'code'      => 'SB',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Интернет-банкинг',
+            ),
+            'alfabank'       => array(
+                'value'     => 'alfabank',
+                'title'     => 'Альфа-Клик',
+                'ttl'       => '8 часов',
+                'hold'      => '6 часов',
+                'code'      => 'AB',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Интернет-банкинг',
+            ),
+            'tinkoff_bank'   => array(
+                'value'     => 'tinkoff_bank',
+                'title'     => 'Тинькофф Банк',
+                'ttl'       => '1 час',
+                'hold'      => '6 часов',
+                'code'      => 'TB',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Интернет-банкинг',
+            ),
+            //B2B-платежи
+            'b2b_sberbank'   => array(
+                'value'     => 'b2b_sberbank',
+                'title'     => 'Сбербанк Бизнес Онлайн',
+                'disabled'  => 'disabled', //нужны данные о налоговых ставках
+                'ttl'       => '72 часа',
+                'hold'      => '—',
+                'code'      => '2S',
+                'refund'    => false,
+                'recurrent' => false,
+                'group'     => 'B2B-платежи',
+            ),
+            //Другие способы
+            'mobile_balance' => array(
+                'value'     => 'mobile_balance',
+                'title'     => 'Баланс телефона',
+                'disabled'  => 'disabled', //нужен номер телефона
+                'ttl'       => '1 час',
+                'hold'      => '6 часов',
+                'code'      => 'MC',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Другие способы',
+            ),
+            'cash'           => array(
+                'value'     => 'cash',
+                'title'     => 'Наличные',
+                'ttl'       => 'Без ограничений',
+                'hold'      => '6 часов',
+                'code'      => 'GP',
+                'refund'    => false,
+                'recurrent' => false,
+                'group'     => 'Другие способы',
+            ),
+            'installments'   => array(
+                'value'     => 'installments',
+                'title'     => 'Заплатить по частям (кредит)',
+                'ttl'       => '8 часов',
+                'hold'      => '6 часов',
+                'code'      => 'CR',
+                'refund'    => true,
+                'recurrent' => false,
+                'group'     => 'Другие способы',
+            ),
+        );
+
+        foreach ($options as $id => $option) {
+            if (!empty($option['disabled'])) {
+                unset($options[$id]);
+            }
+        }
+
+        return $options;
+    }
+
+    public static function settingsPaymentTypeOptions()
+    {
+        return array(
+
+                ''         => array(
+                    'value' => '',
+                    'title' => 'На выбор покупателя после перехода на сайт «Яндекс.Кассы» (рекомендуется)',
+                ),
+                'customer' => 'На выбор покупателя до перехода на сайт «Яндекс.Кассы»',
+            ) + self::settingsCustomerPaymentTypeOptions();
+    }
+
 
     public function allowedCurrency()
     {
@@ -1164,6 +1479,9 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 if (empty($payment['refundable'])) {
                     $transaction = false;
                 }
+                if (isset($payment['refunded_amount'])) {
+                    $transaction['refunded_amount'] = floatval($payment['refunded_amount']['value']);
+                }
             } catch (waException $ex) {
                 $transaction = false;
             }
@@ -1179,9 +1497,10 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             $payment = $this->getPaymentInfo($transaction['native_id']);
 
             if (!empty($payment['refundable'])) {
+                $refund_amount = $transaction_raw_data['refund_amount'];
                 $data = array(
                     'amount'     => array(
-                        'value'    => number_format($transaction_raw_data['refund_amount'], 2, '.', ''),
+                        'value'    => number_format($refund_amount, 2, '.', ''),
                         'currency' => $transaction['currency_id'],
                     ),
                     'payment_id' => $transaction['native_id'],
@@ -1190,6 +1509,16 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 if ($receipt) {
                     $data['receipt'] = $receipt;
                 }
+
+                $params = array();
+
+                if ($transaction['refunded_amount'] + $refund_amount < $transaction['amount']) {
+                    $params['refundable'] = true;
+                } else {
+                    $params['parent_id'] = $transaction['id'];
+                }
+
+                $data['%params'] = $params;
 
                 $data = $this->apiQuery('refunds', $data);
                 return array(
@@ -1209,5 +1538,77 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 'description' => $ex->getMessage(),
             );
         }
+    }
+
+    public function callbackMatchSettings($settings)
+    {
+        $result = !empty($settings['shop_id']);
+        if ($result) {
+
+            $result = intval($result);
+            switch (ifset($settings['payment_type'])) {
+                case 'installments':
+                    $result += 2;
+                    break;
+                case 'customer':
+                    if (!empty($settings['customer_payment_type']['installments'])) {
+                        $result += 1;
+                    } else {
+                        $result = false;
+                    }
+                    break;
+            }
+        }
+        return $result;
+    }
+
+
+    public static function getCreditInfo($amount, $app_id = null, $id = null, $selector = null)
+    {
+        if (empty($id)) {
+            $id = '*';
+        } elseif ($id === 'yandexkassa') {
+            $id = '*';
+        }
+        $instance = new self($id);
+        $instance->type = self::PLUGIN_TYPE;
+        $instance->app_id = $app_id;
+        $instance->id = 'yandexkassa';
+
+        if ($id === '*') {
+            $instance->key = array($instance, 'callbackMatchSettings');
+        }
+        $instance->init();
+
+        $amount = intval($amount * 100);
+
+        $result = '';
+        if (empty($selector)) {
+            $dom_id = sprintf('wa_yandexkassa_%d', $instance->shop_id);
+            $result .= /** @lang html */
+                <<<HTML
+<div id="{$dom_id}"><!-- Yandex.Kassa placeholder --></div>
+HTML;
+            $selector = '#'.$dom_id;
+        }
+
+        $result .= /** @lang html */
+            <<<HTML
+<script src="https://static.yandex.net/kassa/pay-in-parts/ui/v1"></script>
+<script>
+const \$checkoutCreditUI = YandexCheckoutCreditUI({
+    shopId: '{$instance->shop_id}',
+    sum: {$amount}
+});
+const checkoutCreditText = \$checkoutCreditUI({
+    type: 'info',
+    domSelector: '{$selector}'
+});
+
+</script>
+HTML;
+
+
+        return $result;
     }
 }

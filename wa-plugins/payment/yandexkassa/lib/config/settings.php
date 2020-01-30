@@ -1,14 +1,14 @@
 <?php
 return array(
-    'shop_id'                       => array(
+    'shop_id'       => array(
         'value'        => '',
-        'title'        => 'Идентификатор магазина',
+        'title'        => 'shopId',
         'description'  => 'Выдаётся оператором платёжной системы.',
         'control_type' => 'input',
     ),
-    'shop_password'                 => array(
+    'shop_password' => array(
         'value'        => '',
-        'title'        => 'Пароль',
+        'title'        => 'Секретный ключ',
         'description'  => <<<HTML
 <span class="js-yandexkassa-registration-link" style="background-color: #FFE6E6; display: block; margin: 10px 0; padding: 10px 15px; font-weight: normal; font-size: 14px;color: black; width: 80%;">
 Подключаясь к платёжной системе <a href="https://www.webasyst.com/my/ajax/?action=campain&hash=f799812face0b887237ea5609bd49a7fef" target="_blank">через Webasyst</a>, вы получаете <b>премиум-тариф со ставками от&nbsp;2,8% на 3&nbsp;месяца + купон на 7000&nbsp;рублей</b> на первую рекламную кампанию в «Яндекс.Директе» при оплате от 2500&nbsp;рублей.
@@ -20,6 +20,21 @@ return array(
 HTML
         ,
         'control_type' => waHtmlControl::PASSWORD,
+    ),
+
+    'payment_type'                  => array(
+        'value'            => '',
+        'options_callback' => array('yandexkassaPayment', 'settingsPaymentTypeOptions'),
+        'title'            => 'Способ оплаты',
+        'description'      => 'Настройки выбора способа оплаты.',
+        'control_type'     => waHtmlControl::SELECT,
+    ),
+    'customer_payment_type'         => array(
+        'value'            => array(),
+        'title'            => 'Варианты для способа оплаты «на выбор покупателя»',
+        'description'      => 'Настройки доступных способов оплаты для выбора покупателям.',
+        'control_type'     => waHtmlControl::GROUPBOX,
+        'options_callback' => array('yandexkassaPayment', 'settingsCustomerPaymentTypeOptions'),
     ),
     'receipt'                       => array(
         'value'        => false,
@@ -101,5 +116,22 @@ HTML
         'title'        => 'Двухстадийная оплата',
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,
+    ),
+
+    'credit_helper' => array(
+        'value'        => sprintf('{yandexkassaPaymentViewHelper::getCreditInfo($amount_value, "%s", "%s", "#my_id")}', $this->app_id, $this->key),
+        'description'  => <<<HTML
+Вставьте эту строку в шаблон страницы или темы дизайна, чтобы показать на сайте условия оплаты в кредит через «Яндекс.Кассу».
+<ul>
+<li><code>\$amount_value</code> — сумма кредита.</li>
+<li><code>"{$this->app_id}"</code> — идентификатор приложения.</li>
+<li><code>"{$this->key}"</code> — идентификатор настроек плагина. Если у вас настроен только один способ оплаты через «Яндекс.Кассу», укажите значение <code>0</code>.</li>
+<li><code>"#my_id"</code> — селектор HTML-элемента, внутри которого нужно показать виджет с условиями. Если селектор не указан, то виджет будет показан в том месте, куда добавлен этот код.</li>
+</ul>
+
+HTML
+        ,
+        'title'        => 'Код виджета с условиями оплаты в кредит',
+        'control_type' => waHtmlControl::HELP,
     ),
 );
