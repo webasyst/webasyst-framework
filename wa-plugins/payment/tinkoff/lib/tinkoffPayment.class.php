@@ -6,7 +6,7 @@
  * @name tinkoffPayment
  * @description tinkoff Payments Standard Integration
  *
- * @link        https://oplata.tinkoff.ru/landing/develop/documentation
+ * @link        https://oplata.tinkoff.ru/develop/api/payments/
  *
  * @property-read        $terminal_key
  * @property-read        $terminal_password
@@ -181,6 +181,19 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         }
     }
 
+    protected function callbackInit($request)
+    {
+        $request = $this->sanitizeRequest($request);
+
+        $pattern = '/^([a-z]+)_(\d+)_(.+)$/';
+        if (!empty($request['OrderId']) && preg_match($pattern, $request['OrderId'], $match)) {
+            $this->app_id = $match[1];
+            $this->merchant_id = $match[2];
+            $this->order_id = $match[3];
+        }
+        return parent::callbackInit($request);
+    }
+
     /**
      * Main method. Call API with params
      *
@@ -216,7 +229,8 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
             if (!empty($response['ErrorCode'])) {
                 $message = sprintf(
-                    'Error #%d: %s',
+                    '%s #%d: %s',
+                    ifset($response, 'Message', 'Error'),
                     $response['ErrorCode'],
                     ifset($response, 'Details', $this->translateError($response['ErrorCode']))
                 );
@@ -249,19 +263,6 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         }
 
         return $response;
-    }
-
-    protected function callbackInit($request)
-    {
-        $request = $this->sanitizeRequest($request);
-
-        $pattern = '/^([a-z]+)_(\d+)_(.+)$/';
-        if (!empty($request['OrderId']) && preg_match($pattern, $request['OrderId'], $match)) {
-            $this->app_id = $match[1];
-            $this->merchant_id = $match[2];
-            $this->order_id = $match[3];
-        }
-        return parent::callbackInit($request);
     }
 
     /**
@@ -303,6 +304,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                     $app_payment_method = self::CALLBACK_DECLINE;
                 }
                 break;
+
             case self::OPERATION_AUTH_CAPTURE:
                 if ($transaction_data['result']) {
                     $app_payment_method = self::CALLBACK_PAYMENT;
@@ -310,25 +312,54 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                     $app_payment_method = self::CALLBACK_DECLINE;
                 }
                 break;
+
             case self::OPERATION_CHECK:
                 $app_payment_method = self::CALLBACK_CONFIRMATION;
                 break;
+
             case self::OPERATION_CAPTURE:
                 $app_payment_method = self::CALLBACK_CAPTURE;
                 break;
+
             case self::OPERATION_REFUND:
-                $app_payment_method = self::CALLBACK_REFUND;
+                if ($transaction_data['state'] === self::STATE_PARTIAL_REFUNDED) {
+                    $app_payment_method = self::CALLBACK_NOTIFY;
+                } else {
+                    $app_payment_method = self::CALLBACK_REFUND;
+                }
                 break;
+
             case self::OPERATION_CANCEL:
-                $app_payment_method = self::CALLBACK_CANCEL;
+                if ($transaction_data['state'] === self::STATE_DECLINED) {
+                    $app_payment_method = self::CALLBACK_DECLINE;
+                } else {
+                    $app_payment_method = self::CALLBACK_CANCEL;
+                }
+
                 break;
+
             default:
                 self::log($this->id, 'Unsupported callback operation: '.$transaction_data['type']);
                 return;
         }
         if ($app_payment_method) {
-            $transaction_data = $this->saveTransaction($transaction_data, $data);
-            $this->execAppCallback($app_payment_method, $transaction_data);
+            $method = $this->isRepeatedCallback($app_payment_method, $transaction_data);
+            if ($method == $app_payment_method) {
+                //Save transaction and run app callback only if it not repeated callback;
+                $transaction_data = $this->saveTransaction($transaction_data, $data);
+                $this->execAppCallback($app_payment_method, $transaction_data);
+            } else {
+                $log = array(
+                    'message'                  => 'silent skip callback as repeated',
+                    'method'                   => __METHOD__,
+                    'app_id'                   => $this->app_id,
+                    'callback_method'          => $method,
+                    'original_callback_method' => $app_payment_method,
+                    'transaction_data'         => $transaction_data,
+                );
+
+                static::log($this->id, $log);
+            }
         }
     }
 
@@ -348,8 +379,23 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 $args['Description'] = $transaction_raw_data['refund_description'];
             }
 
+            $items = ifset($transaction_raw_data, 'refund_items', array());
+
+            if ($this->getSettings('atolonline_on') && $items) {
+                $order_data = waOrder::factory(array(
+                    'items'      => $items,
+                    'currency'   => $transaction_raw_data['transaction']['currency_id'],
+                    'id'         => $transaction_raw_data['transaction']['order_id'],
+                    'contact_id' => $transaction_raw_data['transaction']['customer_id'],
+                ));
+                $args['Receipt'] = $this->getReceiptData($order_data);
+                if (!$args['Receipt']) {
+                    throw new waPaymentException('Ошибка формирования чека возврата');
+                }
+            }
+
             $res = $this->apiQuery('Cancel', $args);
-            $status = ifset($res, 'Status', '');
+
 
             $response = array(
                 'result'      => 0,
@@ -360,7 +406,6 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
             $amount = $transaction_raw_data['transaction']['amount'];
 
-            //XXX check partial refunds
             if (isset($res['OriginalAmount']) && isset($res['NewAmount'])) {
                 $amount = ($res['OriginalAmount'] - $res['NewAmount']) / 100;
             }
@@ -368,6 +413,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             $transaction = array(
                 'native_id'       => $transaction_raw_data['transaction']['native_id'],
                 'type'            => self::OPERATION_REFUND,
+                'state'           => $this->formalizeDataState($res),
                 'result'          => 1,
                 'order_id'        => $transaction_raw_data['transaction']['order_id'],
                 'customer_id'     => $transaction_raw_data['transaction']['customer_id'],
@@ -383,16 +429,15 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 self::STATE_PARTIAL_REFUNDED,
             );
 
-            if (!in_array($status, $expected_states, true)) {
+            if (!in_array($transaction['state'], $expected_states, true)) {
                 $transaction['state'] = self::STATE_DECLINED;
                 $transaction['result'] = 0;
                 $transaction['error'] = ifset($res['Message']); // $this->translateError(isset($res['ErrorCode']))
                 $transaction['view_data'] = ifset($res['Details']);
                 $response['result'] = -1;
                 $response['description'] = $transaction['error'].' '.$transaction['view_data'];
-            } else {
-                $transaction['parent_state'] = $status;
-                $transaction['state'] = $status;
+            } elseif ($transaction['state'] === self::STATE_REFUNDED) {
+                $transaction['parent_state'] = $transaction['state'];
             }
 
             if (isset($res['TerminalKey'])) {
@@ -557,6 +602,41 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         }
     }
 
+    protected function formalizeDataState($data)
+    {
+        $state = null;
+        switch (ifset($data['Status'])) {
+            case 'AUTHORIZED':
+                $state = self::STATE_AUTH;
+                break;
+
+            case 'CONFIRMED':
+                $state = self::STATE_CAPTURED;
+                break;
+
+            case 'PARTIAL_REFUNDED':
+                $state = self::STATE_PARTIAL_REFUNDED;
+                break;
+
+            case 'REFUNDED':
+                $state = self::STATE_REFUNDED;
+                break;
+
+            case 'REJECTED':
+                $state = self::STATE_DECLINED;
+                break;
+
+            case 'REVERSED':
+                $state = self::STATE_DECLINED;
+                break;
+
+            default:
+                throw new waException('Invalid transaction status');
+        }
+
+        return $state;
+    }
+
     /**
      * Convert transaction raw data to formatted data
      * @param array $data - transaction raw data
@@ -571,7 +651,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         if (empty($data['Status'])) {
             throw new waException('Empty transaction status');
         }
-        $transaction_data['state'] = null;
+        $transaction_data['state'] = $this->formalizeDataState($data);
         $transaction_data['parent_id'] = null;
         $parent_transaction = null;
         if (!empty($data['PaymentId'])) {
@@ -583,78 +663,59 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
         switch ($data['Status']) {
             case 'AUTHORIZED':
-                $transaction_data['state'] = self::STATE_AUTH;
-                break;
-            case 'CONFIRMED':
-                $transaction_data['state'] = self::STATE_CAPTURED;
-                break;
-            case 'PARTIAL_REFUNDED':
-                $transaction_data['state'] = self::STATE_PARTIAL_REFUNDED;
-                break;
-            case 'REFUNDED':
-                $transaction_data['state'] = self::STATE_REFUNDED;
-                break;
-            case 'REJECTED':
-                $transaction_data['state'] = self::STATE_DECLINED;
-                break;
-            case 'REVERSED':
-                $transaction_data['state'] = self::STATE_DECLINED;
-                break;
-            default:
-                throw new waException('Invalid transaction status');
-        }
-
-        switch ($data['Status']) {
-            case 'AUTHORIZED':
                 if ($this->two_steps) {
                     $transaction_data['type'] = self::OPERATION_AUTH_ONLY;
                 } else {
                     $transaction_data['type'] = self::OPERATION_CHECK;
-                    //$transaction_data['native_id'] = null;
                 }
                 break;
+
             case 'CONFIRMED':
-                $transaction_data['type'] = self::OPERATION_CAPTURE;
-                break;
-            case 'REJECTED':
                 if ($parent_transaction) {
-                    $transaction_data['type'] = self::OPERATION_CANCEL;
+                    $transaction_data['type'] = self::OPERATION_CAPTURE;
                 } else {
-                    if ($this->two_steps) {
-                        $transaction_data['type'] = self::OPERATION_AUTH_ONLY;
-                    } else {
-                        $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
-                    }
+                    $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
                 }
                 break;
-            case 'REVERSED':
-                $transaction_data['type'] = self::OPERATION_CANCEL;
-                break;
+
             case 'PARTIAL_REFUNDED':
                 $transaction_data['type'] = self::OPERATION_REFUND;
+                if (!empty($data['OriginalAmount']) && !empty($data['NewAmount'])) {
+                    $transaction_data['refunded_amount'] = (intval($data['OriginalAmount']) - intval($data['NewAmount'])) / 100;
+                }
                 break;
+
             case 'REFUNDED':
                 $transaction_data['type'] = self::OPERATION_REFUND;
                 break;
+
+            case 'REJECTED':
+                $transaction_data['type'] = self::OPERATION_CANCEL;
+                break;
+
+            case 'REVERSED':
+                $transaction_data['type'] = self::OPERATION_CANCEL;
+                break;
+
             default:
-                throw new waException('Unknown transaction status');
+                throw new waException('Invalid transaction status');
         }
-        if (!$parent_transaction && $data['Status'] == 'CONFIRMED') {
-            $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
-        }
+
+
         if (!empty($data['Pan'])) {
             $transaction_data['view_data'] = $data['Pan'];
         }
+
         $transaction_data['amount'] = ifset($data['Amount']) / 100;
         $transaction_data['currency_id'] = $this->currency_id;
         $transaction_data['order_id'] = $this->order_id;
         $transaction_data['result'] = (isset($data['Success']) && $data['Success'] == 'true') ? 1 : 0;
         $error_code = intval(ifset($data['ErrorCode']));
+
         $transaction_data['error'] = $this->translateError($error_code);
         if (!empty($transaction_data['error'])) {
-            $transaction_data['view_data'] = (
-                isset($transaction_data['view_data']) ? ($transaction_data['view_data'].'; ') : ''
-                ).$transaction_data['error'];
+            $transaction_data['view_data'] = isset($transaction_data['view_data']) ? ($transaction_data['view_data'].'; ') : '';
+            $transaction_data['view_data'] .= $transaction_data['error'];
         }
 
         if (!empty($data['RebillId'])) {
@@ -699,10 +760,18 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     private function getParentTransaction($native_id)
     {
         $tm = new waTransactionModel();
-        $sql = "SELECT * FROM {$tm->getTableName()} WHERE
-                native_id = ? AND plugin = ? AND type IN('"
-            .self::OPERATION_AUTH_CAPTURE."', '".self::OPERATION_AUTH_ONLY."')";
-        return $tm->query($sql, $native_id, $this->id)->fetchAssoc();
+        $search = array(
+            'native_id' => $native_id,
+            'app_id'    => $this->app_id,
+            'plugin'    => $this->id,
+            'type'      => array(
+                self::OPERATION_AUTH_ONLY,
+                self::OPERATION_AUTH_CAPTURE,
+            ),
+        );
+
+        $transactions = $tm->getByFields($search);
+        return $transactions ? reset($transactions) : null;
     }
 
     /**
@@ -728,6 +797,9 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 if ($item['price'] > 0) {
 
                     switch (ifset($item['type'])) {
+                        case 'shipping':
+                            $item['payment_object_type'] = $this->payment_object_type_shipping;
+                            break;
                         case 'service':
                             $item['payment_object_type'] = $this->payment_object_type_service;
                             break;
