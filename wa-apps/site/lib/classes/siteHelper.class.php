@@ -72,7 +72,7 @@ class siteHelper
                     $incorrect_text_parts[] = _w('“Redirect” rule is incorrect.', '%d “Redirect” rules are incorrect.', count($incorrect_redirect_rules));
                 }
 
-                $incorrect_text_parts[] = sprintf(_w('Move rule %s/* to the bottom of the rule list.'), $domain);
+                $incorrect_text_parts[] = sprintf(_w('Move rule %s/* to the bottom of the rule list.'), waIdna::dec($domain));
 
                 $incorrect_text = join(PHP_EOL, $incorrect_text_parts);
 
