@@ -180,7 +180,7 @@ class courierShipping extends waShipping
     {
         $result = array();
         foreach ($fields as $index => $field) {
-            if (self::isOneLineStringField($field)) {
+            if (self::isOneLineField($field)) {
                 $result[$index] = $field;
             }
         }
@@ -191,9 +191,9 @@ class courierShipping extends waShipping
      * @param waContactField $field
      * @return bool
      */
-    private static function isOneLineStringField($field)
+    private static function isOneLineField($field)
     {
-        return $field->getType() === 'String' && $field->getParameter('input_height') == 1;
+        return $field->getType() === 'Number' || ($field->getType() === 'String' && $field->getParameter('input_height') == 1);
     }
 
     /**
