@@ -1221,7 +1221,11 @@ abstract class waPayment extends waSystemPlugin
             waPayment::OPERATION_CHECK,
         );
 
-        foreach ($transactions as $transaction) {
+        foreach ($transactions as $transaction_id => $transaction) {
+            if ($transaction['result'] === 'is_repeated') {
+                unset($transactions[$transaction_id]);
+                continue;
+            }
             if (!empty($transaction['type']) && in_array($transaction['type'], $start_transactions, true)) {
                 $first_transaction = $transaction;
             }
@@ -1361,11 +1365,14 @@ abstract class waPayment extends waSystemPlugin
             }
         }
 
-        if (!$this->getProperties('partial_refund')
-            || !isset($transaction_raw_data['refund_amount'])
-            || ($transaction_raw_data['refund_amount'] === true)) {
+        if ($this->getProperties('partial_refund') &&
+            (!isset($transaction_raw_data['refund_amount']) || ($transaction_raw_data['refund_amount'] === true))
+        ) {
             #refund full amount
             $transaction_raw_data['refund_amount'] = $transaction_raw_data['transaction']['amount'];
+            if (!empty( $transaction_raw_data['transaction']['refunded_amount'])) {
+                $transaction_raw_data['refund_amount'] -=  $transaction_raw_data['transaction']['refunded_amount'];
+            }
 
         } elseif (isset($transaction_raw_data['refund_amount'])) {
             #refund partial
