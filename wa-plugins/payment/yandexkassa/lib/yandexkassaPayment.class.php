@@ -431,6 +431,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 }
 
                 $wa_transaction_data = $this->formalizeData($response);
+                if (!empty($params['order_id'])) {
+                    $wa_transaction_data += array(
+                        'order_id' => $params['order_id'],
+                    );
+                }
                 if (!empty($params['parent_id'])) {
                     $wa_transaction_data['parent_id'] = $params['parent_id'];
                     $wa_transaction_data['parent_state'] = $wa_transaction_data['state'];
@@ -1014,11 +1019,15 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     );
                     $view[] = sprintf('Выполнен возврат %s', $value);
 
-                    $value = wa_currency(
-                        (float)$transaction_raw_data['amount']['value'],
-                        $transaction_raw_data['amount']['currency']
-                    );
-                    $view[] = sprintf('Из общей суммы %s', $value);
+                    if (empty($transaction_raw_data['refundable'])
+                        || ($transaction_raw_data['refunded_amount']['value'] != $transaction_raw_data['amount']['value'])
+                    ) {
+                        $value = wa_currency(
+                            (float)$transaction_raw_data['amount']['value'],
+                            $transaction_raw_data['amount']['currency']
+                        );
+                        $view[] = sprintf('Из общей суммы %s', $value);
+                    }
 
                 } else {
                     $data['state'] = self::STATE_CAPTURED;
@@ -1481,6 +1490,10 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 }
                 if (isset($payment['refunded_amount'])) {
                     $transaction['refunded_amount'] = floatval($payment['refunded_amount']['value']);
+                    if (isset($payment['amount'])) {
+                        $transaction['amount'] = floatval($payment['amount']['value']);
+                        $transaction['amount'] = max(0, $transaction['amount'] - $transaction['refunded_amount']);
+                    }
                 }
             } catch (waException $ex) {
                 $transaction = false;
@@ -1510,9 +1523,13 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     $data['receipt'] = $receipt;
                 }
 
-                $params = array();
+                $params = array(
+                    'order_id'        => $transaction['order_id'],
+                    'amount'          => $transaction['amount'],
+                    'refunded_amount' => isset($transaction['refunded_amount']) ? $transaction['refunded_amount'] : false,
+                );
 
-                if ($transaction['refunded_amount'] + $refund_amount < $transaction['amount']) {
+                if ($refund_amount < $transaction['amount']) {
                     $params['refundable'] = true;
                 } else {
                     $params['parent_id'] = $transaction['id'];
