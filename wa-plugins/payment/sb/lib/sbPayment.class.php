@@ -180,7 +180,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             $request = array(
                 'orderId'  => $transaction['native_id'],
                 'language' => $this->getLanguage(),
-                'amount'   => intval($transaction_raw_data['refund_amount'] * 100), //convert to cent
+                'amount'   => number_format($transaction_raw_data['refund_amount'], 2, '', ''), //convert to cent
             );
 
             $items = ifset($transaction_raw_data, 'refund_items', array());
@@ -200,9 +200,10 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
             $this->sendRequest(self::URL_PAYMENT_REFUND, $request);
             $transaction_data = array(
-                'amount' => $transaction_raw_data['refund_amount'],
+                'amount'    => $transaction_raw_data['refund_amount'],
+                'parent_id' => $transaction['id'],
             );
-            if ($transaction_raw_data['refund_amount'] <= $transaction['amount']) {
+            if ($transaction_raw_data['refund_amount'] < $transaction['amount']) {
                 $transaction_data['state'] = self::STATE_PARTIAL_REFUNDED;
             }
 
@@ -231,7 +232,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
             $request = array(
                 'orderId' => $transaction['native_id'],
-                'amount'  => intval($transaction['amount'] * 100), //convert to cent
+                'amount'  => number_format($transaction['amount'], 2, '', ''), //convert to cent
             );
 
             $this->sendRequest(self::URL_PAYMENT_COMPLETE, $request);
@@ -420,6 +421,10 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 );
                 break;
             case 'DECLINED': # заказ отклонён;
+                $transaction_data += array(
+                    'type'  => self::OPERATION_CHECK,
+                    'state' => self::STATE_DECLINED,
+                );
                 break;
             case 'REVERSED': # заказ отменён;
                 $transaction_data += array(
@@ -473,6 +478,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
             case self::SB_ORDER_DECLINE: # авторизация отклонена
                 $transaction_data += array(
+                    'type'  => self::OPERATION_CHECK,
                     'state' => self::STATE_DECLINED,
                 );
                 break;
@@ -504,10 +510,50 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
         }
 
+        //update parent transaction
+        switch ($transaction_data['type']) {
+            case self::OPERATION_REFUND:
+                if ($transaction_data['state'] === self::STATE_REFUNDED) {
+                    if (isset($related_transactions[self::TRANSACTION_CAPTURE])) {
+                        $transaction_data['parent_id'] = $related_transactions[self::TRANSACTION_CAPTURE]['id'];
+                        $transaction_data['parent_state'] = self::STATE_REFUNDED;
+                    }
+                }
+                break;
+            case self::OPERATION_CAPTURE:
+                if (isset($related_transactions[self::TRANSACTION_AUTH])) {
+                    $transaction_data['parent_id'] = $related_transactions[self::TRANSACTION_AUTH]['id'];
+                    $transaction_data['parent_state'] = self::STATE_CAPTURED;
+                }
+                break;
+            case self::OPERATION_CANCEL:
+                if (isset($related_transactions[self::TRANSACTION_AUTH])) {
+                    $transaction_data['parent_id'] = $related_transactions[self::TRANSACTION_AUTH]['id'];
+                    $transaction_data['parent_state'] = self::STATE_CANCELED;
+                }
+                break;
+        }
+
         //fill view data
+        $card_fields = array();
+        $payment_fields = array();
         switch ($transaction_data['type']) {
             case self::OPERATION_AUTH_ONLY:
                 $view_data[] = 'Деньги заблокированы';
+                break;
+
+            case self::OPERATION_CANCEL:
+                $card_fields = array(
+                    'cardAuthInfo.pan'            => 'Pan: %s',
+                    'cardAuthInfo.cardholderName' => 'CardHolder: %s',
+                );
+
+                if (!empty($transaction_raw_data['actionCodeDescription'])) {
+                    $transaction_data['error'] = $transaction_raw_data['actionCodeDescription'];
+                } elseif (!empty($transaction_raw_data['actionCode'])) {
+                    $transaction_data['error'] = $transaction_raw_data['actionCode'];
+                }
+
                 break;
             case self::OPERATION_AUTH_CAPTURE:
             case self::OPERATION_CAPTURE:
@@ -516,25 +562,23 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     'cardAuthInfo.cardholderName' => 'CardHolder: %s',
                 );
 
-                foreach ($card_fields as $field => $format) {
-                    if (!empty($transaction_raw_data[$field])) {
-                        $view_data[] = sprintf($format, $transaction_raw_data[$field]);
-                    }
-                }
-
                 $payment_fields = array(
                     'paymentAmountInfo.depositedAmount' => 'Списано %0.2f %s',
                     'paymentAmountInfo.approvedAmount'  => 'Заблокировано %0.2f %s',
                 );
-
-
-                foreach ($payment_fields as $field => $format) {
-                    if (!empty($transaction_raw_data[$field])) {
-                        $view_data[] = sprintf($format, intval($transaction_raw_data[$field]) / 100, $transaction_data['currency_id']);
-                    }
-                }
-
                 break;
+        }
+
+        foreach ($card_fields as $field => $format) {
+            if (!empty($transaction_raw_data[$field])) {
+                $view_data[] = sprintf($format, $transaction_raw_data[$field]);
+            }
+        }
+
+        foreach ($payment_fields as $field => $format) {
+            if (!empty($transaction_raw_data[$field])) {
+                $view_data[] = sprintf($format, intval($transaction_raw_data[$field]) / 100, $transaction_data['currency_id']);
+            }
         }
 
 
@@ -767,7 +811,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     break;
             }
 
-            $error =  sprintf('Неуспешная операция %s', $operation_name);
+            $error = sprintf('Неуспешная операция %s', $operation_name);
 
             $transaction_data['view_data'][] = $error;
             $transaction_data['error'] = $error;
@@ -1006,6 +1050,12 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         $transaction_data += parent::formalizeData([]);
 
+        if (!empty($transaction['id'])) {
+            $transaction_data += array(
+                'parent_id' => $transaction['id'],
+            );
+        }
+
         switch ($operation) {
             case self::OPERATION_CHECK:
                 $transaction_data += array(
@@ -1021,8 +1071,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
             case self::OPERATION_CAPTURE:
                 $transaction_data += array(
-                    'type'  => self::OPERATION_CAPTURE,
-                    'state' => self::STATE_CAPTURED,
+                    'type'         => self::OPERATION_CAPTURE,
+                    'state'        => self::STATE_CAPTURED,
+                    'parent_state' => self::STATE_CAPTURED,
                 );
                 break;
             case self::OPERATION_AUTH_CAPTURE:
@@ -1033,8 +1084,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
             case self::OPERATION_CANCEL:
                 $transaction_data += array(
-                    'type'  => self::OPERATION_CANCEL,
-                    'state' => self::STATE_CANCELED,
+                    'type'         => self::OPERATION_CANCEL,
+                    'state'        => self::STATE_CANCELED,
+                    'parent_state' => self::STATE_CANCELED,
                 );
                 break;
             case self::OPERATION_REFUND:
@@ -1042,12 +1094,20 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     'type'  => self::OPERATION_REFUND,
                     'state' => self::STATE_REFUNDED,
                 );
+                if ($transaction_data['state'] === self::STATE_REFUNDED) {
+                    $transaction_data += array(
+                        'parent_state' => self::STATE_REFUNDED,
+                    );
+                }
                 break;
         }
 
         $transaction_data += $transaction;
         unset($transaction_data['id']);
         unset($transaction_data['raw_data']);
+        if (empty($transaction_data['parent_id'])) {
+            unset($transaction_data['parent_state']);
+        }
 
         return $transaction_data;
     }
@@ -1066,7 +1126,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $fail_url = $this->getRelayUrl().'?orderNumber='.$order_number.'&wa_result=fail';
         $register_fields = array(
             'orderNumber'        => $order_number,
-            'amount'             => intval($wa_order->total * 100), //Сумма платежа в минимальных единицах валюты (копейки, центы и т. п.).
+            'amount'             => number_format($wa_order->total, 2, '', ''), //Сумма платежа в минимальных единицах валюты (копейки, центы и т. п.).
             'currency'           => $this->getCurrencyISO4217Code($wa_order->currency), //Код валюты платежа ISO 4217
             'returnUrl'          => $return_url,
             'failUrl'            => $fail_url,
@@ -1338,13 +1398,13 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 'value'   => (int)$data['quantity'],
                 'measure' => 'шт.',
             ),
-            'itemAmount'   => round($data['total'] * 100),
-            'itemPrice'    => round($data['price'] * 100),
+            'itemAmount'   => number_format($data['total'], 2, '', ''),
+            'itemPrice'    => number_format($data['price'], 2, '', ''),
             'itemCurrency' => $this->getCurrencyISO4217Code($order_data['currency']),
             'itemCode'     => $this->app_id.'_order_'.$order_data['id'].'_'.$data['type'].'_'.$data['id'],
             'tax'          => array(
                 'taxType' => $this->getTaxType($data['tax_rate']),
-                'taxSum'  => round($tax_sum * 100, 2),
+                'taxSum'  => number_format($tax_sum, 2, '', ''),
             ),
         );
 
@@ -1479,8 +1539,10 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     protected function sendRequest($api_url, $request)
     {
         $url = $this->getURL($api_url);
-
-        $log = compact('url', 'request');
+        $log = array(
+            'method' => __METHOD__,
+        );
+        $log += compact('url', 'request');
 
         //next data shouldn't be logged
         $request['userName'] = $this->userName;
