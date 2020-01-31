@@ -1370,15 +1370,14 @@ abstract class waPayment extends waSystemPlugin
         ) {
             #refund full amount
             $transaction_raw_data['refund_amount'] = $transaction_raw_data['transaction']['amount'];
-            if (!empty( $transaction_raw_data['transaction']['refunded_amount'])) {
-                $transaction_raw_data['refund_amount'] -=  $transaction_raw_data['transaction']['refunded_amount'];
-            }
 
         } elseif (isset($transaction_raw_data['refund_amount'])) {
             #refund partial
             if ($transaction_raw_data['refund_amount'] === true) {
                 $transaction_raw_data['refund_amount'] = $transaction_raw_data['transaction']['amount'];
             }
+
+            #limit max amount
             $transaction_raw_data['refund_amount'] = max(
                 0,
                 min(
@@ -1387,6 +1386,7 @@ abstract class waPayment extends waSystemPlugin
                 )
             );
         } else {
+            #refund full amount
             $transaction_raw_data['refund_amount'] = $transaction_raw_data['transaction']['amount'];
         }
 
