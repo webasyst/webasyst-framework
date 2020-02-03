@@ -134,14 +134,30 @@ class waNet
      */
     public function userAgent($user_agent = null)
     {
-        $current_user_agent = $this->user_agent;
+        $current_user_agent = $this->getUserAgent();
         if ($user_agent != null) {
-            $this->user_agent = $user_agent;
+            $this->setUserAgent($user_agent);
         }
 
         return $current_user_agent;
     }
+    
+    /**
+     * @param string $user_agent
+     * @return $this
+     */
+    public function setUserAgent($user_agent) {
+        $this->user_argent = $user_agent;
+        return $this;
+    }
 
+    /**
+     * @return string
+     */
+    public function getUserAgent() {
+        return $this->user_agent;
+    }
+    
     public function cookies($path)
     {
         $this->accept_cookies = true;
