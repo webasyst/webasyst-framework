@@ -158,7 +158,7 @@ class waSignupAction extends waViewAction
 
         if ($user_info) {
             if ($this->sendLink(new waContact($user_info['id']))) {
-                echo _ws('Confirmation link has been resent');
+                echo _ws('Confirmation link has been resent.');
             } else {
                 echo _ws('Error');
             }

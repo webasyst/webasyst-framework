@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2019-12-18 09:52+0300\n"
+"PO-Revision-Date: 2020-02-03 11:19+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3767,10 +3767,7 @@ msgid "A confirmation link has been sent to your email address provided during t
 msgstr "Вам была отправлена ссылка на подтверждение email-адреса. Пожалуйста, щелкните по этой ссылке, чтобы подтвердить ваш email и авторизоваться на сайте. <a class=\"send-email-confirmation\" href=\"%s\">Отправить ссылку еще раз</a>"
 
 msgid "Confirmation link has been resent."
-msgstr "Ссылка на подтверждение была отправлена."
-
-msgid "Confirmation link has been resent"
-msgstr "Ссылка на подтверждение была отправлена"
+msgstr "Ссылка для подтверждения отправлена повторно."
 
 msgid "Invalid login"
 msgstr "Неверный логин"
