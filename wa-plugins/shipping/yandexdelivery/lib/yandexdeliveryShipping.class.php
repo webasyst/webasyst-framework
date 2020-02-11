@@ -1187,6 +1187,18 @@ class yandexdeliveryShipping extends waShipping
                     $payment[self::PAYMENT_TYPE_CASH] = "Оплата наличными";
                     $payment[self::PAYMENT_TYPE_PREPAID] = "Предоплата";
                 } else {
+                    if (!empty($service['services'])) {
+                        foreach ($service['services'] as $_service) {
+                            if ($_service['code'] === 'CASH_SERVICE') {
+                                if (!empty($_service['possibility'])) {
+                                    $payment[self::PAYMENT_TYPE_CARD] = "Оплата картой";
+                                    $payment[self::PAYMENT_TYPE_CASH] = "Оплата наличными";
+                                }
+                                break;
+                            }
+                        }
+                    }
+
                     $payment[self::PAYMENT_TYPE_PREPAID] = "Предоплата";
                 }
                 unset($payment);
