@@ -70,11 +70,21 @@ class boxberryShippingDraftPackage
             'name1' => $this->bxb->targetstart
         ];
 
-        $data['customer'] = [
-            'fio'   => $this->order->getContactField('name'),
-            'phone' => $this->order->getContactField('phone'),
-            'email' => $this->order->getContactField('email'),
+        $contact_info = [
+            'fio' => $this->order->getContactField('name')
         ];
+
+        $contact_phone = $this->order->getContactField('phone');
+        if ($contact_phone) {
+            $contact_info['phone'] = $contact_phone;
+        }
+
+        $contact_email = $this->order->getContactField('email');
+        if ($contact_email) {
+            $contact_info['email'] = $contact_email;
+        }
+
+        $data['customer'] = $contact_info;
 
         return $this->sendCreateDraftRequest($data);
     }
