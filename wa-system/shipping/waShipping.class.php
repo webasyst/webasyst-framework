@@ -493,6 +493,11 @@ abstract class waShipping extends waSystemPlugin
 
         $method_name = sprintf('%sPackage', $state);
         if (method_exists($this, $method_name)) {
+            /**
+             * @uses waShipping::cancelPackage
+             * @uses waShipping::readyPackage
+             * @uses waShipping::draftPackage
+             */
             return $this->{$method_name}($order, $shipping_data);
         } else {
             throw new waException(sprintf("Unknown package state %s", $state));
@@ -700,6 +705,7 @@ abstract class waShipping extends waSystemPlugin
 
     /**
      * @return bool|null
+     * @throws waDbException
      */
     protected function syncRequired()
     {
@@ -709,17 +715,19 @@ abstract class waShipping extends waSystemPlugin
             $sync_time = $this->getGeneralSettings('sync_time');
             $sync_success_time = (int)$this->getGeneralSettings('sync_success_time');
             $sync_failure_time = (int)$this->getGeneralSettings('sync_failure_time');
+            $plugin_run_sync = max(0, $sync_success_time, $sync_failure_time);
             $required = false;
-            $interval = max(1, $info['sync']) * 3600;
-            $time = time();
-            if (($time - $interval) > $sync_time) {
-                $required = true;
-            } elseif (($time - 0.5 * $interval) > $sync_time) {
 
-                if ($sync_failure_time > $sync_success_time) {
-                    $required = true;
-                }
-            } elseif (empty($sync_failure_time) && empty($sync_success_time)) {
+            // interval value between 1 hour and 1 week
+            $interval = min(24 * 7, max(1, $info['sync'])) * 3600;
+            $time = time();
+            if (empty($sync_time) // it's first run
+                || ($time >= ($plugin_run_sync + $interval - 60)) // OR more than required time
+            ) {
+                $required = true;
+            } elseif (($time > ($plugin_run_sync + 0.25 * $interval)) // quarter interval
+                && ($sync_failure_time > $sync_success_time) // AND previous run failed
+            ) {
                 $required = true;
             }
         }

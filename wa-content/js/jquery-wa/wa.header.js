@@ -158,10 +158,31 @@ $(function () {
         return false;
     });
 
-    var updateCount = function () {
+    var is_idle = true;
+
+    $(document).on("mousemove keyup scroll", function() {
+        is_idle = false;
+    });
+
+    document.addEventListener("touchmove", function () {
+        is_idle = false;
+    }, false);
+
+    var updateCount = function() {
+
+        var data = {
+            background_process: 1
+        };
+
+        if (is_idle) {
+            data.idle = "true";
+        } else {
+            is_idle = true;
+        }
+
         $.ajax({
             url: backend_url + "?action=count",
-            data: {'background_process': 1},
+            data: data,
             success: function (response) {
                 if (response && response.status == 'ok') {
                     // announcements

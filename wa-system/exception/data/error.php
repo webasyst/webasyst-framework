@@ -41,7 +41,7 @@
                         <h2><?php echo $message; ?></h2>
                         <p>
                         <?php if ($app) {
-                            echo _ws('Please contact app developer.');
+                            echo _ws('To learn more details about this error, enable the debug mode in Settings app and reload this page.');
                         } else {
                             echo _ws('Please contact server administrator.');
                         }?>

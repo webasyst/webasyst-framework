@@ -467,7 +467,7 @@ class waHtmlControl
     {
         $description = '';
         if (!empty($params['description_wrapper']) && !empty($params['description'])) {
-            $description = sprintf($params['description_wrapper'], $params['description']);
+            $description = sprintf($params['description_wrapper'], self::_wp($params['description'], $params));
         }
         return $description;
     }

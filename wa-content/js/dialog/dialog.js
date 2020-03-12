@@ -34,6 +34,7 @@
 
                 // DYNAMIC VARS
                 that.is_visible = false;
+                that.is_removed = false;
 
                 // HELPERS
                 that.onBgClick = (options["onBgClick"] || false);
@@ -65,59 +66,63 @@
 
         Dialog.prototype.bindEvents = function() {
             var that = this,
+                $window = $(window),
                 $document = $(document),
                 $block = (that.$block) ? that.$block : that.$wrapper;
 
-            that.$wrapper.on("close", close);
+            $block.on("click", ".js-close-dialog", function(event) {
+                event.preventDefault();
+                that.close();
+            });
+
+            that.$wrapper.on("close", function() {
+                that.close();
+            });
 
             // Click on background, default nothing
             that.$wrapper.on("click", getSelector("background"), function(event) {
                 if (typeof that.onBgClick === "function") {
                     that.onBgClick(event);
+                }
+            });
+
+            $document.on("keyup", escapeWatcher);
+            function escapeWatcher(event) {
+                var is_exist = $.contains(document, that.$wrapper[0]);
+                if (is_exist) {
+                    var escape_code = 27;
+                    if (event.keyCode === escape_code) {
+                        that.close();
+                    }
                 } else {
-                    event.stopPropagation();
-                }
-            });
-
-            $document.on("keyup", function(event) {
-                var escape_code = 27;
-                if (event.keyCode === escape_code) {
-                    that.close();
-                }
-            });
-
-            $block.on("click", ".js-close-dialog", close);
-
-            $(window).on("resize", onResize);
-
-            // refresh dialog position
-            $document.on("refresh", resizeDialog);
-
-            //
-
-            function close() {
-                var result = that.close();
-                if (result === true) {
-                    $document.off("click", close);
-                    $document.off("wa_before_load", close);
+                    if (that.is_removed) {
+                        $document.off("keyup", escapeWatcher);
+                    }
                 }
             }
 
+            $window.on("resize", onResize);
             function onResize() {
                 var is_exist = $.contains(document, that.$wrapper[0]);
                 if (is_exist) {
                     that.resize();
                 } else {
-                    $(window).off("resize", onResize);
+                    if (that.is_removed) {
+                        $window.off("resize", onResize);
+                    }
                 }
             }
 
+            // refresh dialog position
+            $document.on("refresh", resizeDialog);
             function resizeDialog() {
                 var is_exist = $.contains(document, that.$wrapper[0]);
                 if (is_exist) {
                     that.resize();
                 } else {
-                    $(document).off("resizeDialog", resizeDialog);
+                    if (that.is_removed) {
+                        $document.off("resizeDialog", resizeDialog);
+                    }
                 }
             }
         };
@@ -154,9 +159,13 @@
         Dialog.prototype.setPosition = function() {
             var that = this,
                 $window = that.$window,
-                window_w = $window.width(),
-                window_h = $window.height(),
                 $block = (that.$block) ? that.$block : that.$wrapper,
+                $content = $block.find( getSelector("content") );
+
+            $content.css("height", "auto");
+
+            var window_w = $window.width(),
+                window_h = $window.height(),
                 wrapper_w = $block.outerWidth(),
                 wrapper_h = $block.outerHeight(),
                 pad = 20,
@@ -181,15 +190,13 @@
             } else {
                 css.top = pad;
 
-                var $content = $block.find( getSelector("content") );
-
                 $content.hide();
 
                 var block_h = $block.outerHeight(),
                     content_h = window_h - block_h - pad * 2;
 
                 $content
-                    .height(content_h)
+                    .css("height", content_h + "px")
                     .addClass("is-long-content")
                     .show();
 
@@ -219,6 +226,8 @@
                     if (that.lock_body_scroll) {
                         that.$body.removeClass(locked_class);
                     }
+
+                    that.is_removed = true;
                 }
             }
 
@@ -275,6 +284,13 @@
 
         if (options["$wrapper"]) {
             result = new Dialog(options);
+            if (options.debug_output && (!result.$block || !result.$block.length)) {
+                // In case html does not have required structure, show content - useful for debugging
+                options.content = options.html;
+                options.html = null;
+                options["$wrapper"] = getWrapper(options);
+                result = new Dialog(options);
+            }
         }
 
         return result;
