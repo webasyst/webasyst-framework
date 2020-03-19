@@ -1,8 +1,7 @@
 <?php
 
 $files = array(
-    '/plugins/emailsubscription/lib/actions/blogEmailsubscriptionPluginBackendSettings.action.php',
-    '/plugins/category/templates/actions/backend/'
+    'plugins/emailsubscription/lib/actions/blogEmailsubscriptionPluginBackendSettings.action.php',
 );
 
 foreach ($files as $file) {

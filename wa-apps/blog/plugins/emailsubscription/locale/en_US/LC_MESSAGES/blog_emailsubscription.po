@@ -28,7 +28,7 @@ msgid "Email alerts require CRON to be properly setup for Webasyst Blog app, whi
 msgstr ""
 
 #: /wa-apps/blog/plugins/emailsubscription/lib/blogEmailsubscriptionPlugin.class.php:80
-msgid "New post in the blog “%s”"
+msgid "New post in blog “%s”"
 msgstr "New post in blog “%s”"
 
 #: /wa-apps/blog/plugins/emailsubscription/lib/blogEmailsubscriptionPlugin.class.php:104

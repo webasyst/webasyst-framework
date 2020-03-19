@@ -9,7 +9,7 @@ class blogEmailsubscriptionCli extends waCliController
     {
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->set(array('blog', 'emailsubscription'), 'last_emailsubscription_cron_time', time());
-        
+
         $model = new blogEmailsubscriptionLogModel();
         $row = $model->getByField('status', 0);
         if ($row) {
@@ -30,7 +30,7 @@ class blogEmailsubscriptionCli extends waCliController
                 $post_url .= "/blog/?module=post&id=".$post_id;
             }
             $blog_name = htmlspecialchars($blog['name']);
-            $body = '<html><body>'.sprintf(_wp("New post in the blog “%s”"), $blog_name).': <strong><a href="'.$post_url.'">'.$post_title.'</a></strong></body></html>';
+            $body = '<html><body>'.sprintf(_wp("New post in blog “%s”"), $blog_name).': <strong><a href="'.$post_url.'">'.$post_title.'</a></strong></body></html>';
             $message = new waMailMessage();
             $message->setEncoder(Swift_Encoding::getBase64Encoding());
             $message->setSubject($subject);
@@ -38,7 +38,7 @@ class blogEmailsubscriptionCli extends waCliController
             $rows = $model->getByField(array('status' => 0, 'post_id' => $post_id), true);
 
             $message_count = 0;
-            
+
             foreach ($rows as $row) {
                 try {
                     $message->setTo($row['email'], $row['name']);
@@ -51,14 +51,14 @@ class blogEmailsubscriptionCli extends waCliController
                     $model->setStatus($row['id'], -1, $e->getMessage());
                 }
             }
-            
+
             /**
              * Notify plugins about sending emailsubscripition
              * @event followup_send
              * @return void
              */
             wa()->event('emailsubscription_send', $message_count);
-            
+
         }
     }
 }

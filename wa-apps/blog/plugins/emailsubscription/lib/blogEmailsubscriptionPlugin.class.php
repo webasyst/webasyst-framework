@@ -8,11 +8,11 @@ class blogEmailsubscriptionPlugin extends blogPlugin
         $blog_id = (int)$params['blog_id'];
 
         // check rights for this blog at first and unsubscribe user if he hasn't
-        
+
         $sql = "SELECT c.id FROM blog_emailsubscription s
         JOIN wa_contact c ON s.contact_id = c.id
         WHERE s.blog_id = ".$blog_id;
-        
+
         $model = new waModel();
         $unsubscribe_contact_ids = array();
         foreach ($model->query($sql) as $row) {
@@ -33,7 +33,7 @@ class blogEmailsubscriptionPlugin extends blogPlugin
                 'blog_id' => $blog_id
             ));
         }
-        
+
         // add subscribers to queue
         $sql = "REPLACE INTO blog_emailsubscription_log (post_id, contact_id, name, email, datetime)
                 SELECT ".$post_id.", c.id, c.name, e.email, '".date('Y-m-d H:i:s')."' FROM blog_emailsubscription s
@@ -46,7 +46,7 @@ class blogEmailsubscriptionPlugin extends blogPlugin
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->set(array($this->app_id, $this->id), 'backend_url', wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl());
     }
-    
+
     /**
      * @deprecated
      * @see blogEmailsubscriptionCli
@@ -73,7 +73,7 @@ class blogEmailsubscriptionPlugin extends blogPlugin
                 $post_url .= "/blog/?module=post&id=".$post_id;
             }
             $blog_name = htmlspecialchars($blog['name']);
-            $body = '<html><body>'.sprintf(_wp("New post in the blog “%s”"), $blog_name).': <strong><a href="'.$post_url.'">'.$post_title.'</a></strong></body></html>';
+            $body = '<html><body>'.sprintf(_wp("New post in blog “%s”"), $blog_name).': <strong><a href="'.$post_url.'">'.$post_title.'</a></strong></body></html>';
             $message = new waMailMessage();
             $message->setEncoder(Swift_Encoding::getBase64Encoding());
             $message->setSubject($subject);
@@ -131,18 +131,18 @@ class blogEmailsubscriptionPlugin extends blogPlugin
             $blog_id = $params['blog']['id'];
             $model = new blogEmailsubscriptionModel();
             $subscribed = $model->getByField(array('blog_id' => $blog_id, 'contact_id' => wa()->getUser()->getId()));
-            
+
             /**
              * @deprecated
              * For backward compatibility reason
              */
             $cron_schedule_time = waSystem::getSetting('cron_schedule', 0, 'blog');
-            
+
             $last_emailsubscription_cron_time = waSystem::getSetting('last_emailsubscription_cron_time', 0, array('blog', 'emailsubscription'));
             if (!$cron_schedule_time && !$last_emailsubscription_cron_time) {
                 $msg = sprintf( _wp('WARNING: Email subscription works only if Cron scheduled task for the Blog app is properly configured (%s), and it appears that Cron was not setup for your Webasyst installation yet. Please contact your server administrator, or follow instructions given in the Plugins > Email subscription page of the Blog app. Click OK to subscribe anyway (subscription will be enabled, but will start to work only when Cron is enabled).'), 'cli.php blog emailsubscription' );
                 $confirm_subscribe =  "
-            if ($(this).is(':checked') && !confirm('".$msg."')) { 
+            if ($(this).is(':checked') && !confirm('".$msg."')) {
                 $(this).iButton('toggle', false);
                 return false;
             }
@@ -173,7 +173,7 @@ class blogEmailsubscriptionPlugin extends blogPlugin
             $.post("?plugin=emailsubscription&module=subscribe", {blog_id:'.$blog_id.', subscribe: $(that).is(":checked") ? 1 : 0}, function () {
             }, "json");
         }
-        
+
         '.$confirm_subscribe.'
     });
 </script>';
