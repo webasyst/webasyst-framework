@@ -68,6 +68,7 @@ class boxberryShippingCalculateValidate
     {
         $error = false;
 
+        $country = $this->bxb->getAddress('country');
         $region = $this->bxb->getAddress('region');
         $city = trim(mb_strtolower($this->bxb->getAddress('city')));
 
@@ -83,12 +84,8 @@ class boxberryShippingCalculateValidate
         if (!$error && $settings_cities) {
             $settings_city_list = explode(',', $settings_cities);
 
-            foreach ($settings_city_list as &$settings_city) {
-                $settings_city = trim(mb_strtolower($settings_city));
-            }
-            unset($settings_city);
-
-            if (!in_array($city, $settings_city_list)) {
+            $found = boxberryShippingCalculateHelper::findRusCityName($city, $settings_city_list);
+            if (!$found) {
                 $error = true;
             }
         }

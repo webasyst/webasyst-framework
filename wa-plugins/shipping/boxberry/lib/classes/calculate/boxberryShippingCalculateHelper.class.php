@@ -267,4 +267,26 @@ class boxberryShippingCalculateHelper
     {
         return '';
     }
+
+    public static function findRusCityName($query_city, $city_names)
+    {
+        foreach ($city_names as $city_name) {
+            $original_city_name = $city_name;
+
+            $city_name = trim(mb_strtolower($city_name));
+            $city_name = preg_replace("/[её]/u", "е", $city_name);
+            $city_name = preg_replace("/[\-\s+]/", " ", $city_name);
+
+            $query_city = mb_strtolower($query_city);
+            $query_city = preg_replace("/[её]/u", "е", $query_city);
+            $query_city = preg_replace("/[\-\s+]/", " ", $query_city);
+
+            if ($query_city === $city_name) {
+                return $original_city_name;
+            }
+        }
+
+        return null;
+    }
+
 }
