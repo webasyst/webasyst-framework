@@ -68,7 +68,7 @@ class webmoneyPayment extends waPayment implements waIPayment, waIPaymentRefund
             case self::PROTOCOL_PAYMASTER:
             case self::PROTOCOL_WEBMONEY_LEGACY_COM:
             case self::PROTOCOL_PAYMASTER_COM:
-                $currency = array('RUB', 'UAH', 'USD', 'EUR', 'UZS', 'BYR');
+                $currency = array('RUB', 'UAH', 'USD', 'EUR', 'UZS', 'BYR', 'BYN');
                 break;
             case self::PROTOCOL_WEBMONEY:
             default:
@@ -79,7 +79,7 @@ class webmoneyPayment extends waPayment implements waIPayment, waIPaymentRefund
                     'E' => 'EUR',
                     'D' => 'USD',
                     'Y' => 'UZS',
-                    'B' => 'BYR',
+                    'B' => array('BYR', 'BYN',),
                 );
                 $pattern = '/^(['.implode('', array_keys($currency_map)).'])\d+$/i';
                 if (preg_match($pattern, trim($this->LMI_PAYEE_PURSE), $matches)) {

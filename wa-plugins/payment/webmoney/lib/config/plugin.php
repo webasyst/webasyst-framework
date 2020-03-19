@@ -5,7 +5,7 @@ return array(
     'icon'           => 'img/paymaster16.png',
     'logo'           => 'img/paymaster.png',
     'vendor'         => 'webasyst',
-    'version'        => '2.1.1',
+    'version'        => '2.1.2',
     'partial_refund' => true,
     'type'           => waPayment::TYPE_ONLINE,
 );
