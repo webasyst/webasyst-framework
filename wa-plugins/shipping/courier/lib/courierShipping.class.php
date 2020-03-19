@@ -101,8 +101,6 @@ class courierShipping extends waShipping
             $l = substr(wa()->getUser()->getLocale(), 0, 2);
             if ($l == 'ru') {
                 $values['rate_zone']['country'] = 'rus';
-                $values['rate_zone']['region'] = '77';
-                $values['city'] = '';
             } else {
                 $values['rate_zone']['country'] = 'usa';
             }
@@ -269,8 +267,17 @@ class courierShipping extends waShipping
         return ($a > $b) ? 1 : ($a < $b ? -1 : 0);
     }
 
+    /**
+     * @var array - holidays from 'extra_holidays.date' settings
+     */
     private $holidays;
+
+    /**
+     * @var array - workdays from 'extra_workdays.date' settings
+     */
     private $workdays;
+
+
     private $time;
 
     private function setupSchedule()
@@ -282,50 +289,50 @@ class courierShipping extends waShipping
         }
     }
 
+    /**
+     * Calculate delivery timestamp (int) or timestamps interval (int[])
+     * @return null|int|int[]
+     */
     private function getDeliveryTimes()
     {
         $this->setupSchedule();
-        if ($this->delivery_time) {
-            /** @var string $departure_datetime SQL DATETIME */
-            $departure_datetime = $this->getPackageProperty('departure_datetime');
-            /** @var  int $departure_timestamp */
-            if ($departure_datetime) {
-                $departure_timestamp = max(0, strtotime($departure_datetime) - $this->time);
-            } else {
-                $departure_timestamp = 0;
-            }
-            if ('exact_delivery_time' === $this->delivery_time) {
-                $delivery_date = array(
-                    $this->time + max(0, max(0, intval($this->exact_delivery_time)) * 3600) + $departure_timestamp,
-                );
-            } else {
-                $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
-                foreach ($delivery_date as & $date) {
-                    $date += $departure_timestamp;
-                }
-                unset($date);
-                $delivery_date = array_unique($delivery_date);
-            }
 
-            $est_delivery = array();
-            foreach ($delivery_date as $date) {
-                $est_delivery[] = waDateTime::format('humandate', $date);
-            }
-            $est_delivery = implode(' — ', $est_delivery);
-
-            if (count($delivery_date) == 1) {
-                $delivery_date = reset($delivery_date);
-            }
-        } else {
-            $delivery_date = null;
-            $est_delivery = null;
+        if (!$this->delivery_time) {
+            return null;
         }
 
+        /**
+         * @var string $departure_datetime SQL DATETIME
+         */
+        $departure_datetime = $this->getPackageProperty('departure_datetime');
 
-        return array(
-            'timestamp' => $delivery_date,
-            'estimate'  => $est_delivery,
-        );
+        /**
+         * @var  int $departure_timestamp
+         */
+        if ($departure_datetime) {
+            $departure_timestamp = max(0, strtotime($departure_datetime) - $this->time);
+        } else {
+            $departure_timestamp = 0;
+        }
+
+        if ('exact_delivery_time' === $this->delivery_time) {
+            $delivery_date = array(
+                $this->time + max(0, max(0, intval($this->exact_delivery_time)) * 3600) + $departure_timestamp,
+            );
+        } else {
+            $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
+            foreach ($delivery_date as &$date) {
+                $date += $departure_timestamp;
+            }
+            unset($date);
+            $delivery_date = array_unique($delivery_date);
+        }
+
+        if (count($delivery_date) == 1) {
+            $delivery_date = reset($delivery_date);
+        }
+
+        return $delivery_date;
     }
 
     protected function calculate()
@@ -360,7 +367,7 @@ class courierShipping extends waShipping
         $delivery_times = $this->getDeliveryTimes();
 
         $delivery = array(
-            'est_delivery' => $delivery_times['estimate'],
+            'est_delivery' => '',
             'currency'     => $this->currency,
             'rate'         => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
             'type'         => self::TYPE_TODOOR,
@@ -376,7 +383,7 @@ class courierShipping extends waShipping
             $date_format = waDateTime::getFormat('date');
             $offset = null;
             foreach ($setting['intervals'] as $interval) {
-                $service_delivery_date = $this->workupInterval($interval, $delivery_times['timestamp']);
+                $service_delivery_date = $this->workupInterval($interval, $delivery_times);
 
                 if (!empty($service_delivery_date)) {
                     $key = $interval['interval'];
@@ -396,8 +403,10 @@ class courierShipping extends waShipping
         }
 
         $delivery += array(
-            'delivery_date' => self::formatDatetime($delivery_times['timestamp']),
+            'delivery_date' => self::formatDatetime($delivery_times),
         );
+
+        $delivery['est_delivery'] = $this->formatEstDeliveryDate($delivery['delivery_date']);
 
         if (!empty($setting['intervals'])) {
             $custom_data = array(
@@ -421,6 +430,34 @@ class courierShipping extends waShipping
     }
 
     /**
+     * @param int|int[]|string|string[] $delivery_date - delivery date or delivery date interval.
+     *      Possible values: timestamp (int),
+     *                      timestamps interval(int[]),
+     *                      formatted date (string),
+     *                      formatted dates interval (string[])
+     * @return string - 'humandate' date or 'humandate' dates interval
+     * @throws waException
+     */
+    protected function formatEstDeliveryDate($delivery_date)
+    {
+        if (!$delivery_date) {
+            return '';
+        }
+
+        if (!is_array($delivery_date)) {
+            $delivery_date = [$delivery_date];
+        }
+
+        $est_delivery = [];
+        foreach ($delivery_date as $date) {
+            $est_delivery[] = waDateTime::format('humandate', $date);
+        }
+        $est_delivery = implode(' — ', $est_delivery);
+
+        return $est_delivery;
+    }
+
+    /**
      * @param $interval
      * @param $timestamp
      * @return false|string|null
@@ -436,53 +473,68 @@ class courierShipping extends waShipping
 
         $days = array_filter(array_map('intval', $interval['day']));
         unset($interval['day']);
+
         $interval = array_map('trim', $interval);
 
         $service_delivery_date = null;
-        $interval['offset'] = 0;
         $start = $timestamp ? (is_array($timestamp) ? reset($timestamp) : $timestamp) : $this->time;
 
         $interval['from'] = sprintf('%02d:%02d', $interval['from'], $interval['from_m']);
         unset($interval['from_m']);
+
         $interval['to'] = sprintf('%02d:%02d', $interval['to'], $interval['to_m']);
         unset($interval['to_m']);
 
         $interval['interval'] = sprintf('%s-%s', $interval['from'], $interval['to']);
 
-        do {
+        // safety loop limiter
+        $limit = 60;
+
+        // loop day by day while not found free day to delivery OR while not overstep safety loop limiter $limit
+        while (empty($service_delivery_date)) {
+
+            if ($interval['offset'] >= $limit) {
+                break;
+            }
+
             $service_datetime = strtotime(sprintf('+%d days', $interval['offset']++), $start);
             $service_date = date('Y-m-d', $service_datetime);
 
             $week_day = date('N', $service_datetime) - 1;
 
-            $is_holiday = in_array($service_date, $this->holidays, true);
+            // is extra holiday on current $service_date?
+            $is_extra_holiday = false;
+            $is_extra_holidays_enabled = !empty($days['holiday']);
+            if ($is_extra_holidays_enabled) {
+                $is_extra_holiday = in_array($service_date, $this->holidays, true);
+            }
 
-            $is_extra_holiday = $is_holiday && !empty($days['holiday']);
+            // Extra holiday day has maximum priority.
+            // If current $service_date is holiday it is not delivery day for sure
+            if ($is_extra_holiday) {
+                continue;
+            }
 
-            if (!$is_holiday || $is_extra_holiday) {
+            // is extra workday on current $service_date?
+            $is_extra_workday = false;
+            $is_extra_workday_enabled = !empty($days['workday']);
+            if ($is_extra_workday_enabled) {
+                $is_extra_workday = in_array($service_date, $this->workdays, true);
+            }
 
-                $is_extra_workday = !empty($days['workday']) && in_array($service_date, $this->workdays, true);
+            $is_workday = $is_extra_workday || !empty($days[$week_day]);
 
-                $is_workday = $is_extra_holiday || $is_extra_workday || !empty($days[$week_day]);
-
-                if ($is_workday) {
-                    $is_same_day = date('Y-m-d', $this->time) === $service_date;
-                    if ($is_same_day) {
-                        if ((int)date('H', $this->time) >= (int)$interval['to']) {
-                            continue;
-                        }
+            if ($is_workday) {
+                $is_same_day = date('Y-m-d', $this->time) === $service_date;
+                if ($is_same_day) {
+                    if ((int)date('H', $this->time) >= (int)$interval['to']) {
+                        continue;
                     }
-                    $service_delivery_date = $service_date;
-                    $service_delivery_date .= sprintf(' %02d:00', $interval['from']);
                 }
+                $service_delivery_date = $service_date;
+                $service_delivery_date .= sprintf(' %02d:00', $interval['from']);
             }
-            if ($interval['offset'] > 60) {
-                break;
-            }
-        } while (empty($service_delivery_date));
-
-        //  unset($days['holiday']);
-        //  unset($days['workday']);
+        }
 
         $interval['day'] = $days;
 
@@ -654,7 +706,7 @@ class courierShipping extends waShipping
             if (!empty($setting['intervals'])) {
                 $delivery_times = $this->getDeliveryTimes();
                 foreach ($setting['intervals'] as &$interval) {
-                    $start = $this->workupInterval($interval, $delivery_times['timestamp']);
+                    $start = $this->workupInterval($interval, $delivery_times);
                     $interval['start_date'] = date('Y-m-d', strtotime($start));
                 }
                 unset($interval);

@@ -29,24 +29,24 @@ msgid "Delivery time"
 msgstr "Время доставки"
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:24
-msgid "Same day"
-msgstr "В течение дня"
+msgid "Same workday, with the order ready time taken into account"
+msgstr "В течение рабочего дня с учетом времени готовности заказа"
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:25
-msgid "Next day"
-msgstr "Следующий день"
+msgid "Add 1 day to the order ready time"
+msgstr "Прибавить 1 рабочий день ко времени готовности заказа"
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:26
-msgid "2-3 days"
-msgstr "2–3 дня"
+msgid "Add 1–2 days to the order ready time"
+msgstr "Прибавить 1–2 рабочих дня ко времени готовности заказа"
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:26
-msgid "1-2 days"
-msgstr "1–2 дня"
+msgid "Add 2–3 days to the order ready time"
+msgstr "Прибавить 2–3 рабочих дня ко времени готовности заказа"
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:27
-msgid "1 week"
-msgstr "1 неделя"
+msgid "Add 7 days to the order ready time"
+msgstr "Прибавить 7 рабочих дней ко времени готовности заказа"
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:28
 msgid "Undefined"
@@ -168,8 +168,8 @@ msgstr "Желаемое время доставки"
 msgid "Preferred delivery time &amp; working schedule"
 msgstr "Желаемое время доставки и график работы"
 
-msgid "Online map settings are available in <a href=\"%s\">Installer</a> app."
-msgstr "Настройки онлайн-карт доступы в «<a href=\"%s\">Инсталлере</a>»."
+msgid "Online map settings are available in <a href=\"%s\">Settings</a> app."
+msgstr "Настройки онлайн-карт доступы в приложении «<a href=\"%s\">Настройки</a>»."
 
 #: /wa-plugins/shipping/courier/templates/settings.html:48
 msgid "Default address fields"
@@ -199,8 +199,8 @@ msgstr "Использовать только стандартные поля а
 msgid "Enable this option for the plugin to require from a client <em>mandatory</em> completion of the fields only, which are selected below in setting “Default address fields”.<br>Disable it to make the plugin <em>optionally</em> request only address fields defined by app settings (the app must request all address fields required for selected shipping method)."
 msgstr "Включите, если плагин должен требовать <em>обязательное</em>  заполнение только полей, выбранных ниже в настройке «Стандартные поля адреса».<br>Выключите, если плагин должен запрашивать <em>необязательное</em> заполнение полей адреса из настроек приложения (приложение должно запрашивать все поля адреса, обязательные для выбранного способа доставки)."
 
-msgid "Specified time in hours"
-msgstr "Указанное количество часов"
+msgid "Add specified time in hours to the order ready time"
+msgstr "Прибавить указанное количество часов ко времени готовности заказа"
 
 msgid "Average delivery time in hours"
 msgstr "Среднее количество часов доставки"
@@ -214,11 +214,11 @@ msgstr "Дополнительные выходные"
 msgid "Extra workdays"
 msgstr "Дополнительные рабочие дни"
 
-msgid "Select dates of extra days off and enable at least one checkbox in “Extra days off” column of the “Delivery intervals” table. Delivery intervals are valid for all extra days off."
-msgstr "Выберите даты дополнительных выходных дней и в таблице «Интервалы доставки» минимум для одного интервала включите флажок в столбце «Доп. выходной». Интервалы действуют на все дополнительные выходные дни."
+msgid "Select dates of extra days off and enable at least one checkbox in “Extra days off” column of the “Delivery intervals” table. Delivery intervals are valid for all extra days off.<br>Extra days off are taken into account only if “Specified time in hours” option is selected for “Delivery time” setting."
+msgstr "Выберите даты дополнительных выходных дней и в таблице «Интервалы доставки» минимум для одного интервала включите флажок в столбце «Доп. выходной». Интервалы действуют на все дополнительные выходные дни.<br>Дополнительные выходные учитываются, только если для настройки «Время доставки» выбран вариант «Указанное количество часов»."
 
-msgid "Select dates of extra workdays and enable at least one checkbox in “Extra workdays” column of the “Delivery intervals” table. Delivery intervals are valid for all extra workdays."
-msgstr "Выберите даты дополнительных рабочих дней и в таблице «Интервалы доставки» минимум для одного интервала включите флажок в столбце «Доп. рабочий день». Интервалы действуют на все дополнительные рабочие дни."
+msgid "Select dates of extra workdays and enable at least one checkbox in “Extra workdays” column of the “Delivery intervals” table. Delivery intervals are valid for all extra workdays.<br>Extra workdays are taken into account only if “Specified time in hours” option is selected for “Delivery time” setting."
+msgstr "Выберите даты дополнительных рабочих дней и в таблице «Интервалы доставки» минимум для одного интервала включите флажок в столбце «Доп. рабочий день». Интервалы действуют на все дополнительные рабочие дни.<br>Дополнительные рабочие дни учитываются, только если для настройки «Время доставки» выбран вариант «Указанное количество часов»."
 
 msgid "Additional address fields"
 msgstr "Дополнительные поля адреса"
@@ -249,3 +249,9 @@ msgstr "Выберите разные поля адреса для каждог�
 
 msgid "“%s”"
 msgstr "«%s»"
+
+msgid "Recommended for multi-step checkout"
+msgstr "Рекомендуется для пошагового оформления заказа"
+
+msgid "Recommended for in-cart checkout"
+msgstr "Рекомендуется для оформления заказа в корзине"

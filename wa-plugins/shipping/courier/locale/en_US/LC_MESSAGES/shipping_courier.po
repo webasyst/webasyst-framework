@@ -28,23 +28,23 @@ msgid "Delivery time"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:27
-msgid "Same day"
+msgid "Same workday, with the order ready time taken into account"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:28
-msgid "Next day"
+msgid "Add one day to the order ready time"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:29
-msgid "2-3 days"
+msgid "Add 2–3 days to the order ready time"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php
-msgid "1-2 days"
+msgid "Add 1–2 days to the order ready time"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:30
-msgid "1 week"
+msgid "Add 7 days to the order ready time"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:31

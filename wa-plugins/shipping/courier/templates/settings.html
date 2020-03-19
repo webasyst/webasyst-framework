@@ -136,7 +136,7 @@
                     {$map_adapter_settings = $a->getSettingsHtml(['namespace'=>$namespace])}
                     {if !empty($map_adapter_settings)}
                         <div class="value no-shift hint js-map-adapter-settings" data-adapter-id="{$adapter_id}" style="display: none;">
-                            {'../installer/?module=settings'|string_format:$p->_w('Online map settings are available in <a href="%s">Installer</a> app.')}
+                            {'../webasyst/settings/maps/'|string_format:$p->_w('Online map settings are available in <a href="%s">Settings</a> app.')}
                         </div>
                     {/if}
                 {/foreach}
