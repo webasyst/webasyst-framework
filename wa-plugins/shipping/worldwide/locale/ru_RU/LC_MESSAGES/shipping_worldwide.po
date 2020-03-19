@@ -155,3 +155,9 @@ msgstr "Название службы доставки"
 
 msgid "Enter optional shipping service name which will be shown to customers next to this shipping option"
 msgstr "Введите необязательное название службы доставки, которое будет показано покупателю рядом с этим вариантом доставки"
+
+msgid "Store country"
+msgstr "Страна магазина"
+
+msgid "Select a country within which worldwide shipping should not be available."
+msgstr "Выберите страну, в пределах которой не должна быть доступна международная доставка."

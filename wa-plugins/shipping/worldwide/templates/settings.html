@@ -25,6 +25,8 @@
             </select>
         </div>
     </div>
+
+
     <div class="field">
         <div class="name">
             {$p->_w('Weight dimension unit')}
@@ -42,6 +44,23 @@
             </select>
         </div>
     </div>
+
+    <div class="field">
+        <div class="name">
+            {$p->_w('Store country')}
+        </div>
+        <div class="value">
+            <select name="{$namespace|escape}[own_country]" id="{$plid}-own-country">
+                <option selected value=""></option>
+                {foreach $countries as $c}
+                    <option value="{$c.iso3letter}" {if !empty($values.own_country) && $values.own_country == $c.iso3letter}selected="selected"{/if}>{$c.name}</option>
+                {/foreach}
+            </select>
+            <br>
+            <span class="hint">{$p->_w('Select a country within which worldwide shipping should not be available.')}</span>
+        </div>
+    </div>
+
     <div class="field">
         <div class="name">
             {$p->_w('Delivery rates')}

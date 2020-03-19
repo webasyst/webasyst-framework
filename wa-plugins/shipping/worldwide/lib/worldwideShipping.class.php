@@ -219,6 +219,26 @@ class worldwideShipping extends waShipping
         );
     }
 
+    public function isAllowedAddress($address = array())
+    {
+        if ($this->isOwnCountryAddress($address)) {
+            return false;
+        }
+        return parent::isAllowedAddress($address);
+    }
+
+    protected function isOwnCountryAddress($address = array())
+    {
+        if (empty($address)) {
+            $address = $this->address;
+        }
+        $own_country = $this->getSettings('own_country');
+        if ($own_country && isset($address['country']) && $address['country'] == $own_country) {
+            return true;
+        }
+        return false;
+    }
+
     protected function calculate()
     {
         $price = null;
