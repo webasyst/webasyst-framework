@@ -260,7 +260,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     {
         $data = array(
             'amount'       => array(
-                'value'    => $order->total,
+                'value'    => number_format(round($order->total, 2), 2, '.', ''),
                 'currency' => $order->currency,
             ),
             'confirmation' => array(
@@ -318,8 +318,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             case 'capture': #https://payment.yandex.net/api/v3/payments/{payment_id}/capture
                 $url .= sprintf('payments/%s/capture ', $data['native_id']);
                 $data = array(
-                    'amount'  => array(
-                        'value'    => $data['amount'],
+                    'amount' => array(
+                        'value'    => number_format($data['amount'], 2, '.', ''),
                         'currency' => $data['currency_id'],
                     ),
                     'receipt' => ifset($data, 'receipt', null),
@@ -373,6 +373,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             $headers = array();
         }
 
+        $params = array();
         if (is_array($data) && isset($data['%params'])) {
             $params = $data['%params'];
             unset($data['%params']);
@@ -1513,7 +1514,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $refund_amount = $transaction_raw_data['refund_amount'];
                 $data = array(
                     'amount'     => array(
-                        'value'    => number_format($refund_amount, 2, '.', ''),
+                        'value'    => number_format(round($refund_amount, 2), 2, '.', ''),
                         'currency' => $transaction['currency_id'],
                     ),
                     'payment_id' => $transaction['native_id'],

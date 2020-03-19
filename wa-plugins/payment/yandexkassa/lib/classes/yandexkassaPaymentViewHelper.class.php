@@ -10,7 +10,8 @@ class yandexkassaPaymentViewHelper
         try {
             $html = yandexkassaPayment::getCreditInfo($amount, $app_id, $id, $selector);
         } catch (waException $ex) {
-            '<!-- YandexkassaPayment: Oops -->';
+            waLog::log($ex->getMessage(), 'payment/yandexkassaPaymentWidget.log');
+            $html = '<!-- YandexkassaPayment: Oops -->';
         }
         return $html;
     }
