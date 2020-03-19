@@ -1154,7 +1154,9 @@ class yandexdeliveryShipping extends waShipping
         # recalc cost WithRules
         $payment_types = $this->getSelectedPaymentTypes();
         if (!empty($payment_types) && $this->cash_service) {
-            $rate['rate'] += $this->calculateServiceCost($service, compact('payment_types'));
+            if ($rate['rate']) {
+                $rate['rate'] += $this->calculateServiceCost($service, compact('payment_types'));
+            }
         }
 
         $rate['name'] = implode(': ', array_unique($rate['name']));
