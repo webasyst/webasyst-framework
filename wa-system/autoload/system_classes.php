@@ -62,6 +62,7 @@ return array(
 
     'waCaptcha'                         => 'captcha/waCaptcha.class.php',
     'waReCaptcha'                       => 'captcha/recaptcha/waReCaptcha.class.php',
+    'waHCaptcha'                        => 'captcha/hcaptcha/waHCaptcha.class.php',
     'waPHPCaptcha'                      => 'captcha/phpcaptcha/waPHPCaptcha.class.php',
 
     'waModel'                           => 'database/waModel.class.php',
