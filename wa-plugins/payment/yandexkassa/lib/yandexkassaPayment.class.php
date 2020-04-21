@@ -284,7 +284,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         );
 
         if (!empty($type)) {
-            $data['payment_method'] = array(
+            $data['payment_method_data'] = array(
                 'type' => $type,
             );
         }
