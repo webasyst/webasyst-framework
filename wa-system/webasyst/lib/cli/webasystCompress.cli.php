@@ -80,7 +80,7 @@ Optional parameters:
         all          Skip all above.
         none         (default choice) Do not skip anything.
     -php /path/to/php/bin Option to specify custom path to check php syntax
-    
+
 Hint: use wa-config/developer.php to setup common defaults e.g. style, skip, php
 
 HELP;
@@ -864,7 +864,6 @@ HELP;
             if ($keys) {
                 $this->tracef("Invalid %s's settings: unknown config options (%s)", $this->type, implode(',', $keys));
             }
-            $valid = $valid && empty($keys);
 
             $images = false;
             $fields = array('icon', 'img', 'logo');
@@ -905,32 +904,38 @@ HELP;
 
     private function testRouting()
     {
-        $result = true;
-        $routing = $this->getItemConfig('routing');
-        if (!empty($this->config['frontend'])) {
-            if (empty($routing)) {
-                $result = false;
-                $this->tracef("Invalid %s's settings: empty routing for frontend", $this->type);
-            } else {
-                // TODO test routing
-
-                foreach ($routing as $name => $rule) {
-                    if (false && !preg_match('@/(\*)?@', $name)) {
-                        $this->tracef("Invalid %s's routing rule: expect / or /* at the end of %s", $this->type, $name);
-                    }
-                }
-            }
-        } else {
-            if ($routing !== null) {
-                $this->tracef("Invalid %s's settings: routing exists but frontend disabled", $this->type);
-                $result = false;
-            }
-            if (!empty($this->config['themes'])) {
-                $this->tracef("Invalid %s's settings: themes option will be ignored", $this->type);
-            }
+        // Themes option implies frontend for apps
+        if ($this->type == 'app' && !empty($this->config['frontend']) && !empty($this->config['themes'])) {
+            $this->tracef("Invalid %s's settings: themes option will be ignored", $this->type);
         }
 
-        return $result;
+        // lib/config/routing.php
+        $routing = $this->getItemConfig('routing');
+
+        if (!empty($routing)) {
+            // Only apps and plugins are allowed to have routing.
+            if ($this->type != 'app' && $this->type != 'plugin') {
+                $this->tracef("%s may not have routing", $this->type);
+                return false;
+            }
+            // Make sure plugin specified frontend option
+            if ($this->type == 'plugin' && empty($this->config['frontend'])) {
+                $this->tracef("Plugin must specify it uses frontend hook.");
+                return false;
+            }
+        } else {
+            // App has no routing but specified frontend option?
+            if ($this->type == 'app' && !empty($this->config['frontend'])) {
+                $this->tracef("Invalid %s's settings: empty routing.php for frontend", $this->type);
+                return false;
+            }
+            // Plugin has frontend, has no routing and specified no custom routing handler?
+            if ($this->type == 'plugin' && !empty($this->config['frontend']) && empty($this->config['handlers']['routing'])) {
+                $this->tracef("Invalid %s's settings: empty routing.php for frontend", $this->type);
+                return false;
+            }
+        }
+        return true;
     }
 
     private function testInstall()
@@ -1448,6 +1453,7 @@ HELP;
                 '@^lib/config/exclude.php@'                           => 'exclude files list',
                 '@\.styl$@'                                           => 'CSS preprocessor files',
                 '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
+                '@(locale)\/.+\.(te?mp)(\.(po|mo))?$@'                => 'temp files in the locale directory',
                 '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
                 '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
                 '@(/|^)\.git.*@'                                      => 'GIT file',

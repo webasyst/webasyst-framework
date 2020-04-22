@@ -84,23 +84,22 @@ REPORT;
         $report .= <<<REPORT
 Useful commands:
     # generate plugin's locale files
-    php wa.php locale wa-plugins/{$this->type}{$this->app_id}
+    php wa.php locale wa-plugins/{$this->type}/{$this->plugin_id}
 REPORT;
         if (isset($params['db'])) {
             $report .= <<<REPORT
 
     # generate plugin's database description file db.php
-    php wa.php generateDb wa-plugins/{$this->type}{$this->plugin_id}
+    php wa.php generateDb wa-plugins/{$this->type}/{$this->plugin_id}
 
 REPORT;
 
         }
         $report .= "\n\n".<<<REPORT
     #check & compress plugin code for store
-    php wa.php compress wa-plugins/{$this->type}{$this->plugin_id}
+    php wa.php compress wa-plugins/{$this->type}/{$this->plugin_id}
 REPORT;
         echo $report;
-        var_export($data);
     }
 
     protected function createClass($file)
@@ -129,7 +128,7 @@ REPORT;
         return array(
             'name'        => empty($params['name']) ? ucfirst($this->plugin_id) : $params['name'],
             'description' => '',
-            'icon'        => 'img/'.$this->plugin_id.'.png',
+            'img'         => 'img/'.$this->plugin_id.'.png',
             'version'     => empty($params['version']) ? $this->getDefaults('version') : $params['version'],
             'vendor'      => empty($params['vendor']) ? $this->getDefaults('vendor') : $params['vendor'],
         );

@@ -358,6 +358,9 @@ HTML;
                 $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n";
             } //for handling iPad and tablet computer default view properly
 
+            // no referrer for backend urls
+            $css .= '<meta name="referrer" content="no-referrer" />';
+
         } else {
             $css = '';
         }

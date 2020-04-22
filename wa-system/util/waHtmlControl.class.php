@@ -1105,6 +1105,7 @@ HTML;
             $root_url = wa()->getRootUrl();
             $multiple = empty($params['multiple']) ? 'false' : 'new Array()';
             $selected_class = ifset($params, 'params', 'selected', 'ui-state-active');
+            $start_date = ifset($start_date, '');
             $html .= <<<HTML
 <script>
     ( function() {
@@ -1133,6 +1134,7 @@ HTML;
         });
         
         input_date.data('available_days', {$available_days});
+        input_date.data('start_date', '{$start_date}');
         
         var intervalAllowed = function(option, timestamp, day, day_type) {
             
@@ -1247,7 +1249,7 @@ HTML;
                     var day_type = dayType(date);
                     var day = (date.getDay() + 6) % 7;
                     if (interval && interval.length) {
-                        var interval_options = interval? interval.find('option'):[]
+                        var interval_options = interval? interval.find('option'):[];
                         /** @var int day week day */
                         var timestamp = date.getTime();
                         available = false;

@@ -449,6 +449,22 @@ class waPageActions extends waActions
         if (empty($domain)) throw new waException(_ws('Unknown page domain'));
         if (empty($route)) throw new waException(_ws('Unknown page route'));
 
+        $page_model = $this->getPageModel();
+        $domain_field = $page_model->getDomainField();
+        $domain_name = $domain_field === 'domain_id' ? $data['domain_id'] : $domain;
+        $same_url = $page_model->getByField(array(
+            $domain_field => $domain_name,
+            'url' => $page_url
+        ), true);
+
+        if (!empty($same_url)) {
+            foreach ($same_url as $page) {
+                if ($page['id'] != $id) {
+                    throw new waException(_ws('Specified URL already exists.'));
+                }
+            }
+        }
+
         $page_url = str_replace('*', '', $route) . $page_url;
         $domain_routes = wa()->getRouting()->getRoutes($domain);
 

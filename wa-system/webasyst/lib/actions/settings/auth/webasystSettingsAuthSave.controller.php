@@ -16,9 +16,9 @@ class webasystSettingsAuthSaveController extends webasystSettingsJsonController
         $config = waBackendAuthConfig::getInstance();
         $data = $this->getData();
 
-        $errors = $this->validateEmailChannel($data);
+        $errors = $this->validate($data);
         if ($errors) {
-            $this->errors = array('email' => $errors);
+            $this->errors = $errors;
             return;
         }
 
@@ -37,42 +37,134 @@ class webasystSettingsAuthSaveController extends webasystSettingsJsonController
         return is_array($data) ? $data : array();
     }
 
+    protected function validate($data)
+    {
+        $data = is_array($data) ? $data : array();
+        if (empty($data['used_auth_methods'])) {
+            throw new waException(_ws('Saving error'));
+        }
+
+        $errors = $this->validateEmailChannel($data);
+        if (!$errors) {
+
+            if (in_array('sms', $data['used_auth_methods'])) {
+                $errors = $this->validateSmsChannel($data);
+                if (!$errors) {
+                    $errors = $this->validatePhoneTransformPrefixes($data);
+                }
+            }
+
+        }
+        return $errors;
+    }
+
+    protected function validatePhoneTransformPrefixes($data)
+    {
+        $data = is_array($data) ? $data : array();
+
+        $errors = array();
+
+        $phone_transform_prefix = isset($data['phone_transform_prefix']) && is_array($data['phone_transform_prefix']) ? $data['phone_transform_prefix'] : array();
+
+        $input_code = isset($phone_transform_prefix['input_code']) && is_scalar($phone_transform_prefix['input_code']) ? (string)$phone_transform_prefix['input_code'] : '';
+        $output_code = isset($phone_transform_prefix['output_code']) && is_scalar($phone_transform_prefix['output_code']) ? (string)$phone_transform_prefix['output_code'] : '';
+
+        $input_code_filled = strlen($input_code) > 0;
+        $output_code_filled = strlen($output_code) > 0;
+
+        $filled_only_one_code = $input_code_filled && !$output_code_filled || !$input_code_filled && $output_code_filled;
+        if ($filled_only_one_code) {
+            if (!$input_code_filled) {
+                $errors["phone_transform_prefix[input_code]"] = _ws('Required');
+            }
+            if (!$output_code_filled) {
+                $errors["phone_transform_prefix[output_code]"] = _ws('Required');
+            }
+        }
+
+        if ($input_code_filled && !wa_is_int($input_code)) {
+            $errors["phone_transform_prefix[input_code]"] = _ws('Enter digits only');
+        }
+        if ($output_code_filled && !wa_is_int($output_code)) {
+            $errors["phone_transform_prefix[output_code]"] = _ws('Enter digits only');
+        }
+
+        return $errors;
+    }
+
     protected function validateEmailChannel($data)
+    {
+        return $this->validateChannel($data, waVerificationChannelModel::TYPE_EMAIL);
+    }
+
+    protected function validateSmsChannel($data)
+    {
+        return $this->validateChannel($data, waVerificationChannelModel::TYPE_SMS);
+    }
+
+    protected function validateChannel($data, $type)
     {
         $channel_ids = $data['verification_channel_ids'];
         $vcm = new waVerificationChannelModel();
         $channels = $vcm->getChannels($channel_ids);
 
-        $email_channel = null;
+        $found_channel = null;
         foreach ($channels as $channel) {
-            if ($channel['type'] === waVerificationChannelModel::TYPE_EMAIL) {
-                $email_channel = $channel;
+            if ($channel['type'] === $type) {
+                $found_channel = $channel;
                 break;
             }
         }
 
-        if (!$email_channel) {
+        if (!$found_channel) {
             return array(
-                'required' => _ws('Email notifications must be enabled.')
+                $type => array(
+                    'required' => $this->getErrorMessageForChannelType($type, 'required')
+                )
             );
         }
 
-        $email_channel = waVerificationChannel::factory($email_channel['id']);
+        $found_channel = waVerificationChannel::factory($found_channel['id']);
 
-        if (!($email_channel instanceof waVerificationChannelEmail)) {
+        if ($found_channel->getType() != $type) {
             // being paranoid
             return array(
-                'required' => _ws('Email notifications must be enabled.')
+                $type => array(
+                    'required' => $this->getErrorMessageForChannelType($type, 'required')
+                )
             );
         }
 
-        $diagnostic = $email_channel->getAddressDiagnostic();
+        // for sms channel there is not address diagnostic (for this moment at least)
+        $diagnostic = null;
+        if ($found_channel instanceof waVerificationChannelEmail) {
+            $diagnostic = $found_channel->getAddressDiagnostic();
+        }
+
         if ($diagnostic) {
             return array(
-                'diagnostic' => array($email_channel->getId() => $diagnostic)
+                $type => array(
+                    'diagnostic' => array($found_channel->getId() => $diagnostic)
+                )
             );
         }
 
         return array();
     }
+
+    protected function getErrorMessageForChannelType($type, $error_type)
+    {
+        if ($type === waVerificationChannelModel::TYPE_EMAIL) {
+            if ($error_type === 'required') {
+                return _ws('Email notifications must be enabled.');
+            }
+        } elseif ($type === waVerificationChannelModel::TYPE_SMS) {
+            if ($error_type === 'required') {
+                return _ws('SMS notifications must be enabled.');
+            }
+        }
+        return _ws('Unknown error');
+    }
+
+
 }

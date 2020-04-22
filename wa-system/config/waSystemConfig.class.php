@@ -217,7 +217,7 @@ class waSystemConfig
             self::$system_options['mod_rewrite'] = false;
         }
 
-        if (!get_magic_quotes_gpc()) {
+        if (!ini_get('magic_quotes_gpc')) {
             return;
         }
 

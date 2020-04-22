@@ -42,7 +42,7 @@ class waCountryModel extends waModel
     public function name($id, $locale=null)
     {
         $a = $this->get($id, $locale);
-        return $a['name'];
+        return isset($a['name']) ? $a['name'] : null;
     }
 
     public function get($id, $locale=null)

@@ -16,7 +16,7 @@ class waSMS
      * @param $to
      * @param $text
      * @param string $from - sender
-     * @return bool|mixed
+     * @return bool|mixed - FALSE means failure sending
      */
     public function send($to, $text, $from = null)
     {

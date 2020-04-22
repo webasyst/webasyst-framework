@@ -69,7 +69,7 @@ abstract class waAuthConfig
 
         if ($empty_channels) {
             $channel = $vcm->getDefaultSystemEmailChannel();
-            $channel_ids[] = $channel['id'];
+            $channel_ids[] = isset($channel['id']) ? $channel['id'] : null;
             $this->setRawVerificationChannelIds($channel_ids);
         }
     }
@@ -864,7 +864,32 @@ abstract class waAuthConfig
      * @param array
      * @return array
      */
-    abstract public function getPhoneTransformPrefix();
+    public function getPhoneTransformPrefix()
+    {
+        return $this->getArrayValue('phone_transform_prefix');
+    }
+
+    /**
+     * @param string|string[] $options
+     */
+    public function setPhoneTransformPrefix($options)
+    {
+        $input_code = ifset($options['input_code']);
+        $input_code = is_scalar($input_code) && strlen((string)$input_code) ? (string)$input_code : null;
+
+        $output_code = ifset($options['output_code']);
+        $output_code = is_scalar($output_code) && strlen((string)$output_code) ? (string)$output_code : null;
+
+        if (wa_is_int($input_code) && wa_is_int($output_code)) {
+            $this->setArrayValue('phone_transform_prefix', array(
+                'input_code' => $input_code,
+                'output_code' => $output_code
+            ));
+        } else {
+            $this->unsetKey('phone_transform_prefix');
+        }
+
+    }
 
     /**
      * @return bool
@@ -873,12 +898,6 @@ abstract class waAuthConfig
     {
         return !!$this->getPhoneTransformPrefix();
     }
-
-    /**
-     * @param $options
-     * @return mixed
-     */
-    abstract public function setPhoneTransformPrefix($options);
 
     /**
      * Transform phone by rule(s) that in current config

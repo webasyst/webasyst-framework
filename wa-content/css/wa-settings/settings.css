@@ -784,12 +784,16 @@ table.zebra tr.selected .s-single-line:after {
 .s-auth-settings-page .s-auth-settings-fields-block .s-auth-config-params {
   border-bottom: 1px solid #ccc;
 }
-.s-auth-settings-page .s-auth-settings-fields-block .s-auth-config-params .s-auth-method {
-  margin-bottom: 22px;
+.s-auth-settings-page .s-auth-settings-fields-block .s-channel-template-diagnostic-messages {
+  margin: 10px 0;
 }
-.s-auth-settings-page .s-auth-settings-fields-block .s-auth-config-params .s-auth-method .s-template-link {
+.s-auth-settings-page .s-auth-settings-fields-block .s-channel-template-diagnostic-messages .s-error-help-text-wrapper {
+  margin: 5px 0;
+}
+.s-auth-settings-page .s-auth-settings-fields-block .s-phone-channel-settings-block {
   margin: 8px 0;
 }
+.s-auth-settings-page .s-auth-settings-fields-block .s-login-by-phone-toggle,
 .s-auth-settings-page .s-auth-settings-fields-block .s-rememberme-toogle {
   display: inline-block;
   margin-right: 6px;

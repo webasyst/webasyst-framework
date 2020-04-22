@@ -613,6 +613,8 @@ class waNet
             curl_multi_close(self::$mh[$namespace]);
             unset(self::$mh[$namespace]);
         }
+
+        self::$master_options = [];
     }
 
     private function getCurl($url, $content, $method, $curl_options = array())
@@ -740,11 +742,9 @@ class waNet
             }
 
             if (empty($curl_options[CURLOPT_POST]) && empty($curl_options[CURLOPT_POSTFIELDS])) {
-                if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
-                    $curl_options[CURLOPT_FOLLOWLOCATION] = true;
-                }
-
-                if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
+                if (!ini_get('safe_mode') && !ini_get('open_basedir')) {
+                    // This is a useful option to have, but it is disabled in paranoid environments
+                    // (which emits a warning). Also, does not apply to POST requests.
                     $curl_options[CURLOPT_FOLLOWLOCATION] = true;
                 }
             }

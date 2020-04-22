@@ -712,7 +712,7 @@ class waEvent
         if (substr($event, -2, 2) === '.*') {
             //Escape last dot and other previous regex symbol. After add a regular expression .*
             $regex = '/'.preg_quote(substr($event, 0, -1)).'.*/';
-        } elseif ($event{0} !== '/' && $event{0} !== '~') {
+        } elseif ($event[0] !== '/' && $event[0] !== '~') {
             $regex = '/'.preg_quote($event).'/';
         } else {
             $regex = $event;
@@ -731,7 +731,7 @@ class waEvent
      */
     protected function isMask($event)
     {
-        if ($event && (substr($event, -2, 2) === '.*' || $event{0} === '/' || $event{0} === '~')) {
+        if ($event && (substr($event, -2, 2) === '.*' || $event[0] === '/' || $event[0] === '~')) {
             return true;
         } else {
             return false;

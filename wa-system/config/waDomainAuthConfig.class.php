@@ -553,7 +553,7 @@ class waDomainAuthConfig extends waAuthConfig
                 'used_auth_methods'         => array('login', 'signup'),
                 'priority_auth_method'      => array('login', 'signup'),
                 'can_login_by_contact_login' => array('login'),
-                'phone_transform_prefix'     => array('signup', 'login')
+                'phone_transform_prefix'     => array('signup', 'login'),
             );
             $methods = array();
             foreach ($keys as $k => $nss) {
@@ -1129,37 +1129,6 @@ class waDomainAuthConfig extends waAuthConfig
         $this->setBoolValue('can_login_by_contact_login', $enabled);
     }
 
-    /**
-     * Get options for transform phone(s) prefix
-     * @param array
-     * @return array
-     */
-    public function getPhoneTransformPrefix()
-    {
-        return $this->getArrayValue('phone_transform_prefix');
-    }
-
-    /**
-     * @param string|string[] $options
-     */
-    public function setPhoneTransformPrefix($options)
-    {
-        $input_code = ifset($options['input_code']);
-        $input_code = is_scalar($input_code) && strlen((string)$input_code) ? (string)$input_code : null;
-
-        $output_code = ifset($options['output_code']);
-        $output_code = is_scalar($output_code) && strlen((string)$output_code) ? (string)$output_code : null;
-
-        if (wa_is_int($input_code) && wa_is_int($output_code)) {
-            $this->setArrayValue('phone_transform_prefix', array(
-                'input_code' => $input_code,
-                'output_code' => $output_code
-            ));
-        } else {
-            $this->unsetKey('phone_transform_prefix');
-        }
-
-    }
 
     /**
      * Transform phone by rules for specified (or all) domains

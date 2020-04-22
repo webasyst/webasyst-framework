@@ -92,9 +92,9 @@ class waVerificationChannelAssetsModel extends waModel
                 $expires = date('Y-m-d H:i:s', strtotime('+' . $ttl . ' seconds'));
             } elseif (is_scalar($ttl)) {
                 $ttl = trim((string)$ttl);
-                if ($ttl{0} === '-') {
+                if ($ttl[0] === '-') {
                     return false;
-                } elseif ($ttl{0} !== '+') {
+                } elseif ($ttl[0] !== '+') {
                     $ttl = '+' . $ttl;
                 }
                 $time = strtotime($ttl);

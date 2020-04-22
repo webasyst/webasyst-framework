@@ -644,7 +644,7 @@ class waSystem
     private function redirectToHttps($ssl_all)
     {
         if (!waRequest::isHttps() && $ssl_all) {
-            $domain = $this->getRouting()->getDomain(null, true);
+            $domain = $this->getRouting()->getDomain(null, true, false);
             $url = 'https://'.$this->getRouting()->getDomainUrl($domain).'/'.$this->getConfig()->getRequestUrl();
             $this->getResponse()->redirect($url, 301);
             return;

@@ -763,6 +763,12 @@ abstract class waPayment extends waSystemPlugin
                 'state'           => $wa_transaction_data['parent_state'],
                 'update_datetime' => date('Y-m-d H:i:s'),
             );
+            if (isset($wa_transaction_data['amount'])
+                //update amount for partial capture
+                && in_array($wa_transaction_data['parent_state'], array(waPayment::STATE_CAPTURED), true)
+            ) {
+                $data['amount'] = $wa_transaction_data['amount'];
+            }
             $transaction_model->updateById($wa_transaction_data['parent_id'], $data);
         }
         if ($transaction_raw_data && is_array($transaction_raw_data)) {

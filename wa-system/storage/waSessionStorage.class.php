@@ -37,7 +37,7 @@ class waSessionStorage extends waStorage
         // initialize parent
         parent::init($options);
 
-        if (!headers_sent()) {
+        if (!headers_sent() && session_status() != PHP_SESSION_ACTIVE) {
             if (isset($this->options['session_name'])) {
                 session_name($this->options['session_name']);
             }
@@ -67,10 +67,10 @@ class waSessionStorage extends waStorage
 
     public function open()
     {
-        if (!self::$started) {
+        if (!self::$started  && session_status() != PHP_SESSION_ACTIVE) {
             session_start();
-            self::$started = true;
         }
+        self::$started = true;
     }
 
     public function getAll()

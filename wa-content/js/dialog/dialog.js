@@ -26,6 +26,7 @@
 
                 // CONST
                 that.animate = (typeof options["animate"] === "boolean" ? options["animate"] : true);
+                that.esc = (typeof options["esc"] === "boolean" ? options["esc"] : true);
 
                 // VARS
                 that.userPosition = (options["setPosition"] || false);
@@ -86,17 +87,19 @@
                 }
             });
 
-            $document.on("keyup", escapeWatcher);
-            function escapeWatcher(event) {
-                var is_exist = $.contains(document, that.$wrapper[0]);
-                if (is_exist) {
-                    var escape_code = 27;
-                    if (event.keyCode === escape_code) {
-                        that.close();
-                    }
-                } else {
-                    if (that.is_removed) {
-                        $document.off("keyup", escapeWatcher);
+            if (that.esc) {
+                $document.on("keyup", escapeWatcher);
+                function escapeWatcher(event) {
+                    var is_exist = $.contains(document, that.$wrapper[0]);
+                    if (is_exist) {
+                        var escape_code = 27;
+                        if (event.keyCode === escape_code) {
+                            that.close();
+                        }
+                    } else {
+                        if (that.is_removed) {
+                            $document.off("keyup", escapeWatcher);
+                        }
                     }
                 }
             }

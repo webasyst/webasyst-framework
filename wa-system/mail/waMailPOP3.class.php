@@ -104,7 +104,7 @@ class waMailPOP3
         } else {
 
             // Not error number - try get error another way
-            if (!$errno) {
+            if (!$errno && !$errstr) {
                 if (function_exists('socket_last_error')) {
                     $errno = socket_last_error();
                     $errstr = socket_strerror($errno);

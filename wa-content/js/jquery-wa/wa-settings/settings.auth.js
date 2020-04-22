@@ -6,7 +6,11 @@ var WASettingsAuth = ( function($) {
         // DOM
         that.$wrapper = options['$wrapper'];
         that.$form = that.$wrapper.find('form');
-        that.$auth_methods = that.$wrapper.find('.js-auth-methods');
+
+        that.$template_selectors = that.$wrapper.find('.js-channel-template-selector');
+        that.$email_template_select = that.$template_selectors.filter('[data-channel-type="email"]');
+        that.$sms_template_select = that.$template_selectors.find('[data-channel-type="phone"]');
+
         that.$footer_actions = that.$form.find('.js-footer-actions');
         that.$button = that.$footer_actions.find('.js-submit-button');
         that.$cancel = that.$footer_actions.find('.js-cancel');
@@ -40,7 +44,7 @@ var WASettingsAuth = ( function($) {
         //
         that.initSelectAuthType();
         //
-        that.initAuthMethods();
+        that.initLoginByPhoneToggle();
         //
         that.initRemembermeToogle();
         //
@@ -58,12 +62,11 @@ var WASettingsAuth = ( function($) {
     WASettingsAuth.prototype.initSelectAuthType = function () {
         var that = this,
             $wrapper = that.$wrapper,
-            $auth_methods = that.$auth_methods,
             $auth_type_wrapper = $wrapper.find('.js-auth-type-select'),
             $auth_type_radio_inputs = $auth_type_wrapper.find(':radio[name="auth_type"]'),
             $onetime_password_type = $auth_type_radio_inputs.filter('[value="onetime_password"]'),
-            $email_template_select = $auth_methods.find('select.js-template[data-channel-type="email"]'),
-            $sms_template_select = $auth_methods.find('select.js-template[data-channel-type="sms"]'),
+            $email_template_select = that.$email_template_select,
+            $sms_template_select = that.$sms_template_select,
             $confirm_dialog = $wrapper.find('.js-onetime-password-confirm-dialog .s-onetime-password-auth-confirm-dialog').clone();
 
         $confirm_dialog.removeClass('.js-is-template');
@@ -156,55 +159,44 @@ var WASettingsAuth = ( function($) {
 
     };
 
-    WASettingsAuth.prototype.initAuthMethods = function() {
+    WASettingsAuth.prototype.initLoginByPhoneToggle = function() {
         var that = this,
             $auth_form_constructor = that.$wrapper.find('.js-login-form-constructor'),
             $login_wrapper = $auth_form_constructor.find('div[data-field-id="login"]'),
             $login_name = $login_wrapper.find('.js-editable-item'),
             $login_name_input = $login_wrapper.find('input[name="login_caption"]'),
             $login_placeholder_input = $login_wrapper.find('input[name="login_placeholder"]'),
-            $wrapper = that.$auth_methods;
+            $login_by_phone_toggle = that.$wrapper.find('.js-login-by-phone-toggle'),
+            $login_by_phone_status = that.$wrapper.find('.js-login-by-phone-status'),
+            $phone_channel_settings_block = that.$wrapper.find('.s-phone-channel-settings-block');
 
-        $wrapper.on('change', '.js-auth-method-checkbox', function () {
-            var active_methods = getActiveMethods(),
-                email = ($.inArray('email', active_methods) !== -1),
-                phone = ($.inArray('sms', active_methods) !== -1),
-                email_and_phone = ($.inArray('email', active_methods) !== -1 && $.inArray('sms', active_methods) !== -1),
-                value = null;
-
-            if (!active_methods.length) {
-                $wrapper.find('.js-auth-method-checkbox[name="used_auth_methods[email]"]').prop('checked', true).trigger('change'); // default method
-                return;
-            }
-
-            if (email_and_phone) {
-                value = that.locale.login_names.login_or_phone;
-            } else if (email) {
-                value = that.locale.login_names.login;
-            } else if (phone) {
-                value = that.locale.login_names.phone;
-            }
-
-            if (value) {
-                $login_name.text(value);
-                $login_name_input.val(value);
-                $login_placeholder_input.val(value);
-            }
+        $login_by_phone_toggle.iButton({
+            labelOn: "",
+            labelOff: "",
+            className: "s-login-by-phone-toggle",
+            classContainer: 'ibutton-container mini'
         });
 
-        function getActiveMethods() {
-            var $active_method_checkbox = $wrapper.find('.js-auth-method-checkbox:checked'),
-                active_methods = [];
+        $login_by_phone_toggle.on('change', function () {
+            var is_checked = $(this).is(':checked'),
+                login_name = that.locale.login_names.login;
 
-            $active_method_checkbox.each(function (i, checkbox) {
-                var $checkbox = $(checkbox),
-                    method = $checkbox.data('method');
+            if (is_checked) {
+                login_name = that.locale.login_names.login_or_phone;
+            }
 
-                active_methods.push(method);
-            });
+            $login_name.text(login_name);
+            $login_name_input.val(login_name);
+            $login_placeholder_input.val(login_name);
 
-            return active_methods;
-        }
+            if (is_checked) {
+                $login_by_phone_status.text(that.locale.enabled);
+                $phone_channel_settings_block.show().find(':input').removeAttr('disabled');
+            } else {
+                $login_by_phone_status.text(that.locale.disabled);
+                $phone_channel_settings_block.hide().find(':input').attr('disabled', true);
+            }
+        }).trigger('change');
 
     };
 
@@ -390,7 +382,7 @@ var WASettingsAuth = ( function($) {
 
     WASettingsAuth.prototype.initSubmit = function () {
         var that = this,
-            $template_selects = that.$auth_methods.find('select.js-template'),
+            $template_selects = that.$template_selectors,
             $form = that.$form;
 
         var markAsHasError = function ($select, with_animate) {
@@ -404,6 +396,12 @@ var WASettingsAuth = ( function($) {
             },500);
         };
 
+        // Clean transform prefix inputs on blur
+        var $transform_prefix_inputs = that.$wrapper.find('input[name="phone_transform_prefix[input_code]"],input[name="phone_transform_prefix[output_code]"]');
+        $transform_prefix_inputs.on('blur', function () {
+            $(this).removeClass('error').nextAll('.errormsg').remove();
+        });
+
         // Before submit, do validation to show current errors, so user could fix it
         validateFields();
 
@@ -412,6 +410,10 @@ var WASettingsAuth = ( function($) {
             if (that.is_locked) {
                 return;
             }
+
+            $transform_prefix_inputs.each(function () {
+                $(this).removeClass('error').nextAll('.errormsg').remove();
+            });
 
             var errors = validateFields(true);
             if (errors) {
@@ -436,35 +438,12 @@ var WASettingsAuth = ( function($) {
                 } else {
                     that.$loading.hide();
 
-                    if (res.errors && res.errors.email) {
-                        $.each(res.errors.email, function (error_type, errors) {
-                            if (error_type === 'required') {
-                                $form.find('.s-email-template-not-selected-msg').show();
-                            } else if (error_type === 'diagnostic') {
-                                $.each(errors, function (channel_id, diagnostic) {
-                                    var $diagnostic_messages = $form.find('.s-email-template-diagnostic-messages[data-channel-id="' + channel_id + '"]');
-
-                                    $diagnostic_messages.html('');
-
-                                    $.each(diagnostic, function (index, message) {
-                                        var $message = $form.find('.s-email-template-diagnostic-message.is-template').clone();
-                                        $message.find('.s-error-text-wrapper .s-error-txt').html(message.text || '');
-                                        $message.find('.s-error-help-text-wrapper .s-error-txt').html(message.help_text || '');
-                                        $diagnostic_messages.append($message.show());
-                                    });
-
-                                    $diagnostic_messages.show();
-                                    markAsHasError($template_selects.filter('[data-channel-type="email"]'), true);
-
-
-                                });
-
-                            }
-
-                        });
-
+                    if (!$.isEmptyObject(res.errors)) {
+                        if (renderServerChannelErrors(res.errors)) {
+                            return;
+                        }
+                        renderServerPhoneTransformPrefixErrors(res.errors);
                     }
-
                 }
                 that.is_locked = false;
                 that.$button.prop('disabled', false);
@@ -472,14 +451,18 @@ var WASettingsAuth = ( function($) {
         });
 
         // clear error when change on selector
-        that.$auth_methods.find('select.js-template').on('change', function () {
+        that.$template_selectors.on('change', function () {
             var $select = $(this),
                 channel_type = $select.data('channelType');
             $select.removeClass('error');
 
             if (channel_type === 'email') {
-                $form.find('.s-email-template-not-selected-msg').hide();
-                $form.find('.s-email-template-diagnostic-messages').hide();
+                $form.find('.js-email-template-not-selected-msg').hide();
+                $form.find('.js-channel-template-diagnostic-messages').hide();
+            } else if (channel_type === 'sms') {
+                $form.find('.js-sms-template-not-selected-msg').hide();
+            } else {
+                // not supported
             }
         });
 
@@ -506,7 +489,7 @@ var WASettingsAuth = ( function($) {
                         has_error = true;
 
                         // show message about concrete channel is not selected
-                        $form.find('.s-email-template-not-selected-msg').show();
+                        $form.find('.js-email-template-not-selected-msg').show();
 
                     } else if (channel_type === 'sms') {
                         // for SMS channels concrete channel_id must be selected if channel_type is checked
@@ -516,7 +499,7 @@ var WASettingsAuth = ( function($) {
 
                 if (channel_type === 'email' && channel_id > 0) {
                     // if there are diagnostic messages for this concrete channel - show them
-                    var $diagnostic_messages = $form.find('.s-email-template-diagnostic-messages[data-channel-id="' + channel_id + '"]');
+                    var $diagnostic_messages = $form.find('.js-channel-template-diagnostic-messages[data-channel-id="' + channel_id + '"]');
                     if ($diagnostic_messages.children().length > 0) {
                         has_error = true;
                         $diagnostic_messages.show();
@@ -531,6 +514,77 @@ var WASettingsAuth = ( function($) {
             });
 
             return errors;
+        }
+
+        //
+        function renderServerChannelErrors(errors) {
+            var channel_types = ['email', 'sms'],
+                is_error = false;
+
+            $.each(channel_types, function (_, channel_type) {
+                if (!errors || $.isEmptyObject(errors[channel_type])) {
+                    return;
+                }
+                $.each(errors[channel_type], function (error_type, errors) {
+
+                    if (error_type === 'required') {
+                        if (channel_type === 'email') {
+                            $form.find('.js-email-template-not-selected-msg').show();
+                        } else if (channel_type === 'sms') {
+                            $form.find('.js-sms-template-not-selected-msg').show();
+                        } else {
+                            // not supported
+                            return;
+                        }
+
+                        markAsHasError($template_selects.filter('[data-channel-type="' + channel_type + '"]'), true);
+                        is_error = true;
+                        return;
+                    }
+
+                    // diagnostic errors supports for email channel for now
+                    if (error_type === 'diagnostic' && channel_type === 'email') {
+                        $.each(errors, function (channel_id, diagnostic) {
+                            var $diagnostic_messages = $form.find('.js-channel-template-diagnostic-messages[data-channel-id="' + channel_id + '"]');
+
+                            $diagnostic_messages.html('');
+
+                            $.each(diagnostic, function (index, message) {
+                                var $message = $form.find('.s-channel-template-diagnostic-message.is-template').clone();
+                                $message.find('.s-error-text-wrapper .s-error-txt').html(message.text || '');
+                                $message.find('.s-error-help-text-wrapper .s-error-txt').html(message.help_text || '');
+                                $diagnostic_messages.append($message.show());
+                            });
+
+                            $diagnostic_messages.show();
+                            markAsHasError($template_selects.filter('[data-channel-type="' + channel_type + '"]'), true);
+                            is_error = true;
+
+                        });
+                    }
+                });
+            });
+
+            return is_error;
+        }
+
+        //
+        function renderServerPhoneTransformPrefixErrors(errors) {
+            var targets = ["phone_transform_prefix[output_code]", "phone_transform_prefix[input_code]"],
+                is_error = false;
+
+            $.each(targets, function (_, target) {
+                if (errors && errors[target]) {
+                    var $field = that.$wrapper.find('input[name="' + target + '"]');
+                    $field.addClass('error');
+                    $field.nextAll('.errormsg').remove();
+                    $field.after("<em class='errormsg'>" + errors[target] + "</em>");
+                    is_error = true;
+                }
+            });
+
+            return is_error;
+
         }
 
         that.$form.on('input', function () {

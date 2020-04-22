@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-02-21 12:02+0300\n"
+"PO-Revision-Date: 2020-04-21 09:54+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -5479,6 +5479,9 @@ msgstr "Проверьте также в разделе «<a href=\"%s\">%s</a>�
 msgid "Email notifications must be enabled."
 msgstr "Email-уведомления должны быть включены."
 
+msgid "SMS notifications must be enabled."
+msgstr "SMS-уведомления должны быть включены."
+
 msgid "Email address is not valid."
 msgstr "Email-адрес введен неверно."
 
@@ -5775,3 +5778,36 @@ msgstr "Для добавления поддержки эмодзи таблиц
 
 msgid "Click the button below to start the conversion."
 msgstr "Запустите смену кодировки с помощью кнопки внизу."
+
+msgid "National direct-dialing code (NDD)"
+msgstr "Код междугородней связи"
+
+msgid "Enter the NDD code which is used for making calls within your country."
+msgstr "Введите код, с помощью которого совершаются междугородние звонки в вашей стране. Пример кода для Российской Федерации: 8."
+
+msgid "The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers."
+msgstr "Если указан код междугородней связи, то в номерах посетителей сайта он будет заменен на телефонный код страны."
+
+msgid "Country code"
+msgstr "Код страны"
+
+msgid "Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD."
+msgstr "Международный код вашей страны, который будет использоваться в телефонных номерах посетителей сайта вместо кода междугородней связи."
+
+msgid "Enter digits only"
+msgstr "Введите только цифры"
+
+msgid "Unknown error"
+msgstr "Неизвестная ошибка"
+
+msgid "Saving error"
+msgstr "Ошибка сохранения"
+
+msgid "Enable authorization by phone number"
+msgstr "Включить вход по номеру телефона"
+
+msgid "Specified URL already exists."
+msgstr "Указанный URL уже существует."
+
+msgid "No SMS notifications template group is selected."
+msgstr "Не выбрана группа шаблонов SMS-уведомлений."

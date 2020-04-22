@@ -222,7 +222,9 @@ class waResponse
 
     protected function header($string, $replace = true, $http_response_code = null)
     {
-        header($string, $replace, $http_response_code);
+        if (!headers_sent()) {
+            header($string, $replace, $http_response_code);
+        }
     }
 
     /**

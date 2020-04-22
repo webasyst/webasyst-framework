@@ -1659,7 +1659,8 @@ class waSignupAction extends waViewAction
                 $sent = $channel->sendOnetimePasswordMessage($address, array(
                     'site_url' => $this->auth_config->getSiteUrl(),
                     'site_name' => $this->auth_config->getSiteName(),
-                    'login_url' => $this->auth_config->getLoginUrl(array(), true)
+                    'login_url' => $this->auth_config->getLoginUrl(array(), true),
+                    'use_session' => true
                 ));
 
             } elseif ($channel->isSMS() && !empty($addresses['phone'])) {

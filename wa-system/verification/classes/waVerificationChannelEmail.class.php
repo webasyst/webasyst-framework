@@ -961,7 +961,19 @@ class waVerificationChannelEmail extends waVerificationChannel
 
     /**
      * Get diagnostic info about address of this channel
-     * @return array
+     * @return array<string, array<string, string>> $result
+     *      Possible outcomes:
+     *          Invalid format of channel email:
+     *              array $result['invalid_format']
+     *                  string $result['invalid_format']['text'] - text about error
+     *          Invalid system sender:
+     *              array $result['invalid_sender']
+     *                  string $result['invalid_sender']['text'] - text about error
+     *                  string $result['invalid_sender']['help_text'] - extra help text about error
+     *          Bad (failed) sending statistics:
+     *              array $result['failed_sending']
+     *                  string $result['failed_sending']['text'] - text about error
+     * @throws waException
      */
     public function getAddressDiagnostic()
     {

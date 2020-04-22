@@ -429,6 +429,10 @@ class waContact implements ArrayAccess
                             return substr($eml, 0, $pos);
                         }
                     }
+                    $phone_as_name = $this->get('phone', 'default|value');
+                    if ($phone_as_name) {
+                        return $phone_as_name;
+                    }
                 }
 
                 return $result;

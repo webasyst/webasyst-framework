@@ -62,8 +62,9 @@ CLI;
     {
         $vcm = new waVerificationChannelModel();
         $channel = $vcm->getDefaultSystemEmailChannel();
-        $this->setVerificationChannelForDomainConfigs($channel['id']);
-        $this->setVerificationChannelForBackendConfig($channel['id']);
+        $channel_id = isset($channel['id']) ? $channel['id'] : null;
+        $this->setVerificationChannelForDomainConfigs($channel_id);
+        $this->setVerificationChannelForBackendConfig($channel_id);
     }
 
     protected function setVerificationChannelForDomainConfigs($channel_id)

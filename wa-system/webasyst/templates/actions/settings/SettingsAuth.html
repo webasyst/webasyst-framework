@@ -71,6 +71,7 @@
                         </ul>
                     </div>
                 </div>
+
                 {* Timeouts *}
                 <div class="field">
                     <div class="name">[`Re-sending of verification code`]</div>
@@ -82,83 +83,109 @@
                     </div>
                 </div>
 
-                {* Auth methods *}
-                <div class="field ">
-                    <div class="name">[`User notifications`]</div>
-                    <div class="value js-auth-methods">
-                        {* Email *}
-                        <div class="s-auth-method js-auth-method">
-                            <label>
-                                <input class="js-auth-method-checkbox" name="used_auth_methods[email]" data-method="email" type="checkbox"{if in_array(waVerificationChannelModel::TYPE_EMAIL, $used_auth_methods)} checked="checked"{/if} disabled="disabled">
-                                [`Email`]
-                            </label>
-                            <div class="hint s-template-link">
-
-                                {if empty($email_channels)}
-                                    <div class="errormsg"><i class="icon16 exclamation"></i> [`Specify email sender address`] </div>
-                                    <div>
-                                        {sprintf('[s`No sender email address specified in “<a href="%s">Email settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/")}
-                                    </div>
-                                    <div>
-                                        [s`Please be sure to correctly set up a sender. It will be used to restore a lost password or to regain access to the backend should the one-time password authentication fail.`]
-                                    </div>
-                                {else}
-                                    [s`Email notification templates`]
-
-                                    <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;" data-channel-type="email">
-                                        <option value="">[s`Select template`]</option>
-                                        {foreach $email_channels as $_id => $_channel}
-                                            {$_selected = in_array($_id, $auth_config.verification_channel_ids)}
-                                            <option value="{$_id|escape}"{if $_selected} selected{/if}>{$_channel.name|escape}</option>
-                                            {if $_selected}
-                                                {$_selected_email_channel = $_channel}
-                                            {/if}
-                                        {/foreach}
-                                    </select>
-
-                                    <span>
-                                        {sprintf('[s`Edit the list in “<a href="%s">Email&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/template/")}
-                                    </span>
-
-                                    {* HERE ERROR MESSAGES THAT WILL BE SHOW/HIDE OR RERENDER BY JS *}
-                                    <div class="errormsg s-email-template-not-selected-msg" style="display: none;"><i class="icon16 exclamation"></i> [s`No email template group is selected.`] </div>
-
-                                    {function name="webasyst_showDiagnosticMessage" message=[] is_template=false}
-                                        <div class="s-email-template-diagnostic-message {if $is_template}is-template{/if}" {if $is_template}style="display: none;"{/if}>
-                                            <div class="errormsg s-error-text-wrapper"><i class="icon16 exclamation"></i> <span class="s-error-txt">{$message.text|default:''}</span></div>
-                                            <div class="s-error-help-text-wrapper"> <span class="s-error-txt">{$message.help_text|default:''}</span></div>
-                                        </div>
-                                    {/function}
-
-                                    {foreach $email_channels as $_channel}
-                                        <div class="s-email-template-diagnostic-messages" data-channel-id="{$_channel.id}" style="display: none;">
-                                            {foreach $_channel.diagnostic|default:[] as $_message_id => $_message}
-                                                {webasyst_showDiagnosticMessage message=$_message}
-                                            {/foreach}
-                                        </div>
-                                    {/foreach}
-
-                                    {webasyst_showDiagnosticMessage message=[] is_template=true}
-
-                                {/if}
+                {* Auth by email *}
+                <div class="field">
+                    <div class="name">[s`Email notification templates`]</div>
+                    <div class="value">
+                        {if empty($email_channels)}
+                            <div class="errormsg"><i class="icon16 exclamation"></i> [`Specify email sender address`] </div>
+                            <div>
+                                {sprintf('[s`No sender email address specified in “<a href="%s">Email settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/")}
                             </div>
+                            <div>
+                                [s`Please be sure to correctly set up a sender. It will be used to restore a lost password or to regain access to the backend should the one-time password authentication fail.`]
+                            </div>
+                        {else}
+                            <select name="verification_channel_ids[]" class="js-channel-template-selector" data-channel-type="email">
+                                <option value="">[s`Select template`]</option>
+                                {foreach $email_channels as $_id => $_channel}
+                                    {$_selected = in_array($_id, $auth_config.verification_channel_ids)}
+                                    <option value="{$_id|escape}"{if $_selected} selected{/if}>{$_channel.name|escape}</option>
+                                    {if $_selected}
+                                        {$_selected_email_channel = $_channel}
+                                    {/if}
+                                {/foreach}
+                            </select>
+
+                            <span>
+                                {sprintf('[s`Edit the list in “<a href="%s">Email&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/template/")}
+                            </span>
+
+                            {* HERE ERROR MESSAGES THAT WILL BE SHOW/HIDE OR RERENDER BY JS *}
+                            <div class="errormsg js-email-template-not-selected-msg" style="display: none;"><i class="icon16 exclamation"></i> [s`No email template group is selected.`] </div>
+
+                            {function name="webasyst_showEmailChannelDiagnosticMessage" message=[] is_template=false}
+                                <div class="s-channel-template-diagnostic-message js-channel-template-diagnostic-message {if $is_template}is-template{/if}" {if $is_template}style="display: none;"{/if}>
+                                    <div class="errormsg s-error-text-wrapper"><i class="icon16 exclamation"></i> <span class="s-error-txt">{$message.text|default:''}</span></div>
+                                    <div class="s-error-help-text-wrapper"> <span class="s-error-txt">{$message.help_text|default:''}</span></div>
+                                </div>
+                            {/function}
+
+                            {foreach $email_channels as $_channel}
+                                <div class="s-channel-template-diagnostic-messages js-channel-template-diagnostic-messages" data-channel-id="{$_channel.id}" style="display: none;">
+                                    {foreach $_channel.diagnostic|default:[] as $_message_id => $_message}
+                                        {webasyst_showEmailChannelDiagnosticMessage message=$_message}
+                                    {/foreach}
+                                </div>
+                            {/foreach}
+
+                            {webasyst_showEmailChannelDiagnosticMessage message=[] is_template=true}
+
+                        {/if}
+                    </div>
+                </div>
+
+                {* Auth by SMS *}
+                <div class="field">
+                    <div class="name">[s`Enable authorization by phone number`]</div>
+                    <div class="value">
+
+                        {$_is_checked = in_array(waVerificationChannelModel::TYPE_SMS, $used_auth_methods)}
+
+                        <div>
+                            <input type="hidden" name="used_auth_methods[sms]" value="0">
+                            <input id="s-login-by-phone-toggle" class="ibutton s-login-by-phone-toggle js-login-by-phone-toggle js-auth-method-checkbox" name="used_auth_methods[sms]" data-method="sms" type="checkbox"{if $_is_checked} checked="checked"{/if}>
+                            <label for="s-login-by-phone-toggle"><span class="js-login-by-phone-status">{if $_is_checked}[`enabled`]{else}[`disabled`]{/if}</span></label>
                         </div>
 
-                        {* SMS *}
-                        <div class="s-auth-method js-auth-method">
-                            <label>
-                                <input class="js-auth-method-checkbox" name="used_auth_methods[sms]" data-method="sms" type="checkbox"{if in_array(waVerificationChannelModel::TYPE_SMS, $used_auth_methods)} checked="checked"{/if}>
-                                [`Phone`]
-                            </label>
-                            <div class="hint s-template-link">
-                                [s`SMS notification templates`]
-                                <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;" data-channel-type="sms">
-                                    <option value="">[s`Select template`]</option>
-                                    {foreach $sms_channels as $_id => $_channel}
-                                        <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
-                                    {/foreach}
-                                </select>
-                                {sprintf('[s`Edit the list in “<a href="%s">SMS&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/sms/template/")}
+                        <div class="s-phone-channel-settings-block" {if !$_is_checked}style="display: none;"{/if}>
+                            <select name="verification_channel_ids[]" class="js-channel-template-selector" data-channel-type="sms">
+                                <option value="">[s`Select template`]</option>
+                                {foreach $sms_channels as $_id => $_channel}
+                                    <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
+                                {/foreach}
+                            </select>
+
+                            <span>{sprintf('[s`Edit the list in “<a href="%s">SMS&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/sms/template/")}</span>
+
+                            {* HERE ERROR MESSAGES THAT WILL BE SHOW/HIDE OR RERENDER BY JS *}
+                            <div class="errormsg js-sms-template-not-selected-msg" style="display: none;"><i class="icon16 exclamation"></i> [s`No SMS notifications template group is selected.`] </div>
+
+                        </div>
+
+                        <div class="s-phone-channel-settings-block" {if !$_is_checked}style="display: none;"{/if}>
+                            <div class="field">
+                                <div class="name">[`National direct-dialing code (NDD)`]</div>
+
+                                {$_phone_transform_prefix = $auth_config.phone_transform_prefix|default:[]}
+
+                                <div class="value">
+                                    {$_input_code = $_phone_transform_prefix['input_code']|default:''}
+                                    <input type="text" class="short" name="phone_transform_prefix[input_code]" value="{$_input_code}">
+                                    <div class="hint" style="margin-top: 10px;">
+                                        [`Enter the NDD code which is used for making calls within your country.`]<br>
+                                        [`The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers.`]
+                                    </div>
+                                </div>
+
+                                <div class="name">[`Country code`]</div>
+                                <div class="value">
+                                    {$_output_code = $_phone_transform_prefix['output_code']|default:''}
+                                    + <input type="text" class="short" name="phone_transform_prefix[output_code]" value="{$_output_code}">
+                                    <div class="hint" style="margin-top: 10px;">
+                                        [`Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD.`]
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

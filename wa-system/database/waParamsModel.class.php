@@ -282,7 +282,7 @@ abstract class waParamsModel extends waModel
      */
     protected function unserializeOne($value)
     {
-        if ($value && ($value{0} == '{' || $value{0} == '[' || $value == 'null')) {
+        if ($value && ($value[0] == '{' || $value[0] == '[' || $value == 'null')) {
             $value = json_decode($value, true);
         }
         return $value;

@@ -41,6 +41,9 @@ class waDbConnector
         } else {
             if (empty($settings)) {
                 $settings = self::getConfig($name);
+                if ($settings['type'] === 'mysql' && !extension_loaded('mysql')) {
+                    $settings['type'] = 'mysqli';
+                }
             }
             $class = "waDb".ucfirst(strtolower($settings['type']))."Adapter";
             if (!class_exists($class)) {

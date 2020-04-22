@@ -232,7 +232,7 @@ function wa_is_int($val)
         $val = (string) $val;
         if (ctype_digit($val)) {
             return true;
-        } else if ($val && $val{0} == '-' && ctype_digit(substr($val, 1))) {
+        } else if ($val && $val[0] == '-' && ctype_digit(substr($val, 1))) {
             return true;
         }
     }

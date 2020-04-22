@@ -178,7 +178,6 @@ class waOrder implements ArrayAccess
                                 'length'      => null,
                                 'weight'      => null,
                                 'quantity'    => 1,
-                                'total'       => null,
                             );
                             $item += array(
                                 'total' => $item['price'] * $item['quantity'],
