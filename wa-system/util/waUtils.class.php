@@ -190,11 +190,12 @@ class waUtils
     }
 
     /**
-     * Extract from input associative array  only specified keys
+     * Extract from input associative array only specified keys.
      * @param $array
      * @param array $keys
-     * @param bool $skip Default True
+     * @param bool $skip default true
      * @param mixed $populate
+     * @param mixed $multi default false, set key or true for extract keys from sub arrays
      *
      * That values of $keys that aren't keys in $array will be
      *  + skipped - If $skip === True (default value)
@@ -215,17 +216,34 @@ class waUtils
      * $fruits = waUtils::extractValuesByKeys($fruits, $keys, false, 0);
      * $fruits === array('orange' => 200, 'watermelon' => 400, 'strawberry' => 0);
      *
+     * Example with multi
+     *
+     * $users = [['id' => 1, 'name' => 'A', 'age' => 18], ['id' => 2, 'name' => 'B', 'age' => 15]];
+     * $result = waUtils::extractValuesByKeys($users, ['name', 'age'], true, null, true);
+     * $result === [['name' => 'A', 'age' => 18], ['name' => 'B', 'age' => 15]];
+     * $result = waUtils::extractValuesByKeys($users, ['name', 'age'], true, null, 'id');
+     * $result === [1 => ['name' => 'A', 'age' => 18], 2 => ['name' => 'B', 'age' => 15]];
+     *
      * @return array
      * @since 1.10.0
      */
-    public static function extractValuesByKeys(array $array, $keys = array(), $skip = true, $populate = null)
+    public static function extractValuesByKeys(array $array, $keys, $skip = true, $populate = null, $multi = false)
     {
         $result = array();
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $array)) {
-                $result[$key] = $array[$key];
-            } elseif (!$skip) {
-                $result[$key] = $populate;
+        if ($multi) {
+            foreach ($array as $key => $sub_array) {
+                if (!is_bool($multi)) {
+                    $key = $multi;
+                }
+                $result[$key] = self::extractValuesByKeys($sub_array, $keys, $skip, $populate, false);
+            }
+        } else {
+            foreach ($keys as $key) {
+                if (array_key_exists($key, $array)) {
+                    $result[$key] = $array[$key];
+                } elseif (!$skip) {
+                    $result[$key] = $populate;
+                }
             }
         }
         return $result;
