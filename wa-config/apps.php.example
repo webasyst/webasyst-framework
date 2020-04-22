@@ -1,7 +1,9 @@
 <?php
 
 return array(
-    'contacts' => true,
+    'team' => true,
+//    'developer' => true,
+//    'contacts' => true,
     'site' => true,
     'blog' => true,
     'photos' => true,
