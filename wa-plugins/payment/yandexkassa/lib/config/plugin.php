@@ -1,11 +1,12 @@
 <?php
 return array(
-    'name'           => 'Яндекс.Касса (новый протокол)',
-    'description'    => 'Приём платежей через сервис «Яндекс.Касса» (<a href="https://kassa.yandex.ru/">kassa.yandex.ru</a>).',
-    'icon'           => 'img/yandexkassa16.png',
-    'logo'           => 'img/yandexkassa.png',
-    'version'        => '1.1.2',
-    'vendor'         => 'webasyst',
-    'type'           => waPayment::TYPE_ONLINE,
-    'partial_refund' => true,
+    'name'            => 'Яндекс.Касса (новый протокол)',
+    'description'     => 'Приём платежей через сервис «Яндекс.Касса» (<a href="https://kassa.yandex.ru/">kassa.yandex.ru</a>).',
+    'icon'            => 'img/yandexkassa16.png',
+    'logo'            => 'img/yandexkassa.png',
+    'version'         => '1.1.3',
+    'vendor'          => 'webasyst',
+    'type'            => waPayment::TYPE_ONLINE,
+    'partial_refund'  => true,
+    'partial_capture' => true,
 );
