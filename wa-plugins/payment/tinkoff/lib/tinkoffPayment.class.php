@@ -552,11 +552,25 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
     public function capture($data)
     {
-
         $args = array(
             'PaymentId' => $data['transaction']['native_id'],
             'Amount'    => $data['transaction']['amount'] * 100,
         );
+
+        if (!empty($transaction_raw_data['order_data'])) {
+            $order = waOrder::factory($transaction_raw_data['order_data']);
+
+            if ($data['transaction']['currency_id'] != $order->currency) {
+                throw new waPaymentException(sprintf('Currency id changed. Expected %s, but get %s.', $data['transaction']['currency_id'], $order->currency));
+            }
+
+            $args['Amount'] = $order->total;
+
+            if ($this->getSettings('atolonline_on')) {
+                $args['Receipt'] = $this->getReceiptData($order);
+            }
+        }
+
         try {
             $res = $this->apiQuery('Confirm', $args);
 
