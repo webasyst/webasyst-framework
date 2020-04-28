@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:nifty" version="1.1.5">
+<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:nifty" version="1.2.10">
     <name locale="en_US">Nifty</name>
     <name locale="ru_RU">Nifty</name>
     <files>
@@ -18,7 +18,7 @@
         </file>
         <file path="content.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Blog app content</description>
-            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+            <description locale="ru_RU">Основной макет вывода содержимого и навигации в приложении «Блог»</description>
         </file>
         <file path="head.html" custom="0">
             <description locale="en_US">Blog app's &lt;head&gt; instructions</description>
