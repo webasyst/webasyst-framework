@@ -12,11 +12,11 @@
 		</div>
 
 		<div class="hierarchical" id="s-files-tree">
-				
+
 		</div>
 	</div>
 </div>
-						
+
 <div class="content left250px">
 	<div class="s-editor s-white bordered-left">
 		<div class="block s-grey-toolbar">
@@ -66,7 +66,7 @@
 			<div class="dialog-content">
 					<div class="dialog-content-indent">
 						<h1>[`New folder`]</h1>
-						<span></span> <input type="text" id="s-folder-name" name="name" class="bold large" value="" />							
+						<span></span> <input type="text" id="s-folder-name" name="name" class="bold large" value="" />
 					</div>
 			</div>
 			<div class="dialog-buttons">
@@ -79,13 +79,17 @@
 </div>
 <div class="dialog" id="s-upload-dialog">
 		<div class="dialog-background"> </div>
-		<div class="dialog-window" style="height: 122px; min-height: 122px; width: 350px; min-width: 350px">
+		<div class="dialog-window" style="height: 140px; min-height: 140px; width: 350px; min-width: 350px">
 			<form id="s-upload-form" method="post" action="?module=files&action=upload" enctype="multipart/form-data">
             {$wa->csrf()}
 			<div class="dialog-content">
 					<div class="dialog-content-indent">
 						<h1>[`Upload files`]</h1>
-						<input id="s-input-file" type="file" name="files[]" multiple>
+
+                        <div style="overflow: hidden; width: 100%;">
+						    <input id="s-input-file" type="file" name="files[]" multiple>
+                        </div>
+
 						<input type="hidden" name="path" id="s-upload-path" value="" />
 						<div class="loading" style="display:none; margin-top: 10px">
 							<i class="icon16 loading"></i> [`Uploading...`]
@@ -110,7 +114,7 @@
 			<div class="dialog-content">
 					<div class="dialog-content-indent">
 						<h1>[`Rename`]</h1>
-						<span></span> <input type="text" id="s-name" name="name" class="bold large" value="" />							
+						<span></span> <input type="text" id="s-name" name="name" class="bold large" value="" />
 					</div>
 			</div>
 			<div class="dialog-buttons">
@@ -130,7 +134,7 @@
 						<h1>[`Move to folder`] <span style="color: #aaa;"></span></h1>
 						<select name="new_path"></select>
 						<input type="hidden" name="path" />
-						<div id="s-move-dialog-files" style="display:none"></div>							
+						<div id="s-move-dialog-files" style="display:none"></div>
 					</div>
 			</div>
 			<div class="dialog-buttons">
@@ -193,20 +197,21 @@
 
 	$("#s-upload-link").click(function () {
     	$("#s-upload-dialog").waDialog({
+            esc: false,
         	onLoad: function () {
         		if (!$.browser.msie) {
 	       			$('#s-input-file').click();
         		}
     		}
     	});
-    	
+
 		return false;
 	});
-	
+
 	$("#s-files-grid input").live('click', function () {
 		if ($(this).hasClass('all')) {
 			if ($(this).is(':checked')) {
-				$("#s-files-grid input").attr('checked', 'checked');			
+				$("#s-files-grid input").attr('checked', 'checked');
 			} else {
 				$("#s-files-grid input").removeAttr('checked');
 			}
@@ -217,10 +222,10 @@
 				$("#s-files-grid input.all").attr('checked', 'checked');
 			}
 		}
-		var n = $("#s-files-grid input:checked").length - ($("#s-files-grid input.all").is(":checked") ? 1 : 0);	
+		var n = $("#s-files-grid input:checked").length - ($("#s-files-grid input.all").is(":checked") ? 1 : 0);
 		$("#s-files-count").html(n);
 	});
-	
+
 	$("#s-files-grid ul.dropdown.clickable > li > a").live('click', function (e) {
 		if (!$(this).next().length) {
 			var file = $(this).parents('tr').find('input[type=checkbox]').val();
@@ -238,9 +243,9 @@
 		});
 		return false;
 	});
-	
+
 	$("#s-add-folder").click(function () {
-		$("#s-add-folder-dialog").waDialog({ 
+		$("#s-add-folder-dialog").waDialog({
 			onLoad: function () {
 				$(this).find('span').html($.wa.site.filesPath(true));
                 $('#s-folder-name').focus();
@@ -262,9 +267,9 @@
 		});
 		return false;
 	});
-	
+
 	$("#s-folder-rename").click(function () {
-		$("#s-rename-dialog").waDialog({ 
+		$("#s-rename-dialog").waDialog({
 			disableButtonsOnSubmit: true,
 			onLoad: function () {
 				$("#s-name").val($("#s-files-tree li.selected a b").html()).focus().select();
@@ -287,11 +292,11 @@
 			}
 		});
 		return false;
-	});	
-	
+	});
+
 	$("#s-folder-move, #s-files-move").click(function () {
 		var is_files = $(this).attr('id') == 's-files-move';
-		$("#s-move-dialog select").html($.wa.site.filesPathOptions($("#s-files-tree > ul.s-folderlist"), '', is_files ? false : true));		
+		$("#s-move-dialog select").html($.wa.site.filesPathOptions($("#s-files-tree > ul.s-folderlist"), '', is_files ? false : true));
 		$("#s-move-dialog-files").empty();
 		if (is_files) {
 			var n = 0;
@@ -300,7 +305,7 @@
 					n++;
 					$("#s-move-dialog-files").append('<input type="hidden" name="file[]" value="' + $(this).val() + '" />');
 				}
-			});			
+			});
 			if (!n) {
 				return false;
 			}
@@ -309,7 +314,7 @@
 			$("#s-move-dialog h1 span").empty();
 		}
 		$("#s-move-dialog input[name=path]").val($.wa.site.filesPath());
-		$("#s-move-dialog").waDialog({ 
+		$("#s-move-dialog").waDialog({
 			disableButtonsOnSubmit: true,
 			onSubmit: function () {
 				$.post('?module=files&action=move', $("#s-move-dialog form").serialize() , function (response) {
@@ -329,8 +334,8 @@
 			}
 		});
 		return false;
-	});		
-	
+	});
+
 	$("#s-folder-delete").click(function () {
 	    if ($.wa.site.filesPath()) {
             $("#s-delete-dialog").waDialog({
@@ -363,7 +368,7 @@
         }
 		return false;
 	});
-	
+
 	$("#s-files-delete").click(function () {
 		var files = [];
 		$("#s-files-grid input:checked").each(function () {
@@ -373,7 +378,7 @@
 		});
 		if (!files.length) {
 			return false;
-		}		
+		}
 		$("#s-delete-dialog").waDialog({
 			content: '<h1>[`Delete files`] <span style="color: #aaa;">(' + files.length + ')</span></h1><p>[`Files will be deleted without the ability to recover.`]</p>',
 			disableButtonsOnSubmit: true,
@@ -385,7 +390,7 @@
 					} else if (response.status == 'fail') {
 						alert(response.errors);
 						$("#s-delete-dialog input[type=submit]").removeAttr('disabled');
-					}				
+					}
 				}, "json");
 			}
 		});
