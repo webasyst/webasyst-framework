@@ -77,7 +77,7 @@ return array(
         'control_type' => waHtmlControl::INPUT,
     ),
     'customer_interval'   => array(
-        'title'          =>/*_wp*/('Preferred delivery time &amp; working schedule'),
+        'title'          =>/*_wp*/('Preferred delivery time & working schedule'),
         'control_type'   => 'DeliveryIntervalControl',
         'minutes'        => true,
         'extra_holidays' => true,

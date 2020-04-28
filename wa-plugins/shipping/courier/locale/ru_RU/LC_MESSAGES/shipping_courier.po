@@ -165,7 +165,7 @@ msgstr "Введите стоимость доставки в виде числ�
 msgid "Preferred delivery time"
 msgstr "Желаемое время доставки"
 
-msgid "Preferred delivery time &amp; working schedule"
+msgid "Preferred delivery time & working schedule"
 msgstr "Желаемое время доставки и график работы"
 
 msgid "Online map settings are available in <a href=\"%s\">Settings</a> app."
@@ -255,3 +255,6 @@ msgstr "Рекомендуется для пошагового оформлен�
 
 msgid "Recommended for in-cart checkout"
 msgstr "Рекомендуется для оформления заказа в корзине"
+
+msgid "Select an online maps service to display a map with the customer address on the printable packing list form."
+msgstr "Выберите сервис онлайн-карт для отображения карты с адресом покупателя в печатной форме листа доставки."

@@ -140,6 +140,7 @@
                         </div>
                     {/if}
                 {/foreach}
+                <div class="value hint">{$p->_w('Select an online maps service to display a map with the customer address on the printable packing list form.')}</div>
             </div>
         {/if}
     </div>
@@ -287,7 +288,7 @@
         $wrapper: $('#courier-pickup-settings'),
         locale_strings: {$_locale_strings|json_encode},
         namespace: {$namespace|escape|json_encode},
-        xhr_url: {$xhr_url|escape|json_encode},
+        xhr_url: {$xhr_url|json_encode},
         js_validate: true
     });
 
