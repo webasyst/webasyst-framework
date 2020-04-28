@@ -132,7 +132,7 @@
                         <div class="nav-list">
                             {$selected_node = null}
                             {foreach $pages as $p}
-                                {if $wa->currentUrl()|strstr:$p.url && strlen($p.url) >= strlen($selected_node.url)}{$selected_node = $p}{/if}
+                                {if $wa->currentUrl()|strstr:$p.url && strlen($p.url) >= strlen(ifset($selected_node, 'url', ''))}{$selected_node = $p}{/if}
                             {/foreach}
                             {if !$selected_node}{$selected_node.id = null}{/if}
 
