@@ -332,7 +332,7 @@ class russianpostShipping extends waShipping
             $rate['parcel'] += $rate_parcel * $percent;
         }
 
-        if ($this->caution) {
+        if ($this->caution && $this->caution_percent) {
             $cp = $this->caution_percent;
             $percent = ifset($cp, 0) / 100;
             $rate['parcel'] += $rate_parcel * $percent;
@@ -345,14 +345,15 @@ class russianpostShipping extends waShipping
             $rate['bookpost'] += ($rate['bookpost'] * (ifset($dc, 0) / 100)) * 2;
 
         }
+        $commission = !empty($this->commission) ? $this->commission : 0;
+        $extra_charge = !empty($this->extra_charge) ? $this->extra_charge : 0;
+        $rate['parcel'] += $price * ($commission / 100) + $extra_charge;
 
-        $rate['parcel'] += $price * ($this->commission / 100) + $this->extra_charge;
-
-        if ($this->bookpost == 'declared') {
+        if ($this->bookpost == 'declared' && $this->bookpost_declared_commission) {
             $rate['bookpost'] += $price * ($this->bookpost_declared_commission / 100);
         }
 
-        $rate['bookpost'] += $this->extra_charge;
+        $rate['bookpost'] += $extra_charge;
 
         return $rate;
     }
