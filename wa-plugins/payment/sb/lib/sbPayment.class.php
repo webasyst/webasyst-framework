@@ -97,8 +97,6 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     return 'Состояние платежа изменилось — обновите страницу.';
                 } elseif (!empty($create_transaction['raw_data']['formUrl'])) {
                     return $this->viewForm($create_transaction['raw_data']['formUrl'], $auto_submit);
-                } elseif (isset($transaction_data['callback_method']) && !empty($create_transaction['raw_data']['formUrl'])) {
-                    return $this->viewForm($create_transaction['raw_data']['formUrl'], $auto_submit);
                 } else {
                     return 'Ошибка получения формы оплаты.';
                 }
@@ -232,8 +230,23 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
             $request = array(
                 'orderId' => $transaction['native_id'],
-                'amount'  => number_format($transaction['amount'], 2, '', ''), //convert to cent
             );
+
+            if (!empty($transaction_raw_data['order_data'])) {
+                $order = waOrder::factory($transaction_raw_data['order_data']);
+
+                // handle changed amount; convert to cents for API
+                $transaction['amount'] = number_format($order->total, 2, '.', '');
+                $request['amount'] = number_format($order->total, 2, '', '');
+
+                $order_bundle = array(
+                    'items' => $this->getItemsForFiscalization($order),
+                );
+
+                $request['depositItems'] = json_encode($order_bundle, JSON_UNESCAPED_UNICODE);
+            } else {
+                $request['amount'] = number_format($transaction['amount'], 2, '', ''); //convert to cent
+            }
 
             $this->sendRequest(self::URL_PAYMENT_COMPLETE, $request);
 
@@ -1354,10 +1367,18 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             }
         };
 
-        return $items;
+        // Never send zero-quantity item to API
+        foreach ($items as $i => $item) {
+            if (empty($item['quantity']['value'])) {
+                unset($items[$i]);
+            }
+        }
+
+        return array_values($items);
     }
 
     /**
+     * @link https://developer.sberbank.ru/doc/v1/acquiring/api-basket
      * @param array   $data
      * @param waOrder $order_data
      * @param int     $number
@@ -1554,7 +1575,11 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'request_format' => waNet::FORMAT_RAW,
             'timeout'        => 60,
         );
-        $net = new waNet($options);
+        if ($this->TESTMODE && class_exists('sbtestNet')) {
+            $net = new sbtestNet($options);
+        } else {
+            $net = new waNet($options);
+        }
 
         try {
 
@@ -1895,6 +1920,10 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $signature = ifset($request, 'checksum', null);
         if ($signature === null) {
             return null;
+        }
+
+        if ($this->TESTMODE && class_exists('sbtestNet')) {
+            return true;
         }
 
         $signature = hex2bin($signature);
