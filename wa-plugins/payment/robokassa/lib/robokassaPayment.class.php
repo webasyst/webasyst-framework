@@ -278,7 +278,7 @@ HTML;
     private function getCommission($amount)
     {
         if (!$this->gateway_currency) {
-            throw new waPaymentException('Для рассчета коммиссии необходимо выбрать способ оплаты');
+            throw new waPaymentException('Для расчета комиссии нужно выбрать способ оплаты.');
         }
         $params = array(
             'MerchantLogin' => $this->merchant_login,
@@ -289,13 +289,13 @@ HTML;
         if ($rate = (double)$xml->OutSum) {
             return $rate;
         }
-        throw new waPaymentException(sprintf('Не удалось рассчитать комиссию для %s', $this->gateway_currency));
+        throw new waPaymentException(sprintf('Не удалось рассчитать комиссию для %s.', $this->gateway_currency));
     }
 
     private function getRates($amount)
     {
         if (!$this->gateway_currency) {
-            throw new waPaymentException('Для рассчета коммиссии необходимо выбрать способ оплаты');
+            throw new waPaymentException('Для расчета комиссии нужно выбрать способ оплаты.');
         }
         $params = array(
             'MerchantLogin' => $this->merchant_login,
@@ -318,7 +318,7 @@ HTML;
             $rate = reset($rates);
             return (double)$rate['IncSum'];
         }
-        throw new waPaymentException(sprintf('Не удалось рассчитать комиссию для %s', $this->gateway_currency));
+        throw new waPaymentException(sprintf('Не удалось рассчитать комиссию для %s.', $this->gateway_currency));
     }
 
     private static function getCurrencyOptions($data = array())
@@ -370,7 +370,7 @@ HTML;
         );
 
         if (!class_exists('waNet')) {
-            throw new waPaymentException('Требуется актуальная версия фреймворка Webasyst');
+            throw new waPaymentException('Требуется актуальная версия фреймворка Webasyst.');
         }
 
         if (empty($params['MerchantLogin'])) {
@@ -522,7 +522,7 @@ HTML;
             }
 
             if (!$tax_included && $rate > 0) {
-                throw new waPaymentException('Фискализация товаров с налогом не включенном в стоимость не поддерживается. Обратитесь к администратору магазина');
+                throw new waPaymentException('Фискализация товаров с налогом, не включенным в стоимость, не поддерживается. Обратитесь к администратору магазина.');
             }
 
             switch ($rate) {
