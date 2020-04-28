@@ -4,7 +4,7 @@ class teamWaAppSettingsModel extends waAppSettingsModel
 {
     protected $app_id = 'team';
 
-    protected $map_adapters = array('yandex', 'google');
+    protected $map_adapters = array('yandex', 'google', 'disabled');
 
     /**
      * @var teamConfig

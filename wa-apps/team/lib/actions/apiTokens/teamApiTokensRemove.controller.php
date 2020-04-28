@@ -21,7 +21,7 @@ class teamApiTokensRemoveController extends waJsonController
         }
 
         if ($action === 'remove' && !$token_id) {
-            return $this->errors[] = _w('Token not transferred');
+            return $this->errors[] = _w('The token was not transferred.');
         } else {
             return $api_token_model->deleteByField(array('contact_id' => $contact_id, 'token' => $token_id));
         }

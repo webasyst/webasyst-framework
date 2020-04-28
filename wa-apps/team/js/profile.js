@@ -30,6 +30,10 @@ var Profile = ( function($) {
         that.initEditableJobtitle();
         //
         that.bindEvents();
+        //
+        if ($.team && $.team.sidebar) {
+            $.team.sidebar.selectLink(false);
+        }
     };
 
     Profile.prototype.bindEvents = function() {
@@ -145,11 +149,13 @@ var Profile = ( function($) {
         } else {
             $tab_a.click();
         }
-
+        
         // Animate scroll to tabs
-        $('html, body').animate({
-            scrollTop: $tab_a.offset().top
-        }, 500);
+        if ($tab_a.length) {
+            $('html, body').animate({
+                scrollTop: $tab_a.offset().top
+            }, 500);
+        }
 
         return deferred.promise();
 

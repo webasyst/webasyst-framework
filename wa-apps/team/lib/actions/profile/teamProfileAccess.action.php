@@ -172,7 +172,13 @@ class teamProfileAccessAction extends waViewAction
     {
         $apps = wa()->getApps();
         $tokens_model = new waApiTokensModel();
-        $api_tokens = $tokens_model->getByField(array('contact_id' => $this->user->getId()),true);
+
+        $api_tokens = $tokens_model
+            ->select('*')
+            ->where('contact_id = ?', $this->user->getId())
+            ->order('last_use_datetime DESC, create_datetime DESC')
+            ->fetchAll();
+
         foreach ($api_tokens as &$token) {
             // Get scope apps images and names
             $token['installed_apps'] = $token['not_installed_apps'] =  array();

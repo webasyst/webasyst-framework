@@ -86,10 +86,18 @@ class teamUser
      * - access_rights: boolean (defaults to true: filter out contacts current user has no access to)
      * - offset: default 0
      * - limit: default 100500
+     * - fetch_total_count: default false
+     *
+     *
+     * @param string $collection_hash
+     * @param array $options
+     * @param null &$total_count - output parameter. If $option['fetch_total_count'] == true here will be fetched total count of users
+     * @return array
+     * @throws waException
      */
-    public static function getList($collection_hash, $options = array())
+    public static function getList($collection_hash, $options = array(), &$total_count = null)
     {
-        $collection = new waContactsCollection($collection_hash);
+        $collection = new teamUsersCollection($collection_hash);
 
         // Additional fields
         foreach (ifset($options['additional_fields'], array()) as $alias => $field) {
@@ -104,6 +112,7 @@ class teamUser
                 $order_by = 'last_seen';
             }
         }
+
         switch ($order_by) {
             case 'signed_up':
                 $order_by = 'create_datetime DESC';
@@ -111,9 +120,19 @@ class teamUser
             case 'last_seen':
                 $order_by = 'last_datetime DESC';
                 break;
+            default:
+                $order_by = 'name ASC';
+                break;
         }
+        
         $order_by = explode(' ', $order_by);
-        $collection->orderBy($order_by[0], ifset($order_by[1], 'ASC'));
+        $order_by[1] = strtoupper(ifset($order_by[1], 'ASC'));
+
+        if ($order_by[0] == 'name') {
+            $collection->orderBy('_display_name', $order_by[1]);
+        } else {
+            $collection->orderBy($order_by[0], $order_by[1]);
+        }
 
         // Fields
         $fields = ifset($options['fields'], 'default');
@@ -123,6 +142,11 @@ class teamUser
 
         // Fetch contacts
         $contacts = $collection->getContacts($fields, ifset($options['offset'], 0), ifset($options['limit'], 100500));
+
+        // Fetch counter
+        if (!empty($options['fetch_total_count'])) {
+            $total_count = $collection->count();
+        }
 
         // Filter out contacts not visible because of access rights to groups
         if (ifset($options['access_rights'], true)) {
@@ -142,7 +166,7 @@ class teamUser
 
         // Sort by actual name
         if ($order_by[0] === 'name') {
-            if ($order_by[1] === 'desc') {
+            if ($order_by[1] === 'DESC') {
                 $callback = wa_lambda('$a, $b', 'return -strcmp($a["name"], $b["name"]);');
             } else {
                 $callback = wa_lambda('$a, $b', 'return strcmp($a["name"], $b["name"]);');

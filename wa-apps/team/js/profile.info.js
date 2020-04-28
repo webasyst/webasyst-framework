@@ -1,3 +1,40 @@
+
+(function ($) {
+
+function scrollTo($dom, shift) {
+    if (typeof $dom === 'number') {
+        shift = $dom;
+    }
+
+    shift = shift || 0;
+    var offset_top = 0;
+
+    if ($dom && $dom.length) {
+        var offset = $dom.offset();
+        if (offset && offset.top) {
+            offset_top = offset.top;
+        }
+    }
+
+    var win = window,
+        parent = window.parent,
+        iframeShift = 0;
+
+    if (parent) {
+        $(parent.document).find('iframe').each(function() {
+            if (this.contentWindow == win) {
+                var offset = $(this).offset();
+                iframeShift = offset && offset.top ? offset.top : 0;
+            }
+        });
+    }
+
+    var top = Math.max(Math.floor(offset_top + shift + iframeShift), 0);
+
+    var $body = $( (parent || win).document ).find('html,body');
+    $body.stop().animate({ scrollTop: top }, 500);
+}
+
 /**
   * Base classs for all editor factory types, all editor factories and all editors.
   * Implements JS counterpart of contactsFieldEditor with no validation.
@@ -76,7 +113,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if (this.currentMode == 'edit') {
                     this.domElement.find('.val').val(this.fieldValue);
                 } else {
-                    this.domElement.find('.val').html(this.fieldValue);
+                    this.domElement.find('.val').html($.wa.encodeHTML(this.fieldValue));
                 }
             },
 
@@ -287,7 +324,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (this.currentMode == 'edit') {
                 this.domElement.find('.val').val(this.fieldValue);
             } else {
-                this.domElement.find('.val').html(this.fieldValue);
+                this.domElement.find('.val').html($.wa.encodeHTML(this.fieldValue));
             }
         },
 
@@ -319,7 +356,12 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 }
                 result.find('.val').val(value);
             } else {
-                result = $('<span class="val"></span><i class="icon16 loading" style="display:none;">').text(value);
+                if (this.fieldData.input_height <= 1) {
+                    result = $('<span class="val"></span><i class="icon16 loading" style="display:none;">').text(value);
+                } else {
+                    var text = $.wa.encodeHTML(value || '').replace(/\n/g, '<br>');
+                    result = $('<span class="val"></span><i class="icon16 loading" style="display:none;">').html(text);
+                }
             }
             return result;
         },
@@ -393,7 +435,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
 
                     options += opt;
                 }
-
+                
                 return $('<div><select class="val '  + (this.fieldData.type + '').toLowerCase() + '"><option value=""'+(selected ? '' : ' selected')+'>'+this.notSet()+'</option>'+options+'</select></div>');
             }
         }
@@ -1068,7 +1110,12 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
 //                if (mode == 'edit') {
 //                    nameAddition = (this.fieldData.required ? '<span class="req-star">*</span>' : '')+':';
 //                }
-                var wrapper = contactEditor.wrapper('<span class="replace-me-with-value"></span>', i === 0 ? (this.fieldData.name+nameAddition) : '', 'no-bot-margins');
+
+                var label = '';
+                if (i == 0 || this.fieldData.type === 'Composite') {
+                    label = this.fieldData.name+nameAddition;
+                }
+                var wrapper = contactEditor.wrapper('<span class="replace-me-with-value"></span>', label, 'no-bot-margins');
                 var rwv = wrapper.find('span.replace-me-with-value');
 
                 // extension
@@ -1095,7 +1142,13 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     }
                 });
 
-                sf.parentEditorData.domElement = $('<div></div>').append(wrapper).append(sf.domElement);
+                var cls_name = '';
+                if (this.fieldData.type === 'Composite') {
+                    cls_name = 'field-composite-subfields-block';
+                }
+
+                sf.domElement.data('multifield-index', i).attr('data-multifield-index', i);
+                sf.parentEditorData.domElement = $('<div class="' + cls_name + '"></div>').append(wrapper).append(sf.domElement);
 
                 if (mode == 'edit') {
                     sf.parentEditorData.empty = false;
@@ -1117,7 +1170,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             }
 
             sf.domElement = value;
-            sf.domElement.data('subfield-index', i).attr('data-subfield-index', i);
+            sf.domElement.data('multifield-index', i).attr('data-multifield-index', i);
             var result = $('<div class="value"></div>').append(value);
             var rwe = result.find('.replace-with-ext');
             if (rwe.size() <= 0) {
@@ -1235,7 +1288,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                         'opacity': 0.75,
                         'axis': 'y',
                         'tolerance': 'pointer',
-                        'items': '> .value',
+                        'items': '> .value, > .field-composite-subfields-block',
                         'handle': '.sort-handler',
                         'cursor': 'move',
                         'update': function(event, ui) {
@@ -1243,11 +1296,11 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                                 $multifield_subfields_block = $item.closest('.multifield-subfields');
 
                             var new_index = 0;
-                            $multifield_subfields_block.find('[data-subfield-index]').each(function() {
+                            $multifield_subfields_block.find('[data-multifield-index]').each(function() {
                                 var $item = $(this),
                                     editor = $item.parent().data('subfieldEditor');
                                 that.subfieldEditors[new_index] = editor;
-                                $item.data('subfieldIndex', new_index).attr('data-subfield-index', new_index);
+                                $item.data('subfieldIndex', new_index).attr('data-multifield-index', new_index);
                                 new_index++;
                             });
                         }
@@ -1677,7 +1730,15 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     });
                 }
             } else {
-                this.domElement.find('.val').html(this.fieldValue);
+
+                var val = this.fieldValue;
+                if (typeof this.fieldValue === 'object') {
+                    if (this.fieldValue.value) {
+                        val = this.fieldValue.value;
+                    }
+                }
+
+                this.domElement.find('.val').html($.wa.encodeHTML(val));
             }
         }
 
@@ -1698,7 +1759,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (this.currentMode == 'edit') {
                 this.domElement.find('input:text').datepicker('setDate', this.fieldValue);
             } else {
-                this.domElement.find('.val').html(this.fieldValue);
+                this.domElement.find('.val').html($.wa.encodeHTML(this.fieldValue));
             }
         },
         newInlineFieldElement: function(mode) {
@@ -1782,7 +1843,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (this.currentMode == 'edit') {
                 this.domElement.find('input.val').val(this.fieldValue);
             } else {
-                this.domElement.find('.val').html(this.viewValue);
+                this.domElement.find('.val').html(this.viewValue);  // already encoded value with icon
             }
         },
 
@@ -1821,7 +1882,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (this.currentMode == 'edit') {
                 this.domElement.find('input.val').val(this.fieldValue);
             } else {
-                this.domElement.find('.val').html(this.viewValue);
+                this.domElement.find('.val').html(this.viewValue);  // alrady encoded value with icon
             }
         },
 
@@ -2095,7 +2156,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 el.html('');
                 el.removeClass('edit-mode view-mode');
                 el.off('click.map', '.map-link').on('click.map', '.map-link', function() {
-                    var i = $(this).parent().data('subfield-index');
+                    var i = $(this).parent().data('multifield-index');
                     if (i !== undefined) {
                         var fieldValue = self.fieldEditors.address.fieldValue;
                         self.geocodeAddress(fieldValue, i);
@@ -2162,11 +2223,11 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
 
                     that.switchMode('view');
-                    $.scrollTo(0); // !!! scroll in parent window too?..
+                    scrollTo(0); // !!! scroll in parent window too?..
                     return false;
                 }, function() {
                     that.switchMode('view');
-                    $.scrollTo(0);
+                    scrollTo(0);
                 });
                 if (that.contact_id === null) {
                     buttons.find('.cancel, .or').remove();
@@ -2174,7 +2235,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 el.append(buttons);
 
                 setTimeout( function() {
-                    initStickyButtons( el.find('.buttons') );
+                    //initStickyButtons( el.find('.buttons') );
                 }, 666);
 
             } else {
@@ -2255,8 +2316,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             }
 
             if (validationErrors) {
-                $.scrollTo(validationErrors);
-                $.scrollTo('-=100px');
+                scrollTo(validationErrors, -100);
                 callback(false);
                 return;
             }
@@ -2292,6 +2352,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
 
             function save(with_geocoding) {
                 with_geocoding = with_geocoding === undefined ? true : with_geocoding;
+
                 $.post(that.getSaveUrl(), {
                     'data': JSON.stringify(data),
                     'type': that.contactType,
@@ -2333,8 +2394,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
 
                     if (validationErrors) {
-                        $.scrollTo(validationErrors);
-                        $.scrollTo('-=100px');
+                        scrollTo(validationErrors, -100);
                         return;
                     } else if (that.contact_id && newData.data.reload) {
                         if (window.profileTab) {
@@ -2378,6 +2438,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
 
                         var requests = [];
                         var indexes = [];
+
                         // iterate throughout addresses but test if changed
                         for (var i = 0; i < address.length; i += 1) {
                             var is_diff = true;
@@ -2396,14 +2457,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                         if (requests.length) {
                             var fn = function(response, i) {
                                 if (response.status === "OK") {
-                                    var lat = response.results[0].geometry.location.lat || '';
-                                    var lng = response.results[0].geometry.location.lng || '';
+                                    var lat = response.lat || '';
+                                    var lng = response.lng || '';
                                     data['address'][i]['value'].lat = lat;
                                     data['address'][i]['value'].lng = lng;
                                 } else if (response.status === "OVER_QUERY_LIMIT") {
                                     $.storage.set('contacts/last_geocoding', (new Date()).getTime() / 1000);
                                 }
                             };
+
                             $.when.apply($, requests).then(function() {
                                 if (requests.length <= 1 && arguments[1] === 'success') {
                                     fn(arguments[0], indexes[0]);
@@ -2414,6 +2476,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                                         }
                                     }
                                 }
+                                // TODO: not cool send all data again, rework someday
                                 save(false);
                             });
                         }
@@ -2542,7 +2605,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 }
                 // remove topmost validation errors
                 that.fieldEditors.name.showValidationErrors(null);
-                $.scrollTo(0);
+                scrollTo(0);
                 return false;
             });
             buttons.children('div.value.submit')
@@ -2606,7 +2669,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             }
         },
 
-        sendGeocodeRequest: function(value, fn, force) {
+        sendGeocodeRequest: function(value, fn) {
             var address = [];
             if (typeof value === 'string') {
                 address.push(value);
@@ -2622,87 +2685,109 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
                 }
             }
-//            if (address.length <= 1 && force === undefined) {
-//                force = true;
-//            }
-            force = true;
 
             var df = $.Deferred();
 
+            var self = this,
+                geocoding = self.geocoding || {};
 
-      //Uncomment for test
-//            console.log('//maps.googleapis.com/maps/api/geocode/json');
-//            df.resolve([{
-//                    status: 'OK',
-//                    results: [
-//                        {
-//                            geometry: {
-//                                location: {
-//                                    lat: 60.2479758,
-//                                    lng: 90.1104176
-//                                }
-//                            }
-//                        }
-//                    ]
-//            }, 'success']);
-//            return df;
-
-
-            var self = this;
-            $.ajax({
-                url: '//maps.googleapis.com/maps/api/geocode/json',
-                data: {
-                    sensor: false,
-                    address: address[0]
-                },
-                dataType: 'json',
-                success: function(response) {
-                    var lat, lng;
-                    if (response) {
-                        if (response.status === "OK") {
-                            var n = response.results.length;
-                            var r = false;
-                            for (var i = 0; i < n; i += 1) {
-                                if (!response.results[i].partial_match) {   // address correct, geocoding without errors
-                                    lat = response.results[i].geometry.location.lat || '';
-                                    lng = response.results[i].geometry.location.lng || '';
-                                    if (fn instanceof Function) {
-                                        fn({ lat: lat, lng: lng });
+            var googleGeocoding = function(key) {
+                $.ajax({
+                    url: 'https://maps.googleapis.com/maps/api/geocode/json',
+                    data: {
+                        sensor: false,
+                        key: key,
+                        address: address[0]
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        var lat, lng;
+                        if (response) {
+                            if (response.status === "OK") {
+                                var n = response.results.length;
+                                var r = false;
+                                for (var i = 0; i < n; i += 1) {
+                                    if (!response.results[i].partial_match) {   // address correct, geocoding without errors
+                                        lat = response.results[i].geometry.location.lat || '';
+                                        lng = response.results[i].geometry.location.lng || '';
+                                        if (fn instanceof Function) {
+                                            fn({ lat: lat, lng: lng });
+                                        }
+                                        r = true;
+                                        break;
                                     }
-                                    r = true;
-                                    break;
                                 }
-                            }
-                            if (!r) {   // partial match results
 
-                                if (force) {    // force: just return results
+                                if (!r) {   // partial match results
                                     lat = response.results[0].geometry.location.lat || '';
                                     lng = response.results[0].geometry.location.lng || '';
                                     if (fn instanceof Function) {
                                         fn({ lat: lat, lng: lng });
                                     }
-                                    df.resolve([response, 'success']);
-                                } else if (address[1]) {    // try another address (maybe this is it)
-                                    self.sendGeocodeRequest(address[1], fn, true).always(function(r) {
-                                        df.resolve(r);
-                                    });
+                                    df.resolve([{ lat: lat, lng: lng, status: response.status }, 'success']);
                                 } else {
-                                    df.resolve([response, 'success']);
+                                    df.resolve([{ lat: lat, lng: lng, status: response.status }, 'success']);
                                 }
                             } else {
-                                df.resolve([response, 'success']);
+                                df.resolve([ { status: response.status } , 'success']);
                             }
                         } else {
-                            df.resolve([response, 'success']);
+                            df.resolve([{ status: 'FAIL' }, 'error']);
                         }
-                    } else {
-                        df.resolve([{}, 'error']);
+                    },
+                    error: function(response) {
+                        df.resolve([{ status: response.status }, 'error']);
                     }
-                },
-                error: function(response) {
-                    df.resolve([response, 'error']);
-                }
-            });
+                });
+            };
+
+            var yandexGeocoding = function(key) {
+                $.ajax({
+                    url: 'https://geocode-maps.yandex.ru/1.x/?format=json',
+                    data: {
+                        apikey: key,
+                        geocode: address[0]
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        var lat, lng;
+                        if (data.response && data.response.GeoObjectCollection && data.response.GeoObjectCollection.featureMember) {
+                            $.each(data.response.GeoObjectCollection.featureMember, function (index, res) {
+                                if (res.GeoObject && res.GeoObject.Point && res.GeoObject.Point.pos && typeof res.GeoObject.Point.pos === 'string') {
+                                    var coords = res.GeoObject.Point.pos.split(" ");
+                                    if (coords.length === 2) {
+                                        lng = coords[0];
+                                        lat = coords[1];
+                                        if (fn instanceof Function) {
+                                            fn({ lat: lat, lng: lng });
+                                        }
+                                        df.resolve([{ lat: lat, lng: lng, status: 'OK' }, 'success']);
+                                        return false;
+                                    }
+                                }
+                            });
+                            if (!lat || !lng) {
+                                df.resolve([{ status: 'FAIL' }, 'error']);
+                            }
+                        } else {
+                            df.resolve([{ status: 'FAIL' }, 'error']);
+                        }
+                    },
+                    error: function(response) {
+                        df.resolve([{ status: 'FAIL' }, 'error']);
+                    }
+                });
+            };
+
+            // options of geocoding
+            if (geocoding.type === 'google' && geocoding.key) {
+                googleGeocoding(geocoding.key);
+            } else if (geocoding.type === 'yandex' && geocoding.key) {
+                yandexGeocoding(geocoding.key);
+            } else {
+                df.resolve([{ geocoding: geocoding }, 'error']);
+            }
+
             return df;
         },
 
@@ -2734,3 +2819,5 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
 
 // one global instance of contact editor always exists
 $.wa.contactEditor = $.wa.contactEditorFactory();
+
+})(jQuery);

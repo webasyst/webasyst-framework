@@ -52,7 +52,7 @@ if (!$groups) {
     $crm->save(-$admin_group_id, 'webasyst', 'backend', 2);
 
     $hq_group_id = $gm->insert(array(
-        'name' => sprintf_wp('%s HQ', wa('webasyst')->accountName()),
+        'name' => _w('My office'),
         'type' => 'location',
         'sort' => 1,
     ));

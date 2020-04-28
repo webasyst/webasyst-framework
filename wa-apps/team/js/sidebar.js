@@ -397,6 +397,13 @@ var Sidebar = ( function($) {
 
         if (uri) {
             $link = that.$wrapper.find('a[href="' + uri + '"]:first');
+
+        } else if ( uri === false ) {
+            if (that.$activeMenuItem) {
+                that.$activeMenuItem.removeClass(that.selected_class);
+                that.$activeMenuItem = null;
+            }
+            return false;
         }
 
         if ($link && $link.length) {

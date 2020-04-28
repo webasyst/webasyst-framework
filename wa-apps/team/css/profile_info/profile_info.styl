@@ -128,7 +128,12 @@ a.c-user-group-setup { margin-left: 10px; }
 .c-access-cb-all input { margin: 0 0.5em!important;vertical-align: middle;}
 .c-list-toolbar ul.menu-h.dropdown li:first-child { width: 250px;}
 .c-list-toolbar ul.menu-h.dropdown li:first-child ul li:first-child { width:auto;}
-.c-core-content .delete-subfield { margin: 0 0 0 .5em}
+
+.c-core-content .delete-subfield,
+.t-dynamic-content .delete-subfield {
+    margin: 0 0 0 .5em
+}
+
 .contacts-data .thumbs { padding-left: 2px;}
 .contacts-data ul.thumbs .c-name-check a { vertical-align:top; max-width:80px; display:inline-block; overflow:hidden;}
 .contacts-data .paging { color: #444444; font-size: 0.92em; white-space: nowrap; overflow:hidden; margin-left: 10px;}
@@ -250,7 +255,10 @@ input.external-error {
 .fields .field .multifield-subfields .value .address-field { margin-bottom: 15px; }
 .fields .edit-mode .field .multifield-subfields { margin-bottom: -2px; }
 .fields .value.multifield-subfields-add-another { margin-bottom: 10px; }
-.fields .field .multifield-subfields .ext { font-size: 0.8em; }
+
+.fields .field .multifield-subfields .ext { margin-left: 2px; font-size: 0.8em; }
+.fields .field[data-field-id="address"] .multifield-subfields .ext { margin-left: 0 }
+
 .multifield-subfields>:only-child .delete-subfield,
 .in-place-editor .delete-subfield {
     display: none;
@@ -267,6 +275,15 @@ input.external-error {
     opacity 0
     cursor move
 }
+
+.fields .field .multifield-subfields .field-composite-subfields-block {
+    position relative
+}
+.fields .field .multifield-subfields .field-composite-subfields-block .sort-handler {
+    position absolute
+    margin-top 2px
+}
+
 .fields .field[data-field-id="address"] .multifield-subfields .sort-handler {
     margin-top: 0px;
 }

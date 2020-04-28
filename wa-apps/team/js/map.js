@@ -14,8 +14,8 @@ var TeamMap = (function ($) {
 
         // VARS
         that.provider = provider;
-        if (['google', 'yandex'].indexOf(that.provider) < 0) {
-            throw Error('Not supported map provider: %s'.replace('%s', that.provider));
+        if (that.provider && ['google', 'yandex', 'disabled'].indexOf(that.provider) < 0) {
+            console.error('Not supported map provider: %s'.replace('%s', that.provider));
         }
 
         that.map_info = null;
@@ -34,6 +34,8 @@ var TeamMap = (function ($) {
                 return that.googleRender(lat, lng);
             case 'yandex':
                 return that.yandexRender(lat, lng);
+            default:
+                return;
         }
     };
 
@@ -108,6 +110,13 @@ var TeamMap = (function ($) {
                 return that.googleGeocode(query, success, fail);
             case 'yandex':
                 return that.yandexGeocode(query, success, fail);
+            default:
+                if (fail) {
+                    fail();
+                } else if (success) {
+                    success();
+                }
+                break;
         }
     };
 
@@ -150,6 +159,8 @@ var TeamMap = (function ($) {
             var firstGeoObject = res.geoObjects.get(0);
             var coords = firstGeoObject.geometry.getCoordinates();
             success(coords[0], coords[1]);
+        }, function (err) {
+            fail(err);
         });
     };
 

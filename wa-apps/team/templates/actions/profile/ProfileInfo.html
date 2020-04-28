@@ -23,6 +23,8 @@
     <div class="clear-left"></div>
 </div>
 
+{$assets = $assets|default:[]}
+
 <script type="text/javascript">
 
     $.wa.locale = $.extend($.wa.locale, {
@@ -59,12 +61,17 @@
         "cancel": "[s`cancel`]"
     });
 
-    $.wa.loadFiles({
+    var files = {
         "{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?{$wa->version(true)}": typeof $.store !== 'function',
-        "{$wa_url}wa-content/js/jquery-plugins/jquery.scrollTo-min.js?{$wa->version(true)}": typeof $.fn.scrollTo !== 'function',
         "{$wa_app_static_url}js/profile.info.js?{$wa->version()}": typeof window.ProfileInfoTab !== 'function',
         "{$wa_app_static_url}css/profile_info.css?{$wa->version()}": typeof window.ProfileInfoTab !== 'function'
-    }).then(function() {
+    };
+
+    {foreach $assets as $asset}
+        files["{$asset}?{$wa->version()}"] = true;
+    {/foreach}
+
+    $.wa.loadFiles(files).then(function() {
 
         $.storage = new $.store();
 
@@ -79,6 +86,7 @@
         $.wa.contactEditor.current_user_id = {$wa->user('id')|json_encode};
         $.wa.contactEditor.contactType = '{if $contact.is_company}company{else}person{/if}';
         $.wa.contactEditor.justCreated = false;
+        $.wa.contactEditor.geocoding = {$geocoding|json_encode};
 
         $(function(){ "use strict";
             $.wa.contactEditor.initFactories({json_encode($contactFields)}, {json_encode($contactFieldsOrder)});

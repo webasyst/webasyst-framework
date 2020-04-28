@@ -14,9 +14,10 @@
                 <tr class="white">
                     <td class="tc-column"></td>
                     <td class="tc-column-user">[`User`]</td>
-                    <td class="tc-column-date">[`Create data`]</td>
+                    <td class="tc-column-date">[`Create date`]</td>
                     <td class="tc-column-client-id">[`Client id`]</td>
                     <td class="tc-column-scope">[`Scope`]</td>
+                    <td class="tc-column-last-use-datetime">[`Last use date`]</td>
                     <td class="tc-column-expires">[`Expires`]</td>
                     <td class="tc-column-remove"></td>
                 </tr>
@@ -57,6 +58,7 @@
                                 <span style="color: #999;">{$_app|escape}{if !$_app@last},{/if}</span>
                             {/foreach}
                         </td>
+                        <td class="tc-column-last-use-datetime">{if !empty($_token.last_use_datetime)}{$_token.last_use_datetime|wa_date:humandatetime}{else}<span style="color: #999;">—</span>{/if}</td>
                         <td class="tc-column-expires">{if !empty($_token.expires)}{$_token.expires|wa_date:humandatetime}}{else}<span style="color: #999;">—</span>{/if}</td>
                         <td class="tc-column-remove"><a href="#" title="[`Remove token`]" class="js-remove-api-token" style="display: inline-block;"><i class="icon16 no"></i></a></td>
                     </tr>

@@ -51,9 +51,11 @@
     {/if}
 
     {if $map_info.adapter === 'google'}
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&key={$map_info.settings.key|default:''}&lang={$wa->locale()}"></script>
+        {$_key = $map_info.settings.key|default:''}
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&key={$_key}&lang={$wa->locale()}"></script>
     {elseif $map_info.adapter === 'yandex'}
-        <script src="https://api-maps.yandex.ru/2.1/?lang={$wa->locale()}" type="text/javascript"></script>
+        {$_apikey = $map_info.settings.apikey|default:''}
+        <script src="https://api-maps.yandex.ru/2.1/?lang={$wa->locale()}&apikey={$_apikey}" type="text/javascript"></script>
     {/if}
 
 

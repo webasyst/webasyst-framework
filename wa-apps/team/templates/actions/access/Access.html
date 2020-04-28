@@ -56,7 +56,9 @@
                                         >{$_access.name|default:""|escape}</div>
                                     </td>
                                 {else}
-                                    {foreach $_user.access as $_app_id => $_rights}
+                                    {foreach $apps as $app}
+                                        {$_app_id = $app.id}
+                                        {$_rights = $_user.access[$_app_id]|default:0}
                                         <td>
                                             {if $_rights > 1}
                                                 {$_access = $access_types.full}
@@ -66,10 +68,9 @@
                                                 {$_access = $access_types.no}
                                             {/if}
                                             <div class="t-access-status type-{$_access.id}"
-                                                data-user-id="{$_user.id}"
-                                                data-app-id="{$_app_id}"
-                                                title="[`Edit access`]"
-                                            >
+                                                 data-user-id="{$_user.id}"
+                                                 data-app-id="{$_app_id}"
+                                                 title="[`Edit access`]">
                                                 {* Output all possible names to be able to change them via JS *}
                                                 {foreach $access_types as $at}
                                                     <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
@@ -137,6 +138,13 @@
             })(jQuery);
         })(jQuery);
     </script>
+
+    {if isset($pages_count) && $pages_count > 1}
+        <div>
+            {wa_pagination total=$pages_count attrs=['class'=>'menu-h']}
+        </div>
+    {/if}
+
 </div>
 
 {/strip}

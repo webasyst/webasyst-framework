@@ -353,13 +353,14 @@
                 <div class="field c-shown-on-enabled" id="tc-api-tokens-filed">
                     <div class="name">[`API tokens`]</div>
                     <div class="value">
-                        <table class="zebra js-api-tokens-list" style="max-width: 700px;">
+                        <table class="zebra js-api-tokens-list" style="max-width: 750px;">
                             <thead style="font-size: 11px; color: #777; text-transform: uppercase; font-weight: bold;">
                                 <tr class="white">
                                     <td class="tc-column"></td>
-                                    <td class="tc-column-date">[`Create data`]</td>
+                                    <td class="tc-column-date">[`Create date`]</td>
                                     <td class="tc-column-client-id">[`Client id`]</td>
                                     <td class="tc-column-scope">[`Scope`]</td>
+                                    <td class="tc-column-last-use-datetime">[`Last use date`]</td>
                                     <td class="tc-column-expires">[`Expires`]</td>
                                     <td class="tc-column-remove"></td>
                                 </tr>
@@ -378,6 +379,7 @@
                                                 <span style="color: #999;">{$_app|escape}{if !$_app@last},{/if}</span>
                                             {/foreach}
                                         </td>
+                                        <td class="tc-column-last-use-datetime">{if !empty($_token.last_use_datetime)}{$_token.last_use_datetime|wa_date:humandatetime}{else}<span style="color: #999;">—</span>{/if}</td>
                                         <td class="tc-column-expires">{if !empty($_token.expires)}{$_token.expires|wa_date:humandatetime}}{else}<span style="color: #999;">—</span>{/if}</td>
                                         <td class="tc-column-remove"><a href="#" title="[`Remove token`]" class="js-remove-api-token" style="display: inline-block;"><i class="icon16 no"></i></a></td>
                                     </tr>
@@ -407,7 +409,7 @@
             </div>
 
             <div class="field c-shown-on-enabled" id="tc-email-change-log" style="{if $contact.is_user === '-1' || !$email_change_log}display:none;{/if}">
-                <div class="name">[`Email change history`]</div>
+                <div class="name">[`Email address changes history`]</div>
                 <div class="value">
                     <ul class="menu-v">
                         {foreach $email_change_log as $log_item}

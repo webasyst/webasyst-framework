@@ -561,7 +561,8 @@ var GroupEditDialog = ( function($) {
         that.$form.on("submit", function(event) {
             event.preventDefault();
             if (!that.is_locked) {
-                that.$submitButton.parent().append("<i class=\"icon16 loading\"></i>");
+                that.$form.find('.js-submit-loading').remove();
+                that.$submitButton.parent().append("<i class='icon16 loading js-submit-loading'></i>");
                 that.save();
             }
         });
@@ -572,6 +573,7 @@ var GroupEditDialog = ( function($) {
             var $field = $(this),
                 has_error = $field.hasClass( that.has_error_class );
 
+            that.$form.find('.js-submit-loading').remove();
             if (has_error) {
                 $field
                     .removeClass(that.has_error_class)

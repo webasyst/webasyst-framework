@@ -204,6 +204,7 @@ class teamHelper
     public static function appsWithAccessRights($ownAccess, $groupAccess = array())
     {
         $apps = wa()->getApps();
+        uasort($apps, wa_lambda('$app1, $app2', 'return strcoll($app1["name"], $app2["name"]);'));
         foreach ($apps as $app_id => &$app) {
             $app['id'] = $app_id;
             $app['customizable'] = isset($app['rights']) ? (boolean) $app['rights'] : false;
