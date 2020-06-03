@@ -87,12 +87,12 @@
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                     <td>{$key}</td>
-                                    <td>{if is_array($key_fields)}{$key_fields|implode:', '}{else}{$key_fields}{/if}</td>
+                                    <td>{if is_array($key_fields)}{$key_fields|join:', '}{else}{$key_fields}{/if}</td>
                                 </tr>
                             {/foreach}
                         {else}
                             {$current_info = $app.current_tables[$table][$column]}
-                            <tr{if $info.status} class="error" title="{$info.status|implode:', '}" {else}{/if}>
+                            <tr{if $info.status} class="error" title="{$info.status|join:', '}" {else}{/if}>
 
                                 <td>
                                     {if !$app_anchor_done}<a name="{$app_id}"></a>{$app_anchor_done=true}{/if}

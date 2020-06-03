@@ -20,6 +20,8 @@ class waAuth implements waiAuth
     const LOGIN_FIELD_PHONE = 'phone';
     const LOGIN_FIELD_LOGIN = 'login';
 
+    const PASSWORD_MAX_LENGTH = 255;
+
     protected $options = array(
         'cookie_expire' => 2592000,
     );

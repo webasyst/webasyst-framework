@@ -18,13 +18,12 @@ class webasystDashboardActivityAction extends waViewAction
         }
         $logs  = $this->getLogs($filters, $count);
         $this->view->assign('activity', $logs);
+        $this->view->assign('datetime_group', '');
         if ($logs && waRequest::isXMLHttpRequest()) {
             $row = reset($logs);
             $this->view->assign('datetime_group', $this->getDatetimeGroup($row['datetime']));
         }
-        if ($count == 50) {
-            $this->view->assign('activity_load_more', true);
-        }
+        $this->view->assign('activity_load_more', $count == 50);
     }
 
     public function getLogs($filters = array(), &$count = null, $autoload_more = true)

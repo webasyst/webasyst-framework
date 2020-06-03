@@ -225,7 +225,7 @@
         $('#wa-design-menu,#wa-design-container').on('click', ".wa-theme-preview", function (e) {
             var $self = $(this),
                 theme_id = $self.data('theme-id'),
-                url = $self.attr('href'),
+                url = $self.attr('data-href'),
                 tmp_params = waDesignParams($('#wa-theme-list li.selected a').attr('href'));
 
             if (!tmp_params['route']) {
@@ -238,7 +238,6 @@
                 $.post(href, data, function () {
                     window.open(url, "_blank");
                 });
-
                 $('#wa-current-theme').html($('#wa-theme-active .url').html());
                 $("#wa-design-preview").waDialog({
                     esc: false,

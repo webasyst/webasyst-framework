@@ -875,17 +875,22 @@ class waSignupAction extends waViewAction
         // See below onetime_password validation
         if ($this->auth_config->getField('password') && !$onetime_password_need) {
 
-            // check required
-            if (!isset($errors['password']) && !$data['password']) {
-                $errors['password'] = array();
-                $errors['password_confirm']['required'] = _ws('Password can not be empty.');
-            }
-
-            // check passwords
-            if (!isset($errors['password']) && $data['password'] !== $data['password_confirm']) {
-                $errors['password'] = (array)ifset($errors['password']);
-                $errors['password_confirm'] = (array)ifset($errors['password_confirm']);
-                $errors['password_confirm']['not_match'] = _ws('Passwords do not match');
+            if (!isset($errors['password'])) {
+                if (!$data['password']) {
+                    // check required
+                    $errors['password'] = array();
+                    $errors['password_confirm']['required'] = _ws('A password cannot be empty.');
+                } elseif ($data['password'] !== $data['password_confirm']) {
+                    // check passwords match
+                    $errors['password'] = (array)ifset($errors['password']);
+                    $errors['password_confirm'] = (array)ifset($errors['password_confirm']);
+                    $errors['password_confirm']['not_match'] = _ws('Passwords do not match');
+                } elseif (strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
+                    // check passwords length
+                    $errors['password'] = (array)ifset($errors['password']);
+                    $errors['password_confirm'] = (array)ifset($errors['password_confirm']);
+                    $errors['password_confirm']['too_long'] = _ws('Specified password is too long.');
+                }
             }
 
         }

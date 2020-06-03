@@ -63,6 +63,8 @@ class waPluginsActions extends waActions
         }
         $template = $this->getTemplatePath('settings');
         $vars['plugins_count'] = $plugins_count;
+        $vars['app_id'] = $this->getAppId();
+        $vars['need_show_review_widget'] = wa()->appExists('installer');
         $this->display($vars, $template);
 
     }

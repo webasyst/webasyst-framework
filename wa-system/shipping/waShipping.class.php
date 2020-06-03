@@ -1299,7 +1299,7 @@ HTML;
             if (!value) {
                 value = 0;
             }
-            el.val(Math.max(1, Math.min(23, parseInt(value))));
+            el.val(Math.max(0, Math.min(23, parseInt(value))));
         });
 
         table.on('click', '.add-interval', function () {

@@ -291,4 +291,9 @@ class waUser extends waContact
         ));
         return $view->fetch('file:'.dirname(__FILE__).'/templates/NameAndStatus.html');
     }
+
+    public function isAuth()
+    {
+        return false;
+    }
 }

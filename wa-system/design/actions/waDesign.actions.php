@@ -798,6 +798,7 @@ HTACCESS;
                 'cover'                               => $cover,
                 'route_url'                           => $route_url,
                 'apps'                                => wa()->getApps(),
+                'need_show_review_widget'             => wa()->appExists('installer') && $theme_id != 'default',
             ), $this->getConfig()->getRootPath().'/wa-system/design/templates/Theme.html');
         }
     }
@@ -1081,12 +1082,17 @@ HTACCESS;
         $theme_id = waRequest::get('theme');
         $app_id = waRequest::get('app_id', $this->getAppId());
         $theme = new waTheme($theme_id, $app_id);
-        $target_file = $theme->compressSettings(wa()->getTempPath("themes"));
-        waFiles::readFile($target_file, basename($target_file), false);
-        try {
-            waFiles::delete($target_file);
-        } catch (Exception $ex) {
+        $incorrect_settings = $this->checkExistenceSettings($theme);
+        if ($incorrect_settings === false) {
+            $target_file = $theme->compressSettings(wa()->getTempPath("themes"));
+            waFiles::readFile($target_file, basename($target_file), false);
+            try {
+                waFiles::delete($target_file);
+            } catch (Exception $ex) {
 
+            }
+        } else {
+            return $this->displayJson(array(), $incorrect_settings);
         }
     }
 
@@ -1304,5 +1310,52 @@ HTACCESS;
     protected function getView()
     {
         return wa('webasyst')->getView();
+    }
+
+    public function checkExistenceSettings($theme)
+    {
+        $theme_settings = $theme->getSettings();
+        if (empty($theme_settings)) {
+            $parent_theme = explode(':', $theme->parent_theme_id);
+            $theme_id = ifset($parent_theme[1], null);
+
+            $app_name = $app_url = null;
+            if (!empty($parent_theme[0])) {
+                $app_id = $parent_theme[0];
+                $app_name = wa($app_id)->getConfig()->getName();
+                $app_url = $this->getAppAppearanceUrl($app_id);
+                if (!empty($theme_id)) {
+                    $app_url .= '/theme=' . $theme_id;
+                }
+            }
+            $response = array(
+                'message' => _ws('This design theme does not have its own settings. Try to export the parent theme’s settings.'),
+                'app_name' => _ws($app_name),
+                'appearance_name' => _ws('Appearance'),
+                'app_url' => $app_url,
+                'theme_id' => $theme_id
+            );
+            return $response;
+        }
+
+        return false;
+    }
+
+    public function getAppAppearanceUrl($application_id = 'site')
+    {
+        $app_url = wa($application_id)->getAppUrl($application_id);
+        switch ($application_id) {
+            case 'blog':
+                $app_url .= '?module=design';
+                break;
+            case 'shop':
+                $app_url .= '?action=storefronts#/design';
+                break;
+            default:
+                $app_url .= '#/design';
+                break;
+        }
+
+        return $app_url;
     }
 }

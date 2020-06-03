@@ -24,7 +24,8 @@ class waSystemConfig
 
     protected static $system_options = array(
         'backend_url' => 'webasyst',
-        'mod_rewrite' => true
+        'mod_rewrite' => true,
+        'cache_versioning' => true,
     );
 
     public static $time = null;

@@ -451,10 +451,33 @@ class waPageActions extends waActions
 
         $page_model = $this->getPageModel();
         $domain_field = $page_model->getDomainField();
-        $domain_name = $domain_field === 'domain_id' ? $data['domain_id'] : $domain;
+        $field_name = 'domain_id';
+        if ($domain_field == $field_name) {
+            if (!empty($data[$field_name])) {
+                $domain_name = $data[$field_name];
+            } elseif (!empty($page[$field_name])) {
+                $domain_name = $page[$field_name];
+            } elseif (!empty($parent[$field_name])) {
+                $domain_name = $parent[$field_name];
+            }
+        } else {
+            $domain_name = $domain;
+        }
+
+        $full_url = '';
+        if (!empty($parent['full_url'])) {
+            if (substr($parent['full_url'], -1) == '/') {
+                $full_url = $parent['full_url'];
+            } else {
+                $full_url = $parent['full_url'] . '/';
+            }
+        }
+        $full_url .= $data['url'];
+
         $same_url = $page_model->getByField(array(
             $domain_field => $domain_name,
-            'url' => $page_url
+            'route' => $route,
+            'full_url' => $full_url,
         ), true);
 
         if (!empty($same_url)) {

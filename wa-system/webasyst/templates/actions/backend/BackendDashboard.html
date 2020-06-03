@@ -49,7 +49,7 @@
                 <section class="activity-list-wrapper">
                     <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
                         {if !empty($activity)}
-                            {include file="../dashboard/DashboardActivity.html" inline}
+                            {include file="../dashboard/DashboardActivity.html" datetime_group='' inline}
                         {else}
                             <div class="empty-activity-text">
                                 <h2>[`No events in the live stream yet.`]</h2>

@@ -81,7 +81,7 @@
 									[`Email`] *
 								</div>
 								<div class="value">
-									<input type="text" {if !empty($errors.email)}class="error"{/if} name="email" value="{$wa->request('email')}" />
+									<input type="text" {if !empty($errors.email)}class="error"{/if} name="email" value="{$wa->request('email')|escape}" />
 									<em class="errormsg">{if !empty($errors.email)}{$errors.email}{/if}</em>
 								</div>
 							</div>

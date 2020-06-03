@@ -95,6 +95,8 @@ abstract class waBaseLoginAction extends waLoginModuleController
         $password = is_scalar($password) ? (string)$password : '';
         if (strlen($password) <= 0) {
             return _ws('Password is required');
+        } elseif (strlen($password) > waAuth::PASSWORD_MAX_LENGTH) {
+            return _ws('Specified password is too long.');
         } else {
             return null;
         }

@@ -2,6 +2,15 @@
 
 class waUtils
 {
+    /**
+     * Saves a variable value to a PHP configuration file.
+     * The saved value can be read from the file using include() statement.
+     *
+     * @param  mixed  $var    Variable value.
+     * @param  string $file   Path to the file.
+     * @param  bool   $export Whether the value must be converted to a string using var_export() function.
+     * @return bool           Whether the value was successfully saved.
+     */
     public static function varExportToFile($var, $file, $export = true)
     {
         $result = false;
@@ -39,7 +48,7 @@ class waUtils
     }
 
     /**
-     * Extract values from array of arrays (or objects) using a single key.
+     * Extract values from an array of arrays (or objects) using a single key.
      * Works kinda like array_column (which unfortunately requires php 7).
      *
      * When used with objects, requires having magic methods __isset() and __get().
@@ -49,8 +58,8 @@ class waUtils
      * When $index_key is true, it means to use index $i of original $array.
      * Otherwise, index by value taken from $array[$i][$index_key]. If not present, value is skipped.
      *
-     * @param array      $array      Array of arrays or objects
-     * @param string|int $field      Key for extract value
+     * @param array      $array      Array of arrays or objects.
+     * @param string|int $field      Key for extracted values.
      * @param mixed      $index_key  How to index the result, see above.
      * @return array
      */
@@ -94,9 +103,14 @@ class waUtils
     }
 
     /**
-     * @param array $array
-     * @param mixed $field
-     * @param string $type 'collect', 'first', 'last'
+     * Groups sub-arrays of an array in several ways.
+     *
+     * @param array  $array Array of associative sub-arrays.
+     * @param mixed  $field Key of sub-arrays' items by whose values sub-arrays will be grouped.
+     * @param string $type Type of grouping: 'collect', 'first', or 'last':
+     * - 'collect': sub-arrays of the original array, containing equal values of the key specified in $field parameter, are gruoped into sub-arrays of the resulting array; the values of the specified $field are used as the keys of the resulting array.
+     * - 'first': only the first sub-array of each group of sub-arrays with the same values of the specified $field is added to the resulting array.
+     * - 'last': only the last sub-array of each group of sub-arrays with the same values of the specified $field is added to the resulting array.
      * @return array
      * @since 1.10.0
      */
@@ -135,20 +149,19 @@ class waUtils
     }
 
     /**
-     * Re-order keys of input associative array by predefined order
+     * Re-order keys of input associative array by predefined order.
      *
-     * @param array $array that what you want re-order
-     * @param array $order predefined order
+     * @param array $array Original array.
+     * @param array $order Array of its keys in the desired order.
      *
-     * That keys IN $array that aren't in $order will be saved in original order
-     * That values IN $orders that aren't keys in $array will be ignored
+     * The order of keys of $array that are not contained in $order will not be changed.
+     * The values of $order that are not among the keys of $array will be ignored.
      *
-     * Example
-     *
-     * $fruits = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
-     * $my_order = array('watermelon', 'pineapple', 'strawberry');
-     * $fruits = waUtils::orderKeys($fruits, $my_order);
-     * $fruits === array('watermelon' => 400, 'pineapple' => 300, 'apple' => 100, 'orange' => 200);
+     * @example
+     * $array = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
+     * $order = array('watermelon', 'pineapple', 'strawberry');
+     * waUtils::orderKeys($array, $order);
+     * // array('watermelon' => 400, 'pineapple' => 300, 'apple' => 100, 'orange' => 200);
      *
      * @return array
      * @since 1.10.0
@@ -190,30 +203,32 @@ class waUtils
     }
 
     /**
-     * Extract from input associative array  only specified keys
-     * @param $array
-     * @param array $keys
-     * @param bool $skip Default True
-     * @param mixed $populate
+     * Returns array items with specified keys.
      *
-     * That values of $keys that aren't keys in $array will be
+     * @param array $array    Associative array.
+     * @param array $keys     Array of keys whose values must be returned.
+     * @param bool  $skip     Whether array items with keys missing in $keys must not be included in the resulting array.
+     * @param mixed $populate The value to replace the values of original array’s items,
+     * whose keys are not contained in $keys, when $skip = false.
+     *
+     * The values of $keys that are not among the keys of $array will be
      *  + skipped - If $skip === True (default value)
      *  + not skipped - If $skip === False
-     *  + populate by $populate value if $skip === False
+     *  + populated by $populate value if $skip === False
      *
-     * Example with skipping
+     * @example $skip = true
      *
-     * $fruits = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
+     * $array = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
      * $keys = array('orange', 'watermelon', 'strawberry');
-     * $fruits = waUtils::extractValuesByKeys($fruits, $keys);
-     * $fruits === array('orange' => 200, 'watermelon' => 400);
+     * waUtils::extractValuesByKeys($array, $keys);
+     * // array('orange' => 200, 'watermelon' => 400);
      *
-     * Example with populate
+     * @example $populate = true
      *
-     * $fruits = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
+     * $array = array('apple' => 100, 'orange' => 200, 'pineapple' => 300, 'watermelon' => 400);
      * $keys = array('orange', 'watermelon', 'strawberry');
-     * $fruits = waUtils::extractValuesByKeys($fruits, $keys, false, 0);
-     * $fruits === array('orange' => 200, 'watermelon' => 400, 'strawberry' => 0);
+     * waUtils::extractValuesByKeys($array, $keys, false, 0);
+     * // array('orange' => 200, 'watermelon' => 400, 'strawberry' => 0);
      *
      * @return array
      * @since 1.10.0
@@ -232,8 +247,10 @@ class waUtils
     }
 
     /**
-     * Cast to array of integers
-     * @param mixed $val
+     * Returns an array of values cast to integer type.
+     *
+     * @param mixed $val Either array of values,
+     *     or a scalar value which, cast to integer type, is returned as a single array item.
      * @return int[]
      * @since 1.10.0
      */
@@ -248,9 +265,11 @@ class waUtils
     }
 
     /**
-     * Cast to array of strings
-     * @param mixed $val
-     * @param bool $trim
+     * Returns an array of values cast to string type.
+     *
+     * @param mixed $val  Either array of values,
+     *                    or a scalar value which, cast to string type, is returned as a single array item.
+     * @param bool  $trim Whether leading and trailing whitespace characters must be removed from strings.
      * @return string[]
      * @since 1.10.0
      */
@@ -268,26 +287,28 @@ class waUtils
     }
 
     /**
-     * Drop all not positive values from input array
-     * @param array [int] $int_array
-     * @return array[int]
+     * Filters out array items which are not positive numbers.
+     *
+     * @param array [numeric] $array Original array of numbers.
+     * @return array[numeric]
      * @since 1.10.0
      */
-    public static function dropNotPositive($int_array)
+    public static function dropNotPositive($array)
     {
-        foreach ($int_array as $index => $int) {
+        foreach ($array as $index => $int) {
             if ($int <= 0) {
-                unset($int_array[$index]);
+                unset($array[$index]);
             }
         }
-        return $int_array;
+        return $array;
     }
 
     /**
-     * Wraps json_encode() adding proper options if available depending on PHP version.
+     * Wrapper for json_encode() function adding proper options if available for current PHP version.
+     *
      * @param mixed $value
-     * @param int $options
-     * @param int $depth
+     * @param int   $options
+     * @param int   $depth
      * @return string
      * @since 1.10.0
      */
@@ -312,12 +333,12 @@ class waUtils
     }
 
     /**
-     * Wraps json_decode() adding error handling via exceptions
+     * Wrapper for json_decode() function with error handling via exceptions.
      *
-     * @param string $json The json string being decoded
-     * @param bool $assoc When TRUE, returned objects will be converted into associative arrays
-     * @param int $depth User specified recursion depth (since PHP 5.3.0)
-     * @param int $options Bitmask of JSON decode options (since PHP 5.4.0)
+     * @param string $json The JSON string to be decoded.
+     * @param bool   $assoc When TRUE, returned objects will be converted into associative arrays.
+     * @param int    $depth User specified recursion depth (since PHP 5.3.0).
+     * @param int    $options Bitmask of JSON decode options (since PHP 5.4.0).
      * @return mixed
      * @throws waException
      * @since 1.10.0
@@ -367,12 +388,12 @@ class waUtils
     }
 
     /**
-     * Insert a value or key/value pair after a specific key in an array.
-     * If key doesn't exist, value is appended to the end of the array.
+     * Adds new array items after a specified key.
+     * If the specified key doesn't exist, new values are appended to the end of the array.
      *
-     * @param array $array
-     * @param string $key
-     * @param array $new
+     * @param array  $array Original associative array.
+     * @param string $key   Array key after which new items must be added.
+     * @param array  $new   New items array.
      * @return array
      * @since 1.10.0
      */
@@ -382,5 +403,28 @@ class waUtils
         $index = array_search($key, $keys);
         $pos = false === $index ? count($array) : $index + 1;
         return array_merge(array_slice($array, 0, $pos), $new, array_slice($array, $pos));
+    }
+
+    /**
+     * Greater common divisor of two positive integers.
+     * @since 1.13.9
+     */
+    public static function gcd($a, $b) {
+        $a = max((int) $a, 1);
+        $b = max((int) $b, 1);
+        while ($b != 0) {
+            list($a, $b) = [$b, $a % $b];
+        }
+        return $a;
+    }
+
+    /**
+     * Least common multiple of two positive integers.
+     * @since 1.13.9
+     */
+    public static function lcm($a, $b) {
+        $a = max((int) $a, 1);
+        $b = max((int) $b, 1);
+        return $a*$b / self::gcd($a, $b);
     }
 }

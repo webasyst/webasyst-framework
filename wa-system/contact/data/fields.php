@@ -77,7 +77,8 @@ return array(
             'yahoo' => 'Yahoo',
             'aim' => 'AIM',
             'msn' => 'MSN',
-            'telegram' => 'Telegram'
+            'telegram' => 'Telegram',
+            'viber' => 'Viber'
         ),
         'formats' => array(
                 'top' => new waContactIMTopFormatter(),

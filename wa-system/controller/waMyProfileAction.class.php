@@ -12,6 +12,11 @@ abstract class waMyProfileAction extends waViewAction
     /** @var waContact */
     public $contact = null;
 
+    /**
+     * @var string waContactForm namesapce
+     */
+    protected $namespace = 'profile';
+
     public function execute()
     {
         $this->form = $this->getForm();
@@ -63,10 +68,16 @@ abstract class waMyProfileAction extends waViewAction
                 waImage::factory($photo_file)->crop($square, $square)->save($filename, 90);
 
                 waContactFields::getStorage('waContactInfoStorage')->set($contact, array('photo' => $rand));
+
             } elseif (empty($data['photo'])) { // remove photo
                 $contact->set('photo', "");
             }
-            $this->form->values['photo'] = $data['photo'] = $contact->get('photo');
+
+            // just in case, may be some outer code user values array
+            $this->form->values['photo'] = $contact->get('photo');
+
+            // after saving page it is not reloaded, but waContactForm gets data from post property to render itself by html() method
+            $this->form->post['photo'] = $contact->get('photo');
         }
 
         // Validation
@@ -77,6 +88,9 @@ abstract class waMyProfileAction extends waViewAction
         // Password validation
         if (!empty($data['password']) && $data['password'] !== $data['password_confirm']) {
             $form->errors('password', _ws('Passwords do not match'));
+            return false;
+        } elseif (strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
+            $form->errors('password', _ws('Specified password is too long.'));
             return false;
         } elseif (empty($data['password']) || empty($data['password_confirm'])) {
             unset($data['password']);
@@ -96,7 +110,10 @@ abstract class waMyProfileAction extends waViewAction
         }
 
         foreach ($data as $field => $value) {
-            $contact->set($field, $value);
+            // except photo, photo is already set
+            if ($field != 'photo') {
+                $contact->set($field, $value);
+            }
         }
         $errors = $contact->save();
 
@@ -118,7 +135,7 @@ abstract class waMyProfileAction extends waViewAction
                 $new_data[$field_id] = $this->contact->get($field_id);
             }
         }
-        
+
         $this->logProfileEdit($old_data, $new_data);
 
         return true;
@@ -218,7 +235,7 @@ abstract class waMyProfileAction extends waViewAction
         }
 
         return waContactForm::loadConfig($enabled, array(
-            'namespace' => 'profile'
+            'namespace' => $this->namespace
         ));
     }
 

@@ -1,37 +1,42 @@
 {if isset($plugin_id)}
-{if !empty($settings_controls)}
-<h1>{$plugin_info.name}</h1>
-<div class="fields form">
-    <form action="?module=plugins&id={$plugin_id}&action=save" method="post" id="plugins-settings-form" enctype="multipart/form-data" target="plugins-settings-iframe">
-        {$wa->csrf()}
-        {foreach $settings_controls as $name => $control}
-        <div class="field">
-            {$control}
+    {if !empty($settings_controls)}
+        <h1>{$plugin_info.name}</h1>
+        <div class="fields form">
+            <form action="?module=plugins&id={$plugin_id}&action=save" method="post" id="plugins-settings-form" enctype="multipart/form-data" target="plugins-settings-iframe">
+                {$wa->csrf()}
+                {foreach $settings_controls as $name => $control}
+                    <div class="field">
+                        {$control}
+                    </div>
+                {/foreach}
+
+                <div class="field">
+                    <div class="value submit">
+                        <input type="submit" class="button green" value="[s`Save`]">
+                        <span id="plugins-settings-form-status" style="display:none"><!-- message placeholder --></span>
+                    </div>
+                </div>
+
+            </form>
+            <iframe style="display:none" name="plugins-settings-iframe" id="plugins-settings-iframe"></iframe>
         </div>
-        {/foreach}
-
-        <div class="field">
-            <div class="value submit">
-                <input type="submit" class="button green" value="[s`Save`]">
-                <span id="plugins-settings-form-status" style="display:none"><!-- message placeholder --></span>
-            </div>
+    {else}
+        <div class="block double-padded align-center gray">
+            <p>
+                <strong>{$plugin_info.name|default:$plugin_id|string_format:'[s`Plugin %s is installed and working.`]'}</strong>
+                <br>
+                <br>
+                [s`No configuration options are available for this plugin.`]
+            </p>
         </div>
+    {/if}
 
-    </form>
-    <iframe style="display:none" name="plugins-settings-iframe" id="plugins-settings-iframe"></iframe>
-</div>
-{else}
-<div class="block double-padded align-center gray">
-    <p>
-        <strong>{$plugin_info.name|default:$plugin_id|string_format:'[s`Plugin %s is installed and working.`]'}</strong>
-        <br>
-        <br>
-        [s`No configuration options are available for this plugin.`]
-    </p>
+    {if $need_show_review_widget}
+        <div>
+            {$wa->installer->reviewWidget("plugin/`$app_id`/`$plugin_id`", ['is_inline' => true])}
+        </div>
+    {/if}
 
-</div>
-
-{/if}
 {elseif ($plugins_count > 0)}
     [s`Unknown plugin`]
 {/if}

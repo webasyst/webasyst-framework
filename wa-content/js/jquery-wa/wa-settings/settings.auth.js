@@ -161,6 +161,8 @@ var WASettingsAuth = ( function($) {
 
     WASettingsAuth.prototype.initLoginByPhoneToggle = function() {
         var that = this,
+            $form = that.$form,
+            $button = that.$button,
             $auth_form_constructor = that.$wrapper.find('.js-login-form-constructor'),
             $login_wrapper = $auth_form_constructor.find('div[data-field-id="login"]'),
             $login_name = $login_wrapper.find('.js-editable-item'),
@@ -180,6 +182,8 @@ var WASettingsAuth = ( function($) {
         $login_by_phone_toggle.on('change', function () {
             var is_checked = $(this).is(':checked'),
                 login_name = that.locale.login_names.login;
+
+            that.clearPhoneAuthBlockErrors();
 
             if (is_checked) {
                 login_name = that.locale.login_names.login_or_phone;
@@ -380,6 +384,16 @@ var WASettingsAuth = ( function($) {
         });
     };
 
+    WASettingsAuth.prototype.clearPhoneAuthBlockErrors = function() {
+        var that = this,
+            $wrapper = that.$wrapper;
+
+        $wrapper.find('.js-phone-auth-settings-block')
+            .find('.error').removeClass('error').end()
+            .find('.errormsg:not(.js-sms-template-not-selected-msg)').remove().end()
+            .find('.js-sms-template-not-selected-msg').hide();
+    };
+
     WASettingsAuth.prototype.initSubmit = function () {
         var that = this,
             $template_selects = that.$template_selectors,
@@ -432,19 +446,18 @@ var WASettingsAuth = ( function($) {
                     that.$button.removeClass('yellow').addClass('green');
                     that.$loading.removeClass('loading').addClass('yes');
                     that.$footer_actions.removeClass('is-changed');
-                    setTimeout(function(){
-                        that.$loading.hide();
-                    },2000);
-                } else {
-                    that.$loading.hide();
-
-                    if (!$.isEmptyObject(res.errors)) {
-                        if (renderServerChannelErrors(res.errors)) {
-                            return;
-                        }
-                        renderServerPhoneTransformPrefixErrors(res.errors);
-                    }
+                    return;
                 }
+
+                if (!$.isEmptyObject(res.errors)) {
+                    if (renderServerChannelErrors(res.errors)) {
+                        return;
+                    }
+                    renderServerPhoneTransformPrefixErrors(res.errors);
+                }
+
+            }).always(function () {
+                that.$loading.hide();
                 that.is_locked = false;
                 that.$button.prop('disabled', false);
             });

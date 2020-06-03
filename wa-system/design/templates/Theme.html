@@ -220,7 +220,7 @@
 
                 {if !empty($preview_url)}
                     <div style="margin: 16px 0 22px 0;">
-                        <a class="wa-theme-preview button blue" data-theme-id="{$theme.id|escape}" target="_blank" href="{$preview_url}">[s`Preview on my website`]</a>
+                        <a class="wa-theme-preview button blue" data-theme-id="{$theme.id|escape}" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">[s`Preview on my website`]</a>
                         <p class="hint" style=" margin:16px 0 0 0">
                             <strong>[s`Your website will display this trial theme for you only.`]</strong>
                             [s`Other visitors will keep seeing existing theme with no change.`]
@@ -350,12 +350,22 @@
 
         {/if}
 
+        {* Installer review widget *}
+        {if can_show_review_widget}
+            <div class="block not-padded top-padded insidebar-wrapper">
+                {$wa->installer->reviewWidget("theme/`$theme.id`", ['is_inline' => true])}
+            </div>
+        {/if}
+
         {* Misc actions *}
         <div class="block  wa-theme-actions">
             <ul class="menu-v with-icons">
                 {if !empty($settings.items)}
                     {* Export theme settings *}
-                    <li><a href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}"><i class="icon16 import"></i>[s`Export theme settings`]</a></li>
+                    <li>
+                        <div><a class="js-export-theme-settings" href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}"><i class="icon16 import"></i>[s`Export theme settings`]</a></div>
+                        <div class="hidden js-export-error"><span class="js-export-error-caption small red"></span></div>
+                    </li>
                     {* Import theme settings *}
                     <li><a class="js-import-theme-settings" href="#"><i class="icon16 export"></i>[s`Import theme settings`]</a></li>
                 {/if}
@@ -556,7 +566,7 @@
                     <a id="theme-start-using" href="#" class="button green">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
                     {if !empty($preview_url)}
                         [s`or`]
-                        <span class="nowrap"><a class="wa-theme-preview" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
+                        <span class="nowrap"><a class="wa-theme-preview" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
                     {/if}
                 </p>
             {/if}

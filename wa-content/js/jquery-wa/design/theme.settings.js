@@ -88,6 +88,8 @@ var WAThemeSettings = ( function($) {
         //
         that.initThemeReameDialog();
         //
+        that.initThemeExportSettingsDialog();
+        //
         that.initThemeImportSettingsDialog();
         //
         that.initThemeDownloadDialog();
@@ -158,6 +160,38 @@ var WAThemeSettings = ( function($) {
             return false;
         });
 
+    };
+
+    WAThemeSettings.prototype.initThemeExportSettingsDialog = function () {
+        var that = this,
+            $export_button = that.$wrapper.find('.js-export-theme-settings'),
+            $export_error = that.$wrapper.find('.js-export-error'),
+            $export_error_caption = that.$wrapper.find('.js-export-error-caption'),
+            href = $export_button.attr('href');
+
+        $export_button.on('click', function (e) {
+            $.ajax({
+                url: href,
+                type: 'POST',
+                async: false,
+                cache: false,
+            }).done(function(res) {
+                if (res.status === 'fail') {
+                    var app_link = '';
+                    if (res.errors.app_name != null) {
+                        app_link = '<a href="' + res.errors.app_url + '">' +
+                                    res.errors.app_name + ' - ' + res.errors.appearance_name + '</a>';
+                    }
+                    $export_error_caption.html(res.errors.message + app_link);
+                    $export_error.slideDown();
+                    $export_button.replaceWith("<span class='js-export-theme-settings gray'>" + $export_button.html() + "</span>");
+                    e.preventDefault();
+                } else {
+                    $export_error_caption.empty();
+                    $export_error.slideUp();
+                }
+            });
+        });
     };
 
     WAThemeSettings.prototype.initThemeImportSettingsDialog = function () {

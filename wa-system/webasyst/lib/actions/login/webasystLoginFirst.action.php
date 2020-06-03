@@ -44,6 +44,8 @@ class webasystLoginFirstAction extends waViewAction
                 $errors['password'] = _ws("Password required");
             } elseif ($password !== $password_confirm) {
                 $errors['password'] = _ws('Passwords do not match');
+            } elseif (strlen($password) > waAuth::PASSWORD_MAX_LENGTH) {
+                $errors['password'] = _ws('Specified password is too long.');
             }
 
             $email = waRequest::post('email');

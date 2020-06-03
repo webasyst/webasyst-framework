@@ -359,7 +359,7 @@ HTML;
             } //for handling iPad and tablet computer default view properly
 
             // no referrer for backend urls
-            $css .= '<meta name="referrer" content="no-referrer" />';
+            $css .= '<meta name="referrer" content="origin-when-cross-origin" />';
 
         } else {
             $css = '';

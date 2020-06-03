@@ -31,7 +31,11 @@ class webasystSettingsAuthSaveController extends webasystSettingsJsonController
     protected function getData()
     {
         $data = $this->getRequest()->post();
-        $data['used_auth_methods'] = (!empty($data['used_auth_methods'])) ? array_keys($data['used_auth_methods']) : array();
+
+        $data['used_auth_methods'] = isset($data['used_auth_methods']) && is_array($data['used_auth_methods']) ? $data['used_auth_methods'] : [];
+        $data['used_auth_methods'] = array_filter($data['used_auth_methods'], function ($v) { return !empty($v); });
+        $data['used_auth_methods'] = array_keys($data['used_auth_methods']);
+
         // Always must be set
         $data['used_auth_methods'][] = waAuthConfig::AUTH_METHOD_EMAIL;
         return is_array($data) ? $data : array();
@@ -160,7 +164,7 @@ class webasystSettingsAuthSaveController extends webasystSettingsJsonController
             }
         } elseif ($type === waVerificationChannelModel::TYPE_SMS) {
             if ($error_type === 'required') {
-                return _ws('SMS notifications must be enabled.');
+                return _ws('No SMS notifications template group is selected.');
             }
         }
         return _ws('Unknown error');
