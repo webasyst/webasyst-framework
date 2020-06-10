@@ -479,13 +479,11 @@ class courierShipping extends waShipping
         $service_delivery_date = null;
         $start = $timestamp ? (is_array($timestamp) ? reset($timestamp) : $timestamp) : $this->time;
 
-        $interval['from'] = sprintf('%02d:%02d', $interval['from'], $interval['from_m']);
-        unset($interval['from_m']);
+        $interval_from = sprintf('%02d:%02d', $interval['from'], $interval['from_m']);
 
-        $interval['to'] = sprintf('%02d:%02d', $interval['to'], $interval['to_m']);
-        unset($interval['to_m']);
+        $interval_to = sprintf('%02d:%02d', $interval['to'], $interval['to_m']);
 
-        $interval['interval'] = sprintf('%s-%s', $interval['from'], $interval['to']);
+        $interval['interval'] = sprintf('%s-%s', $interval_from, $interval_to);
 
         // safety loop limiter
         $limit = 60;
@@ -527,12 +525,12 @@ class courierShipping extends waShipping
             if ($is_workday) {
                 $is_same_day = date('Y-m-d', $this->time) === $service_date;
                 if ($is_same_day) {
-                    if ((int)date('H', $this->time) >= (int)$interval['to']) {
+                    if ((int)date('H', $this->time) >= (int)$interval_to) {
                         continue;
                     }
                 }
                 $service_delivery_date = $service_date;
-                $service_delivery_date .= sprintf(' %02d:00', $interval['from']);
+                $service_delivery_date .= ' ' . $interval_from;
             }
         }
 
