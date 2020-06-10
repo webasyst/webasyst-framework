@@ -26,7 +26,7 @@
         </file>
         <file path="main.html">
             <description locale="en_US">Main layout and navigation for the Blog app content</description>
-            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+            <description locale="ru_RU">Основной макет вывода содержимого и навигации в приложении «Блог»</description>
         </file>
         <file path="footer.html">
             <description locale="en_US">App specific footer content</description>
