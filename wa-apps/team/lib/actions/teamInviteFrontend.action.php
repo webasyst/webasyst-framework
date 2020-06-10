@@ -40,10 +40,10 @@ class teamInviteFrontendAction extends waViewAction
 
             if (empty($data['password'])) {
                 $errors['password'] = _ws('This field is required.');
-            } else {
-                if ($data['password'] != $data['password_confirm']) {
-                    $errors['password_confirm'] = _ws('Passwords do not match');
-                }
+            } elseif ($data['password'] != $data['password_confirm']) {
+                $errors['password_confirm'] = _ws('Passwords do not match');
+            } elseif (strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
+                $errors['password'] = _ws('Specified password is too long.');
             }
             unset($data['password_confirm']);
 

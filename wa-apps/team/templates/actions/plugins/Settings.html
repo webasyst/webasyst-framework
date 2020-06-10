@@ -26,6 +26,13 @@
         <input class="button green t-connect-calendar-external" type="button" value="{sprintf('[`Connect your %s now`]', $plugin->getName())}">
     </p>
 
+    {$_need_show_review_widget = $need_show_review_widget|default:false}
+    {if $_need_show_review_widget}
+        <div>
+            {$wa->installer->reviewWidget("plugin/`$app_id`/`$plugin_id`", ['is_inline' => true])}
+        </div>
+    {/if}
+
     <script>
         $(function () {
             $('#wa-plugins-content .t-connect-calendar-external').click(function () {

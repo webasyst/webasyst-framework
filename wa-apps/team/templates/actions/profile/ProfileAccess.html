@@ -418,7 +418,7 @@
                                     {$log_item.datetime|wa_date:'humandatetime'}
                                 </div>
                                 <div>
-                                    {$log_item.emails|join:', '}
+                                    {$log_item.emails|join:', '|escape}
                                 </div>
                             </li>
                         {/foreach}

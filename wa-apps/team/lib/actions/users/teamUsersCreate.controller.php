@@ -73,10 +73,10 @@ class teamUsersCreateController extends teamUsersNewUserController
 
         if (empty($data['password'])) {
             return array(_ws('This field is required.'), 'password');
-        }
-
-        if ($data['password'] != $data['password_confirm']) {
+        } elseif ($data['password'] != $data['password_confirm']) {
             return array(_ws('Passwords do not match'), 'password_confirm');
+        } elseif (strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
+            return array(_ws('Specified password is too long.'), 'password');
         }
 
         return null;

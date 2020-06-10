@@ -153,6 +153,10 @@ class teamAccessSaveActions extends waJsonActions
             $this->errors[] = _w('Passwords do not match.');
             return null;
         }
+        if (strlen($password) > waAuth::PASSWORD_MAX_LENGTH) {
+            $this->errors[] = _w('Specified password is too long.');
+            return null;
+        }
         return $password;
     }
 

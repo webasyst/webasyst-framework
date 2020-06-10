@@ -5,7 +5,7 @@ class teamUsersOnlineAction extends teamContentViewAction
     public function execute()
     {
         $contacts = teamUser::getList('users', array(
-            'order' => 'last_datetime DESC',
+            'order' => 'last_seen',
             'fields' => teamUser::getFields('default').',_online_status',
         ));
 
