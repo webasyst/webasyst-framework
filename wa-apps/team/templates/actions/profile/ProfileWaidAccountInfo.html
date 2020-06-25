@@ -1,0 +1,35 @@
+{$error = $error|default:''}
+{$info = $info|default:[]}
+
+<div class="t-webasyst-id-account-info">
+    {if $error}
+        <p class="errormsg">{$error}</p>
+    {else}
+        <div class="profile image32px">
+            <div class="image">
+                <img width="32" height="32" src="{$info.userpic|default:''|escape}" alt="">
+            </div>
+            <div class="details">
+                <div>{$info.name|default:''|escape}</div>
+
+                {if $info.email|default:[]}
+                    <div>
+                        {foreach $info.email as $email}
+                            <div>
+                                <a href="mailto:{$email.value|escape}">{$email.value|escape}</a>
+                            </div>
+                        {/foreach}
+                    </div>
+                {/if}
+
+                {if $info.phone|default:[]}
+                    <div>
+                        {foreach $info.phone as $phone}
+                            <div>{$phone.value|escape}</div>
+                        {/foreach}
+                    </div>
+                {/if}
+            </div>
+        </div>
+    {/if}
+</div>

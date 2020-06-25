@@ -27,6 +27,7 @@ class teamProfileAction extends teamContentViewAction
         } else {
             $user_name_formatted = waContactNameField::formatName($user, true);
         }
+
         $ugm = new waUserGroupsModel();
         $this->view->assign(array(
             'backend_profile'                  => $this->pluginHook($user),
@@ -40,6 +41,11 @@ class teamProfileAction extends teamContentViewAction
             // teamHelper::getVisibleGroups($user),
             'user_name_formatted'              => $user_name_formatted,
             'invite'                           => $invite,
+            'is_own_profile'                   => $this->isOwnProfile($user),
+            'webasyst_id_auth_url'             => $this->getWebasystIDAuthUrl($user),
+            'is_super_admin'                   => $this->getUser()->isAdmin('webasyst'),
+            'customer_center_auth_url'         => $this->getCustomerCenterAuthUrl(),
+            'webasyst_id_email'                => $this->getWebasystIDEmail()
         ));
         $this->view->assign(teamCalendar::getHtml($user['id'], null, null, true));
     }
@@ -91,5 +97,88 @@ class teamProfileAction extends teamContentViewAction
             'after_top',
             'photo',
         ));
+    }
+
+    protected function isOwnProfile($user)
+    {
+        return $user instanceof waContact && $user->getId() == wa()->getUser()->getId();
+    }
+
+    /**
+     * @param waContact $user
+     * @return string
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystIDAuthUrl($user)
+    {
+        // if installation is not connected yet
+        $m = new waWebasystIDClientManager();
+        if (!$m->isConnected()) {
+            return '';
+        }
+
+        // only own profile can bind with webasyst ID
+        if (!$this->isOwnProfile($user)) {
+            return '';
+        }
+
+        // profile is already bound with webasyst ID
+        if ($user->getWebasystContactId() > 0) {
+            return '';
+        }
+
+        $auth = new waWebasystIDAuth();
+        return $auth->getUrl();
+    }
+
+    /**
+     * @return bool
+     * @throws waException
+     */
+    protected function getCustomerCenterAuthUrl()
+    {
+        $access_token = $this->getWebasystAuthAccessToken();
+        if (!$access_token) {
+            return '';
+        }
+        return wa()->getConfig()->getBackendUrl(true) . '?module=profile&action=customer';
+    }
+
+    /**
+     * Email of webasyst ID contact
+     * @return mixed|string
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystIDEmail()
+    {
+        $access_token = $this->getWebasystAuthAccessToken();
+        if (!$access_token) {
+            return '';
+        }
+        $atm = new waWebasystIDAccessTokenManager();
+        $info = $atm->extractTokenInfo($access_token);
+        return $info['email'];
+    }
+
+    /**
+     * Get access token if supports 'auth' scope
+     * @return array|mixed
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystAuthAccessToken()
+    {
+        $token_params = $this->getUser()->getWebasystTokenParams();
+        if ($token_params) {
+            $access_token = $token_params['access_token'];
+            $atm = new waWebasystIDAccessTokenManager();
+            $supports = $atm->isScopeSupported('auth', $access_token);
+            if ($supports) {
+                return $access_token;
+            }
+        }
+        return [];
     }
 }

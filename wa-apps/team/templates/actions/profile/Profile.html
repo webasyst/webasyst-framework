@@ -97,6 +97,9 @@
                         <p><em>[`User invitation has been sent`]</em></p>
                     {/if}
 
+                    {* Used for trigger event in ProfileAccess.html *}
+                    <span class="js-webasyst-id-unbind-auth hidden"></span>
+
                     <!-- plugin hook: 'backend_profile.before_top' -->
                     {* @event backend_customer.%plugin_id%.before_top *}
                     {foreach $backend_profile as $_}{ifset($_.before_top)}{/foreach}
@@ -118,6 +121,25 @@
                                 </div>
                             </div>
                         </div>
+                    {/if}
+
+                    {if !empty($is_own_profile)}
+                        {if $webasyst_id_auth_url}
+                            <div class="waid-login">
+                                <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">[s`Enable sign in with`]&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span></a>
+                                <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[s`What is Webasyst ID?`]</a>
+                            </div>
+                        {elseif $customer_center_auth_url}
+                            {* Auth into customer center *}
+                            <div class="" style="margin-top: 2em;">
+                                <div class="js-customer-center-auth-link-wrapper waid-login">
+                                    <a class="waid-auth-link js-customer-center-auth" href="{$customer_center_auth_url}">
+                                        <i class="icon16" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 16px 16px; background-position: 0 0;"></i>
+                                        [s`Go to the Webasyst Customer Center`]
+                                    </a>
+                                </div>
+                            </div>
+                        {/if}
                     {/if}
 
                     <!-- plugin hook: 'backend_profile.after_top' -->
@@ -164,19 +186,25 @@
         'selected_tab' => waRequest::param('tab', 'activity', 'string')
     ])}
 
-    {* JS INIT *}
     <script>
         (function ($) {
             $.team.setTitle({$user_name_formatted|json_encode});
             new Profile({
                 $wrapper: $('#contact-info-top').closest('.t-profile-page'),
                 photo_dialog_url: "{$wa_backend_url}?module=profile&action=photo&id={$user.id}",
+                backend_url: {$wa_backend_url|json_encode},
+                is_own_profile: {$is_own_profile|json_encode},
+                wa_app_url: {$wa_app_url|json_encode},
+                webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode},
                 user: {
                     id: {$user.id|json_encode}
-                }
+                },
+                wa_url: {$wa_url|json_encode},
+                wa_version: {$wa->version()|json_encode}
             });
         })(jQuery);
     </script>
+    {* JS INIT *}
 </div>
 
 {/strip}

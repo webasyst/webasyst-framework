@@ -598,9 +598,18 @@ window.ProfileAccessTab = function(o) { "use strict";
     initFormChangeLogin();
     initFormChangePassword();
     initApiTokensEditor();
+
     if (!o.is_own_profile) {
         initToggleBan(o.wa_url, o.wa_framework_version);
     }
+
+    if (o.is_own_profile) {
+        initWebasystIDAuth();
+    }
+
+    initWebasystIDShowAccountInfo(contact_id);
+    initWebasystIDUnbindAuth();
+    initWebasystIDHelpLink();
 
     initSelectorGlobalAccess(o.is_own_profile, o.contact_no_access, o.contact_groups_no_access);
     new UserAccessTable({
@@ -609,6 +618,54 @@ window.ProfileAccessTab = function(o) { "use strict";
         is_frame: true
     });
     return;
+
+    function initWebasystIDHelpLink() {
+        $('.js-webasyst-id-help-link').on('click', function (e) {
+            e.preventDefault();
+            window.top.$('body').trigger('wa_waid_help_link');
+        });
+    }
+
+    function initWebasystIDAuth() {
+        $('.js-webasyst-id-auth').on('click', function (e) {
+            e.preventDefault();
+            window.top.$('body').trigger('wa_webasyst_id_auth');
+        });
+    }
+
+    function initWebasystIDShowAccountInfo(contact_id) {
+        $('.js-show-webasyst-id-account-info').on('click', function (e) {
+            e.preventDefault();
+            var $link = $(this),
+                $icon = $link.parent().find('.js-loading'),
+                is_loading = false;
+
+            if (is_loading) {
+                return;
+            }
+
+            is_loading = true;
+            $icon.show();
+
+            var url = '{$wa_app_url}?module=profile&action=waidAccountInfo';
+            $.get(url, { id: contact_id }, 'html')
+                .done(function (html) {
+                    $('.js-webasyst-id-info-place').replaceWith(html);
+                })
+                .always(function () {
+                    is_loading = false;
+                    $icon.remove();
+                    $link.remove();
+                });
+        });
+    }
+
+    function initWebasystIDUnbindAuth() {
+        $('.js-webasyst-id-unbind-auth').on('click', function (e) {
+            e.preventDefault();
+            window.top.$('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth');
+        });
+    }
 
     function initApiTokensEditor() {
         var $wrapper = $('#tc-api-tokens-filed'),
@@ -1066,7 +1123,6 @@ window.ProfileAccessTab = function(o) { "use strict";
             }
         }
     }//}}}
-
 };
 
 /**

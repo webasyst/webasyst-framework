@@ -62,6 +62,54 @@
     </div>
 {/capture}
 
+{capture assign="waid_block"}
+    {if $is_connected_to_webasyst_id && ($contact['is_user'] == '1' || $is_bound_with_webasyst_contact)}
+        <div class="c-waid">
+            <div class="field">
+                <div class="name">[s`Sign in with Webasyst ID`]</div>
+                <div class="value">
+
+                    {if $is_bound_with_webasyst_contact}
+
+                        {* own or other uses's profile is connected to webasyst ID *}
+
+                        <i class="icon10 yes"></i>
+
+                        {if $webasyst_id_email}
+                            [`Подключен к аккаунту`] <span class="bold">{$webasyst_id_email}</span>.
+                        {else}
+                            <span class="bold">[s`Sign in with Webasyst ID`]</span> [s`is connected`].
+                        {/if}
+
+                        {* authorize into customer center - available only for own profile *}
+                        {if $customer_center_auth_url}
+                            <a class="bold underline js-customer-center-auth" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[s`Go to the Webasyst Customer Center`]</a>
+                        {/if}
+
+                        <a href="#" class="hint js-webasyst-id-unbind-auth">[s`Disconnect`]</a>
+
+                    {elseif $is_own_profile}
+
+                        {* own profile is not connected to webasyst ID *}
+
+                        <div>[s`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="javascript:void(0);" class="underline js-webasyst-id-help-link">[s`How it works?`]</a></div>
+                        <div class="waid-login">
+                            <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">[s`Enable sign in with`]&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span></a>
+                            <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[s`What is Webasyst ID?`]</a>
+                        </div>
+
+                    {else}
+
+                        {* other user's profile (not own) is connected to webasyst ID *}
+
+                        <i class="icon10 no"></i> <span class="bold">[s`Sign in with Webasyst ID`]</span> [s`is not connected`].
+                    {/if}
+                </div>
+            </div>
+        </div>
+    {/if}
+{/capture}
+
 <div class="block double-padded" id="profile-access-wrapper">
 
 {if !$is_superadmin}
@@ -76,6 +124,7 @@
                 </div>
             </div>
             {$password_block}
+            {$waid_block}
         </div>
     </div>
 </div>
@@ -138,6 +187,7 @@
                     {/if}
                 </div>
             {/foreach}
+
         </div>
 
         <div id="c-credentials-block" style="display:none;">
@@ -200,6 +250,7 @@
         </div>
 
         {$password_block}
+        {$waid_block}
 
         <div class="c-shown-on-access">
             <div class="field">

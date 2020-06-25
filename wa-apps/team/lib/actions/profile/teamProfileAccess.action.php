@@ -1,9 +1,13 @@
 <?php
+
 /**
  * User access tab in profile.
  */
 class teamProfileAccessAction extends waViewAction
 {
+    /**
+     * @var waContact|waUser - user access tab of which this is all about
+     */
     protected $user;
 
     public function __construct($params = null)
@@ -88,8 +92,56 @@ class teamProfileAccessAction extends waViewAction
             'api_tokens'           => $this->getApiTokens(),
             'url_change_api_token' => $url_change_api_token,
 
-            'email_change_log' => $this->getEmailChangeLog()
+            'email_change_log' => $this->getEmailChangeLog(),
+
+            'is_own_profile'                   => $this->isOwnProfile(),
+
+            // webasyst ID related vars
+            'is_connected_to_webasyst_id'    => $this->isConnectedToWebasystID(),
+            'is_bound_with_webasyst_contact' => $user->getWebasystContactId() > 0,
+            'customer_center_auth_url'       => $this->getCustomerCenterAuthUrl(),
+            'webasyst_id_email'              => $this->getWebasystIDEmail()
         ));
+    }
+
+    protected function isOwnProfile()
+    {
+        return $this->user->getId() == wa()->getUser()->getId();
+    }
+
+    /**
+     * Email of webasyst ID contact bound with user, access tab of which this is all about
+     * @return mixed|string
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystIDEmail()
+    {
+        $access_token = $this->getWebasystAuthAccessToken($this->user);
+        if (!$access_token) {
+            return '';
+        }
+        $atm = new waWebasystIDAccessTokenManager();
+        $info = $atm->extractTokenInfo($access_token);
+        return $info['email'];
+    }
+
+    /**
+     * Link to authorize into customer center - available only for own profile
+     * @return bool
+     * @throws waException
+     */
+    protected function getCustomerCenterAuthUrl()
+    {
+        if (!$this->isOwnProfile()) {
+            return '';
+        }
+
+        $access_token = $this->getWebasystAuthAccessToken($this->getUser());
+        if (!$access_token) {
+            return '';
+        }
+        return wa()->getConfig()->getBackendUrl(true) . '?module=profile&action=customer';
     }
 
     protected static function hasAccess($user)
@@ -200,6 +252,8 @@ class teamProfileAccessAction extends waViewAction
 
     /**
      * @return waLogModel
+     * @throws waDbException
+     * @throws waException
      */
     protected function getLogModel()
     {
@@ -211,5 +265,37 @@ class teamProfileAccessAction extends waViewAction
             wa('webasyst');
         }
         return $model = new waLogModel();
+    }
+
+    /**
+     * @return bool
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function isConnectedToWebasystID()
+    {
+        $m = new waWebasystIDClientManager();
+        return $m->isConnected();
+    }
+
+    /**
+     * Get access token if supports 'auth' scope
+     * @param waContact $contact
+     * @return array|mixed
+     * @throws waDbException
+     * @throws waException
+     */
+    protected function getWebasystAuthAccessToken(waContact $contact)
+    {
+        $token_params = $contact->getWebasystTokenParams();
+        if ($token_params) {
+            $access_token = $token_params['access_token'];
+            $atm = new waWebasystIDAccessTokenManager();
+            $supports = $atm->isScopeSupported('auth', $access_token);
+            if ($supports) {
+                return $access_token;
+            }
+        }
+        return [];
     }
 }
