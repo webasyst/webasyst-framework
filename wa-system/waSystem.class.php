@@ -463,6 +463,7 @@ class waSystem
     public function getAuth($provider = null, $params = array())
     {
         if ($provider) {
+
             $file = $this->config->getPath('system').'/auth/adapters/'.$provider.'Auth.class.php';
             if (!file_exists($file)) {
                 $file = $this->config->getPath('plugins').'/auth/adapters/'.$provider.'Auth.class.php';
@@ -697,6 +698,12 @@ class waSystem
         $url = explode("/", $request_url);
         if (ifset($url[1]) == 'dashboard') {
             wa('webasyst', 1)->getFrontController()->execute(null, 'dashboard', 'tv');
+            return;
+        }
+
+        // Access to help information action about webasyst ID
+        if (waRequest::get('module') === 'backend' && waRequest::get('action') === 'webasystIDHelp') {
+            wa('webasyst', 1)->getFrontController()->execute(null, waRequest::get('module'), waRequest::get('action'));
             return;
         }
 

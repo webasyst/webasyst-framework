@@ -829,7 +829,8 @@ class waContact implements ArrayAccess
         if (waConfig::get('is_template')) {
             unset(
                 $data['is_user'],
-                $data['is_company']
+                $data['is_company'],
+                $data['webasyst_contact_id']
             );
         }
         return $data;
@@ -1470,5 +1471,106 @@ class waContact implements ArrayAccess
             '_event' => $event,
         ));
         return $event;
+    }
+
+    /**
+     * Bind current contact with contact of Webasyst ID - this method save right away, not just store in runtime
+     *
+     * @param int $webasyst_contact_id
+     * @param array $token_params - token params
+     *      - string $token_params['access_token']  [required] - access token itself (jwt)
+     *      - string $token_params['refresh_token'] [optional] - refresh token to refresh access token
+     *      - int    $token_params['expires_in']    [optional] - ttl of expiration in seconds
+     *      - string $token_params['token_type']    [optional] - "bearer"
+     * @throws waDbException
+     * @throws waException
+     */
+    public function bindWithWaid($webasyst_contact_id, $token_params)
+    {
+        $cwm = new waContactWaidModel();
+        $cwm->set($this->getId(), $webasyst_contact_id, $token_params);
+    }
+
+    /**
+     * Unbind current contact from contact of Webasyst ID, delete token params
+     * @throws waDbException
+     * @throws waException
+     */
+    public function unbindWaid()
+    {
+        $cwm = new waContactWaidModel();
+        $cwm->del($this->getId());
+    }
+
+    /**
+     * Get bound with current contact Webasyst ID contact
+     * @return int - always return int >= 0. If 0 means bind contact is not valid or not exist at all
+     * @throws waDbException
+     * @throws waException
+     */
+    public function getWebasystContactId()
+    {
+        $cwm = new waContactWaidModel();
+        $data = $cwm->get($this->getId());
+        if ($data) {
+            return intval($data['webasyst_contact_id']);
+        }
+        return 0;
+    }
+
+
+    /**
+     * Update for current contact Webasyst ID token params
+     * Current contact must be already bound with webasyst ID, otherwise method will not has any effect
+     * @param array|null $params - token params or NULL if want to delete token params
+     *      - string $params['access_token']  [required] - access token itself (jwt)
+     *      - string $params['refresh_token'] [optional] - refresh token to refresh access token
+     *      - int    $params['expires_in']    [optional] - ttl of expiration in seconds
+     *      - string $params['token_type']    [optional] - "bearer"
+     * @throws waDbException
+     * @throws waException
+     */
+    public function updateWebasystTokenParams($params = [])
+    {
+        $cwm = new waContactWaidModel();
+        $cwm->updateToken($this->getId(), $params);
+    }
+
+    /**
+     * Get for current contact Webasyst ID token params
+     * @return null|array $params - if token params saved is not valid by expected format OR not existed at all returns NULL, otherwise:
+     *      - string $params['access_token']  [required] - access token itself (jwt), if there is not this field returns NULL
+     *      - string $params['refresh_token'] [optional] - refresh token to refresh access token, if not valid return ''
+     *      - int    $params['expires_in']    [optional] - ttl of expiration in seconds, if not valid return 0
+     *      - string $params['token_type']    [optional] - "bearer", always return "bearer"
+     * @throws waDbException
+     * @throws waException
+     */
+    public function getWebasystTokenParams()
+    {
+        $cwm = new waContactWaidModel();
+        $data = $cwm->get($this->getId());
+        if (!$data) {
+            return null;
+        }
+        return $data['token'];
+    }
+
+    /**
+     * Clear all Webasyst ID assets for all contacts
+     */
+    public static function clearAllWebasystIDAssets()
+    {
+        // not available in templates
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
+        // delete contact id <-> webasyst contact id binds along with token params
+        $cwm = new waContactWaidModel();
+        $cwm->clearAll();
+
+        $csm = new waContactSettingsModel();
+        $csm->clearAllWebasystAnnouncementCloseFacts();
     }
 }

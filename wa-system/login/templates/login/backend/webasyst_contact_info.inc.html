@@ -1,0 +1,6 @@
+{if $webasyst_contact_info}
+<p class="align-center">[s`Webasyst ID account`]&nbsp; <i class="icon16 userpic20" style="background-image: url({$webasyst_contact_info.userpic|default:''|escape})"></i><span class="bold">{$webasyst_contact_info.name|default:''|escape}</span> {if $webasyst_contact_info.email|default:[]}<span class="small">({$webasyst_contact_info.email[0].value|escape})</span>{/if} [s`does not connected to any control panel user`].</p>
+<p class="align-center">[s`Sign in with login or email to connect the account:`]</p>
+{else}
+<p class="errormsg align-center">[`Fail on getting Webasyst ID account data from the Webasyst resource server.`]</p>
+{/if}

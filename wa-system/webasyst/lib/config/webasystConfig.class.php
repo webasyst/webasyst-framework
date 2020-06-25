@@ -261,5 +261,18 @@ class webasystConfig extends waAppConfig
         );
 
     }
+
+    /**
+     * Get identity hash (aka installation hash)
+     * @return string
+     */
+    public function getIdentityHash()
+    {
+        $value = $this->getSystemOption('identity_hash');
+        if (is_scalar($value)) {
+            return strval($value);
+        }
+        return '';
+    }
 }
 

@@ -16,6 +16,12 @@ var ContentRouter = ( function($) {
         that.xhr = false;
         that.is_enabled = true;
 
+        // predicate that says ignore routing by this router - for example if we want turn of whole design redactor section be handled by this router
+        that.ignore = options.ignore;
+        if (typeof that.ignore !== "function") {
+            delete that.ignore
+        }
+
         // INIT
         that.initClass();
     };
@@ -53,6 +59,12 @@ var ContentRouter = ( function($) {
         var full_app_url = window.location.origin + that.app_url;
 
         $(document).on("click", "a", function(event) {
+
+            // ignore routing
+            if (that.ignore && that.ignore()) {
+                return;
+            }
+
             var $link = $(this),
                 href = $link.attr("href");
 
@@ -77,12 +89,20 @@ var ContentRouter = ( function($) {
 
         // Click on header app icon
         $("#wa-header").on("click", "a", function(event) {
+            // ignore routing
+            if (that.ignore && that.ignore()) {
+                return;
+            }
             event.stopPropagation();
         });
 
         // Click on header app icon
         if (that.api_enabled) {
             window.onpopstate = function(event) {
+                // ignore routing
+                if (that.ignore && that.ignore()) {
+                    return;
+                }
                 event.stopPropagation();
                 that.onPopState(event);
             };

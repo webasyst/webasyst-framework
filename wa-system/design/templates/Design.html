@@ -98,6 +98,9 @@
                     <div class="dialog-content-indent">
                         <h1>[s`Theme preview`]</h1>
                         <p>[s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
+                        {if waRequest::isHttps()}
+                            <p>[s`The design theme preview will not work on your domain name <strong id="wa-preview-domain"></strong> if it is not available via HTTPS protocol. If so then please either install an SSL certificate for your domain name or log into your Webasyst backend on that domain to preview a design theme.`]</p>
+                        {/if}
                     </div>
                 </div>
                 <div class="dialog-buttons">
@@ -225,7 +228,7 @@
         $('#wa-design-menu,#wa-design-container').on('click', ".wa-theme-preview", function (e) {
             var $self = $(this),
                 theme_id = $self.data('theme-id'),
-                url = $self.attr('data-href'),
+                url = $self.attr('data-href') || $self.attr('href'),
                 tmp_params = waDesignParams($('#wa-theme-list li.selected a').attr('href'));
 
             if (!tmp_params['route']) {
@@ -239,7 +242,26 @@
                     window.open(url, "_blank");
                 });
                 $('#wa-current-theme').html($('#wa-theme-active .url').html());
-                $("#wa-design-preview").waDialog({
+
+                // Warn user that preview only works when opened via HTTPS
+                // (when current domain opened via HTTPS and is different from target storefront domain)
+                var $https_warning = $('#wa-preview-domain');
+                if ($https_warning.length) {
+                    var origin = $('<a>').attr('href', url)[0].origin;
+                    if (origin == location.origin) {
+                        $https_warning.closest('p').hide();
+                    } else {
+                        $https_warning.closest('p').show();
+                        $https_warning.text(origin);
+                    }
+                }
+
+                var $dialog = $("#wa-design-preview"),
+                    $_anchor = $("<div />", { class: "js-place-for-dialog" }).hide().insertBefore($dialog);
+
+                $dialog.appendTo( $("body") );
+
+                $dialog.waDialog({
                     esc: false,
                     onSubmit: function () {
                         if (url.indexOf('?theme_hash') === -1) {
@@ -249,6 +271,8 @@
                         $("body").append($('<iframe style="display:none" src="' + url.replace(/(set_force_theme=).*$/, '$1') + '" />').load(function () {
                             $(this).remove();
                         }));
+                        $dialog.insertAfter($_anchor);
+                        $_anchor.remove();
                         return false;
                     }
                 });

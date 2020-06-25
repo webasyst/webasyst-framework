@@ -1389,7 +1389,10 @@ class waSignupAction extends waViewAction
 
         // try auth new contact if needed
         if ($need_auth) {
-            return $this->tryAuthContact($contact);
+            $auth_result = $this->tryAuthContact($contact);
+            if ($auth_result) {
+                $this->afterAuth();
+            }
         }
 
         return true;
@@ -1763,6 +1766,14 @@ class waSignupAction extends waViewAction
      * @param waContact $contact
      */
     protected function afterSignup(waContact $contact)
+    {
+
+    }
+
+    /**
+     * After successful auth
+     */
+    protected function afterAuth()
     {
 
     }

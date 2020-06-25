@@ -118,7 +118,7 @@ return array(
     'waFrontendLoginForm'          => 'login/classes/login/waFrontendLoginForm.class.php',
 
     // forgotpassword
-    'waForgotPasswordForm'         => 'login/classes/forgotpassword/waForgotPasswordForm.class.php',
+    'waForgotPasswordForm'              => 'login/classes/forgotpassword/waForgotPasswordForm.class.php',
     'waBackendForgotPasswordForm'       => 'login/classes/forgotpassword/waBackendForgotPasswordForm.class.php',
     'waFrontendForgotPasswordForm'      => 'login/classes/forgotpassword/waFrontendForgotPasswordForm.class.php',
 
@@ -217,5 +217,19 @@ return array(
 
     'waMapAdapter'                      => 'map/waMapAdapter.class.php',
     'waDisabledMapAdapter'              => 'map/adapters/waDisabledMapAdapter.class.php',
+
+    // <WEBASYST ID MODULE>
+
+    'waWebasystIDConfig'                       => 'waid/waWebasystIDConfig.class.php',
+    'waWebasystIDException'                    => 'waid/exceptions/waWebasystIDException.class.php',
+    'waWebasystIDAuthException'                => 'waid/exceptions/waWebasystIDAuthException.class.php',
+    'waWebasystIDAccessDeniedAuthException'    => 'waid/exceptions/waWebasystIDAccessDeniedAuthException.class.php',
+    'waWebasystIDClientManager'                => 'waid/waWebasystIDClientManager.class.php',
+    'waWebasystIDAuth'                         => 'waid/waWebasystIDAuth.class.php',
+    'waWebasystIDAccessTokenManager'           => 'waid/waWebasystIDAccessTokenManager.class.php',
+    'waWebasystIDApi'                          => 'waid/waWebasystIDApi.class.php',
+    'waWebasystIDCustomerCenterAuthController' => 'waid/waWebasystIDCustomerCenterAuth.controller.php',
+
+    // </WEBASYST ID MODULE>
 );
 

@@ -1,0 +1,39 @@
+{$dialog_class = 'w-waid-disconnect-dialog'}
+{$dialog_id = uniqid($dialog_class)}
+<div class="wa-dialog {$dialog_class}" id="{$dialog_id}">
+    <div class="wa-dialog-background"></div>
+    <div class="wa-dialog-body">
+        <header class="wa-dialog-header">
+            <h1 class="js-title">[`Disable sign in with Webasyst ID`]</h1>
+        </header>
+        <div class="wa-dialog-content">
+            <p>[`If you disable sign in with Webasyst ID, all configured user associations with Webasyst ID accounts will be deleted. Users will not be able to sign into the control panel with Webasyst ID.`]</p>
+            <div class="js-success-block" style="display: none">
+                <p>[`Sign in with Webasyst ID has been successfully disabled`] <i class="icon16 yes"></i></p>
+            </div>
+            <div class="js-fail-block" style="display: none">
+                <p class="errormsg">[`Fail to disable sign in with Webasyst ID`] <i class="icon16 cross"></i></p>
+            </div>
+
+        </div>
+        <footer class="wa-dialog-footer">
+            <input type="button" class="button red js-disconnect" value="[`Disconnect`]"> [`or`]
+            <a href="javascript:void(0)" class="js-close-dialog">[`cancel`]</a> <i class="icon16 loading js-loading" style="display: none"></i>
+        </footer>
+        <footer class="wa-dialog-footer js-success-dialog-footer" style="display: none;">
+            <input type="button" class="button js-close-dialog" value="[`Close`]">
+        </footer>
+        <span class="wa-close-icon js-close-dialog">
+            <i class="icon10 close"></i>
+        </span>
+    </div>
+
+    <script>
+        $(function () {
+            new WASettingsWaIDDisconnectConfirm({
+                $dialog: $('#{$dialog_id}'),
+                connect_url: {$connect_url|default:''|json_encode}
+            });
+        })
+    </script>
+</div>

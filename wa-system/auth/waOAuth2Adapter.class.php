@@ -49,6 +49,11 @@ abstract class waOAuth2Adapter extends waAuthAdapter
         return array();
     }
 
+    /**
+     * URL of auth provider endpoint (to where user will be redirected from webasyst)
+     * It is not redirect_uri URL of OAuth protocol
+     * @return string
+     */
     abstract public function getRedirectUri();
 
     public function getCode()
@@ -56,8 +61,18 @@ abstract class waOAuth2Adapter extends waAuthAdapter
         return waRequest::get('code');
     }
 
+    /**
+     * This where we call OAuth service again with code to get access token
+     * @param $code
+     * @return mixed
+     */
     abstract public function getAccessToken($code);
 
+    /**
+     * Get user data from OAuth provider
+     * @param $token
+     * @return mixed
+     */
     abstract public function getUserData($token);
 
 }

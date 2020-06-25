@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-06-02 16:52+0300\n"
+"PO-Revision-Date: 2020-06-22 17:40+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4594,11 +4594,11 @@ msgstr "Предварительный просмотр"
 msgid "Preview SMS-message \"<span class=\"js-template-name\"></span>\""
 msgstr "Предварительный просмотр SMS-сообщения «<span class=\"js-template-name\"></span>»"
 
-msgid "Checking the sending of SMS-messages"
+msgid "Checking the sending of SMS messages"
 msgstr "Проверка отправки SMS-сообщений"
 
-msgid "Checking the sending of Email message"
-msgstr "Проверка отправки Email сообщения"
+msgid "Checking the sending of email messages"
+msgstr "Проверка отправки email-сообщений"
 
 msgid "Recipient's phone number"
 msgstr "Телефон получателя"
@@ -5733,9 +5733,9 @@ msgstr ""
 
 msgid "%d hour"
 msgid_plural "%d hours"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "%d час"
+msgstr[1] "%d часа"
+msgstr[2] "%d часов"
 
 msgid "Scheduled tasks"
 msgstr "Задачи по расписанию"
@@ -5809,6 +5809,222 @@ msgstr "Ошибка сохранения"
 msgid "Enable authorization by phone number"
 msgstr "Включить вход по номеру телефона"
 
+msgid "Sign in with Webasyst ID"
+msgstr "Вход с Webasyst ID"
+
+msgid "Will close in"
+msgstr "Закроется через"
+
+msgid "sec"
+msgstr "сек"
+
+msgid "Got it"
+msgstr "Понятно"
+
+msgid "has been successfully connected to account"
+msgstr "успешно подключен для аккаунта"
+
+msgid "Leave as it is"
+msgstr "Оставить как есть"
+
+msgid "Confirm"
+msgstr "Подтвердить"
+
+msgid "Webasyst ID account <i class=\"icon16 userpic20\" style=\"background-image: url(%s);\"></i> <strong>%s</strong> is already connected to user <i class=\"icon16 userpic20\" style=\"background-image: url(%s);\"></i> <strong>%s</strong>"
+msgstr "Аккаунт Webasyst ID <i class=\"icon16 userpic20\" style=\"background-image: url(%s);\"></i> <strong>%s</strong> уже подключен для пользователя бекенда <i class=\"icon16 userpic20\" style=\"background-image: url(%s);\"></i> <strong>%s</strong>."
+
+msgid "Change connection to a new user?"
+msgstr "Изменить подключение на нового пользователя?"
+
+msgid "If you need to change the connection of your Webasyst ID account to the user <strong>%s</strong> press \"Confirm\""
+msgstr "Если вам необходимо изменить подключение вашего аккаунта Webasyst ID на пользователя <strong>%s</strong>, нажмите «Подтвердить»"
+
+msgid "is connected"
+msgstr "подключен"
+
+msgid "is not connected"
+msgstr "не подключен"
+
+msgid "Disconnect"
+msgstr "Отключить"
+
+msgid "Connect"
+msgstr "Подключить"
+
+msgid "is enabled"
+msgstr "подключен"
+
+msgid "is disabled"
+msgstr "отключен"
+
+msgid "Disable"
+msgstr "Отключить"
+
+msgid "Enable"
+msgstr "Включить"
+
+msgid "Allow users to use their Webasyst ID accounts to sign into the control panel."
+msgstr "Разрешите пользователям использовать свои аккаунты Webasyst ID для входа в панель управления."
+
+msgid "More info"
+msgstr "Подробнее"
+
+msgid "Disable sign in with Webasyst ID"
+msgstr "Отключить вход с Webasyst ID"
+
+msgid "Sign in with Webasyst ID has been successfully disabled"
+msgstr "Вход с Webasyst ID успешно отключен"
+
+msgid "Fail to disable sign in with Webasyst ID"
+msgstr "Не удалось отключить вход с Webasyst ID"
+
+msgid "If you disable sign in with Webasyst ID, all configured user associations with Webasyst ID accounts will be deleted. Users will not be able to sign into the control panel with Webasyst ID."
+msgstr "При отключении входа с Webasyst ID будут удалены все настроенные связи пользователей с аккаунтами Webasyst ID. Пользователи не смогут авторизоваться в панель управления с Webasyst ID."
+
+msgid "Enable sign in with Webasyst ID"
+msgstr "Подключить вход с Webasyst ID"
+
+msgid "Sign in with Webasyst ID has been successfully enabled"
+msgstr "Вход с Webasyst ID успешно подключен"
+
+msgid "Connecting to the Webasyst ID Authentication Server"
+msgstr "Подключение к серверу авторизации Webasyst ID"
+
+msgid "Fail to connect to Webasyst ID Authentication Server"
+msgstr "Не удалось подключиться к серверу авторизации Webasyst ID"
+
+msgid "Connect my Webasyst ID account"
+msgstr "Подключить мой аккаунт Webasyst ID"
+
+msgid "<strong>Enable sign in with Webasyst ID</strong>, a universal authorization option that unites Webasyst Customer Center and backend sign-in on your custom domains. Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains."
+msgstr "<strong>Подключите вход с Webasyst ID</strong> — единый способ авторизации, который объединяет Центр заказчика Webasyst и вход в бекенд Webasyst на ваших сайтах. С Webasyst ID удобнее пользоваться всеми приложениями, сервисами и сайтами Webasyst без лишних паролей в разных местах."
+
+msgid "Enable&nbsp;Webasyst&nbsp;ID — it’s free and secure!"
+msgstr "Подключить&nbsp;Webasyst&nbsp;ID — бесплатно и безопасно!"
+
+msgid "How it works?"
+msgstr "Как это работает?"
+
+msgid "What is Webasyst ID?"
+msgstr "Что такое Webasyst ID?"
+
+msgid "What is it?"
+msgstr "Что это?"
+
+msgid "Sign in with"
+msgstr "Войти с"
+
+msgid "Enable sign in with"
+msgstr "Подключить вход с"
+
+msgid "Unknown auth error. Sign in with login and password."
+msgstr "Неизвестная ошибка авторизации. Войдите с помощью имени и пароля."
+
+msgid "Connect your Webasyst ID account and sign into the backend securely with no extra passwords."
+msgstr "Подключите свой аккаунт Webasyst ID и входите в бекенд с его помощью без лишних паролей."
+
+msgid "Go to the Webasyst Customer Center"
+msgstr "Перейти в Центр заказчика Webasyst"
+
+msgid "Failed to log into the Webasyst Customer Center"
+msgstr "Не удалось войти в Центр заказчика Webasyst"
+
+msgid "User revoked permission to log into the Webasyst Customer Center"
+msgstr "Пользователь отозвал разрешение на переход в Центр заказчика Webasyst"
+
+msgid "Disconnect Webasyst ID account"
+msgstr "Отключить аккаунт Webasyst ID"
+
+msgid "Association with Webasyst ID account will be deleted. User will not be able to sign into the control panel with Webasyst ID."
+msgstr "Связь с аккаунтами Webasyst ID будет удалена. Пользователь не сможет авторизоваться в панель управления с Webasyst ID."
+
+msgid "User will be able to connect Webasyst ID account again at any time."
+msgstr "Пользователь сможет снова подключить свой аккаунт Webasyst ID в любое время."
+
+msgid "What is Webasyst ID"
+msgstr "Что такое Webasyst ID"
+
+msgid "1. Customer Center &rarr; Webasyst ID"
+msgstr "1. Центр заказчика &rarr; Webasyst ID"
+
+msgid "Based on a Webasyst Customer Center account, Webasyst ID is a unified secure authorization, <strong>a single password</strong> for all Webasyst apps, sites, and backends — including those that work on your custom domains."
+msgstr "Webasyst ID — это <strong>аккаунт в Центре заказчика Webasyst</strong> и вход с его помощью во все приложения и на все сайты, где вы работаете с Webasyst — как в облаке, так и на собственном хостинге."
+
+msgid "2. Start using Webasyst ID"
+msgstr "2. Как подключить"
+
+msgid "To enable Webasyst ID, simply sign in with your Webasyst Customer Center account <strong>just once</strong>. The system will connect everything automatically and will then allow you to quickly sign into your backend using your single Webasyst ID password. If you do not remember your Customer Center account details, simply <a href=\"https://www.webasyst.com/my/forgotpassword/\">recover the password</a> or <a href=\"https://www.webasyst.com/my/signup/\">create an account for free</a>."
+msgstr "Чтобы подключить вход с Webasyst ID, нужно всего лишь <strong>один раз связать</strong> вход на сайте с вашим аккаунтом в Центре заказчика. Система свяжет авторизацию и позволит в будущем входить везде с единым паролем. Если вы не помните, как войти в Центр заказчика, <a href=\"https://www.webasyst.ru/my/forgotpassword/\">восстановите свой пароль</a> или <a href=\"https://www.webasyst.ru/my/signup/\">зарегистрируйтесь</a>. Это бесплатно."
+
+msgid "3. Personal Webasyst ID for each user"
+msgstr "3. У каждого пользователя — свой Webasyst ID"
+
+msgid "If you are working together with your team then each of your teammates will be able to use their own Webasyst ID. All access rights remain unchanged while users get an option to log in with a new single password."
+msgstr "Если вы работаете в команде, то каждый сотрудник сможет использовать свой личный Webasyst ID. Все права доступа останутся без изменений, но каждый пользователь сможет входить со своим новым единым паролем."
+
+msgid "4. Why this is useful"
+msgstr "4. Для чего это нужно"
+
+msgid "With Webasyst ID, it is much more convenient to use the entire Webasyst <strong>ecosystem of apps and plugins</strong>, communicate with developers and get support, manage your Webasyst customer assets such as software licenses, cloud accounts, domain names, and purchases. A single account for everything."
+msgstr "Webasyst ID — самый удобный способ работы со всей <strong>экосистемой приложений и плагинов Webasyst</strong>, общения с разработчиками, обращения в поддержку, управления активами Webasyst: лицензиями, хостингом и облаком, доменными именами. Один аккаунт для всех сервисов."
+
+msgid "5. Will I retain the usual login option?"
+msgstr "5. Можно ли будет вернуться к обычному способу входа?"
+
+msgid "Yes, you will be able to use it as before. Simply enter your user name and password as usual, without selecting the Webasyst ID login option."
+msgstr "Да, такая возможность у вас останется. Для этого нужно просто вводить свои имя пользователя и пароль, как обычно, — не выбирая вход через Webasyst ID."
+
+msgid "Next"
+msgstr "Далее"
+
+msgid "Finish"
+msgstr "Завершить"
+
+msgid "Sign in without Webasyst ID"
+msgstr "Войти без подключения Webasyst ID"
+
+msgid "Sign in and connect Webasyst ID"
+msgstr "Войти и подключить Webasyst ID"
+
+msgid "Webasyst ID account"
+msgstr "Аккаунт Webasyst ID"
+
+msgid "does not connected to any control panel user"
+msgstr "не связан с пользователем панели управления"
+
+msgid "Sign in with login or email to connect the account:"
+msgstr "Чтобы подключить аккаунт, войдите по логину или email:"
+
+msgid "Fail on getting Webasyst ID account data from the Webasyst resource server."
+msgstr "Не удалось получить данные аккаунта Webasyst ID от сервера ресурсов Webasyst."
+
+msgid "“"
+msgstr "«"
+
+msgid "”"
+msgstr "»"
+
+msgid "will get:"
+msgstr "получит:"
+
+msgid "Connected: all team users"
+msgstr "Подключились все пользователи команды"
+
+msgid "Connected: ** from %d team user"
+msgid_plural "Connected: ** from %d team users"
+msgstr[0] "Подключились: ** из %d пользователя команды"
+msgstr[1] "Подключились: ** из %d пользователей команды"
+msgstr[2] "Подключились: ** из %d пользователей команды"
+
+msgid "Connected users"
+msgstr "Подключенные пользователи"
+
+msgid "No users have connected Webasyst ID"
+msgstr "Пока нет пользователей, подключивших Webasyst ID"
+
+msgid "Last sign in with Webasyst ID"
+msgstr "Последний вход с Webasyst ID"
+
 msgid "Specified URL already exists."
 msgstr "Указанный URL уже существует."
 
@@ -5829,3 +6045,6 @@ msgstr "У этой темы дизайна нет собственных нас
 
 msgid "A password cannot be empty."
 msgstr "Пароль не может быть пустым."
+
+msgid "The design theme preview will not work on your domain name <strong id=\"wa-preview-domain\"></strong> if it is not available via HTTPS protocol. If so then please either install an SSL certificate for your domain name or log into your Webasyst backend on that domain to preview a design theme."
+msgstr "Предварительный просмотр темы дизайна не будет работать на доменном имени <strong id=\"wa-preview-domain\"></strong>, если оно недоступно по протоколу HTTPS. Если это так, то для предпросмотра темы дизайна либо установите SSL-сертификат для этого домена, либо войдите в свой Webasyst на этом домене."

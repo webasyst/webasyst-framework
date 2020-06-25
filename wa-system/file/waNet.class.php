@@ -94,7 +94,11 @@ class waNet
     /**
      * waNet constructor.
      * @param array $options key => value format
+     *      - $options['format'] - expected format of response
+     *      - $options['request_format'] - format of request data
+     *      ...
      * @param array $custom_headers key => value format
+     * @throws waException
      */
     public function __construct($options = array(), $custom_headers = array())
     {
@@ -1020,5 +1024,13 @@ class waNet
             'raw'              => $this->raw_response,
             'preview'          => $this->decoded_response,
         );
+    }
+
+    public function getResponseDebugInfo()
+    {
+        return [
+            'headers' => $this->response_header,
+            'body'    => $this->raw_response,
+        ];
     }
 }

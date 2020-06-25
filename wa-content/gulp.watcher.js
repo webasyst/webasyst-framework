@@ -112,6 +112,13 @@ var config = {
             "sources": "./wa-content/js/dropdown/styl/*.styl",
             "target": "./wa-content/js/dropdown/styl/dropdown.styl"
         }
+    },
+    'waid': {
+        'styl': {
+            "directory": "./wa-content/css/wa/waid/",
+            "sources": "./wa-content/css/wa/waid/styl/*.styl",
+            "target": "./wa-content/css/wa/waid/styl/waid.styl"
+        }
     }
 };
 

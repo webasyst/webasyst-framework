@@ -61,8 +61,19 @@ class waBackendLoginForm extends waLoginForm
     protected function prepareTemplateAssign($assign = array())
     {
         $assign = parent::prepareTemplateAssign($assign);
+
         // for api oauth authorization (e.g. mobile phones)
         $assign['is_api_oauth'] = isset($this->options['is_api_oauth']) ? $this->options['is_api_oauth'] : false;
+
+        // link to auth by webasyst ID
+        $assign['webasyst_id_auth_url'] = isset($this->options['webasyst_id_auth_url']) ? $this->options['webasyst_id_auth_url'] : '';
+
+        // special mode of form = login & bind to webasyst ID at the same time
+        $assign['bind_with_webasyst_contact'] = isset($this->options['bind_with_webasyst_contact']) ? $this->options['bind_with_webasyst_contact'] : false;
+
+        // in case of bind with webasyst id it we should has here webasyst contact info (another word customer center contact info)
+        $assign['webasyst_contact_info'] = isset($this->options['webasyst_contact_info']) ? $this->options['webasyst_contact_info'] : null;
+
         return $assign;
     }
 }

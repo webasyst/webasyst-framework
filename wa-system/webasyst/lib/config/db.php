@@ -239,6 +239,17 @@ return array(
             'PRIMARY' => array('contact_id', 'app_id', 'name'),
         ),
     ),
+    'wa_contact_waid' => array(
+        'contact_id' => array('int', 11, 'null' => 0),
+        'token' => array('text', 'null' => 0),
+        'webasyst_contact_id' => array('int', 11, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'login_datetime' => array('datetime'),
+        ':keys' => array(
+            'PRIMARY' => array('contact_id'),
+            'webasyst_contact_id' => array('webasyst_contact_id', 'unique' => 1)
+        )
+    ),
     'wa_country' => array(
         'name' => array('varchar', 255, 'null' => 0),
         'iso3letter' => array('varchar', 3, 'null' => 0),

@@ -71,6 +71,7 @@ class webasystBackendHeaderAction extends waViewAction
         $this->view->assign(array(
             'root_url'        => wa()->getRootUrl(),
             'backend_url'     => wa()->getConfig()->getBackendUrl(true),
+            'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
             'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8'),
             'company_url'     => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
             'date'            => $date,
@@ -85,6 +86,8 @@ class webasystBackendHeaderAction extends waViewAction
             'header_middle'   => $header_middle,
             'header_bottom'   => $header_bottom,
             'include_wa_push' => $include_wa_push,
+            'webasyst_id_auth_url' => $this->getWebasystIDAuthUrl(),
+            'is_super_admin' => wa()->getUser()->isAdmin('webasyst')
         ));
 
         $this->setTemplate(wa()->getAppPath('templates/actions/backend/BackendHeader.html', 'webasyst'));
@@ -92,6 +95,8 @@ class webasystBackendHeaderAction extends waViewAction
 
     /**
      * @return array
+     * @throws waDbException
+     * @throws waException
      */
     protected function getHeaderItems()
     {
@@ -171,4 +176,49 @@ class webasystBackendHeaderAction extends waViewAction
 
         return $sorted_header_items;
     }
+
+    protected function getWebasystIDSettingsUrl()
+    {
+        return wa()->getConfig()->getBackendUrl(true) . 'webasyst/settings/waid/';
+    }
+
+    /**
+     * Get link to authorize current user into webasyst ID that will be shown in Webasyst ID announcement banner
+     * This method returns empty string in case when announcement can't be shown
+     * @return string
+     * @throws waException
+     */
+    protected function getWebasystIDAuthUrl()
+    {
+        if (!$this->isConnectedToWebasystID()) {
+            return '';
+        }
+
+        // user already bound with webasyst contact id
+        $user = $this->getUser();
+        $webasyst_contact_id = $user->getWebasystContactId();
+        if ($webasyst_contact_id) {
+            return '';
+        }
+
+        // announcement closed by x link
+        if ($user->getSettings('webasyst', 'webasyst_id_announcement_close')) {
+            return '';
+        }
+
+        $auth = new waWebasystIDAuth();
+        return $auth->getUrl();
+    }
+
+    /**
+     * Is installation connected to webasyst ID
+     * @return bool
+     */
+    protected function isConnectedToWebasystID()
+    {
+        // client (installation) not connected
+        $auth = new waWebasystIDAuth();
+        return $auth->isClientConnect();
+    }
+
 }

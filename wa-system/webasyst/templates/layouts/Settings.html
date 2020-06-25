@@ -41,9 +41,15 @@
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.regions.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.js
         {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.list.dialog.js
+        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waID.js
+        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDConnectDialog.js
+        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDDisconnectConfirm.js
+        {$wa_url}wa-content/js/dialog/dialog.js
     {/wa_js}
 
     <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/css/wa-settings/settingsDialog.css?v{$wa->version()}">
+    <link type="text/css" href="{$wa_url}wa-content/js/dialog/dialog.css?{$wa->version()}" rel="stylesheet" />
+
     <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.dialog.js?v{$wa->version()}"></script>
 
     {* @event backend_assets.%plugin_id% *}
@@ -83,10 +89,43 @@
             {* need for waEditorAceInit *}
             window.wa_url = {$wa_url|json_encode};
 
+            var $doc = $(document),
+                $wrapper = $('#s-main-wrapper'),
+                $content = $("#s-content-block"),
+                before_load_content_event = 'wa_before_load.webasyst-settings';
+
+            var changeUrlHandler = function(params) {
+                // auto off
+                if (!$wrapper.length) {
+                    $doc.off(before_load_content_event);
+                    return;
+                }
+
+                params = params || {};
+
+                {* Hide connect announcement banner of waid settings page, and show in other pages (of cource if banner in DOM) *}
+                var content_uri = params.content_uri || location.href || '';
+                if (content_uri.indexOf('waid') > -1) {
+                    $('.js-webasyst-id-connect-announcement').hide();
+                } else {
+                    $('.js-webasyst-id-connect-announcement').show();
+                }
+            };
+
+            // Change url handling
+            $doc.off(before_load_content_event).on(before_load_content_event, function (e, params) {
+                changeUrlHandler(params);
+            });
+
+            // Change url handler on initial state
+            changeUrlHandler();
+
+            // content router
             $.wa.content = new ContentRouter({
-                $content: $("#s-content-block"),
+                $content: $content,
                 app_url: {"`$wa_backend_url`webasyst/settings/"|json_encode}
             });
+
         })(jQuery);
     </script>
 </body>

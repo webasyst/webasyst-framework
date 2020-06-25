@@ -198,4 +198,51 @@ CLI;
         }
         return $exists;
     }
+
+    public function addColumn($table, $column_name, $column_definition, $after_column = null)
+    {
+        $disable_exception_log = waConfig::get('disable_exception_log');
+        waConfig::set('disable_exception_log', true);
+
+        $m = new waModel();
+
+        try {
+            $m->query("SELECT `{$column_name}` FROM `{$table}` WHERE 0");
+        } catch (waDbException $e) {
+            waConfig::set('disable_exception_log', false);
+
+            $sql = "ALTER TABLE `{$table}` ADD COLUMN `{$column_name}` {$column_definition}";
+            if ($after_column) {
+                $sql .= " AFTER {$after_column}";
+            }
+            $m->exec($sql);
+        }
+
+        waConfig::set('disable_exception_log', $disable_exception_log);
+    }
+
+    public function renameColumn($table, $old_column_name, $new_column_name, $column_definition)
+    {
+        $disable_exception_log = waConfig::get('disable_exception_log');
+        waConfig::set('disable_exception_log', true);
+
+        $m = new waModel();
+
+        try {
+            $m->query("SELECT `{$new_column_name}` FROM `{$table}` WHERE 0");
+        } catch (waDbException $e) {
+            waConfig::set('disable_exception_log', false);
+            $sql = "ALTER TABLE `{$table}` CHANGE `{$old_column_name}` `{$new_column_name}` {$column_definition}";
+            $m->exec($sql);
+        }
+
+        waConfig::set('disable_exception_log', $disable_exception_log);
+    }
+
+    public function changeColumn($table, $column_name, $column_definition)
+    {
+        $m = new waModel();
+        $sql = "ALTER TABLE `{$table}` CHANGE `{$column_name}` `{$column_name}` {$column_definition}";
+        $m->query($sql);
+    }
 }

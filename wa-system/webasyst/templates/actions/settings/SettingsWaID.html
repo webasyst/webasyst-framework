@@ -1,0 +1,71 @@
+{$_title = "[s`Sign in with Webasyst ID`] — {$wa->accountName(false)}"}
+
+<div class="s-waid-settings-page blank block double-padded" id="s-waid-settings-page">
+    <h1 class="s-page-header">[s`Sign in with Webasyst ID`]</h1>
+    <div class="s-description">[s`Allow users to use their Webasyst ID accounts to sign into the control panel.`]
+        <a href="javascript:void(0);" class="underline js-webasyst-id-help-link">[s`More info`]</a>
+    </div>
+    <div class="field-group">
+        {if $is_connected}
+            <i class="icon16 yes"></i> <span class="bold">[s`Sign in with Webasyst ID`]</span> [`is enabled`]. <a href="#" class="hint js-disconnect-to-waid">[s`Disable`]</a>
+        {else}
+            <i class="icon16 exclamation"></i> <span class="bold">[s`Sign in with Webasyst ID`]</span> [`is disabled`].
+            <p></p>
+            <p><input type="button" class="button blue js-connect-to-waid" value="[s`Enable`]"></p>
+        {/if}
+    </div>
+
+    {if $is_connected}
+        <div class="field-group">
+            {if $connected_users}
+                <h2>
+                    {if $users_count == $connected_users_count}
+                        [s`Connected: all team users`]
+                    {else}
+                        {_ws("Connected: ** from %d team user", "Connected: ** from %d team users", $users_count)|replace:'**':$connected_users_count}
+                    {/if}
+                </h2>
+
+                <table class="s-connected-users zebra">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>[s`Name`]</th>
+                        <th>[s`Connected`]</th>
+                        <th>[s`Last sign in with Webasyst ID`]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $connected_users as $user}
+                    <tr>
+                        <td>
+                            <a href="{$user.link}"><img src="{$user.photo_url_32}"></a>
+                        </td>
+                        <td>
+                            <a href="{$user.link}">{$user.name|escape}</a>
+                        </td>
+                        <td>{$user.waid_create_datetime|wa_date:'humandatetime'}</td>
+                        <td>{$user.waid_login_datetime|wa_date:'humandatetime'}</td>
+                    </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+
+            {else}
+                <h2>[s`Connected users`]</h2>
+                <p class="gray">[s`No users have connected Webasyst ID`]</p>
+            {/if}
+        </div>
+    {/if}
+
+    <script>
+        (function ($) {
+            $.wa.setTitle({$_title|json_encode});
+            new WASettingsWaID({
+                $wrapper: $('#s-waid-settings-page'),
+                wa_backend_url: {$wa_backend_url|json_encode}
+            });
+        })(jQuery);
+    </script>
+
+</div>

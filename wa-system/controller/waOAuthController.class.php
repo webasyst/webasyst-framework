@@ -4,28 +4,38 @@ class waOAuthController extends waViewController
 {
     public function execute()
     {
-        // Remember in session who is handling the auth.
-        // Important for multi-step auth such as OAuth2.
-        $app = waRequest::get('app', null, 'string');
-        if ($app) {
-            $this->getStorage()->set('auth_app', $app);
-            $params = waRequest::get();
-            unset($params['app'], $params['provider']);
-            if ($params) {
-                $this->getStorage()->set('auth_params', $params);
+        $provider_id = $this->getAuthProviderId();
+
+        $is_webasyst_id_auth = $provider_id === waWebasystIDAuth::PROVIDER_ID;
+
+        // Webasyst ID auth provider case not supports app related OAuth controller
+        $ignore_app_controller = $is_webasyst_id_auth;
+
+        if (!$ignore_app_controller) {
+            // Remember in session who is handling the auth.
+            // Important for multi-step auth such as OAuth2.
+            $app = waRequest::get('app', null, 'string');
+            if ($app) {
+                $this->getStorage()->set('auth_app', $app);
+                $params = waRequest::get();
+                unset($params['app'], $params['provider']);
+                if ($params) {
+                    $this->getStorage()->set('auth_params', $params);
+                }
+            }
+
+            // Make sure the correct app is handling the request
+            $app = $this->getStorage()->get('auth_app');
+            if ($app && $app != wa()->getApp()) {
+                if (wa()->appExists($app)) {
+                    return wa($app, true)->getFrontController()->execute(null, 'OAuth');
+                } else {
+                    $this->cleanup();
+                    throw new waException("Page not found", 404);
+                }
             }
         }
 
-        // Make sure the correct app is handling the request
-        $app = $this->getStorage()->get('auth_app');
-        if ($app && $app != wa()->getApp()) {
-            if (wa()->appExists($app)) {
-                return wa($app, true)->getFrontController()->execute(null, 'OAuth');
-            } else {
-                $this->cleanup();
-                throw new waException("Page not found", 404);
-            }
-        }
 
         try {
             // Look into wa-config/auth.php, find provider settings
@@ -38,6 +48,12 @@ class waOAuthController extends waViewController
 
             $auth = $this->getAuthAdapter($provider_id);
 
+            // this is about webasyst ID binding, see php doc of methods
+            if ($is_webasyst_id_auth && $this->isUnfinishedBindingProcess()) {
+                $this->finishBindingProcess($auth);
+                return;
+            }
+
             // Use waAuthAdapter to identify the user.
             // In case of waOAuth2Adapter, things are rather complicated:
             // 1) When user has just opened the oauth popup, adapter redirects them
@@ -46,18 +62,54 @@ class waOAuthController extends waViewController
             //    with a code in GET parameters.
             // 3) That second time, adapter uses the code from GET to fetch user data
             //    from external resource and return here if all goes well.
-            $person_data = $auth->auth();
-            if (!$person_data) {
+            $auth_response_data = $auth->auth();
+            if (!$auth_response_data) {
                 throw new waException('Unable to finish auth process.');
             }
 
-            // Person identified. Now properly authorise them as local waContact,
-            // possibly creating new waContact from data provided.
-            $result = $this->afterAuth($person_data);
+            if ($is_webasyst_id_auth) {
+                /**
+                 * @var waWebasystIDAuth $auth
+                 */
+                if ($auth->isBackendAuth()) {
+
+                    $result = $this->authBackendUser($auth_response_data);
+
+                    // save result in session
+                    $this->getStorage()->set('webasyst_id_backend_auth_result', $result);
+
+                    // if auth fail because of not bounding, save server data in session for latter use
+                    if (!$result['status'] && $result['details']['error_code'] === 'not_bound') {
+                        $this->getStorage()->set('webasyst_id_server_data', $auth_response_data);
+                    }
+                } else {
+
+                    $result = $auth->bindWithWebasystContact($auth_response_data);
+
+                    // if binding fail, save server data in session for latter use
+                    if (!$result['status']) {
+                        $this->getStorage()->set('webasyst_id_server_data', $auth_response_data);
+                    }
+
+                    // wrap so we can differ this response from others
+                    $result = ['type' => 'bind_with_webasyst_contact', 'result' => $result];
+                }
+            } else {
+                // Person identified. Now properly authorise them as local waContact,
+                // possibly creating new waContact from data provided.
+                $result = $this->afterAuth($auth_response_data);
+            }
+
             $this->cleanup();
 
-            // Close oauth popup and reload page that opened it
             $this->displayAuth($result);
+        } catch (waWebasystIDAccessDeniedAuthException $e) {
+            $this->cleanup();
+            // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish proccess)
+            $this->displayAuth([]);
+        } catch (waWebasystIDAuthException $e) {
+            $this->cleanup();
+            $this->displayError($e->getMessage());  // show legitimate error from webasyst ID auth adapter
         } catch (Exception $e) {
             $this->cleanup();
             throw $e; // Caught in waSystem->dispatch()
@@ -89,17 +141,34 @@ class waOAuthController extends waViewController
 
     protected function getAuthAdapter($provider)
     {
+        if ($provider === waWebasystIDAuth::PROVIDER_ID) {
+            return new waWebasystIDAuth();
+        }
+
         $config = wa()->getAuthConfig();
         if (!isset($config['adapters'][$provider])) {
             throw new waException('Unknown auth provider');
         }
+
         return wa()->getAuth($provider, $config['adapters'][$provider]);
     }
 
+    /**
+     * @param $result
+     * @throws waException
+     */
     protected function displayAuth($result)
     {
         wa('webasyst');
-        $this->executeAction(new webasystOAuthAction());
+
+        $provider_id = $this->getAuthProviderId();
+
+        $params = [
+            'provider_id' => $provider_id,
+            'result' => $result
+        ];
+        
+        $this->executeAction(new webasystOAuthAction($params));
     }
 
     protected function displayError($error)
@@ -111,6 +180,12 @@ class waOAuthController extends waViewController
     /**
      * @param array $data
      * @return waContact
+     * @throws waAuthConfirmEmailException
+     * @throws waAuthConfirmPhoneException
+     * @throws waAuthException
+     * @throws waAuthInvalidCredentialsException
+     * @throws waDbException
+     * @throws waException
      */
     protected function afterAuth($data)
     {
@@ -187,6 +262,91 @@ class waOAuthController extends waViewController
     }
 
     /**
+     * Authorize backend user by params that we get from Webasyst ID service
+     *
+     * @param array $params - here is access token params with expected format:
+     *      - string $params['access_token'] [required] - access token itself (jwt)
+     *      - string $params['refresh_token'] [required] - refresh token to refresh access token
+     *      - int    $params['expires_in'] [optional] - ttl of expiration in seconds
+     *      - string $params['token_type'] [optional] - "bearer"
+     *      - ... and maybe some other fields from Webasyst ID server
+     * @return array $result
+     *      - bool  $result['status'] - ok or not ok?
+     *      - array $result['details']
+     *          If ok:
+     *              int $result['details']['contact_id']
+     *          Otherwise:
+     *              string $result['details']['error_code']
+     *              string $result['details']['error_message']
+     *
+     * @throws waException
+     */
+    private function authBackendUser($params)
+    {
+        // some user already authorized - return it
+        if (wa()->getUser()->isAuth()) {
+            return [
+                'status' => true,
+                'details' => [
+                    'contact_id' => wa()->getUser()->getId()
+                ]
+            ];
+        }
+
+        $m = new waWebasystIDAccessTokenManager();
+        $token_info = $m->extractTokenInfo($params['access_token']);
+
+        // it is webasyst contact id
+        $contact_id = $token_info['contact_id'];
+
+        // search backend contact in DB by webasyst_contact_id
+        $cwm = new waContactWaidModel();
+
+        // current contact id (of current installation)
+        $current_contact_id = $cwm->getBoundWithWebasystContact($contact_id);
+
+
+        if ($current_contact_id <= 0) {
+            return [
+                'status' => false,
+                'details' => [
+                    'error_code' => 'not_bound',
+                    'error_message' => _w('Not bound yet')
+                ]
+            ];
+        }
+
+        $contact = new waContact($current_contact_id);
+
+        $is_existing_backend_user = $contact->exists() && $contact['is_user'] >= 1;
+        if (!$is_existing_backend_user) {
+            return [
+                'status' => false,
+                'details' => [
+                    'error_code' => 'not_exists',
+                    'error_message' => _w("Backend user doesn't exists")
+                ]
+            ];
+        }
+
+        $contact->updateWebasystTokenParams($params);
+
+        // last backend login datetime
+        $cwm->updateById($current_contact_id, [
+            'login_datetime' => date('Y-m-d H:i:s')
+        ]);
+
+        wa()->getAuth()->auth(['id' => $current_contact_id]);
+
+        return [
+            'status' => true,
+            'details' => [
+                'contact_id' => $current_contact_id
+            ]
+        ];
+    }
+
+    /**
      * @param array $data
      * @return waContact
      * @throws waException
@@ -254,6 +414,36 @@ class waOAuthController extends waViewController
          */
         wa()->event('signup', $contact);
         return $contact;
+    }
+
+    /**
+     * If we in process of binding and user has been asked to choose what to do (see OAuth.html)
+     * @return bool
+     */
+    protected function isUnfinishedBindingProcess()
+    {
+        $post_data = $this->getRequest()->post();
+        return $this->getStorage()->get('webasyst_id_server_data') && isset($post_data['renew']);
+    }
+
+    /**
+     * Finish process of binding contact with webasyst ID contact
+     * @param waWebasystIDAuth $auth
+     * @throws waException
+     */
+    protected function finishBindingProcess($auth)
+    {
+        $post_data = $this->getRequest()->post();
+
+        $data = $this->getStorage()->get('webasyst_id_server_data');
+        $this->getStorage()->del('webasyst_id_server_data');
+
+        // renew binding confirmed by user, unbind webasyst contact with existing contact and bind with current
+        if ($post_data['renew']) {
+            $auth->bindWithWebasystContact($data, true);
+        }
+
+        $this->displayAuth([]);
     }
 
     protected function cleanup()

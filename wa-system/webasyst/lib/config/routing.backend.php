@@ -14,6 +14,7 @@ return array(
     'settings/regions/?'                        => 'settingsRegions',
     'settings/field/?'                          => 'settingsField',
     'settings/db/?'                             => 'settingsDatabase',
+    'settings/waid/?'                           => 'settingsWaID',
     'settings/?'                                => 'settings/',
     'repair'                                    => array(
         'url'    => 'repair/<action:(\w+)?>/?',

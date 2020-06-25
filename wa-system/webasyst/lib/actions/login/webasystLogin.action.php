@@ -41,6 +41,8 @@ class webasystLoginAction extends waBackendLoginAction
 
     protected function afterAuth()
     {
+        $this->bindWithWebasystContact();
+
         $this->getStorage()->remove('auth_login');
         $redirect = $this->getConfig()->getCurrentUrl();
         $backend_url = $this->getConfig()->getBackendUrl(true);
@@ -81,6 +83,7 @@ class webasystLoginAction extends waBackendLoginAction
      * @return array
      *   - 'redirect_url' - always presented - chosen redirect url
      *
+     * @throws waException
      */
     protected function throwLoginEvent($params = array())
     {
@@ -151,6 +154,7 @@ class webasystLoginAction extends waBackendLoginAction
     /**
      * @param array $options
      * @return waBackendLoginForm
+     * @throws waException
      */
     protected function getFormRenderer($options = array())
     {
@@ -159,10 +163,105 @@ class webasystLoginAction extends waBackendLoginAction
             $options = array_merge($base_options, $options);
         }
 
+        if ($this->isNotBoundWithWebasystID()) {
+            // login form will works on special mode - login and bind with webasyst ID contact at the same time
+            $options['bind_with_webasyst_contact'] = true;
+            // get info of webasyst contact (customer center contact info)
+            $options['webasyst_contact_info'] = $this->getWebasystContactInfo();
+        }
+
+        $webasyst_id_auth_url = $this->getWebasystIDAuthUrl();
+        if ($webasyst_id_auth_url) {
+            $options['webasyst_id_auth_url'] = $webasyst_id_auth_url;
+        }
+
         $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
         $is_api_oauth = $request_url === 'api.php/auth';
         $options['is_api_oauth'] = $is_api_oauth;
 
         return parent::getFormRenderer($options);
+    }
+
+    protected function getWebasystIDAuthUrl()
+    {
+        $auth = new waWebasystIDAuth();
+        if ($auth->isClientConnect()) {
+            return $auth->getUrl() . '&backend_auth=1';
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get result about attempt authorize backend user by Webasyst ID
+     * @see waWebasystIDAuth
+     * @see waOAuthController
+     * @return array|null $result - NULL means there was not attempt yet
+     *      - bool $result['status']
+     *      - array $result['details']
+     *              string $result['details']['error_code']
+     *              string $result['details']['error_code']
+     */
+    protected function getWebasystAuthResult()
+    {
+        $key = 'webasyst_id_backend_auth_result';
+        $result = $this->getStorage()->get($key);
+        if (!is_array($result)) {
+            $result = null;
+        }
+        return $result;
+    }
+
+    /**
+     * If on attempt to auth by webasyst ID error 'not_bound' happened
+     * @return bool
+     */
+    protected function isNotBoundWithWebasystID()
+    {
+        $result = $this->getWebasystAuthResult();
+        if (!$result) {
+            return false;
+        }
+        return empty($result['status']) && isset($result['details']['error_code']) && $result['details']['error_code'] === 'not_bound';
+    }
+
+    /**
+     * @return null|array $info - expected info format:
+     *      string $info['name']
+     *      string $info['userpic']
+     *      array $info['email'] - list of emails (list of assoc arrays)
+     *      array $info['phone'] - list of phones (list of assoc arrays)
+     * @throws waException
+     */
+    protected function getWebasystContactInfo()
+    {
+        $data = $this->getStorage()->get('webasyst_id_server_data');
+        if (!$data || !is_array($data)) {
+            return null;
+        }
+        $api = new waWebasystIDApi();
+        return $api->loadProfileInfo($data);
+    }
+
+    protected function bindWithWebasystContact()
+    {
+        $data = $this->getStorage()->get('webasyst_id_server_data');
+        self::clearWebasystIDAuthProcessState();
+
+        if ($data && is_array($data)) {
+            $auth = new waWebasystIDAuth();
+            $auth->bindWithWebasystContact($data);
+        }
+    }
+
+    public static function clearWebasystIDAuthProcessState()
+    {
+        $storage = wa()->getStorage();
+
+        // Delete result about attempt authorize backend user by Webasyst ID
+        $storage->del('webasyst_id_backend_auth_result');
+
+        // Delete response from webasyst ID server
+        $storage->del('webasyst_id_server_data');
     }
 }

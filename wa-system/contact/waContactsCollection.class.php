@@ -1324,7 +1324,7 @@ class waContactsCollection
     public function getHash($params_only = false)
     {
         if ($params_only) {
-            return $this->hash[1];
+            return (isset($this->hash[1]) ? $this->hash[1] : '');
         } else {
             return $this->hash;
         }

@@ -406,6 +406,109 @@ class waUtils
     }
 
     /**
+     * Generate random hex string of length $length
+     * Try use the most cryptographically secure algorithm available in current php version
+     *
+     * @param int $length
+     * If input is of invalid type (not int greater then 0) will be force to $length = 64,
+     * Default is 64
+     *
+     * @return string
+     */
+    public static function getRandomHexString($length = 64)
+    {
+        if (!wa_is_int($length) || $length <= 0) {
+            $length = 64;
+        }
+
+        // we will bin2hex and byte is 2 hex digit, so make a little correction and than, before method returns, make correction back
+        $is_even = $length % 2 === 0;
+        if (!$is_even) {
+            $length += 1;
+        }
+
+        if (function_exists('random_bytes')) {
+            try {
+
+                $result = bin2hex(random_bytes($length / 2));
+
+                // make a correction back
+                if (!$is_even) {
+                    $result = substr($result, 1);
+                }
+
+                return $result;
+            } catch (Exception $e) {
+            }
+        }
+
+        if (function_exists('openssl_random_pseudo_bytes')) {
+            $result = openssl_random_pseudo_bytes($length / 2);
+            if ($result) {
+                $result = bin2hex($result);
+
+                // make a correction back
+                if (!$is_even) {
+                    $result = substr($result, 1);
+                }
+
+                return $result;
+            }
+        }
+
+        $bytes = [];
+        if (function_exists('random_int')) {
+            $fn = 'random_int';
+        } elseif (function_exists('mt_rand')) {
+            $fn = 'mt_rand';
+        } else {
+            $fn = 'rand';
+        }
+
+        for ($i = 0, $n = $length / 2; $i < $n; $i++) {
+            $bytes[] = chr($fn(0, 255));   // gen one byte
+        }
+
+        $bytes = join('',$bytes);
+
+        $result = bin2hex($bytes);
+
+        // make a correction back
+        if (!$is_even) {
+            $result = substr($result, 1);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Url safe base64 encoding
+     * @param $string
+     * @return string
+     */
+    public static function urlSafeBase64Encode($string)
+    {
+        $data = base64_encode($string);
+        $data = str_replace(['+','/','='], ['-','_',''], $data);
+        return $data;
+    }
+
+    /**
+     * Url safe base64 decoding
+     * @param $string
+     * @return false|string
+     */
+    public static function urlSafeBase64Decode($string)
+    {
+        $data = str_replace(['-', '_'], ['+', '/'], $string);
+        $mod4 = strlen($data) % 4;
+        if ($mod4) {
+            $data .= substr('====', $mod4);
+        }
+        return base64_decode($data);
+    }
+
+   /**
      * Greater common divisor of two positive integers.
      * @since 1.13.9
      */

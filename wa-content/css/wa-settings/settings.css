@@ -492,6 +492,9 @@ table.zebra tr.selected .s-single-line:after {
   background-size: contain;
   background-position: center;
 }
+.icon16.ws.waid {
+  background-image: url("../../img/wa-settings/ws-waid.svg");
+}
 .s-email-settings-page .s-settings-items .s-item:hover > .s-remove {
   opacity: 0.6;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
@@ -1204,4 +1207,31 @@ table.zebra tr.selected .s-single-line:after {
   100% {
     color: #222;
   }
+}
+.s-waid-settings-page h2 {
+  margin-bottom: 1.5rem;
+}
+.s-waid-settings-page .s-connected-users tr {
+  padding: 5px;
+}
+.s-waid-settings-page .s-connected-users tr th {
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: bold;
+  background: transparent;
+  border: 0 none;
+}
+.s-waid-settings-page .s-connected-users tr th:nth-child(1) {
+  width: 32px;
+}
+.s-waid-settings-page .s-connected-users tr th:nth-child(2) {
+  width: 15%;
+}
+.s-waid-settings-page .s-connected-users tr th:nth-child(3) {
+  width: 15%;
+}
+.s-waid-settings-page .s-connected-users tr td img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50px;
 }

@@ -56,11 +56,22 @@ abstract class waAuthAdapter
         return wa()->getRootUrl().'wa-content/img/auth/'.$this->getId().$prefix.'.'.$ext;
     }
 
+    /**
+     * Inner url that will dispatched to OAuthController and that to auth adapter again
+     * @return string
+     * @throws waException
+     */
     public function getUrl()
     {
         return wa()->getRootUrl(false, true).'oauth.php?app='.wa()->getApp().'&amp;provider='.$this->getId();
     }
 
+    /**
+     * Callback url - url of controller that will process response from oauth provider service
+     * @param bool $absolute
+     * @return string
+     * @throws waException
+     */
     public function getCallbackUrl($absolute = true)
     {
         return wa()->getRootUrl($absolute, true).'oauth.php?provider='.$this->getId();
