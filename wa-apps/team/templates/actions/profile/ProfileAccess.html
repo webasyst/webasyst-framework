@@ -76,7 +76,7 @@
                         <i class="icon10 yes"></i>
 
                         {if $webasyst_id_email}
-                            [`Подключен к аккаунту`] <span class="bold">{$webasyst_id_email}</span>.
+                            {sprintf(_w('Webasyst ID account <span class="bold">%s</span> is connected.'), $webasyst_id_email)}
                         {else}
                             <span class="bold">[s`Sign in with Webasyst ID`]</span> [s`is connected`].
                         {/if}
@@ -451,9 +451,9 @@
                         [`Not available`]
                     {/if}<br>
                     <span class="hint">
-                        [`Customer Portal is a part of your site available for registered clients and containing their personal data. To access their customer portals your clients must log in with email and password.`]
+                        [`Customer portal is a part of your site available for registered clients and containing their personal data. To access their customer portals, your clients must log in with an email address and a password.`]
                         {if $is_superadmin}
-                            <a href="{$wa_backend_url}site/#/personal/settings" class="no-underline">[`Personal portal settings`]</a> [`in Site app`]
+                            {sprintf('[`Manage <a href="%s" class="no-underline">personal portal settings</a> in Site app.`]', "`$wa_backend_url`site/#/personal/settings")}
                         {/if}
                     </span>
                 </div>

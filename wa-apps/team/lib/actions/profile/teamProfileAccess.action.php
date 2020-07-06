@@ -117,7 +117,7 @@ class teamProfileAccessAction extends waViewAction
      */
     protected function getWebasystIDEmail()
     {
-        $access_token = $this->getWebasystAuthAccessToken($this->user);
+        $access_token = $this->getWebasystAuthAccessToken($this->user, 'profile');
         if (!$access_token) {
             return '';
         }
@@ -137,7 +137,7 @@ class teamProfileAccessAction extends waViewAction
             return '';
         }
 
-        $access_token = $this->getWebasystAuthAccessToken($this->getUser());
+        $access_token = $this->getWebasystAuthAccessToken($this->getUser(), 'auth');
         if (!$access_token) {
             return '';
         }
@@ -281,17 +281,18 @@ class teamProfileAccessAction extends waViewAction
     /**
      * Get access token if supports 'auth' scope
      * @param waContact $contact
+     * @param string $scope_should_be_supported
      * @return array|mixed
      * @throws waDbException
      * @throws waException
      */
-    protected function getWebasystAuthAccessToken(waContact $contact)
+    protected function getWebasystAuthAccessToken(waContact $contact, $scope_should_be_supported)
     {
         $token_params = $contact->getWebasystTokenParams();
         if ($token_params) {
             $access_token = $token_params['access_token'];
             $atm = new waWebasystIDAccessTokenManager();
-            $supports = $atm->isScopeSupported('auth', $access_token);
+            $supports = $atm->isScopeSupported($scope_should_be_supported, $access_token);
             if ($supports) {
                 return $access_token;
             }

@@ -148,6 +148,7 @@ var Profile = ( function($) {
 
                 $.waDialog({
                     html: html,
+                    animate: false,
                     onOpen: function($dialog) {
 
                         var $unbind_link = $dialog.find('.js-unbind');
@@ -285,8 +286,11 @@ var Profile = ( function($) {
         }
 
         // for availability in another frame
-        $(document).on('wa_waid_unbind_auth', function (e) {
-            onUnbind()
+        $(document).on('wa_waid_unbind_auth', function (event, contact) {
+            if(contact.id == contact_id){
+                event.stopImmediatePropagation();
+                onUnbind();
+            }
         });
 
         // click on link in current document

@@ -109,14 +109,11 @@ msgstr "Доступен"
 msgid "Not available"
 msgstr "Недоступен"
 
-msgid "Customer Portal is a part of your site available for registered clients and containing their personal data. To access their customer portals your clients must log in with email and password."
+msgid "Customer portal is a part of your site available for registered clients and containing their personal data. To access their customer portals, your clients must log in with an email address and a password."
 msgstr "Личный кабинет — это часть вашего сайта, доступная каждому зарегистрированному клиенту и содержащая персональные данные клиента. Для доступа в личный кабинет клиентам потребуется авторизация с помощью email-адреса и пароля."
 
-msgid "Personal portal settings"
-msgstr "Настройка личного кабинета"
-
-msgid "in Site app"
-msgstr "в приложении \"Сайт\""
+msgid "Manage <a href=\"%s\" class=\"no-underline\">personal portal settings</a> in Site app."
+msgstr "Управляйте <a href=\"%s\" class=\"no-underline\">настройками личного кабинета</a> в приложении «Сайт»."
 
 msgid "Login"
 msgstr "Логин"
@@ -1242,3 +1239,6 @@ msgstr "Удалённый контакт"
 
 msgid "Specified password is too long."
 msgstr "Указан слишком длинный пароль."
+
+msgid "Webasyst ID account <span class=\"bold\">%s</span> is connected."
+msgstr "Подключен к аккаунту Webasyst ID <span class=\"bold\">%s</span>."

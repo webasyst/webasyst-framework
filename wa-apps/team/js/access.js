@@ -663,7 +663,7 @@ window.ProfileAccessTab = function(o) { "use strict";
     function initWebasystIDUnbindAuth() {
         $('.js-webasyst-id-unbind-auth').on('click', function (e) {
             e.preventDefault();
-            window.top.$('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth');
+            window.top.$('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth', {id: contact_id});
         });
     }
 
