@@ -1,0 +1,39 @@
+{if $announcements}
+    <div class="js-wa-announcement-wrap">
+        <style>
+            .wa-announcement {
+                position: relative; padding: 0;
+                background-image: initial; background-color: #4e4d12; box-shadow: rgba(13, 13, 13, 0.13) 0px 1px 3px -1px;
+                background: #ffd; font-size: 0.9em;
+                border-bottom: 1px solid silver;
+            }
+            .wa-announcement a.wa-announcement-close {
+                float: right; display: inline-block;
+                margin-right: 12px; margin-top: 7px; margin-left: 13px;
+                font-size: 1.6em; color: #c2bf94; text-decoration-color: initial; text-decoration: none;
+            }
+            .wa-announcement .wa-announcement-content { padding: .75rem 2.5rem .75rem 5%; }
+        </style>
+
+        {foreach $announcements as $_key => $_a}
+            <div class="wa-announcement js-wa-announcement">
+                <a title="[`close`]" class="wa-announcement-close js-announcement-close" href="javascript:void(0);" rel="installer" data-key="{$_key}">×</a>
+                {$_a.value}
+            </div>
+        {/foreach}
+    </div>
+{/if}
+
+<script>
+$(function() {
+    {if $announcements}
+        $('.js-announcement-close').unbind('click').bind('click', function() {
+            $.post('{$wa_backend_url}installer/?module=announcement&action=hide', {
+                key: $(this).data('key')
+            });
+            $(this).closest('.js-wa-announcement').remove();
+            return false;
+        });
+    {/if}
+});
+</script>

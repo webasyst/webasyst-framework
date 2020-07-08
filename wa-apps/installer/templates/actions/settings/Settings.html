@@ -1,0 +1,43 @@
+<div class="shadowed">
+    <div class="i-white-core-content">
+        <div class="block double-padded">
+            <div class="fields">
+                <div class="field-group">
+                    <div class="field">
+                        <div class="name">
+                            [`System settings`]
+                        </div>
+                        <div class="value">
+                            {sprintf('[`<a href="%s">Change system settings in Settings app</a>.`]', "`$wa_backend_url`webasyst/settings/")}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">
+                            [`Webasyst version`]
+                        </div>
+                        <div class="value no-shift">{$version}</div>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <div class="field">
+                        <div class="name" style="margin-top: 8px;">
+                            [`Clear cache`]
+                        </div>
+                        <div class="value">
+                            <input type="button" class="button gray" name="clear_cache" value="[`Clear cache`]">
+                            <span id="installer-cache-state" style="display: none;"><!-- state placeholder --></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+<script src="{$wa_app_static_url}js/settings.js?v={$wa->version()}" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.installer_settings.init();
+    });
+</script>

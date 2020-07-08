@@ -1,0 +1,173 @@
+{$wrapper_class_id = 'i-product-review-widget-wrappper'}
+{$wrapper_id = uniqid($wrapper_class_id|cat:'-')}
+
+{$_is_modal = $is_modal|default:false}
+
+{$inline_class = ''}
+{if !$_is_modal}
+    {$inline_class = '-inline'}
+{/if}
+
+{capture assign="_product_loader_template"}
+    {strip}
+        <div class="i-skeleton-wrapper js-skeleton-wrapper pulsed">
+            <div class="i-product-review-block loader-pulse">
+                <span class="i-product-review-icon"></span>
+                <span class="i-product-review-title "></span>
+                <div class="i-rates-list" style="display: none">
+                {for $_index = 1 to 5}
+                    <span class="i-rate">
+                        <svg class="svg-inline--fa fa-star" aria-hidden="true" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" data-fa-i2svg="">
+                            <path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"></path>
+                        </svg>
+                    </span>
+                {/for}
+                </div>
+                <span class="i-product-review-support"></span>
+            </div>
+        </div>
+    {/strip}
+{/capture}
+
+
+
+<link href="{$wa_url}wa-content/js/dialog/dialog.css" rel="stylesheet">
+<link href="{$wa_url}wa-apps/installer/css/app.installer.css" rel="stylesheet">
+<script src="{$wa_url}wa-content/js/dialog/dialog.js"></script>
+<script defer src="{$wa_url}wa-apps/installer/fonts/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
+
+{if !$_is_modal}
+    {$_product_loader_template}
+{/if}
+{* MAIN DOM WRAPPER OF WIDGET *}
+<div id="{$wrapper_id}" class="{$wrapper_class_id}">
+    <div class="i-product-widget-block js-product-widget-block wa-dialog{$inline_class}" style="display: none;">
+        <div class="wa-dialog-body{$inline_class}">
+            <div class="wa-dialog-content{$inline_class}">
+                <div class="i-product-icon js-product-icon"></div>
+                <div class="i-product-name js-product-name"></div>
+                <div class="i-rates-list js-rates-list">
+                    {for $_index = 1 to 5}
+                    <span class="i-rate js-set-rate">
+                            <i class="fas fa-star"></i>
+                        </span>
+                    {/for}
+                </div>
+            </div>
+            <div class="wa-dialog-footer{$inline_class}">
+                <a class="js-product-support" target="_blank" href="#">{_wd('installer', 'Contact the developer')}</a>
+            </div>
+            {if $_is_modal}
+            <span class="wa-close-icon js-close-dialog">
+                <i class="fas fa-times"></i>
+            </span>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{capture assign="_product_review_dialog_template"}
+<div class="wa-dialog i-product-review-dialog">
+    <div class="wa-dialog-background"></div>
+    <div class="wa-dialog-body">
+        <div class="wa-dialog-header">
+            <h1 class="js-content-title">{_wd('installer', 'Your review')}</h1>
+        </div>
+        <div class="wa-dialog-content">
+            <div class="i-comment-section js-comment-section">
+                {strip}
+                <div class="i-rates-list js-rates-list">
+                    {for $_index = 1 to 5}
+                    <span class="i-rate js-set-rate"><i class="fas fa-star"></i></span>
+                    {/for}
+                    <span class="gray"> – {_wd('installer', 'Your rate has been added, thank you!')}</span>
+                </div>
+                {/strip}
+
+                <div class="i-description">{_wd('installer', 'What you like or dislike about this product')}<span class="gray">({_wd('installer', 'optional')})</span>:</div>
+
+                <textarea class="i-comment-field js-comment-field"></textarea>
+
+            </div>
+
+            <div class="i-comment-user js-comment-user assets" style="display: none;">
+                <i class="userpic20 icon16"></i>
+                <strong class="user"></strong>
+                <span class="hint">{wa_date('humandate')}</span>
+            </div>
+
+            <div class="i-errors-place js-errors-place" style="display: none;"></div>
+
+        </div>
+
+        <div class="wa-dialog-footer">
+
+            <div class="hint js-dialog-signup-user-info" style="display: none;">
+                <p>
+                    {_wd('installer', 'You are currently signed into Webasyst as <span class="js-customer-center-user-name"></span>')}<br>
+                    {_wd('installer', 'If you want to add a review as another customer, please <a class="js-customer-center-logout-link">sign out</a>.')}
+                </p>
+            </div>
+
+            <button class="button2 large blue js-send-comment">{_wd('installer', 'Add a review')}</button>
+        </div>
+        <span class="wa-close-icon js-close-dialog">
+            <i class="fas fa-times"></i>
+        </span>
+    </div>
+</div>
+{/capture}
+
+{capture assign="_confirm_text_template"}
+<div class="i-confirm-text">{_wd('installer', 'Your review has been added, thank you!')}</div>
+{/capture}
+
+    {$_locale = [
+        'your_rates'          => _wd('installer', 'Your rates'),
+        'button_default'      => _wd('installer', "Add a rate"),
+        'button_active'       => _wd('installer', "Add a rate and a review"),
+        'button_edit_default' => _wd('installer', "Change rate"),
+        'button_edit_active'  => _wd('installer', "Change rate and review"),
+        'rate_plugin'         => _wd('installer', "Rate plugin"),
+        'rate_widget'         => _wd('installer', "Rate widget"),
+        'rate_theme'          => _wd('installer', "Rate theme"),
+        'rate_app'            => _wd('installer', "Rate app"),
+        'for_plugin'          => _wd('installer', "for plugin"),
+        'for_widget'          => _wd('installer', "for widget"),
+        'for_theme'           => _wd('installer', "for theme"),
+        'for_app'             => _wd('installer', "for app")
+    ]}
+
+    <script>
+        $(function () {
+
+            $(document).on('wa_store_installer_widget_init', function () {
+                $('.js-skeleton-wrapper').remove();
+            });
+
+            var init = function () {
+                new InstallerProductReviewWidget({
+                    $wrapper: $('#{$wrapper_id}'),
+                    product_id: {$product_id|json_encode},
+                    store_review_core_url: {$store_review_core_url|json_encode},
+                    store_auth_params: {$store_auth_params|json_encode},
+                    locale_defs: {$_locale|json_encode},
+                    is_modal: {$_is_modal|json_encode},
+                    errors: {$errors|default:[]|json_encode},
+                    installer_app_url: {$installer_app_url|default:''|json_encode},
+                    is_debug: {$is_debug|json_encode},
+                    has_access: {$has_access|json_encode},
+                    templates: {
+                        review_dialog: {$_product_review_dialog_template|json_encode},
+                        confirm: {$_confirm_text_template|json_encode}
+                    }
+                });
+            };
+
+            if (typeof InstallerProductReviewWidget === 'undefined') {
+                $.getScript('{$installer_app_static_url}js/product_review_widget.js', init)
+            } else {
+                init();
+            }
+        });
+    </script>
