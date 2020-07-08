@@ -323,8 +323,8 @@ class waOAuthController extends waViewController
             return [
                 'status' => false,
                 'details' => [
-                    'error_code' => 'not_exists',
-                    'error_message' => _w("Backend user doesn't exists")
+                    'error_code' => 'access_denied',
+                    'error_message' => _w("Access denied")
                 ]
             ];
         }

@@ -81,6 +81,8 @@ class waPageAction extends waViewAction
             }
             $this->view->assign('page', $page);
             $this->setThemeTemplate('page.html');
+
+            $this->addCanonicalUrl($page['full_url']);
         }
     }
 
@@ -122,5 +124,12 @@ class waPageAction extends waViewAction
             $this->model = $this->getAppId().'PageModel';
         }
         return new $this->model();
+    }
+
+    public function addCanonicalUrl($full_url)
+    {
+        $storefront_url = wa()->getRouteUrl('/frontend/', true);
+        $canonical_url = $storefront_url . $full_url;
+        $this->getResponse()->setCanonical($canonical_url);
     }
 }

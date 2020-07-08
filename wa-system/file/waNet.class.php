@@ -515,7 +515,7 @@ class waNet
         return false;
     }
 
-    private function runCurl($url, $params, $method, $curl_options = array(), $callback = null)
+    protected function runCurl($url, $params, $method, $curl_options = array(), $callback = null)
     {
         $this->getCurl($url, $params, $method, $curl_options);
         if (!empty($callback) && is_callable($callback) && !empty(self::$namespace) && !empty(self::$mh[self::$namespace])) {
@@ -766,7 +766,7 @@ class waNet
         wa()->getStorage()->close();
     }
 
-    private function runStreamContext($url, $content, $method)
+    protected function runStreamContext($url, $content, $method)
     {
         $context = $this->getStreamContext($content, $method);
         $response = @file_get_contents($url, false, $context);
@@ -880,7 +880,7 @@ class waNet
      * @return bool|string
      * @throws waException
      */
-    private function runSocketContext($url, $content, $method)
+    protected function runSocketContext($url, $content, $method)
     {
         $host = parse_url($url, PHP_URL_HOST);
 

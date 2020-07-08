@@ -414,25 +414,28 @@ class waContact implements ArrayAccess
                         !trim($this['company'] !== null ? $this['company'] : '')
                     )
                 {
-                    $eml = $this->get('email', 'value');
+                    $emls = $this->get('email', 'value');
+                    $emls = waUtils::toStrArray($emls);
+
+                    $eml = $emls ? reset($emls) : '';
+
                     if ($eml) {
-                        if (is_array($eml)) {
-                            $eml = array_values($eml);
-                            $eml = reset($eml);
-                        } else {
-                            $eml = '';
-                        }
                         $pos = strpos($eml, '@');
-                        if ($pos == false) {
-                            return $eml;
-                        } else {
+                        if ($pos !== false) {
                             return substr($eml, 0, $pos);
+                        } else {
+                            return $eml;
                         }
                     }
-                    $phone_as_name = $this->get('phone', 'default|value');
-                    if ($phone_as_name) {
-                        return $phone_as_name;
-                    }
+
+                    // email happend to be empty - now will try phone
+
+                    $phones = $this->get('phone', 'value');
+                    $phones = waUtils::toStrArray($phones);
+
+                    $phone = $phones ? reset($phones) : '';
+
+                    return $phone;
                 }
 
                 return $result;

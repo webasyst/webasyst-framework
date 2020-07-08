@@ -351,7 +351,7 @@
         {/if}
 
         {* Installer review widget *}
-        {if can_show_review_widget}
+        {if $need_show_review_widget}
             <div class="block not-padded top-padded insidebar-wrapper">
                 {$wa->installer->reviewWidget("theme/`$theme.id`", ['is_inline' => true])}
             </div>

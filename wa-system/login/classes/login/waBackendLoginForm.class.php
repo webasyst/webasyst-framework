@@ -74,6 +74,8 @@ class waBackendLoginForm extends waLoginForm
         // in case of bind with webasyst id it we should has here webasyst contact info (another word customer center contact info)
         $assign['webasyst_contact_info'] = isset($this->options['webasyst_contact_info']) ? $this->options['webasyst_contact_info'] : null;
 
+        $assign['webasyst_id_auth_result'] = isset($this->options['webasyst_id_auth_result']) ? $this->options['webasyst_id_auth_result'] : [];
+
         return $assign;
     }
 }

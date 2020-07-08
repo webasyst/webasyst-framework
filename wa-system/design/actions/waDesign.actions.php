@@ -798,7 +798,7 @@ HTACCESS;
                 'cover'                               => $cover,
                 'route_url'                           => $route_url,
                 'apps'                                => wa()->getApps(),
-                'need_show_review_widget'             => wa()->appExists('installer') && $theme_id != 'default',
+                'need_show_review_widget'             => $this->needShowReviewWidget($theme_id),
             ), $this->getConfig()->getRootPath().'/wa-system/design/templates/Theme.html');
         }
     }
@@ -1357,5 +1357,15 @@ HTACCESS;
         }
 
         return $app_url;
+    }
+
+    /**
+     * @param string $theme_id
+     * @return bool
+     * @throws waException
+     */
+    private function needShowReviewWidget($theme_id)
+    {
+        return wa()->appExists('installer') && $theme_id != 'default';
     }
 }

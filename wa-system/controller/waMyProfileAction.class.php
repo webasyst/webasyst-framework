@@ -89,7 +89,7 @@ abstract class waMyProfileAction extends waViewAction
         if (!empty($data['password']) && $data['password'] !== $data['password_confirm']) {
             $form->errors('password', _ws('Passwords do not match'));
             return false;
-        } elseif (strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
+        } elseif (!empty($data['password']) && strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
             $form->errors('password', _ws('Specified password is too long.'));
             return false;
         } elseif (empty($data['password']) || empty($data['password_confirm'])) {

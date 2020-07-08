@@ -173,6 +173,10 @@ class webasystLoginAction extends waBackendLoginAction
         $webasyst_id_auth_url = $this->getWebasystIDAuthUrl();
         if ($webasyst_id_auth_url) {
             $options['webasyst_id_auth_url'] = $webasyst_id_auth_url;
+            $auth_result = $this->getWebasystAuthResult();
+            if ($auth_result && empty($auth_result['status'])) {
+                $options['webasyst_id_auth_result'] = $auth_result;
+            }
         }
 
         $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');

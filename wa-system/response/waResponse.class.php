@@ -265,6 +265,34 @@ class waResponse
     }
 
     /**
+     * Return current CANONICAL link.
+     *
+     * @return  string
+     */
+    public function getCanonical()
+    {
+        return $this->getMeta('canonical');
+    }
+
+    /**
+     * Sets the page CANONICAL link.
+     * This link is accessible in Smarty templates using {$wa->head()}.
+     *
+     * @param   string  $url  Page CANONICAL link
+     * @return  waResponse  Instance of waResponse class
+     */
+    public function setCanonical($canonical_url, $with_header_link = true)
+    {
+        $actual_url = wa()->getConfig()->getRootUrl(true) . wa()->getConfig()->getRequestUrl();
+        if ($canonical_url != $actual_url) {
+            if ($with_header_link) {
+                $this->addHeader('Link', "<{$canonical_url}>; rel='canonical'");
+            }
+            $this->setMeta('canonical', (string)$canonical_url);
+        }
+    }
+
+    /**
      * Sets a META value.
      * This value is accessible in Smarty templates using {$wa->meta()}.
      *

@@ -173,7 +173,7 @@ class waWebasystIDAuth extends waOAuth2Adapter
         if ($error) {
             $error_description = waRequest::get('error_description');
             if (!$error_description) {
-                $error_description = _ws('Unknown error from Webasyst ID server');
+                $error_description = _ws('Unknown error from Webasyst ID server.');
             }
 
             // if webasyst ID server response 'access_denied' it means that we must react on it special way
@@ -236,9 +236,9 @@ class waWebasystIDAuth extends waOAuth2Adapter
             'client_id' => $credentials['client_id'],
             'redirect_uri' => $callback_url,
             'state' => $state,
-            'scope' => 'profile auth'
+            'scope' => 'profile' // 'profile auth' - switch off auth scope
         ];
-        
+
         if (empty($params['response_type'])) {
             $params['response_type'] = 'code';
         }

@@ -263,6 +263,12 @@ HTML;
                 }
             }
         }
+
+        $canonical = wa()->getResponse()->getCanonical();
+        if ($canonical) {
+            $html .= '<link rel="canonical" href="' . htmlspecialchars($canonical) . '" />' . PHP_EOL;
+        }
+
         return $html;
     }
 

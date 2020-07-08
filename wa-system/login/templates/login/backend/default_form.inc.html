@@ -48,14 +48,15 @@
 
     </form>
 </div>
+
 {if $webasyst_id_auth_url && !$bind_with_webasyst_contact}
 <div class="waid-login">
     <span class="separator">[s`or`]</span>
     <a href="{$webasyst_id_auth_url}" class="waid-auth-link js-webasyst-auth-link">[s`Sign in with`]&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span></a>
     <a href="#" class="hint js-waid-hint">[s`What is it?`]</a>
-    {if !empty($webasyst_ID_auth_error)}
-        <span class="error" data-code="{$webasyst_ID_auth_error.code|default:''}">
-            {$webasyst_ID_auth_error.message|default:_w('Unknown auth error. Sign in with login and password.')}
+    {if !empty($webasyst_id_auth_result) && empty($webasyst_id_auth_result.status)}
+        <span class="error" data-code="{$webasyst_id_auth_result.details.error_code|default:''}">
+            {$webasyst_id_auth_result.details.error_message|default:_w('Unknown auth error. Sign in with login and password.')}
         </span>
     {/if}
 </div>
