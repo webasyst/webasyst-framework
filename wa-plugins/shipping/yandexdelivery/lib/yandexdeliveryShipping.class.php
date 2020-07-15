@@ -527,7 +527,9 @@ class yandexdeliveryShipping extends waShipping
             $response = $this->apiQuery('confirmSenderOrders', $data);
             if (isset($response['result']['error'][$order_id])) {
                 $message = 'Ошибка при автоматическом подтверждении отправления. Подтвердите отправление вручную в личном кабинете «Яндекс.Доставки».';
-                $hint = htmlentities($response['result']['error'][$order_id], ENT_NOQUOTES, 'utf-8');
+                $hint_text = is_array($response['result']['error'][$order_id])
+                    ? implode(',', $response['result']['error'][$order_id]) : $response['result']['error'][$order_id];
+                $hint = htmlentities($hint_text, ENT_NOQUOTES, 'utf-8');
                 $message .= sprintf('<span class="hint">%s</span>', $hint);
 
                 return $message;
