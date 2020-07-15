@@ -85,6 +85,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'CustomerKey' => $c->getId(),
             'Description' => $order_data['summary'],
+            'PayType'     => $this->two_steps ? 'T' : 'O',
             'DATA'        => array(
                 'Email' => $email,
             ),
@@ -216,16 +217,27 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
         $api_url = $this->getEndpointUrl().$method;
 
-        $net = new waNet(array(
+        $options = array(
             'request_format' => 'json',
             'format'         => waNet::FORMAT_JSON,
             'verify'         => false,
-        ));
+        );
 
-        $log = array();
+        if (class_exists('tinkofftestNet')) {
+            $net = new tinkofftestNet($options);
+        } else {
+            $net = new waNet($options);
+        }
+
+        $log = array(
+            'method' => __METHOD__,
+            'url' => $api_url,
+            'request' => $request,
+        );
         try {
 
             $response = $net->query($api_url, $request, waNet::METHOD_POST);
+            $log['response'] = $response;
 
             if (!empty($response['ErrorCode'])) {
                 $message = sprintf(
@@ -247,19 +259,20 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             }
 
         } catch (Exception $ex) {
-            $log += array(
-                'message' => $ex->getMessage(),
-                'request' => $request,
-            );
+            $log['message'] = $ex->getMessage();
             if (empty($log['response'])) {
                 $log['raw_response'] = $net->getResponse(true);
             }
-
             $log['response_headers'] = $net->getResponseHeader();
 
             self::log($this->id, $log);
 
             throw $ex;
+        }
+
+        if ($this->isTestMode()) {
+            $log['testmode'] = 'Extra logging enabled';
+            static::log($this->id, $log);
         }
 
         return $response;
@@ -403,13 +416,6 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 'description' => '',
             );
             $now = date('Y-m-d H:i:s');
-
-            $amount = $transaction_raw_data['transaction']['amount'];
-
-            if (isset($res['OriginalAmount']) && isset($res['NewAmount'])) {
-                $amount = ($res['OriginalAmount'] - $res['NewAmount']) / 100;
-            }
-
             $transaction = array(
                 'native_id'       => $transaction_raw_data['transaction']['native_id'],
                 'type'            => self::OPERATION_REFUND,
@@ -417,7 +423,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 'result'          => 1,
                 'order_id'        => $transaction_raw_data['transaction']['order_id'],
                 'customer_id'     => $transaction_raw_data['transaction']['customer_id'],
-                'amount'          => $amount,
+                'amount'          => $amount/100,
                 'currency_id'     => $transaction_raw_data['transaction']['currency_id'],
                 'parent_id'       => $transaction_raw_data['transaction']['id'],
                 'create_datetime' => $now,
@@ -444,7 +450,15 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 unset($res['TerminalKey']);
             }
 
-            $this->saveTransaction($transaction, $res);
+            $this->saveTransaction($transaction, [
+                // used by $this->formalizeData() and eventually by waPayment->isRefundAvailable()
+                // to calculate how large should total refund be
+                'captured_amount' => round((
+                    $transaction_raw_data['transaction']['amount'] +
+                    ifset($transaction_raw_data, 'transaction', 'refunded_amount', 0)
+                )*100),
+                'Amount' => $amount,
+            ] + $res);
 
             return $response;
         } catch (Exception $ex) {
@@ -557,19 +571,39 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'Amount'    => $data['transaction']['amount'] * 100,
         );
 
-        if (!empty($transaction_raw_data['order_data'])) {
-            $order = waOrder::factory($transaction_raw_data['order_data']);
+        if (!empty($data['order_data'])) {
+            $order = waOrder::factory($data['order_data']);
 
             if ($data['transaction']['currency_id'] != $order->currency) {
                 throw new waPaymentException(sprintf('Currency id changed. Expected %s, but get %s.', $data['transaction']['currency_id'], $order->currency));
             }
 
-            $args['Amount'] = $order->total;
+            $args['Amount'] = round($order->total*100);
 
             if ($this->getSettings('atolonline_on')) {
                 $args['Receipt'] = $this->getReceiptData($order);
             }
         }
+
+        // Callbacks from Tinkoff API are pretty fast and often come before
+        // the call to /Confirm endpoint returns.
+        // We create wa_transaction record beforehand so that
+        // the callback is ignored
+        $datetime = date('Y-m-d H:i:s');
+        $transaction_model = new waTransactionModel();
+        $transaction = $this->saveTransaction([
+            'native_id'       => $data['transaction']['native_id'],
+            'type'            => self::OPERATION_CAPTURE,
+            'result'          => 'unfinished',
+            'order_id'        => $data['transaction']['order_id'],
+            'customer_id'     => $data['transaction']['customer_id'],
+            'amount'          => $args['Amount'] / 100,
+            'currency_id'     => $data['transaction']['currency_id'],
+            'parent_id'       => $data['transaction']['id'],
+            'create_datetime' => $datetime,
+            'update_datetime' => $datetime,
+            'state'           => $data['transaction']['state'],
+        ]);
 
         try {
             $res = $this->apiQuery('Confirm', $args);
@@ -577,22 +611,6 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             $response = array(
                 'result'      => 0,
                 'description' => '',
-            );
-
-            $datetime = date('Y-m-d H:i:s');
-
-            $transaction = array(
-                'native_id'       => $data['transaction']['native_id'],
-                'type'            => self::OPERATION_CAPTURE,
-                'result'          => 1,
-                'order_id'        => $data['transaction']['order_id'],
-                'customer_id'     => $data['transaction']['customer_id'],
-                'amount'          => $data['transaction']['amount'],
-                'currency_id'     => $data['transaction']['currency_id'],
-                'parent_id'       => $data['transaction']['id'],
-                'create_datetime' => $datetime,
-                'update_datetime' => $datetime,
-                'state'           => self::STATE_CAPTURED,
             );
 
             $status = ifset($res, 'Status', '');
@@ -604,14 +622,22 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 $transaction['view_data'] = ifset($res['Details']);
                 $response['result'] = -1;
                 $response['description'] = $transaction['error'];
+            } else {
+                $transaction['result'] = 1;
+                $transaction['state'] = self::STATE_CAPTURED;
             }
 
             $transaction['parent_state'] = $transaction['state'];
 
+            $transaction_model->deleteById($transaction['id']);
+            unset($transaction['id']);
             $response['data'] = $this->saveTransaction($transaction, $res);
 
             return $response;
         } catch (Exception $ex) {
+            if (isset($transaction['id'])) {
+                $transaction_model->deleteById($transaction['id']);
+            }
             return null;
         }
     }
@@ -694,9 +720,20 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
             case 'PARTIAL_REFUNDED':
                 $transaction_data['type'] = self::OPERATION_REFUND;
-                if (!empty($data['OriginalAmount']) && !empty($data['NewAmount'])) {
-                    $transaction_data['refunded_amount'] = (intval($data['OriginalAmount']) - intval($data['NewAmount'])) / 100;
+                // 'refunded_amount' is used by waPayment->isRefundAvailable()
+                // It contains total amount refunded so far, including by this transaction.
+                if (!empty($data['NewAmount'])) {
+                    if (!empty($data['captured_amount'])) {
+                        // for partially-captured orders
+                        // 'captured_amount' contains amount captured, this may differ from `OriginalAmount`
+                        $transaction_data['refunded_amount'] = (intval($data['captured_amount']) - intval($data['NewAmount'])) / 100;
+                    } else if (!empty($data['OriginalAmount'])) {
+                        // for fully-captured orders
+                        // (old plugin versions did not write `captured_amount` to raw data)
+                        $transaction_data['refunded_amount'] = (intval($data['OriginalAmount']) - intval($data['NewAmount'])) / 100;
+                    }
                 }
+
                 break;
 
             case 'REFUNDED':
@@ -808,7 +845,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             }
             foreach ($order->items as $item) {
                 $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
-                if ($item['price'] > 0) {
+                if ($item['price'] > 0 && $item['quantity'] > 0) {
 
                     switch (ifset($item['type'])) {
                         case 'shipping':
@@ -906,5 +943,10 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         $settings['terminal_key'] = trim($settings['terminal_key']);
         $settings['terminal_password'] = trim($settings['terminal_password']);
         return parent::saveSettings($settings);
+    }
+
+    protected function isTestMode()
+    {
+        return $this->testmode || 'DEMO' === substr($this->getSettings('terminal_key'), -4);
     }
 }
