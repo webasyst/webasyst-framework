@@ -195,6 +195,9 @@ class blogFrontendPostAction extends blogViewAction
         }
 
         $this->view->assign('post', $post);
+
+        $canonical_url = $post['link'];
+        $this->getResponse()->setCanonical($canonical_url);
     }
 
     /**

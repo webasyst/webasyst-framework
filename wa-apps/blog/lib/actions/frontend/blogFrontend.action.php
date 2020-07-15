@@ -198,5 +198,7 @@ class blogFrontendAction extends blogViewAction
         if ($this->cache_time && false) {
             $this->cache->set(array_keys($posts));
         }
+
+        $this->getResponse()->setCanonical($url);
     }
 }
