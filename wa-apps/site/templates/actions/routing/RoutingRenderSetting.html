@@ -88,7 +88,7 @@
             {if isset($_v.items)}
                 <select{if $value != $_k || !isset($_v['items'][$value])} disabled="disabled"{/if} name="params[{$info.id}]">
                     {foreach $_v.items as $_k2 => $_v2}
-                        <option{if $_k2 == $value} selected="selected"{/if} value="{$_k2|escape}">{$_k2|escape}</option>
+                        <option{if $_k2 == $value} selected="selected"{/if} value="{$_k2|escape}">{$_v2|escape}</option>
                     {/foreach}
                 </select>
             {/if}
