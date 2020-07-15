@@ -51,6 +51,8 @@ class boxberryShippingDraftPackage
             'sender_name'  => $this->bxb->notification_name
         ];
 
+        $data['weights'] += $this->getParcelVolume();
+
         // If the number is saved, then you need to update
         if (!empty($this->order->shipping_data['original_track_number'])) {
             $data['updateByTrack'] = $this->order->shipping_data['original_track_number'];
@@ -193,12 +195,31 @@ class boxberryShippingDraftPackage
             ];
 
             if (is_numeric($item['tax_rate'])) {
-                $bxb_item['nds'] = $item['tax_rate'];
+                $bxb_item['nds'] = (float) $item['tax_rate'];
             }
 
             $result[] = $bxb_item;
         }
         return $result;
+    }
+
+    protected function getParcelVolume()
+    {
+        $item = current($this->order->items);
+        $dimensions = array('x' => 'width', 'y' => 'height', 'z' => 'length');
+        foreach ($dimensions as $key => $dimension) {
+            if (
+                isset($item[$dimension])
+                && !empty($item[$dimension])
+                && $item['dimensions_unit']
+                && $item[$dimension] < floatval($this->bxb->getSettings('max_' . $dimension))
+            ) {
+                $dimensions[$key] = ceil(shopDimension::getInstance()->convert($item[$dimension], 'length', 'cm', $item['dimensions_unit']));
+            } else {
+                return array();
+            }
+        }
+        return $dimensions;
     }
 
     /**
