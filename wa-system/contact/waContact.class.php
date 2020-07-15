@@ -406,13 +406,12 @@ class waContact implements ArrayAccess
             }
             // no special formatting
             else {
-                // Contact without name uses first part of email as fiestname
+                // Contact without name derive firstname from email or phone
                 if ($field_id === 'firstname' &&
-                        $result === null &&
-                        !trim($this['middlename'] !== null ? $this['middlename'] : '') &&
-                        !trim($this['lastname'] !== null ? $this['lastname'] : '') &&
-                        !trim($this['company'] !== null ? $this['company'] : '')
-                    )
+                        !trim($result) &&
+                        !trim($this['middlename']) &&
+                        !trim($this['lastname']) &&
+                        !trim($this['company']))
                 {
                     $emls = $this->get('email', 'value');
                     $emls = waUtils::toStrArray($emls);
@@ -433,9 +432,7 @@ class waContact implements ArrayAccess
                     $phones = $this->get('phone', 'value');
                     $phones = waUtils::toStrArray($phones);
 
-                    $phone = $phones ? reset($phones) : '';
-
-                    return $phone;
+                    return $phones ? reset($phones) : '';
                 }
 
                 return $result;
