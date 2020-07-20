@@ -142,6 +142,10 @@ class waAPIController
     protected function checkToken()
     {
         $token = waRequest::request('access_token');
+        if (!$token) {
+            $token = waRequest::server('Authorization');
+            $token = preg_replace('~^(Bearer\s)~ui', '', $token);
+        }
         if ($token) {
             $tokens_model = new waApiTokensModel();
             $data = $tokens_model->getById($token);
