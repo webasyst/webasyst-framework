@@ -33,10 +33,11 @@ class installerUpdateManagerAction extends waViewAction
 
         if (installerHelper::isDeveloper()) {
             if ($this->is_install) {
-                $msg = _w('Unable to install product (developer version is on)');
+                $msg = _w('Unable to install the product (developer mode is on).');
             } else {
-                $msg = _w('Unable to update product (developer version is on)');
+                $msg = _w('Unable to update the product (developer mode is on).');
             }
+            $msg .= "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file.");
             $this->redirect(array(
                 'module' => $this->module,
                 'msg'    => installerMessage::getInstance()->raiseMessage($msg, 'fail'),

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>[`Database indices and AUTO_INCREMENT repair tool`]</title>
+    {$wa->css()}
+    <style>
+        .buttons-container { display: flex; justify-content: space-between; }
+        .button-container { padding: 5px; }
+        .button-container p { margin: 0.5em 0 0 0; line-height: 1; }
+    </style>
+</head>
+<body>
+    <div class="block double-padded">
+        <h1>[`Restoring of missing database indices and AUTO_INCREMENT values`]</h1>
+        {if isset($comparison)}
+            <form action="{$wa_backend_url}webasyst/repair/indices/" method="post" name="db-repair">
+                <table class="zebra">
+                    <thead>
+                        <tr>
+                            <th>[`Select`]</th>
+                            <th>[`Table name`]</th>
+                            <th>[`Query`]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {foreach $comparison as $table_name => $query}
+                            <tr>
+                                <td><input type="checkbox" class="table-selector" name="tables[]" value="{$table_name}"></td>
+                                <td title="{ifset($table_definitions, $table_name, '')|escape}">{$table_name}</td>
+                                <td>{$query}</td>
+                            </tr>
+                        {/foreach}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">
+                                <div class="buttons-container">
+                                    <div class="button-container">
+                                        <button type="submit" class="button green" id="soft-selective" name="restore_mode" value="soft-selective" disabled>[`Fix selected tables`]</button>
+                                        <p>[`Indices and AUTO_INCREMENT values will be restored <strong>only for selected tables</strong>.`]</p>
+                                    </div>
+                                    <div class="button-container">
+                                        <button type="submit" class="button blue" name="restore_mode" value="soft-all">[`Fix all listed tables`]</button>
+                                        <p>[`Indices and AUTO_INCREMENT values will be restored for <strong>all tables listed on this page</strong>.`]</p>
+                                    </div>
+                                    <div class="button-container">
+                                        <button type="submit" class="button red" name="restore_mode" value="hard-all">[`Update all database tables`]</button>
+                                        <p>[`Indices and AUTO_INCREMENT values will be <strong>removed and restored for all tables in the database</strong>.`]</p>
+                                    </div>
+                                </div>
+                                {$wa->csrf()}
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </form>
+        {else}
+            <h3>[`No errors found.`]</h3>
+        {/if}
+    </div>
+    <script>
+        var elements = document.getElementsByClassName('table-selector');
+        for(var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            element.onclick = function() {
+                if (document.querySelector('input:checked') !== null) {
+                    document.getElementById('soft-selective').disabled = false;
+                } else {
+                    document.getElementById('soft-selective').disabled = true;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

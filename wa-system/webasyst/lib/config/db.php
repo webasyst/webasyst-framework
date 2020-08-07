@@ -102,7 +102,6 @@ return array(
             'PRIMARY' => 'id',
             'login' => array('login', 'unique' => 1),
             'name' => 'name',
-            'id_name' => array('id', 'name'),
         ),
     ),
     'wa_contact_calendars' => array(

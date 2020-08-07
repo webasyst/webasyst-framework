@@ -54,6 +54,7 @@ return array(
     'waViewAction'                      => 'controller/waViewAction.class.php',
     'waViewActions'                     => 'controller/waViewActions.class.php',
     'waViewController'                  => 'controller/waViewController.class.php',
+    'waDispatch'                        => 'controller/waDispatch.class.php',
     'waWidget'                          => 'widget/waWidget.class.php',
 
     'waCurrency'                        => 'currency/waCurrency.class.php',

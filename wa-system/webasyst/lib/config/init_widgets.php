@@ -129,13 +129,6 @@ return array(
             ),
         ),
         array(
-            'widget' => 'traffic',
-            'size' => '2x2',
-            'params' => array(
-                'city' => 'Москва',
-            ),
-        ),
-        array(
             'widget' => 'news',
             'size' => '2x2',
             'params' => array(

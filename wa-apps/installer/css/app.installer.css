@@ -945,6 +945,9 @@ i.icon16.pause {
   box-shadow: 0 3px 7px 0 rgba(0,0,0,0.13), 0 0 3px 0 rgba(40,40,80,0.1);
   border-radius: 5px;
 }
+.i-product-widget-block .wa-dialog-body-inline .wa-close-icon {
+  display: none;
+}
 .i-product-widget-block .wa-dialog-body,
 .i-product-widget-block .wa-dialog-body-inline {
   display: -webkit-box;

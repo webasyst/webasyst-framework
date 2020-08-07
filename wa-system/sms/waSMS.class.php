@@ -22,8 +22,19 @@ class waSMS
     {
         try {
             $adapter = $this->getAdapter($from);
-            $result = $adapter->send($to, $text, $from ? $from : $adapter->getOption('from'));
-            return $result;
+            $params = array(
+                'to' => $to,
+                'text' => $text,
+                'from' => $from ? $from : $adapter->getOption('from'),
+                'adapter' => $adapter,
+                'result' => false,
+            );
+            wa()->event('sms_send.before', $params, array('to', 'text', 'from', 'result', 'adapter'));
+            if (empty($params['result'])) {
+                $params['result'] = $params['adapter']->send($params['to'], $params['text'], $params['from']);
+            }
+            wa()->event('sms_send.after', $params);
+            return $params['result'];
         } catch (waException $e) {
             waLog::log($e->getMessage(), 'sms.log');
             return false;

@@ -25,6 +25,7 @@ class waPageAction extends waViewAction
 
             $this->setThemeTemplate('error.html');
         } else {
+            $this->getResponse()->setLastModified($page['update_datetime']);
 
             $breadcrumbs = array();
             $parents = array();

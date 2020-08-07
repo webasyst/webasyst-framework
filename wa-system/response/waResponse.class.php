@@ -91,37 +91,84 @@ class waResponse
     /**
      * Sets a cookie value.
      *
-     * @param   string  $name       Cookie name
-     * @param   mixed   $value      Cookie value
-     * @param   int     $expire     Expiration time
-     * @param   string  $path       Path to URL "subdirectory" within which cookie must be valid
-     * @param   string  $domain     Domain name for which cookie must be valid
-     * @param   bool    $secure     Flag making cookie value available only if passed over HTTPS
-     * @param   bool    $http_only  Flag making cookie value accessible only via HTTP and not accessible to client scripts (JavaScript)
+     * @param   string     $name       Cookie name
+     * @param   mixed      $value      Cookie value
+     * @param   array|int  $expires    Expiration time; an array here can be used to pass key-value options like setcookie() of PHP 7.3
+     * @param   string     $path       Path to URL "subdirectory" within which cookie must be valid
+     * @param   string     $domain     Domain name for which cookie must be valid
+     * @param   bool       $secure     Flag making cookie value available only if passed over HTTPS
+     * @param   bool       $httponly   Flag making cookie value accessible only via HTTP and not accessible to client scripts (JavaScript)
      * @return  waResponse  Instance of waResponse class
      */
     public function setCookie(
         $name,
         $value,
-        $expire = 0,
+        $expires = 0,
         $path = '',
         $domain = '',
         $secure = false,
-        $http_only = false
+        $httponly = false
     ) {
+        if (is_array($expires)) {
+            $options = $expires;
+            $expires = ifset($options, 'expires', 0);
+            $path = ifset($options, 'path', '');
+            $domain = ifset($options, 'domain', '');
+            $secure = ifset($options, 'secure', false);
+            $httponly = ifset($options, 'httponly', false);
+            $samesite = ifset($options, 'samesite', null);
+        }
         if (!$path) {
             $path = waSystem::getInstance()->getRootUrl();
         }
+        if (!in_array(ifset($samesite), ['Lax', 'Strict', 'None'])) {
+            $samesite = null;
+        }
+        if (!isset($samesite)) {
+            if (waRequest::isHttps()) {
+                //
+                // 'samesite=None; Secure' means:
+                // POST from different domain will contain all cookies.
+                // Non-HTTPS request from anywhere will contain no cookies.
+                //
+                // Since we need cross-domain POSTs for certain functions to work,
+                // this is the preferred option. And we have other built-in methods
+                // to protect against CSRF.
+                //
+                $samesite = 'None';
+            } else {
+                //
+                // 'samesite=Lax' means:
+                // Background POST from different domain will contain no cookies.
+                // Non-HTTPS request from anywhere will contain all cookies.
+                //
+                // No other option on HTTP, so we'll have to sacrifice cross-domain POSTs here.
+                //
+                $samesite = 'Lax';
+            }
+        }
+        if ($samesite == 'None') {
+            $secure = true; // required by specs
+        }
 
-        setcookie(
-            (string)$name,
-            (string)$value,
-            (int)$expire,
-            (string)$path,
-            (string)$domain,
-            (bool)$secure,
-            (bool)$http_only
-        );
+        // setCookie changed in 7.3
+        if (PHP_VERSION_ID < 70300) {
+            setcookie(
+                (string)$name,
+                (string)$value,
+                (int)$expires,
+                sprintf('%s; samesite=%s', $path, $samesite),
+                (string)$domain,
+                (bool)$secure,
+                (bool)$httponly
+            );
+        } else {
+            setcookie(
+                (string)$name,
+                (string)$value,
+                compact('expires', 'path', 'domain', 'secure', 'httponly', 'samesite')
+            );
+        }
 
         $_COOKIE[$name] = $value;
 
@@ -268,6 +315,7 @@ class waResponse
      * Return current CANONICAL link.
      *
      * @return  string
+     * @since   1.14.2
      */
     public function getCanonical()
     {
@@ -280,6 +328,7 @@ class waResponse
      *
      * @param   string  $url  Page CANONICAL link
      * @return  waResponse  Instance of waResponse class
+     * @since   1.14.2
      */
     public function setCanonical($canonical_url, $with_header_link = true)
     {
@@ -290,6 +339,33 @@ class waResponse
             }
             $this->setMeta('canonical', (string)$canonical_url);
         }
+    }
+
+    /**
+     * Sets the header if the page Last Modified header.
+     * Will immediately send 304 and exit if there's a If-Modified-Since request header
+     * with later time.
+     *
+     * @param   string  $last_modified_datetime  Page update datetime
+     * @since   1.14.3
+     */
+    public function setLastModified($last_modified_datetime)
+    {
+        $last_modified_timestamp = @strtotime($last_modified_datetime);
+        $last_modified = gmdate("D, d M Y H:i:s \G\M\T", $last_modified_timestamp);
+        $if_modified_since = false;
+        if (getenv('HTTP_IF_MODIFIED_SINCE')) {
+            $if_modified_since = @strtotime(substr(getenv('HTTP_IF_MODIFIED_SINCE'), 5));
+        }
+        if (!$if_modified_since && waRequest::server('HTTP_IF_MODIFIED_SINCE')) {
+            $if_modified_since = @strtotime(substr(waRequest::server('HTTP_IF_MODIFIED_SINCE'), 5));
+        }
+        if ($if_modified_since && $if_modified_since >= $last_modified_timestamp) {
+            $this->setStatus(304);
+            wa()->getResponse()->sendHeaders();
+            exit;
+        }
+        $this->addHeader('Last-Modified', $last_modified);
     }
 
     /**

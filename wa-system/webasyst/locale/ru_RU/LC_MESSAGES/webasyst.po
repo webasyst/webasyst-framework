@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-07-07 16:15+0300\n"
+"PO-Revision-Date: 2020-08-07 09:57+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -6051,3 +6051,39 @@ msgstr "Предварительный просмотр темы дизайна 
 
 msgid "Unknown error from Webasyst ID server."
 msgstr "Неизвестная ошибка с сервера Webasyst ID."
+
+msgid "This is a custom file and it will not be affected by the update."
+msgstr "Это пользовательский файл, и он не будет затронут обновлением."
+
+msgid "Restoring of missing database indices and AUTO_INCREMENT values"
+msgstr "Восстановление отсутствующих индексов и значений AUTO_INCREMENT"
+
+msgid "Table name"
+msgstr "Имя таблицы"
+
+msgid "Query"
+msgstr "Запрос"
+
+msgid "Fix selected tables"
+msgstr "Исправить выбранные таблицы"
+
+msgid "Fix all listed tables"
+msgstr "Исправить все перечисленные таблицы"
+
+msgid "Update all database tables"
+msgstr "Обновить все таблицы базы данных"
+
+msgid "No errors found."
+msgstr "Неполадки не найдены."
+
+msgid "Database indices and AUTO_INCREMENT repair tool"
+msgstr "Исправление индексов таблиц базы данных и AUTO_INCREMENT"
+
+msgid "Indices and AUTO_INCREMENT values will be restored <strong>only for selected tables</strong>."
+msgstr "Индексы и значения AUTO_INCREMENT будут восстановлены <strong>только для выбранных таблиц</strong>."
+
+msgid "Indices and AUTO_INCREMENT values will be restored for <strong>all tables listed on this page</strong>."
+msgstr "Индексы и значения AUTO_INCREMENT будут восстановлены <strong>для всех таблиц, перечисленных на этой странице</strong>."
+
+msgid "Indices and AUTO_INCREMENT values will be <strong>removed and restored for all tables in the database</strong>."
+msgstr "Индексы и значения AUTO_INCREMENT будут <strong>удалены и восстановлены для всех таблиц базы данных</strong>."

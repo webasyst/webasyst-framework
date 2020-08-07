@@ -246,6 +246,9 @@ class installerHelper
 
     public static function isDeveloper()
     {
+        if (waSystemConfig::systemOption('installer_in_developer_mode')) {
+            return false;
+        }
         $result = false;
         $paths = array();
         $paths[] = dirname(__FILE__).'/.svn';

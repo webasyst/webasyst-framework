@@ -20,10 +20,14 @@
                     {$_non_m_group_shown_flag = true}
                 {/if}
             {else}
-                <li><label class="bold" title="[s`You modified this file`]"><input name="reset[]" type="checkbox" value="{$f_id|escape}"> {$f_id|escape}</label></li>
+                {if empty($f.custom)}
+                    <li><label class="bold" title="[s`You modified this file`]"><input name="reset[]" type="checkbox" value="{$f_id|escape}"> {$f_id|escape}</label></li>
+                {else}
+                    <li><label title="[s`This is a custom file and it will not be affected by the update.`]" class="gray"><input name="reset[]" type="checkbox" disabled value="{$f_id|escape}"> {$f_id|escape}</label></li>
+                {/if}
             {/if}
             {/foreach}
-            
+
         </ul>
         {else}
         <input type="hidden" name="parent_only" value="1">
@@ -52,7 +56,7 @@
         </ul>
         {/if}
         <div class="clear-both"></div>
-        
+
     </div>
     <div class="dialog-buttons">
         <input type="hidden" name="theme" value="{$theme.id}">

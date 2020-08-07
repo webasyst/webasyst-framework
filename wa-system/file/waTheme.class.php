@@ -1182,10 +1182,13 @@ XML;
 
         $files = $this->getFiles();
 
-        $modified = array();
+        $modified = $custom = array();
         foreach ($files as $f_id => $f) {
             if (!empty($f['modified'])) {
                 $modified[] = $f_id;
+            }
+            if (!empty($f['custom'])) {
+                $custom[$f_id] = $f;
             }
         }
 
@@ -1255,6 +1258,10 @@ XML;
                     $f['modified'] = true;
                     $this->setFiles(array($f_id => $f));
                 }
+            }
+
+            foreach ($custom as $f_id => $f) {
+                $this->setFiles(array($f_id => $f));
             }
 
             $old_settings = $this->info['settings'];

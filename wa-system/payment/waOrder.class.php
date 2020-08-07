@@ -75,12 +75,21 @@
  * @property array[][string]double  $items[]['width']
  * @property array[][string]double  $items[]['length']
  * @property array[][string]double  $items[]['weight']
- * @property array[][string]int  $items[]['quantity']
+ * @property array[][string]int     $items[]['quantity']
  * @property array[][string]double  $items[]['discount']
  * @property array[][string]double  $items[]['total_discount']
  * @property array[][string]double  $items[]['total']
  * @property array[][string]double  $items[]['tax_rate'] Tax rate in percent
- * @property array[][string]boolean  $items[]['tax_included'] Tax is included into price
+ * @property array[][string]boolean $items[]['tax_included'] Tax is included into price
+ * @property array[][int][]         $items[]['product_codes'] - product code array <id:int> => <product_code_record:array>
+ *      Product code item format:
+ *          int      'id'
+ *          string   'code'
+ *          string   'name' [optional]
+ *          string   'icon' [optional]
+ *          string   'logo' [optional]
+ *          string[] 'values' - promo code item value for each instance of product item
+ *
  *
  *
  * @property int $total_quantity
@@ -178,6 +187,7 @@ class waOrder implements ArrayAccess
                                 'length'      => null,
                                 'weight'      => null,
                                 'quantity'    => 1,
+                                'product_codes' => [],
                             );
                             $item += array(
                                 'total' => $item['price'] * $item['quantity'],
@@ -412,6 +422,8 @@ class waOrder implements ArrayAccess
             if (!$this->contact) {
                 $this->contact = new waContact($this->contact_id);
             }
+            return $this->contact;
+        } elseif ($this->contact instanceof waContact) {
             return $this->contact;
         }
         return null;

@@ -29,7 +29,8 @@ class installerAppsRemoveAction extends waViewAction
         $app_ids = waRequest::request('app_id');
         try {
             if (installerHelper::isDeveloper()) {
-                throw new waException(_w('Unable to delete application (developer version is on)'));
+                throw new waException(_w('Unable to delete the app (developer mode is on).').
+                    "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file."));
             }
 
             if (!$app_ids || !is_array($app_ids)) {

@@ -3,9 +3,11 @@
 
 {$_is_modal = $is_modal|default:false}
 
+{$inline_class_prefix = '-inline'}
+
 {$inline_class = ''}
 {if !$_is_modal}
-    {$inline_class = '-inline'}
+    {$inline_class = $inline_class_prefix}
 {/if}
 
 {capture assign="_product_loader_template"}
@@ -57,11 +59,9 @@
             <div class="wa-dialog-footer{$inline_class}">
                 <a class="js-product-support" target="_blank" href="#">{_wd('installer', 'Contact the developer')}</a>
             </div>
-            {if $_is_modal}
             <span class="wa-close-icon js-close-dialog">
                 <i class="fas fa-times"></i>
             </span>
-            {/if}
         </div>
     </div>
 </div>
@@ -138,6 +138,14 @@
         'for_app'             => _wd('installer', "for app")
     ]}
 
+    {* Need so JS can switch current mode - modal/inline *}
+    {$_view_classes = [
+        ['wa-dialog', "wa-dialog{$inline_class_prefix}"],
+        ['wa-dialog-body', "wa-dialog-body{$inline_class_prefix}"],
+        ['wa-dialog-content', "wa-dialog-content{$inline_class_prefix}"],
+        ['wa-dialog-footer', "wa-dialog-footer{$inline_class_prefix}"]
+    ]}
+
     <script>
         $(function () {
 
@@ -153,6 +161,7 @@
                     store_auth_params: {$store_auth_params|json_encode},
                     locale_defs: {$_locale|json_encode},
                     is_modal: {$_is_modal|json_encode},
+                    view_classes: {$_view_classes|json_encode},
                     errors: {$errors|default:[]|json_encode},
                     installer_app_url: {$installer_app_url|default:''|json_encode},
                     is_debug: {$is_debug|json_encode},

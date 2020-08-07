@@ -30,7 +30,20 @@ var InstallerProductReviewWidget = ( function($) {
         that.store_review_core_url = options.store_review_core_url || '';
         that.store_auth_params = options.store_auth_params || {};
         that.installer_app_url = options.installer_app_url || '';
+
+        /**
+         * @type {Boolean}
+         * View (modal or inline)
+         * Take into account that actual view also depends on type of product
+         * @see isModal()
+         */
         that.is_modal = options.is_modal;
+
+        /**
+         * @type {Array} - array of array of 2 elements. First element is class for modal view, second element is class for inline view
+         */
+        that.view_classes = options.view_classes;
+
         that.is_debug = options.is_debug || false;
         that.has_access = options.has_access || false;  // has access to installer app
         that.message = '';
@@ -64,20 +77,51 @@ var InstallerProductReviewWidget = ( function($) {
         });
     };
 
+    InstallerProductReviewWidget.prototype.isModal = function(product_type) {
+        var that = this;
+
+        // modal view allowed only for APP, otherwise modal is not supported
+        if (product_type !== 'APP') {
+            return false;
+        } else {
+            return that.is_modal;
+        }
+    };
+
+    /**
+     * Set modal or inline view dynamically - without changing inner state of current object
+     * @param is_modal
+     */
+    InstallerProductReviewWidget.prototype.setUIView = function(is_modal) {
+        var that = this;
+
+        /**
+         *
+         * @param {String} selector
+         * @param {String[]} off_classes - array of string
+         * @param {String} on_class
+         */
+        var switchClass = function(selector, off_classes, on_class) {
+            var $dom = that.$wrapper.find(selector);
+            $dom.removeClass(off_classes.join(" "));
+            $dom.addClass(on_class);
+        };
+
+        $.each(that.view_classes, function (index, classes) {
+            var modal_class = classes[0],
+                inline_class = classes[1],
+                selector = '.' + classes.join(',.');
+            switchClass(selector, classes, is_modal ? modal_class : inline_class);
+        });
+    };
+
     InstallerProductReviewWidget.prototype.initProductWidgetBlock = function() {
         var that = this,
             review_widget_io = that.review_widget_io,
             errors = review_widget_io.getErrors(),
-            data = review_widget_io.getData(),
+            data = review_widget_io.getData(),  // here is data for widget from server (store) part
             has_access = that.has_access,
             review_widget_shown = sessionStorage.getItem('review_widget_shown');
-
-        // Show only one product widget in modal mode
-        if (that.is_modal) {
-            if ($.isEmptyObject(errors) && data.review.id || (review_widget_shown && review_widget_shown !== data.product_id)) {
-                errors = { not_shown: 'Product "' + data.product_id.toUpperCase() + '" is not shown' };
-            }
-        }
 
         // IMPORTANT: check errors and if there are some then stops further logic
         if (!$.isEmptyObject(errors)) {
@@ -85,8 +129,21 @@ var InstallerProductReviewWidget = ( function($) {
             return;
         }
 
+        // is_modal depends on product type
+        var is_modal = that.isModal(data.product_info.type);
+
+        // Show only one product widget in modal mode
+        if (is_modal) {
+            if ($.isEmptyObject(errors) && data.review.id || (review_widget_shown && review_widget_shown !== data.product_id)) {
+                that.processLoadingProductStoreInfoErrors({
+                    not_shown: 'Product "' + data.product_id.toUpperCase() + '" is not shown'
+                });
+                return;
+            }
+        }
+
         // Set storage session in modal mode
-        if (that.is_modal) {
+        if (is_modal) {
             sessionStorage.setItem('review_widget_shown', data.product_id);
         }
 
@@ -104,7 +161,9 @@ var InstallerProductReviewWidget = ( function($) {
 
             that.message = data.review.message;
 
-        if (that.is_modal) {
+        that.setUIView(is_modal);
+
+        if (is_modal) {
             var dialog = $.waDialog({
                 html: $product_widget_block,
                 lock_body_scroll: false,

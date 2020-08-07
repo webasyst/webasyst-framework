@@ -141,25 +141,32 @@ class waAPIController
 
     protected function checkToken()
     {
-        $token = waRequest::request('access_token');
-        if ($token) {
-            $tokens_model = new waApiTokensModel();
-            $data = $tokens_model->getById($token);
-            if ($data) {
-                if ($data['expires'] && (strtotime($data['expires']) < time())) {
-                    throw new waAPIException('invalid_token', 'Access token has expired', 401);
-                }
-
-                // we will use token, update datetime
-                $tokens_model->updateLastUseDatetime($token);
-
-                // auth user
-                wa()->setUser(new waApiAuthUser($data['contact_id']));
-
-                return $data;
+        $token = waRequest::request('access_token', null, 'string');
+        if (!$token) {
+            $token = waRequest::server('Authorization', null, 'string');
+            if ($token) {
+                $token = preg_replace('~^(Bearer\s)~ui', '', $token);
             }
+        }
+        if (!$token) {
+            throw new waAPIException('invalid_request', 'Required parameter is missing: access_token', 400);
+        }
+
+        $tokens_model = new waApiTokensModel();
+        $data = $tokens_model->getById($token);
+        if (!$data) {
             throw new waAPIException('invalid_token', 'Invalid access token', 401);
         }
-        throw new waAPIException('invalid_request', 'Required parameter is missing: access_token', 400);
+        if ($data['expires'] && (strtotime($data['expires']) < time())) {
+            throw new waAPIException('invalid_token', 'Access token has expired', 401);
+        }
+
+        // remember token usage time
+        $tokens_model->updateLastUseDatetime($token);
+
+        // auth user
+        wa()->setUser(new waApiAuthUser($data['contact_id']));
+
+        return $data;
     }
 }

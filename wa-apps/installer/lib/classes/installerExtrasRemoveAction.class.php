@@ -39,12 +39,15 @@ abstract class installerExtrasRemoveAction extends waViewAction
             switch ($this->extras_type) {
                 case 'themes':
                     $msg = _w("Unable to delete application's themes (developer version is on)");
+                    $msg .= "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file.");
                     break;
                 case 'plugins':
                     $msg = _w("Unable to delete application's plugins (developer version is on)");
+                    $msg .= "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file.");
                     break;
                 case 'widgets':
                     $msg = _w("Unable to delete application's widgets (developer version is on)");
+                    $msg .= "\n"._w("A .git or .svn directory has been detected. To ignore the developer mode, add option 'installer_in_developer_mode' => true to wa-config/config.php file.");
                     break;
                 default:
                     $msg = '???';

@@ -341,12 +341,10 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
         }
 
     } else {
-        $str = 'array';
-        if ($value) {
-            $str .= '(';
-        } else {
-            return $str.'()';
+        if (!$value) {
+            return '[]';
         }
+        $str = '[';
         $value_to_iterate =& $value;
     }
 
@@ -367,7 +365,7 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     }
     array_pop($level_arr);
 
-    $str .= is_array($value) ? $br.')' : $br.'}';
+    $str .= is_array($value) ? $br.']' : $br.'}';
     return $str;
 }
 

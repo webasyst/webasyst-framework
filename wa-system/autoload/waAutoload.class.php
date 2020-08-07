@@ -166,7 +166,9 @@ class waAutoload
     {
         if (is_array($class)) {
             foreach ($class as $class_name => $path) {
-                $this->classes[$class_name] = $path;
+                if (!isset($this->classes[$class_name])) {
+                    $this->classes[$class_name] = $path;
+                }
             }
         } else {
             $this->classes[$class] = $path;

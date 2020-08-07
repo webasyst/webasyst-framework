@@ -383,12 +383,12 @@ $.wa = $.extend(true, $.wa, {
             var timezone = window.jstz.determine().name();
 
             // Session cookie timezone
-            document.cookie = "tz="+jstz.determine().name();
+            document.cookie = "tz="+jstz.determine().name()+"; sameSite=LAX";
 
             // Expires in two weeks
             var expire = new Date();
             expire.setTime(expire.getTime() + 14*24*60*60*1000); // two weeks
-            document.cookie = "oldtz="+timezone+"; expires="+expire.toUTCString();
+            document.cookie = "oldtz="+timezone+"; expires="+expire.toUTCString()+"; sameSite=LAX";
             if (callback) {
                 callback(timezone);
             }

@@ -185,6 +185,7 @@ class waInstallerApps
             }
         }
         if (!$raw && $d) {
+            $d = array_slice($d, 0, 10);
             $d = implode(':', $d);
         }
 
@@ -1553,8 +1554,8 @@ class waInstallerApps
             }
             if (file_exists($build_path) && ($build = include($build_path))) {
                 $item['installed']['version'] .= ".{$build}";
-            } elseif (preg_match('/((^|\\.)[\\d]+){3}$/', $item['installed']['version'])) {
-                $item['installed']['version'] .= ".0";
+            } elseif (preg_match('/((^|\\.)[\\d]+){2,3}$/', $item['installed']['version'])) {
+                $item['installed']['version'] .= ".p";
             }
         }
     }

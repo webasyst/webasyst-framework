@@ -65,6 +65,11 @@ class installerViewHelper
         waConfig::set('is_template', false);
 
         $is_inline = !empty($options['is_inline']);
+        $parts = explode('/', $id, 3);
+        if (count($parts) > 1 && $parts[0] !== 'app') {
+            // force inline mode for non app products (plugins, themes, widgets)
+            $is_inline = true;
+        }
 
         $is_debug = waSystemConfig::isDebug();
         if (isset($options['is_debug'])) {

@@ -22,7 +22,7 @@ class waContactBranchField extends waContactSelectField
         $html = '';
         $radios_name = $this->getHTMLName($params);
         foreach ($this->getOptions() as $k => $v) {
-            $html .= '<label><input type="radio"'.($k == $value ? ' checked="checked"' : '').' name="'.$radios_name.'" value="'.htmlspecialchars($k).'"> '.htmlspecialchars($v).'</label>';
+            $html .= '<label><input type="radio"'.(strlen($value) > 0 && $k == $value ? ' checked="checked"' : '').' name="'.$radios_name.'" value="'.htmlspecialchars($k).'"> '.htmlspecialchars($v).'</label>';
         }
 
         //
