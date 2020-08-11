@@ -178,4 +178,15 @@ HTML
             'credit_payment'     => 'выплата по кредиту',
         ),
     ),
+
+    'payment_language' => array(
+        'value'        => 'ru',
+        'title'        => 'Язык платежной формы',
+        'description'  => 'Выберите язык платежной формы для своих клиентов',
+        'control_type' => waHtmlControl::SELECT,
+        'options'      => array(
+            'ru' => 'русский',
+            'en' => 'английский'
+        )
+    ),
 );

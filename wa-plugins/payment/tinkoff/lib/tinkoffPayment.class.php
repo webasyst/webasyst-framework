@@ -84,7 +84,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'Currency'    => ifset(self::$currencies[$this->currency_id]),
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'CustomerKey' => $c->getId(),
-            'Description' => $order_data['summary'],
+            'Description' => ifempty($order_data, 'summary', ''),
             'PayType'     => $this->two_steps ? 'T' : 'O',
             'DATA'        => array(
                 'Email' => $email,
@@ -104,6 +104,10 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             if (!$args['Receipt']) {
                 return 'Данный вариант платежа недоступен. Воспользуйтесь другим способом оплаты.';
             }
+        }
+
+        if ($this->getSettings('payment_language') == 'en') {
+            $args['Language'] = 'en';
         }
 
         try {
@@ -389,7 +393,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             );
 
             if (isset($transaction_raw_data['refund_description'])) {
-                $args['Description'] = $transaction_raw_data['refund_description'];
+                $args['Description'] = ifempty($transaction_raw_data['refund_description'], '');
             }
 
             $items = ifset($transaction_raw_data, 'refund_items', array());
@@ -489,7 +493,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             'Currency'    => ifset(self::$currencies[$this->currency_id]),
             'OrderId'     => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
             'CustomerKey' => $c->getId(),
-            'Description' => $order_data['summary'],
+            'Description' => ifempty($order_data, 'summary', ''),
             'DATA'        => array(
                 'Email' => $email,
             ),
