@@ -656,6 +656,8 @@ SQL;
             }
         }
 
+        $data['update_datetime'] = date("Y-m-d H:i:s");
+
         if (!$id && (!isset($data['contact_id']) || !$data['contact_id'])) {
             $data['contact_id'] = wa()->getUser()->getId();
         }

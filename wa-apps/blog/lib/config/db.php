@@ -75,6 +75,7 @@ return array(
         'contact_id' => array('int', 11, 'null' => 0),
         'contact_name' => array('varchar', 150, 'default' => ''),
         'datetime' => array('datetime'),
+        'update_datetime' => array('datetime'),
         'title' => array('varchar', 255, 'null' => 0, 'default' => ''),
         'status' => array('enum', "'draft','deadline','scheduled','published'", 'null' => 0, 'default' => 'draft'),
         'text' => array('mediumtext', 'null' => 0),
