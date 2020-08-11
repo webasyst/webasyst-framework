@@ -6,6 +6,9 @@ class siteFrontendAction extends waPageAction
     {
         $page = $this->params;
         if ($page && is_array($page)) {
+            if (!empty($page['update_datetime'])) {
+                $this->getResponse()->setLastModified($page['update_datetime']);
+            }
             $params = waRequest::param();
             foreach ($params as $k => $v) {
                 if (in_array($k, array('url', 'module', 'action'))) {

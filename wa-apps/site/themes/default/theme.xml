@@ -86,16 +86,18 @@
         </setting>
         <setting var="pagination" control_type="select">
             <value>lazyloading</value>
-            <name locale="en_US">Long lists display</name>
-            <name locale="ru_RU">Длинные списки</name>
+            <name locale="en_US">Displaying of long product lists</name>
+            <name locale="ru_RU">Отображение длинных списков товаров</name>
+            <description locale="ru_RU">Применяется к спискам товаров в категориях и результатах поиска.</description>
+            <description locale="en_US">For category-listing pages and search results.</description>
             <options>
                 <option value="lazyloading">
-                    <name locale="ru_RU">Lazy loading: автоматическая подгрузка при скролле</name>
-                    <name locale="en_US">Lazy loading: auto load on scroll</name>
+                    <name locale="ru_RU">Автоматически загружать содержимое при прокручивании страницы</name>
+                    <name locale="en_US">Automatically load content on page scrolling</name>
                 </option>
                 <option value="paging">
-                    <name locale="ru_RU">1 2 3 4: Постраничная навигация</name>
-                    <name locale="en_US">1 2 3 4: Paginated lists</name>
+                    <name locale="ru_RU">Постраничная навигация (1 2 3 4)</name>
+                    <name locale="en_US">Paginated lists (1 2 3 4)</name>
                 </option>
             </options>
         </setting>
