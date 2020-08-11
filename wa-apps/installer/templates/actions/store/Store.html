@@ -63,7 +63,7 @@
 
                 <div class="i-comment-user js-comment-user" style="display: none;">
                     <i class="userpic20 icon16"></i>
-                    <strong class="user">{$reviewer_info.name|escape}</strong>
+                    <strong class="user">{if isset($reviewer_info)}{$reviewer_info.name|escape}{/if}</strong>
                     <span class="hint">{wa_date('humandate')}</span>
                 </div>
 

@@ -88,7 +88,7 @@
  *          string   'name' [optional]
  *          string   'icon' [optional]
  *          string   'logo' [optional]
- *          string[] 'values' - promo code item value for each instance of product item
+ *          string[] 'values' - one or more values, possibly for each instance of product item if provided
  *
  *
  *
