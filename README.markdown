@@ -27,24 +27,24 @@ Website: http://www.webasyst.com
 1. Copy the source code to your web server's `%PATH%` directory (e.g., *public_html/webasyst*).
 
 	git:
-        ```
-		cd %PATH%
-		git clone git://github.com/webasyst/webasyst-framework.git
-		```
+	```
+	cd %PATH%
+	git clone git://github.com/webasyst/webasyst-framework.git
+	```
 
 	SVN:
-	    ```
-		cd %PATH%
-		svn checkout http://svn.github.com/webasyst/webasyst-framework.git
-		```
+	```
+	cd %PATH%
+	svn checkout http://svn.github.com/webasyst/webasyst-framework.git
+	```
 
 2. Enable the framework installation directory (`%PATH%`) for writing.
-        ```
-		cd ..
-		chmod %PATH% 0775
-		
-		(or 0777 depending on your server configuration)
-		```
+	```
+	cd ..
+	chmod %PATH% 0775
+	
+	(or 0777 depending on your server configuration)
+	```
 
 3. Create a new MySQL database for Webasyst.
 
