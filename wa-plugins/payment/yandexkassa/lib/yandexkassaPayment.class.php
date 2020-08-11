@@ -25,6 +25,12 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         'USD',
     );
 
+    /**
+     * ID of chestnyznak product code (aka DataMatrix code)
+     * @var int
+     */
+    protected $chestnyznak_code_id;
+
     public function getSettingsHTML($params = array())
     {
         $html = parent::getSettingsHTML($params);
@@ -827,14 +833,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             $receipt['tax_system_code'] = $this->tax_system_code;
         }
 
-        foreach ($order->items as $item) {
-            if (ifset($item, 'quantity', 0) <= 0) {
-                continue;
-            }
-            $item['amount'] = round($item['price'], 2) - round(ifset($item['discount'], 0.0), 2);
-            $receipt['items'][] = $this->formatReceiptItem($item, $order->currency);
-            unset($item);
-        }
+        $receipt['items'] = $this->getReceiptItems($order);
 
         #shipping
         if (($order->shipping) || strlen($order->shipping_name)) {
@@ -857,6 +856,59 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         return $receipt;
     }
 
+    protected function getReceiptItems(waOrder $order)
+    {
+        $receipt_items = [];
+
+        foreach ($order->items as $item) {
+            $quantity = (int)ifset($item, 'quantity', 0);
+            if ($quantity <= 0) {
+                continue;
+            }
+            $item['amount'] = round($item['price'], 2) - round(ifset($item['discount'], 0.0), 2);
+
+            // possible splitting items into array of items
+            $items = [$item];
+
+            // "Честный знак" marking code for product item leads to splitting by 'quantity'
+            if ($item['type'] === 'product') {
+                $values = $this->getChestnyznakCodeValues($item['product_codes']);
+                if ($values) {
+                    $items = $this->splitItem($item, $values);
+                }
+            }
+
+            foreach ($items as $it) {
+                $receipt_items[] = $this->formatReceiptItem($it, $order->currency);
+            }
+
+            unset($item);
+        }
+
+        return $receipt_items;
+    }
+
+    /**
+     * Split one product item to several items because chestnyznak marking code must be related for single product instance
+     * Extend each new item with 'chestnyznak' value from $values
+     * Invariant $item['quantity'] === count($values)
+     * @param array $item - order item
+     * @param array $values - chestnyznak values
+     * @return array[] - array of items. Each item has 'product_code'
+     */
+    protected function splitItem(array $item, array $values)
+    {
+        $quantity = (int)ifset($item, 'quantity', 0);
+        $items = [];
+        for ($i = 0; $i < $quantity; $i++) {
+            $value = isset($values[$i]) ? $values[$i] : '';
+            $item['chestnyznak'] = $value;
+            $item['quantity'] = 1;
+            $items[] = $item;
+        }
+        return $items;
+    }
+
     /**
      * @see https://kassa.yandex.ru/developers/api#%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5_%D0%BF%D0%BB%D0%B0%D1%82%D0%B5%D0%B6%D0%B0_receipt_items
      * @param array  $item
@@ -869,7 +921,9 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         if (isset($item['tax_included']) && empty($item['tax_included']) && !empty($item['tax_rate'])) {
             $item['amount'] += round(floatval($item['tax_rate']) * $item['amount'] / 100.0, 2);
         }
-        switch (ifset($item['type'])) {
+
+        $type = ifset($item['type']);
+        switch ($type) {
             case 'shipping':
                 $item['payment_subject_type'] = $this->payment_subject_type_shipping;
                 break;
@@ -881,7 +935,8 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $item['payment_subject_type'] = $this->payment_subject_type_product;
                 break;
         }
-        return array(
+
+        $result = [
             //Название товара (не более 128 символов).
             'description'     => mb_substr($item['name'], 0, 128),
             //Количество товара. Максимально возможное значение зависит от модели вашей онлайн-кассы.
@@ -895,7 +950,31 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             'payment_subject' => $item['payment_subject_type'],
             //Признак способа расчета.
             'payment_mode'    => $this->payment_method_type,
-        );
+        ];
+
+        // Код товара — уникальный номер, который присваивается экземпляру товара при маркировке
+        // Тут идет конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
+        if (isset($item['chestnyznak'])) {
+            $fiscal_code = $this->convertToFiscalCode($item['chestnyznak']);
+            if ($fiscal_code) {
+                $result['product_code'] = $fiscal_code;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
+     * @param $uid
+     * @return bool|string
+     */
+    protected function convertToFiscalCode($uid)
+    {
+        if (!class_exists('shopChestnyznakPluginCodeParser')) {
+            return false;
+        }
+        return shopChestnyznakPluginCodeParser::convertToFiscalCode($uid);
     }
 
     /**
@@ -1600,6 +1679,48 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         return $result;
     }
 
+    /**
+     * @return int
+     */
+    protected function getChestnyznakCodeId()
+    {
+        if ($this->chestnyznak_code_id !== null) {
+            return $this->chestnyznak_code_id;
+        }
+
+        $code = 'chestnyznak';
+        $code_model = new shopProductCodeModel();
+        $record = $code_model->select('id')->where("`code` = '{$code}'")->fetchField();
+
+        $this->chestnyznak_code_id = 0;
+        if ($record) {
+            $this->chestnyznak_code_id = $record['id'];
+        }
+
+        return $this->chestnyznak_code_id;
+    }
+
+    /**
+     * @param array<int, array> $item_product_codes - array of product code records indexed by id of record
+     *  id => [
+     *      int      'id'
+     *      string   'code'
+     *      string   'name' [optional]
+     *      string   'icon' [optional]
+     *      string   'logo' [optional]
+     *      string[] 'values' - promo code item value for each instance of product item
+     *  ]
+     * @return array - chestnyznak values
+     */
+    protected function getChestnyznakCodeValues(array $item_product_codes)
+    {
+        $code_id = $this->getChestnyznakCodeId();
+        $values = [];
+        if (isset($item_product_codes[$code_id]['values'])) {
+            $values = $item_product_codes[$code_id]['values'];
+        }
+        return $values;
+    }
 
     public static function getCreditInfo($amount, $app_id = null, $id = null, $selector = null)
     {

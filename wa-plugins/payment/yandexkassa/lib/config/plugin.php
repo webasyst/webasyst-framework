@@ -4,7 +4,7 @@ return array(
     'description'     => 'Приём платежей через сервис «Яндекс.Касса» (<a href="https://kassa.yandex.ru/">kassa.yandex.ru</a>).',
     'icon'            => 'img/yandexkassa16.png',
     'logo'            => 'img/yandexkassa.png',
-    'version'         => '1.1.4',
+    'version'         => '1.1.5',
     'vendor'          => 'webasyst',
     'type'            => waPayment::TYPE_ONLINE,
     'partial_refund'  => true,
