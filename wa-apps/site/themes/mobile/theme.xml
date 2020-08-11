@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.3.10">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.3.11">
     <name locale="en_US">Mobile</name>
     <name locale="ru_RU">Mobile</name>
     <description locale="en_US">Theme for mobile devices</description>
@@ -78,16 +78,18 @@
         </setting>
         <setting var="pagination" control_type="select">
             <value>lazyloading</value>
-            <name locale="en_US">Long lists</name>
-            <name locale="ru_RU">Длинные списки</name>
+            <name locale="en_US">Displaying of long product lists</name>
+            <name locale="ru_RU">Отображение длинных списков товаров</name>
+            <description locale="ru_RU">Применяется к спискам товаров в категориях и результатах поиска.</description>
+            <description locale="en_US">For category-listing pages and search results.</description>
             <options>
                 <option value="lazyloading">
-                    <name locale="ru_RU">Автоматическая подгрузка при скролле (lazy loading)</name>
-                    <name locale="en_US">Auto load on scroll (lazy loading)</name>
+                    <name locale="ru_RU">Автоматически загружать содержимое при прокручивании страницы</name>
+                    <name locale="en_US">Automatically load content on page scrolling</name>
                 </option>
                 <option value="paging">
-                    <name locale="ru_RU">Постраничная навигация (1 2 3 4 ...)</name>
-                    <name locale="en_US">Paginated lists (1 2 3 4 ...)</name>
+                    <name locale="ru_RU">Постраничная навигация (1 2 3 4)</name>
+                    <name locale="en_US">Paginated lists (1 2 3 4)</name>
                 </option>
             </options>
         </setting>
