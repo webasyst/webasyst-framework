@@ -3,10 +3,10 @@
 /**
  * Checkout 3.0 & Callback 3.0 support
  *
- * @link https://www.liqpay.com/
+ * @link https://www.liqpay.ua/ru
  *
- * @link https://www.liqpay.com/ru/doc/checkout
- * @link https://www.liqpay.com/ru/doc/callback
+ * @link https://www.liqpay.ua/documentation/api/aquiring/checkout/
+ * @link https://www.liqpay.ua/documentation/api/callback
  *
  * @property string $public_key Публичный ключ - идентификатор магазина. Получить ключ можно в настройках магазина
  * @property string $secret_key Приватный ключ
@@ -33,7 +33,7 @@ class liqpayPayment extends waPayment
             'description' => $order->description,
             'order_id'    => sprintf('%s.%s_%s', $this->app_id, $this->merchant_id, $order->id),
             'server_url'  => $this->getRelayUrl(),
-            'result_url'  => $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, array('order_id' => $order->id)),
+            'result_url'  => $this->getRelayUrl() . '?' . http_build_query(array('order_id' => $order->id))
         );
 
         if ($this->sandbox) {
@@ -104,6 +104,23 @@ class liqpayPayment extends waPayment
             default:
                 $callback_method = self::CALLBACK_NOTIFY;
                 break;
+        }
+
+        // response processing to result_url
+        if (isset($request['order_id'])) {
+            if (ifset($transaction_data['state']) == self::STATE_CAPTURED) {
+                $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, array('order_id' => $request['order_id']));
+            } elseif (ifset($transaction_data['state']) == self::STATE_DECLINED) {
+                $transaction_data['error'] = 'Вы отказались от совершения платежа. Повторите попытку позднее, пожалуйста.'; // max length 255 characters
+                $transaction = $this->saveTransaction($transaction_data);
+                $params = isset($transaction['id'])
+                    ? '?' . http_build_query(array('transaction_id' => $transaction['id'], 'order_id' => $request['order_id'])) : '';
+                $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_DECLINE) . $params;
+            } else {
+                $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_DECLINE);
+            }
+            wa()->getResponse()->redirect($url);
+            exit;
         }
 
         if ($callback_method) {
