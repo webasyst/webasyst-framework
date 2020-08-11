@@ -496,7 +496,7 @@ window.AccessDialog = ( function($) {
 
         var promise = setAppRight(access_code);
 
-        if (access_id == "limited") {
+        if (access_id === "limited") {
             promise = promise.then( function() {
                 var $form = that.$limitedContent.find("form");
                 return $.post($form.attr('action'), $form.serialize(), 'json');
@@ -769,7 +769,30 @@ window.ProfileAccessTab = function(o) { "use strict";
                 return false;
             }
 
-            $.post(form.attr('action'), form.serialize(), function (r) {
+            var data = form.serializeArray();
+            var $select = $('#c-access-rights-toggle');
+            if ($select.val() === '1') {
+                data = data.concat([
+                    {
+                        name: 'set_rights',
+                        value: '1'
+                    },
+                    {
+                        name: 'app_id',
+                        value: 'webasyst'
+                    },
+                    {
+                        name: 'name',
+                        value: 'backend'
+                    },
+                    {
+                        name: 'value',
+                        value: 1
+                    }
+                ]);
+            }
+
+            $.post(form.attr('action'), data, function (r) {
                 if (r.status === 'ok') {
                     form.hide();
                     login = new_login;

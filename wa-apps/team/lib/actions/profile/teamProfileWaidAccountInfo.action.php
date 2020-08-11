@@ -15,7 +15,7 @@ class teamProfileWaidAccountInfoAction extends waViewAction
         $error = null;
         $info = $this->getInfo();
         if (!$info) {
-            $error = _w("Can't load webasyst ID account info");
+            $error = _w("Cannot load Webasyst ID account data.");
         }
 
         $this->view->assign([

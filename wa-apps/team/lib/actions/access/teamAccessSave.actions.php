@@ -63,6 +63,11 @@ class teamAccessSaveActions extends waJsonActions
             $this->contact['login'] = $login;
             $this->contact['password'] = $password;
             $this->saveContact();
+
+            // set rights right away
+            if ($this->getRequest()->post('set_rights')) {
+                $this->rightsAction();
+            }
         }
     }
 

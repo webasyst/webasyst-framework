@@ -1242,3 +1242,6 @@ msgstr "Указан слишком длинный пароль."
 
 msgid "Webasyst ID account <span class=\"bold\">%s</span> is connected."
 msgstr "Подключен к аккаунту Webasyst ID <span class=\"bold\">%s</span>."
+
+msgid "Cannot load Webasyst ID account data."
+msgstr "Не удалось загрузить данные аккаунта Webasyst ID."
