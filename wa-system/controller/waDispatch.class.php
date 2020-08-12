@@ -275,7 +275,7 @@ class waDispatch
         // Run it through the routing, redirecting to backend if no routing is set up.
         $route_found = $this->system->getRouting()->dispatch();
         if (!$route_found) {
-            $this->system->getResponse()->redirect($this->config->getConfig()->getBackendUrl(true), 302);
+            $this->system->getResponse()->redirect($this->config->getBackendUrl(true), 302);
             return;
         }
 
