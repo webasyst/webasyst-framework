@@ -4,23 +4,22 @@
     <div class="wa-dialog-background"></div>
     <div class="wa-dialog-body">
         <header class="wa-dialog-header">
-            <h1 class="js-title">[`Enable sign in with Webasyst ID`]</h1>
+            <h1 class="js-title">[s`Enable sign-in with Webasyst ID`]</h1>
         </header>
         <div class="wa-dialog-content">
             <div class="js-process-block">
-                <p>[`Connecting to the Webasyst ID Authentication Server`] <i class="icon16 loading js-loading"></i></p>
+                <p>[s`Connecting to the Webasyst ID authentication server...`] <i class="icon16 loading js-loading"></i></p>
             </div>
             <div class="js-success-block" style="display: none">
-                <p>[`Sign in with Webasyst ID has been successfully enabled`] <i class="icon16 yes"></i></p>
-                <a href="javascript:void(0);" class="js-webasyst-id-auth" style="display: none;">[`Connect my Webasyst ID account`]</a>
+                <p>[s`Sign-in with Webasyst ID has been enabled.`] <i class="icon16 yes"></i></p>
             </div>
             <div class="js-fail-block" style="display: none">
-                <p class="errormsg">[`Fail to connect to Webasyst ID Authentication Server`] <i class="icon16 cross"></i></p>
+                <p class="errormsg">[s`Failed to connect to Webasyst ID authentication server.`] <i class="icon16 cross"></i></p>
             </div>
 
         </div>
         <footer class="wa-dialog-footer">
-            <input type="button" class="button gray js-close-dialog" value="[`Close`]" disabled="disabled">
+            <input type="button" class="button gray js-close-dialog" value="[s`Close`]" disabled="disabled">
         </footer>
     </div>
 
@@ -173,8 +172,7 @@
                 new WASettingsWaIDConnectDialog({
                     $dialog: $('#{$dialog_id}'),
                     connect_url: {$connect_url|default:''|json_encode},
-                    wa_url: {$wa_url|json_encode},
-                    reload_after_close: {(!$_is_from_banner)|json_encode}
+                    wa_url: {$wa_url|json_encode}
                 });
             }
         })

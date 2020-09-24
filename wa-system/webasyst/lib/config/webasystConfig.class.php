@@ -274,5 +274,54 @@ class webasystConfig extends waAppConfig
         }
         return '';
     }
+
+    public function dispatchAppToken($data)
+    {
+        $app_tokens_model = new waAppTokensModel();
+
+        // Unknown token type?
+        if ($data['type'] != 'webasyst_id_invite') {
+            $app_tokens_model->deleteById($data['token']);
+            throw new waException("Page not found", 404);
+        }
+
+        // Make sure contact is still ok
+        $contact = new waContact($data['contact_id']);
+        if (!$contact->exists() || $contact['is_user'] < 0) {
+            $app_tokens_model->deleteById($data['token']);
+            throw new waException("Page not found", 404);
+        }
+
+        $data_data = (array)json_decode($data['data'], true);
+
+        $auth = wa()->getAuth();
+
+        // auto backend auth works one time only
+        if (!empty($data_data['auto_backend_auth'])) {
+            $auth->auth(['id' => $contact->getId()]);
+            $app_tokens_model->updateById($data['token'], [
+                'data' => json_encode($data_data)
+            ]);
+        }
+
+        $webasyst_id_auth = new waWebasystIDWAAuth();
+
+        // bind webasyst id
+        $url = $webasyst_id_auth->getUrl();
+
+        if (empty($data_data['auto_backend_auth'])) {
+
+            // log out current user if it is not token owner - no need webasyst id bind to improper user
+            if ($auth->isAuth() && wa()->getUser()->getId() != $contact->getId()) {
+                wa()->getUser()->logout();
+            }
+
+            // bind to webasyst id and ask auth into backend as the last step of oauth flow
+            $url .= '&backend_auth=1';
+        }
+
+        wa()->getResponse()->redirect($url);
+
+    }
 }
 

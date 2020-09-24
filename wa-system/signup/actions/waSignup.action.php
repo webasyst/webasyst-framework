@@ -905,7 +905,7 @@ class waSignupAction extends waViewAction
 
         // check captcha
         if ($this->auth_config->getSignUpCaptcha()) {
-            if (!wa()->getCaptcha()->isValid()) {
+            if (!wa()->getCaptcha(['app_id' => $this->auth_config->getApp()])->isValid()) {
                 $errors['captcha'] = _ws('Invalid captcha');
             }
         }

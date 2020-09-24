@@ -159,6 +159,20 @@ class waDispatch
 
     private function dispatchFrontend($request_url)
     {
+        // Payment callback?
+        if (!strncmp($request_url, 'payments.php/', 13)) {
+            $url = substr($request_url, 13);
+            if (preg_match('~^([a-z0-9_]+)~i', $url, $m) && !empty($m[1])) {
+                $module_id = $m[1];
+                waRequest::setParam('module_id', $module_id);
+                waRequest::setParam('no_domain_www_redirect', true);
+                wa('webasyst', 1)->getFrontController()->execute(null, 'payments');
+            }
+            return;
+        }
+
+        $this->redirectToHttps(waRouting::getDomainConfig('ssl_all'));
+
         // Sitemap?
         if (preg_match('/^sitemap-?([a-z0-9_]+)?(-([0-9]+))?.xml$/i', $request_url, $m)) {
             $app_id = isset($m[1]) ? $m[1] : 'webasyst';
@@ -176,19 +190,6 @@ class waDispatch
             throw new waException("Page not found", 404);
         }
 
-        // Payment callback?
-        if (!strncmp($request_url, 'payments.php/', 13)) {
-            $url = substr($request_url, 13);
-            if (preg_match('~^([a-z0-9_]+)~i', $url, $m) && !empty($m[1])) {
-                $module_id = $m[1];
-                waRequest::setParam('module_id', $module_id);
-                waRequest::setParam('no_domain_www_redirect', true);
-                wa('webasyst', 1)->getFrontController()->execute(null, 'payments');
-            }
-            return;
-        }
-
-        $this->redirectToHttps(waRouting::getDomainConfig('ssl_all'));
         // Shipping callback?
         if (false && !strncmp($request_url, 'shipping.php/', 13)) {
             $url = substr($request_url, 13);

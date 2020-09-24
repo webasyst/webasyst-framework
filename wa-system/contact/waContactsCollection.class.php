@@ -184,6 +184,7 @@ class waContactsCollection
 
         // Add required fields to select and delete fields for getting data after query
         foreach ($fields as $i => $f) {
+
             if (!$contact_model->fieldExists($f)) {
                 if ($f === 'email' || substr($f, 0, 6) === 'email.') {
                     if ($f === 'email') {
@@ -214,6 +215,8 @@ class waContactsCollection
             if (isset($required_fields[$f])) {
                 $fields[$i] = ($required_fields[$f] ? $required_fields[$f]."." : '').$f;
                 unset($required_fields[$f]);
+            } elseif ($contact_model->fieldExists($f)) {
+                $fields[$i] = 'c.' . $f;
             }
         }
 

@@ -88,4 +88,28 @@ class waSMS
         }
         return new $class_name($options);
     }
+
+    public static function getInstalledAdapterIds()
+    {
+        $path = wa()->getConfig()->getPath('plugins').'/sms/';
+        if (!file_exists($path)) {
+            return array();
+        }
+        $dh = opendir($path);
+        $adapters = array();
+        while (($f = readdir($dh)) !== false) {
+            if ($f === '.' || $f === '..' || !is_dir($path.$f)) {
+                continue;
+            } elseif (file_exists($path.$f.'/lib/'.$f.'SMS.class.php')) {
+                $adapters[] = $f;
+            }
+        }
+        closedir($dh);
+
+        if (class_exists('wadebugSMS') && waSystemConfig::isDebug()) {
+            $adapters[] = 'wadebug';
+        }
+
+        return $adapters;
+    }
 }

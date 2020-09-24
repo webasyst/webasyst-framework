@@ -74,22 +74,23 @@ class waContactSettingsModel extends waModel
     }
 
     /**
-     * Clear webasyst ID token params for all contacts
+     * Clear facts about closed webasyst ID announcement for all contacts
      */
-    public function clearAllWebasystTokenParams()
+    public function clearAllWebasystAnnouncementCloseFacts()
     {
         $this->deleteByField([
             'app_id' => 'webasyst',
-            'name' => 'webasyst_token_params'
+            'name' => 'webasyst_id_announcement_close'
         ]);
     }
 
     /**
      * Clear facts about closed webasyst ID announcement for all contacts
      */
-    public function clearAllWebasystAnnouncementCloseFacts()
+    public function clearWebasystAnnouncementCloseFacts(array $contact_ids)
     {
         $this->deleteByField([
+            'contact_id' => $contact_ids,
             'app_id' => 'webasyst',
             'name' => 'webasyst_id_announcement_close'
         ]);

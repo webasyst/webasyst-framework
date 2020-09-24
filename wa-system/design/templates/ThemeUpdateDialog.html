@@ -10,13 +10,13 @@
             <li><label title="[s`Theme appearance settings will be updated automatically`]" class="gray"><input type="checkbox" disabled checked="checked"> [s`Theme appearance settings (theme.xml)`]</label></li>
             {$_non_m_files_count = 0}
             {foreach $theme.files as $f_id => $f}
-                {if empty($f.modified)}{$_non_m_files_count = $_non_m_files_count + 1}{/if}
+            {if empty($f.modified)}{$_non_m_files_count = $_non_m_files_count + 1}{/if}
             {/foreach}
             {$_non_m_group_shown_flag = false}
             {foreach $theme.files as $f_id => $f}
             {if empty($f.modified)}
                 {if !$_non_m_group_shown_flag}
-                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf('[s`%s and %d more unmodified files`]', $f_id|escape, $_non_m_files_count-1)}{else}{$f_id|escape}{/if} </label></li>
+                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf(sprintf('%s and %s', $f_id|escape, _ws('%d more non-modified file', '%d more non-modified files', $_non_m_files_count-1)))}{else}{$f_id|escape}{/if} </label></li>
                     {$_non_m_group_shown_flag = true}
                 {/if}
             {else}
@@ -46,7 +46,7 @@
             {foreach $theme.parent_theme.files as $f_id => $f}
             {if empty($f.modified)}
                 {if !$_non_m_group_shown_flag}
-                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf('[s`%s and %d more unmodified files`]', $f_id|escape, $_non_m_files_count-1)}{else}{$f_id|escape}{/if} </label></li>
+                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf(_ws('%s and %d more unmodified file', '%s and %d more unmodified files', $_non_m_files_count-1, false), $f_id|escape, $_non_m_files_count-1)}{else}{$f_id|escape}{/if} </label></li>
                     {$_non_m_group_shown_flag = true}
                 {/if}
             {else}

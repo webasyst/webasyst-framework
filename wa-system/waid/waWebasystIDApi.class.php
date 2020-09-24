@@ -262,7 +262,7 @@ class waWebasystIDApi
             ]);
             return false;
         }
-        $auth = new waWebasystIDAuth();
+        $auth = new waWebasystIDWAAuth();
         return $auth->refreshAccessToken($token, $contact_id, $credentials['client_id'], $credentials['client_secret']);
     }
 
@@ -318,7 +318,7 @@ class waWebasystIDApi
      */
     protected function requestToDeleteUser($token_params)
     {
-        $response = $this->requestApiMethod('delete', $token_params['access_token']);
+        $response = $this->requestApiMethod('delete', $token_params['access_token'], waNet::METHOD_DELETE);
         if ($response['status'] == 200) {
             return $response['response'];
         }
@@ -344,8 +344,9 @@ class waWebasystIDApi
     }
 
     /**
-     * @param string $method
+     * @param string $api_method
      * @param string $access_token
+     * @param string $http_method - waNet::METHOD_
      * @return array $result
      *      int|null    $result['status']   - http status or if failed before net query NULL
      *      array       $result['response'] - response data
@@ -355,9 +356,9 @@ class waWebasystIDApi
      *                          string $result['response']['error'] - error from server
      * @throws waException
      */
-    protected function requestApiMethod($method, $access_token)
+    protected function requestApiMethod($api_method, $access_token, $http_method = waNet::METHOD_GET)
     {
-        $url = $this->config->getApiUrl($method);
+        $url = $this->config->getApiUrl($api_method);
 
         $net_options = [
             'timeout' => 20,
@@ -374,7 +375,7 @@ class waWebasystIDApi
         $exception = null;
         $response = null;
         try {
-            $response = $net->query($url);
+            $response = $net->query($url, $http_method);
         } catch (Exception $e) {
             $exception = $e;
         }

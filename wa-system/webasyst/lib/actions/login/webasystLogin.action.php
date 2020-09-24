@@ -188,8 +188,8 @@ class webasystLoginAction extends waBackendLoginAction
 
     protected function getWebasystIDAuthUrl()
     {
-        $auth = new waWebasystIDAuth();
-        if ($auth->isClientConnect()) {
+        $auth = new waWebasystIDWAAuth();
+        if ($auth->isClientConnected()) {
             return $auth->getUrl() . '&backend_auth=1';
         } else {
             return null;
@@ -198,13 +198,13 @@ class webasystLoginAction extends waBackendLoginAction
 
     /**
      * Get result about attempt authorize backend user by Webasyst ID
-     * @see waWebasystIDAuth
-     * @see waOAuthController
      * @return array|null $result - NULL means there was not attempt yet
      *      - bool $result['status']
      *      - array $result['details']
      *              string $result['details']['error_code']
      *              string $result['details']['error_code']
+     *@see waOAuthController
+     * @see waWebasystIDWAAuth
      */
     protected function getWebasystAuthResult()
     {
@@ -253,7 +253,7 @@ class webasystLoginAction extends waBackendLoginAction
         self::clearWebasystIDAuthProcessState();
 
         if ($data && is_array($data)) {
-            $auth = new waWebasystIDAuth();
+            $auth = new waWebasystIDWAAuth();
             $auth->bindWithWebasystContact($data);
         }
     }

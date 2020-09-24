@@ -40,13 +40,13 @@ class waLayout extends waController
             }
             if ($utm) {
                 // save utm to cookie
-                wa()->getResponse()->setCookie('utm', json_encode($utm), time() + 30 * 86400, null, '', false, true);
+                wa()->getResponse()->setCookie('utm', json_encode($utm), time() + 90 * 86400, null, '', false, true);
             }
             // save referer
             if ($ref = waRequest::server('HTTP_REFERER')) {
                 $ref_host = @parse_url($ref, PHP_URL_HOST);
                 if ($ref_host != waRequest::server('HTTP_HOST')) {
-                    wa()->getResponse()->setCookie('referer', waRequest::server('HTTP_REFERER'), time() + 30 * 86400, null, '', false, true);
+                    wa()->getResponse()->setCookie('referer', waRequest::server('HTTP_REFERER'), time() + 90 * 86400, null, '', false, true);
                 }
             }
             // save landing page

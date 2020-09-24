@@ -1,4 +1,5 @@
 $(function () {
+
     $(window).resize(function() {
         var list_width = $('#wa-applist ul').width() - 1,
             icon_width = 75, // 72px + space symbol
@@ -115,22 +116,6 @@ $(function () {
 
     // Webasyst ID auth announcement :: click on auth link
 
-    // Connect Webasyst ID with installation
-    var connectWebasystID = function() {
-        var $wrapper = $('body'),
-            df = $.Deferred();
-        $.get(backend_url + '?module=settings&action=waIDConnectDialog', { from_banner: 1 }, function (html) {
-            $wrapper.append(html);
-
-            var $dialog = $wrapper.find('.js-waid-connect-dialog').last();
-            $dialog.on('connected', function (e, data) {
-                $dialog.trigger('close');
-                df.resolve(data);
-            });
-        });
-        return df;
-    };
-
     // Bind contact with Webasyst ID contact
     var bindWithWebasystID = function(href, oauth_modal) {
         if (!oauth_modal) {
@@ -145,29 +130,22 @@ $(function () {
         window.open(href,'oauth', "width=" + 600 + ",height=" + height + ",left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
     };
 
-    $('.js-webasyst-id-auth-announcement .js-webasyst-id-auth').on('click', function (e) {
-
+    $('.js-webasyst-id-connect-announcement .js-webasyst-id-connect').on('click', function (e) {
         e.preventDefault();
-
-        var $link = $(this);
-        if ($link.hasClass('js-webasyst-id-connect')) {
-            connectWebasystID().done(function (data) {
-                var href = $link.attr('href');
-                if (data && data.webasyst_id_auth_url) {
-                    $link.attr('href', data.webasyst_id_auth_url);
-                    href = data.webasyst_id_auth_url;
-                }
-                bindWithWebasystID(href);
-            });
-        } else {
-            bindWithWebasystID($link.attr('href'));
+        var in_webasyst_settings_page = location.href.indexOf(webasyst_id_settings_url) !== -1;
+        if (!in_webasyst_settings_page) {
+            location.href = webasyst_id_settings_url;
         }
     });
 
-    $('.js-webasyst-id-auth-announcement .js-webasyst-id-helplink').on('click', function (e) {
+    $('.js-webasyst-id-auth-announcement .js-webasyst-id-auth').on('click', function (e) {
         e.preventDefault();
+        bindWithWebasystID($(this).attr('href'));
+    });
+
+    var showWebasystIDHelp = function() {
         var help_url = backend_url + "?module=backend&action=webasystIDHelp",
-            is_now_in_settings_page = (location.pathname || '').indexOf('webasyst/settings/waid/') != -1;
+            is_now_in_settings_page = (location.pathname || '').indexOf('webasyst/settings/waid/') !== -1;
 
         if (is_now_in_settings_page) {
             help_url += '&caller=webasystSettings'
@@ -176,6 +154,16 @@ $(function () {
         $.get(help_url, function (html) {
             $('body').append(html);
         });
+    };
+
+    $('.js-webasyst-id-connect-announcement .js-webasyst-id-helplink').on('click', function (e) {
+        e.preventDefault();
+        showWebasystIDHelp();
+    });
+
+    $('.js-webasyst-id-auth-announcement .js-webasyst-id-helplink').on('click', function (e) {
+        e.preventDefault();
+        showWebasystIDHelp();
     });
 
     var pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;

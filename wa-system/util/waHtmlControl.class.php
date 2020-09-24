@@ -1000,6 +1000,9 @@ HTML;
                 $date_params['description'] = _ws('Date');
             }
 
+            if (isset($params['params']['autocomplete'])) {
+                $date_params['autocomplete'] = $params['params']['autocomplete'] ? 'on' : 'off';
+            }
 
             $date_params['value'] = ifset($params, 'value', 'date_str', '');
 

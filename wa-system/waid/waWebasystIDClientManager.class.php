@@ -284,7 +284,7 @@ class waWebasystIDClientManager
     /**
      * @return waWebasystIDConfig
      */
-    protected function getWebasystIDConfig()
+    public function getWebasystIDConfig()
     {
         if (!$this->config) {
             $this->config = new waWebasystIDConfig();

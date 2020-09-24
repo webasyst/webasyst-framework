@@ -226,10 +226,15 @@ return array(
     'waWebasystIDAuthException'                => 'waid/exceptions/waWebasystIDAuthException.class.php',
     'waWebasystIDAccessDeniedAuthException'    => 'waid/exceptions/waWebasystIDAccessDeniedAuthException.class.php',
     'waWebasystIDClientManager'                => 'waid/waWebasystIDClientManager.class.php',
+    'waWebasystIDAuthAdapter'                  => 'waid/waWebasystIDAuthAdapter.class.php',
     'waWebasystIDAuth'                         => 'waid/waWebasystIDAuth.class.php',
+    'waWebasystIDWAAuth'                       => 'waid/waWebasystIDWAAuth.class.php',
+    'waWebasystIDSiteAuth'                     => 'waid/waWebasystIDSiteAuth.class.php',
+    'waWebasystIDWAAuthController'             => 'waid/waWebasystIDWAAuthController.class.php',
     'waWebasystIDAccessTokenManager'           => 'waid/waWebasystIDAccessTokenManager.class.php',
     'waWebasystIDApi'                          => 'waid/waWebasystIDApi.class.php',
     'waWebasystIDCustomerCenterAuthController' => 'waid/waWebasystIDCustomerCenterAuth.controller.php',
+    'waWebasystIDUserInviting'                 => 'waid/waWebasystIDUserInviting.class.php'
 
     // </WEBASYST ID MODULE>
 );

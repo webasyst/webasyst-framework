@@ -25,7 +25,7 @@ class webasystOAuthAction extends waViewAction
 
     public function execute()
     {
-        if ($this->provider_id === waWebasystIDAuth::PROVIDER_ID) {
+        if ($this->provider_id === waWebasystIDAuthAdapter::PROVIDER_ID) {
             $this->webasystIDAuthCase();
         } else {
             $this->defaultCase();
@@ -51,6 +51,11 @@ class webasystOAuthAction extends waViewAction
     protected function getReferrerUrl()
     {
         $url = $this->getRequest()->get('referrer_url', '', waRequest::TYPE_STRING_TRIM);
+
+        if (waUtils::isUrlSafeBase64Encoded($url)) {
+            $url = waUtils::urlSafeBase64Decode($url);
+        }
+
         return strlen($url) > 0 ? $url : wa()->getConfig()->getBackendUrl(true);
     }
 }

@@ -1,13 +1,14 @@
 {$_reload = true}
 
 {$_result = $result.result|default:[]}
-{$_is_bind_with_webasyst_contact = $result.type|default:'' === 'bind_with_webasyst_contact'}
+{$_is_bind_with_webasyst_contact = $result.type|default:'' === 'bind'}
+{$_error_msg = $result.error_msg|default:''}
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>[s`Sign in with Webasyst ID`]</title>
+    <title>[s`Sign-in with Webasyst ID`]</title>
     <style>
         * {
             box-sizing: border-box;
@@ -157,56 +158,69 @@
     </style>
 </head>
 <body>
-{if $_is_bind_with_webasyst_contact}
+
+{if $_is_bind_with_webasyst_contact || $_error_msg}
     <main class="oauth-wrapper">
         <img class="wa-logo" src="{$wa_url}wa-content/img/webasyst-logo.svg" alt="Webasyst">
         <div class="oauth-info">
-        {if $_result.status}
-            {*After <strong>3 seconds</strong> you will redirected back to backend of your site, or you can click "Got it" to redirect right now*}
-            {* Successfull binding webasyst ID contact with current isntallation user *}
-            {$_webasyst_contact_info = $_result.details.webasyst_contact_info}
-            <img class="circle-check" src="{$wa_url}wa-content/img/wa-id/circle-check.svg" alt="OK">
-            <p class="text-center">
-                [`Sign in with Webasyst ID`]
-                [`has been successfully connected to account`]<br><strong>{$_webasyst_contact_info.name|default:''|escape}{if $_webasyst_contact_info.email|default:[]} ({$_webasyst_contact_info.email[0].value|escape}){/if}</strong>
-            </p>
-            <button onclick="onClickRedirect()">[`Got it`]</button>
-            <span class="js-timeout">[`Will close in`] <span>3</span> [`sec`]...</span>
-        {else}
+            {if !$_error_msg}
+                {if $_result.status}
+                    {*After <strong>3 seconds</strong> you will redirected back to backend of your site, or you can click "Got it" to redirect right now*}
+                    {* Successfull binding webasyst ID contact with current isntallation user *}
+                    {$_webasyst_contact_info = $_result.details.webasyst_contact_info}
+                    <img class="circle-check" src="{$wa_url}wa-content/img/wa-id/circle-check.svg" alt="OK">
+                    <p class="text-center">
+                        [`Sign-in with Webasyst ID`]
+                        [`has been successfully connected to account`]<br><strong>{$_webasyst_contact_info.name|default:''|escape}{if $_webasyst_contact_info.email|default:[]} ({$_webasyst_contact_info.email[0].value|escape}){/if}</strong>
+                    </p>
+                    <button onclick="onClickRedirect()">[`Got it`]</button>
+                    <span class="js-timeout">[`Will close in`] <span>3</span> [`sec`]...</span>
+                {else}
 
-            {$_webasyst_contact_info = $_result.details.webasyst_contact_info}
-            {$_bound_contact_info = $_result.details.bound_contact_info}
-            {$_current_user_info = $_result.details.current_user_info}
+                    {$_webasyst_contact_info = $_result.details.webasyst_contact_info}
+                    {$_bound_contact_info = $_result.details.bound_contact_info}
+                    {$_current_user_info = $_result.details.current_user_info}
 
-            <h1 class="text-center">[`Sign in with Webasyst ID`]</h1>
-            <div class="alert alert-warning">
-                <svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
-                    <path fill="currentColor" d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"></path>
-                </svg>
-                <div>
-                    {sprintf(
-                    _w('Webasyst ID account <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong> is already connected to user <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong>'),
-                    $_webasyst_contact_info.userpic,
-                    $_webasyst_contact_info.name|escape,
-                    $_bound_contact_info.userpic,
-                    $_bound_contact_info.name|escape)}
-                </div>
-            </div>
-            <h4 class="text-center">[`Change connection to a new user?`]</h4>
-            <p>
-                {sprintf(
-                _w('If you need to change the connection of your Webasyst ID account to the user <strong>%s</strong> press "Confirm"'),
-                $_current_user_info.name|escape,
-                $_bound_contact_info.name|escape)}
-            </p>
-            <div class="actions-buttons">
-                <form method="POST">
-                    <button type="submit" name="renew" value="1" class="confirm">[`Confirm`]</button>
-                    <button type="submit" name="renew" value="0" class="link">[`Leave as it is`]</button>
-                </form>
-            </div>
-            {$_reload = false}
-        {/if}
+                    <h1 class="text-center">[`Sign-in with Webasyst ID`]</h1>
+                    <div class="alert alert-warning">
+                        <svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                            <path fill="currentColor" d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"></path>
+                        </svg>
+                        <div>
+                            {sprintf(
+                            _ws('Webasyst ID account <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong> is already connected to user <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong>'),
+                            $_webasyst_contact_info.userpic,
+                            $_webasyst_contact_info.name|escape,
+                            $_bound_contact_info.userpic,
+                            $_bound_contact_info.name|escape)}
+                        </div>
+                    </div>
+                    <h4 class="text-center">[`Change connection to a new user?`]</h4>
+                    <p>
+                        {sprintf(
+                        _ws('If you need to change the connection of your Webasyst ID account to user <strong>%s</strong>, press “Confirm”.'),
+                        $_current_user_info.name|escape,
+                        $_bound_contact_info.name|escape)}
+                    </p>
+                    <div class="actions-buttons">
+                        <form method="POST">
+                            <button type="submit" name="renew" value="1" class="confirm">[`Confirm`]</button>
+                            <button type="submit" name="renew" value="0" class="link">[`Leave as it is`]</button>
+                        </form>
+                    </div>
+                    {$_reload = false}
+                {/if}
+            {else}
+                <img class="circle-check" src="{$wa_url}wa-content/img/wa-id/wrong.svg" alt="ERROR">
+                <p class="text-center">
+                    [`Sorry, the login has failed.`]
+                </p>
+                <p>
+                    {$_error_msg}
+                </p>
+                <button onclick="onClickRedirect()">[`Back`]</button>
+                {$_reload = false}
+            {/if}
         </div>
     </main>
 {/if}
@@ -235,7 +249,7 @@
                 window.location.href = {$redirect_url|json_encode};
             };
 
-            {if $_is_bind_with_webasyst_contact}
+            {if $_is_bind_with_webasyst_contact && !$_error_msg}
                 {if $_result.status}
                     var counter = 2,
                         $timeout = document.getElementsByClassName("js-timeout")[0].getElementsByTagName('span')[0],
@@ -248,7 +262,7 @@
                             }
                         }, 1000);
                 {/if}
-            {else}
+            {elseif !$_error_msg}
                 redirect();
             {/if}
 

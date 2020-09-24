@@ -433,7 +433,7 @@ class waAuth implements waiAuth
             $user_info = $contact_model->getById($params['id']);
             if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user'])) {
                 waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1);
-                return $this->getAuthData($user_info);
+                return $this->_afterAuth($user_info, $params);
             }
             return false;
         }
@@ -639,6 +639,7 @@ class waAuth implements waiAuth
 
         // if remember
         $remember_enabled = $this->auth_config->getRememberMe();
+
         if ($remember && $remember_enabled) {
             $cookie_domain = ifset($this->options['cookie_domain'], '');
             $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, $cookie_domain, false, true);

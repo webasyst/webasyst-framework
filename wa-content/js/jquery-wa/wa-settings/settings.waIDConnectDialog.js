@@ -12,8 +12,8 @@ var WASettingsWaIDConnectDialog = ( function($) {
         // VARS
         that.connect_url = options.connect_url || '';
         that.wa_url = options.wa_url || '';
-        that.reload_after_close = typeof options.reload_after_close === 'undefined' ? true : options.reload_after_close;
         that.oauth_modal = options.oauth_modal || false;
+        that.dialog = null;
 
         // DYNAMIC VARS
 
@@ -29,25 +29,25 @@ var WASettingsWaIDConnectDialog = ( function($) {
     WASettingsWaIDConnectDialog.prototype.initDialog = function () {
         var that = this;
 
-        $.waDialog({
+        that.dialog = $.waDialog({
             html: that.$dialog,
             onOpen: function () {
                 that.connect();
-                that.initAuthLink();
-            },
-            onClose: function () {
-                if (that.$success_block.is(':visible') && that.reload_after_close) {
-                    window.location.reload();
-                }
             }
         });
+    };
 
+    WASettingsWaIDConnectDialog.prototype.close = function() {
+        var that = this;
+        if (that.dialog) {
+            that.dialog.close();
+        }
     };
 
     WASettingsWaIDConnectDialog.prototype.connect = function() {
         var that = this,
-            connect_url = '?module=settings&action=waIDConnect';
-
+            connect_url = that.connect_url;
+        
         var request = $.post(connect_url);
 
         var onDone = function(r) {
@@ -55,12 +55,7 @@ var WASettingsWaIDConnectDialog = ( function($) {
             if (r && r.status === 'ok') {
                 that.$success_block.show();
                 that.$process_block.hide();
-
-                if (r.data && r.data.webasyst_id_auth_url) {
-                    that.$dialog.find('.js-webasyst-id-auth').show().attr('href', r.data.webasyst_id_auth_url);
-                }
-
-                that.$dialog.trigger('connected', [r.data]);
+                that.$dialog.trigger('connected', [r.data, that]);
 
                 return;
             }
@@ -88,33 +83,6 @@ var WASettingsWaIDConnectDialog = ( function($) {
         request.done(onDone).fail(onFail).always(onAlways);
     };
 
-    WASettingsWaIDConnectDialog.prototype.initAuthLink = function () {
-        var that = this,
-            $dialog = that.$dialog,
-            $link = $dialog.find('.js-webasyst-id-auth'),
-            oauth_modal = that.oauth_modal;
-
-        $link.on('click', function (e) {
-            e.preventDefault();
-
-            var href = $(this).attr('href');
-            if (!oauth_modal) {
-                var referrer_url = window.location.href;
-                window.location = href + '&referrer_url=' + referrer_url;
-                return;
-            }
-
-            var width = 600;
-            var height = 500;
-            var left = (screen.width - width) / 2;
-            var top = (screen.height - height) / 2;
-
-            window.open(href,'oauth', "width=" + 600 + ",height=" + height + ",left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
-
-
-            return false;
-        });
-    };
 
     return WASettingsWaIDConnectDialog;
 

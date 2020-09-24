@@ -183,7 +183,11 @@ class waSignupForm
             return '';
         }
         $template = $this->getTemplate('captcha');
-        $object = wa()->getCaptcha(array('version' => 2, 'wrapper_class' => 'wa-captcha-section'));
+        $object = wa()->getCaptcha([
+            'version' => 2,
+            'wrapper_class' => 'wa-captcha-section',
+            'app_id' => $this->config->getApp()
+        ]);
         $assign = array(
             'object'       => $object,
             'is_invisible' => $object->getOption('invisible'),

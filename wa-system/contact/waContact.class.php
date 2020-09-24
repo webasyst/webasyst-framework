@@ -146,6 +146,8 @@ class waContact implements ArrayAccess
     {
         if ($width === 'original') {
             $size = 'original';
+        } elseif ($width === 'original_crop') {
+            $size = 'original_crop';
         } else if ($width && !$height) {
             $size = $width.'x'.$width;
         } else if (!$width) {
@@ -161,16 +163,23 @@ class waContact implements ArrayAccess
 
         if ($ts) {
             $dir = self::getPhotoDir($id, false);
-            if ($size != 'original' && $retina) {
-                $size .= '@2x';
+
+            if ($size === 'original_crop') {
+                $filename = "{$ts}.jpg";
+            } else{
+                if ($size != 'original' && $retina) {
+                    $size .= '@2x';
+                }
+                $filename = "{$ts}.{$size}.jpg";
             }
+
             if (waSystemConfig::systemOption('mod_rewrite')) {
-                return wa()->getDataUrl("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
+                return wa()->getDataUrl("photos/{$dir}{$filename}", true, 'contacts');
             } else {
-                if (file_exists(wa()->getDataPath("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts'))) {
-                    return wa()->getDataUrl("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
+                if (file_exists(wa()->getDataPath("photos/{$dir}{$filename}.jpg", true, 'contacts'))) {
+                    return wa()->getDataUrl("photos/{$dir}{$filename}.jpg", true, 'contacts');
                 } else {
-                    return wa()->getDataUrl("photos/thumb.php/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
+                    return wa()->getDataUrl("photos/thumb.php/{$dir}{$filename}.jpg", true, 'contacts');
                 }
             }
         } else {
@@ -1572,5 +1581,26 @@ class waContact implements ArrayAccess
 
         $csm = new waContactSettingsModel();
         $csm->clearAllWebasystAnnouncementCloseFacts();
+
+        // delete invitation marks
+        $csm->deleteByField(['name' => 'waid_invite_datetime']);
+    }
+
+    public static function clearWebasystIDAssets(array $contact_ids = [])
+    {
+        // not available in templates
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
+        // delete contact id <-> webasyst contact id binds along with token params
+        $cwm = new waContactWaidModel();
+        $cwm->clear($contact_ids);
+
+        $csm = new waContactSettingsModel();
+        $csm->clearWebasystAnnouncementCloseFacts($contact_ids);
+
+        // delete invitation marks
+        $csm->deleteByField(['contact_id' => $contact_ids, 'name' => 'waid_invite_datetime']);
     }
 }

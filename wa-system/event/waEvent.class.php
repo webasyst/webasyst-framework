@@ -324,7 +324,7 @@ class waEvent
 
         //Get app handlers
         try {
-            $apps = wa()->getApps();
+            $apps = wa()->getApps(true);
         } catch (Exception $e) {
             $this->debugLog($e->getMessage());
             $apps = array();
@@ -601,11 +601,8 @@ class waEvent
      */
     protected function getAppsHandlersFiles($app_id)
     {
-        $apps_path = wa()->getConfig()->getPath('apps');
-        $DS = DIRECTORY_SEPARATOR;
-        $files = waFiles::listdir($apps_path.$DS.$app_id.$DS.'lib'.$DS.'handlers'.$DS);
-
-        return $files;
+        $handlers_path = wa()->getAppPath('lib/handlers', $app_id);
+        return waFiles::listdir($handlers_path);
     }
 
     /**

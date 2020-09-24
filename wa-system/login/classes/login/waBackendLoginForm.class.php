@@ -66,7 +66,10 @@ class waBackendLoginForm extends waLoginForm
         $assign['is_api_oauth'] = isset($this->options['is_api_oauth']) ? $this->options['is_api_oauth'] : false;
 
         // link to auth by webasyst ID
-        $assign['webasyst_id_auth_url'] = isset($this->options['webasyst_id_auth_url']) ? $this->options['webasyst_id_auth_url'] : '';
+        $webasyst_id_auth_url = $this->getWebasystIdAuthUrl();
+
+        //
+        $assign['webasyst_id_auth_url'] = $webasyst_id_auth_url;
 
         // special mode of form = login & bind to webasyst ID at the same time
         $assign['bind_with_webasyst_contact'] = isset($this->options['bind_with_webasyst_contact']) ? $this->options['bind_with_webasyst_contact'] : false;
@@ -77,5 +80,30 @@ class waBackendLoginForm extends waLoginForm
         $assign['webasyst_id_auth_result'] = isset($this->options['webasyst_id_auth_result']) ? $this->options['webasyst_id_auth_result'] : [];
 
         return $assign;
+    }
+
+    private function getWebasystIdAuthUrl()
+    {
+        $webasyst_id_auth_url = isset($this->options['webasyst_id_auth_url']) ? $this->options['webasyst_id_auth_url'] : '';
+        if (!$webasyst_id_auth_url) {
+            return '';
+        }
+        $current_url = $this->getCurrentUrl();
+        $current_url = waUtils::urlSafeBase64Encode($current_url);
+        $webasyst_id_auth_url .= '&referrer_url=' . $current_url;
+        return $webasyst_id_auth_url;
+    }
+
+    private function getCurrentUrl()
+    {
+        $url = wa()->getConfig()->getRequestUrl(false, false);
+        $url = ltrim($url, '/');
+        $domain = wa()->getConfig()->getDomain();
+
+        if (waRequest::isHttps()) {
+            return "https://{$domain}/{$url}";
+        } else {
+            return "http://{$domain}/{$url}";
+        }
     }
 }

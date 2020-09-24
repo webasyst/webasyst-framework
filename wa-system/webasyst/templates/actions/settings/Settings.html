@@ -104,6 +104,21 @@
                         <div class="value no-shift bold">[`Webasyst is moving to PHP versions 5.6 and higher.`]</div>
                     {/if}
                 </div>
+
+                {* Image adapter *}
+                <div class="field">
+                    <div class="name">[s`Image processing library`]</div>
+                    <div class="value no-shift">
+                        <select name="config[image_adapter]">
+                            {foreach $image_adapters_list as $_adapter => $_params}
+                                <option {if $_adapter == $image_adapter}selected{/if}
+                                        {if !$_params.enabled}disabled{/if} value="{$_adapter}">
+                                    {$_params.name|escape} {if !$_params.enabled}([`not installed`]){/if}
+                                </option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div class="s-form-buttons">

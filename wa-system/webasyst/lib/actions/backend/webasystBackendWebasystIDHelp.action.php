@@ -54,7 +54,7 @@ class webasystBackendWebasystIDHelpAction extends waViewAction
             return '';
         }
 
-        $auth = new waWebasystIDAuth();
+        $auth = new waWebasystIDWAAuth();
         return $auth->getUrl();
     }
 
@@ -65,7 +65,7 @@ class webasystBackendWebasystIDHelpAction extends waViewAction
     protected function isConnectedToWebasystID()
     {
         // client (installation) not connected
-        $auth = new waWebasystIDAuth();
-        return $auth->isClientConnect();
+        $auth = new waWebasystIDWAAuth();
+        return $auth->isClientConnected();
     }
 }

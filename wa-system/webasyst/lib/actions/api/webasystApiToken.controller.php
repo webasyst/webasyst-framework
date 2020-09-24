@@ -31,7 +31,7 @@ class webasystApiTokenController extends waController
             if (strtotime($row['expires']) < time()) {
                 $this->response(array(
                     'error' => 'invalid_grant',
-                    'error_description' => 'Authorization code expired'
+                    'error_description' => 'Authorization code has expired'
                 ));
                 return;
             }

@@ -76,6 +76,8 @@ class waAPIController
         } elseif ($request_url == 'api.php/revoke') {
             $this->checkToken();
             wa()->getFrontController()->execute(null, 'api', 'revoke');
+        } elseif ($request_url == 'api.php/token-headless') {
+            wa()->getFrontController()->execute(null, 'api', 'tokenHeadless');
         } elseif ($request_url === 'api.php') {
             $this->execute(waRequest::get('app'), waRequest::get('method'));
         } else {
@@ -110,7 +112,7 @@ class waAPIController
 
         // check app access
         if (!waSystem::getInstance()->appExists($app)) {
-            throw new waAPIException('invalid_request', 'Application '.$app.' not exists');
+            throw new waAPIException('invalid_request', 'App is not installed ('.$app.')');
         }
         if (wa()->getUser()->getRights($app, 'backend') <= 0) {
             throw new waAPIException('access_denied', 403);
@@ -143,7 +145,13 @@ class waAPIController
     {
         $token = waRequest::request('access_token', null, 'string');
         if (!$token) {
-            $token = waRequest::server('Authorization', null, 'string');
+            if (function_exists('getallheaders')) {
+                $headers = getallheaders();
+                $token = ifset($headers, 'Authorization', null);
+            }
+            if (!$token) {
+                $token = waRequest::server('HTTP_AUTHORIZATION', null, 'string');
+            }
             if ($token) {
                 $token = preg_replace('~^(Bearer\s)~ui', '', $token);
             }

@@ -52,22 +52,35 @@
 {* @event backend_header *}
 {* $return[%app_id%]['header_top'] *}
 {if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
-<script type="text/javascript">var backend_url = "{$backend_url}";</script>
+<script type="text/javascript">
+    var backend_url = "{$backend_url}";
+    var webasyst_id_settings_url = {$webasyst_id_settings_url|json_encode};
+</script>
 {if !empty($include_wa_push)}
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
 {/if}
 
 {* Announcements section *}
 <div id="wa-announcement">
-    {if $webasyst_id_auth_url}
-        <div class="js-webasyst-id-announcement js-webasyst-id-auth-announcement">
-            <a href="javascript:void(0);" class="wa-announcement-close js-close-webasyst-id-announcement" title="close"
-               data-name="webasyst_id_announcement_close" rel="webasyst">&times;</a>
-            <p>
-                [s`<strong>Enable sign in with Webasyst ID</strong>, a universal authorization option that unites Webasyst Customer Center and backend sign-in on your custom domains. Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains.`]&nbsp;
-                <a href="{$webasyst_id_auth_url}" class="bold js-webasyst-id-auth">[s`Enable&nbsp;Webasyst&nbsp;ID — it’s free and secure!`]</a>&nbsp;
-                <a href="javascript:void(0);" class="gray js-webasyst-id-helplink">[s`How it works?`]</a>
 
+    {if $show_connection_banner}
+        <div class="js-webasyst-id-announcement js-webasyst-id-auth-announcement js-webasyst-id-connect-announcement w-webasyst-id-banner">
+            <a href="javascript:void(0);" class="wa-announcement-close js-close-webasyst-id-announcement" title="close"  data-name="webasyst_id_announcement_close" rel="webasyst">&times;</a>
+            <p>
+                <i class="icon16 waid-green"></i>[s`<strong>Enable sign-in with Webasyst ID</strong>, a universal authorization option that unites Webasyst Customer Center and backend sign-in on your custom domains. Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains.`]&nbsp;
+                <a href="javascript:void(0)"
+                   class="bold js-webasyst-id-auth js-webasyst-id-connect">{sprintf('[s`Enable&nbsp;Webasyst&nbsp;ID on %s — it’s free and secure!`]', $current_domain|escape|strtoupper)}</a>&nbsp;
+                <a href="javascript:void(0);" class="gray js-webasyst-id-helplink">[s`How does it work?`]</a>
+            </p>
+        </div>
+    {elseif $webasyst_id_auth_banner}
+        <div class="js-webasyst-id-announcement js-webasyst-id-auth-announcement js-webasyst-id-auth-announcement w-webasyst-id-banner">
+            <a href="javascript:void(0);" class="wa-announcement-close js-close-webasyst-id-announcement" title="close"  data-name="webasyst_id_announcement_close" rel="webasyst">&times;</a>
+            <p>
+                <i class="icon16 userpic20" style="background-image: url('{$user->getPhoto(32)}');"></i>+ <i class="icon16 waid-green"></i> {sprintf('[s`<strong>Upgrade your user account (%s) to Webasyst ID</strong>, a unified authorization across all Webasyst apps, sites, and services. It’s free, secure, and takes just a minute.`]', $user.login|escape|strtoupper)}&nbsp;
+                <a href="{$webasyst_id_auth_banner.url}"
+                    class="bold js-webasyst-id-auth">{sprintf('[s`Enable&nbsp;Webasyst&nbsp;ID for %s now!`]', $user.login|escape|strtoupper)}</a>&nbsp;
+                <a href="javascript:void(0);" class="gray js-webasyst-id-helplink">[s`How does it work?`]</a>
             </p>
         </div>
     {/if}

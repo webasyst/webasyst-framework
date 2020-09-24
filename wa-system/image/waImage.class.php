@@ -128,6 +128,7 @@ class waImage
     public static function factory($file, $adapter = false)
     {
         if (!$adapter) {
+            self::$default_adapter = waSystemConfig::systemOption('image_adapter');
             $adapter = self::getDefaultAdapter();
         }
 

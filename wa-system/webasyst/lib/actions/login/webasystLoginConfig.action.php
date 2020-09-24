@@ -42,7 +42,7 @@ class webasystLoginConfigAction extends waViewAction
                         'default' => $config
                     );
                     if (!waUtils::varExportToFile($data, $file.'/db.php')) {
-                        $error = sprintf(_w("Error creating file %s"), $file.'/routing.php');
+                        $error = sprintf(_w("Error creating file %s"), $file.'/db.php');
                     } else {
                         // check routing.php
                         if (!file_exists($file.'/routing.php')) {

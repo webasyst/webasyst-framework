@@ -83,14 +83,24 @@ class waContactWaidModel extends waModel
     /**
      * Get contact bound with this webasyst ID contact
      * @param int $webasyst_contact_id
+     * @param int|int[] $exclude_contact_ids - that contacts among which no need searching
      * @return int - found contact id or 0
      * @throws waException
      */
-    public function getBoundWithWebasystContact($webasyst_contact_id)
+    public function getBoundWithWebasystContact($webasyst_contact_id, $exclude_contact_ids = [])
     {
-        $contact_id = $this->select('contact_id')->where(
-            $this->getWhereByField(['webasyst_contact_id' => $webasyst_contact_id])
-        )->fetchField();
+        $where = $this->getWhereByField(['webasyst_contact_id' => $webasyst_contact_id]);
+        $bind_params = [];
+
+        // no search among that list of contact ids
+        if ($exclude_contact_ids) {
+            $exclude_contact_ids = waUtils::toIntArray($exclude_contact_ids);
+            $exclude_contact_ids = waUtils::dropNotPositive($exclude_contact_ids);
+            $where .= " AND contact_id NOT IN(:ids)";
+            $bind_params['ids'] = $exclude_contact_ids;
+        }
+
+        $contact_id = $this->select('contact_id')->where($where, $bind_params)->fetchField();
         return intval($contact_id);
     }
 
@@ -100,6 +110,15 @@ class waContactWaidModel extends waModel
     public function clearAll()
     {
         $this->exec("DELETE FROM `{$this->table}` WHERE 1");
+    }
+
+    /**
+     * Clear webasyst ID bounds along with token params
+     * @param array $contact_ids
+     */
+    public function clear(array $contact_ids)
+    {
+        $this->deleteById($contact_ids);
     }
 
     /**

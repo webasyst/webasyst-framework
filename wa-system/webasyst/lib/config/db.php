@@ -111,6 +111,7 @@ return array(
         'font_color' => array('varchar', 7),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
         'is_limited' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
+        'default_status' => array('varchar', 255),
         ':keys' => array(
             'PRIMARY' => 'id',
         ),

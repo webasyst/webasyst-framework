@@ -583,7 +583,12 @@ var WaLoginAbstractForm = ( function($) {
                 return true;
             },
             redirect: function (url) {
-                window.location.href = url;
+                url = url || '';
+                if (url.indexOf('#') !== -1 && url === window.location.href) {
+                    window.location.reload();
+                } else {
+                    window.location.href = url;
+                }
                 return true;
             },
             messages: function (messages) {

@@ -112,7 +112,11 @@ abstract class waBaseLoginAction extends waLoginModuleController
         if (!$this->auth_config->needLoginCaptcha()) {
             return null;
         }
-        if (!wa()->getCaptcha()->isValid()) {
+        $captcha_options = [];
+        if ($this->auth_config instanceof waDomainAuthConfig) {
+            $captcha_options['app_id'] = $this->auth_config->getApp();
+        }
+        if (!wa()->getCaptcha($captcha_options)->isValid()) {
             return _ws('Invalid captcha');
         } else {
             return null;

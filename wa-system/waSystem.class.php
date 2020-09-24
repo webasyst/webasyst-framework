@@ -464,6 +464,10 @@ class waSystem
     {
         if ($provider) {
 
+            if ($provider === waWebasystIDAuthAdapter::PROVIDER_ID) {
+                return new waWebasystIDSiteAuth($params);
+            }
+
             $file = $this->config->getPath('system').'/auth/adapters/'.$provider.'Auth.class.php';
             if (!file_exists($file)) {
                 $file = $this->config->getPath('plugins').'/auth/adapters/'.$provider.'Auth.class.php';

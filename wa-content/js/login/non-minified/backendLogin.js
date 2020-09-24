@@ -205,16 +205,22 @@ var WaBackendLogin = ( function($) {
     Self.prototype.initWebasystIDAuthLink = function (oauth_modal) {
         var that = this,
             $wrapper = that.$wrapper,
-            $link = $wrapper.find('.js-webasyst-auth-link');
+            $link = $wrapper.find('.js-webasyst-auth-link'),
+            $remember_me_field = $wrapper.find('.field-remember-me'),
+            $remember_me_checkbox = $remember_me_field.find(':checkbox');
 
         $link.on('click', function (e) {
             e.preventDefault();
 
-            var href = $(this).attr('href');
+            var href = $(this).attr('href') || '';
+
+            // remember me hack for webasyst ID auth into backend
+            if ($remember_me_checkbox.is(':checked')) {
+                href = href.replace('backend_auth=1', 'backend_auth=2');
+            }
 
             if (!oauth_modal) {
-                var referrer_url = window.location.href;
-                window.location = href + '&referrer_url=' + referrer_url;
+                window.location = href;
                 return;
             }
 

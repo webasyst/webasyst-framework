@@ -508,6 +508,21 @@ class waUtils
         return base64_decode($data);
     }
 
+    /**
+     * Check is string already encoded
+     * @param $string
+     * @return bool
+     */
+    public static function isUrlSafeBase64Encoded($string)
+    {
+        $data = str_replace(['-', '_'], ['+', '/'], $string);
+        $mod4 = strlen($data) % 4;
+        if ($mod4) {
+            $data .= substr('====', $mod4);
+        }
+        return base64_decode($data, true) !== false;
+    }
+
    /**
      * Greater common divisor of two positive integers.
      * @since 1.13.9

@@ -1091,6 +1091,8 @@ class waDomainAuthConfig extends waAuthConfig
             }
         }
         closedir($dh);
+
+        $this->auth_adapters[waWebasystIDAuthAdapter::PROVIDER_ID] = new waWebasystIDSiteAuth(['app_id' => '', 'app_secret' => '']);
     }
 
     protected function getDomainApps($domain)

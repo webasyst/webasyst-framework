@@ -25,8 +25,9 @@ class webasystSettingsWaIDConnectController extends waJsonController
     {
         $m = new waWebasystIDClientManager();
         if ($m->isConnected()) {
-            $auth = new waWebasystIDAuth();
+            $auth = new waWebasystIDWAAuth();
             return $auth->getUrl();
         }
+        return '';
     }
 }

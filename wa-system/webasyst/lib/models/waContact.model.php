@@ -212,6 +212,32 @@ class waContactModel extends waModel
             return array();
         }
     }
+
+    /**
+     * Generate unique login by email
+     * @param string $email
+     * @return string|null
+     * @throws waException
+     */
+    public function generateLoginByEmail($email)
+    {
+        $validator = new waEmailValidator();
+        if (!$validator->isValid($email)) {
+            return null;
+        }
+
+        $parts = explode('@', $email, 2);
+
+        $email_part = trim($parts[0]);
+
+        $login = $email_part;
+        while ($this->getByField(['login' => $login])) {
+            $padding = waUtils::getRandomHexString(6);
+            $login = $email_part . $padding;
+        }
+
+        return $login;
+    }
 }
 
 // EOF

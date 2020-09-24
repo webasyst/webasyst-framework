@@ -43,6 +43,14 @@ class waRouting
         return isset($this->aliases[$domain]) ? $this->aliases[$domain] : false;
     }
 
+    /**
+     * @return array[string] mirror domain => actual domain mirror points to
+     * @since 1.14.5
+     */
+    public function getAliases()
+    {
+        return $this->aliases;
+    }
 
     public function getDomains()
     {
@@ -465,8 +473,8 @@ class waRouting
         $is_different_module = false;
 
         if ($is_set_route) {
-            foreach ($params as $k => $k) {
-                if ($k != 'url' && isset($this->route[$k]) && $this->route[$k] != $k) {
+            foreach ($params as $k => $v) {
+                if ($k != 'url' && isset($this->route[$k]) && $this->route[$k] != $v) {
                     $is_current_route = false;
                     break;
                 }

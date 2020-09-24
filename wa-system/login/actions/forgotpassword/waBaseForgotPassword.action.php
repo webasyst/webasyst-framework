@@ -270,8 +270,15 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         } elseif (strlen($password) > waAuth::PASSWORD_MAX_LENGTH) {
             $errors['password'] = _ws('Specified password is too long.');
         }
-        if ($this->auth_config->needLoginCaptcha() && !wa()->getCaptcha()->isValid()) {
-            $errors['captcha'] = _ws('Invalid captcha');
+
+        if ($this->auth_config->needLoginCaptcha()) {
+            $captcha_options = [];
+            if ($this->auth_config instanceof waDomainAuthConfig) {
+                $captcha_options['app_id'] = $this->auth_config->getApp();
+            }
+            if (!wa()->getCaptcha($captcha_options)->isValid()) {
+                $errors['captcha'] = _ws('Invalid captcha');
+            }
         }
         return $errors;
     }
