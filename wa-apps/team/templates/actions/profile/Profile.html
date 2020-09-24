@@ -126,8 +126,12 @@
                     {if !empty($is_own_profile)}
                         {if $webasyst_id_auth_url}
                             <div class="waid-login">
-                                <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">[s`Enable sign in with`]&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span></a>
-                                <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[s`What is Webasyst ID?`]</a>
+                                {capture name='webasyst_logo_html'}
+                                    &nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span>
+                                {/capture}
+
+                                <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">{sprintf(_w('Enable sign-in with %s'), $smarty.capture.webasyst_logo_html)}</a>
+                                <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[`What is Webasyst ID?`]</a>
                             </div>
                         {elseif $customer_center_auth_url}
                             {* Auth into customer center *}
@@ -135,7 +139,7 @@
                                 <div class="js-customer-center-auth-link-wrapper waid-login">
                                     <a class="waid-auth-link js-customer-center-auth" href="{$customer_center_auth_url}">
                                         <i class="icon16" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 16px 16px; background-position: 0 0;"></i>
-                                        [s`Go to the Webasyst Customer Center`]
+                                        [`Go to the Webasyst Customer Center`]
                                     </a>
                                 </div>
                             </div>

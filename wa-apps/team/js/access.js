@@ -607,7 +607,6 @@ window.ProfileAccessTab = function(o) { "use strict";
         initWebasystIDAuth();
     }
 
-    initWebasystIDShowAccountInfo(contact_id);
     initWebasystIDUnbindAuth();
     initWebasystIDHelpLink();
 
@@ -632,34 +631,7 @@ window.ProfileAccessTab = function(o) { "use strict";
             window.top.$('body').trigger('wa_webasyst_id_auth');
         });
     }
-
-    function initWebasystIDShowAccountInfo(contact_id) {
-        $('.js-show-webasyst-id-account-info').on('click', function (e) {
-            e.preventDefault();
-            var $link = $(this),
-                $icon = $link.parent().find('.js-loading'),
-                is_loading = false;
-
-            if (is_loading) {
-                return;
-            }
-
-            is_loading = true;
-            $icon.show();
-
-            var url = '{$wa_app_url}?module=profile&action=waidAccountInfo';
-            $.get(url, { id: contact_id }, 'html')
-                .done(function (html) {
-                    $('.js-webasyst-id-info-place').replaceWith(html);
-                })
-                .always(function () {
-                    is_loading = false;
-                    $icon.remove();
-                    $link.remove();
-                });
-        });
-    }
-
+    
     function initWebasystIDUnbindAuth() {
         $('.js-webasyst-id-unbind-auth').on('click', function (e) {
             e.preventDefault();
@@ -1048,7 +1020,7 @@ window.ProfileAccessTab = function(o) { "use strict";
                         return false;
                     } else {
                         if (login) {
-                            $('#c-access-rights-by-app').show();
+                            $('#c-access-rights-by-app').show().find('.t-access-status').removeClass('type-no type-limited type-full').addClass('type-no');
                             $('.c-shown-on-access').show();
                             $('#c-login-block').show();
                             $('#c-password-block').show();

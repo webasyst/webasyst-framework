@@ -47,7 +47,7 @@ class teamScheduleDayAction extends teamCalendarAction
 
         /*
         $day = array(
-            "month_name" => _w("Август"),
+            "month_name" => "Август",
             "number" => 4
         );
 

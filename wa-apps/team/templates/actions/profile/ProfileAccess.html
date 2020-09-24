@@ -66,7 +66,7 @@
     {if $is_connected_to_webasyst_id && ($contact['is_user'] == '1' || $is_bound_with_webasyst_contact)}
         <div class="c-waid">
             <div class="field">
-                <div class="name">[s`Sign in with Webasyst ID`]</div>
+                <div class="name">[`Sign-in with Webasyst ID`]</div>
                 <div class="value">
 
                     {if $is_bound_with_webasyst_contact}
@@ -78,31 +78,35 @@
                         {if $webasyst_id_email}
                             {sprintf(_w('Webasyst ID account <span class="bold">%s</span> is connected.'), $webasyst_id_email)}
                         {else}
-                            <span class="bold">[s`Sign in with Webasyst ID`]</span> [s`is connected`].
+                            {sprintf(_w('%sSign-in with Webasyst ID%s is connected.'), '<span class="bold">', '</span>')}
                         {/if}
 
                         {* authorize into customer center - available only for own profile *}
                         {if $customer_center_auth_url}
-                            <a class="bold underline js-customer-center-auth" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[s`Go to the Webasyst Customer Center`]</a>
+                            <a class="bold underline js-customer-center-auth" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[`Go to the Webasyst Customer Center`]</a>
                         {/if}
 
-                        <a href="#" class="hint js-webasyst-id-unbind-auth">[s`Disconnect`]</a>
+                        <a href="#" class="hint js-webasyst-id-unbind-auth">[`Disconnect`]</a>
 
                     {elseif $is_own_profile}
 
                         {* own profile is not connected to webasyst ID *}
 
-                        <div>[s`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="javascript:void(0);" class="underline js-webasyst-id-help-link">[s`How it works?`]</a></div>
+                        <div>[`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="javascript:void(0);" class="underline js-webasyst-id-help-link">[`How does it work?`]</a></div>
                         <div class="waid-login">
-                            <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">[s`Enable sign in with`]&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span></a>
-                            <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[s`What is Webasyst ID?`]</a>
+                            {capture name='webasyst_logo_html'}
+                                &nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span>
+                            {/capture}
+
+                            <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">{sprintf(_w('Enable sign-in with %s'), $smarty.capture.webasyst_logo_html)}</a>
+                            <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[`What is Webasyst ID?`]</a>
                         </div>
 
                     {else}
 
                         {* other user's profile (not own) is connected to webasyst ID *}
 
-                        <i class="icon10 no"></i> <span class="bold">[s`Sign in with Webasyst ID`]</span> [s`is not connected`].
+                        <i class="icon10 no"></i> {sprintf(_w('%sSign-in with Webasyst ID%s is not connected.'), '<span class="bold">', '</span>')}</span>
                     {/if}
                 </div>
             </div>

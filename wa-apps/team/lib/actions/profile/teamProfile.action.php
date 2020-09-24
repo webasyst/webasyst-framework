@@ -128,7 +128,7 @@ class teamProfileAction extends teamContentViewAction
             return '';
         }
 
-        $auth = new waWebasystIDAuth();
+        $auth = new waWebasystIDWAAuth();
         return $auth->getUrl();
     }
 

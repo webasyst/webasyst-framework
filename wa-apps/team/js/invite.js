@@ -11,6 +11,7 @@ var InvitePage = ( function($) {
         // VARS
         that.errors = options["errors"];
         that.error_class = "error";
+        that.backend_url = options.backend_url || '';
 
         // DYNAMIC VARS
         that.is_locked = false;
@@ -27,6 +28,8 @@ var InvitePage = ( function($) {
         that.bindEvents();
         //
         that.autoCenter();
+
+        that.initProfileWebasystIDHelpLink();
     };
 
     InvitePage.prototype.bindEvents = function() {
@@ -78,6 +81,23 @@ var InvitePage = ( function($) {
 
         $block.css({
             top: top
+        });
+    };
+
+    InvitePage.prototype.initProfileWebasystIDHelpLink = function() {
+        var that = this;
+
+        var onHelp = function() {
+            var url = that.backend_url + "?module=backend&action=webasystIDHelp";
+            $.get(url, function (html) {
+                $('body').append(html);
+            });
+        };
+
+        // click on link in current document
+        $('.js-waid-hint').on('click', function (e) {
+            e.preventDefault();
+            onHelp();
         });
     };
 

@@ -58,7 +58,7 @@ class teamUsersInviteController extends teamUsersNewUserController
                     '{CONTACT_ID}'   => $token['contact_id'],
                     '{COMPANY}'      => htmlentities(wa()->accountName(),ENT_QUOTES,'utf-8'),
                     '{LINK}'         => waAppTokensModel::getLink($token),
-                    '{HOURS_LEFT}'   => $hours.' '._ws('hour', 'hours', $hours),
+                    '{HOURS_LEFT}'   => _w('%d hour', '%d hours', $hours),
                 ) // , wa()->getUser()->get('email', 'default')
             );
         } catch (waException $e) {

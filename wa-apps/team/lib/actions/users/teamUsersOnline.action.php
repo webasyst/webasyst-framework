@@ -45,11 +45,11 @@ class teamUsersOnlineAction extends teamContentViewAction
 
         $day = $date_time->format('Y z');
         if ($day === $date_time_today->format('Y z')) {
-            $result = mb_strtolower(_ws('Today'));
+            $result = mb_strtolower(_w('Today'));
         } else if ($day === $date_time_tomorrow->format('Y z')) {
-            $result = mb_strtolower(_ws('Tomorrow'));
+            $result = mb_strtolower(_w('Tomorrow'));
         } else if ($day === $date_time_yesterday->format('Y z')) {
-            $result = mb_strtolower(_ws('Yesterday'));
+            $result = mb_strtolower(_w('Yesterday'));
         } else {
             $result = waDateTime::date(waDateTime::getFormat('humandate'), $time, $timezone);
         }

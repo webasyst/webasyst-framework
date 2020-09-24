@@ -60,7 +60,7 @@ class teamWelcomeSaveController extends waJsonController
                             '{CONTACT_ID}'   => $token['contact_id'],
                             '{COMPANY}'      => htmlentities(wa()->accountName(),ENT_QUOTES,'utf-8'),
                             '{LINK}'         => waAppTokensModel::getLink($token),
-                            '{HOURS_LEFT}'   => $hours.' '._ws('hour', 'hours', $hours),
+                            '{HOURS_LEFT}'   => _w('%d hour', '%d hours', $hours),
                             '{DOMAIN}'       => waRequest::server('HTTP_HOST'),
                             '{EXPIRE_DATE}'  => waDateTime::format('date', strtotime('-1 day', $token['expire_datetime'])),
                         ) // , wa()->getUser()->get('email', 'default')

@@ -35,7 +35,7 @@ msgid "Page:"
 msgstr "Страницы:"
 
 msgid "next"
-msgstr "следующия"
+msgstr "следующая"
 
 msgid "prev"
 msgstr "предыдущая"
@@ -221,7 +221,7 @@ msgid "Edit"
 msgstr "Редактировать"
 
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 msgid "Added"
 msgstr "Добавил"
@@ -518,7 +518,7 @@ msgid "Invite new user"
 msgstr "Пригласить нового пользователя"
 
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 msgid "Please specify an email to send user invitation with further instructions."
 msgstr "Укажите email-адрес для отправки пользователю приглашения с инструкциями для входа."
@@ -812,40 +812,76 @@ msgid "Next month"
 msgstr "Следующий месяц"
 
 msgid "January"
-msgstr "Январь"
+msgid_plural "January"
+msgstr[0] "Январь"
+msgstr[1] "Января"
+msgstr[2] "Январь"
 
 msgid "February"
-msgstr "Февраль"
+msgid_plural "February"
+msgstr[0] "Февраль"
+msgstr[1] "Февраля"
+msgstr[2] "Января"
 
 msgid "March"
-msgstr "Март"
+msgid_plural "March"
+msgstr[0] "Март"
+msgstr[1] "Марта"
+msgstr[2] "Март"
 
 msgid "April"
-msgstr "Апрель"
+msgid_plural "April"
+msgstr[0] "Апрель"
+msgstr[1] "Апреля"
+msgstr[2] "Апрель"
 
 msgid "May"
-msgstr "Май"
+msgid_plural "May"
+msgstr[0] "Май"
+msgstr[1] "Мая"
+msgstr[2] "Май"
 
 msgid "June"
-msgstr "Июнь"
+msgid_plural "June"
+msgstr[0] "Июнь"
+msgstr[1] "Июня"
+msgstr[2] "Июнь"
 
 msgid "July"
-msgstr "Июль"
+msgid_plural "July"
+msgstr[0] "Июль"
+msgstr[1] "Июля"
+msgstr[2] "Июль"
 
 msgid "August"
-msgstr "Август"
+msgid_plural "August"
+msgstr[0] "Август"
+msgstr[1] "Августа"
+msgstr[2] "Август"
 
 msgid "September"
-msgstr "Сентябрь"
+msgid_plural "September"
+msgstr[0] "Сентябрь"
+msgstr[1] "Сентября"
+msgstr[2] "Сентябрь"
 
 msgid "October"
-msgstr "Октябрь"
+msgid_plural "October"
+msgstr[0] "Октябрь"
+msgstr[1] "Октября"
+msgstr[2] "Октябрь"
 
 msgid "November"
-msgstr "Ноябрь"
+msgid_plural "November"
+msgstr[0] "Ноябрь"
+msgstr[1] "Ноября"
+msgstr[2] "Ноябрь"
 
 msgid "December"
-msgstr "Декабрь"
+msgid_plural "December"
+msgstr[0] "Декабрь"
+msgstr[1] "Декабря"
+msgstr[2] "Декабрь"
 
 msgid "Event"
 msgstr "Событие"
@@ -1157,25 +1193,22 @@ msgid "deleted"
 msgstr "удалено"
 
 msgid "Register application on %s"
-msgstr ""
+msgstr "Зарегистрировать приложение на %s"
 
 msgid "Connect %s account:"
-msgstr ""
+msgstr "Подключить аккаунт %s"
 
 msgid "Check your key first of all <a href=\"{$wa_app_url}settings/\">here</a>"
-msgstr ""
+msgstr "Проверьте свой ключ прежде всего <a href=\"{$wa_app_url}settings/\">здесь</a>"
 
 msgid "Error"
 msgstr "Ошибка"
 
-msgid "Google map has error, maybe key is invalid"
-msgstr ""
+msgid "Google map error, probably key in settings is invalid."
+msgstr "Ошибка карт Google, возможно, в настройках указан неверный ключ."
 
-msgid "Август"
-msgstr ""
-
-msgid "- Uninstalled"
-msgstr ""
+msgid "%s - Uninstalled"
+msgstr "%s - Удален"
 
 msgid "Uninstalled or not existed plugin"
 msgstr "Плагин был удален или не существует"
@@ -1226,7 +1259,7 @@ msgid "The token was not transferred."
 msgstr "Токен не был передан."
 
 msgid "This login name is already being used by user %s."
-msgstr ""
+msgstr "Этот логин уже использует пользователь %s."
 
 msgid "Folders:"
 msgstr "Папки:"
@@ -1245,3 +1278,93 @@ msgstr "Подключен к аккаунту Webasyst ID <span class=\"bold\">
 
 msgid "Cannot load Webasyst ID account data."
 msgstr "Не удалось загрузить данные аккаунта Webasyst ID."
+
+msgid "Failed to get Webasyst ID account data from the Webasyst resource server."
+msgstr "Не удалась получить данные аккаунта Webasyst ID с сервера ресурсов Webasyst."
+
+msgid "Sign in with %s"
+msgstr "Войти с %s"
+
+msgid "%sSign-in with Webasyst ID%s is connected."
+msgstr "%sВход с Webasyst ID%s подключен."
+
+msgid "%sSign-in with Webasyst ID%s is not connected."
+msgstr "%sВход с Webasyst ID%s не подключен."
+
+msgid "Webasyst ID account %s is already connected to a backend user."
+msgstr "Аккаунт Webasyst ID %s уже подключен к пользователю бекенда."
+
+msgid "You can sign in with a login name and a password or use a different Webasyst ID account."
+msgstr "Вы можете войти с логином и паролем или использовать другой аккаунт Webasyst ID."
+
+msgid "Enable sign-in with %s"
+msgstr "Включить вход с %s"
+
+msgid "edited contact"
+msgstr "отредактировал контакт"
+
+msgid "What is Webasyst ID?"
+msgstr "Что такое Webasyst ID?"
+
+msgid "Go to the Webasyst Customer Center"
+msgstr "Перейти в Центр заказчика Webasyst"
+
+msgid "This is a required field."
+msgstr "Это обязательное поле."
+
+msgid "At least one of these fields must be completed."
+msgstr "Хотя бы одно из этих полей должно быть заполнено."
+
+msgid "Sign-in with Webasyst ID"
+msgstr "Вход с Webasyst ID"
+
+msgid "Disconnect"
+msgstr "Отключить"
+
+msgid "Connect your Webasyst ID account and sign into the backend securely with no extra passwords."
+msgstr "Подключите свой аккаунт Webasyst ID и входите в бекенд с его помощью без лишних паролей."
+
+msgid "How does it work?"
+msgstr "Как это работает?"
+
+msgid "What is it?"
+msgstr "Что это?"
+
+msgid "Mon"
+msgstr "Пн"
+
+msgid "Tue"
+msgstr "Вт"
+
+msgid "Wed"
+msgstr "Ср"
+
+msgid "Thu"
+msgstr "Чт"
+
+msgid "Fri"
+msgstr "Пт"
+
+msgid "Sat"
+msgstr "Сб"
+
+msgid "Sun"
+msgstr "Вс"
+
+msgid "A login name is required."
+msgstr "Логин обязателен."
+
+msgid "Invalid login name."
+msgstr "Неверный логин."
+
+msgid "Today"
+msgstr "Сегодня"
+
+msgid "Yesterday"
+msgstr "Вчера"
+
+msgid "Tomorrow"
+msgstr "Завтра"
+
+msgid "Authorization with Webasyst ID has failed, try to log in with a login name and a password."
+msgstr "Авторизация с Webasyst ID не удалась, попробуйте войти с логином и паролем."

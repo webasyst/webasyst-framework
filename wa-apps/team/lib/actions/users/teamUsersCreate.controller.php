@@ -57,12 +57,12 @@ class teamUsersCreateController extends teamUsersNewUserController
     public function validateCredentials($data, $contact_id)
     {
         if (empty($data['login'])) {
-            return array(_ws('Login is required'), 'login');
+            return array(_w('A login name is required.'), 'login');
         }
 
         $data['login'] = strtolower(trim($data['login']));
         if (!preg_match('~^[a-z0-9@_\.\-]+$~u', $data['login'])) {
-            return array(_ws('Invalid login'), 'login');
+            return array(_w('Invalid login name.'), 'login');
         }
 
         $user_model = new waUserModel();
@@ -72,11 +72,11 @@ class teamUsersCreateController extends teamUsersNewUserController
         }
 
         if (empty($data['password'])) {
-            return array(_ws('This field is required.'), 'password');
+            return array(_w('This is a required field.'), 'password');
         } elseif ($data['password'] != $data['password_confirm']) {
-            return array(_ws('Passwords do not match'), 'password_confirm');
+            return array(_w('Passwords do not match.'), 'password_confirm');
         } elseif (strlen($data['password']) > waAuth::PASSWORD_MAX_LENGTH) {
-            return array(_ws('Specified password is too long.'), 'password');
+            return array(_w('Specified password is too long.'), 'password');
         }
 
         return null;

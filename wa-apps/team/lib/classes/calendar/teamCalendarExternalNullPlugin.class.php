@@ -17,10 +17,10 @@ class teamCalendarExternalNullPlugin extends teamCalendarExternalPlugin
         if (file_exists($plugin_info_path)) {
             $plugin_info = include $plugin_info_path;
             $this->info = array_merge($this->info, $plugin_info);
-            $this->info['name'] = $this->info['name'] . _w(' - Uninstalled');
+            $this->info['name'] = sprintf(_w('%s - Uninstalled'), $this->info['name']);
         } else {
             $this->info = array_merge($this->info, array(
-                'name' => "#{$plugin_id}" . _w(' - Uninstalled'),
+                'name' => sprintf(_w('%s - Uninstalled'), "#{$plugin_id}"),
                 'description' => _w('Uninstalled or not existed plugin'),
                 'icon' => '',
                 'img' => '',

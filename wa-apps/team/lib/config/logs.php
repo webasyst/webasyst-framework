@@ -13,7 +13,7 @@ return array(
         'name' => /*_w*/('deleted contact')
     ),
     'contact_edit' => array(
-        'name' => _ws('edited contact')
+        'name' => /*_w*/('edited contact')
     ),
     'user_invite' => array(
         'name' => /*_w*/('invited'),

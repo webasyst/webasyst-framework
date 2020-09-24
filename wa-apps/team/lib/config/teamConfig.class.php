@@ -99,9 +99,19 @@ class teamConfig extends waAppConfig
         }
     }
 
+    /**
+     * @param array $data - if here array of format ['token_info' => <array>, 'auth_result'] => <array>] it is response from webasyst ID auth
+     * @throws waException
+     */
     public function dispatchAppToken($data)
     {
         $app_tokens_model = new waAppTokensModel();
+
+        $webasyst_id_auth_result = null;
+        if (isset($data['token_info'])) {
+            $webasyst_id_auth_result = isset($data['auth_result']) ? $data['auth_result'] : null;
+            $data = $data['token_info'];
+        }
 
         // Unknown token type?
         if ($data['type'] != 'user_invite') {
@@ -133,7 +143,7 @@ class teamConfig extends waAppConfig
 
         wa('webasyst');
         $controller = wa()->getDefaultController();
-        $controller->setAction(new teamInviteFrontendAction($data));
+        $controller->setAction(new teamInviteFrontendAction($data, $webasyst_id_auth_result));
         $controller->run();
     }
 

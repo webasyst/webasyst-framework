@@ -21,7 +21,7 @@ class teamUsersNewUserController extends waJsonController
         $v = new waEmailValidator();
         $error = null;
         if (!$email) {
-            $error = _ws('This field is required');
+            $error = _w('This is a required field.');
         } else {
             if (!$v->isValid($email)) {
                 $error = _w('This does not look like a valid email');
