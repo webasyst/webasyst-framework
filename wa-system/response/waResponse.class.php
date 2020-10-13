@@ -109,6 +109,10 @@ class waResponse
         $secure = false,
         $httponly = false
     ) {
+        if (headers_sent()) {
+            return $this;
+        }
+
         if (is_array($expires)) {
             $options = $expires;
             $expires = ifset($options, 'expires', 0);
@@ -245,10 +249,18 @@ class waResponse
     /**
      * Sends all previously added headers.
      *
+     * Will immediately send 304 and exit if there are both
+     * an If-Modified-Since request header as well as Last-Modified response header
+     * and the former equals the latter. See `handleIfModifiedSince()`
+     *
      * @return  waResponse  Instance of waResponse class
      */
     public function sendHeaders()
     {
+        if ($this->status != 304 && $this->isNotModified304()) {
+            $this->setStatus(304);
+        }
+
         foreach ($this->headers as $name => $value) {
             if (is_array($value)) {
                 foreach ($value as $var) {
@@ -262,6 +274,10 @@ class waResponse
         // Added after all that was not erased
         if ($this->status !== null) {
             $this->header(waRequest::server('SERVER_PROTOCOL', 'HTTP/1.0').' '.$this->status.' '.self::$statuses[$this->status]);
+        }
+
+        if ($this->status == 304) {
+            exit;
         }
 
         return $this;
@@ -342,9 +358,13 @@ class waResponse
     }
 
     /**
-     * Sets the header if the page Last Modified header.
-     * Will immediately send 304 and exit if there's a If-Modified-Since request header
-     * with later time.
+     * Sets the Last-Modified header.
+     * Can be called multiple times during page generation. Effective value of
+     * Last-Modified header is the most recent $last_modified_datetime between all calls.
+     *
+     * `SendHeaders()` will immediately send 304 and exit if there's
+     * an If-Modified-Since request header that equals effective $last_modified_datetime.
+     * See handleIfModifiedSince(): it can be used to send 304 immediately.
      *
      * @param   string  $last_modified_datetime  Page update datetime
      * @since   1.14.3
@@ -352,20 +372,68 @@ class waResponse
     public function setLastModified($last_modified_datetime)
     {
         $last_modified_timestamp = @strtotime($last_modified_datetime);
+        if (!$last_modified_timestamp || wa()->getUser()->getId()) {
+            return;
+        }
+
+        // Ignore new $last_modified_datetime if more recent datetime
+        // has been set via previous call to setLastModified()
+        $existing_last_modified = $this->getHeader('Last-Modified');
+        if ($existing_last_modified) {
+            $existing_last_modified_timestamp = strtotime($existing_last_modified);
+            if ($existing_last_modified_timestamp >= $last_modified_timestamp) {
+                return;
+            }
+        }
+
         $last_modified = gmdate("D, d M Y H:i:s \G\M\T", $last_modified_timestamp);
-        $if_modified_since = false;
-        if (getenv('HTTP_IF_MODIFIED_SINCE')) {
-            $if_modified_since = @strtotime(substr(getenv('HTTP_IF_MODIFIED_SINCE'), 5));
+        $this->addHeader('Last-Modified', $last_modified);
+        if (!$this->getHeader('Cache-Control')) {
+            $this->addHeader('Cache-Control', 'max-age=0');
         }
-        if (!$if_modified_since && waRequest::server('HTTP_IF_MODIFIED_SINCE')) {
-            $if_modified_since = @strtotime(substr(waRequest::server('HTTP_IF_MODIFIED_SINCE'), 5));
-        }
-        if ($if_modified_since && $if_modified_since >= $last_modified_timestamp) {
+    }
+
+    /**
+     * Check if request header If-Modified-Since equals response header Last-Modified.
+     * If it does, this sends 304 response immediately and exits.
+     *
+     * @since   1.14.7
+     */
+    public function handleIfModifiedSince()
+    {
+        if ($this->isNotModified304()) {
             $this->setStatus(304);
-            wa()->getResponse()->sendHeaders();
+            $this->sendHeaders();
             exit;
         }
-        $this->addHeader('Last-Modified', $last_modified);
+    }
+
+    /**
+     * Compare request header If-Modified-Since and response header Last-Modified.
+     * Return true if 304 status should be sent. False if full response is required.
+     */
+    protected function isNotModified304()
+    {
+        // Handle behaviour of headers: If-Modified-Since / Last-Modified / 304 Not Modified status.
+        $last_modified = $this->getHeader('Last-Modified');
+        if ($last_modified) {
+            $if_modified_since = false;
+            $last_modified_timestamp = strtotime($last_modified);
+            if (getenv('HTTP_IF_MODIFIED_SINCE')) {
+                $if_modified_since = @strtotime(substr(getenv('HTTP_IF_MODIFIED_SINCE'), 5));
+            }
+            if (!$if_modified_since && waRequest::server('HTTP_IF_MODIFIED_SINCE')) {
+                $if_modified_since = @strtotime(substr(waRequest::server('HTTP_IF_MODIFIED_SINCE'), 5));
+            }
+            if ($if_modified_since && $if_modified_since == $last_modified_timestamp) {
+                // We check for equality (==) rather than (>=) deliberately because of the way
+                // some dynamic content (e.g. shop cart in frontend theme) behaves with last-modified.
+                // Equality check does not break anything but fixes corner cases
+                // and is more robust overall.
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

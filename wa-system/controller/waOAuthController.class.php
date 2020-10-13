@@ -50,7 +50,12 @@ class waOAuthController extends waViewController
                 throw new waException('Unknown adapter ID');
             }
 
-            $auth = $this->getAuthAdapter($provider_id, $this->getAuthType());
+            $type = $this->getAuthType();
+            if ($provider_id === waWebasystIDAuthAdapter::PROVIDER_ID && (!$type || $type === waWebasystIDAuthAdapter::TYPE_WA)) {
+                $auth = new waWebasystIDWAAuth();
+            } else {
+                $auth = $this->getAuthAdapter($provider_id);
+            }
 
             // Webasyst ID WA Auth (auth in WA backend by webasyst ID)
             if ($auth instanceof waWebasystIDWAAuth) {
@@ -126,16 +131,11 @@ class waOAuthController extends waViewController
 
     /**
      * @param string $provider
-     * @param string $type - supported only be webasyst ID provider
-     * @return object|waAuthAdapter|waiAuth|waWebasystIDWAAuth
+     * @return object|waAuthAdapter|waiAuth
      * @throws waException
      */
-    protected function getAuthAdapter($provider, $type = null)
+    protected function getAuthAdapter($provider)
     {
-        if ($provider === waWebasystIDAuthAdapter::PROVIDER_ID && (!$type || $type === waWebasystIDAuthAdapter::TYPE_WA)) {
-            return new waWebasystIDWAAuth();
-        }
-
         $config = wa()->getAuthConfig();
         if (!isset($config['adapters'][$provider])) {
             throw new waException('Unknown auth provider');

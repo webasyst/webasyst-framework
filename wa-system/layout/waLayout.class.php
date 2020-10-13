@@ -142,12 +142,15 @@ class waLayout extends waController
             (waRequest::param('theme') != waRequest::param('theme_mobile'))) {
             wa()->getResponse()->addHeader('Vary', 'User-Agent');
         }
-        wa()->getResponse()->sendHeaders();
         $this->view->cache(false);
         if ($this->view->autoescape() && $this->view instanceof waSmarty3View) {
             $this->view->smarty->loadFilter('pre', 'content_nofilter');
         }
-        $this->view->display($this->getTemplate());
+
+        // fetch() is slightly slower because of output filtering,
+        // but it allows to modify page headers from inside theme templates.
+        $html = $this->view->fetch($this->getTemplate());
+        wa()->getResponse()->sendHeaders();
+        echo $html;
     }
 }
-

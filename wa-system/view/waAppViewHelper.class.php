@@ -117,6 +117,17 @@ class waAppViewHelper
                     unset($pages[$page_id]);
                 }
             }
+
+            /**
+             * Event for {$wa->app_id->pages()}
+             * @since 1.14.0
+             * @param array $pages
+             *
+             * @event view_pages
+             */
+
+            $this->wa()->event('view_pages', $pages);
+
             return $pages;
         } catch (Exception $e) {
             return array();
@@ -131,6 +142,15 @@ class waAppViewHelper
 
         $page_params_model = $page_model->getParamsModel();
         $page += $page_params_model->getById($id);
+
+        /**
+         * Event for {$wa->app_id->page()}
+         * @since 1.14.0
+         * @param array $page
+         *
+         * @event view_page
+         */
+        $this->wa()->event('view_page', $page);
 
         return $page;
     }
