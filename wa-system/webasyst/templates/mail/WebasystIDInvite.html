@@ -260,6 +260,7 @@
                                                 <span style="font-size: 16px;"><img src="{$sender_user.userpic|escape}" style="border-radius:50%; width:20px;height:20px;vertical-align: middle; margin-right: 5px;" alt="{$sender_user.name|escape}">
                                                     {$_sender_user_name = "<strong>`$sender_user.name|escape`</strong>"}
                                                     {$_site_link = "<a href='`$site_url|escape`' rel='noopener' style='text-decoration: none; color: #0077ff;' target='_blank'>`$site_domain|escape`</a>"}
+                                                    {$_username = "<strong>`$user.name|escape`</strong>"}
                                                     {sprintf(_ws('%s prompts you to upgrade your account on %s with the Webasyst ID secure login option — a single sign in system across all Webasyst apps, sites, and services. Confirm the upgrade for %s by linking it with your existing Webasyst ID account or by creating a new one. It’s free and secure!'), $_sender_user_name, $_site_link, $_username)}
                                             </p>
                                         </div>
