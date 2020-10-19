@@ -8,6 +8,8 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
 
     const WEBASYST_PLUGIN_PATTERN = '_wp';
 
+    const WEBASYST_DOMAIN_PATTERN = '_wd';
+
     const WEBASYST_SYSTEM_PLUGIN_PATTERN = '->_w';
 
     const OPEN_SPRINTF_PATTERN = 'sprintf_wp';
@@ -195,10 +197,12 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
         $result = [];
 
         $webasyst_functions = $this->getWebasystFunctionPatterns();
+        $domain_function = $this->getDomainFunctionPattern();
         $open_functions = $this->getOpenFunctionPatterns();
 
         foreach ($this->getQuotes() as $quote) {
             $word_pattern = $this->getWordPattern($quote);
+            $app_pattern = $this->getAppPattern($quote, $this->getDomain());
 
             if ($webasyst_functions) {
                 $plural_pattern = $this->getPluralPattern($webasyst_functions, $word_pattern);
@@ -206,6 +210,14 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
 
                 $default_pattern = $this->getDefaultPattern($webasyst_functions, $word_pattern);
                 $result = $this->mergeResult($result, $this->getByDefault($default_pattern, $text, $path, $quote));
+            }
+
+            if ($domain_function) {
+                $domain_plural_pattern = $this->getDomainPluralPattern($word_pattern, $app_pattern);
+                $result = $this->mergeResult($result, $this->getByPlural($domain_plural_pattern, $text, $path, $quote));
+
+                $domain_default_pattern = $this->getDomainDefaultPattern($word_pattern, $app_pattern);
+                $result = $this->mergeResult($result, $this->getByDefault($domain_default_pattern, $text, $path, $quote));
             }
 
             if ($open_functions) {
@@ -470,5 +482,83 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
         $word_pattern .= '[\\s]*';
 
         return $word_pattern;
+    }
+
+    /**
+     * @param $quote
+     * @param string $app_id
+     * @return string
+     */
+    protected function getAppPattern($quote, $app_id)
+    {
+        // Find carriage return, new line, invisible character
+        $getAppPattern = '[\\r\\n\\s]*';
+
+        // Opening quotes
+        $getAppPattern .= $quote;
+
+        // Exact match with application id
+        $getAppPattern .= $app_id;
+
+        // Closed quotes
+        $getAppPattern .= $quote;
+
+        // Find whitespace character
+        $getAppPattern .= '[\\s]*';
+
+        return $getAppPattern;
+    }
+
+    protected function getDomainDefaultPattern($word_pattern, $app_pattern)
+    {
+        $pattern = '@';
+
+        // Find function name in files
+        // Example: _wd
+        $pattern .= '(?:(' . self::WEBASYST_DOMAIN_PATTERN . '))';
+
+        // Find commented function
+        // Example: /*_wd*/
+        $pattern .= '(?:\\s*\\*/[\\r\\n]*)?\\s*';
+
+        // Find text for translate
+        // Example: ('shop', 'Product')
+        $pattern .= '\\(' . $app_pattern . ',' . $word_pattern . '\\)';
+
+        // Add regex flags
+        $pattern .= '@mus';
+
+        return $pattern;
+    }
+
+    protected function getDomainPluralPattern($word_pattern, $app_pattern)
+    {
+        $plural_pattern = '@';
+
+        // Find function name in files
+        // Example: _wd
+        $plural_pattern .= '(?:' . self::WEBASYST_DOMAIN_PATTERN . ')';
+
+        // Find commented function
+        // Example: /*_wd*/
+        $plural_pattern .= '(?:\\s*\\*/[\\r\\n]*)?\\s*\\';
+
+        // Find plural form text
+        // Example: ('shop', 'Product', 'Products', 1)
+        $plural_pattern .= '(' . $app_pattern . ',' . $word_pattern . ',' . $word_pattern . '(,\\s*|[\\r\\n\\s]*\))';
+
+        // Add regex flags
+        $plural_pattern .= '@mus';
+
+        return $plural_pattern;
+    }
+
+    /**
+     * Domain pattern by which to search for translations
+     * @return string
+     */
+    public function getDomainFunctionPattern()
+    {
+        return null;
     }
 }
