@@ -50,6 +50,8 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
     protected $receipt_number;
 
+    const CHESTNYZNAK_PRODUCT_CODE = 'chestnyznak';
+
     /**
      * Transfer of all payments into rubles.
      * @return string
@@ -92,7 +94,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 $create_transaction = $transactions[waPayment::TRANSACTION_PAYMENT];
                 $transaction_data = $this->getGatewayTransactionStatus($order_data['order_id'], $create_transaction);
 
-                if (!empty($transaction_data['callback_method'])) {
+                if ($transaction_data['amount'] != $order_data['total']) {
+                    return 'Сумма оплаты отличается от суммы заказа';
+                } elseif (!empty($transaction_data['callback_method'])) {
                     $this->handleTransaction($transaction_data);
                     return 'Состояние платежа изменилось — обновите страницу.';
                 } elseif (!empty($create_transaction['raw_data']['formUrl'])) {
@@ -103,8 +107,15 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
             } else {
                 // It's a new order, we need to create new transaction
-                $transaction = $this->registerOrder($order_data);
-                $redirect_url = $transaction['raw_data']['formUrl'];
+                $storage = wa()->getStorage();
+                $storage->write('sb_order', $order_data);
+                $get_query = array(
+                    'register_order' => 1,
+                    'app_id' => $this->app_id,
+                    'merchant_id' => $this->merchant_id,
+                    'orderNumber' => $this->getOrderNumber($order_data['order_id']),
+                );
+                $redirect_url = wa()->getRootUrl() . 'payments.php/sb/?' . http_build_query($get_query);
                 return $this->viewForm($redirect_url, $auto_submit);
             }
         } catch (waPaymentException $ex) {
@@ -380,6 +391,33 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     }
 
     /**
+     * @param array<int, array> $item_product_codes - array of product code records indexed by id of record
+     *  id => [
+     *      int      'id'
+     *      string   'code'
+     *      string   'name' [optional]
+     *      string   'icon' [optional]
+     *      string   'logo' [optional]
+     *      string[] 'values' - promo code item value for each instance of product item
+     *  ]
+     * @return array - chestnyznak values
+     */
+    protected function getChestnyznakCodeValues(array $item_product_codes)
+    {
+        $values = [];
+        foreach ($item_product_codes as $product_code) {
+            if (isset($product_code['code']) && $product_code['code'] === self::CHESTNYZNAK_PRODUCT_CODE) {
+                if (isset($product_code['values'])) {
+                    $values = $product_code['values'];
+                    break;
+                }
+            }
+        }
+
+        return $values;
+    }
+
+    /**
      * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:getorderstatusextended
      * @param array $transaction_raw_data
      * @return array
@@ -435,7 +473,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
             case 'DECLINED': # заказ отклонён;
                 $transaction_data += array(
-                    'type'  => self::OPERATION_CHECK,
+                    'type'  => self::OPERATION_AUTH_ONLY,
                     'state' => self::STATE_DECLINED,
                 );
                 break;
@@ -491,7 +529,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 break;
             case self::SB_ORDER_DECLINE: # авторизация отклонена
                 $transaction_data += array(
-                    'type'  => self::OPERATION_CHECK,
+                    'type'  => self::OPERATION_AUTH_ONLY,
                     'state' => self::STATE_DECLINED,
                 );
                 break;
@@ -552,7 +590,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $payment_fields = array();
         switch ($transaction_data['type']) {
             case self::OPERATION_AUTH_ONLY:
-                $view_data[] = 'Деньги заблокированы';
+                if ($transaction_data['state'] === self::STATE_AUTH) {
+                    $view_data[] = 'Деньги заблокированы';
+                }
                 break;
 
             case self::OPERATION_CANCEL:
@@ -580,6 +620,21 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     'paymentAmountInfo.approvedAmount'  => 'Заблокировано %0.2f %s',
                 );
                 break;
+        }
+
+        if ($transaction_data['state'] === self::STATE_DECLINED) {
+            $transaction_data['result'] = '';
+            $card_fields = array(
+                'cardAuthInfo.pan'            => 'Pan: %s',
+                'cardAuthInfo.cardholderName' => 'CardHolder: %s',
+            );
+
+            if (!empty($transaction_raw_data['actionCodeDescription'])) {
+                $transaction_data['error'] = $transaction_raw_data['actionCodeDescription'];
+            } elseif (!empty($transaction_raw_data['actionCode'])) {
+                $transaction_data['error'] = $transaction_raw_data['actionCode'];
+            }
+            $view_data[] = $transaction_data['error'];
         }
 
         foreach ($card_fields as $field => $format) {
@@ -651,6 +706,15 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
      */
     public function callbackHandler($request)
     {
+        if (isset($request['register_order'])) {
+            $storage = wa()->getStorage();
+            $order_data = $storage->get('sb_order');
+            $transaction = $this->registerOrder($order_data);
+            $redirect_url = $transaction['raw_data']['formUrl'];
+            $storage->remove('sb_order');
+            wa()->getResponse()->redirect($redirect_url);
+        }
+
         $verified = $this->verifyRequest($request);
 
         //extend request data
@@ -895,20 +959,17 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'bankInfo'          => '',
 
         );
-
         foreach ($order_status as $key => $value) {
-            if (array_key_exists($key, $slice)) {
-                foreach ($value as $name => $param) {
-                    $order_status[$key.'.'.$name] = $param;
-                }
-            }
-
             //if there are new arrays
             if (is_array($value)) {
+                if (array_key_exists($key, $slice)) {
+                    foreach ($value as $name => $param) {
+                        $order_status[$key.'.'.$name] = $param;
+                    }
+                }
                 $order_status[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
             }
         }
-
         return array_diff_key($order_status, $delete);
     }
 
@@ -924,11 +985,12 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         if ($this->TESTMODE) {
             $view_data[] = 'Тестовый режим';
         }
-        $view_data = implode('. ', $view_data);
+        $transaction_data['view_data'] = implode('. ', $view_data);
+
         $raw_data = $this->formalizeRawData($raw_data);
         $transaction_data = $this->saveTransaction($transaction_data, $raw_data);
 
-        $transaction_data += compact('view_data', 'raw_data');
+        $transaction_data += compact('raw_data');
 
 
         if ($this->TESTMODE) {
@@ -1357,13 +1419,29 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         if (is_array($order_data->items)) {
-            foreach ($order_data->items as $data) {
-                if (!$data['tax_included'] && (int)$data['tax_rate'] > 0) {
-                    static::log($this->id, sprintf('НДС не включён в цену товара: %s.', var_export($data, true)));
+            foreach ($order_data->items as $item_data) {
+                if (!$item_data['tax_included'] && (int)$item_data['tax_rate'] > 0) {
+                    static::log($this->id, sprintf('НДС не включён в цену товара: %s.', var_export($item_data, true)));
                     throw new waPaymentException('Ошибка платежа. Обратитесь в службу поддержки.');
                 }
 
-                $items[] = $this->formalizeItemData($data, $order_data);
+                $items_data = [];
+                $item_type = ifset($item_data, 'type', null);
+                if ($item_type === 'product') {
+                    $values = $this->getChestnyznakCodeValues($item_data['product_codes']);
+                    if ($values) {
+                        $items_data = $this->splitItem($item_data, $values);
+                    }
+                }
+
+                if ($items_data) {
+                    foreach ($items_data as $split_index => $data) {
+                        $data['split_index'] = $split_index;
+                        $items[] = $this->formalizeItemData($data, $order_data);
+                    }
+                } else {
+                    $items[] = $this->formalizeItemData($item_data, $order_data);
+                }
             }
         };
 
@@ -1378,10 +1456,31 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     }
 
     /**
+     * Split one product item to several items because chestnyznak marking code must be related for single product instance
+     * Extend each new item with 'chestnyznak' value from $values
+     * Invariant $item['quantity'] === count($values)
+     * @param array $item - order item
+     * @param array $values - chestnyznak values
+     * @return array[] - array of items. Each item has 'product_code'
+     */
+    protected function splitItem(array $item, array $values)
+    {
+        $quantity = (int)ifset($item, 'quantity', 0);
+        $items = [];
+        for ($i = 0; $i < $quantity; $i++) {
+            $value = isset($values[$i]) ? $values[$i] : '';
+            $item['chestnyznak'] = $value;
+            $item['quantity'] = 1;
+            $item['total'] = $item['price'];
+            $items[] = $item;
+        }
+        return $items;
+    }
+
+    /**
      * @link https://developer.sberbank.ru/doc/v1/acquiring/api-basket
      * @param array   $data
      * @param waOrder $order_data
-     * @param int     $number
      * @return array
      * @throws waException
      * @throws waPaymentException
@@ -1393,6 +1492,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             $discount = round(ifset($data, 'discount', 0.0), 2);
             $data['price'] = round($data['price'], 2) - $discount; //calculate flexible discounts
         }
+
+        $is_split = isset($data['split_index']);
+
         /**
          * В корзине запрещены для передачи товарные позиции, отсутствующие в оригинальном заказе.
          * Происходит проверка наличия указанного товара в корзине запроса на возврат в изначальном заказе.
@@ -1403,12 +1505,21 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         if (empty($data['id'])) {
             $position_id = $this->receipt_number++;
             $data['id'] = $position_id;
-
+        } elseif ($is_split) {
+            // position_id must be unique in order, so if item has been split position number is autoincrement receipt_number
+            $position_id = $this->receipt_number++;
         } else {
             $position_id = max($data['id'], $this->receipt_number);
             if ($position_id == $this->receipt_number) {
                 ++$this->receipt_number;
             }
+        }
+
+        $item_code = $this->app_id.'_order_'.$order_data['id'].'_'.$data['type'].'_'.$data['id'];
+
+        // if item has been split cause of fiscal code, there is split index, add it as part of item code
+        if ($is_split) {
+            $item_code .= '_' . $data['split_index'];
         }
 
         $tax_sum = $this->getTaxSum($data['price'], $data['tax_rate']);
@@ -1422,27 +1533,43 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'itemAmount'   => number_format($data['total'], 2, '', ''),
             'itemPrice'    => number_format($data['price'], 2, '', ''),
             'itemCurrency' => $this->getCurrencyISO4217Code($order_data['currency']),
-            'itemCode'     => $this->app_id.'_order_'.$order_data['id'].'_'.$data['type'].'_'.$data['id'],
+            'itemCode'     => $item_code,
             'tax'          => array(
                 'taxType' => $this->getTaxType($data['tax_rate']),
                 'taxSum'  => number_format($tax_sum, 2, '', ''),
             ),
         );
 
-        //Credit dont work for ФФД 1.05
+
+        // Credit dont work for ФФД 1.05
         if (!$this->credit) {
-            $item_data['itemAttributes'] = [
-                'attributes' => [
-                    [
-                        'name'  => 'paymentMethod',
-                        'value' => $this->payment_method,
-                    ],
-                    [
-                        'name'  => 'paymentObject',
-                        'value' => $this->getPaymentObject(ifset($data, 'type', null)),
-                    ],
+            $attributes = [
+                [
+                    'name'  => 'paymentMethod',
+                    'value' => $this->payment_method,
+                ],
+                [
+                    'name'  => 'paymentObject',
+                    'value' => $this->getPaymentObject(ifset($data, 'type', null)),
                 ],
             ];
+
+            // Код товара — уникальный номер, который присваивается экземпляру товара при маркировке
+            // Тут идет конвертация из DataMatrix кода (Честный знак) в 1162 тег код для ККТ
+            if (isset($data['chestnyznak'])) {
+                $nomenclature = $this->convertToNomenclatureCode($data['chestnyznak']);
+                if ($nomenclature) {
+                    $attributes[] = [
+                        'name' => 'nomenclature',
+                        'value' => $nomenclature
+                    ];
+                }
+            }
+
+            $item_data['itemAttributes'] = [
+                'attributes' => $attributes,
+            ];
+
         }
 
         return $item_data;
@@ -1465,6 +1592,25 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         return $result;
+    }
+
+    /**
+     * Конвертация из DataMatrix кода (Честный знак) в код номенклатуры
+     * @param $uid
+     * @return bool|string
+     */
+    protected function convertToNomenclatureCode($uid)
+    {
+        if (!class_exists('shopChestnyznakPluginCodeParser')) {
+            return false;
+        }
+
+        $code = shopChestnyznakPluginCodeParser::extractProductCode($uid);
+        if (!$code) {
+            return false;
+        }
+
+        return $code;
     }
 
     /**
