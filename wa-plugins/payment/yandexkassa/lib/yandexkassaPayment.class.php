@@ -25,11 +25,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
         'USD',
     );
 
-    /**
-     * ID of chestnyznak product code (aka DataMatrix code)
-     * @var int
-     */
-    protected $chestnyznak_code_id;
+    const CHESTNYZNAK_PRODUCT_CODE = 'chestnyznak';
 
     public function getSettingsHTML($params = array())
     {
@@ -736,14 +732,40 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
      */
     protected function callbackHandlerRedirect($transaction_data, $request)
     {
+        $params = '';
         if ((ifset($request['action']) == 'PaymentFail') || (waRequest::get('result') == 'fail')) {
             $type = waAppPayment::URL_FAIL;
         } else {
+            if (isset($transaction_data['order_id']) && !empty($transaction_data['order_id'])) {
+                $fields = array(
+                    'plugin' => $this->id,
+                    'app_id' => $this->app_id,
+                    'merchant_id' => $this->merchant_id,
+                    'error' => null,
+                );
+                $fields['order_id'] = filter_var($transaction_data['order_id'], FILTER_SANITIZE_NUMBER_INT);
+                $transaction_model = new waTransactionModel();
+                $transaction = $transaction_model->getByFields($fields);
+                if (isset(end($transaction)['native_id']) && !empty(end($transaction)['native_id'])) {
+                    $native_id = end($transaction)['native_id'];
+                    $payment = $this->getPaymentInfo($native_id);
+                    if ($payment['status'] == 'pending' || $payment['status'] == 'canceled') {
+                        $transaction_data['error'] = _w('Вы отказались от совершения платежа. Повторите попытку позднее, пожалуйста.'); // max length 255 characters
+                        $transaction = $this->saveTransaction($transaction_data);
+                        $params = isset($transaction['id']) ? '&transaction_id=' .  $transaction['id'] : '';
+
+                        $type = waAppPayment::URL_DECLINE;
+                    }
+                }
+            }
+        }
+
+        if (!isset($type)) {
             $type = waAppPayment::URL_SUCCESS;
         }
 
         return array(
-            'redirect' => $this->getAdapter()->getBackUrl($type, $transaction_data),
+            'redirect' => $this->getAdapter()->getBackUrl($type, $transaction_data) . $params,
         );
     }
 
@@ -1680,27 +1702,6 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     }
 
     /**
-     * @return int
-     */
-    protected function getChestnyznakCodeId()
-    {
-        if ($this->chestnyznak_code_id !== null) {
-            return $this->chestnyznak_code_id;
-        }
-
-        $code = 'chestnyznak';
-        $code_model = new shopProductCodeModel();
-        $record = $code_model->select('id')->where("`code` = '{$code}'")->fetchField();
-
-        $this->chestnyznak_code_id = 0;
-        if ($record) {
-            $this->chestnyznak_code_id = $record['id'];
-        }
-
-        return $this->chestnyznak_code_id;
-    }
-
-    /**
      * @param array<int, array> $item_product_codes - array of product code records indexed by id of record
      *  id => [
      *      int      'id'
@@ -1714,11 +1715,16 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
      */
     protected function getChestnyznakCodeValues(array $item_product_codes)
     {
-        $code_id = $this->getChestnyznakCodeId();
         $values = [];
-        if (isset($item_product_codes[$code_id]['values'])) {
-            $values = $item_product_codes[$code_id]['values'];
+        foreach ($item_product_codes as $product_code) {
+            if (isset($product_code['code']) && $product_code['code'] === self::CHESTNYZNAK_PRODUCT_CODE) {
+                if (isset($product_code['values'])) {
+                    $values = $product_code['values'];
+                    break;
+                }
+            }
         }
+
         return $values;
     }
 
