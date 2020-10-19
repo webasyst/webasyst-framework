@@ -35,6 +35,29 @@ class boxberryShipping extends waShipping
 {
     const MAX_DECLARED_PRICE = 300000;
 
+    public function tracking($tracking_id = null)
+    {
+        if (!empty($tracking_id)) {
+            $data = array(
+                'ImId' => $tracking_id
+            );
+
+            $api_manger = new boxberryShippingApiManager($this->token, $this->api_url);
+            $status = $api_manger->getListStatusesFull($data);
+            $text = 'Отправление в стадии оформления.';
+            if (isset($status['statuses'])) {
+                $last_status = array_pop($status['statuses']);
+                if (isset($last_status['Name'])) {
+                    $text = sprintf('Статус отправления: «%s».', $last_status['Name']);
+                }
+            }
+
+            return $text;
+        }
+
+        return null;
+    }
+
     /**
      * @return array|string
      * @throws waException
@@ -123,15 +146,11 @@ class boxberryShipping extends waShipping
      */
     public function allowedAddress()
     {
-        $region = $this->getSettings('region');
+        $countries = $this->getSettings('countries');
 
         $address = [
-            'country' => 'rus',
+            'country' => $countries,
         ];
-
-        if ($region) {
-            $address['region'] = $region;
-        }
 
         return [
             $address

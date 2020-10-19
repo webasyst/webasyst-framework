@@ -249,7 +249,7 @@ class boxberryShippingCalculateHelper
      */
     protected function getApiManager()
     {
-        return new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url);
+        return new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url, $this->bxb);
     }
 
     /**
@@ -268,7 +268,7 @@ class boxberryShippingCalculateHelper
         return '';
     }
 
-    public static function findRusCityName($query_city, $city_names)
+    public static function findCityName($query_city, $city_names)
     {
         foreach ($city_names as $city_name) {
             $original_city_name = $city_name;

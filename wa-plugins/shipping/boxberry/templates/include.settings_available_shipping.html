@@ -1,4 +1,6 @@
-<div class="field-group">
+{$wrapper_id = uniqid("js-field-group-")}
+
+<div class="field-group" id="{$wrapper_id|escape}">
     <div class="field">
         <div class="name"></div>
         <div class="value"><h3>{$obj->_w('Availability settings')}</h3></div>
@@ -8,24 +10,29 @@
     <div class="field">
         <div class="name">{$obj->_w('Country')}</div>
         <div class="value no-shift">
-            <span>[`Russian Federation`]</span>
-            <input type="hidden" name="{$namespace}[country]" value="rus">
+            <span class="list-saved-countries">{$list_saved_countries|escape}</span>
+            <i class="icon16 edit js-edit-countries">[`Edit`]</i>
+            <input type="hidden" name="{$namespace}[countries]" id="saved-country-codes" value='{$saved_country_codes}'>
+            <input type="hidden" name="{$namespace}[regions]" id="saved-region-codes" value='{$saved_region_codes}'>
+
+            {if isset($has_field_country)}<input type="hidden" name="{$namespace}[country]" value=''>{/if}
+            {if isset($has_field_region)}<input type="hidden" name="{$namespace}[region]" value=''>{/if}
         </div>
     </div>
-    <div class="field">
-        <div class="name">
-            {$obj->_w('Region')}
+
+    {foreach $all_allowed_countries as $country}
+        <div class="field country-field" {if !$country.enabled}style="display: none"{/if}>
+            <div class="name">
+                {sprintf_wp('Regions (%s)', $country.name|escape)}
+            </div>
+            <div class="value">
+                <span class="list-saved-regions">{$country.list_saved_regions|escape}</span>
+                <i class="icon16 edit js-edit-country-regions" data-country="{$country.iso3letter}">[`Edit`]</i>
+                <p class="small">[`Shipping will be available for selected regions only`]</p>
+            </div>
         </div>
-        <div class="value">
-            <select name="{$namespace}[region]">
-                <option value=""></option>
-                {foreach $regions as $region}
-                    <option value="{$region.code|escape}"{if $settings.region|default:''|escape == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
-                {/foreach}
-            </select>
-            <p class="small">{$obj->_w('Shipping will be restricted to the selected region.')}</p>
-        </div>
-    </div>
+    {/foreach}
+
     <div class="field">
         <div class="name">
             {$obj->_w('Localities')}
@@ -73,10 +80,172 @@
             {$obj->_w('m')}
         </div>
     </div>
-    
+
     <div class="field">
         <div class="value">
             <p class="hint bold">{$obj->_w('The sum of length, width, and height values must not exceed 2.5 m.')}</p>
         </div>
     </div>
+
+    <script>
+        ( function($) {
+            // DOM
+            var $wrapper = $("#{$wrapper_id|escape}");
+
+            // CONST
+            var loading = "<i class='icon16 loading'></i>"
+
+            // VARS
+            var region_xhr = null,
+                countries_dialog_locked = false,
+                regions_dialog_locked = false;
+
+            $wrapper.on("click", ".js-edit-countries", function() {
+                var $icon = $(this);
+
+                if (!countries_dialog_locked) {
+                    countries_dialog_locked = true;
+
+                    $icon.hide();
+                    var $loading = $(loading).insertAfter($icon);
+
+                    showDialog().always( function() {
+                        $loading.remove();
+                        $icon.show();
+                        countries_dialog_locked = false;
+                    });
+                }
+            });
+
+            $wrapper.on("click", ".js-edit-country-regions", function() {
+                var that = this,
+                    $icon = $(this);
+
+                if (!regions_dialog_locked) {
+                    regions_dialog_locked = true;
+
+                    $icon.hide();
+                    var $loading = $(loading).insertAfter($icon);
+
+                    showRegionDialog(that).always( function() {
+                        $loading.remove();
+                        $icon.show();
+                        regions_dialog_locked = false;
+                    });
+                }
+            });
+
+            function showDialog() {
+                var deferred = $.Deferred();
+
+                var sources = [{
+                    id: "wa-dialog-css",
+                    type: "css",
+                    uri: "{$wa_url}wa-content/js/dialog/dialog.css?v={$wa->version(true)}"
+                }, {
+                    id: "wa-dialog-js",
+                    type: "js",
+                    uri: "{$wa_url}wa-content/js/dialog/dialog.js?v={$wa->version(true)}"
+                }];
+
+                $.shop.loadSources(sources).then(init, function() {
+                    deferred.reject();
+                });
+
+                return deferred.promise();
+
+                function init() {
+                    var href = "{$wa_backend_url}webasyst/shipping/boxberry/settings/countryDialog/",
+                        data = {
+                            'saved_country_codes': $('#saved-country-codes').val(),
+                        };
+
+                    $.post(href, data, "json")
+                        .done(function (html) {
+                            var dialog = $.waDialog({
+                                html: html,
+                                debug_output: true,
+                                options: {
+                                    onSuccess: onSuccess
+                                }
+                            });
+
+                            deferred.resolve(dialog);
+                        })
+                        .fail( function() {
+                            deferred.reject();
+                        });
+                }
+
+                // when user successfully submit form inside dialog
+                function onSuccess(r) {
+                    if (r.status === 'ok') {
+                        $('#saved-country-codes').val(r.data.countries);
+                        $('.list-saved-countries').html(r.data.list_saved_countries);
+                        if (r.data.country_codes) {
+                            $('.country-field').hide();
+                            for (var code of r.data.country_codes) {
+                                $('.js-edit-country-regions[data-country="' + code + '"]').parents('.country-field').show();
+                            }
+                        } else {
+                            $('.country-field').show();
+                        }
+                    }
+                }
+            }
+
+            function showRegionDialog(that) {
+                var deferred = $.Deferred();
+
+                var sources = [{
+                    id: "wa-dialog-css",
+                    type: "css",
+                    uri: "{$wa_url}wa-content/js/dialog/dialog.css?v={$wa->version(true)}"
+                }, {
+                    id: "wa-dialog-js",
+                    type: "js",
+                    uri: "{$wa_url}wa-content/js/dialog/dialog.js?v={$wa->version(true)}"
+                }];
+
+                $.shop.loadSources(sources).then(init, function() {
+                    deferred.reject();
+                });
+
+                return deferred.promise();
+
+                function init() {
+                    var href = "{$wa_backend_url}webasyst/shipping/boxberry/settings/regionDialog/",
+                        data = {
+                            'country': $(that).data('country'),
+                            'saved_region_codes': $('#saved-region-codes').val(),
+                        };
+
+                    $.post(href, data, "json")
+                        .done(function (html) {
+                            var dialog = $.waDialog({
+                                html: html,
+                                debug_output: true,
+                                options: {
+                                    onSuccess: onSuccess
+                                }
+                            });
+
+                            deferred.resolve(dialog);
+                        })
+                        .fail( function() {
+                            deferred.reject();
+                        });
+                }
+
+                // when user successfully submit form inside dialog
+                function onSuccess(r) {
+                    if (r.status === 'ok') {
+                        $('#saved-region-codes').val(r.data.regions);
+                        $(that).parent().find('.list-saved-regions').html(r.data.list_saved_regions);
+                    }
+                }
+            }
+
+        })(jQuery);
+    </script>
 </div>

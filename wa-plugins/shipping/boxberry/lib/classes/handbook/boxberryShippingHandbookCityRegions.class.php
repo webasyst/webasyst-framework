@@ -10,7 +10,7 @@ class boxberryShippingHandbookCityRegions extends boxberryShippingHandbookManage
      */
     protected function getCacheKey()
     {
-        return 'cities_with_regions';
+        return $this->bxb->getAddress('country') . '_cities_with_regions';
     }
 
     /**
@@ -52,21 +52,28 @@ class boxberryShippingHandbookCityRegions extends boxberryShippingHandbookManage
         $result = [];
 
         foreach ($cities as $city) {
-            $kladr = ifset($city, 'Kladr', '');
             $city_code = ifset($city, 'Code', null);
 
-            if ($kladr && $city_code) {
-                $region_code = mb_substr($kladr, 0, 2);
+            if ($city['CountryCode'] != '643') {
+                $country_regions = boxberryShippingCountriesAdapter::getRegionCodes($city['CountryCode']);
+                $region = mb_strtolower($city['Region']);
+                $region_code = $country_regions[$region];
                 $result[$city_code] = $region_code;
             } else {
-                $city_name = ifset($city, 'Name', '');
-                $log = "Error getting information about the city of {$city_name}({$city_code}). ";
+                $kladr = ifset($city, 'Kladr', '');
+                if ($kladr && $city_code) {
+                    $region_code = mb_substr($kladr, 0, 2);
+                    $result[$city_code] = $region_code;
+                } else {
+                    $city_name = ifset($city, 'Name', '');
+                    $log = "Error getting information about the city of {$city_name}({$city_code}). ";
 
-                if (!$kladr) {
-                    $log .= 'KLADR not transferred.';
+                    if (!$kladr) {
+                        $log .= 'KLADR not transferred.';
+                    }
+
+                    $this->log($log, $this->getAPIMethod());
                 }
-
-                $this->log($log, $this->getAPIMethod());
             }
         }
 

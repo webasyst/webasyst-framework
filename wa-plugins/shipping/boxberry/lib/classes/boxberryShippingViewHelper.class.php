@@ -72,6 +72,6 @@ class boxberryShippingViewHelper
      */
     protected function getApiManger()
     {
-        return new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url);
+        return new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url, $this->bxb);
     }
 }

@@ -319,7 +319,7 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper im
      */
     protected function getPointsByCity()
     {
-        $handbook_manager = new boxberryShippingHandbookAvailablePoints($this->getApiManager());
+        $handbook_manager = new boxberryShippingHandbookAvailablePoints($this->getApiManager(), [], $this->bxb);
         $points = $handbook_manager->getHandbook();
 
         $city = mb_strtolower($this->bxb->getAddress('city'));
@@ -330,9 +330,9 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper im
         // Retrieving Point Codes by City and Region
         $codes_by_cities = ifset($cities_points, $city, $region_code, []);
 
-        // workaround rus city name like Орел/Орёл or Йошкар Ола/Йошкар-Ола
-        if (!$codes_by_cities && $this->bxb->getAddress('country') === 'rus') {
-            $found_city = self::findRusCityName($city, array_keys($cities_points));
+        // workaround city name like Орел/Орёл or Йошкар Ола/Йошкар-Ола
+        if (!$codes_by_cities) {
+            $found_city = self::findCityName($city, array_keys($cities_points));
             if ($found_city) {
                 $codes_by_cities = ifset($cities_points, $found_city, $region_code, []);
             }

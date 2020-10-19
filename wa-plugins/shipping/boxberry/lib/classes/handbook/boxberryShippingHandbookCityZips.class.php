@@ -78,7 +78,7 @@ class boxberryShippingHandbookCityZips extends boxberryShippingHandbookManager
      */
     protected function getRegionsMap()
     {
-        $path = $this->data['plugin_path'].'/lib/config/data/regions.php';
+        $path = $this->data['plugin_path'].'/lib/config/data/rus_region_codes.php';
         $regions = [];
 
         if (file_exists($path) && is_readable($path)) {

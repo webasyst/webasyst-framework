@@ -7,7 +7,7 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
      */
     public function getCacheKey()
     {
-        return 'available_points';
+        return $this->bxb->getAddress('country') . '_available_points';
     }
 
     /**
@@ -115,6 +115,10 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
             'courier_delivery'    => mb_strtolower(ifset($point, 'NalKD', '')),
         ];
 
+        if (empty($result['name'])) {
+            $result['name'] = preg_replace('/\d+\,\s/i', '', $result['address'], 1);
+        }
+
         $result += $this->parseGPS(ifset($point, 'GPS', ''));
 
         return $result;
@@ -149,7 +153,7 @@ class boxberryShippingHandbookAvailablePoints extends boxberryShippingHandbookMa
      */
     protected function getCitiesWithRegions()
     {
-        $handbook = new boxberryShippingHandbookCityRegions($this->api_manager);
+        $handbook = new boxberryShippingHandbookCityRegions($this->api_manager, [], $this->bxb);
         return $handbook->getHandbook();
     }
 

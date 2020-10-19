@@ -185,9 +185,9 @@ class boxberryShippingCalculateCourier extends boxberryShippingCalculateHelper i
         $city = mb_strtolower($this->bxb->getAddress('city'));
         $zips = ifset($cities_with_zips, $city, $region, []);
 
-        // workaround rus city name like Орел/Орёл or Йошкар Ола/Йошкар-Ола
+        // workaround city name like Орел/Орёл or Йошкар Ола/Йошкар-Ола
         if (!$zips && $this->bxb->getAddress('country') === 'rus') {
-            $found_city = self::findRusCityName($city, array_keys($cities_with_zips));
+            $found_city = self::findCityName($city, array_keys($cities_with_zips));
             if ($found_city) {
                 $zips = ifset($cities_with_zips, $found_city, $region, []);
             }

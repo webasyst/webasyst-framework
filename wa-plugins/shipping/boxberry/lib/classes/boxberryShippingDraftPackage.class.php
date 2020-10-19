@@ -234,7 +234,7 @@ class boxberryShippingDraftPackage
         $result = [];
 
         if (!$error) {
-            $api_manager = new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url);
+            $api_manager = new boxberryShippingApiManager($this->bxb->token, $this->bxb->api_url, $this->bxb);
 
             $sdata = array();
             foreach ($data as $key => $value) {
