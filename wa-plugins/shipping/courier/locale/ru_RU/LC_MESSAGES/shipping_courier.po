@@ -16,152 +16,114 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: //wa-plugins/shipping/courier/lib/config/plugin.php:3
 msgid "Courier"
 msgstr "Курьер"
 
-#: //wa-plugins/shipping/courier/lib/config/plugin.php:4
 msgid "Shipping is restricted to the specific country and region only. Shipping rate is calculated based on either total amount or weight of the shipment."
 msgstr "Доставка ограничивается только определенной страной и регионом. Стоимость доставки рассчитывается на основании итоговой стоимости заказа либо веса отправления."
 
-#: //wa-plugins/shipping/courier/lib/config/settings.php:20
 msgid "Delivery time"
 msgstr "Время доставки"
 
-#: //wa-plugins/shipping/courier/lib/config/settings.php:24
 msgid "Same workday, with the order ready time taken into account"
 msgstr "В течение рабочего дня с учетом времени готовности заказа"
 
-#: //wa-plugins/shipping/courier/lib/config/settings.php:25
 msgid "Add 1 day to the order ready time"
 msgstr "Прибавить 1 рабочий день ко времени готовности заказа"
 
-#: //wa-plugins/shipping/courier/lib/config/settings.php:26
 msgid "Add 1–2 days to the order ready time"
 msgstr "Прибавить 1–2 рабочих дня ко времени готовности заказа"
 
-#: //wa-plugins/shipping/courier/lib/config/settings.php:26
 msgid "Add 2–3 days to the order ready time"
 msgstr "Прибавить 2–3 рабочих дня ко времени готовности заказа"
 
-#: //wa-plugins/shipping/courier/lib/config/settings.php:27
 msgid "Add 7 days to the order ready time"
 msgstr "Прибавить 7 рабочих дней ко времени готовности заказа"
 
-#: //wa-plugins/shipping/courier/lib/config/settings.php:28
 msgid "Undefined"
 msgstr "Не определено"
 
-#: //wa-plugins/shipping/courier/lib/courierShipping.class.php:171
 msgid "Packing list"
 msgstr "Лист доставки"
 
-#: //wa-plugins/shipping/courier/lib/courierShipping.class.php:172
 msgid "Order summary for courier shipping"
 msgstr "Информация о заказе для курьера"
 
-#: //wa-plugins/shipping/courier/templates/form.html:105
 msgid "Print"
 msgstr "Печать"
 
-#: //wa-plugins/shipping/courier/templates/form.html:109
 msgid "Paid"
 msgstr "Оплачен"
 
-#: //wa-plugins/shipping/courier/templates/form.html:113
 msgid "Payment"
 msgstr "Оплата"
 
-#: //wa-plugins/shipping/courier/templates/form.html:114
 msgid "Shipping cost"
 msgstr "Стоимость доставки"
 
-#: //wa-plugins/shipping/courier/templates/form.html:118
 msgid "Comment"
 msgstr "Комментарий"
 
-#: //wa-plugins/shipping/courier/templates/form.html:150
 msgid "Shipping address"
 msgstr "Адрес доставки"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:16
 msgid "Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country."
 msgstr "Доставка будет ограничена только выбранной страной. Указанные ниже расценки распространяются на всю страну."
 
-#: //wa-plugins/shipping/courier/templates/settings.html:2
 msgid "Shipping region"
 msgstr "Регион доставки"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:25
 msgid "Shipping will be restricted to the selected region."
 msgstr "Доставка будет ограничена только выбранным регионом."
 
-#: //wa-plugins/shipping/courier/templates/settings.html:35
 msgid "Locality name"
 msgstr "Название населенного пункта"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:36
 msgid "If courier shipping is provided only within specific localities, enter the locality names separated by comma so that customer is not be prompted to enter a locality name when this shipping option is selected; a locality name will be automatically fetched as you specify it here. If this field is left blank, a customer will be prompted to enter a locality name."
 msgstr "Если доставка курьером доступна только в определенных населенных пунктах, введите их названия через запятую. Покупателю не придется указывать название населенного пункта при выборе этого способа доставки — оно автоматически будет получено из этой настройки. Если оставить это поле пустым, покупателю будет предложено ввести название населенного пункта."
 
-#: //wa-plugins/shipping/courier/templates/settings.html:42
 msgid "Shipping rate calculation"
 msgstr "Расчет стоимости доставки"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:45
 msgid "By weight"
 msgstr "По весу"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:48
 msgid "By price"
 msgstr "По цене"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:68
 msgid "Order weight, KG"
 msgstr "Вес заказа, кг"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:70
 msgid "Shipping rate, USD"
 msgstr "Стоимость заказа в долларах США"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:83
 msgid "Order total"
 msgstr "Сумма заказа"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:85
 msgid "Shipping rate"
 msgstr "Стоимость доставки"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:85
 msgid "Shipment weight"
 msgstr "Вес отправления"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:109
 msgid "Shipment amount"
 msgstr "Сумма отправления"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:100
 msgid "Add rate"
 msgstr "Добавить тариф"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:156
 msgid "kg"
 msgstr "кг"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:160
 msgid "lbs"
 msgstr "фунт"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:150
 msgid "Weight dimension unit"
 msgstr "Единица измерения веса"
 
-#: //wa-plugins/shipping/courier/templates/settings.html:104
 msgid "Enter shipping rate as a flat rate, as a percent of cart total, or as a sum of both. Example: <b>20+10%%</b> will calculate shipping rate as 20 %s + 10%% of cart total."
 msgstr "Введите стоимость доставки в виде числа, процента от общей стоимости корзины покупок или в виде суммы этих слагаемых. Пример: <b>20+10%%</b> рассчитает стоимость доставки как 20 %s + 10%% от общей стоимости корзины покупок."
 
-#: /wa-plugins/shipping/courier/lib/config/settings.php:38
-#: /wa-plugins/shipping/courier/lib/courierShipping.class.php:216
 msgid "Preferred delivery time"
 msgstr "Желаемое время доставки"
 
@@ -171,7 +133,6 @@ msgstr "Желаемое время доставки и график работ�
 msgid "Online map settings are available in <a href=\"%s\">Settings</a> app."
 msgstr "Настройки онлайн-карт доступы в приложении «<a href=\"%s\">Настройки</a>»."
 
-#: /wa-plugins/shipping/courier/templates/settings.html:48
 msgid "Default address fields"
 msgstr "Стандартные поля адреса"
 
@@ -258,3 +219,6 @@ msgstr "Рекомендуется для оформления заказа в �
 
 msgid "Select an online maps service to display a map with the customer address on the printable packing list form."
 msgstr "Выберите сервис онлайн-карт для отображения карты с адресом покупателя в печатной форме листа доставки."
+
+msgid "Invalid date"
+msgstr "Неправильная дата"
