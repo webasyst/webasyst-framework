@@ -35,6 +35,7 @@
  * @property string $address
  * @property string $country
  * @property string $region
+ * @property string $city
  * @property string $way
  *
  * //Time
@@ -59,12 +60,6 @@ class sdShipping extends waShipping
      */
     protected function calculate()
     {
-        if (!$this->isCompletedAddress()) {
-            return array();
-        }
-        if (!$this->isValidAddress()) {
-            return false;
-        }
         if (!$this->isValidWeight()) {
             return $this->_w('Weight values above the limit.');
         }
@@ -123,19 +118,24 @@ class sdShipping extends waShipping
 
     public function allowedAddress()
     {
-        $data = array();
+        $address = array();
         $country = $this->country;
         $region = $this->region;
+        $city = $this->getCity();
 
         if ($country) {
-            $data['country'] = array($country);
+            $address['country'] = $country;
         }
 
         if ($region) {
-            $data['region'] = array($region);
+            $address['region'] = $region;
         }
 
-        return $data;
+        if ($city) {
+            $address['city'] = count($city) == 1 ? $city[0] : $city;
+        }
+
+        return array($address);
     }
 
     public function requestedAddressFields()
@@ -155,86 +155,6 @@ class sdShipping extends waShipping
         }
 
         return $fields;
-    }
-
-    /**
-     * Check if valid address is entered
-     * @return bool
-     */
-    protected function isCompletedAddress()
-    {
-        $requested_fields = $this->requestedAddressFields();
-        $flag = true;
-
-        foreach ($requested_fields as $field_name => $field) {
-            $address = $this->getAddress($field_name);
-            if (empty($address)) {
-                $flag = false;
-                break;
-            }
-        }
-
-        return $flag;
-    }
-
-    /**
-     * Check whether the address is served
-     * @return bool
-     */
-    protected function isValidAddress()
-    {
-        if ($this->isValidCountry() && $this->isValidRegion() && $this->isValidCity()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Check that the country exists
-     * @return bool
-     */
-    protected function isValidCountry()
-    {
-        $requested_country = $this->getAddress('country');
-
-        if ($this->country === $requested_country) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Check that the region is required and exists
-     * @return bool
-     */
-    protected function isValidRegion()
-    {
-        $saved_region = mb_strtolower($this->region);
-        $requested_region = mb_strtolower($this->getAddress('region'));
-
-        if (empty($saved_region) || $saved_region === $requested_region) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Check that the city is required and exists
-     * @return bool
-     */
-    protected function isValidCity()
-    {
-        $saved_city = $this->getCity();
-        $requested_city = mb_strtolower($this->getAddress('city'));
-
-        if (empty($saved_city) || in_array($requested_city, $saved_city)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**
