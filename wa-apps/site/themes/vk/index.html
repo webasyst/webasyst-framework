@@ -68,22 +68,28 @@
 
     <!-- js -->
     <script src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+
     <!-- vk iframe apps js -->
+    <script src="{$wa_theme_url}vk.bridge.js?v{$wa_theme_version}"></script>
+
     <!-- internal shop-script js for vk iframe app integration -->
     <script>
-        ( function($) {
+        // Sends event to client
+        vkBridge.send('VKWebAppInit');
+
+        (function ($) {
             window.waTheme = {
                 getFrameSources: getFrameSources
             };
 
             function getFrameSources() {
-                var deferred = $.Deferred(),
-                    is_frame = isFrame();
+                var deferred = $.Deferred();
+                var is_frame = isFrame();
 
                 if (is_frame) {
-                    $.getScript("//vk.com/js/api/xd_connection.js?2", function() {
+                    $.getScript("//vk.com/js/api/xd_connection.js?2", function () {
                         if (window.VK) {
-                            $.getScript("{$wa_theme_url}vk.js?v{$wa_theme_version}", function() {
+                            $.getScript("{$wa_theme_url}vk.js?v{$wa_theme_version}", function () {
                                 deferred.resolve(window.VK);
                             });
                         }
