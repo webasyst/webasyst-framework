@@ -202,6 +202,7 @@ class waImageGd extends waImage
     {
         switch (strtolower($extension)) {
             case 'jpg':
+            case 'jfif':
             case 'jpeg':
                 $save = 'imagejpeg';
                 $type = IMAGETYPE_JPEG;
