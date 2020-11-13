@@ -64,7 +64,13 @@ class waAuth implements waiAuth
             $this->options['is_user'] = $this->env == 'backend';
         }
 
-        $this->auth_config = waAuthConfig::factory($this->env);
+        if (isset($this->options['env'])) {
+            $this->env = $this->options['env'];
+        }
+
+        $this->auth_config = waAuthConfig::factory([
+            'env' => $this->env
+        ]);
 
         $this->initLoginFieldIds();
 
@@ -432,7 +438,16 @@ class waAuth implements waiAuth
             $contact_model = new waContactModel();
             $user_info = $contact_model->getById($params['id']);
             if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user'])) {
-                waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1);
+
+                $response = waSystem::getInstance()->getResponse();
+
+                $cookie_domain = ifset($this->options['cookie_domain'], '');
+                $remember_enabled = $this->auth_config->getRememberMe();
+
+                if (empty($params['remember']) || !$remember_enabled) {
+                    $response->setCookie('auth_token', null, -1, null, $cookie_domain);
+                }
+
                 return $this->_afterAuth($user_info, $params);
             }
             return false;
@@ -833,7 +848,24 @@ class waAuth implements waiAuth
      */
     public function clearAuth()
     {
+        // collect of session keys, that no need to be destroyed
+        $persistent = [
+            waReCaptcha::SESSION_KEY => null
+        ];
+
+        foreach ($persistent as $key => $_) {
+            $persistent[$key] = waSystem::getInstance()->getStorage()->get($key);
+        }
+
         waSystem::getInstance()->getStorage()->destroy();
+
+        // restore persistent session keys
+        foreach ($persistent as $key => $value) {
+            if ($value !== null) {
+                waSystem::getInstance()->getStorage()->set($key, $value);
+            }
+        }
+
         if (waRequest::cookie('auth_token')) {
             $cookie_domain = ifset($this->options['cookie_domain'], '');
             waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1, null, $cookie_domain);

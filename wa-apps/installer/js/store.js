@@ -198,9 +198,13 @@ var InstallerStore = (function ($) {
             if (window.waInstaller && window.waInstaller.sidebar) {
                 window.waInstaller.sidebar.reload();
             }
+        } else if (window.location.href.indexOf('install=') !== -1) {
+            // remove from history 'install' parameter, so when user click back we returns to url without install parameter
+            var href = window.location.href || '';
+            href = href.replace(/install=(.*?)(&|$)/, '');
+            href = href.replace(/\?$/, '');
+            window.history.pushState({}, '', href)
         }
-
-        //that.$loading_wrapper.remove();
     };
 
     InstallerStore.prototype.getNetToken = function (data) {

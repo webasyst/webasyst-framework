@@ -198,6 +198,10 @@ function smarty_function_fetch($params, $template)
             return;
         }
     } else {
+        $file_info = new SplFileInfo($params['file']);
+        if ($file_info->getExtension() !== 'html') {
+            return;
+        }
         $content = @file_get_contents($params['file']);
         if ($content === false) {
             throw new SmartyException("{fetch} cannot read resource '" . $params['file'] ."'");

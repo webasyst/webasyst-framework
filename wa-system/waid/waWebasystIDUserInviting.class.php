@@ -49,7 +49,7 @@ class waWebasystIDUserInviting
 
         $result = $this->generateOneTimeToken($user['id']);
 
-        $site_domain = wa()->getConfig()->getDomain();
+        $site_domain = $this->getCurrentDomain();
         $site_url = wa()->getConfig()->getHostUrl();
 
         $sender_user = wa()->getUser();
@@ -61,7 +61,7 @@ class waWebasystIDUserInviting
             'userpic' => $this->getDataResourceUrl($sender_user->getPhoto())
         ];
 
-        $subject = sprintf(_ws("[Action Required] %s invites you to upgrade to Webasyst ID on %s"), $sender_info['name'], strtoupper($site_domain));
+        $subject = sprintf(_ws("[Action Required] %s invites you to upgrade to Webasyst ID on %s"), $sender_info['name'], mb_strtoupper($site_domain));
 
         $connect_link = waAppTokensModel::getLink($result['token']);
 
@@ -77,6 +77,12 @@ class waWebasystIDUserInviting
         ]);
 
         return $this->sendEmail($subject, $body, $user['email']);
+    }
+
+    protected function getCurrentDomain()
+    {
+        $domain = wa()->getConfig()->getDomain();
+        return waIdna::dec($domain);
     }
 
     protected function getDataResourceUrl($relative_url)
@@ -101,12 +107,10 @@ class waWebasystIDUserInviting
         ]);
 
         $expire_datetime = date('Y-m-d H:i:s', time() + 3600 * 24 * 3);
-        $data = ['auto_backend_auth' => true];
 
         if ($token) {
             $update = [
-                'expire_datetime'   => $expire_datetime,
-                'data' => json_encode($data)
+                'expire_datetime'   => $expire_datetime
             ];
             $this->atm->updateById($token['token'], $update);
             return array_merge($token, $update);
@@ -119,7 +123,6 @@ class waWebasystIDUserInviting
             'create_contact_id' => wa()->getUser()->getId(),
             'expire_datetime' => $expire_datetime,
             'create_datetime' => date('Y-m-d H:i:s'),
-            'data' => json_encode($data),
         ]);
     }
 

@@ -21,13 +21,12 @@
                 var wrapper = $(this).addClass('initialized');
                 var widget_id = grecaptcha.render(wrapper[0], { sitekey: sitekey });
                 wrapper.siblings('.wa-captcha-refresh, .wa-captcha-img').click(function() {
-                    try {
-                        grecaptcha.reset(widget_id);
-                        $(window).trigger('wa_recaptcha_loaded');
-                    } catch (e) {
-                        console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
-                        console.log(e);
-                    }
+                    var new_wrapper = $('<div class="g-recaptcha"></div>');
+                    wrapper.after(new_wrapper);
+                    wrapper.remove();
+                    new_wrapper = new_wrapper.addClass('initialized');
+                    widget_id = grecaptcha.render(new_wrapper[0], { sitekey: sitekey });
+                    wrapper = new_wrapper;
                     return false;
                 });
             });

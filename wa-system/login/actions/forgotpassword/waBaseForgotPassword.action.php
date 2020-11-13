@@ -572,8 +572,20 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
 
             if ($channel_type == waVerificationChannelModel::TYPE_EMAIL) {
 
+                $get_params = [
+                    'key' => '{$secret_hash}',
+                ];
+
+                if ($this->env === 'backend') {
+                    // force login form in backend if webasyst ID auth is forced
+                    $is_login_form_forced = wa()->getRequest()->get('force_login_form');
+                    if ($is_login_form_forced) {
+                        $get_params['force_login_form'] = 1;
+                    }
+                }
+
                 $url = $this->auth_config->getRecoveryPasswordUrl(array(
-                    'get' => 'key={$secret_hash}'
+                    'get' => $get_params
                 ), true);
 
                 $sent = $channel->sendRecoveryPasswordMessage($contact, array_merge($options, array(

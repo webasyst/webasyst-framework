@@ -31,8 +31,6 @@
                         {$page_route=waRouting::clearUrl($page.route)}
                         <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
                         <a href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}"><i class="icon10 new-window"></i></a>
-                    {else}
-                    [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
                     {/if}
                 {/if}
                 <br />
@@ -68,10 +66,18 @@
                         <div class="value wa-page-app-url no-shift">
                             {if !empty($url)}{$url_decoded|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
                         </div>
-                        {if empty($url)}
-                        <div class="value small wa-page-app-url no-shift">
-                            <span style="color: red;">[s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]</span>
-                        </div>
+                        {if !empty($warnings)}
+                            <div class="value small wa-page-app-url no-shift">
+                                <span style="color: red;">
+                                    {if isset($warnings.no_site_storefront)}
+                                        [s`Страница не будет опубликована, потому что в настройках структуры сайта нет ни одного поселения приложения (правил маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура».`]
+                                    {elseif isset($warnings.deleted_site_storefront)}
+                                        [s`Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура».`]
+                                    {elseif isset($warnings.several_site_storefront)}
+                                        [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
+                                    {/if}
+                                </span>
+                            </div>
                         {/if}
                     </div>
 

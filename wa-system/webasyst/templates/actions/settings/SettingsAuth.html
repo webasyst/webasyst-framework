@@ -43,7 +43,33 @@
 <div class="s-auth-settings-page blank block double-padded" id="s-auth-settings-page">
     <h1 class="s-page-header">[s`Backend authorization`]</h1>
     <div class="s-description">[s`Set up how users will log into your Webasyst backend.`]</div>
-    <div class="s-auth-settings-fields-block">
+
+    {if $is_waid_connected}
+        <div class="s-description">
+            <div>
+                <input type="hidden" name="is_force_auth" value="0" />
+                <input name="is_backend_auth_forced" class="ibutton js-force-auth-toggle"
+                       type="checkbox" value="1"
+                        {if $is_backend_auth_forced} checked="checked"{/if}
+                        {if !$is_user_bound_to_webasyst_id}disabled="disabled"{/if}>
+
+                <div class="s-force-description">
+                    <strong><i class="icon16 ws waid-green"></i> [s`Использовать вход только с Webasyst ID - <span class="s-green">рекомендуется</span>`]</strong>
+                    <span class="js-force-save-status s-force-save-status"><i class="icon16 yes"></i> [s`Saved`]</span>
+                </div>
+            </div>
+            <div class="hint">
+                {sprintf(
+                    _ws('При использовании входа с Webasyst ID по умолчанию, простой вход отключается с сохранением всех настроек и возможностью возврата к ним. Пользователи бекенда, которые не подключились к WebasystID смогут подключиться позже самостоятельно, или можно отправить им email-приглашение в разделе <a href="%s">Вход с Webasyst</a>. Регистрация новых пользователей будет происходить сразу с подключением к Webasyst ID.'),
+                    $waid_settings_link
+                )}
+            </div>
+        </div>
+        <div class="js-auth-settings-fields-block-cover s-auth-settings-fields-block-cover"></div>
+    {/if}
+
+    <div class="s-auth-settings-fields-block js-auth-settings-fields-block">
+
         <form action="?module=settingsAuthSave">
             <div class="field-group s-auth-config-params">
                 {* Auth type *}
@@ -301,7 +327,7 @@
                         <div class="field">
                             <div class="s-field-name name">[s`Password`]</div>
                             <div class="value">
-                                <input class="fill s-placeholder-input" type="text" name="password_placeholder" placeholder="{$auth_config.password_placeholder|escape}" />
+                                <input type="text" class="fill s-placeholder-input" name="password_placeholder" value="{$auth_config.password_placeholder|escape}" />
                             </div>
                         </div>
 
@@ -382,8 +408,10 @@
         'login'          => _w('Login'),
         'phone'          => _w('Phone'),
         'login_or_phone' => _w('Login or phone')
-    ]
+    ],
+    'disabled_toggle_reason' => _w('Необходимо подключить Webasyst ID для своего аккаунта')
 ]}
+
 <script type="text/javascript">
     (function($) {
         new WASettingsAuth({

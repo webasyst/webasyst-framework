@@ -28,7 +28,7 @@
         {include file="./oauth_adapters.html" inline}
     {/if}
 
-    <section class="wa-login-form-fields js-login-form-fields-block">
+    <div class="wa-login-form-fields js-login-form-fields-block">
         {foreach $fields|default:[] as $field_id => $params}
             {$renderer->renderField($field_id, $params)}
         {/foreach}
@@ -36,9 +36,9 @@
         {$renderer->renderRememberMe()}
 
         {$renderer->renderCaptcha()}
-    </section>
+    </div>
 
-    <section class="wa-login-form-actions js-login-form-actions">
+    <div class="wa-login-form-actions js-login-form-actions">
         {$renderer->renderUncaughtErrors()}
 
         {if $is_onetime_password_auth_type}
@@ -57,7 +57,7 @@
         <div class="wa-signup-url">
             [s`For the first time with us?`] <a href="{$signup_url}" data-type="signup">[s`Sign Up`]</a>
         </div>
-    </section>
+    </div>
 
     {$renderer->renderCsrf()}
 

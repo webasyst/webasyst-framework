@@ -308,6 +308,12 @@ HTML;
                     $oHTML[] = '<option value="'.$val.'"'.($own==$val ? ' selected' : '').'>'.htmlspecialchars($opt).'</option>';
                 }
                 $oHTML = implode('', $oHTML);
+
+                // corner case when option of this key (group) not exists
+                if (!isset($o[$group])) {
+                    $group = key($o);
+                }
+
                 return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
                             '<td><div>'.$label.'</div></td>'.
                             ($inherited !== null ? '<td><strong>'.$o[$max].'</strong></td>' : '').

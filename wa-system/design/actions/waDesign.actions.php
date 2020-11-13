@@ -577,13 +577,27 @@ HTACCESS;
                 }
             }
             $route_id++;
+            $app_id = $this->getAppId();
             $route = array(
                 'url'          => $url,
-                'app'          => $this->getAppId(),
+                'app'          => $app_id,
                 'theme'        => $theme_id,
                 'theme_mobile' => $theme_id,
                 'locale'       => wa()->getLocale(),
             );
+
+            $app = wa($app_id)->getConfig()->getInfo();
+            if (isset($app['routing_params']) && is_array($app['routing_params'])) {
+                wa($app_id);
+                foreach ($app['routing_params'] as $routing_param => $routing_param_value) {
+                    if (is_callable($routing_param_value)) {
+                        $app['routing_params'][$routing_param] = call_user_func($routing_param_value);
+                    }
+                }
+
+                $route += $app['routing_params'];
+            }
+
             if ($route['url'] == '*') {
                 $routes[$domain][$route_id] = $route;
             } else {

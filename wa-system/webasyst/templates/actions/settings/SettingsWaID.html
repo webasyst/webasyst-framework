@@ -16,6 +16,23 @@
     </div>
 
     {if $is_connected}
+
+        <div class="s-description">
+            <div>
+                <input type="hidden" name="is_force_auth" value="0" />
+                <input name="is_backend_auth_forced" class="ibutton js-force-auth-toggle"
+                       type="checkbox" value="1"
+                            {if $is_backend_auth_forced} checked="checked"{/if}
+                            {if !$is_user_bound_to_webasyst_id}disabled="disabled"{/if}>
+
+                <div class="s-force-description">
+                    <strong><i class="icon16 ws waid-green"></i> [s`Использовать вход только с Webasyst ID - <span class="s-green">рекомендуется</span>`]</strong>
+                    <span class="js-force-save-status s-force-save-status"><i class="icon16 yes"></i> [s`Saved`]</span>
+                </div>
+            </div>
+            <div class="hint">[s`При использовании по умолчанию входа с Webasyst ID, простой вход отключается с сохранением всех настроек и возможностью возврата к ним. Пользователи бекенда, которые не подключились к WebasystID смогут подключиться позже самостоятельно, или можно отправить им email-приглашение. Регистрация новых пользователей будет происходить сразу с подключением к Webasyst ID.`]</div>
+        </div>
+
         {if $not_connected_users}
             <div class="field-group s-waid-not-connected-users-block">
                 <h2><em>
@@ -155,6 +172,10 @@
             </div>
     {/if}
 
+    {$_locale = [
+        'disabled_toggle_reason' => _w('Необходимо подключить Webasyst ID для своего аккаунта')
+    ]}
+
     <script>
         (function ($) {
             $.wa.setTitle({$_title|json_encode});
@@ -162,7 +183,8 @@
                 $wrapper: $('#s-waid-settings-page'),
                 wa_backend_url: {$wa_backend_url|json_encode},
                 upgrade_all: {$upgrade_all|json_encode},
-                webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode}
+                webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode},
+                locale: {$_locale|json_encode},
             });
         })(jQuery);
     </script>

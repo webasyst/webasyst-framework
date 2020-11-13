@@ -4,9 +4,11 @@ class webasystProfileWaidUnbindController extends waJsonController
 {
     public function execute()
     {
-        $contact = $this->getContact();
-        if ($contact && ($this->getUser()->isAdmin() || $contact->getId() == $this->getUserId())) {
-            $this->unbind($contact);
+        if (!$this->isWebasystIDForced()) {
+            $contact = $this->getContact();
+            if ($contact && ($this->getUser()->isAdmin() || $contact->getId() == $this->getUserId())) {
+                $this->unbind($contact);
+            }
         }
     }
 
@@ -28,5 +30,11 @@ class webasystProfileWaidUnbindController extends waJsonController
             }
         }
         return null;
+    }
+
+    protected function isWebasystIDForced()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isBackendAuthForced();
     }
 }

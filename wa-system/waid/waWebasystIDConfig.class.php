@@ -72,6 +72,37 @@ class waWebasystIDConfig
     }
 
     /**
+     * Is backend auth forced to webasyst ID oauth2 only
+     * @return bool
+     */
+    public function isBackendAuthForced()
+    {
+        return !empty($this->config['backend_auth_forced']);
+    }
+
+    /**
+     * Set/unset backend auth forced mode
+     * Save only in runtime memory, to flush changes into file, call commit()
+     * @see commit()
+     * @param bool $on
+     * @return waWebasystIDConfig
+     */
+    public function setBackendAuthForced($on = true)
+    {
+        if ($on) {
+            $this->config['backend_auth_forced'] = $on;
+        } else {
+            unset($this->config['backend_auth_forced']);
+        }
+        return $this;
+    }
+
+    public function commit()
+    {
+        waUtils::varExportToFile($this->config, $this->config_path);
+    }
+
+    /**
      * Generate default config if could, called in constructor in case when config doesn't exist yet
      * @return array
      * @throws Exception
@@ -140,7 +171,7 @@ class waWebasystIDConfig
 
     /**
      * @param mixed $config
-     * @return bool
+     * @return array
      */
     protected function typecastConfig($config)
     {

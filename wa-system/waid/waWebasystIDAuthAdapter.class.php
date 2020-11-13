@@ -235,6 +235,10 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
             $params['change_user'] = 1;
         }
 
+        if (waRequest::get('mode')) {
+            $params['mode'] = waRequest::get('mode');
+        }
+
         return $this->getConfig()->getAuthCenterUrl('auth/code', $params);
     }
 
@@ -262,10 +266,13 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
     {
         $url = $this->getAccessTokenUrl();
         $credentials = $this->getCredentials();
+
+        $redirect_uri = $this->getCallbackUrl(true);
+        
         $params = array_merge($params, [
             'code' => $code,
             'grant_type' => 'authorization_code',
-            'redirect_uri' => $this->getCallbackUrl(),
+            'redirect_uri' => $redirect_uri,
             'client_id' => $credentials['client_id'],
             'client_secret' => $credentials['client_secret'],
         ]);
@@ -393,13 +400,11 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
     {
         $user = wa()->getUser();
 
-        $root_url = wa()->getRootUrl(true);
-
         $info = [
             'firstname' => $user->get('firstname'),
             'lastname' => $user->get('lastname'),
             'middlename' => $user->get('middlename'),
-            'photo_url' => rtrim($root_url, '/') . '/' . ltrim($user->getPhoto2x(48), '/'),
+            'photo_url' => $this->getUserPhoto($user, 48),
             'locale' => $user->getLocale() ? $user->getLocale() : wa()->getLocale()
         ];
 
@@ -411,6 +416,26 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
         }
 
         return $info;
+    }
+
+    protected function getUserPhoto(waContact $user, $size = 48)
+    {
+        $relative_url = $user->getPhoto2x($size);
+
+        $cdn = wa()->getCdn($relative_url);
+        if ($cdn->count() > 0) {
+            return (string)$cdn;
+        }
+
+        $root_url = wa()->getRootUrl();
+        $root_url_len = strlen($root_url);
+
+        if (substr($relative_url, 0, $root_url_len) === $root_url) {
+            $relative_url = substr($relative_url, $root_url_len);
+        }
+
+        $root_url = wa()->getRootUrl(true);
+        return rtrim($root_url, '/') . '/' . ltrim($relative_url, '/');
     }
 
     /**

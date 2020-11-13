@@ -1,0 +1,9 @@
+{* Successfull binding webasyst ID contact with current isntallation user *}
+{$_webasyst_contact_info = $_auth_result.details.webasyst_contact_info}
+<img class="circle-check" src="{$wa_url}wa-content/img/wa-id/circle-check.svg" alt="OK">
+<p class="text-center">
+    [`Sign-in with Webasyst ID`]
+    [`has been successfully connected to account`]<br><strong>{$_webasyst_contact_info.name|default:''|escape}{if $_webasyst_contact_info.email|default:[]} ({$_webasyst_contact_info.email[0].value|escape}){/if}</strong>
+</p>
+<button onclick="onClickRedirect()">[`Got it`]</button>
+<span class="js-timeout">[`Will close in`] <span>3</span> [`sec`]...</span>

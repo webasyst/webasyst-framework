@@ -13,12 +13,18 @@ class waWebasystIDWAAuthController extends waViewController
     protected $auth;
 
     /**
+     * @var waWebasystIDClientManager
+     */
+    protected $cm;
+
+    /**
      * waidWebasystIDAuthController constructor.
      * @param waWebasystIDWAAuth $auth
      */
     public function __construct(waWebasystIDWAAuth $auth)
     {
         $this->auth = $auth;
+        $this->cm = new waWebasystIDClientManager();
     }
 
     public function execute()
@@ -36,7 +42,7 @@ class waWebasystIDWAAuthController extends waViewController
 
         } catch (waWebasystIDAccessDeniedAuthException $e) {
             // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish proccess)
-            $this->displayAuth([]);
+            $this->displayAuth(['type' => 'access_denied']);
         } catch (waWebasystIDAuthException $e) {
             $this->displayError($e->getMessage());  // show legitimate error from webasyst ID auth adapter
         } catch (Exception $e) {
@@ -57,6 +63,7 @@ class waWebasystIDWAAuthController extends waViewController
             $type = 'backend';
             $result = $this->processBackendAuth($auth_response_data);
         } elseif ($invite_token = $this->auth->isInviteAuth()) {
+            // this is case of invite user to team
             $type = 'invite';
             $result = $this->processInviteAuth($auth_response_data, $invite_token);
         } else {
@@ -66,7 +73,10 @@ class waWebasystIDWAAuthController extends waViewController
 
         if ($result) {
             // wrap result with type, so we can differ in template how draw different result types
-            $this->displayAuth(['type' => $type, 'result' => $result]);
+            $this->displayAuth([
+                'type' => $type,
+                'result' => $result
+            ]);
         }
     }
 
@@ -91,12 +101,18 @@ class waWebasystIDWAAuthController extends waViewController
     {
         $result = $this->authBackendUser($auth_response_data);
 
-        // save result in session
-        $this->getStorage()->set('webasyst_id_backend_auth_result', $result);
+        $is_backend_auth_forced = $this->cm->isBackendAuthForced();
 
-        // if auth fail because of not bounding, save server data in session for latter use
-        if (!$result['status'] && $result['details']['error_code'] === 'not_bound') {
-            $this->getStorage()->set('webasyst_id_server_data', $auth_response_data);
+        // save in storage some results which will be used by backend login form (and action)
+        // if backend auth forced by webasyst ID - no need to keep results, keep global state clean
+        if (!$is_backend_auth_forced) {
+            // save result in session
+            $this->getStorage()->set('webasyst_id_backend_auth_result', $result);
+
+            // if auth fail because of not bounding, save server data in session for latter use
+            if (!$result['status'] && $result['details']['error_code'] === 'not_bound') {
+                $this->getStorage()->set('webasyst_id_server_data', $auth_response_data);
+            }
         }
 
         return $result;
@@ -127,7 +143,13 @@ class waWebasystIDWAAuthController extends waViewController
 
         $auth_result = $this->authInvitedUser($auth_response_data, $result['details']['contact']);
 
-        // token application will deals with success responses and response with already_bound
+        // system logic will process this response - show user message about bounding problem
+        $is_backend_auth_forced = $this->cm->isBackendAuthForced();
+        if ($is_backend_auth_forced && !$auth_result['status'] && $auth_result['details']['error_code'] == 'already_bound') {
+            return $auth_result;
+        }
+
+        // delegate control to app token dispatcher - it will deals with success responses and response with already_bound
         if ($auth_result['status'] || $auth_result['details']['error_code'] == 'already_bound') {
             wa($result['details']['token_info']['app_id'], true)->getConfig()->dispatchAppToken([
                 'token_info' => $result['details']['token_info'],
@@ -137,7 +159,6 @@ class waWebasystIDWAAuthController extends waViewController
         }
 
         // otherwise system logic will process response
-
         return $auth_result;
     }
 
@@ -153,37 +174,13 @@ class waWebasystIDWAAuthController extends waViewController
      */
     protected function authInvitedUser(array $auth_response_data, $invite_contact)
     {
-        $m = new waWebasystIDAccessTokenManager();
-        $token_info = $m->extractTokenInfo($auth_response_data['access_token']);
-
-        // this is webasyst contact id
-        $contact_id = $token_info['contact_id'];
+        $result = $this->auth->bindUserWithWebasystContact($invite_contact, $auth_response_data);
+        if (!$result['status']) {
+            return $result;
+        }
 
         // search backend contact in DB by webasyst_contact_id
         $cwm = new waContactWaidModel();
-
-        // currently bound contact id (of current installation) to webasyst contact
-        $bound_contact_id = $cwm->getBoundWithWebasystContact($contact_id, $invite_contact->getId());
-
-        $bound_contact = new waContact($bound_contact_id);
-        $is_existing_backend_user = $bound_contact->exists();
-
-        // conflict case: existed user already bound
-        if ($is_existing_backend_user) {
-            $webasyst_contact_info = $this->auth->getUserData($auth_response_data);
-            return [
-                'status' => false,
-                'details' => [
-                    'error_code' => 'already_bound',
-                    'error_message' => _ws('Already bound'),
-                    'webasyst_contact_info' => $webasyst_contact_info,
-                    'bound_contact_info' => $this->getContactInfo($bound_contact),
-                ]
-            ];
-        }
-
-        // bound webasyst ID contact with contact from invite token
-        $invite_contact->bindWithWaid($contact_id, $auth_response_data);
 
         // last backend login datetime
         $cwm->updateById($invite_contact->getId(), [
@@ -281,6 +278,14 @@ class waWebasystIDWAAuthController extends waViewController
         // if binding fail, save server data in session for latter use
         if (!$result['status']) {
             $this->getStorage()->set('webasyst_id_server_data', $auth_response_data);
+        } else {
+            // delete webasyst ID invite token (exists it or not)
+            $app_tokens_model = new waAppTokensModel();
+            $app_tokens_model->deleteByField([
+                'app_id' => 'webasyst',
+                'type' => 'webasyst_id_invite',
+                'contact_id' => wa()->getUser()->getId()
+            ]);
         }
 
         return $result;
@@ -309,27 +314,62 @@ class waWebasystIDWAAuthController extends waViewController
 
         // renew binding confirmed by user, unbind webasyst contact with existing contact and bind with current
         if ($post_data['renew']) {
-            $this->auth->bindWithWebasystContact($data, true);
+            $result = $this->auth->bindWithWebasystContact($data, true);
+        } else {
+            $result = [
+                'status' => false,
+                'details' => [
+                    'error_code' => 'not_bound'
+                ]
+            ];
         }
 
-        $this->displayAuth([]);
+        if ($result['status']) {
+            // delete webasyst ID invite token (exists it or not)
+            $app_tokens_model = new waAppTokensModel();
+            $app_tokens_model->deleteByField([
+                'app' => 'webasyst',
+                'type' => 'webasyst_id_invite',
+                'contact_id' => wa()->getUser()->getId()
+            ]);
+        }
+
+        $this->displayAuth([
+            'type' => 'bind',
+            'result' => $result,
+        ]);
     }
 
     /**
      * @param array $result
+     *      string $result['type']  - 'backend', 'invite', 'bind', 'access_denied'
+     *      array $result['result'] - auth result
+     * @return mixed
      * @throws waException
      */
     protected function displayAuth(array $result)
     {
-        if ($invite_token = $this->auth->isInviteAuth()) {
-            $this->redirect(wa()->getConfig()->getRootUrl() . 'link.php/' . $invite_token . '/');
+        $invite_token = $this->auth->isInviteAuth();
+
+        $type = $result['type'];
+
+        if ($type === 'invite') {
+            $auth_result = $result['result'];
+            $is_backend_auth_forced = $this->cm->isBackendAuthForced();
+            $system_should_process = $is_backend_auth_forced && !$auth_result['status'] && $auth_result['details']['error_code'] == 'already_bound';
+
+            if (!$system_should_process) {
+                $this->redirect(wa()->getConfig()->getRootUrl() . 'link.php/' . $invite_token . '/');
+            }
         }
 
         wa('webasyst');
         $this->executeAction(new webasystOAuthAction([
             'provider_id' => waWebasystIDAuthAdapter::PROVIDER_ID,
+            'invite_token' => $invite_token,
             'result' => $result
         ]));
+
         $this->display();
     }
 
@@ -339,6 +379,7 @@ class waWebasystIDWAAuthController extends waViewController
         $this->executeAction(new webasystOAuthAction([
             'provider_id' => waWebasystIDAuthAdapter::PROVIDER_ID,
             'result' => [
+                'type' => 'error',
                 'error_msg' => $error
             ]
         ]));
@@ -380,11 +421,13 @@ class waWebasystIDWAAuthController extends waViewController
         $current_contact_id = $cwm->getBoundWithWebasystContact($contact_id);
 
         if ($current_contact_id <= 0) {
+            $webasyst_contact_info = $this->auth->getUserData($params);
             return [
                 'status' => false,
                 'details' => [
                     'error_code' => 'not_bound',
-                    'error_message' => _w('Not bound yet')
+                    'error_message' => _w('Not bound yet'),
+                    'webasyst_contact_info' => $webasyst_contact_info,
                 ]
             ];
         }
@@ -409,15 +452,49 @@ class waWebasystIDWAAuthController extends waViewController
             'login_datetime' => date('Y-m-d H:i:s')
         ]);
 
-        wa()->getAuth()->auth([
+        $backend_auth = new waAuth(['env' => 'backend']);
+        $backend_auth->auth([
             'id' => $current_contact_id,
             'remember' => $this->auth->isRememberMe()
         ]);
 
+        /**
+         * Event after success auth by webasyst ID
+         * User is already authorized in backend to this time
+         *
+         * Listener could do some inner work what need to do
+         * But also listener could use $dispatch input argument and try to suggest url to redirect after auth is fully finish
+         *
+         *
+         * @event 'waid_auth'
+         *
+         * @param string $type - 'backend', 'invite', 'bind' ...
+         * @param array|null $dispatch, if not null has this format
+         *      string $dispatch['app'] - so concrete app could be even try suggest redirect url
+         *      string $dispatch['module'] -
+         *      string $dispatch['action'] -
+         *
+         * @return array $return[%listener_id%]['dispatch'] [optional]
+         *      Listener (application) by input parameter $dispatch try to suggest url to redirect after auth is fully finish
+         *      If listener not prefer any url to redirect where and just do own inner work on event, it SHOULD NOT return this type of data
+         * @return string $return[%listener_id%]['dispatch']['url']
+         *      Where to redirect
+         * @return string $return[%listener_id%]['dispatch']['error']['code']
+         *      Listener would like to suggest redirect url but something wrong, so here is error code
+         * @return string $return[%listener_id%]['dispatch']['error']['message]
+         *      Listener would like to redirect but something wrong, so here is error message
+         */
+        $event_params = [
+            'type' => 'backend',
+            'dispatch' => $this->auth->getDispatchParams()
+        ];
+        $event_result = wa('webasyst')->event('waid_auth', $event_params);
+
         return [
             'status' => true,
             'details' => [
-                'contact_id' => $current_contact_id
+                'contact_id' => $current_contact_id,
+                'event_result' => $event_result
             ]
         ];
     }
@@ -513,7 +590,12 @@ class waWebasystIDWAAuthController extends waViewController
             $photo_url_parts = explode('/', $photo_url);
             $path = wa()->getTempPath('auth_photo/'.$contact->getId().'.'.md5(end($photo_url_parts)), 'webasyst');
             file_put_contents($path, $photo);
-            $contact->setPhoto($path);
+            try {
+                $contact->setPhoto($path);
+            } catch (Exception $exception) {
+                
+            }
+
         }
     }
 }

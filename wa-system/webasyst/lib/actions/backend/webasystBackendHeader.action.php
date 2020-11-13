@@ -88,10 +88,16 @@ class webasystBackendHeaderAction extends waViewAction
             'include_wa_push' => $include_wa_push,
             'webasyst_id_auth_banner' => $this->getWebasystIDAuthBanner(),
             'show_connection_banner' => $this->showConnectionBanner(),
-            'current_domain' => wa()->getConfig()->getDomain()
+            'current_domain' => $this->getCurrentDomain()
         ));
 
         $this->setTemplate(wa()->getAppPath('templates/actions/backend/BackendHeader.html', 'webasyst'));
+    }
+
+    protected function getCurrentDomain()
+    {
+        $domain = wa()->getConfig()->getDomain();
+        return waIdna::dec($domain);
     }
 
     /**

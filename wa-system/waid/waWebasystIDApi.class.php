@@ -13,9 +13,19 @@ class waWebasystIDApi
      */
     protected $config;
 
-    public function __construct()
+    protected $options = [];
+
+    /**
+     * waWebasystIDApi constructor.
+     * @param array $options
+     *      waWebasystIDConfig $options['config'] [optional]
+     *          Default is waWebasystIDConfig
+     *
+     */
+    public function __construct(array $options = [])
     {
         $this->config = new waWebasystIDConfig();
+        $this->options = $options;
     }
 
     /**
@@ -38,6 +48,20 @@ class waWebasystIDApi
                 'error' => sprintf("Contact %s not exist", $contact_id)
             ]);
             return null;
+        }
+
+        $token_params = $contact->getWebasystTokenParams();
+        if (!$token_params) {
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => sprintf("Contact %s is not authorize (not bound with webasyst ID contact)", $contact_id)
+            ]);
+            return [
+                'status' => false,
+                'details' => [
+                    'error' => _w('Not connected with webasyst ID contact')
+                ]
+            ];
         }
 
         // try get profile info
@@ -120,6 +144,20 @@ class waWebasystIDApi
                 'status' => false,
                 'details' => [
                     'error' => ''
+                ]
+            ];
+        }
+
+        $token_params = $contact->getWebasystTokenParams();
+        if (!$token_params) {
+            $this->logError([
+                'method' => __METHOD__,
+                'error' => sprintf("Contact %s is not authorize (not bound with webasyst ID contact)", $contact_id)
+            ]);
+            return [
+                'status' => false,
+                'details' => [
+                    'error' => _w('Not connected with webasyst ID contact')
                 ]
             ];
         }
@@ -211,6 +249,11 @@ class waWebasystIDApi
     {
         $contact = $this->getExistingContact($contact_id);
         if (!$contact) {
+            return false;
+        }
+
+        $token_params = $contact->getWebasystTokenParams();
+        if (!$token_params) {
             return false;
         }
 
@@ -318,7 +361,7 @@ class waWebasystIDApi
      */
     protected function requestToDeleteUser($token_params)
     {
-        $response = $this->requestApiMethod('delete', $token_params['access_token'], waNet::METHOD_DELETE);
+        $response = $this->requestApiMethod('delete', $token_params['access_token'], [], waNet::METHOD_DELETE);
         if ($response['status'] == 200) {
             return $response['response'];
         }
@@ -346,7 +389,9 @@ class waWebasystIDApi
     /**
      * @param string $api_method
      * @param string $access_token
+     * @param array $params
      * @param string $http_method - waNet::METHOD_
+     * @params array $net_options
      * @return array $result
      *      int|null    $result['status']   - http status or if failed before net query NULL
      *      array       $result['response'] - response data
@@ -356,15 +401,17 @@ class waWebasystIDApi
      *                          string $result['response']['error'] - error from server
      * @throws waException
      */
-    protected function requestApiMethod($api_method, $access_token, $http_method = waNet::METHOD_GET)
+    protected function requestApiMethod($api_method, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
     {
         $url = $this->config->getApiUrl($api_method);
 
-        $net_options = [
+        $default_net_options = [
             'timeout' => 20,
             'format' => waNet::FORMAT_JSON,
             'request_format' => waNet::FORMAT_RAW
         ];
+
+        $net_options = array_merge($default_net_options, $net_options);
 
         $headers = [
             'Authorization' => "Bearer {$access_token}"
@@ -375,9 +422,24 @@ class waWebasystIDApi
         $exception = null;
         $response = null;
         try {
-            $response = $net->query($url, $http_method);
+            $response = $net->query($url, $params, $http_method);
         } catch (Exception $e) {
             $exception = $e;
+        }
+
+        if ($exception) {
+            $this->logException($exception);
+            $this->logError([
+                'method' => __METHOD__,
+                'debug' => $net->getResponseDebugInfo()
+            ]);
+
+            return [
+                'status' => null,
+                'response' => [
+                    'error' => 'system_error'
+                ]
+            ];
         }
 
         $status = $net->getResponseHeader('http_code');
@@ -385,6 +447,13 @@ class waWebasystIDApi
             return [
                 'status' => 200,
                 'response' => $response
+            ];
+        }
+
+        if ($status == 204) {
+            return [
+                'status' => 204,
+                'response' => []
             ];
         }
 
@@ -413,13 +482,7 @@ class waWebasystIDApi
             }
         }
 
-        if ($exception) {
-            $this->logException($exception);
-            $this->logError([
-                'method' => __METHOD__,
-                'debug' => $net->getResponseDebugInfo()
-            ]);
-        } else {
+        if (!$exception) {
             $this->logError([
                 'method' => __METHOD__,
                 'response_error' => 'unknown',

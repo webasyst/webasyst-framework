@@ -37,7 +37,7 @@
                     <i class="icon16 loading wa-loading" style="display: none;"></i>
 
                     {if $forgotpassword_url && empty($is_api_oauth)}
-                        <a href="{$forgotpassword_url}" class="wa-forgotpassword underline" data-type="forgotpassword">[s`Forgot password?`]</a>
+                        <a href="{$forgotpassword_url}{if $force_login_form}&force_login_form=1{/if}" class="wa-forgotpassword underline" data-type="forgotpassword">[s`Forgot password?`]</a>
                     {/if}
                 {/if}
 

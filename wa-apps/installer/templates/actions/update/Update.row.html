@@ -96,12 +96,7 @@
 
                 {* not allowed to install the app, i.e. expired *}
 
-                {if !empty($item.domains) && count($item.domains)>1}
-                    <p class="small red bold">{sprintf('[`To get the update, you need to have separate %s app license for every individual domain the app is used on: %s`]', $item.name,implode(', ',(array)$item.domains))}</p>
-                {else}
-                    {if !empty($item.domains)}{$_domain=reset($item.domains)}{else}{$_domain=$domain}{/if}
-                    <p class="small red">{sprintf('[`License for this app is either expired or not valid for this domain (%s)`]',$_domain)}</p>
-                {/if}
+                <p class="small red">[`License is either expired or not valid for this installation`]</p>
 
                 {if $item_type eq 'app'}
                     {$link="app/`$item.id`"}

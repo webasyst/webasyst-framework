@@ -13,10 +13,14 @@ class waWebasystIDClientManager
     protected $config;
 
     /**
+     * Lazy loader property, use getAppSettingsModel
+     * @var waAppSettingsModel
+     */
+    protected $asm;
+
+    /**
      * Is client (current installation) connect to Webasyst ID
      * @return bool
-     * @throws waDbException
-     * @throws waException
      */
     public function isConnected()
     {
@@ -29,18 +33,36 @@ class waWebasystIDClientManager
      * @return array|null $credentials
      *      - string $credentials['client_id']
      *      - string $credentials['client_secret']
-     * @throws waDbException
-     * @throws waException
      */
     public function getCredentials()
     {
-        $asm = new waAppSettingsModel();
-        $credentials = $asm->get('webasyst', 'waid_credentials');
+        $credentials = $this->getAppSettingsModel()->get('webasyst', 'waid_credentials');
         $credentials = json_decode($credentials, true);
         if (is_array($credentials) && isset($credentials['client_id']) && isset($credentials['client_secret'])) {
             return $credentials;
         }
         return null;
+    }
+
+    /**
+     * Is backend auth forced to webasyst ID oauth2 only
+     * Check also is installation is connected to webasyst ID
+     * If not connected that method will return false
+     * @return bool
+     */
+    public function isBackendAuthForced()
+    {
+        return $this->isConnected() && $this->getWebasystIDConfig()->isBackendAuthForced();
+    }
+
+    /**
+     * Set (or unset) force auth mode
+     * @param bool $on
+     */
+    public function setBackendAuthForced($on = true)
+    {
+        $this->getWebasystIDConfig()->setBackendAuthForced($on)->commit();
+
     }
 
     /**
@@ -126,8 +148,7 @@ class waWebasystIDClientManager
     {
         // Expected response from API
         if (isset($credentials['client_id']) && isset($credentials['client_secret'])) {
-            $asm = new waAppSettingsModel();
-            $asm->set('webasyst', 'waid_credentials', json_encode($credentials));
+            $this->getAppSettingsModel()->set('webasyst', 'waid_credentials', json_encode($credentials));
         }
     }
 
@@ -204,7 +225,7 @@ class waWebasystIDClientManager
             return $this->packFailResult($error_code, $error_message);
         }
 
-        $asm = new waAppSettingsModel();
+        $asm = $this->getAppSettingsModel();
         $asm->del('webasyst', 'waid_credentials');
 
         // Fact about disconnecting save in settings for future
@@ -213,6 +234,8 @@ class waWebasystIDClientManager
         $asm->set('webasyst', 'waid_disconnected', date('Y-m-d H:i:s'));
 
         waContact::clearAllWebasystIDAssets();
+
+        $this->setBackendAuthForced(false);
 
         return $this->packOkResult();
     }
@@ -249,10 +272,8 @@ class waWebasystIDClientManager
      */
     protected function getToken()
     {
-        $asm = new waAppSettingsModel();
-
         $token = null;
-        if ($token_data = $asm->get('installer', 'token_data', false)) {
+        if ($token_data = $this->getAppSettingsModel()->get('installer', 'token_data', false)) {
             $token_data = waUtils::jsonDecode($token_data, true);
             if (!empty($token_data['token'])) {
                 $token = $token_data['token'];
@@ -301,6 +322,17 @@ class waWebasystIDClientManager
         return wa('webasyst')->getConfig();
     }
 
+    /**
+     * @return waAppSettingsModel
+     */
+    protected function getAppSettingsModel()
+    {
+        if (!$this->asm) {
+            $this->asm = new waAppSettingsModel();
+        }
+        return $this->asm;
+    }
+
     protected function packFailResult($error_code, $error_message)
     {
         return [
@@ -333,5 +365,6 @@ class waWebasystIDClientManager
         }
         waLog::log($e, 'webasyst/' . get_class($this) . '.log');
     }
+
 
 }

@@ -21,6 +21,8 @@ var WASettingsAuth = ( function($) {
         that.$background_input = that.$wrapper.find('input[name="auth_form_background"]');
         that.$upload_preview_background_wrapper = that.$wrapper.find('.js-upload-preview');
 
+        that.$force_auth_toggle = that.$wrapper.find('.js-force-auth-toggle');
+
         // VARS
         that.locale = options['locale'];
 
@@ -57,6 +59,78 @@ var WASettingsAuth = ( function($) {
         that.initLoginFormControl();
         //
         that.initSubmit();
+
+        that.initForceAuthToggle();
+    };
+
+    WASettingsAuth.prototype.initForceAuthToggle = function() {
+        var that = this,
+            $toggle = that.$force_auth_toggle,
+            $status = that.$wrapper.find('.js-force-save-status'),
+            $cover = that.$wrapper.find('.js-auth-settings-fields-block-cover'),
+            $block = that.$wrapper.find('.js-auth-settings-fields-block');
+
+        $toggle.iButton({
+            labelOn: "",
+            labelOff: "",
+            className: "s-waid-force-auth-toggle",
+            classContainer: 'ibutton-container mini'
+        });
+
+        var initCover = function () {
+            var position = $block.position(),
+                top = parseInt(position.top),
+                left = parseInt(position.left),
+                height = parseInt($block.height()),
+                width = parseInt($block.width());
+            $cover.css({
+                top: top + 'px',
+                left: left + 'px',
+                height: height,
+                width: width,
+            });
+        };
+
+        initCover();
+
+        var cover = function () {
+            $cover.show();
+        };
+
+        var uncover = function () {
+            $cover.hide();
+        };
+
+        var timer_id = null;
+
+        $toggle.on('change', function () {
+            if ($toggle.is(':checked')) {
+                cover();
+            } else {
+                uncover();
+            }
+
+            var url = that.wa_backend_url + "?module=settingsWaID&action=save";
+            $.post(url, $toggle.serialize())
+                .done(function () {
+                    timer_id && clearTimeout(timer_id);
+                    $status.show();
+                    timer_id = setTimeout(function () {
+                        $status.fadeOut(500);
+                        timer_id = null;
+                    }, 2000);
+                });
+        });
+
+        if ($toggle.attr('disabled')) {
+            that.$wrapper.find('.s-waid-force-auth-toggle').attr('title', that.locale.disabled_toggle_reason || '');
+        }
+
+        if ($toggle.is(':checked')) {
+            cover();
+        } else {
+            uncover();
+        }
     };
 
     WASettingsAuth.prototype.initSelectAuthType = function () {

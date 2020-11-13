@@ -956,6 +956,11 @@ HTML;
     {
         $html = '';
 
+        $shop_config = wa()->getConfig()->getSchedule();
+        if (isset($shop_config['timezone'])) {
+            date_default_timezone_set($shop_config['timezone']);
+        }
+
         $wrappers = array(
             'title'           => '',
             'title_wrapper'   => '%s',
@@ -1117,7 +1122,7 @@ HTML;
             }
             $html .= <<<HTML
 <script>
-    ( function() {
+    (function () {
         'use strict';
         var input_date = $('#{$date_params['id']}');
         var input_date_formatted = $('#{$date_formatted_params['id']}');
@@ -1127,7 +1132,7 @@ HTML;
         var holidays = {$holidays};
         var workdays = {$workdays};
 
-        if (multiple_dates !== false){
+        if (multiple_dates !== false) {
             multiple_dates = input_date.val().split(';');
         }
         
@@ -1135,45 +1140,98 @@ HTML;
             multiple_dates_formatted = input_date_formatted.val().split(';');
         }
         
-        // remove bad date from hidden input
-        input_date.on('change', function() {
+        /** remove bad date from hidden input */
+        input_date.on('change', function () {
             if (this.value === '') {
-                input_date_formatted.val('')
+                input_date_formatted.val('');
             }
         });
+        
+        if (interval) {
+            interval.on('click change', function (event, date) {
+                if (!date) {
+                    date = /(\d+)[-./](\d+)[-./](\d+)/.exec(input_date.val());
+                    date = (date && 4 === date.length ? new Date(date[2] +' '+ date[1] +' '+ date[3]) : null);
+                }
+                
+                if (date && interval && interval.length) {
+                    /** @var int day week day (starts from 0) */
+                    var day       = (date.getDay() + 6) % 7;
+                    var timestamp = date.getTime();
+                    var day_type  = dayType(date);
+                    /** filter select by days */
+                    var value   = typeof(interval.val()) !== 'undefined';
+                    var matched = null;
+                    
+                    interval.find('option').each(function () {
+                        /** @this HTMLOptionElement */
+                        var option   = $(this);
+                        var disabled = !this.value || intervalAllowed(option, timestamp, day, day_type) ? null : 'disabled';
+                        option.attr('disabled', disabled);
+                        if (disabled) {
+                            if (this.selected) {
+                                value = false;
+                            }
+                        } else {
+                            matched = this;
+                            if (!value) {
+                                this.selected = true;
+                                value = !!this.value;
+                                if (typeof(interval.highlight) === 'function') {
+                                    interval.highlight();
+                                }
+                            }
+                        }
+                    });
+    
+                    if (value) {
+                        interval.removeClass('error');
+                    } else if (matched) {
+                        matched.selected = true;
+                        interval.removeClass('error');
+                    } else {
+                        interval.addClass('error');
+                    }
+                }
+            });
+        }
         
         input_date.data('available_days', {$available_days});
         input_date.data('start_date', '{$start_date}');
         
-        var intervalAllowed = function(option, timestamp, day, day_type) {
-            
+        var intervalAllowed = function (option, timestamp, day, day_type) {
+            var allowed;
+            var start_timestamp;
             var days = option.data('days');
-            if ((typeof(days)) === 'undefined') {
+            
+            if (typeof days === 'undefined') {
                days = input_date.data('available_days');
             }
-            var allowed = null;
-            
-            var start_timestamp = option.data('start_timestamp');
-            if (timestamp && start_timestamp && (timestamp<start_timestamp*1000)) {
-                allowed = false;
-            } else if (day_type==='holiday') {
-                allowed = (days.indexOf(day_type) >= 0);
-            } else if (day_type === 'workday'){
-                allowed = (days.indexOf(day) >= 0)||(days.indexOf(day_type) >= 0);
-            } else {
-                allowed = (days.indexOf(day) >= 0);
+            start_timestamp = option.data('start_timestamp');
+            if (timestamp && start_timestamp && (timestamp < start_timestamp * 1000)) {
+                return false;
             }
-            
-            
+
+            /** в обычные дни недели */
+            allowed = (days.indexOf(day) >= 0);
+
+            if (day_type ==='holiday' && allowed) {
+                /** выключаем дату, если это дополнительный выходной, а в обычный день недели - рабочий */
+                allowed = !(days.indexOf(day) >= 0);
+            } else if (day_type === 'workday' && !allowed) {
+                /** включаем дату, если это дополнительный рабочий день, а в обычный день недели - выходной */
+                allowed = !(days.indexOf(day) >= 0);
+            }
+
             return allowed;
         };
         
-        var dayType = function(date) {
+        var dayType = function (date) {
             var day_type = null;
             var date_formatted = $.datepicker.formatDate('yy-mm-dd', date); 
-            if (holidays.indexOf(date_formatted)>=0) {
+            if (holidays.indexOf(date_formatted) >= 0) {
                 day_type = 'holiday';
-            } else if (workdays.indexOf(date_formatted)>=0) {
+            } else if (workdays.indexOf(date_formatted) >= 0) {
                 day_type = 'workday';
             }
             return day_type;
@@ -1190,6 +1248,7 @@ HTML;
                 "onSelect": function (dateText) {
                     var date = container.datepicker('getDate');
                     if (multiple_dates !== false) {
+                        var date_formatted;
                         var index = $.inArray(dateText, multiple_dates);
                         if (index >= 0) {
                              multiple_dates.splice(index, 1);
@@ -1198,8 +1257,8 @@ HTML;
                         }
                         input_date.val(multiple_dates.join(';'));
                         
-                        var date_formatted = $.datepicker.formatDate('yy-mm-dd', date);
-                        index = $.inArray(date_formatted, multiple_dates_formatted);
+                        date_formatted = $.datepicker.formatDate('yy-mm-dd', date);
+                        index          = $.inArray(date_formatted, multiple_dates_formatted);
                         if (index >= 0) {
                              multiple_dates_formatted.splice(index, 1);
                         } else if (index < 0) {
@@ -1209,45 +1268,7 @@ HTML;
                         container.datepicker('setDate',null);
                     } else {
                         input_date.val(dateText);
-                        if (date && interval && interval.length) {
-                            /** @var int day week day (starts from 0) */
-                            var day = (date.getDay() + 6) % 7;
-                            var timestamp = date.getTime();
-                            var day_type = dayType(date);
-                            /** filter select by days */
-                            var value = typeof(interval.val()) !== 'undefined';
-                            var matched = null;
-                            interval.find('option').each(function () {
-                                /** @this HTMLOptionElement */
-                                var option = $(this);
-                                
-                                var disabled = !this.value || intervalAllowed(option, timestamp, day, day_type) ? null: 'disabled';
-                                option.attr('disabled', disabled);
-                                if (disabled) {
-                                    if (this.selected) {
-                                        value = false;
-                                    }
-                                } else {
-                                    matched = this;
-                                    if (!value) {
-                                        this.selected = true;
-                                        value = !!this.value;
-                                        if (typeof(interval.highlight) === 'function') {
-                                            interval.highlight();
-                                        }
-                                    }
-                                }
-                            });
-    
-                            if (value) {
-                                interval.removeClass('error');
-                            } else if (matched) {
-                                matched.selected = true;
-                                interval.removeClass('error');
-                            } else {
-                                interval.addClass('error');
-                            }
-                        }
+                        interval.trigger('change', [date]);
                     }
                 },
                 "beforeShowDay": function (date) {
@@ -1258,17 +1279,16 @@ HTML;
                     var day_type = dayType(date);
                     var day = (date.getDay() + 6) % 7;
                     if (interval && interval.length) {
-                        var interval_options = interval? interval.find('option'):[];
+                        var interval_options = interval ? interval.find('option') : [];
                         /** @var int day week day */
                         var timestamp = date.getTime();
                         available = false;
-                        interval_options.each(function(){
-                            if(this.value.length && intervalAllowed($(this), timestamp, day, day_type)){
+                        interval_options.each(function () {
+                            if (this.value.length && intervalAllowed($(this), timestamp, day, day_type)) {
                                 available = true;
                                 tooltip.push(this.value);
                             }
                         });
-                        
                     } else if (multiple_dates_formatted !== false) {
                         var index = $.inArray(date_formatted, multiple_dates_formatted);
                         if (index >= 0) {
@@ -1278,7 +1298,11 @@ HTML;
                         available = intervalAllowed(input_date, null, day, day_type);
                     }
                     
-                    return [available, css_class.length?css_class.join(' '):'', tooltip.length?tooltip.join('\\n'):null]
+                    return [
+                        available,
+                        css_class.length ? css_class.join(' ') : '',
+                        tooltip.length ? tooltip.join('\\n') : null
+                    ]
                 }
             });
 
@@ -1292,7 +1316,7 @@ HTML;
             }
         };
 
-        $(document).ready( function() {
+        $(document).ready(function () {
             if (typeof $.fn.datepicker === "function") {
                 initDatePicker();
             } else {
@@ -1307,8 +1331,7 @@ HTML;
                         type: "css",
                         uri: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
                     }
-                ]).then(function() {
-
+                ]).then(function () {
                     var locale = "{$locale}".substr(0, 2);
                     if (locale === "ru") {
                         load([{

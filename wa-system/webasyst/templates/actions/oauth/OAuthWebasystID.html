@@ -1,8 +1,79 @@
 {$_reload = true}
 
-{$_result = $result.result|default:[]}
-{$_is_bind_with_webasyst_contact = $result.type|default:'' === 'bind'}
-{$_error_msg = $result.error_msg|default:''}
+{* Webasyst ID (WA) auth types: backend/invite/bind *}
+{$_auth_type = $result.type|default:''}
+
+{* Webasyst ID (WA) auth result *}
+{$_auth_result = $result.result|default:[]}
+{$_auth_result.status = $_auth_result.status|default:false}
+{$_auth_result.details = $_auth_result.details|default:[]}
+{$_auth_result.details.error_code = $_auth_result.details.error_code|default:''}
+
+{* Sytem error (exception) from WA adapter *}
+{$_system_error_msg = $result.error_msg|default:''} {* system error from webasyst ID auth adapter *}
+
+{* in process of primary binding (connetion) backend user with webasyst ID contact  *}
+{$_is_bind_with_webasyst_contact = $_auth_type === 'bind'}
+
+{* process of primary binding is finished ok *}
+{$_is_bind_ok = $_is_bind_with_webasyst_contact && $_auth_result.status}
+
+{* in process of primary binding (or inviting user over team) end up with already_bound error *}
+{$_is_already_bound = ($_auth_type === 'bind' || $_auth_type === 'invite') && !$_auth_result.status && $_auth_result.details.error_code === 'already_bound'}
+
+{* in process of primary binding end up with 'not_bound' error *}
+{$_is_bind_fail = $_is_bind_with_webasyst_contact && !$_auth_result.status && $_auth_result.details.error_code === 'not_bound'}
+
+{* in process of auth (login) backend user somehow backend user is not connected to webasyst ID contact *}
+{$_backend_contact_not_bound = $_auth_type === 'backend' && !$_auth_result.status && $_auth_result.details.error_code == 'not_bound'}
+
+{* force backend - there is no standard auth (login) into backend - only webasyst ID auth *}
+{$_is_backend_auth_forced = $is_backend_auth_forced|default:false}
+
+{* not bound case while backend auth force *}
+{$_is_force_login_not_bound = $_is_backend_auth_forced && $_backend_contact_not_bound}
+
+{* redirect: url *}
+{$_redirect_url = ''}
+{if !empty($redirect.url)}
+    {$_redirect_url = $redirect.url}
+{/if}
+
+{* redirect: application returns error *}
+{$_redirect_error_message = ''}
+{if !empty($redirect.error.message)}
+    {$_redirect_error_message = $redirect.error.message}
+{elseif !empty($redirect.error.code)}
+    {$_redirect_error_message = $redirect.error.code}
+{/if}
+
+{$_info_content_exists = false}
+{capture assign="_info_content"}
+    {if !$_system_error_msg}
+        {if $_is_bind_ok}
+            {include file="./bind_ok.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {elseif $_is_force_login_not_bound}
+            {include file="./force_login_not_bound.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {elseif $_is_already_bound}
+            {include file="./bind_already_bound.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {elseif $_redirect_error_message}
+            {include file="./redirect_error.html" inline}
+            {$_reload = false}
+            {$_info_content_exists = true}
+        {/if}
+    {else}
+        {include file="./system_error.html" inline}
+        {$_reload = false}
+        {$_info_content_exists = true}
+    {/if}
+{/capture}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -159,68 +230,11 @@
 </head>
 <body>
 
-{if $_is_bind_with_webasyst_contact || $_error_msg}
+{if $_info_content_exists}
     <main class="oauth-wrapper">
         <img class="wa-logo" src="{$wa_url}wa-content/img/webasyst-logo.svg" alt="Webasyst">
         <div class="oauth-info">
-            {if !$_error_msg}
-                {if $_result.status}
-                    {*After <strong>3 seconds</strong> you will redirected back to backend of your site, or you can click "Got it" to redirect right now*}
-                    {* Successfull binding webasyst ID contact with current isntallation user *}
-                    {$_webasyst_contact_info = $_result.details.webasyst_contact_info}
-                    <img class="circle-check" src="{$wa_url}wa-content/img/wa-id/circle-check.svg" alt="OK">
-                    <p class="text-center">
-                        [`Sign-in with Webasyst ID`]
-                        [`has been successfully connected to account`]<br><strong>{$_webasyst_contact_info.name|default:''|escape}{if $_webasyst_contact_info.email|default:[]} ({$_webasyst_contact_info.email[0].value|escape}){/if}</strong>
-                    </p>
-                    <button onclick="onClickRedirect()">[`Got it`]</button>
-                    <span class="js-timeout">[`Will close in`] <span>3</span> [`sec`]...</span>
-                {else}
-
-                    {$_webasyst_contact_info = $_result.details.webasyst_contact_info}
-                    {$_bound_contact_info = $_result.details.bound_contact_info}
-                    {$_current_user_info = $_result.details.current_user_info}
-
-                    <h1 class="text-center">[`Sign-in with Webasyst ID`]</h1>
-                    <div class="alert alert-warning">
-                        <svg aria-hidden="true" focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
-                            <path fill="currentColor" d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"></path>
-                        </svg>
-                        <div>
-                            {sprintf(
-                            _ws('Webasyst ID account <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong> is already connected to user <i class="icon16 userpic20" style="background-image: url(%s);"></i> <strong>%s</strong>'),
-                            $_webasyst_contact_info.userpic,
-                            $_webasyst_contact_info.name|escape,
-                            $_bound_contact_info.userpic,
-                            $_bound_contact_info.name|escape)}
-                        </div>
-                    </div>
-                    <h4 class="text-center">[`Change connection to a new user?`]</h4>
-                    <p>
-                        {sprintf(
-                        _ws('If you need to change the connection of your Webasyst ID account to user <strong>%s</strong>, press “Confirm”.'),
-                        $_current_user_info.name|escape,
-                        $_bound_contact_info.name|escape)}
-                    </p>
-                    <div class="actions-buttons">
-                        <form method="POST">
-                            <button type="submit" name="renew" value="1" class="confirm">[`Confirm`]</button>
-                            <button type="submit" name="renew" value="0" class="link">[`Leave as it is`]</button>
-                        </form>
-                    </div>
-                    {$_reload = false}
-                {/if}
-            {else}
-                <img class="circle-check" src="{$wa_url}wa-content/img/wa-id/wrong.svg" alt="ERROR">
-                <p class="text-center">
-                    [`Sorry, the login has failed.`]
-                </p>
-                <p>
-                    {$_error_msg}
-                </p>
-                <button onclick="onClickRedirect()">[`Back`]</button>
-                {$_reload = false}
-            {/if}
+            {$_info_content}
         </div>
     </main>
 {/if}
@@ -246,23 +260,21 @@
 
         function initPage() {
             var redirect = function() {
-                window.location.href = {$redirect_url|json_encode};
+                window.location.href = {$_redirect_url|json_encode};
             };
 
-            {if $_is_bind_with_webasyst_contact && !$_error_msg}
-                {if $_result.status}
-                    var counter = 2,
-                        $timeout = document.getElementsByClassName("js-timeout")[0].getElementsByTagName('span')[0],
-                        intervalId = setInterval(function() {
-                            $timeout.innerText = counter;
-                            counter -= 1;
-                            if (counter === 0) {
-                                clearInterval(intervalId);
-                                redirect();
-                            }
-                        }, 1000);
-                {/if}
-            {elseif !$_error_msg}
+            {if $_is_bind_with_webasyst_contact && !$_system_error_msg && !$_is_bind_fail && !$_is_already_bound}
+                var counter = 2,
+                    $timeout = document.getElementsByClassName("js-timeout")[0].getElementsByTagName('span')[0],
+                    intervalId = setInterval(function() {
+                        $timeout.innerText = counter;
+                        counter -= 1;
+                        if (counter === 0) {
+                            clearInterval(intervalId);
+                            redirect();
+                        }
+                    }, 1000);
+            {elseif !$_system_error_msg && !$_is_force_login_not_bound && !$_redirect_error_message && !$_is_already_bound}
                 redirect();
             {/if}
 

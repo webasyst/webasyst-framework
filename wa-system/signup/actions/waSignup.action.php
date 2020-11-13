@@ -363,7 +363,7 @@ class waSignupAction extends waViewAction
                 $ignore_url = is_string($ignore_url) ? $ignore_url : '';
 
                 // if referer "looks like" ignorable url
-                if (strpos($referer, $ignore_url) !== false || strpos($ignore_url, $referer) !== false) {
+                if (!is_null($referer) && (strpos($referer, $ignore_url) !== false || strpos($ignore_url, $referer) !== false)) {
                     // Suck url not consider as referer
                     $referer = null;
                 }

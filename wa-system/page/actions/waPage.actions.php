@@ -142,6 +142,17 @@ class waPageActions extends waActions
             $url = null;
         }
 
+        $warnings = array();
+        if (!isset($routes[$domain.'/'.$route])) {
+            if (empty($page)) {
+                $warnings['no_site_storefront'] = true;
+            } elseif (empty($routes)) {
+                $warnings['deleted_site_storefront'] = true;
+            } else {
+                $warnings['several_site_storefront'] = true;
+            }
+        }
+
         if ($url) {
             $idna = new waIdna();
             $url_decoded = $idna->decode($url);
@@ -152,6 +163,7 @@ class waPageActions extends waActions
         $data = array(
             'url'          => $url,
             'url_decoded'  => $url_decoded,
+            'warnings'     => $warnings,
             'page'         => $page,
             'page_url'     => $this->url,
             'options'      => $this->options,

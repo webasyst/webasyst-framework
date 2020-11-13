@@ -47,6 +47,8 @@ class waAppTokensModel extends waModel
 
         $token = urlencode($token);
 
-        return wa()->getRootUrl(true).'link.php/'.$token.'/';
+        $root_url = wa()->getRootUrl(true);
+        $root_url = waIdna::dec($root_url);
+        return $root_url.'link.php/'.$token.'/';
     }
 }

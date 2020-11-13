@@ -320,14 +320,23 @@ class waOAuthController extends waViewController
                 $photo_url_parts = explode('/', $photo_url);
                 $path = wa()->getTempPath('auth_photo/'.$contact_id.'.'.md5(end($photo_url_parts)), $app_id);
                 file_put_contents($path, $photo);
-                $contact->setPhoto($path);
+
+                try {
+                    $contact->setPhoto($path);
+                } catch (Exception $exception) {
+
+                }
             }
         }
+
         /**
          * @event signup
          * @param waContact $contact
          */
         wa()->event('signup', $contact);
+
+        $this->logAction('signup', wa()->getEnv(), null, $contact->getId());
+
         return $contact;
     }
 

@@ -79,6 +79,9 @@ class waBackendLoginForm extends waLoginForm
 
         $assign['webasyst_id_auth_result'] = isset($this->options['webasyst_id_auth_result']) ? $this->options['webasyst_id_auth_result'] : [];
 
+        // force login form in backend if webasyst ID auth is forced
+        $assign['force_login_form'] = wa()->getRequest()->get('force_login_form');
+
         return $assign;
     }
 

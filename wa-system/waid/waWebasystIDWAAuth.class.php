@@ -83,7 +83,84 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
             $callback_url .= '&referrer_url=' . $referrer_url;
         }
 
+        // all other get params leave as it is
+
+        $ignore = ['provider', 'type', 'backend_auth', 'invite_token', 'referrer_url', 'code', 'state'];
+        $ignore = array_flip($ignore);
+        foreach (waRequest::get() as $key => $value) {
+            if (!isset($ignore[$key]) && $value) {
+                $callback_url .= '&' . $key . '=' . $value;
+            }
+        }
+
         return $callback_url;
+    }
+
+    /**
+     * Get url to auth to backend of installation by webasyst ID oauth
+     * @param array $params - key-value map of params to mixin into url
+     *      $params['referrer_url'] [optional] - url of referrer, i.e. url where come back after oauth flow. If missed (or empty) will be current request url
+     * @return string
+     * @throws waException
+     */
+    public function getBackendAuthUrl(array $params = [])
+    {
+        $params['backend_auth'] = 1;
+        return $this->getAuthUrl($params);
+    }
+
+    /**
+     * @param string $invite_token
+     * @param array $params - key-value map of params to mixin into url
+     *      $params['referrer_url'] [optional] - url of referrer, i.e. url where come back after oauth flow. If missed (or empty) will be current request url
+     * @return string
+     * @throws waException
+     */
+    public function getInviteAuthUrl($invite_token, array $params = [])
+    {
+        $params['invite_token'] = $invite_token;
+        return $this->getAuthUrl($params);
+    }
+
+    public function getBindUrl(array $params = [])
+    {
+        return $this->getAuthUrl($params);
+    }
+
+    /**
+     * Get url to auth to installation by webasyst ID oauth (backend_auth, invite)
+     * @param array $params - key-value map of params to mixin into url
+     *      $params['referrer_url'] [optional] - url of referrer, i.e. url where come back after oauth flow. If missed (or empty) will be current request url
+     * @return string
+     * @throws waException
+     */
+    protected function getAuthUrl(array $params = [])
+    {
+        $referrer_url = isset($params['referrer_url']) ? $params['referrer_url'] : null;
+
+        if (!$referrer_url) {
+            $url = wa()->getConfig()->getRequestUrl(false, false);
+            $url = ltrim($url, '/');
+            $domain = wa()->getConfig()->getDomain();
+
+            if (waRequest::isHttps()) {
+                $referrer_url = "https://{$domain}/{$url}";
+            } else {
+                $referrer_url = "http://{$domain}/{$url}";
+            }
+        }
+
+        $referrer_url = waUtils::urlSafeBase64Encode($referrer_url);
+
+        $params['referrer_url'] = $referrer_url;
+
+        if ($this->getClientManager()->isBackendAuthForced()) {
+            $params['mode'] = 'forced';
+        }
+
+        $params_str = http_build_query($params);
+
+        return $this->getUrl() . '&' . $params_str;
     }
 
     /**
@@ -111,6 +188,33 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
     public function isInviteAuth()
     {
         return waRequest::get('invite_token');
+    }
+
+    /**
+     * @return array|null $dispatch - if array that must be of format
+     *      string $dispatch['app'] -
+     *      string $dispatch['module']
+     *      string $dispatch['action'] [optional]
+     *      ...other key-value pairs that would be interpreted by concrete app
+     */
+    public function getDispatchParams()
+    {
+        $dispatch = waRequest::get('dispatch');
+        if (!$dispatch) {
+            return null;
+        }
+
+        $dispatch = waUtils::urlSafeBase64Decode($dispatch);
+        if (!is_string($dispatch) || strlen($dispatch) <= 0) {
+            return null;
+        }
+
+        parse_str($dispatch, $result);
+        if (!isset($result['app']) && !isset($result['module'])) {
+            return null;
+        }
+
+        return $result;
     }
 
     /**
@@ -191,6 +295,7 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
      *      - 'webasyst_token_params' to store token params itself
      *      - 'webasyst_contact_id' to bind with Webasyst ID contact
      *
+     * @param waContact $user
      * @param array $params - here is access token params with expected format:
      *      - string $params['access_token'] [required] - access token itself (jwt)
      *      - string $params['refresh_token'] [required] - refresh token to refresh access token
@@ -200,7 +305,10 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
      * @param bool $force - force renew binding even if this is conflict with existing binding
      * @return array $result
      *      bool  $result['status'] - bind status
-
+     *
+     *      string $result['details']['error_code']                         - if $result['status'] === FALSE
+     *      string $result['details']['error_message']                      - if $result['status'] === FALSE
+     *
      *      array $result['details']['webasyst_contact_info']               - info about webasyst contact, always returns
      *      array $result['details']['bound_contact_info'] [optional]       - info about bound contact (that is conflicted with current user), returns in case of conflict
      *      array $result['details']['current_user_info'] [optional]        - info about current user, returns in case of conflict
@@ -213,15 +321,12 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
      *
      * @throws waException
      */
-    public function bindWithWebasystContact($params, $force = false)
+    public function bindUserWithWebasystContact(waContact $user, $params, $force = false)
     {
         // Extract Webasyst contact
         $m = new waWebasystIDAccessTokenManager();
         $token_info = $m->extractTokenInfo($params['access_token']);
         $contact_id = $token_info['contact_id'];
-
-        // This is current user
-        $user = wa()->getUser();
 
         // Found contact that already bound with this Webasyst contact
         $cwm = new waContactWaidModel();
@@ -234,10 +339,11 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         $webasyst_contact_info = $this->getUserData($params);
 
         if ($is_conflict && !$force) {
-
             return [
                 'status' => false,
                 'details' => [
+                    'error_code' => 'already_bound',
+                    'error_message' => _ws('Already bound'),
                     'webasyst_contact_info' => $webasyst_contact_info,
                     'bound_contact_info' => $this->getContactInfo(new waContact($bound_contact_id)),
                     'current_user_info' => $this->getContactInfo($user)
@@ -257,5 +363,11 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
                 'webasyst_contact_info' => $webasyst_contact_info,
             ]
         ];
+    }
+
+
+    public function bindWithWebasystContact($params, $force = false)
+    {
+        return $this->bindUserWithWebasystContact(wa()->getUser(), $params, $force);
     }
 }

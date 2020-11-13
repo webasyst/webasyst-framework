@@ -943,6 +943,32 @@ table.zebra tr.selected .s-single-line:after {
   position: relative;
   top: -17px;
 }
+.s-auth-settings-page .s-waid-force-auth-toggle {
+  display: inline-block;
+  margin-right: 10px;
+}
+.s-auth-settings-page .s-force-description {
+  display: inline-block;
+}
+.s-auth-settings-page .s-force-description .icon16 {
+  margin-top: 0;
+}
+.s-auth-settings-page .s-force-description .s-green {
+  color: #008000;
+}
+.s-auth-settings-page .s-force-description .s-force-save-status {
+  display: none;
+}
+.s-auth-settings-page .s-auth-settings-fields-block-cover {
+  background: #fff;
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
+  z-index: 100;
+  right: 0;
+  position: absolute;
+  height: 100%;
+}
 .s-field-settings-page .s-field-constructor .hint {
   padding: 0 2px;
 }
@@ -1325,5 +1351,21 @@ table.zebra tr.selected .s-single-line:after {
   margin-left: 2px;
 }
 .s-waid-settings-page .hidden {
+  display: none;
+}
+.s-waid-settings-page .s-waid-force-auth-toggle {
+  display: inline-block;
+  margin-right: 10px;
+}
+.s-waid-settings-page .s-force-description {
+  display: inline-block;
+}
+.s-waid-settings-page .s-force-description .icon16 {
+  margin-top: 0;
+}
+.s-waid-settings-page .s-force-description .s-green {
+  color: #008000;
+}
+.s-waid-settings-page .s-force-description .s-force-save-status {
   display: none;
 }

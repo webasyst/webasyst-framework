@@ -112,7 +112,9 @@ class waAPIController
 
         // check app access
         if (!waSystem::getInstance()->appExists($app)) {
-            throw new waAPIException('invalid_request', 'App is not installed ('.$app.')');
+            throw new waAPIException('app_not_installed', 'App is not installed ('.$app.')', 400, [
+                'app' => $app
+            ]);
         }
         if (wa()->getUser()->getRights($app, 'backend') <= 0) {
             throw new waAPIException('access_denied', 403);

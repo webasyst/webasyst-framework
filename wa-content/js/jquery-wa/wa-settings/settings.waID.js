@@ -9,6 +9,7 @@ var WASettingsWaID = ( function($) {
         that.$upgrade_all_checkbox = that.$wrapper.find('.js-upgrade-all');
         that.$connect_youself = that.$wrapper.find('.js-connect-yourself');
         that.$disconnect_button = that.$wrapper.find('.js-disconnect-to-waid');
+        that.$force_auth_toggle = that.$wrapper.find('.js-force-auth-toggle');
         that.$sidebar_wrapper = $('#s-sidebar-wrapper');
 
         // VARS
@@ -18,6 +19,8 @@ var WASettingsWaID = ( function($) {
 
         that.oauth_modal = options.oauth_modal || false;
         that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
+
+        that.locale = options.locale || {};
 
         // INIT
         that.init();
@@ -43,6 +46,8 @@ var WASettingsWaID = ( function($) {
 
         that.current_page_url = $current_sidebar_item.find('a').attr('href');
 
+        that.initForceAuthToggle();
+
         that.initWebasystIDHelpLink();
 
         that.initReInviteLinks();
@@ -51,6 +56,38 @@ var WASettingsWaID = ( function($) {
         // run automatically invitation process
         if (that.upgrade_all) {
             that.runBulkInviting();
+        }
+    };
+
+    WASettingsWaID.prototype.initForceAuthToggle = function() {
+        var that = this,
+            $toggle = that.$force_auth_toggle,
+            $status = that.$wrapper.find('.js-force-save-status');
+
+        $toggle.iButton({
+            labelOn: "",
+            labelOff: "",
+            className: "s-waid-force-auth-toggle",
+            classContainer: 'ibutton-container mini'
+        });
+
+        var timer_id = null;
+
+        $toggle.on('change', function () {
+            var url = that.wa_backend_url + "?module=settingsWaID&action=save";
+            $.post(url, $toggle.serialize())
+                .done(function () {
+                    timer_id && clearTimeout(timer_id);
+                    $status.show();
+                    timer_id = setTimeout(function () {
+                        $status.fadeOut(500);
+                        timer_id = null;
+                    }, 2000);
+                });
+        });
+
+        if ($toggle.attr('disabled')) {
+            that.$wrapper.find('.s-waid-force-auth-toggle').attr('title', that.locale.disabled_toggle_reason || '');
         }
     };
 

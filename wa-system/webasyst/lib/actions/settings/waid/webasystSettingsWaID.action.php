@@ -2,6 +2,17 @@
 
 class webasystSettingsWaIDAction extends webasystSettingsViewAction
 {
+    /**
+     * @var waWebasystIDClientManager
+     */
+    protected $cm;
+
+    public function __construct($params = null)
+    {
+        parent::__construct($params);
+        $this->cm = new waWebasystIDClientManager();
+    }
+
     public function execute()
     {
         $connected_users = [];
@@ -10,7 +21,7 @@ class webasystSettingsWaIDAction extends webasystSettingsViewAction
         $not_connected_users = [];
         $not_connected_users_count = 0;
 
-        $is_connected = $this->isConnected();
+        $is_connected = $this->cm->isConnected();
         if ($is_connected) {
             list($connected_users, $connected_users_count) = $this->getConnectedUsers();
             list($not_connected_users, $not_connected_users_count) = $this->getNotConnectedUsers();
@@ -18,20 +29,16 @@ class webasystSettingsWaIDAction extends webasystSettingsViewAction
 
         $this->view->assign([
             'is_connected' => $is_connected,
+            'is_backend_auth_forced' => $this->cm->isBackendAuthForced(),
             'connected_users' => $connected_users,
             'connected_users_count' => $connected_users_count,
             'not_connected_users' => $not_connected_users,
             'not_connected_users_count' => $not_connected_users_count,
             'users_count' => $this->getUsersCount(),
             'upgrade_all' => (bool)$this->getRequest()->get('upgrade_all'),
-            'webasyst_id_auth_url' => $this->getWebasystIDAuthUrl()
+            'webasyst_id_auth_url' => $this->getWebasystIDAuthUrl(),
+            'is_user_bound_to_webasyst_id' => (bool)wa()->getUser()->getWebasystContactId(),
         ]);
-    }
-
-    protected function isConnected()
-    {
-        $manager = new waWebasystIDClientManager();
-        return $manager->isConnected();
     }
 
     protected function getConnectedUsers()
@@ -111,8 +118,7 @@ class webasystSettingsWaIDAction extends webasystSettingsViewAction
 
     protected function getWebasystIDAuthUrl()
     {
-        $m = new waWebasystIDClientManager();
-        if ($m->isConnected()) {
+        if ($this->cm->isConnected()) {
             $auth = new waWebasystIDWAAuth();
             return $auth->getUrl();
         }

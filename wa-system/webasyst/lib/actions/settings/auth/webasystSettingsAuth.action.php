@@ -79,7 +79,23 @@ class webasystSettingsAuthAction extends webasystSettingsViewAction
             'images_path'                => $images_path,
             'custom_image'               => $custom_image,
             'demo_captcha'               => wa()->getCaptcha(),
+            'is_waid_connected'          => $this->isWaidConnected(),
+            'is_backend_auth_forced'     => $this->isWaidForced(),
+            'is_user_bound_to_webasyst_id' => (bool)wa()->getUser()->getWebasystContactId(),
+            'waid_settings_link' => wa()->getAppUrl('webasyst') . 'webasyst/settings/waid/'
         ));
+    }
+
+    private function isWaidConnected()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isConnected();
+    }
+
+    private function isWaidForced()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isBackendAuthForced();
     }
 
     private function getImages($path)

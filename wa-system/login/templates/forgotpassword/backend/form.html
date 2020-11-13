@@ -50,12 +50,12 @@
             <input type="submit" value="[s`Password recovery`]" class="button green wa-recovery-button">
             <input type="submit" value="[`Confirm and change password`]" class="button gray wa-confirm-button">
 
-            <a href="{$login_url}" class="wa-remember-now-link" data-type="login">[s`I remember it now!`]</a>
+            <a href="{$login_url}{if $force_login_form}?force_login_form=1{/if}" class="wa-remember-now-link" data-type="login">[s`I remember it now!`]</a>
         </div>
     </div>
 
     <div class="field wa-back-to-login-page-link-wrapper" style="display: none">
-        <a href="{$login_url}" data-type="login">[s`Back to login page`]</a>
+        <a href="{$login_url}{if $force_login_form}?force_login_form=1{/if}" data-type="login">[s`Back to login page`]</a>
     </div>
 
     {$renderer->renderCsrf()}
