@@ -17,6 +17,8 @@
  * @property-read $caution
  * @property-read $caution_percent
  * @property-read $max_weight
+ * @property-read $max_volume
+ * @property-read $max_side_length
  * @property-read $complex_calculation_weight
  * @property-read $complex_calculation_percent
  * @property-read $commission
@@ -326,7 +328,7 @@ class russianpostShipping extends waShipping
             $rate['bookpost'] = $this->getBookpostRate($weight, $zone);
         }
 
-        if ($this->complex_calculation_weight > 0 && $weight > $this->complex_calculation_weight) {
+        if ($this->complex_calculation_weight > 0 && $weight > $this->complex_calculation_weight || !$this->isValidSize()) {
             $ccp = $this->complex_calculation_percent;
             $percent = ifset($ccp, 0) / 100;
             $rate['parcel'] += $rate_parcel * $percent;
@@ -1915,6 +1917,11 @@ HTML;
         return 'kg';
     }
 
+    public function allowedLinearUnit()
+    {
+        return 'cm';
+    }
+
     /**
      * Предварительная подготовка данных для сохранения настроек с помощью метода saveSettings() базового класса waSystemPlugin.
      *
@@ -2131,5 +2138,56 @@ HTML;
         } else {
             return false;
         }
+    }
+
+    public function getTotalSize()
+    {
+        return parent::getTotalSize();
+    }
+
+    /**
+     * Проверяет каждый товар на превышение размера
+     *
+     * @return bool
+     */
+    protected function isValidSize()
+    {
+        $is_valid = true;
+
+        $max_side_length = $this->max_side_length;
+        $max_volume = $this->max_volume;
+        if (!empty($max_side_length) && !empty($max_volume)) {
+            $items = $this->getItems();
+            $total_size = $this->getTotalSize();
+
+            if ($total_size === null) {
+                foreach ($items as $item) {
+                    $item_l = ifset($item, 'length', 0);
+                    $item_w = ifset($item, 'width', 0);
+                    $item_h = ifset($item, 'height', 0);
+
+                    $item_volume = $item_l + $item_w + $item_h;
+
+                    if ($item_volume > $max_volume
+                        || $item_l > $max_side_length || $item_w > $max_side_length || $item_h > $max_side_length
+                    ) {
+                        $is_valid = false;
+                        break;
+                    }
+                }
+            } elseif (is_array($total_size)) {
+                $total_volume = $total_size['height'] + $total_size['width'] + $total_size['length'];
+
+                if ($total_volume > $max_volume
+                    || $total_size['length'] > $max_side_length || $total_size['width'] > $max_side_length || $total_size['height'] > $max_side_length
+                ) {
+                    $is_valid = false;
+                }
+            } else {
+                $is_valid = false;
+            }
+        }
+
+        return $is_valid;
     }
 }
