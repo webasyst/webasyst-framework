@@ -944,7 +944,7 @@ SQL;
                 $url_validator = new blogSlugValidator();
             }
 
-            $url_validator->setSubject(_w('post','posts', 1));
+            $url_validator->setSubject(blogSlugValidator::SUBJECT_POST);
 
             if (!$url_validator->isValid($data['url'])) {
 

@@ -88,7 +88,6 @@ class blogFrontendAction extends blogViewAction
         }
         $blogs = blogHelper::getAvailable();
 
-
         $posts = $post_model
                  ->search($this->search_params, $options, array('blog' => $blogs))
                  ->fetchSearchPage($this->page, $posts_per_page);
@@ -97,6 +96,9 @@ class blogFrontendAction extends blogViewAction
         $stream_title = false;
 
         if (isset($this->search_params['contact_id'])) {
+            if (empty($this->search_params['contact_id'])) {
+                throw new waException(_w('Blog not found'), 404);
+            }
             if (count($posts)) {
                 reset($posts);
                 $post = current($posts);
@@ -174,7 +176,7 @@ class blogFrontendAction extends blogViewAction
         $this->view->assign('show_comments', !isset($options['comments']) || $options['comments']);
         $this->view->assign('posts_per_page', $posts_per_page);
         $this->view->assign('blog_query', htmlspecialchars($query));
-        
+
         /**
          * Backward compatibility with older themes
          * @deprecated
@@ -198,7 +200,9 @@ class blogFrontendAction extends blogViewAction
         if ($this->cache_time && false) {
             $this->cache->set(array_keys($posts));
         }
-
+        if ($this->page > 1) {
+            $url .= '?page=' . $this->page;
+        }
         $this->getResponse()->setCanonical($url);
     }
 }
