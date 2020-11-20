@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.3.11">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.3.12">
     <name locale="en_US">Mobile</name>
     <name locale="ru_RU">Mobile</name>
     <description locale="en_US">Theme for mobile devices</description>
@@ -120,6 +120,13 @@
             <name locale="en_US">Brief working schedule</name>
             <description locale="ru_RU">Например: Пн—Сб 08:00–18:00</description>
             <description locale="en_US">Example: Mo—Sa 08:00–18:00</description>
+        </setting>
+        <setting var="show_cart" control_type="checkbox">
+            <value>1</value>
+            <name locale="ru_RU">Показывать корзину покупок</name>
+            <name locale="en_US">Show shopping cart</name>
+            <description locale="ru_RU">Корзина будет показана, если на сайте настроена хотя бы одна витрина интернет-магазина Shop-Script.</description>
+            <description locale="en_US">The shopping cart will be shown if at least one Shop-Script storefront is set up on the website.</description>
         </setting>
     </settings>
     <locales>

@@ -14,7 +14,8 @@
     </div>
 
     <div class="basket-wrapper">
-        {if $wa->shop}
+        {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
+          && !empty($theme_settings.show_cart)}
             {$_cart_url = $wa->getUrl('shop/frontend/cart')}
             {if method_exists($wa->shop, 'checkout')}
                 {$_cart_url = $wa->shop->checkout()->cartUrl()}
