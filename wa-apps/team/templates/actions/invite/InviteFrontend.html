@@ -26,7 +26,7 @@
             {include file="./webasyst_contact_info.inc.html" webasyst_contact_info=$webasyst_id_auth_result.details.webasyst_contact_info|default:[]}
         {/if}
 
-        <form action="" method="post">
+        <form action="{$token_link}" method="post">
             <h1{if !empty($title_style)} style="{$title_style}"{/if}>{$title|escape}</h1>
             <p>[`Please specify login and password to create new backend user.`]</p>
             <div class="t-fields">

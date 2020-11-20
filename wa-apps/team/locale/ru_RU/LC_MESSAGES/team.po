@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1368,3 +1368,12 @@ msgstr "Завтра"
 
 msgid "Authorization with Webasyst ID has failed, try to log in with a login name and a password."
 msgstr "Авторизация с Webasyst ID не удалась, попробуйте войти с логином и паролем."
+
+msgid "Block"
+msgstr "Заблокировать"
+
+msgid "Optional comment about the reason for blocking"
+msgstr "Опциональный комментарий о причине блокировки"
+
+msgid "Reason for blocking:"
+msgstr "Причина блокировки:"

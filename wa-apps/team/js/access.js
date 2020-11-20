@@ -900,26 +900,42 @@ window.ProfileAccessTab = function(o) { "use strict";
             return;
         }
 
-        var $fields = $('.basic-user-fields');
+        var $fields = $('.basic-user-fields'),
+            $block_form = $('.js-block-user-reason-form');
 
-        // Link to block contact
-        var $link_block = $('#c-access-link-block').click(function() {
+        $block_form.on('click', '.js-block-user-cancel', function () {
+            $block_form.hide();
+        });
+
+        $block_form.on('submit', function (e) {
+            e.preventDefault();
+
             if (!confirm($link_block.data('alert'))) {
-                return false;
+                return;
             }
+
+            var $textarea = $block_form.find('.js-block-user-reason'),
+                text = $.trim($textarea.val());
 
             $('.c-shown-on-enabled').hide();
             var $loading = $link_unblock.parent().find('.loading').show();
             $.post(wa_app_url+'?module=accessSave&action=ban&id='+contact_id, {
-                magic_word: 'please'
+                magic_word: 'please',
+                text: text
             }, function(r) {
                 $loading.hide();
+                $block_form.hide();
                 if (r.status === 'ok') {
                     $fields.addClass('gray');
                     $('.c-shown-on-disabled').show();
                     $('#tc-user-access-disabled').show().html(r.data.access_disable_msg);
                 }
             }, 'json');
+        });
+
+        // Link to block contact
+        var $link_block = $('#c-access-link-block').click(function() {
+            $block_form.show();
         });
 
         // Link to unblock contact

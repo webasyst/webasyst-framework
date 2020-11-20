@@ -100,7 +100,8 @@ class teamProfileAccessAction extends waViewAction
             'is_connected_to_webasyst_id'    => $this->isConnectedToWebasystID(),
             'is_bound_with_webasyst_contact' => $user->getWebasystContactId() > 0,
             'customer_center_auth_url'       => $this->getCustomerCenterAuthUrl(),
-            'webasyst_id_email'              => $this->getWebasystIDEmail()
+            'webasyst_id_email'              => $this->getWebasystIDEmail(),
+            'is_webasyst_id_forced'          => $this->isWebasystIDForced(),
         ));
     }
 
@@ -176,7 +177,8 @@ class teamProfileAccessAction extends waViewAction
         } catch (Exception $e) {
             $name = _w('deleted contact_id=').$log_item['contact_id'];
         }
-        return sprintf_wp(
+
+        $text = sprintf_wp(
             'Access disabled by %1$s, %2$s',
             sprintf(
                 '<a href="%s">%s</a>',
@@ -185,6 +187,22 @@ class teamProfileAccessAction extends waViewAction
             ),
             wa_date("humandatetime", $log_item['datetime'])
         );
+
+        $log_item_params = [];
+        if ($log_item['params']) {
+            $log_item_params = json_decode($log_item['params'], true);
+            if (!is_array($log_item_params)) {
+                $log_item_params = [];
+            }
+        }
+
+        if (isset($log_item_params['reason'])) {
+            $text .= 
+                '<br><br>' . _w('Reason for blocking:') . 
+                '<br><br><em>' . nl2br(htmlspecialchars($log_item_params['reason'])) . '</em>';
+        }
+
+        return $text;
     }
 
     protected function getEmailChangeLog()
@@ -276,6 +294,12 @@ class teamProfileAccessAction extends waViewAction
     {
         $m = new waWebasystIDClientManager();
         return $m->isConnected();
+    }
+
+    protected function isWebasystIDForced()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isBackendAuthForced();
     }
 
     /**

@@ -86,7 +86,9 @@
                             <a class="bold underline js-customer-center-auth" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[`Go to the Webasyst Customer Center`]</a>
                         {/if}
 
-                        <a href="#" class="hint js-webasyst-id-unbind-auth">[`Disconnect`]</a>
+                        {if !$is_webasyst_id_forced}
+                            <a href="#" class="hint js-webasyst-id-unbind-auth">[`Disconnect`]</a>
+                        {/if}
 
                     {elseif $is_own_profile}
 
@@ -121,13 +123,15 @@
 <div class="block not-padded">
     <div class="fields basic-user-fields" style="width:100%;">
         <div class="field-group">
-            <div class="field" style="margin-bottom: 10px;">
-                <div class="name">[`Login`]</div>
-                <div class="value">
-                    <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
+            {if !$is_webasyst_id_forced}
+                <div class="field" style="margin-bottom: 10px;">
+                    <div class="name">[`Login`]</div>
+                    <div class="value">
+                        <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
+                    </div>
                 </div>
-            </div>
-            {$password_block}
+                {$password_block}
+            {/if}
             {$waid_block}
         </div>
     </div>
@@ -147,24 +151,37 @@
                     <strong class="large">[`Administrator`]</strong>
                     <br><span class="hint">[`You cannot revoke administrative access level for yourself. Only another Administrator can do this.`]</span>
                 {else}
-                    <select id="c-access-rights-toggle">
-                        <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
-                        <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
-                        <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
-                    </select>
 
-                    <span id="access-rights-toggle-confirm" style="display:none;">
-                        <a href="javascript:void(0)" class="button yellow">[`Confirm access change`]</a>
-                        [`or`]
-                        <a href="javascript:void(0)" class="cancel">[`cancel`]</a>
-                    </span>
+                    {$_has_credentials = $contact.login && $contact.password}
 
-                    {if !$gNoAccess}
-                        <span id="c-access-rights-hint-warning" class="c-access-not-allowed-hint" style="display:none;color:red"><span>[`Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user.`]</span></span>
+                    {*
+                        Selector not avaiable if contact without credentials and webasyst ID forced mode on
+                        Only option for contact became backend user send invitation link
+                    *}
+                    {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
+
+                    {if $_selector_avaiable}
+                        <select id="c-access-rights-toggle">
+                            <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
+                            <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
+                            <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
+                        </select>
+
+                        <span id="access-rights-toggle-confirm" style="display:none;">
+                            <a href="javascript:void(0)" class="button yellow">[`Confirm access change`]</a>
+                            [`or`]
+                            <a href="javascript:void(0)" class="cancel">[`cancel`]</a>
+                        </span>
+
+                        {if !$gNoAccess}
+                            <span id="c-access-rights-hint-warning" class="c-access-not-allowed-hint" style="display:none;color:red"><span>[`Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user.`]</span></span>
+                        {/if}
+
+                        <i class="icon16 loading" style="margin-left:16px;display:none;white-space:normal"></i>
+                        <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
+                    {else}
+                        <span>[`No access`]</span>
                     {/if}
-
-                    <i class="icon16 loading" style="margin-left:16px;display:none;white-space:normal"></i>
-                    <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
                 {/if}
             </div>
 
@@ -194,66 +211,69 @@
 
         </div>
 
-        <div id="c-credentials-block" style="display:none;">
-            <form id="c-credentials-form" method="post" action="{$wa_app_url}?module=accessSave&action=grant&id={$contact.id}">
-                <div class="field">
-                    <div class="name">[`Login`]</div>
-                    <div class="value">
-                        <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
-                        <span class="hint">
-                            [`Login name is required to access your account backend.`]<br>
-                            [`E.g., john, agent07, etc.`]
-                        </span>
-                    </div>
-                </div>
-                <div class="field ">
-                    <div class="name">[`New password`]</div>
-                    <div class="value">
-                        <input name="password" type="password" class="c-password-input" autocomplete="off" />
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="name">[`Confirm password`]</div>
-                    <div class="value">
-                        <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" /><br>
-                        <span class="hint">[`The same password is used to access personal account and backend.`]</span>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="name"></div>
-                    <div class="value">
-                        <input type="submit" class="button green" value="[`Save`]"> [`or`]
-                        <a class="inline-link cancel" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="c-login-block" style="display:none;">
-            <form id="c-login-form" method="post" action="{$wa_app_url}?module=accessSave&action=login&id={$contact.id}">
-                <div class="field">
-                    <div class="name">[`Login`]</div>
-                    <div class="value">
-                        <div class="c-one-tab">
-                            <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
-                            <a href="javascript:void(0)" class="small inline-link c-tab-toggle" style=""><b><i>[`change login`]</i></b></a>
-                        </div>
-                        <div class="c-two-tab" style="display:none;">
+        {if !$is_webasyst_id_forced}
+            <div id="c-credentials-block" style="display:none;">
+                <form id="c-credentials-form" method="post" action="{$wa_app_url}?module=accessSave&action=grant&id={$contact.id}">
+                    <div class="field">
+                        <div class="name">[`Login`]</div>
+                        <div class="value">
                             <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
                             <span class="hint">
                                 [`Login name is required to access your account backend.`]<br>
                                 [`E.g., john, agent07, etc.`]
-                            </span><br><br>
-                            <input type="submit" class="button green" value="[`Save`]"> [`or`]
-                            <a class="inline-link cancel c-tab-toggle" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
-                            <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                            </span>
                         </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                    <div class="field ">
+                        <div class="name">[`New password`]</div>
+                        <div class="value">
+                            <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Confirm password`]</div>
+                        <div class="value">
+                            <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" /><br>
+                            <span class="hint">[`The same password is used to access personal account and backend.`]</span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name"></div>
+                        <div class="value">
+                            <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                            <a class="inline-link cancel" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-        {$password_block}
+            <div id="c-login-block" style="display:none;">
+                <form id="c-login-form" method="post" action="{$wa_app_url}?module=accessSave&action=login&id={$contact.id}">
+                    <div class="field">
+                        <div class="name">[`Login`]</div>
+                        <div class="value">
+                            <div class="c-one-tab">
+                                <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
+                                <a href="javascript:void(0)" class="small inline-link c-tab-toggle" style=""><b><i>[`change login`]</i></b></a>
+                            </div>
+                            <div class="c-two-tab" style="display:none;">
+                                <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
+                                <span class="hint">
+                                    [`Login name is required to access your account backend.`]<br>
+                                    [`E.g., john, agent07, etc.`]
+                                </span><br><br>
+                                <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                                <a class="inline-link cancel c-tab-toggle" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
+                                <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            {$password_block}
+        {/if}
+
         {$waid_block}
 
         <div class="c-shown-on-access">
@@ -347,7 +367,7 @@
             <div class="field">
                 <div class="name">[`Access`]</div>
                 <div class="value">
-                    <div class="left" style="width: 45%;">
+                    <div class="left">
                         {* Toggle to ban user or contact. Can not ban self. *}
                         {if empty($own_profile)}{strip}
                             <a href="javascript:void(0)"
@@ -366,12 +386,21 @@
                             >
                                 <b>[`Unblock contact`]</b>
                             </a>
+
+                            <form class="js-block-user-reason-form" style="display: none">
+                                <br>
+                                <textarea class="js-block-user-reason" placeholder="[`Optional comment about the reason for blocking`]"></textarea><br><br>
+                                <div>
+                                    <input class="button red" type="submit" value="[`Block`]"> [`or`] <a href="javascript:void(0)" class="js-block-user-cancel">[`cancel`]</a>
+                                </div><br>
+                            </form>
+
                         {/strip}{else}
                             {if $contact.is_user == '-1'}[`Disabled`]{else}[`Enabled`]{/if}
                         {/if}
                         <i class="icon16 loading" style="display:none;"></i>
                     </div>
-                    <div class="right" style="width: 53%;">
+                    <div class="right">
 
                         <div class="field c-shown-on-enabled" id="tc-user-status-field" style="{if $contact.is_user === '-1'}display:none;{/if}">
                             <div class="name" style="width: 100%;">[`Status`]:

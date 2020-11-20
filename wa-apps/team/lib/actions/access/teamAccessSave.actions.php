@@ -35,6 +35,29 @@ class teamAccessSaveActions extends waJsonActions
     {
         $this->contact['is_user'] = -1;
         $this->saveContact();
+
+        $reason = $this->getRequest()->post('text', '', waRequest::TYPE_STRING_TRIM);
+
+        $log_model = new waLogModel();
+        $log_item = $log_model->select('*')->where(
+            "subject_contact_id = i:id AND action = 'access_disable'",
+            array('id' => $this->contact['id'])
+        )->order('id DESC')->limit(1)->fetch();
+
+        if ($log_item && strlen($reason) > 0) {
+            $log_item_params = [];
+            if ($log_item['params']) {
+                $log_item_params = json_decode($log_item['params'], true);
+                if (!is_array($log_item_params)) {
+                    $log_item_params = [];
+                }
+            }
+            $log_item_params['reason'] = $reason;
+            $log_model->updateById($log_item['id'], [
+                'params' => json_encode($log_item_params)
+            ]);
+        }
+
         $this->response = array(
             'access_disable_msg' => teamProfileAccessAction::getAccessDisableMsg($this->contact),
         );

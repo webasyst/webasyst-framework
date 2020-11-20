@@ -29,6 +29,8 @@ var InvitePage = ( function($) {
         //
         that.autoCenter();
 
+        that.initSubmit();
+
         that.initProfileWebasystIDHelpLink();
     };
 

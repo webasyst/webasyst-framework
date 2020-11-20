@@ -51,8 +51,9 @@
                             {foreach $user_name_formats as $format}
                                 <li class="t-item-wrapper">
                                     <label>
-                                        <input class="t-input" type="radio" name="data[user_name_format]" value="{$format.format}" {if $format.selected}checked="checked"{/if}>
-                                        <span class="t-name">{$format.name|escape}</span>
+                                        <input class="t-input" type="radio" name="data[user_name_format]" value="{$format.format}"
+                                               {if $format.selected}checked="checked"{/if} {if $format.disabled}disabled="disabled"{/if}>
+                                        <span class="t-name {if $format.disabled}gray{/if}">{$format.name|escape}</span>
                                     </label>
                                 </li>
                             {/foreach}

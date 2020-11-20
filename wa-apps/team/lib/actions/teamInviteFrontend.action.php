@@ -36,15 +36,24 @@ class teamInviteFrontendAction extends waViewAction
         // ID of invited contact
         $contact_id = $this->params['contact_id'];
 
-        // Has successful response from webasyst ID auth
-        if ($this->webasyst_id_auth_result && !empty($this->webasyst_id_auth_result['status'])) {
-            if ($this->afterWebasystIDAuth()) {
-                $this->authAsBackendUser($contact_id);  // this method will redirect automatically
-            } else {
-                $this->rollbackWebasystIDAuth();        // rollback webasyst ID auth if error happened
-                $errors['login'] = _w("Authorization with Webasyst ID has failed, try to log in with a login name and a password.");
+        if ($this->webasyst_id_auth_result) {
+            // Has successful response from webasyst ID auth
+            if (!empty($this->webasyst_id_auth_result['status'])) {
+                if ($this->afterWebasystIDAuth()) {
+                    $this->authAsBackendUser($contact_id);  // this method will redirect automatically
+                } else {
+                    $this->rollbackWebasystIDAuth();        // rollback webasyst ID auth if error happened
+                    $errors['login'] = _w("Authorization with Webasyst ID has failed, try to log in with a login name and a password.");
+                }
+            }
+        } else {
+            // backend auth forced by webasyst ID, no show dialog - go to webasyst ID right away
+            $cm = new waWebasystIDClientManager();
+            if ($cm->isBackendAuthForced()) {
+                $this->forceWebasystIDAuth();
             }
         }
+
 
         $data = waRequest::post('data', array(), 'array');
         $data += array(
@@ -90,6 +99,8 @@ class teamInviteFrontendAction extends waViewAction
         }
 
         list($background, $stretch) = webasystLoginLayout::getBackground();
+        
+        $token_link = waAppTokensModel::getLink($this->params['token']);
 
         $this->view->assign('stretch', $stretch);
         $this->view->assign('background', $background);
@@ -102,19 +113,26 @@ class teamInviteFrontendAction extends waViewAction
             'errors'     => $errors,
             'data'       => $data,
             'background_url' => wa()->getUrl() . 'wa-content/img/backgrounds/bokeh_vivid.jpg',
-            'webasyst_id_auth_url' => $this->getWebasystIDAuthUrl()
+            'webasyst_id_auth_url' => $this->getWebasystIDAuthUrl(),
+            'token_link' => $token_link
         ));
         $this->setTemplate('templates/actions/invite/InviteFrontend.html');
+    }
+
+    protected function forceWebasystIDAuth()
+    {
+        $auth = new waWebasystIDWAAuth();
+        $url = $auth->getInviteAuthUrl($this->params['token']);
+        $this->redirect($url);
     }
 
     protected function getWebasystIDAuthUrl()
     {
         $auth = new waWebasystIDWAAuth();
         if ($auth->isClientConnected()) {
-            return $auth->getUrl() . '&invite_token=' . $this->params['token'];
-        } else {
-            return null;
+            return $auth->getInviteAuthUrl($this->params['token']);
         }
+        return null;
     }
 
     /**

@@ -24,9 +24,17 @@ class teamUsersInviteformAction extends waViewAction
                 $locations[$id] = $g;
             }
         }
+
         $this->view->assign(array(
             'groups'    => $groups,
             'locations' => $locations,
+            'is_waid_forced' => $this->isBackendAuthForced()
         ));
+    }
+
+    protected function isBackendAuthForced()
+    {
+        $cm = new waWebasystIDClientManager();
+        return $cm->isBackendAuthForced();
     }
 }

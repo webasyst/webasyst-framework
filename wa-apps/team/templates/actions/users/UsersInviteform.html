@@ -19,11 +19,15 @@
                                     <input class="long bold large" type="text" name="email" placeholder="[`name@company.com`]">
                                 </div>
                                 <p class="hint">[`Please specify an email to send user invitation with further instructions.`]</p>
-                                <div style="margin-top: 1em;">
-                                    <label>
-                                        <input type="checkbox" name="create_user" value="1" class="t-create-user-toggle"> [`I will enter password on behalf of this user so no invitation will be sent.`]
-                                    </label>
-                                </div>
+
+                                {if !$is_waid_forced}
+                                    <div style="margin-top: 1em;">
+                                        <label>
+                                            <input type="checkbox" name="create_user" value="1" class="t-create-user-toggle"> [`I will enter password on behalf of this user so no invitation will be sent.`]
+                                        </label>
+                                    </div>
+                                {/if}
+
                             </div>
                         </div>
                         <div class="t-create-user-credentials" style="display: none">
