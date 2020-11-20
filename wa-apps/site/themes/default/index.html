@@ -181,7 +181,8 @@
 
                         <div class="column wa-flex-box middle">
                             {$_hide_cart = $wa->globals("hideCart")}
-                            {if $wa->shop && empty($_hide_cart)}
+                            {if $wa->shop && (!method_exists($wa->shop, 'hasRoutes') || $wa->shop->hasRoutes())
+                              && !empty($theme_settings.show_cart) && empty($_hide_cart)}
                                 <!-- cart -->
                                 {$cart_total = $wa->shop->cart->total()}
                                 <div id="cart" class="cart{if !$cart_total} empty{/if}">
