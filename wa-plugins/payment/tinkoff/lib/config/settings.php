@@ -36,11 +36,11 @@ return array(
         'description'  => /*_wp*/('Только для тестирования по старой схеме через платежный шлюз <em>https://rest-api-test.tinkoff.ru/rest/</em>'),
         'control_type' => waHtmlControl::CHECKBOX,
     ),
-    'atolonline_on' => array(
+    'check_data_tax' => array(
         'value'        => '',
-        'title'        => /*_wp*/('Интеграция с «АТОЛ Онлайн»'),
+        'title'        => /*_wp*/('Передавать данные для формирования чека'),
         'control_type' => waHtmlControl::CHECKBOX,
-        'description'  => 'Если включена интеграция, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
+        'description'  => 'Если включена интеграция с онлайн кассами, то клиенты смогут использовать этот способ оплаты только в следующих случаях:'
             .'<br>'
             .'— к элементам заказа и стоимости доставки не применяются налоги'
             .'<br>'
@@ -49,11 +49,11 @@ return array(
             <<<HTML
 <script type="text/javascript">
 (function () {
-    $(':input[name$="\[atolonline_on\]"]').unbind('change').bind('change', function (event) {
+    $(':input[name$="\[check_data_tax\]"]').unbind('change').bind('change', function (event) {
         var show = this.checked;
         var fast = !event.originalEvent;
         var name = [
-            'atolonline_sno',
+            'taxation',
             'payment_object_type_product',
             'payment_object_type_service',
             'payment_object_type_shipping',
@@ -84,7 +84,7 @@ HTML
         ,
     ),
 
-    'atolonline_sno' => array(
+    'taxation' => array(
         'value'        => '',
         'title'        => 'Система налогообложения',
         'control_type' => waHtmlControl::SELECT,

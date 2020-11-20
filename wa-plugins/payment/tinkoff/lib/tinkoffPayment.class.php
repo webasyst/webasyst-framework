@@ -13,8 +13,8 @@
  * @property-read        $currency_id
  * @property-read        $two_steps
  * @property-read        $testmode
- * @property-read int    $atolonline_on
- * @property-read string $atolonline_sno
+ * @property-read int    $check_data_tax
+ * @property-read string $taxation
  * @property-read string $payment_object_type_product
  * @property-read string $payment_object_type_service
  * @property-read string $payment_object_type_shipping
@@ -99,7 +99,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             $args['Recurrent'] = 'Y';
         }
 
-        if ($this->getSettings('atolonline_on')) {
+        if ($this->getSettings('check_data_tax')) {
             $args['Receipt'] = $this->getReceiptData($order_data);
             if (!$args['Receipt']) {
                 return 'Данный вариант платежа недоступен. Воспользуйтесь другим способом оплаты.';
@@ -398,7 +398,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
             $items = ifset($transaction_raw_data, 'refund_items', array());
 
-            if ($this->getSettings('atolonline_on') && $items) {
+            if ($this->getSettings('check_data_tax') && $items) {
                 $order_data = waOrder::factory(array(
                     'items'      => $items,
                     'currency'   => $transaction_raw_data['transaction']['currency_id'],
@@ -516,7 +516,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 'RebillId'  => $order_data['card_native_id'],
             );
 
-            if ($this->getSettings('atolonline_on')) {
+            if ($this->getSettings('check_data_tax')) {
                 $receipt = $this->getReceiptData($order_data);
                 if ($receipt) {
                     $args['Receipt'] = $receipt;
@@ -584,7 +584,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
             $args['Amount'] = round($order->total*100);
 
-            if ($this->getSettings('atolonline_on')) {
+            if ($this->getSettings('check_data_tax')) {
                 $args['Receipt'] = $this->getReceiptData($order);
             }
         }
@@ -787,6 +787,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     private function translateError($error_code)
     {
         $errors = [
+            0 => null,
             7 => 'Покупатель не найден',
             53 => 'Обратитесь к продавцу',
             100 => 'Повторите попытку позже',
@@ -861,7 +862,7 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
             }
             $this->receipt = array(
                 'Items'    => array(),
-                'Taxation' => $this->getSettings('atolonline_sno'),
+                'Taxation' => $this->getSettings('taxation'),
                 'Email'    => $email,
             );
             if ($phone = $order->getContactField('phone')) {
