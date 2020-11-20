@@ -11,7 +11,7 @@
         <div class="name">{$obj->_w('Country')}</div>
         <div class="value no-shift">
             <span class="list-saved-countries">{$list_saved_countries|escape}</span>
-            <i class="icon16 edit js-edit-countries">[`Edit`]</i>
+            <i class="icon16 edit js-edit-countries" title="[`Edit`]"></i>
             <input type="hidden" name="{$namespace}[countries]" id="saved-country-codes" value='{$saved_country_codes}'>
             <input type="hidden" name="{$namespace}[regions]" id="saved-region-codes" value='{$saved_region_codes}'>
 
@@ -23,12 +23,12 @@
     {foreach $all_allowed_countries as $country}
         <div class="field country-field" {if !$country.enabled}style="display: none"{/if}>
             <div class="name">
-                {sprintf_wp('Regions (%s)', $country.name|escape)}
+                {$obj->_w('Regions')} ({$country.name|escape})
             </div>
             <div class="value">
                 <span class="list-saved-regions">{$country.list_saved_regions|escape}</span>
-                <i class="icon16 edit js-edit-country-regions" data-country="{$country.iso3letter}">[`Edit`]</i>
-                <p class="small">[`Shipping will be available for selected regions only`]</p>
+                <i class="icon16 edit js-edit-country-regions" data-country="{$country.iso3letter}" title="[`Edit`]"></i>
+                <p class="small">{$obj->_w('Shipping will be available for selected regions only')}</p>
             </div>
         </div>
     {/foreach}

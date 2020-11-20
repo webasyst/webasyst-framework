@@ -16,7 +16,8 @@ class boxberryShippingSettingsRegionsValidateController extends waJsonController
 
         $all_country_regions = boxberryShippingCountriesAdapter::getRegions($country_code);
         if ($all_regions || empty($selected_regions) || count($selected_regions) == count($all_country_regions)) {
-            $this->response['list_saved_regions'] = _w('All regions');
+            $bxb = waShipping::factory('boxberry');
+            $this->response['list_saved_regions'] = $bxb->_w('All regions');
         } else {
             $regions[$country_code] = $selected_regions;
             $list_saved_regions = array();

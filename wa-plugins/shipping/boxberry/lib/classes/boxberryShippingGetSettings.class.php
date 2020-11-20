@@ -83,7 +83,7 @@ class boxberryShippingGetSettings
     private function getListSavedCountries($saved_country_codes, $saved_countries)
     {
         if (empty($saved_country_codes)) {
-            $list_saved_countries = _w('All countries');
+            $list_saved_countries = $this->bxb->_w('All countries');
         } else {
             $country_names = array();
             foreach ($saved_countries as $country) {
@@ -104,7 +104,7 @@ class boxberryShippingGetSettings
         }
         foreach ($saved_region_codes as $country_iso3 => $region_codes) {
             if (empty($region_codes)) {
-                $all_allowed_countries[$country_iso3]['list_saved_regions'] = _w('All regions');
+                $all_allowed_countries[$country_iso3]['list_saved_regions'] = $this->bxb->_w('All regions');
             } else {
                 $list_saved_regions = array();
                 foreach ($region_codes as $region_code) {

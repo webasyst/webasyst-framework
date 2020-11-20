@@ -12,6 +12,7 @@ class boxberryShippingSettingsActions extends waSystemPluginActions
         }
 
         $this->display(array(
+            'obj' => $this->plugin,
             'countries' => $countries,
             'selected_countries' => $selected_countries,
         ));
@@ -28,6 +29,7 @@ class boxberryShippingSettingsActions extends waSystemPluginActions
         }
 
         $this->display(array(
+            'obj' => $this->plugin,
             'country_code' => $country_code,
             'regions' => $regions,
             'selected_regions' => $selected_regions,

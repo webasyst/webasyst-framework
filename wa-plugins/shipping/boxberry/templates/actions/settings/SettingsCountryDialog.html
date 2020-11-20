@@ -3,7 +3,7 @@
     <div class="wa-dialog-body">
         <form>
             <div class="wa-dialog-header">
-                <h2 class="s-title">[`Countries`]</h2>
+                <h2 class="s-title">{$obj->_w('Countries')}</h2>
             </div>
             <div class="wa-dialog-content">
 
@@ -11,20 +11,20 @@
                     <li class="s-radio-wrapper is-active">
                         <label class="s-radio-label">
                             <input class="s-radio js-type-group-field" type="radio" name="all_countries" value="1" {if empty($selected_countries)}checked{/if}>
-                            <span class="s-text bold">[`All countries`]</span>
+                            <span class="s-text bold">{$obj->_w('All countries')}</span>
                         </label>
                     </li>
                     <li class="s-radio-wrapper">
                         <label class="s-radio-label">
                             <input class="s-radio js-type-group-field" type="radio" name="all_countries" value="0" {if !empty($selected_countries)}checked{/if}>
-                            <span class="s-text">[`Selected countries only`]</span>
+                            <span class="s-text">{$obj->_w('Selected countries only')}</span>
                         </label>
 
                         <ul class="s-checkbox-list menu-v" style="margin-left: 18px; {if !$selected_countries}display: none;{/if}">
                             <li class="s-checkbox-wrapper">
                                 <label>
                                     <input class="s-checkbox js-type-field" type="checkbox" name="selected_countries_all">
-                                    <span class="s-text bold">[`Select all`]</span>
+                                    <span class="s-text bold">{$obj->_w('Select all')}</span>
                                 </label>
                             </li>
                             {foreach $countries as $country}

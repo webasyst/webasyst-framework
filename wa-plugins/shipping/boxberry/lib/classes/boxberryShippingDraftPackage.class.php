@@ -205,7 +205,7 @@ class boxberryShippingDraftPackage
 
     protected function getParcelVolume()
     {
-        $item = current($this->order->items);
+        $item = current(ref($this->order->items));
         $dimensions = array('x' => 'width', 'y' => 'height', 'z' => 'length');
         foreach ($dimensions as $key => $dimension) {
             if (

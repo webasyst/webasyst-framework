@@ -211,9 +211,6 @@ msgstr "В случае оплаты заказа при получении в �
 msgid "Edit"
 msgstr "Редактировать"
 
-msgid "Regions (%s)"
-msgstr "Регионы (%s)"
-
 msgid "Shipping will be available for selected regions only"
 msgstr "Доставка будет доступна только в выбранные регионы"
 
@@ -230,7 +227,7 @@ msgid "Search"
 msgstr "Поиск"
 
 msgid "Select all"
-msgstr ""
+msgstr "Выбрать все"
 
 msgid "No region selected in country settings"
 msgstr "В настройках страны не выбран ни один регион"

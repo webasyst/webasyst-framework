@@ -3,7 +3,7 @@
     <div class="wa-dialog-body">
         <form>
             <div class="wa-dialog-header">
-                <h2 class="s-title">[`Regions`]</h2>
+                <h2 class="s-title">{$obj->_w('Regions')}</h2>
             </div>
             <div class="wa-dialog-content">
 
@@ -11,25 +11,25 @@
                     <li class="s-radio-wrapper is-active">
                         <label class="s-radio-label">
                             <input class="s-radio js-type-group-field" type="radio" name="all_regions" value="1" {if empty($selected_regions)}checked{/if}>
-                            <span class="s-text bold">[`All regions`]</span>
+                            <span class="s-text bold">{$obj->_w('All regions')}</span>
                         </label>
                     </li>
                     <li class="s-radio-wrapper">
                         <label class="s-radio-label">
                             <input class="s-radio js-type-group-field" type="radio" name="all_regions" value="0" {if !empty($selected_regions)}checked{/if}>
-                            <span class="s-text">[`Selected regions only`]</span>
+                            <span class="s-text">{$obj->_w('Selected regions only')}</span>
                         </label>
 
                         <ul class="s-checkbox-list menu-v" style="margin-left: 18px; {if !$selected_regions}display: none;{/if}">
                             {if !empty($regions)}
                                 {if count($regions) > 10}
-                                    <label for="search-regions">[`Search`]</label>
+                                    <label for="search-regions">{$obj->_w('Search')}</label>
                                     <input id="search-regions" type="text" name="search-regions">
                                 {/if}
                                 <li class="s-checkbox-wrapper">
                                     <label>
                                         <input class="s-checkbox js-type-field" type="checkbox" name="selected_regions_all">
-                                        <span class="s-text bold">[`Select all`]</span>
+                                        <span class="s-text bold">{$obj->_w('Select all')}</span>
                                     </label>
                                 </li>
                                 {foreach $regions as $region}
@@ -44,7 +44,7 @@
                                     </li>
                                 {/foreach}
                             {else}
-                                <span>[`No region selected in country settings`]</span>
+                                <span>{$obj->_w('No region selected in country settings')}</span>
                             {/if}
                         </ul>
                     </li>

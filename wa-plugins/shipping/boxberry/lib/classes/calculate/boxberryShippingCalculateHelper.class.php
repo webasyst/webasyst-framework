@@ -209,7 +209,7 @@ class boxberryShippingCalculateHelper
         $result = 0.0;
 
         $payment_type = $this->bxb->getSelectedPaymentTypes();
-        // Если плагин оплаты позволят рассчитаться и авансом и наместе, то значит что-то пошло не так.
+        // Если плагин оплаты позволят рассчитаться и авансом, и на месте, то значит что-то пошло не так.
         // В таком случае считаем минимальную цену.
         if ($payment_type && !in_array(waShipping::PAYMENT_TYPE_PREPAID, $payment_type)) {
             $result = $this->bxb->getTotalPrice();
