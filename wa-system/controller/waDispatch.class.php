@@ -386,32 +386,37 @@ class waDispatch
         if (!$this->system->appExists($app)) {
             throw new waException("App ".$app." not found", 404);
         }
+
         // Load app
         waSystem::getInstance($app, null, true);
         $class_exists = class_exists($class);
         $event_params = array(
             'app' => $app,
             'class' => $class,
-            'exists' => $class_exists
+            'exists' => $class_exists,
         );
-        wa()->event('webasyst.cli_started', $event_params);
-        if ($class_exists) {
-            /**
-             * @var $cli waCliController
-             */
-            $cli = new $class();
+        wa('webasyst')->event('cli_started', $event_params);
 
+        $successful_execution = false;
+        if ($class_exists) {
             try {
+                /** @var $cli waCliController */
+                $cli = new $class();
                 $cli->run();
                 $successful_execution = true;
-            } catch (waException $e) {
-                $successful_execution = false;
+            } catch (Exception $e) {
+                $event_params['exception'] = $e;
+                if (!$e instanceof waException) {
+                    $e = new waException($e);
+                }
+                waLog::log($e, 'cli.log');
             }
-            $event_params['successful_execution'] = $successful_execution;
-            wa()->event('webasyst.cli_finished', $event_params);
         } else {
-            throw new waException("Class ".$class." not found", 404);
+            waLog::log(new waException("Class ".$class." not found"), 'cli.log');
         }
+
+        $event_params['successful_execution'] = $successful_execution;
+        wa('webasyst')->event('cli_finished', $event_params);
     }
 
     /**

@@ -58,7 +58,7 @@ class installerWebasystWaid_authHandler extends waEventHandler
                 'dispatch' => [
                     'error' => [
                         'code' => 'access_denied',
-                        'message' => _w('Install product allowed only for admins of app "Installer"')
+                        'message' => _w('Product installation is allowed only to users with admin access to Installer app.')
                     ]
                 ]
             ];
@@ -87,7 +87,7 @@ class installerWebasystWaid_authHandler extends waEventHandler
                 'dispatch' => [
                     'error' => [
                         'code' => 'access_denied',
-                        'message' => _w('Bind license allowed only for admins of app "Installer"')
+                        'message' => _w('License binding is allowed only to users with admin access to Installer app.')
                     ]
                 ]
             ];

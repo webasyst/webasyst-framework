@@ -96,7 +96,7 @@ class installerWebasystIDApi extends waWebasystIDApi
             return [
                 'status' => false,
                 'details' => [
-                    'error' => _w('Not connected with webasyst ID contact')
+                    'error' => _w('Not connected with a Webasyst ID contact.')
                 ]
             ];
         }
@@ -190,7 +190,7 @@ class installerWebasystIDApi extends waWebasystIDApi
             return [
                 'status' => false,
                 'details' => [
-                    'error' => _w('Not connected with webasyst ID contact')
+                    'error' => _w('Not connected with a Webasyst ID contact.')
                 ]
             ];
         }

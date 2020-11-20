@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -1272,3 +1272,33 @@ msgstr "Оцените тему"
 
 msgid "Rate app"
 msgstr "Оцените приложение"
+
+msgid "My licenses"
+msgstr "Мои лицензии"
+
+msgid "System error"
+msgstr "Системная ошибка"
+
+msgid "Unknown error while trying to get licenses."
+msgstr "Неизвестная ошибка при получении лицензий."
+
+msgid "Invalid license ID"
+msgstr "Неверный идентификатор лицензии"
+
+msgid "License not found."
+msgstr "Лицензия не найдена."
+
+msgid "License binding not available."
+msgstr "Привязка лицензии недоступна."
+
+msgid "Unknown error while trying to bind the license."
+msgstr "Неизвестная ошибка при попытке привязки лицензии."
+
+msgid "Not connected with a Webasyst ID contact."
+msgstr "Нет связи с контактом Webasyst ID."
+
+msgid "Product installation is allowed only to users with admin access to Installer app."
+msgstr "Установка продуктов доступна только пользователям с административным доступом к приложению «Инсталлер»."
+
+msgid "License binding is allowed only to users with admin access to Installer app."
+msgstr "Привязка лицензий доступна только пользователям с административным доступом к приложению «Инсталлер»."

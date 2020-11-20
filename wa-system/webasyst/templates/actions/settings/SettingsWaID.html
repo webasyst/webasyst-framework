@@ -26,11 +26,11 @@
                             {if !$is_user_bound_to_webasyst_id}disabled="disabled"{/if}>
 
                 <div class="s-force-description">
-                    <strong><i class="icon16 ws waid-green"></i> [s`Использовать вход только с Webasyst ID - <span class="s-green">рекомендуется</span>`]</strong>
+                    <strong><i class="icon16 ws waid-green"></i> [s`Use only sign-in option with Webasyst ID — <span class="s-green">recommended</span>`]</strong>
                     <span class="js-force-save-status s-force-save-status"><i class="icon16 yes"></i> [s`Saved`]</span>
                 </div>
             </div>
-            <div class="hint">[s`При использовании по умолчанию входа с Webasyst ID, простой вход отключается с сохранением всех настроек и возможностью возврата к ним. Пользователи бекенда, которые не подключились к WebasystID смогут подключиться позже самостоятельно, или можно отправить им email-приглашение. Регистрация новых пользователей будет происходить сразу с подключением к Webasyst ID.`]</div>
+            <div class="hint">[s`When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation. Newly added users will get connected to Webasyst ID right away.`]</div>
         </div>
 
         {if $not_connected_users}
@@ -72,7 +72,7 @@
                             <td class="nowrap">
                                 <span class="js-await-user-confirmation">
                                     <em>
-                                        [`Awaiting the user to confirm`]
+                                        [s`Awaiting the user to confirm`]
                                     </em>
                                 </span>
                             </td>
@@ -86,9 +86,9 @@
                                             </a>
                                         {else}
                                             {if !$user.waid_invite_datetime}
-                                                {$_link_text = '[`Email upgrade instructions`]'}
+                                                {$_link_text = '[s`Email upgrade instructions`]'}
                                             {else}
-                                                {$_link_text = '[`Email again`]'}
+                                                {$_link_text = '[s`Email again`]'}
                                             {/if}
                                             <a href="javascript:void(0)" class="js-send-email-invitation nowrap" data-id="{$user.id}">
                                                 <i class="icon16 email"></i> <span class="js-text">{$_link_text}</span> <i class="icon16 loading js-loading" style="display: none;"></i>
@@ -125,7 +125,7 @@
                     <tr>
                         <th class="min-width"></th>
                         <th>[s`Name`]</th>
-                        <th>[`Webasyst ID`]</th>
+                        <th>[s`Webasyst ID`]</th>
                         <th>[s`Connected`]</th>
                         <th>[s`Last sign-in with Webasyst ID`]</th>
                     </tr>
@@ -166,14 +166,14 @@
                         <label for="upgrade-all">
                             <i class="icon16 email"></i>[s`and email invitations to users for fast upgrade`]
                         </label><br>
-                        <span class="hint">[`Should the sending of email invitations fail, users will still see a notification with an upgrade link in the backend. Users will also have the option to enable or disable the sign-in with Webasyst ID in their profiles.`]</span>
+                        <span class="hint">[s`Should the sending of email invitations fail, users will still see a notification with an upgrade link in the backend. Users will also have the option to enable or disable the sign-in with Webasyst ID in their profiles.`]</span>
                     </div>
                 {/if}
             </div>
     {/if}
 
     {$_locale = [
-        'disabled_toggle_reason' => _w('Необходимо подключить Webasyst ID для своего аккаунта')
+        'disabled_toggle_reason' => _ws('You need to connect Webasyst ID to your account.')
     ]}
 
     <script>

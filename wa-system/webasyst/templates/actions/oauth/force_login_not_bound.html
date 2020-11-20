@@ -9,15 +9,15 @@
     {/if}
 
     <p>
-        {sprintf(_ws('Вы не можете войти, потому что аккаунт Webasyst ID <strong>%s</strong> не подключен к бекенду <strong>%s</strong>'), $_email, $domain|escape)}
+        {sprintf(_ws('You cannot sign in because Webasyst ID <strong>%s</strong> is connected to the backend at <strong>%s</strong>.'), $_email, $domain|escape)}
     </p>
 
     <div class="actions-buttons">
-        <button onclick='location.href={$try_again_auth_url|json_encode}'>[s`Попробовать с другим Webasyst ID`]</button>
+        <button onclick='location.href={$try_again_auth_url|json_encode}'>[s`Try with another Webasyst ID`]</button>
     </div>
 
     <p>
-        {sprintf(_ws('Или <a class="link" href="%s">войдите в бекенд стандартным способом</a> и подключите к нему свой аккаунт Webasyst ID'), $forced_login_url)}
+        {sprintf(_ws('Or <a class="link" href="%s">sign into your backend in the usual way</a> and connect it to your Webasyst ID.'), $forced_login_url)}
     </p>
 </div>
 

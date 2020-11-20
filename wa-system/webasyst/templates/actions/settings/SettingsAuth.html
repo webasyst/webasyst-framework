@@ -18,24 +18,24 @@
                         <span class="js-image-height">{$custom_image.height|default:null}</span>,
                         <span class="s-image-size js-image-size">
                         {if !empty($custom_image.file_size)}
-                            {$custom_image.file_size|wa_format_file_size:'%0.0f':'[`B,KB,MB`]'}
+                            {$custom_image.file_size|wa_format_file_size:'%0.0f':'[s`B,KB,MB`]'}
                         {/if}
                         </span>
                     </span>
                         {* Delete image *}
                         <span>
-                        <a class="small inline-link js-remove-custom-backgorund" href="javascript:void(0);" title="[`Delete`]">
-                            &nbsp;<i class="icon10 no"></i>&nbsp;<b><i>[`Delete`]</i></b>
+                        <a class="small inline-link js-remove-custom-backgorund" href="javascript:void(0);" title="[s`Delete`]">
+                            &nbsp;<i class="icon10 no"></i>&nbsp;<b><i>[s`Delete`]</i></b>
                         </a>
                     </span>
                     </div>
                 </div>
             {elseif $custom_image === null}
-                <span class="hint">[`File not found.`] {$settings.auth_form_background|escape}</span>
+                <span class="hint">[s`File not found.`] {$settings.auth_form_background|escape}</span>
             {/if}
             <div class="stretch"{if empty($custom_image)} style="display: none;"{/if}>
                 <input class="js-stretch-checkbox" type="checkbox" value="1" name="auth_form_background_stretch" id="installer-auth-stretch-background"{if $settings.auth_form_background_stretch} checked="checked"{/if}>
-                <label for="installer-auth-stretch-background">[`Stretch to fill entire screen`]</label>
+                <label for="installer-auth-stretch-background">[s`Stretch to fill entire screen`]</label>
             </div>
         </div>
     {/strip}
@@ -54,13 +54,13 @@
                         {if !$is_user_bound_to_webasyst_id}disabled="disabled"{/if}>
 
                 <div class="s-force-description">
-                    <strong><i class="icon16 ws waid-green"></i> [s`Использовать вход только с Webasyst ID - <span class="s-green">рекомендуется</span>`]</strong>
+                    <strong><i class="icon16 ws waid-green"></i> [s`Use only sign-in option with Webasyst ID — <span class="s-green">recommended</span>`]</strong>
                     <span class="js-force-save-status s-force-save-status"><i class="icon16 yes"></i> [s`Saved`]</span>
                 </div>
             </div>
             <div class="hint">
                 {sprintf(
-                    _ws('При использовании входа с Webasyst ID по умолчанию, простой вход отключается с сохранением всех настроек и возможностью возврата к ним. Пользователи бекенда, которые не подключились к WebasystID смогут подключиться позже самостоятельно, или можно отправить им email-приглашение в разделе <a href="%s">Вход с Webasyst</a>. Регистрация новых пользователей будет происходить сразу с подключением к Webasyst ID.'),
+                    _ws('When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation in section “<a href="%s">Sign-in with Webasyst ID</a>”. Newly added users will get connected to Webasyst ID right away.'),
                     $waid_settings_link
                 )}
             </div>
@@ -100,10 +100,10 @@
 
                 {* Timeouts *}
                 <div class="field">
-                    <div class="name">[`Re-sending of verification code`]</div>
+                    <div class="name">[s`Re-sending of verification code`]</div>
                     <div class="value">
                         <label>
-                            [`Waiting period in seconds before sending next verification code:`]
+                            [s`Waiting period in seconds before sending next verification code:`]
                             <input type="text" class="semi" name="timeout" value="{$onetime_password_timeout}">
                         </label>
                     </div>
@@ -114,7 +114,7 @@
                     <div class="name">[s`Email notification templates`]</div>
                     <div class="value">
                         {if empty($email_channels)}
-                            <div class="errormsg"><i class="icon16 exclamation"></i> [`Specify email sender address`] </div>
+                            <div class="errormsg"><i class="icon16 exclamation"></i> [s`Specify email sender address`] </div>
                             <div>
                                 {sprintf('[s`No sender email address specified in “<a href="%s">Email settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/")}
                             </div>
@@ -171,7 +171,7 @@
                         <div>
                             <input type="hidden" name="used_auth_methods[sms]" value="0">
                             <input id="s-login-by-phone-toggle" class="ibutton s-login-by-phone-toggle js-login-by-phone-toggle js-auth-method-checkbox" name="used_auth_methods[sms]" data-method="sms" type="checkbox"{if $_is_checked} checked="checked"{/if}>
-                            <label for="s-login-by-phone-toggle"><span class="js-login-by-phone-status">{if $_is_checked}[`enabled`]{else}[`disabled`]{/if}</span></label>
+                            <label for="s-login-by-phone-toggle"><span class="js-login-by-phone-status">{if $_is_checked}[s`enabled`]{else}[s`disabled`]{/if}</span></label>
                         </div>
 
                         <div class="s-phone-channel-settings-block" {if !$_is_checked}style="display: none;"{/if}>
@@ -191,7 +191,7 @@
 
                         <div class="s-phone-channel-settings-block" {if !$_is_checked}style="display: none;"{/if}>
                             <div class="field">
-                                <div class="name">[`National direct-dialing code (NDD)`]</div>
+                                <div class="name">[s`National direct-dialing code (NDD)`]</div>
 
                                 {$_phone_transform_prefix = $auth_config.phone_transform_prefix|default:[]}
 
@@ -199,17 +199,17 @@
                                     {$_input_code = $_phone_transform_prefix['input_code']|default:''}
                                     <input type="text" class="short" name="phone_transform_prefix[input_code]" value="{$_input_code}">
                                     <div class="hint" style="margin-top: 10px;">
-                                        [`Enter the NDD code which is used for making calls within your country.`]<br>
-                                        [`The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers.`]
+                                        [s`Enter the NDD code which is used for making calls within your country.`]<br>
+                                        [s`The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers.`]
                                     </div>
                                 </div>
 
-                                <div class="name">[`Country code`]</div>
+                                <div class="name">[s`Country code`]</div>
                                 <div class="value">
                                     {$_output_code = $_phone_transform_prefix['output_code']|default:''}
                                     + <input type="text" class="short" name="phone_transform_prefix[output_code]" value="{$_output_code}">
                                     <div class="hint" style="margin-top: 10px;">
-                                        [`Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD.`]
+                                        [s`Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD.`]
                                     </div>
                                 </div>
                             </div>
@@ -219,7 +219,7 @@
             </div>
 
             <div class="field-group">
-                <h2>[`Login form`]</h2>
+                <h2>[s`Login form`]</h2>
                 {* Captcha in auth form *}
                 <div class="field js-captcha-wrapper">
                     <div class="name">
@@ -249,20 +249,20 @@
                 {* "Remember me" in auth *}
                 <div class="field">
                     <div class="name">
-                        [`Auto-login`]
+                        [s`Auto-login`]
                         <div class="hint">[s`“Remember me” option`]</div>
                     </div>
                     <div class="value no-shift">
                         <input type="hidden" name="rememberme" value="0" />
                         <input id="s-rememberme-auth" name="rememberme" class="ibutton js-rememberme-auth-toogle" type="checkbox" value="1"{if $auth_config.rememberme} checked="checked"{/if}>
-                        <label for="s-rememberme-auth"><span class="js-rememberme-auth-status">{if $auth_config.rememberme}[`enabled`]{else}[`disabled`]{/if}</span></label>
+                        <label for="s-rememberme-auth"><span class="js-rememberme-auth-status">{if $auth_config.rememberme}[s`enabled`]{else}[s`disabled`]{/if}</span></label>
                     </div>
                 </div>
 
                 {* Background image in authorization page *}
                 <div class="field s-auth-background">
                     <div class="name">
-                        [`Login form background`]
+                        [s`Login form background`]
                     </div>
                     <div class="value">
                         <ul class="s-background-images js-background-images">
@@ -311,14 +311,14 @@
                         {* Login*}
                         <div data-field-id="login" class="field" style="position: relative;">
                             <div class="s-field-name name">
-                                <span class="js-editable-wrapper" title="[`Edit field label`]">
+                                <span class="js-editable-wrapper" title="[s`Edit field label`]">
                                     <label class="s-editable-item s-editable-text js-editable-item">
-                                        {$auth_config.login_caption|default:_w('Login')|escape}
+                                        {$auth_config.login_caption|default:_ws('Login')|escape}
                                     </label>
-                                    <input type="text" class="s-editable-field-label hidden" name="login_caption" value="{$auth_config.login_caption|default:_w('Login')|escape}"/>
+                                    <input type="text" class="s-editable-field-label hidden" name="login_caption" value="{$auth_config.login_caption|default:_ws('Login')|escape}"/>
                                 </span>
                             </div>
-                            <div class="value placeholder" title="[`Edit hint for this placeholder`]">
+                            <div class="value placeholder" title="[s`Edit hint for this placeholder`]">
                                 <input type="text" class="fill s-placeholder-input" name="login_placeholder" value="{$auth_config.login_placeholder|escape}"/>
                             </div>
                         </div>
@@ -341,7 +341,7 @@
                         {* Captcha *}
                         <div class="field js-captcha-preview"{if $auth_config.login_captcha !== waAuthConfig::LOGIN_CAPTCHA_ALWAYS} style="display: none;"{/if}>
                             {if $demo_captcha->getOption('invisible')}
-                                <div class="hint">[`Invisible captcha will be used`]</div>
+                                <div class="hint">[s`Invisible captcha will be used`]</div>
                             {else}
                                 {$demo_captcha->getHtml()}
                             {/if}
@@ -402,14 +402,14 @@
 </div>
 
 {$_locale = [
-    'enabled'     => _w('enabled'),
-    'disabled'    => _w('disabled'),
+    'enabled'     => _ws('enabled'),
+    'disabled'    => _ws('disabled'),
     'login_names' => [
-        'login'          => _w('Login'),
-        'phone'          => _w('Phone'),
-        'login_or_phone' => _w('Login or phone')
+        'login'          => _ws('Login'),
+        'phone'          => _ws('Phone'),
+        'login_or_phone' => _ws('Login or phone')
     ],
-    'disabled_toggle_reason' => _w('Необходимо подключить Webasyst ID для своего аккаунта')
+    'disabled_toggle_reason' => _ws('You need to connect Webasyst ID to your account.')
 ]}
 
 <script type="text/javascript">

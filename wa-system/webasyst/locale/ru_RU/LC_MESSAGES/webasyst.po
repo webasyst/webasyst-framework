@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-09-23 10:43+0300\n"
+"PO-Revision-Date: 2020-11-17 11:17+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -6246,3 +6246,36 @@ msgstr "Не настроен системный email-адрес отправи
 
 msgid "Disable sign-in with Webasyst ID"
 msgstr "Отключить вход с Webasyst ID"
+
+msgid "This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page."
+msgstr "Страница не будет опубликована, потому что в настройках структуры сайта нет ни одного поселения (правила маршрутизации) для этого приложения. Настройте поселение для публикации страницы в разделе «Структура» приложения «Сайт»."
+
+msgid "This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Set up a settlement in Site app’s “Structure” section to publish this page."
+msgstr "Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура» приложения «Сайт»."
+
+msgid "Try with another Webasyst ID"
+msgstr "Попробовать с другим Webasyst ID"
+
+msgid "You cannot sign in because Webasyst ID <strong>%s</strong> is connected to the backend at <strong>%s</strong>."
+msgstr "Вы не можете войти, потому что аккаунт Webasyst ID <strong>%s</strong> не подключен к бекенду <strong>%s</strong>."
+
+msgid "Or <a class=\"link\" href=\"%s\">sign into your backend in the usual way</a> and connect it to your Webasyst ID."
+msgstr "Или <a class=\"link\" href=\"%s\">войдите в бекенд стандартным способом</a> и подключите к нему свой аккаунт Webasyst ID."
+
+msgid "Use another Webasyst ID"
+msgstr "Использовать другой Webasyst ID"
+
+msgid "Use only sign-in option with Webasyst ID — <span class=\"s-green\">recommended</span>"
+msgstr "Использовать вход только с Webasyst ID — <span class=\"s-green\">рекомендуется</span>"
+
+msgid "When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation in section “<a href=\"%s\">Sign-in with Webasyst ID</a>”. Newly added users will get connected to Webasyst ID right away."
+msgstr "При использовании входа с Webasyst ID по умолчанию простой вход отключается с сохранением всех настроек и возможностью возврата к ним. Пользователи бекенда, которые не подключились к Webasyst ID, смогут подключиться позже самостоятельно, либо вы можете отправить им email-приглашение в разделе «<a href=\"%s\">Вход с Webasyst</a>». Новые пользователи бекенда будут сразу подключаться к Webasyst ID."
+
+msgid "When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation. Newly added users will get connected to Webasyst ID right away."
+msgstr "При использовании входа с Webasyst ID по умолчанию простой вход отключается с сохранением всех настроек и возможностью возврата к ним. Пользователи бекенда, которые не подключились к Webasyst ID, смогут подключиться позже самостоятельно, либо вы можете отправить им email-приглашение. Новые пользователи бекенда будут сразу подключаться к Webasyst ID."
+
+msgid "Sign-in with Webasyst ID is enabled by default, a disconnection is not allowed."
+msgstr "Активирован вход с Webasyst ID по умолчанию, поэтому отключение невозможно."
+
+msgid "You need to connect Webasyst ID to your account."
+msgstr "Необходимо подключить Webasyst ID для своего аккаунта."

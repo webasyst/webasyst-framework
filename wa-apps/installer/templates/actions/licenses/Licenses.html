@@ -1,0 +1,54 @@
+{$_wrapper_id = uniqid('i-licenses-wrapper')}
+<div id="{$_wrapper_id}" class="shadowed">
+    <div class="i-white-core-content">
+        <div class="block double-padded">
+            {if $error}
+                <p><i class="icon16 no"></i> {$error}</p>
+            {else}
+                {if $total_count > 1}
+                    <ul class="menu-h">
+                        <li class="{if !$current_product_type}selected{/if}"><a href="{$wa_app_url}licenses/">[`All`]</a></li>
+                        {foreach $product_types as $_type => $_name}
+                            <li class="{if $current_product_type == $_type}selected{/if}"><a href="{$wa_app_url}licenses/?type={$_type}">{$_name}</a></li>
+                        {/foreach}
+                    </ul>
+                {/if}
+                <ul>
+                    {foreach $licenses as $license}
+                        <li class="js-license-item" data-id="{$license.license_id}" data-product-id="{$license.product_id}">
+                            <div class="">
+                                <img src="{$license.icon}" alt="{$license.name|escape}">
+                            </div>
+                            <div class="">
+                                <div>
+                                    {$license.name|escape}
+                                </div>
+                                <p>{$license.brief_text|escape}</p>
+                            </div>
+
+                            {if !$license.is_installed}
+                                {$_requirements_warning_str = $license.requirements_warnings|join:"\n"}
+                                {$_is_disabled = !empty($license.requirements_warnings)}
+                                <input class="js-install-button" type="button" value="[`Install`]" title="{$_requirements_warning_str}" {if $_is_disabled}disabled="disabled"{/if}> <i class="icon16 loading js-loading" style="display:none;"></i>
+                                <em class="errormsg js-bind-error" style="display: none"></em>
+                            {/if}
+                        </li>
+                    {/foreach}
+                </ul>
+            {/if}
+        </div>
+        <div class="clear"></div>
+    </div>
+
+    <script>
+        $(function () {
+            new InstallerLicenses({
+                $wrapper: $('#{$_wrapper_id}'),
+                licenses: {$licenses|json_encode},
+                app_url: {$wa_app_url|json_encode},
+                is_auto_install: {$is_auto_install|json_encode}
+            });
+        });
+    </script>
+
+</div>
