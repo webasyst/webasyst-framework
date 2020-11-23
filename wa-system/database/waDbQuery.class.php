@@ -29,7 +29,7 @@ class waDbQuery
     }
 
     /**
-     * @param string|array $select
+     * @param string $select
      * @return waDbQuery
      */
     public function select($select)
@@ -104,7 +104,7 @@ class waDbQuery
         return $this->model->query($sql)->fetchField($field, $seek);
     }
 
-    protected function getSQL()
+    public function getSQL()
     {
         $sql = "SELECT ".$this->select." FROM ".$this->model->getTableName();
         if ($this->where) {
