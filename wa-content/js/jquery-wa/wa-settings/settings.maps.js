@@ -36,7 +36,7 @@ var WASettingsMaps = ( function($) {
     WASettingsMaps.prototype.initChangeAdapter = function() {
         var that = this;
 
-        that.$wrapper.on('change', ':input[name="map_adapter"]', function(e){
+        that.$wrapper.on('change', ':input.js-map-adapter-field', function(e){
             var $scope = $(this).parents('div.field'),
                 fast = e.originalEvent ? false : true;
 
@@ -53,7 +53,7 @@ var WASettingsMaps = ( function($) {
             }
         });
 
-        that.$wrapper.find(':input[name="map_adapter"]:checked').change();
+        that.$wrapper.find(':input.js-map-adapter-field:checked').change();
     };
 
     WASettingsMaps.prototype.initSubmit = function () {

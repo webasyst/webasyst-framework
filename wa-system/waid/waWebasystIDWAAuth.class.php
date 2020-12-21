@@ -139,7 +139,7 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         $referrer_url = isset($params['referrer_url']) ? $params['referrer_url'] : null;
 
         if (!$referrer_url) {
-            $url = wa()->getConfig()->getRequestUrl(false, false);
+            $url = wa()->getConfig()->getRequestUrl(true, false);
             $url = ltrim($url, '/');
             $domain = wa()->getConfig()->getDomain();
 

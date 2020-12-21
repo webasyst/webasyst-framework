@@ -17,14 +17,21 @@ if (!defined('WA_ROOT')) {
 }
 function wa_installer_autoload($name)
 {
-    static $depended_classes = array(
-        'wainstaller'             => 'wa-installer/lib/classes/wainstaller.class.php',
-        'wainstallercontroller'   => 'wa-installer/lib/classes/wainstallercontroller.class.php',
-        'wainstallerapps'         => 'wa-installer/lib/classes/wainstallerapps.class.php',
-        'wainstallerrequirements' => 'wa-installer/lib/classes/wainstallerrequirements.class.php',
-        'wainstallerlocale'       => 'wa-installer/lib/classes/wainstallerlocale.class.php',
-        'wainstallerfile'         => 'wa-installer/lib/classes/wainstallerfile.class.php',
-    );
+    static $depended_classes;
+
+    if ($depended_classes === null) {
+        foreach ([
+            'wainstaller'             => 'wa-installer/lib/classes/wainstaller.class.php',
+            'wainstallercontroller'   => 'wa-installer/lib/classes/wainstallercontroller.class.php',
+            'wainstallerapps'         => 'wa-installer/lib/classes/wainstallerapps.class.php',
+            'wainstallerrequirements' => 'wa-installer/lib/classes/wainstallerrequirements.class.php',
+            'wainstallerlocale'       => 'wa-installer/lib/classes/wainstallerlocale.class.php',
+            'wainstallerfile'         => 'wa-installer/lib/classes/wainstallerfile.class.php',
+            'waInstallerDownloadException' => 'wa-installer/lib/classes/waInstallerDownloadException.class.php',
+        ] as $class => $path) {
+            $depended_classes[strtolower($class)] = $path;
+        }
+    }
 
     $name = strtolower($name);
     $result = false;

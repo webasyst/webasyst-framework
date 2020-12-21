@@ -53,7 +53,10 @@ class waNet
         'verify'              => true,
         'md5'                 => false,
         'log'                 => false,
+        # authorization settings
         'authorization'       => false,
+        'auth_type'           => 'Basic',
+        'auth_key'            => null,
         'login'               => null,
         'password'            => null,
         # proxy settings
@@ -171,7 +174,6 @@ class waNet
 
         $this->buildRequest($url, $content, $method);
         $this->startQuery();
-
         switch ($transport) {
             case self::TRANSPORT_CURL:
                 $response = $this->runCurl($url, $content, $method, array(), $callback);
@@ -295,8 +297,12 @@ class waNet
          */
 
         if (!empty($this->options['authorization'])) {
-            $authorization = sprintf("%s:%s", $this->options['login'], $this->options['password']);
-            $this->request_headers["Authorization"] = "Basic ".base64_encode($authorization);
+            if (empty($this->options['auth_key'])) {
+                $authorization = base64_encode(sprintf("%s:%s", $this->options['login'], $this->options['password']));
+            } else {
+                $authorization = $this->options['auth_key'];
+            }
+            $this->request_headers["Authorization"] = $this->options['auth_type'] . " " . $authorization;
         }
 
         $this->request_headers['User-Agent'] = $this->user_agent;

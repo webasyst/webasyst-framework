@@ -2460,6 +2460,9 @@ HTACCESS;
             'otf',
             'woff',
             'woff2',
+            'webp',
+            'po',
+            'mo',
             '',
         );
 

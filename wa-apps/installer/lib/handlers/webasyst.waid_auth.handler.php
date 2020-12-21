@@ -64,6 +64,8 @@ class installerWebasystWaid_authHandler extends waEventHandler
             ];
         }
 
+        $url = rtrim($url, '/');
+
         $redirect_url = wa()->getConfig()->getRootUrl(true) . wa()->getConfig()->getBackendUrl()."/installer/store/{$url}/?install=1";
         return [
             'dispatch' => [

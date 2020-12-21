@@ -7,6 +7,13 @@ waSystem::getInstance(null, new SystemConfig('api'));
 // Init Webasyst application (system application)
 waSystem::getInstance('webasyst', null, true);
 
+if (waRequest::server('REQUEST_METHOD') == 'OPTIONS') {
+    wa()->getResponse()
+        ->setStatus(200)
+        ->sendHeaders();
+    exit;
+}
+
 // Execute api controller
 try {
     $controller = new waAPIController();

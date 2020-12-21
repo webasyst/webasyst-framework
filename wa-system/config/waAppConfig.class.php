@@ -490,6 +490,9 @@ class waAppConfig extends SystemConfig
     public function setLocale($locale, $bind = true)
     {
         if ($this->loaded_locale != $locale) {
+            if (preg_match('~[^a-zA-Z0-9\-\_\.]~', $locale)) {
+                return;
+            }
             $this->loaded_locale = $locale;
             waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
         }

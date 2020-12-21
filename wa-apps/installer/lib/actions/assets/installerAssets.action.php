@@ -56,9 +56,10 @@ class installerAssetsAction extends waViewAction
             );
 
             $extras_options = array(
-                'local'     => true,
-                'status'    => false,
-                'installed' => true,
+                'local'            => true,
+                'status'           => false,
+                'installed'        => true,
+                'translate_titles' => true,
             );
 
             foreach ($types as $type) {

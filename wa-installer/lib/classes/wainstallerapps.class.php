@@ -630,6 +630,12 @@ class waInstallerApps
     private function extend(&$item, $options = array())
     {
         if ($item) {
+            if (!empty($options['translate_name']) && isset($item['installed']['name'])) {
+                $translated_name = self::translateName($item, $options['translate_name']);
+                if (!empty($translated_name)) {
+                    $item['installed']['name'] = $translated_name;
+                }
+            }
             if (!empty($options['requirements']) && !isset($item['requirements'])) {
                 $item['requirements'] = self::getRequirements(sprintf(self::ITEM_REQUIREMENTS, $item['slug']), $item['slug']);
             }
@@ -1104,8 +1110,18 @@ class waInstallerApps
 
                     $items = $this->enumerate($path, isset($enum_options[$app_id]) ? $enum_options[$app_id] : array(), $enum_filter);
 
+                    $extend_options = array();
+                    if (!empty($options['translate_titles'])) {
+                        $extend_options = array(
+                            'translate_name' => array(
+                                'type' => $type,
+                                'app_id' => $app_id,
+                            )
+                        );
+                    }
+
                     foreach ($items as &$extras_item) {
-                        self::extend($extras_item);
+                        self::extend($extras_item, $extend_options);
                         unset($extras_item);
                     }
                     $extras[$app_id] = array(
@@ -1558,6 +1574,33 @@ class waInstallerApps
                 $item['installed']['version'] .= ".p";
             }
         }
+    }
+
+    protected static function translateName($item, $options)
+    {
+        $translation = '';
+        if ($options['type'] == 'themes' && class_exists('waTheme')) {
+            $theme = new waTheme($item['id'], $options['app_id']);
+            $translation = $theme->getName();
+        } elseif (class_exists('waLocalePHPAdapter')) {
+            $locale_name = '';
+            if ($options['type'] == 'widgets') {
+                $locale_name = sprintf('%s_widget_%s', $options['app_id'], $item['id']);
+            } elseif ($options['type'] == 'plugins') {
+                if (strpos($options['app_id'], '/') === false) {
+                    $locale_name = sprintf('%s_%s', $options['app_id'], $item['id']);
+                } else {
+                    $system_plugin_type = explode('/', $options['app_id'])[1];
+                    $locale_name = sprintf('%s_%s', $system_plugin_type, $item['id']);
+                }
+            }
+            $locale_adapter = new waLocalePHPAdapter();
+            $root_path = wa()->getConfig()->getRootPath();
+            $path_to_locale = sprintf('%s/%s/locale', $root_path, $item['path']);
+            $locale_adapter->load(wa()->getLocale(), $path_to_locale, $locale_name, false);
+            $translation = $locale_adapter->dgettext($locale_name, $item['installed']['name']);
+        }
+        return $translation;
     }
 
     private function sortAppsCallback($a, $b)

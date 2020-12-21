@@ -901,14 +901,14 @@ msgstr "Действия"
 msgid "Assets"
 msgstr "Активы"
 
-msgid "Plugin <a href=\"%s\">%s</a>"
-msgstr "Плагин «<a href=\"%s\">%s</a>»"
+msgid "Plugin <a href=\"%s\">%s</a> (id %s)"
+msgstr "Плагин «<a href=\"%s\">%s</a>» (id %s)"
 
-msgid "Theme <a href=\"%s\">%s</a>"
-msgstr "Тема дизайна «<a href=\"%s\">%s</a>»"
+msgid "Theme <a href=\"%s\">%s</a> (id %s)"
+msgstr "Тема дизайна «<a href=\"%s\">%s</a>» (id %s)"
 
-msgid "Widget <a href=\"%s\">%s</a>"
-msgstr "Виджет «<a href=\"%s\">%s</a>»"
+msgid "Widget <a href=\"%s\">%s</a> (id %s)"
+msgstr "Виджет «<a href=\"%s\">%s</a>» (id %s)"
 
 msgid "Paused"
 msgstr "Выключен"

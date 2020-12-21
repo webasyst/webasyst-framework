@@ -1315,11 +1315,15 @@ class waContact implements ArrayAccess
 
     /**
      * @param int $len
+     * @param bool $extended - use extended alphabet or only letters and digits
      * @return string
      */
-    public static function generatePassword($len = 11)
+    public static function generatePassword($len = 11, $extended = true)
     {
-        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789!@#$%^&*-?';
+        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789';
+        if ($extended) {
+            $alphabet .= '!@#$%^&*-?';
+        }
         $alphabet = str_split($alphabet, 1);
         shuffle($alphabet);
         $password = array();

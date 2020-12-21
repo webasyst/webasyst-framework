@@ -23,12 +23,45 @@ class installerUpdateExecuteController extends waJsonController
 
     private $is_trial = false;
 
+    protected $params = [];
+
+    public $response;
+    public $errors;
+    public $status_code;
+
+    /**
+     * installerUpdateExecuteController constructor.
+     * @param array $params
+     *  - string $params['thread_id']
+     *  - bool $params['is_trial']
+     *  - bool $params['install']
+     *  - string $params['mode']
+     *  - bool $params['send_response'] - default is TRUE
+     */
+    public function __construct($params = null)
+    {
+        if (is_array($params)) {
+            $this->params = $params;
+        }
+    }
+
     public function execute()
     {
-        $this->is_trial = (bool)waRequest::request('trial', false);
+        if (array_key_exists('trial', $this->params)) {
+            $this->is_trial = $this->params['trial'];
+        } else {
+            $this->is_trial = waRequest::request('trial', false);
+        }
+        $this->is_trial = (bool)$this->is_trial;
 
         try {
-            $this->thread_id = preg_replace('@[^a-zA-Z0-9]+@', '', waRequest::get('thread_id', '', 'string'));
+            if (array_key_exists('thread_id', $this->params)) {
+                $this->thread_id = strval($this->params['thread_id']);
+            } else {
+                $this->thread_id = waRequest::get('thread_id', '', 'string');
+            }
+            $this->thread_id = preg_replace('@[^a-zA-Z0-9]+@', '', $this->thread_id);
+
             if ($this->thread_id) {
                 $path = wa()->getCachePath(sprintf('update.%s.php', $this->thread_id), 'installer');
                 if (file_exists($path)) {
@@ -37,6 +70,7 @@ class installerUpdateExecuteController extends waJsonController
 
                 $log_level = waSystemConfig::isDebug() ? waInstaller::LOG_DEBUG : waInstaller::LOG_WARNING;
                 $updater = new waInstaller($log_level, $this->thread_id);
+
                 if ($this->urls) {
 
                     $this->getStorage()->close();
@@ -51,7 +85,13 @@ class installerUpdateExecuteController extends waJsonController
 
                         $this->getStorage()->close();
                         $this->urls = $updater->update($this->urls);
-                        $install = waRequest::request('install');
+
+                        if (array_key_exists('install', $this->params)) {
+                            $install = $this->params['install'];
+                        } else {
+                            $install = waRequest::request('install');
+                        }
+
                         if ($install) {
                             $this->install();
                         }
@@ -64,7 +104,7 @@ class installerUpdateExecuteController extends waJsonController
                             if (wa()->appExists('site')) {
                                 foreach ($result as $source) {
                                     if (!empty($source['real_slug']) && preg_match('~^site/themes/(\w+)$~', $source['real_slug'], $match)) {
-                                        $this->response['design_redirect'] = wa()->getConfig()->getBackendUrl(true).'site/#/design/theme='.$match[1];
+                                        $this->response['design_redirect'] = wa()->getConfig()->getBackendUrl(true) . 'site/#/design/theme=' . $match[1];
                                     }
                                 }
                             }
@@ -74,7 +114,14 @@ class installerUpdateExecuteController extends waJsonController
 
                         $this->response['sources'] = $result;
                         $this->response['current_state'] = $updater->getState();
-                        $this->response['state'] = $updater->getFullState(waRequest::get('mode', 'apps'));
+
+                        if (array_key_exists('mode', $this->params)) {
+                            $mode = $this->params['mode'];
+                        } else {
+                            $mode = waRequest::get('mode', 'apps');
+                        }
+
+                        $this->response['state'] = $updater->getFullState($mode);
 
                         //cleanup cache
                         $this->storage($this->thread_id, null);
@@ -97,12 +144,19 @@ class installerUpdateExecuteController extends waJsonController
 
                         $this->getConfig()->setCount(false);
 
-                        $response = $this->getResponse();
-                        $response->addHeader('Content-Type', 'application/json; charset=utf-8');
-                        $response->sendHeaders();
+                        if (!array_key_exists('send_response', $this->params) || $this->params['send_response']) {
+                            $response = $this->getResponse();
+                            $response->addHeader('Content-Type', 'application/json; charset=utf-8');
+                            $response->sendHeaders();
+                        }
+
+                    } catch (waInstallerDownloadException $ex) {
+                        $this->setError($ex->getMessage());
+                        $this->status_code = $ex->getCode();
                     } catch (Exception $ex) {
                         $this->setError($ex->getMessage());
                     }
+
                     $ob = ob_get_clean();
                     if ($ob) {
 

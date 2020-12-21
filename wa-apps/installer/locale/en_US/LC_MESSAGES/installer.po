@@ -896,13 +896,13 @@ msgstr ""
 msgid "Assets"
 msgstr ""
 
-msgid "Plugin <a href=\"%s\">%s</a>"
+msgid "Plugin <a href=\"%s\">%s</a> (id %s)"
 msgstr ""
 
-msgid "Theme <a href=\"%s\">%s</a>"
+msgid "Theme <a href=\"%s\">%s</a> (id %s)"
 msgstr ""
 
-msgid "Widget <a href=\"%s\">%s</a>"
+msgid "Widget <a href=\"%s\">%s</a> (id %s)"
 msgstr ""
 
 msgid "Paused"

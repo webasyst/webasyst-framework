@@ -218,19 +218,27 @@ class waSignupAction extends waViewAction
         // Email is now confirmed
         $cem->updateById($email_row['id'], array('status' => waContactEmailsModel::STATUS_CONFIRMED));
 
-        // For some reasons can't signup contact
-        if (!$this->trySignupContact($contact)) {
-            $this->redirectToLoginPage();
-            return;
-        }
+        // if contact is not signed up yet
+        if (!$contact['password']) {
+            // generate password if not generated yet (we in email confirmation case, so password is on extended alphabet)
+            $this->getGeneratedPassword();
+            
+            $is_signed_up = $this->trySignupContact($contact);
 
-        // send sign up notification
-        if ($this->auth_config->getSignUpNotify()) {
-            $addresses = array(
-                'email' => $validated_email,
-                'phone' => $contact->get('phone', 'default')
-            );
-            $this->sendSignupNotify($addresses);
+            // For some reasons can't signup contact
+            if (!$is_signed_up) {
+                $this->redirectToLoginPage();
+                return;
+            }
+
+            // send sign up notification
+            if ($this->auth_config->getSignUpNotify()) {
+                $addresses = array(
+                    'email' => $validated_email,
+                    'phone' => $contact->get('phone', 'default')
+                );
+                $this->sendSignupNotify($addresses);
+            }
         }
 
         $this->redirectToEmailConfirmedPage();
@@ -376,13 +384,20 @@ class waSignupAction extends waViewAction
     }
 
     /**
+     * Generate password and returns, if password already generated returns it right away
+     * @param bool $extended - use extended alphabet or not. This argument applicable only of first call, other calls of course doesn't use this argument
      * @return string
      */
-    protected function getGeneratePassword()
+    protected function getGeneratedPassword($extended = true)
     {
         if (!$this->generated_password) {
-            $this->generated_password = waContact::generatePassword();
+            $len = 11;
+            if (!$extended) {
+                $len = 13;  // lag of diversity compensate with greater length of password
+            }
+            $this->generated_password = waContact::generatePassword($len, $extended);
         }
+
         return $this->generated_password;
     }
 
@@ -422,18 +437,17 @@ class waSignupAction extends waViewAction
                 'site_name' => $this->auth_config->getSiteName(),
                 'login_url' => $this->auth_config->getLoginUrl(array(), true)
             );
-            if ($this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD) {
-                $options['password'] = $this->getGeneratePassword();
-            }
 
             if ($channel->isEmail() && !empty($addresses['email'])) {
                 $address = $addresses['email'];
+                $options['password'] = $this->getGeneratedPassword();
                 $sent = $channel->sendSignUpSuccessNotification($address, $options);
             } elseif ($channel->isSMS() && !empty($addresses['phone'])) {
 
                 $phone = $addresses['phone'];
                 $is_international = substr($phone, 0, 1) === '+';
 
+                $options['password'] = $this->getGeneratedPassword(false);
                 $sent = $channel->sendSignUpSuccessNotification($phone, $options);
 
                 // Not sent, maybe because of sms adapter not work correct with not international phones
@@ -1212,6 +1226,18 @@ class waSignupAction extends waViewAction
         // So try save & sign up client right away
         if (!$need_confirm || $confirm_by_sms) {
 
+            if ($confirm_by_sms) {
+                // If confirmed by SMS, than try generate password on not extended alphabet
+                $this->getGeneratedPassword(false);
+            } elseif (!$need_confirm) {
+                // if confirmation is not required, but sms channel has priority (first in list), than try generate passowrd on not extended alphabet
+                $channels = $this->auth_config->getVerificationChannelInstances();
+                $channel = reset($channels);
+                if ($channel->isSMS()) {
+                    $this->getGeneratedPassword(false);
+                }
+            }
+
             $save_options = array();
             if ($confirm_by_sms) {
                 // to mark that phone is confirmed
@@ -1228,7 +1254,9 @@ class waSignupAction extends waViewAction
             // In UI we will show LOGIN FORM for that user
             $auth_right_away = $this->auth_config->getAuthType() !== waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD;
 
-            if (!$this->trySignupContact($contact, $auth_right_away)) {
+            $is_signed_up = $this->trySignupContact($contact, $auth_right_away);
+
+            if (!$is_signed_up) {
                 // error already logged - so no need log one time again
                 return array(self::SIGNED_UP_STATUS_FAILED, array());
             }
@@ -1372,7 +1400,7 @@ class waSignupAction extends waViewAction
         // Always generate password if contact hasn't it
         // contact.password must not be empty
         if (!$contact->get('password')) {
-            $password = $this->getGeneratePassword();
+            $password = $this->getGeneratedPassword();
             $contact->save(array('password' => $password));
         }
 
@@ -1433,7 +1461,7 @@ class waSignupAction extends waViewAction
         $data_to_save['is_company'] = waRequest::request('contact_type') === 'company' ? 1 : 0;
 
         if (empty($data_to_save['password'])) {
-            $data_to_save['password'] = $this->getGeneratePassword();
+            $data_to_save['password'] = $this->getGeneratedPassword();
         }
 
         if (wa()->getEnv() === 'frontend') {

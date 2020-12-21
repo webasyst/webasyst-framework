@@ -70,7 +70,7 @@ var waYandexMap = ( function($) {
                         message = that.locales['error'];
                     }
                 } else {
-                    message = that.locales['error'];
+                    $('[id^=yandex-static-map-link]').show();
                 }
 
                 if (e.message) {

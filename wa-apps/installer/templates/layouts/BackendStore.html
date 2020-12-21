@@ -17,6 +17,7 @@
     {* CSS *}
     {$wa->css()}
     <link href="{$wa_app_static_url}css/app.installer.css?v={$wa->version()}" rel="stylesheet">
+    <link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.autocomplete.css" rel="stylesheet" type="text/css" />
 
     {* JS *}
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
@@ -24,8 +25,14 @@
 
     {wa_js}
         {$wa_url}wa-content/js/jquery-wa/wa.core.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
         {$wa_app_static_url}js/sidebar.js
-        {$wa_app_static_url}js/licenses.js
+        {$wa_app_static_url}js/licenses/licenses.js
+        {$wa_app_static_url}js/licenses/license.js
     {/wa_js}
 
     {* Include WA Dialog *}

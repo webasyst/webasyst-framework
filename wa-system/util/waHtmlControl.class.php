@@ -1138,7 +1138,7 @@ HTML;
         // remove bad date from hidden input
         input_date.on('change', function() {
             if (this.value === '') {
-                input_date_formatted.val('')
+                input_date_formatted.val('');
             }
         });
 

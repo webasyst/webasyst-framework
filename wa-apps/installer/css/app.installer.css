@@ -1961,3 +1961,18 @@ i.icon16.pause {
     transform: scale3d(1, 1, 1);
   }
 }
+.i-licenses-wrapper ul.pager li {
+  display: inline-block;
+  font-weight: normal;
+  line-height: 1em;
+  list-style-type: none;
+  margin: 0 10px 0 0;
+  padding: 5px;
+  text-align: left;
+}
+.i-licenses-wrapper ul.pager li.selected {
+  background: #b7c1df;
+}
+.i-licenses-wrapper .i-product-name-filter {
+  min-width: 300px;
+}

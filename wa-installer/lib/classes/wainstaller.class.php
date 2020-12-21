@@ -136,7 +136,7 @@ class waInstaller
      * @todo root path workaround
      * @todo partial copy
      *
-     * @throws Exception
+     * @throws Exception|waInstallerDownloadException
      * @param $update_list array[][string]string
      * @param $update_list []['source'] array[][string]string Source path or URI
      * @param $update_list []['target'] array[][string]string Target path
@@ -625,7 +625,7 @@ class waInstaller
      * @param $source
      * @param $temporary_path
      * @return array
-     * @throws Exception
+     * @throws Exception|waInstallerDownloadException
      */
     private function downloadStandard($source, $temporary_path)
     {
@@ -659,17 +659,21 @@ class waInstaller
                     $hint .= " PHP ini option 'allow_url_fopen' are disabled;";
                 }
 
-                if (!empty($http_response_header)) {
+                // Extract http status (and form hint)
+                $status = 500;
+                if (!empty($http_response_header)) {;
                     foreach ($http_response_header as $header) {
-                        if (preg_match('@^status:\s+(\d+)\s+(.+)$@i', $header, $matches)) {
-                            $hint .= " {$matches[1]} {$matches[2]}";
+                        if (preg_match( "#http/[0-9\.]+\s+([0-9]+)\s+(.+)#i", $header, $matches)) {
+                            $status = intval($matches[1]);  // typecast here is important, so === would work in outside (consumer) codes
+                            $hint .= " {$matches[1]} {$matches[2]}.";
                             $hint .= self::getHintByStatus($matches[1]);
-                            break;
                         }
+
                     }
                 }
+
                 $source = preg_replace('@([\?&](previous_hash|hash|token)=)([^&\?]+)@', '$1*hash*', $source);
-                throw new Exception("Error while opening source stream [{$source}]. Hint: {$hint}");
+                throw new waInstallerDownloadException("Error while opening source stream [{$source}]. Hint: {$hint}", $status);
             } elseif (!empty($http_response_header)) {
                 //XXX ????
                 foreach ($http_response_header as $header) {
@@ -818,7 +822,6 @@ class waInstaller
 
     private static function getHintByStatus($status)
     {
-
         $hint = '';
         switch ($status) {
             case 402:

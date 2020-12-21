@@ -408,7 +408,8 @@ class waWebasystIDApi
         $default_net_options = [
             'timeout' => 20,
             'format' => waNet::FORMAT_JSON,
-            'request_format' => waNet::FORMAT_RAW
+            'request_format' => waNet::FORMAT_RAW,
+            'expected_http_code' => null
         ];
 
         $net_options = array_merge($default_net_options, $net_options);
@@ -427,6 +428,15 @@ class waWebasystIDApi
             $exception = $e;
         }
 
+        $status = $net->getResponseHeader('http_code');
+        $body = trim($net->getResponse(true));
+        if ($status == 204 && strlen($body) == 0) {
+            return [
+                'status' => 204,
+                'response' => []
+            ];
+        }
+
         if ($exception) {
             $this->logException($exception);
             $this->logError([
@@ -442,18 +452,10 @@ class waWebasystIDApi
             ];
         }
 
-        $status = $net->getResponseHeader('http_code');
-        if ($status == 200) {
+        if ($response) {
             return [
-                'status' => 200,
+                'status' => $status,
                 'response' => $response
-            ];
-        }
-
-        if ($status == 204) {
-            return [
-                'status' => 204,
-                'response' => []
             ];
         }
 

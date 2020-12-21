@@ -303,8 +303,11 @@ class waSystem
     public function getMap($adapter = null)
     {
         if (empty($adapter)) {
-
-            $adapter = wa()->getSetting('map_adapter', 'google', 'webasyst');
+            $map_adapter_environment = 'map_adapter';
+            if (wa()->getEnv() == 'backend') {
+                $map_adapter_environment = 'backend_' . $map_adapter_environment;
+            }
+            $adapter = wa()->getSetting($map_adapter_environment, 'google', 'webasyst');
 
             // map is disabled
             if ($adapter === 'disabled') {
@@ -365,9 +368,13 @@ class waSystem
         // no adapters in system - disable map right away
         if (!$result) {
             $model = new waAppSettingsModel();
-            $adapter = $model->get('webasyst', 'map_adapter');
+            $map_adapter_environment = 'map_adapter';
+            if (wa()->getEnv() == 'backend') {
+                $map_adapter_environment = 'backend_' . $map_adapter_environment;
+            }
+            $adapter = $model->get('webasyst', $map_adapter_environment);
             if ($adapter !== 'disabled') {
-                $model->set('webasyst', 'map_adapter', 'disabled');
+                $model->set('webasyst', $map_adapter_environment, 'disabled');
             }
         }
 
@@ -630,7 +637,9 @@ class waSystem
      */
     public function setLocale($locale)
     {
-        $this->getConfig()->setLocale($locale);
+        if ($this->getConfig() instanceof waAppConfig) {
+            $this->getConfig()->setLocale($locale);
+        }
     }
 
     /**

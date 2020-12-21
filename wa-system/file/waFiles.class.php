@@ -792,6 +792,7 @@ class waFiles
                     if (!$response->getHeader("Last-Modified")) {
                         $response->addHeader("Last-Modified", filemtime($file));
                     }
+                    wa()->getResponse()->handleIfModifiedSince();
 
                     $response->addHeader("Accept-Ranges", "bytes");
                     $response->addHeader("Connection", "close");
@@ -846,6 +847,7 @@ class waFiles
                 $response->addHeader("Content-type", $file_type);
                 $response->addHeader("Content-Length", $file_size);
                 $response->addHeader("Last-Modified", filemtime($file));
+                wa()->getResponse()->handleIfModifiedSince();
                 if ($md5) {
                     $response->addHeader("Content-MD5", $md5);
                 }

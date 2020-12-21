@@ -99,7 +99,7 @@ class waBackendLoginForm extends waLoginForm
 
     private function getCurrentUrl()
     {
-        $url = wa()->getConfig()->getRequestUrl(false, false);
+        $url = wa()->getConfig()->getRequestUrl(true, false);
         $url = ltrim($url, '/');
         $domain = wa()->getConfig()->getDomain();
 

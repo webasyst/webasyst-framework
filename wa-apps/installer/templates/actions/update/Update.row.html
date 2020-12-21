@@ -59,8 +59,13 @@
         {if !empty($item.version)}
             <strong>{$item.version}</strong>
         {/if}
+
         {if !empty($item.installed.version)}
-            <span class="hint">{$item.installed.version|string_format:'[`Your current version is %s.`]'}</span>
+            {$_version = $item.installed.version}
+            {if $_version|substr:-2 === '.p'}
+                {$_version = $_version|substr:0:-2}
+            {/if}
+            <span class="hint">{$_version|string_format:'[`Your current version is %s.`]'}</span>
         {/if}
 
         {* changelog text *}

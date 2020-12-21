@@ -48,7 +48,7 @@ class webasystCompressCli extends waCliController
         $this->default_params = array_intersect_key($default, array_fill_keys($keys, true));
     }
 
-    private function printHelp()
+    protected function printHelp()
     {
 
         if (preg_match('/^webasyst(\w+)Cli$/', __CLASS__, $matches)) {
@@ -98,6 +98,7 @@ HELP;
     {
         $this->slug = waRequest::param(0);
         $this->params = waRequest::param();
+
         $id_pattern = '[a-z][a-z0-9_]+';
 
         if (preg_match("@^({$id_pattern})($|/(plugins|widgets|themes)/({$id_pattern})$)@", $this->slug, $matches)) {
@@ -121,7 +122,6 @@ HELP;
 
     public function execute()
     {
-
         try {
             $this->verifyParams();
             if (empty($this->params) || isset($this->params['help'])) {
@@ -163,8 +163,7 @@ HELP;
                 } else {
                     $this->trace('Config check skipped');
                 }
-
-
+                
                 if ($compress && ('theme' != $this->type)) {
                     $style = $this->getParam('style');
                     if (!in_array($skip, array('test', 'all'), true)
@@ -219,14 +218,19 @@ HELP;
                 } elseif ($compress) {
                     $this->trace('Test completed');
                 } else {
-                    exit(1);
+                    $this->exitWithCode(1);
                 }
             }
         } catch (Exception $ex) {
             $this->tracef("ERROR: %s\n\n", $ex->getMessage());
             $this->printHelp();
-            exit(-1);
+            $this->exitWithCode(-1);
         }
+    }
+
+    protected function exitWithCode($code)
+    {
+        exit($code);
     }
 
     /**
@@ -238,47 +242,71 @@ HELP;
         return array_map('trim', explode(',', ifset($this->params[$name], ifset(self::$default[$name]))));
     }
 
+    /**
+     * @return string
+     * @throws waException
+     */
+    protected function getPath()
+    {
+        $type = preg_replace('@(plugin|widget|theme|app)s$@', '$1', $this->type);
+        switch ($type) {
+            case 'app':
+                return wa()->getConfig()->getAppsPath($this->app_id, null);
+            case 'widget':
+                if ($this->app_id === 'webasyst') {
+                    return wa()->getConfig()->getPath('widgets').'/'.$this->extension_id;
+                } else {
+                    return wa()->getConfig()->getAppsPath($this->app_id, $this->type.'/'.$this->extension_id);
+                }
+            case 'plugin':
+            case 'theme':
+                return wa()->getConfig()->getAppsPath($this->app_id, $this->type.'/'.$this->extension_id);
+            case 'shipping':
+            case 'payment':
+            case 'sms':
+                return wa()->getConfig()->getPath('plugins').'/'.$this->type.'/'.$this->extension_id;
+            default:
+                throw new waException('Unknown type '.$this->type);
+        }
+    }
+
     private function initPath()
     {
+        $this->path = $this->getPath();
 
         $type = preg_replace('@(plugin|widget|theme|app)s$@', '$1', $this->type);
         switch ($type) {
             case 'app':
                 $namespace = $this->app_id;
-                $this->path = wa()->getConfig()->getAppsPath($this->app_id, null);
                 break;
             case 'widget':
-
                 if ($this->app_id === 'webasyst') {
                     $namespace = $this->extension_id.ucfirst($type);
-                    $this->path = wa()->getConfig()->getPath('widgets').'/'.$this->extension_id;
                 } else {
                     $namespace = $this->app_id.ucfirst($this->extension_id).ucfirst($type);
-                    $this->path = wa()->getConfig()->getAppsPath($this->app_id, $this->type.'/'.$this->extension_id);
                 }
                 break;
             case 'plugin':
             case 'theme':
                 $namespace = $this->app_id.ucfirst($this->extension_id);
-                $this->path = wa()->getConfig()->getAppsPath($this->app_id, $this->type.'/'.$this->extension_id);
                 break;
             case 'shipping':
             case 'payment':
                 $namespace = $this->extension_id.ucfirst($this->type);
-                $this->path = wa()->getConfig()->getPath('plugins').'/'.$this->type.'/'.$this->extension_id;
                 $type = 'plugin';
                 break;
             case 'sms':
                 $namespace = $this->extension_id.strtoupper($this->type);
-                $this->path = wa()->getConfig()->getPath('plugins').'/'.$this->type.'/'.$this->extension_id;
                 $type = 'plugin';
                 break;
             default:
                 throw new waException('Unknown type '.$this->type);
         }
+
         if (!file_exists($this->path) || !is_dir($this->path)) {
             throw new waException('Invalid SLUG: path not found');
         }
+
         $this->type = $type;
         $this->folder = $this->extension_id ? $this->extension_id : $this->app_id;
         $this->archive_path = $this->path.'/'.$this->folder.'.tar.gz';
@@ -701,6 +729,7 @@ HELP;
                 $result = $this->testConfig() && $result;
                 # 1.1 Requirements
                 $result = $this->testRequirements() && $result;
+
                 # 1.2 themes
                 # 1.3 plugins
                 # 2. Check PHP code
@@ -708,7 +737,6 @@ HELP;
                 $result = $this->testPhp($style) && $result;
                 break;
         }
-
 
         # 4 Table names
         if (in_array($this->type, array('app', 'plugin'))) {
@@ -1047,7 +1075,7 @@ HELP;
         return $version;
     }
 
-    private function testPhp($param)
+    protected function testPhp($param)
     {
         $result = true;
 
