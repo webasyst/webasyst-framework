@@ -55,7 +55,11 @@ class siteRoutingEditAction extends waViewAction
                     }
 
                     if (!$route && isset($app['routing_params']) && is_array($app['routing_params'])) {
-                        wa($app_id);
+                        if (wa()->appExists($app_id)) {
+                            // Make sure routing params are not cached, as wa()->getAppInfo() does.
+                            // This makes difference for routing params generated on-the-fly (e.g. shop checkout_storefront_id).
+                            $app['routing_params'] = wa($app_id)->getConfig()->getInfo('routing_params');
+                        }
                         foreach ($app['routing_params'] as $routing_param => $routing_param_value) {
                             if (is_callable($routing_param_value)) {
                                 $app['routing_params'][$routing_param] = call_user_func($routing_param_value);
@@ -146,6 +150,7 @@ class siteRoutingEditAction extends waViewAction
                 $result[] = $info;
             }
         }
+
         return $result;
     }
 
@@ -157,6 +162,13 @@ class siteRoutingEditAction extends waViewAction
 
         if (($value === null) && isset($info['default'])) {
             $value = $info['default'];
+        }
+
+        if ($info['type'] == 'select') {
+            if (!isset($info['items'][$value])) {
+                $new_value = ifset($value, '');
+                $info['items'] = array($new_value => $new_value) + $info['items'];
+            }
         }
 
         $view = wa('site')->getView();
