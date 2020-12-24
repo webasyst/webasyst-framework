@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-12-16 15:52+0300\n"
+"PO-Revision-Date: 2020-12-21 14:57+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -5422,9 +5422,6 @@ msgstr "(отправлен в SMS)"
 msgid "API key"
 msgstr "Ключ API"
 
-msgid "Obtain an API key on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
-msgstr "Получите ключ API в <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">кабинете разработчика</a>. Выберите тип карт «<strong>JavaScript API и HTTP Геокодер</strong>»."
-
 msgid "“Address” is a complex field, which cannot be completely disabled; you can only edit its components listed below."
 msgstr "Поле «Адрес» — составное, его нельзя полностью отключить, но можно редактировать его составляющие, перечисленные ниже."
 
@@ -6279,3 +6276,18 @@ msgstr "Активирован вход с Webasyst ID по умолчанию, 
 
 msgid "You need to connect Webasyst ID to your account."
 msgstr "Необходимо подключить Webasyst ID для своего аккаунта."
+
+msgid "Obtain an API key for the <strong>free or paid version</strong> on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
+msgstr "Получите ключ API для <strong>бесплатной или платной версии</strong> в <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">кабинете разработчика</a>. Выберите тип карт «<strong>JavaScript API и HTTP Геокодер</strong>»."
+
+msgid "Obtain an API key for the <strong>paid version</strong> on the <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">developer dashboard</a>. Select “<strong>JavaScript API, Geocoding API</strong>” option."
+msgstr "Получите ключ API для <strong>платной версии</strong> в <a href=\"https://developer.tech.yandex.ru/\" target=\"_blank\">кабинете разработчика</a>. Выберите тип карт «<strong>JavaScript API и HTTP Геокодер</strong>»."
+
+msgid "If the free version’s API key is specified, only a link to the map will be displayed."
+msgstr "Если указать ключ API для бесплатной версии, то будет показана только ссылка на карту."
+
+msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> to get a map displayed."
+msgstr "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Получите ключ API «Карт Google»</a> для отображения карты."
+
+msgid "Backend"
+msgstr "Бекенд"

@@ -215,13 +215,12 @@ class waSignupAction extends waViewAction
             return;
         }
 
-        // Email is now confirmed
-        $cem->updateById($email_row['id'], array('status' => waContactEmailsModel::STATUS_CONFIRMED));
+        $already_had_password = (bool)$contact['password'];
 
-        // if contact is not signed up yet
-        if (!$contact['password']) {
-            // generate password if not generated yet (we in email confirmation case, so password is on extended alphabet)
-            $this->getGeneratedPassword();
+        // if contact doesn't has password yet then contact for sure is not signed up, therefore we generate password and signup contact
+        if (!$already_had_password) {
+            // generate password if not generated yet
+            $this->getGeneratedPassword();  // we in email confirmation case, so password is on extended alphabet
             
             $is_signed_up = $this->trySignupContact($contact);
 
@@ -230,14 +229,31 @@ class waSignupAction extends waViewAction
                 $this->redirectToLoginPage();
                 return;
             }
+        }
 
-            // send sign up notification
-            if ($this->auth_config->getSignUpNotify()) {
+        // And of course confirm email
+        $cem->updateById($email_row['id'], array('status' => waContactEmailsModel::STATUS_CONFIRMED));
+
+        // need to send notification about successful ending of signup process
+        if ($this->auth_config->getSignUpNotify()) {
+
+            // send notification only if phone is not confirmed, which is indication that we now in ending of signup process
+            // otherwise signup process had been ended when phone has been confirmed (so notification has been send by SMS)
+
+            // If phone is confirmed then contact was signed up already in past (password for sure already exists cause of previous check in code)
+            $phones = $contact->get('phone');
+            $phone = isset($phones[0]) ? $phones[0] : null;
+            $phone_is_confirmed = $phone && $phone['status'] === waContactDataModel::STATUS_CONFIRMED;
+
+            if (!$phone_is_confirmed) {
                 $addresses = array(
                     'email' => $validated_email,
                     'phone' => $contact->get('phone', 'default')
                 );
-                $this->sendSignupNotify($addresses);
+
+                $this->sendSignupNotify($addresses, [
+                    'force_no_password' => $already_had_password    // not event try send password in notification if contact already had password in past
+                ]);
             }
         }
 
@@ -403,21 +419,24 @@ class waSignupAction extends waViewAction
 
     /**
      * Send notification about successful signing up to first working address in list
-     *
-     * IMPORTANT: Send also generated password in proper mode ( waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD )
+     * Send also generated password in waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD mode unless $options['force_no_password'] is TRUE
      *
      * @param $addresses array of addresses where we can sent notification indexed by field id ('email', 'phone')
-     *
-     *
-     * @param null|string $priority waVerificationChannelModel::TYPE_* const
+     * @param array $options
+     *      - null|string   $options['priority'] waVerificationChannelModel::TYPE_* const
+     *      - bool          $options['force_no_password'] - if TRUE then in notification will not have password no matter what
+     *                          Default is FALSE
      * @return array(0 => <status>, 1 => <details>)
      * @throws waException
      */
-    protected function sendSignupNotify($addresses, $priority = null)
+    protected function sendSignupNotify($addresses, array $options = [])
     {
         if (!$this->auth_config->getSignUpNotify()) {
             return array(false, array());
         }
+
+        $priority = isset($options['priority']) ? $options['priority'] : null;
+        $force_no_password = !empty($options['force_no_password']);
 
         $generated_password_auth_type = $this->auth_config->getAuthType() === waAuthConfig::AUTH_TYPE_GENERATE_PASSWORD;
 
@@ -440,14 +459,21 @@ class waSignupAction extends waViewAction
 
             if ($channel->isEmail() && !empty($addresses['email'])) {
                 $address = $addresses['email'];
-                $options['password'] = $this->getGeneratedPassword();
+
+                if ($generated_password_auth_type && !$force_no_password) {
+                    $options['password'] = $this->getGeneratedPassword();
+                }
+
                 $sent = $channel->sendSignUpSuccessNotification($address, $options);
             } elseif ($channel->isSMS() && !empty($addresses['phone'])) {
 
                 $phone = $addresses['phone'];
                 $is_international = substr($phone, 0, 1) === '+';
 
-                $options['password'] = $this->getGeneratedPassword(false);
+                if ($generated_password_auth_type && !$force_no_password) {
+                    $options['password'] = $this->getGeneratedPassword(false);
+                }
+
                 $sent = $channel->sendSignUpSuccessNotification($phone, $options);
 
                 // Not sent, maybe because of sms adapter not work correct with not international phones
@@ -635,7 +661,9 @@ class waSignupAction extends waViewAction
         }
 
         // diagnostic already printed inside
-        list($notify_sent, $notify_details) = $this->sendSignupNotify($data, $priority);
+        list($notify_sent, $notify_details) = $this->sendSignupNotify($data, [
+            'priority' => $priority
+        ]);
 
         // IMPORTANT detail
         // Through 'assign' we inform ALSO signup & login forms

@@ -2443,6 +2443,7 @@ HTACCESS;
             'js',
             'map',
             'css',
+            'styl',
             'html',
             'txt',
             'png',
@@ -2463,6 +2464,7 @@ HTACCESS;
             'webp',
             'po',
             'mo',
+            'json',
             '',
         );
 
