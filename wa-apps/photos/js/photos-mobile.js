@@ -4,11 +4,11 @@
         photos: [],
         init: function() {
             $.photos_mobile.photosAction();
-            $('#p-upload-link').live('click', function() {
+            $('#p-upload-link').on('click', function() {
                 $('#fileupload input').trigger('click');
                 return false;
             });
-            $('#fileupload input').live('change', function() {
+            $('#fileupload input').on('change', function() {
                 $('#fileupload').submit();
 
                 $('#fileupload-iframe').load(function() {

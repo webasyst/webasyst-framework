@@ -4,9 +4,8 @@
 (function($) {
     $.photos.menu.register('photo', '#photo-organize-menu', {
         addToAlbumAction: function() {
-            $('<div id="choose-albums-photo"></div>').waDialog({
+            $.photos.confirmDialog({
                 url: '?module=dialog&action=albums&id=' + $.photos.getPhotoId(),
-                className: 'width600px height400px',
                 onSubmit: function (d) {
                     var photo_id = $.photos.photo_stream_cache.getCurrent().id;
                     $.photos.addToAlbums({
@@ -291,7 +290,7 @@
 
     });
 
-    $('#restore-original').live('click', function() {
+    $('#restore-original').on('click', function() {
         if (confirm($_('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?'))) {
             $.photos.setCover();
             $.photos.restoreOriginal($.photos.getPhotoId(), function() {

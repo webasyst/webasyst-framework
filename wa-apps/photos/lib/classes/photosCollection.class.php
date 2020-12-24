@@ -719,7 +719,7 @@ class photosCollection
                                         break;
                                     case 'middle':
                                         $size = photosPhoto::getMiddlePhotoSize();
-                                        break;;
+                                        break;
                                     case 'big':
                                         $size = photosPhoto::getBigPhotoSize();
                                         break;

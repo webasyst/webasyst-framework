@@ -1,21 +1,21 @@
-(function($) {
-    $.fn.rateWidget = function(options, ext, value) {
-        if (typeof options == 'string') {
-            if (options == 'getOption') {
-                if (ext == 'rate') {
-                    return parseInt(this.attr('data-rate'));
+(function ($) {
+    $.fn.rateWidget = function (options, ext, value) {
+        if (typeof options === 'string') {
+            if (options === 'getOption') {
+                if (ext === 'rate') {
+                    return parseInt(this.attr('data-rate'), 10);
                 }
             }
-            if (options == 'setOption') {
-                if (ext == 'rate') {
-                    var val = parseFloat(value) || 0;
+            if (options === 'setOption') {
+                if (ext === 'rate') {
+                    let val = parseFloat(value) || 0;
                     update.call(this, Math.round(val * 2) / 2);
                     ext = {
                         rate: value
                     };
                 }
                 if (typeof ext === 'object' && ext) {
-                    var settings = this.data('rateWidgetSettings') || {};
+                    let settings = this.data('rateWidgetSettings') || {};
                     $.extend(settings, ext);
                     if (typeof ext.hold !== 'undefined' && typeof ext.hold !== 'function') {
                         settings.hold = _scalarToFunc(settings.hold);
@@ -26,134 +26,166 @@
         }
 
         this.data('rateWidgetSettings', $.extend({
-            onUpdate: function() {},
+            onUpdate: function () {
+            },
             rate: null,
             hold: false,
             withClearAction: true,
             alwaysUpdate: false
         }, options || {}));
 
-        var settings = this.data('rateWidgetSettings'),
+        let settings = this.data('rateWidgetSettings'),
             self = this;
+
         if (typeof settings.hold !== 'function') {
             settings.hold = _scalarToFunc(settings.hold);
         }
+
         init.call(this);
+
         function init() {
             if (this.data('inited')) {  // has inited already. Don't init again
                 return;
             }
+
             if (settings.rate != null) {
                 self.attr('data-rate', settings.rate);
             }
-            self.find('i:lt(' + self.attr('data-rate') + ')').removeClass('star-empty').addClass('star');
-            self.mouseover(function(e) {
-                if (settings.hold.call(self)) {
-                    return;
-                }
-                var target = e.target;
-                if (target.tagName == 'I') {
-                    target = $(target);
-                    target.prevAll()
-                        .removeClass('star star-half star-empty').addClass('star-hover').end()
-                        .removeClass('star star-half star-empty').addClass('star-hover');
-                    target.nextAll().removeClass('star star-hover').addClass('star-empty');
-                }
-            }).mouseleave(function() {
-                if (settings.hold.call(self)) {
-                    return;
-                }
-                update.call(self, self.attr('data-rate'));
-            });
-            self.click(function(e) {
-                if (settings.hold.call(self)) {
-                    return;
-                }
-                var item = e.target;
-                var root = this;
-                while (item.tagName != 'I') {
-                    if (item == root) {
+
+            self
+                .find('svg:lt(' + self.attr('data-rate') + ')')
+                .attr('data-prefix', 'fas');
+
+            self
+                .mouseover(function (e) {
+                    if (settings.hold.call(self)) {
                         return;
                     }
+
+                    let target = e.target;
+
+                    if (target.tagName === 'svg' || target.tagName === 'path') {
+                        target = $(target);
+                        target
+                            .prevAll()
+                            .removeClass('fa-star-half-alt')
+                            .attr('data-prefix', 'fas').end()
+                            .removeClass('fa-star-half-alt')
+                            .attr('data-prefix', 'fas');
+
+                        target
+                            .nextAll()
+                            .removeClass('fa-star-half-alt')
+                            .attr('data-prefix', 'far');
+                    }
+                })
+                .mouseleave(function () {
+                    if (settings.hold.call(self)) {
+                        return;
+                    }
+                    update.call(self, self.attr('data-rate'));
+                });
+
+            self.on('click', 'svg', function (e) {
+
+                if (settings.hold.call(self)) {
+                    return;
                 }
-                var prev_rate = self.attr('data-rate');
-                var rate = 0;
-                self.find('i')
-                    .removeClass('star star-hover')
-                    .addClass('star-empty')
-                    .each(function() {
-                        rate++;
-                        $(this).removeClass('star-empty').addClass('star');
-                        if (this == item) {
+
+                let prev_rate = self.attr('data-rate'),
+                    rate = $(this).attr('data-rate-value');
+
+                self
+                    .find('svg')
+                    .removeClass('fa-star-half-alt')
+                    .attr('data-prefix', 'far')
+                    .each(function () {
+                        $(this).attr('data-prefix', 'fas');
+                        if ($(this).attr('data-rate-value') == rate) {
                             if (settings.alwaysUpdate || prev_rate != rate) {
                                 self.attr('data-rate', rate);
                                 settings.onUpdate(rate);
                             }
                             return false;
                         }
-                });
+                    });
+
             });
+
             // if withClearAction is setted to true make available near the stars link-area for clear all stars (set rate to zero)
             if (settings.withClearAction) {
-                var clear_link_id = 'clear-' + $(this).attr('id'),
-                    clear_link = $('#' + clear_link_id);
+                let clear_link_id = `clear-${$(this).attr('id')}`,
+                    clear_link = $(`#${clear_link_id}`);
+
                 if (!clear_link.length) {
-                    self.after('<a href="javascript:void(0);" class="inline-link p-rate-clear" id="'+clear_link_id+'" style="display:none;"><b><i>'+$_('clear')+'</b></i></a>');
+                    self.after(`<a href="javascript:void(0);" class="p-rate-clear" id="${clear_link_id}" style="display:none;">${$_('clear')}</a>`);
                     clear_link = $('#' + clear_link_id);
                 }
-                clear_link.click(function() {
+
+                clear_link.on('click', function (e) {
+                    e.preventDefault();
+
                     if (settings.hold.call(self)) {
                         return;
                     }
-                    var prev_rate = self.attr('data-rate');
+
+                    let prev_rate = self.attr('data-rate');
+
                     update.call(self, 0);
+
                     if (prev_rate != 0) {
                         settings.onUpdate(0);
                     }
                 });
-                var timer_id;
-                self.parent().mousemove(function() {
-                    if (settings.hold.call(self)) {
-                        return;
-                    }
-                    if (timer_id) {
-                        clearTimeout(timer_id);
-                    }
-                    clear_link.show(0);
-                }).mouseleave(function() {
-                    timer_id = setTimeout(function() {
+
+                let timer_id;
+
+                self
+                    .parent()
+                    .mousemove(function () {
                         if (settings.hold.call(self)) {
                             return;
                         }
-                        clear_link.hide(0);
-                    }, 150);
-                });
+                        if (timer_id) {
+                            clearTimeout(timer_id);
+                        }
+                        clear_link.show(0);
+                    })
+                    .mouseleave(function () {
+                        timer_id = setTimeout(function () {
+                            if (settings.hold.call(self)) {
+                                return;
+                            }
+                            clear_link.hide(0);
+                        }, 150);
+                    });
             }
+
             this.data('inited', true);
         }
 
         function update(new_rate) {
-            var rate = 0;
-            this.find('i')
-                .removeClass('star star-empty star-half star-hover')
-                .addClass('star-empty').each(function() {
-                    if (rate == new_rate) {
-                        return false;
+            let rate = 0;
+            this.find('svg')
+                .removeClass('fa-star-half-alt')
+                .attr('data-prefix', 'far').each(function () {
+                if (rate == new_rate) {
+                    return false;
+                }
+                rate++;
+                if (rate > new_rate) {
+                    if (rate - new_rate == 0.5) {
+                        $(this).attr('data-prefix', 'fas').addClass('fa-star-half-alt');
                     }
-                    rate++;
-                    if (rate > new_rate) {
-                        if (rate - new_rate == 0.5) {
-                            $(this).removeClass('star-empty').addClass('star-half');
-                        }
-                    } else {
-                        $(this).removeClass('star-empty').addClass('star');
-                    }
-                });
+                } else {
+                    $(this).attr('data-prefix', 'fas');
+                }
+            });
             this.attr('data-rate', new_rate);
         }
 
         function _scalarToFunc(scalar) {
-            return function() {
+            return function () {
                 return scalar;
             };
         }

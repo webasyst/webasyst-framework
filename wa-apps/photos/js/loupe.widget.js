@@ -27,6 +27,10 @@ $.photos.widget.loupe = {
     link : null,
     offset : {},
     status : 'thumb',
+    image_container_width: 0,
+    image_container_height: 0,
+    image_width: 0,
+    image_height: 0,
 
     init : function(options) {
         this.options = $.extend(this.options, options || {});
@@ -38,11 +42,11 @@ $.photos.widget.loupe = {
         });
         $.photos.hooks_manager.bind('beforeLoadPhoto', function() {
             self.trace('beforeLoadPhoto');
-            self.stop();
+            //self.stop();
         });
         $.photos.hooks_manager.bind('onAbortPrevLoading', function() {
             self.trace('onAbortPrevLoading');
-            self.stop();
+            //self.stop();
         });
     },
 
@@ -61,11 +65,56 @@ $.photos.widget.loupe = {
         this.trace('prepare, status='+this.status);
         this.photo_data = photo;
         this.container = img;
+
+        let image_container = this.container.closest('.p-one-photo');
+        this.image_container_width = image_container.width();
+        this.image_container_height = image_container.height();
+        this.image_width = this.container.width();
+        this.image_height = this.container.height();
+
         this.thumb_data = {
-                height : proper_thumb.size.height,
-                width : proper_thumb.size.width,
-                src : proper_thumb.url
+                height : this.image_height,
+                width : this.image_width,
+                src : proper_thumb.url2x
         };
+
+        if (photo.height >= this.image_container_height) {
+            this.container.css({
+                'width' : this.image_width + 'px',
+                'height' : this.image_height + 'px',
+            });
+        }else{
+            this.container.css({
+                'width' : proper_thumb.size.width + 'px',
+                'height' : proper_thumb.size.height + 'px',
+            });
+        }
+
+        window.addEventListener("resize", function() {
+            let image_container = self.container.closest('.p-one-photo');
+            self.image_container_width = image_container.width();
+            self.image_container_height = image_container.height();
+            self.image_width = self.container.width();
+            self.image_height = self.container.height();
+
+            self.thumb_data = {
+                height : self.image_height,
+                width : self.image_width,
+                src : proper_thumb.url2x
+            };
+
+            if (photo.height >= self.image_container_height) {
+                self.container.css({
+                    'width' : self.image_width + 'px',
+                    'height' : self.image_height + 'px',
+                });
+            }else{
+                self.container.css({
+                    'width' : proper_thumb.size.width + 'px',
+                    'height' : proper_thumb.size.height + 'px',
+                });
+            }
+        });
 
         if (this.status != 'thumb') {
             this.stop();
@@ -76,32 +125,45 @@ $.photos.widget.loupe = {
     },
 
     reset : function() {
+        var self = this;
         this.trace('reset, status='+this.status);
         this.link = $('#photo-loupe-link');
         if ($('div.photo-loupe-wrapper').length) {
             this.container.css({
-                'width' : this.thumb_data.width + 'px',
+                'width' : this.image_width + 'px',
                 'max-width' : '',
-                'height' : this.thumb_data.height + 'px',
+                'height' : this.image_height + 'px',
                 'margin-left' : '',
                 'margin-top' : ''
             });
             this.container.unwrap();
-        };
+        }
 
         this.status = 'thumb';
         this.link.find('.minimize').hide();
-        if ((this.thumb_data.width && this.thumb_data.width < this.photo_data.width) || (this.thumb_data.height && this.thumb_data.height < this.photo_data.height) ) {
+        if ((this.image_container_width && this.image_container_width < this.photo_data.width) || (this.image_container_height && this.image_container_height < this.photo_data.height) ) {
             this.link.find('.maximize').show();
-            this.options.animate = (this.thumb_data.height && this.thumb_data.width) ? true : false;
+            this.options.animate = (this.image_container_height && this.image_container_width) ? true : false;
         } else {
             this.link.find('.maximize').hide();
         }
 
-        var self = this;
         this.link.unbind('.loupe').bind('click.loupe', function(e) {
             return self.clickHandler.apply(self, [this, e]);
         }).show();
+
+        window.addEventListener("resize", function() {
+            if ((self.image_container_width && self.image_container_width < self.photo_data.width) || (self.image_container_height && self.image_container_height < self.photo_data.height) ) {
+                self.link.find('.maximize').show();
+                self.options.animate = (self.image_container_height && self.image_container_width) ? true : false;
+            } else {
+                self.link.find('.maximize').hide();
+            }
+
+            self.link.unbind('.loupe').bind('click.loupe', function(e) {
+                return self.clickHandler.apply(self, [this, e]);
+            }).show();
+        })
     },
 
     clickHandler : function() {
@@ -185,30 +247,45 @@ $.photos.widget.loupe = {
         $('#photo').removeClass("ui-draggable").closest('.p-image').addClass('p-image-maximized');
         this.offset = this.container.offset();
         this.offset.x = Math
-                .round((this.thumb_data.width - this.photo_data.width) / 2);
+                .round((this.image_container_width - this.photo_data.width) / 2);
         this.offset.y = Math
-                .round((this.thumb_data.height - this.photo_data.height) / 2);
+                .round((this.image_container_height - this.photo_data.height) / 2);
+
         this.container.wrap('<div class="photo-loupe-wrapper" style="height:'
-                + this.thumb_data.height + 'px;width:' + this.thumb_data.width
+                + this.image_container_height + 'px;width:' + this.image_container_width
                 + 'px;position: relative;"/>');
+        window.addEventListener("resize", function() {
+            this.offset = this.container.offset();
+            this.offset.x = Math
+                .round((this.image_container_width - this.photo_data.width) / 2);
+            this.offset.y = Math
+                .round((this.image_container_height - this.photo_data.height) / 2);
+
+            this.container.wrap('<div class="photo-loupe-wrapper" style="height:'
+                + this.image_container_height + 'px;width:' + this.image_container_width
+                + 'px;position: relative;"/>');
+        });
         this.container.removeAttr('width').removeAttr('height').css({
-            'width' : this.thumb_data.width + 'px',
-            'height' : this.thumb_data.height + 'px',
+            'width' : this.image_width + 'px',
+            'height' : this.image_height + 'px',
             'margin-left' : 0,
             'margin-top' : 0,
+            'max-height' : this.photo_data.height + 'px',
             'max-width' : this.photo_data.width + 'px',
             'display' : 'inline-block'
 
         });
+        this.options.animate = true
         if (this.options.animate) {
             this.container.animate({
                 'width' : this.photo_data.width + 'px',
                 'height' : this.photo_data.height + 'px',
                 'margin-left' : this.offset.x + 'px',
                 'margin-top' : this.offset.y + 'px',
+                'max-height' : this.photo_data.height + 'px',
                 'max-width' : this.photo_data.width + 'px'
             }, function() {
-                return self.enlargeComplete.apply(self, [this]);
+                self.enlargeComplete.apply(self, [this]);
             });
         } else {
             this.container.css({
@@ -330,13 +407,24 @@ $.photos.widget.loupe = {
     decrease : function(fast) {
         this.trace('decrease, status='+this.status);
         this.loaded = false;
+
         var self = this;
-        var size = {
-            'width' : this.thumb_data.width + 'px',
-            'height' : this.thumb_data.height + 'px',
-            'margin-left' : 0,
-            'margin-top' : 0
-        };
+        if (this.photo_data.height >= this.image_container_height) {
+            var size = {
+                'width' : this.image_width + 'px',
+                'height' : this.image_height + 'px',
+                'margin-left' : 0,
+                'margin-top' : 0
+            };
+        }else{
+            var size = {
+                'width' : this.thumb_data.width + 'px',
+                'height' : this.thumb_data.height + 'px',
+                'margin-left' : 0,
+                'margin-top' : 0
+            };
+        }
+
         if (fast || !this.options.animate) {
             this.helper.css(size);
             self.decreaseComplete();
@@ -362,10 +450,10 @@ $.photos.widget.loupe = {
         if (this.drag) {
             e.preventDefault();
 
-            this.offset.x = Math.min(0, Math.max(this.thumb_data.width
+            this.offset.x = Math.min(0, Math.max(this.image_width
                     - this.photo_data.width, Math.round(this.offset.x
                     - this.offset.mouseX + e.pageX)));
-            this.offset.y = Math.min(0, Math.max(this.thumb_data.height
+            this.offset.y = Math.min(0, Math.max(this.image_height
                     - this.photo_data.height, Math.round(this.offset.y
                     - this.offset.mouseY + e.pageY)));
             this.offset.mouseX = e.pageX;

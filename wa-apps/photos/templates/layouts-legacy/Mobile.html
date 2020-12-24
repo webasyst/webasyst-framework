@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
+    {$wa->css()}
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css">
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/legacy/mobile.css">
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
+    {*<script type="text/javascript" src="?action=loc&amp;v={$wa->version()}"></script>*}
+    <script src="{$wa_app_static_url}js/legacy/tmpl.min.js"></script>
+    <script type="text/javascript" src="{$wa_app_static_url}js/legacy/photos-mobile.js"></script>
+</head>
+<body>
+<div id="wa">
+    <div id="wa-app" data-role="page">
+        <div data-role="header" data-position="inline" data-backbtn="false">
+            <a href="{$wa_backend_url}" rel="external"  data-role="button" data-iconpos="notext" data-icon="mobile-apps">[`Apps`]</a>
+            <h1>[`Photos`]</h1>
+        </div>
+        <div id="content" data-role="content">
+        </div>
+    </div><!-- #wa-app -->
+</div><!-- #wa -->
+
+<script type="text/javascript">
+$(function() {
+    $.photos_mobile.init();
+});
+</script>
+
+</body>
+</html>

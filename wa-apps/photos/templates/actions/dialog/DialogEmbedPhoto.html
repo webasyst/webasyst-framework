@@ -1,10 +1,9 @@
-<div class="dialog width600px height350px">
+<div class="dialog">
     <div class="dialog-background"></div>
     <form method="post" action="">
-    <div class="dialog-window">
+    <div class="dialog-body">
+        <div class="dialog-header"><h3>[`Share photo`]</h3></div>
         <div class="dialog-content">
-            <div class="dialog-content-indent">
-                <h1>[`Share photo`]</h1>
                 <div class="fields form p-dialog-form">
                     <div class="field-group">
                         {if $photo.frontend_link}
@@ -41,9 +40,8 @@
                         {/if}
                     </div>
                 </div>
-            </div>
         </div>
-        <div class="dialog-buttons">
+        <div class="dialog-buttons dialog-footer">
             <div class="block double-padded float-right">
                 <select name="size">
                     {foreach $sizes as $sz}

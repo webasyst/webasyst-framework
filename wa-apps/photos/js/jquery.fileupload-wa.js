@@ -157,6 +157,7 @@
                                 template.addClass('in');
                                 if (!file.error) {
                                     that.filesIds.push(file.id);
+                                    console.log(template)
                                     setTimeout(function () {
                                         template.hide(200);
                                     }, 5000);
@@ -173,6 +174,7 @@
                     template.addClass('in');
                     if (!file.error) {
                         that.filesIds.push(data.result.files[0]);
+                        console.log(template)
                         setTimeout(function () {
                             template.hide(200);
                         }, 5000);
@@ -268,7 +270,7 @@
             },
             // Callback for uploads stop, equivalent to the global ajaxStop event:
             stop: function (e) {
-                var self = $(this);
+                const self = $(this);
                 $("#p-upload-filescount").html('100%');
                 self.find('.fileupload-progressbar').animate({
                     'width': '100%'
@@ -283,11 +285,12 @@
                 var files_count = that.filesCount;
 
                 if (files_count) {
-                    var waiting = 2;
-                    var data = null;
-                    var showMessage = function() {
+                    let waiting = 2,
+                        data = null;
+
+                    const showMessage = function() {
                         var $place_for_messages = $('#place-for-messages').hide();
-                        $place_for_messages.html('<p><span class="highlighted"><i class="icon10 yes"></i> <em></em></span></p>').slideDown();
+                        $place_for_messages.html('<p><span class="highlighted"><i class="fas fa-check fa-xs"></i> <em></em></span></p>').slideDown();
                         $place_for_messages.find('.highlighted em').text(data);
                         setTimeout(function() {
                             $place_for_messages.slideUp(function() {
@@ -295,10 +298,12 @@
                             });
                         }, 5000);
                     };
+
                     $('#content').one('photos_list_load', function() {
                         waiting--;
                         !waiting && showMessage();
                     });
+
                     // log action and get localized message at the same time
                     $.get('?module=backend&action=log&action_to_log=photos_upload&count='+files_count, {'ids': that.filesIds}, function(r) {
                         data = r.data;
@@ -576,7 +581,7 @@
         },
 
         _initButtonBarEventHandlers: function () {
-            var fileUploadButtonBar = this.element.find('.dialog-buttons'),
+            var fileUploadButtonBar = this.element.find('.dialog-footer'),
                 filesList = this._files,
                 ns = this.options.namespace,
                 that = this;

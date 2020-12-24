@@ -8,12 +8,22 @@
             if (options.width) {
                 this.width = options.width;
             }
-            this.initCollapsible();
-            this.initHandlers();
-            this.initView();
-            setTimeout( function() {
-                that.initFixedSidebar();
-            }, 1000);
+
+            that.wa2 = options.wa2 || false;
+
+            if (that.wa2) {
+                that.$wrapper = options.$wrapper;
+                this.initCollapsibleWa2();
+                this.initHandlers();
+            }else{
+                this.initCollapsible();
+                this.initHandlers();
+                this.initView();
+
+                setTimeout( function() {
+                    that.initFixedSidebar();
+                }, 1000);
+            }
         },
 
         initFixedSidebar: function() {
@@ -25,7 +35,7 @@
             var $window = $(window),
                 $wrapper = $("#wa-app"),
                 $sidebarWrapper = $wrapper.find(".p-sidebar-wrapper"),
-                $sidebar = $sidebarWrapper.find(".p-sidebar-block");
+                $sidebar = $wrapper.find(".p-sidebar-block");
 
             // VARS
             var display_height = $window.height(),
@@ -235,41 +245,148 @@
             });
         },
 
-        initHandlers: function() {
-            $("#p-upload-link").click(function () {
-                $.photos.uploadDialog();
-                return false;
+        initCollapsibleWa2: function() {
+
+            var that = this,
+                section_storage_name = "photos/sidebar/collapsed_sections",
+                album_storage_name = "photos/sidebar/collapsed_albums",
+                $sections = that.$wrapper.find(".p-sidebar-section"),
+                $albums = that.$wrapper.find(".js-album-list li");
+
+            $albums.each( function() {
+                var $album = $(this),
+                    album_id = $album.data("id"),
+                    $caret = $album.find(".caret");
+
+                if ($caret.length) {
+                    $caret.on("click", function(event) {
+                        event.preventDefault();
+                        $album.trigger("collapse_a");
+                    });
+
+                    $album.on("collapse_a", function(event) {
+                        event.preventDefault();
+                        toggle($album, 'album');
+                    });
+
+                    if (album_id) {
+                        var is_hidden = isSectionHidden(album_id, 'album');
+                        if (is_hidden) {
+                            $album.trigger("collapse_a");
+                        }
+                    }
+                }
             });
 
-            $('#album-list-container').off('click', '.p-new-album').
-                on('click', '.p-new-album',
+            $sections.each( function() {
+                var $section = $(this),
+                    section_id = $section.data("id"),
+                    $caret = $section.find(".heading .caret");
+
+                if ($caret.length) {
+                    $caret.on("click", function(event) {
+                        event.preventDefault();
+                        $section.trigger("collapse_s");
+                    });
+
+                    $section.on("collapse_s", function(event) {
+                        event.preventDefault();
+                        toggle($section, 'section');
+                    });
+
+                    if (section_id) {
+                        var is_hidden = isSectionHidden(section_id, 'section');
+                        if (is_hidden) {
+                            $section.trigger("collapse_s");
+                        }
+                    }
+                }
+            });
+
+            function isSectionHidden(block_id, type) {
+                var storage_name = album_storage_name;
+                if (type === 'section') {
+                    storage_name = section_storage_name;
+                }
+                var storage = getStorage(storage_name);
+                return !!(storage[block_id]);
+            }
+
+            function toggle($block, type) {
+                var block_id = $block.data("id"),
+                    hidden_class = "is-collapsed",
+                    is_hidden = $block.hasClass(hidden_class),
+                    storage_name = album_storage_name;
+                if (type === 'section') {
+                    storage_name = section_storage_name;
+                }
+                var storage = getStorage(storage_name);
+
+                if (block_id) {
+                    if (is_hidden) {
+                        delete storage[block_id];
+                    } else {
+                        storage[block_id] = true;
+                    }
+                }
+
+                setStorage(storage, storage_name);
+
+                $block.toggleClass(hidden_class);
+            }
+
+            function setStorage(storage, storage_name) {
+                localStorage.setItem(storage_name , JSON.stringify(storage));
+            }
+
+            function getStorage(storage_name) {
+                var storage = localStorage.getItem(storage_name);
+                return (storage ? JSON.parse(storage) : {});
+            }
+        },
+
+        initHandlers: function() {
+            $("#p-upload-link").on('click', function (e) {
+                e.preventDefault();
+                $.photos.uploadDialog();
+            });
+
+            $('#album-list-container')
+                .off('click', '.p-new-album')
+                .on('click', '.p-new-album',
                     function () {
-                        var self = $(this);
-                        var parent_id = 0;
+                        const self = $(this);
+                        let parent_id = 0;
                         if (!self.is('#p-new-album')) {
                             parent_id = parseInt(self.parents('li:first').attr('rel'), 10) || 0;
                         }
-                        var showDialog = function () {
-                            $('#album-create-dialog').waDialog({
-                                onLoad: function (d) {
-                                    $(this).find('input[type=text]').val('');
-                                },
-                                onSubmit: function (d) {
-                                    var f = $(this);
-                                    $.post(f.attr('action'), f.serialize(), function (r) {
-                                        if (r.status == 'ok') {
-                                            $.photos.onCreateAlbum(r.data, parent_id);
-                                            d.trigger('close');
-                                            if (r.data.id) {
-                                                $.photos.goToHash('/album/' + r.data.id);
+                        const showDialog = function () {
+                            $.waDialog({
+                                $wrapper: $('#album-create-dialog'),
+                                onOpen ($dialog, dialog) {
+                                    $dialog.find('input[type=text]').val('');
+                                    let $form = $dialog.find('form');
+
+                                    $form.find('.js-privacy-settings-link').on('click', function () {
+                                        $(window).resize()
+                                    });
+
+                                    $form.on('submit', function (e) {
+                                        e.preventDefault();
+                                        $.post($form.attr('action'), $form.serialize(), function (r) {
+                                            if (r.status == 'ok') {
+                                                $.photos.onCreateAlbum(r.data, parent_id);
+                                                dialog.close();
+                                                if (r.data.id) {
+                                                    $.photos.goToHash('/album/' + r.data.id);
+                                                }
                                             }
-                                        }
-                                    }, "json");
-                                    return false;
+                                        }, "json");
+                                    })
                                 }
                             });
                         };
-                        var d = $('#album-create-dialog-acceptor');
+                        let d = $('#album-create-dialog-acceptor');
                         if (!d.length) {
                             d = $("<div id='album-create-dialog-acceptor'></div>");
                             $("body").append(d);

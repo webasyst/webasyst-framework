@@ -5,18 +5,16 @@
     <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
     {$wa->css()}
     <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/photos.css?v{$wa->version()}">
-    <!--[if lte IE 9]>
-        <link rel="stylesheet" href="{$wa_app_static_url}css/photos.ie.css">
-    <![endif]-->
+
     <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.css">
     <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.css">
 
-    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
 
     {wa_js file="js/photos-jquery.min.js"}
         {$wa_url}wa-content/js/jquery-wa/wa.core.js
-        {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+
         {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
         {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
         {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
@@ -54,22 +52,38 @@
 </head>
 <body>
 
+<div id="wa">
+
+    {$wa->header()}
+
+    <div class="p-app-wrapper" id="wa-app">
+        <div class="flexbox">
+            {include "templates/layouts/Sidebar.html"}
+            <div class="content blank p-app-content flexbox" id="content">
+                {if isset($content)}{$content}{/if}
+            </div>
+        </div>
+    </div>
+</div>
+
 <script type="text/javascript">
     var wa_url = "{$wa_url}";
 </script>
 
-{capture name="template-photo"}{literal}
+{capture name="template-photo"}
+{literal}
         {% var  p = o.photo,
                 stack = o.stack,
                 albums = o.albums,
                 frontend_link_template = o.frontend_link_template,
                 hooks = o.hooks;
         %}
-        <h1>
-            <a href="#{%#o.hash%}/" class="p-back-to-list">{%#$_('← Back')%}</a>
+    <section class="p-photo-header">
+        <h1 class="flexbox middle space-16">
+            <a href="#{%#o.hash%}/" title="[`Back`]" class="gray"><i class="fas fa-arrow-circle-left"></i></a>
             <span class="editable title" id="photo-name">{%#p.name%}</span>
             <input type="text" id="photo-name-input" class="p-photo-h1-edit" style="display:none;">
-            <span class="p-rate">
+            <span class="p-rate flexbox middle space-10">
                 <a href="javascript: void(0);" title="[`Rate photo`]" id="photo-rate" class="p-rate-photo" data-rate="{%#p.rate%}">
                     {%#$.photos.getRatingHtml(p.rate, 16, true)%}
                 </a>
@@ -82,17 +96,24 @@
                 <!-- end plugin hook: "backend_photo.after_rate" -->
             </span>
         </h1>
-        <div id="p-warning-not-in-album" style="display: none;">
+        <section id="photo-stream" class="blank"></section>
+    </section>
+    <div id="p-warning-not-in-album" style="display: none;">
             <span title="[`This photo is no longer in current dynamic album`]">
                 <i class="icon16 exclamation"></i> [`Photo is not in album`]
             </span>
         </div>
-        <div class="block half-padded float-right hint" id="photo-albums">
-            {% include('template-photo-albums', { albums: albums }); %}
+        <div class="flexbox middle full-width">
+            <div class="p-content-control flexbox middle nowrap space-10 small" id="photo-content-control">
+                {% include('template-photo-content-control', { frontend_link_template: frontend_link_template, url: p.url, status: p.status, photo: p }); %}
+            </div>
+            <div class="block half-padded float-right hint" id="photo-albums">
+                {% include('template-photo-albums', { albums: albums }); %}
+            </div>
         </div>
-        <ul class="menu-h p-content-control" id="photo-content-control">
-            {% include('template-photo-content-control', { frontend_link_template: frontend_link_template, url: p.url, status: p.status, photo: p }); %}
-        </ul>
+
+        <div class="inlinebox custom-my-16" id="p-toolbar"></div>
+
         <div class="align-center">
         <div class="p-image p-one-photo">
             <div class="p-image-corner top left">
@@ -100,21 +121,23 @@
             </div>
             <div class="p-image-corner top right">
                 {% if(p.edit_rights) { %}
-                    <a href="#" id="photo-loupe-link" style="display:none;">{/literal}
-                        <img class="maximize" src="{$wa_app_static_url}img/mode-maximize.png" alt="[`Full size`]">
-                        <img class="minimize" src="{$wa_app_static_url}img/mode-minimize.png" alt="[`Normal size`]" style="display:none;">
+                    <a href="#" id="photo-loupe-link" class="p-loupe-button" style="display:none;">{/literal}
+                        <i class="maximize fas fa-search-plus fa-3x" title="[`Full size`]"></i>
+                        <i class="minimize fas fa-search-minus fa-3x" title="[`Normal size`]" style="display:none;"></i>
                     </a>{literal}
                 {% } %}
                 <!-- plugin hook: backend-photo-image-corner-top-right -->
             </div>
-            <i class="p-image-nav p-rewind" title="[`← Previous`]"></i>
-            <i class="p-image-nav p-ff" title="[`Next →`]"></i>
-            <a href="#" class="next" title="[`Next →`]"><img src="{%#p.thumb.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo" {% if (typeof p.thumb.size === 'object' && p.thumb.size) { %}style="{% if (p.thumb.size.width) { %}width: {%#p.thumb.size.width %}px; {% } %} {% if (p.thumb.size.height) { %}height: {%#p.thumb.size.height%}px;{% } %}"{% } %}
-            /></a>
+            <i class="fas fa-angle-left fa-2x p-image-nav p-rewind" title="[`← Previous`]"></i>
+            <i class="fas fa-angle-right fa-2x p-image-nav p-ff " title="[`Next →`]"></i>
+            <a href="#" class="next" title="[`Next →`]">
+                <img {% if (p.thumb_big.url2x) { %} srcset="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb_big.url2x %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x"{% } %} src="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo"
+            />
+            </a>
         </div>
         </div>
         <!-- stacks only -->
-        <ul class="thumbs p-mini-stream" id="stack-stream">
+        <ul class="thumbs li50px p-mini-stream" id="stack-stream">
         </ul><br>
         <div class="p-description">
             <span class="editable" id="photo-description">{%#p.description%}</span>
@@ -130,26 +153,33 @@
         <!-- end plugin hook: "backend_photo.bottom" -->
         </div>
         <img id="preload-photo" src="" data-photo-id="" style="display:none;">
-{/literal}{/capture}
+{/literal}
+{/capture}
 
-{capture name="template-photo-content-control"}{literal}
+{capture name="template-photo-content-control"}
+{literal}
     {% var photo = o.photo, frontend_link_template = o.frontend_link_template; %}
-    <li class="p-inline-mixed-string">
         {% if (o.frontend_link_template) { %}
             {% if (photo.status <= 0 && photo.hash) { %}
-                <i class="icon10 lock-bw"></i>
-                <span class="hink">[`Private link`]: <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a></span>
+                <i class="fas fa-lock fa-xs"></i>
+                [`Private link`]:&nbsp;<a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a>
             {% } else if (photo.status > 0) { %}
-                [`Public link`]:
-                <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">{%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}</a><input type="text" id="photo-frontend-url-input" style="display:none;"><span class="slash" style="display:none;">/<em class="errormsg" style="display:none;"></em></span>
-                <i class="icon10 new-window"></i>
-                <a href="javascript:void(0);" class="gray inline-link" id="photo-frontend-url-edit-link">
-                    <i class="icon10 edit"></i><b><i>edit</i></b>
+                [`Public link`]:&nbsp;
+                <a id="photo-frontend-link" class="bold" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">
+                    {%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}
+                </a>
+                <input type="text" id="photo-frontend-url-input" style="display:none;">
+                <span class="slash" style="display:none;">/<em class="errormsg" style="display:none;"></em></span>
+
+                &nbsp;
+                <a href="javascript:void(0);" class="gray" id="photo-frontend-url-edit-link">
+                    [`Edit`]
                 </a>
             {% } %}
         {% } %}
-    </li>
-{/literal}{/capture}
+
+{/literal}
+{/capture}
 
 {capture name="template-photo-stack"}{literal}
     {% for (var i = 0, s = o.stack[0], n = o.stack.length; i < n; s = o.stack[++i]) { %}
@@ -165,21 +195,20 @@
 {/literal}{/capture}
 
 {capture name="template-p-block"}
-<div class="sidebar right200px" id="p-toolbar"></div>
-<div class="content left{$sidebar_width}px right200px" id="p-content">
-    <div class="block double-padded" id="p-block"></div>
+<section class="content" id="p-content">
+    <div class="box contentbox" id="p-block"></div>
     <div id="changable-area"></div>
     <div id="cover" class="dialog-background" style="display:none;">
-        <i class="icon16 loading"></i>
+        <i class="fas fa-spinner fa-pulse fa-3x"></i>
     </div>
-</div>
+</section>
 {/capture}
 
 {capture name="template-photo-toolbar"}
 {literal}
     {% var photo = o.photo, author = o.author, exif = o.exif; %}
 {/literal}
-    <div class="block" id="photo-stream"></div>
+
 
     <!-- begin plugin hook: "backend_photo_toolbar.top" -->
     {foreach $backend_photo_toolbar as $plugin_id => $item}
@@ -187,65 +216,78 @@
     {/foreach}
     <!-- end plugin hook: "backend_photo_toolbar.top" -->
 
-    <div class="block">
-        <h6 class="heading">[`Share`]</h6>
-        <ul class="menu-v with-icons compact" id="share-menu">
-            <li data-action='embed'><a href="#"><i class="icon16 link"></i>[`Link / Embed`]</a></li>
-            {if $wa->blog && ($wa->blog->rights(false) >= blogRightConfig::RIGHT_READ_WRITE)}
-            <li data-action='blog-post'>
-              <script type="text/javascript">
-              var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
-              var obligatory_size = {json_encode($big_size)};
-              </script>
-              <a href="#"><i class="icon16" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png');"></i>[`Blog post`]</a>
-              <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
-            </li>
-            {/if}
-
-            {foreach $backend_photo_toolbar as $plugin_id => $item}
-                {if !empty($item.share_menu)}
-                    {if is_array($item.share_menu)}
-                        {foreach $item.share_menu as $menu_item}
-                            {$menu_item}
-                        {/foreach}
-                    {else}
-                        {$item.share_menu}
-                    {/if}
+    <div class="dropdown js-p-toolbar-dropdown">
+        <button class="dropdown-toggle button small" type="button">[`Share`]</button>
+        <div class="dropdown-body">
+            <ul class="menu compact" id="share-menu">
+                <li data-action='embed'>
+                    <a href="#">
+                        <i class="fas fa-link"></i>
+                        <span>[`Link / Embed`]</span>
+                    </a>
+                </li>
+                {if $wa->blog && ($wa->blog->rights(false) >= blogRightConfig::RIGHT_READ_WRITE)}
+                    <li data-action='blog-post'>
+                        <script type="text/javascript">
+                            var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
+                            var obligatory_size = {json_encode($big_size)};
+                        </script>
+                        <a href="#">
+                            <i class="fas fa-pencil-alt"></i>
+                            <span>[`Blog post`]</span>
+                        </a>
+                        <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
+                    </li>
                 {/if}
-            {/foreach}
-            <!-- plugin hook: backend_photo_toolbar_share -->
-        </ul>
+
+                {foreach $backend_photo_toolbar as $plugin_id => $item}
+                    {if !empty($item.share_menu)}
+                        {if is_array($item.share_menu)}
+                            {foreach $item.share_menu as $menu_item}
+                                {$menu_item}
+                            {/foreach}
+                        {else}
+                            {$item.share_menu}
+                        {/if}
+                    {/if}
+                {/foreach}
+                <!-- plugin hook: backend_photo_toolbar_share -->
+            </ul>
+        </div>
     </div>
 
-    <div class="block">
-        <h6 class="heading">[`Edit`]</h6>
-        <ul class="menu-v with-icons compact" id="edit-menu">
-            <li data-action='rotate-left'><a href="javascript:void(0);"><i class="icon16 rotate-left"></i>[`Left`]</a></li>
-            <li data-action='rotate-right'><a href="javascript:void(0);"><i class="icon16 rotate-right"></i>[`Right`]</a></li>
-            <!-- plugin hook: backend_photo_toolbar_edit -->
-            <!-- plugin hook: "backend_photo_toolbar.edit_menu" -->
-            {foreach $backend_photo_toolbar as $plugin_id => $item}
-                {if !empty($item.edit_menu)}
-                    {if is_array($item.edit_menu)}
-                        {foreach $item.edit_menu as $menu_item}
-                            {$menu_item}
-                        {/foreach}
-                    {else}
-                        {$item.edit_menu}
+    <div class="dropdown js-p-toolbar-dropdown">
+        <button class="dropdown-toggle button small" type="button">[`Edit`]</button>
+        <div class="dropdown-body">
+            <ul class="menu compact" id="edit-menu">
+                <li data-action='rotate-left'>
+                    <a href="javascript:void(0);">
+                        <i class="fas fa-undo"></i>
+                        <span>[`Left`]
+                    </a>
+                </li>
+                <li data-action='rotate-right'>
+                    <a href="javascript:void(0);">
+                        <i class="fas fa-redo"></i>
+                        <span>[`Right`]
+                    </a>
+                </li>
+                <!-- plugin hook: backend_photo_toolbar_edit -->
+                <!-- plugin hook: "backend_photo_toolbar.edit_menu" -->
+                {foreach $backend_photo_toolbar as $plugin_id => $item}
+                    {if !empty($item.edit_menu)}
+                        {if is_array($item.edit_menu)}
+                            {foreach $item.edit_menu as $menu_item}
+                                {$menu_item}
+                            {/foreach}
+                        {else}
+                            {$item.edit_menu}
+                        {/if}
                     {/if}
-                {/if}
-            {/foreach}
-            <!-- end plugin hook: "backend_photo_toolbar.edit_menu" -->
-        </ul>
-    </div>
-    <div class="block">
-        <h6 class="heading">[`Organize`]</h6>
-        <ul class="menu-v with-icons compact" id="photo-organize-menu">
-            <li data-action='unstack'><a href="#"><i class="icon16 stack"></i>[`Unstack`]</a></li>
-            <li data-action='add-to-album'><a href="#"><i class="icon16 pictures"></i>[`Add to album`]</a></li>
-            <li data-action='manage-access'><a href="#"><i class="icon16 lock"></i>[`Manage access`]</a></li>
-            <li data-action="delete-photo"><a href="#"><i class="icon16 delete"></i>[`Delete photo`]</a></li>
-        </ul>
+                {/foreach}
+                <!-- end plugin hook: "backend_photo_toolbar.edit_menu" -->
+            </ul>
+        </div>
     </div>
 
     <!-- begin plugin hook: "backend_photo_toolbar.bottom" -->
@@ -255,52 +297,93 @@
     <!-- end plugin hook: "backend_photo_toolbar.bottom" -->
 
 {literal}
-    <div class="block">
-        <h6 class="heading">[`Tags`]</h6>
-        <input id="photo-tags" value="">
-        <span class="hint">[`Separate tags with comma (,)`]</span><br>
-        <div id="photos-photo-popular-tags" class="tags">
-            {/literal}
-            {if $popular_tags}
-                [`Popular tags`]:
-                {foreach $popular_tags as $tag}
-                    <span><a data-tag-id="{$tag.id}" href="javascript:void(0);" class="inline-link"><b><i>{$tag.name|escape}</i></b></a></span>
-                {/foreach}
-                <br>
-            {/if}
-            {literal}
+    <div class="dropdown js-p-toolbar-dropdown">
+        <button class="dropdown-toggle button small" type="button">[`Organize`]</button>
+        <div class="dropdown-body fields vertical">
+            <ul class="menu compact" id="photo-organize-menu">
+            <li data-action='unstack'>
+                <a href="#">
+                    <i class="fas fa-layer-group"></i>
+                    <span>[`Unstack`]</span>
+                </a>
+            </li>
+            <li data-action='add-to-album'>
+                <a href="#">
+                    <i class="fas fa-images"></i>
+                    <span>[`Add to album`]</span>
+                </a>
+            </li>
+            <li data-action='manage-access'>
+                <a href="#">
+                    <i class="fas fa-lock"></i>
+                    <span>[`Manage access`]</span>
+                </a>
+            </li>
+            <li data-action="delete-photo">
+                <a href="#">
+                    <i class="fas fa-times-circle"></i>
+                    <span>[`Delete photo`]</span>
+                </a>
+            </li>
+        </ul>
+            <div class="box">
+                <h5 class="heading custom-mt-0">[`Tags`]</h5>
+                <div class="field">
+                    <div class="value">
+                        <input id="photo-tags" type="text" value="">
+                        <p class="hint">[`Separate tags with comma (,)`]</p>
+                        <div id="photos-photo-popular-tags" class="tags">
+                    {/literal}
+                        {if $popular_tags}
+                            <p class="small">
+                            [`Popular tags`]:
+                            {foreach $popular_tags as $tag}
+                                <a data-tag-id="{$tag.id}" href="javascript:void(0);" class="bold italic">{$tag.name|escape}</a>
+                            {/foreach}
+                            </p>
+                        {/if}
+                    {literal}
+                        </div>
+                        <span id="photo-save-tags-status" style="display:none;"></span>
+                    </div>
+                </div>
+                </div>
         </div>
-        <span id="photo-save-tags-status" style="display:none;">
-        </span>
     </div>
-    <div class="hr"></div>
-    <div class="block profile image32px" id="photo-author">
-          {% if (author && photo) { %}
-              {% include('template-photo-author', { author: author, photo: photo }); %}
-          {% } %}
-    </div>
-    <div class="block p-exif" id="photo-exif">
+
+<div class="dropdown js-p-toolbar-dropdown">
+    <button class="dropdown-toggle button small" type="button">[`Info`]</button>
+    <div class="dropdown-body">
+        <section class="box" id="photo-author">
+            {% if (author && photo) { %}
+            {% include('template-photo-author', { author: author, photo: photo }); %}
+            {% } %}
+        </section>
         {% if (exif) { %}
+        <section class="box p-exif small" id="photo-exif">
             {% include('template-photo-exif', { exif: exif}); %}
+        </section>
         {% } %}
-    </div>
-    <div class="block p-original" id="photo-original">
-        {% if (photo) { %}
+        <section class="box p-original small" id="photo-original">
+            {% if (photo) { %}
             {% include('template-photo-original', { photo: photo}); %}
-        {% } %}
+            {% } %}
+        </section>
     </div>
+</div>
+
 {/literal}
 {/capture}
 
 {capture name="template-photo-stream"}{literal}
-    <ul class="thumbs p-mini-stream photostream">
-    <li class="stream-nav rewind"><a href="javascript:void(0);"><i></i></a></li>
-    <li class="stream-nav ff"><a href="javascript:void(0);"><i></i></a></li>
-    <li class="stream-wrapper">
-        <ul>
-            {% include('template-photo-stream-list', { photos: o.photos, current_photo: o.current_photo || null, hash: o.hash }); %}
-        </ul>
-    </li>
+    <ul class="thumbs li50px p-mini-stream photostream flexbox middle">
+        <li class="stream-nav rewind"><a href="javascript:void(0);"><i class="fas fa-angle-left"></i></a></li>
+        <li class="stream-wrapper">
+            <ul class="flexbox middle">
+                {% include('template-photo-stream-list', { photos: o.photos, current_photo: o.current_photo || null, hash: o.hash }); %}
+            </ul>
+        </li>
+        <li class="stream-nav ff"><a href="javascript:void(0);"><i class="fas fa-angle-right"></i></a></li>
     </ul>
 {/literal}{/capture}
 
@@ -345,10 +428,10 @@
 
 {capture name="template-photo-author"}{literal}
     {% if (o.author.id) { %}
-        <div class="image">
-            <a href="{%#o.author.backend_url%}" title="{%#$_('Photo downloaded by') + ' ' + o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}" class="userpic"></a>
+        <div class="image align-center">
+            <a href="{%#o.author.backend_url%}" title="[`Photo downloaded by`] {%#o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}" class="userpic userpic32"></a>
         </div>
-        <div class="details">
+        <div class="details small">
             <a href="{/literal}{$wa_backend_url}contacts/#/contact/{literal}{%#o.author.id%}">{%#o.author.name%}</a><br>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}
         </div>
     {% } else { %}
@@ -366,9 +449,14 @@
 [`Size`]: <strong>{%# $.wa.util.formatFileSize(photo.size) %}</strong><br>
 {% if (photo.original_exists && photo.edit_rights ) { %}
 <br>
-<ul class="menu-h original-info">
-    <li>[`Original image`]: </li>
-    <li><i class="icon10 lock-bw"></i><a href="?module=photo&action=download&photo_id={%# photo.id %}&original=1">{%# photo.name + '.' + photo.ext %}</a><br><a href="javascript:void(0);" id="restore-original" class="hint">[`Revert to original`]</a></li>
+<h5 class="heading">[`Original image`]</h5>
+<ul class="menu original-info">
+    <li>
+        <a href="?module=photo&action=download&photo_id={%# photo.id %}&original=1"><i class="fas fa-lock"></i><span>{%# photo.name + '.' + photo.ext %}</span></a>
+    </li>
+    <li>
+        <a href="javascript:void(0);" id="restore-original">[`Revert to original`]</a>
+    </li>
 </ul>
 {% } %}
 {/literal}{/capture}
@@ -406,13 +494,6 @@
 {/foreach}
 
 
-<div id="wa">
-    {$wa->header()}
-    <div id="wa-app">
-        {include "templates/layouts/Sidebar.html"}
-        <div id="content">{if isset($content)}{$content}{/if}</div>
-    </div>
-</div>
 <script type="text/javascript">
     $.photos.init({
         last_login_datetime: Date.parseISO('{$last_login_datetime}'),
@@ -428,57 +509,50 @@
     };
 </script>
 {if $rights.upload}{$upload_dialog}{/if}
-<div id="photo-list-tags-dialog" class="dialog width400px height300px">
+<div id="photo-list-tags-dialog" class="dialog">
     <div class="dialog-background"></div>
-    <div class="dialog-window">
-        <form action="">
-            <div class="dialog-content">
-               <div class="dialog-content-indent">
-                    <h1>[`Assign tags`] <span class="gray js-selected-counter">(N)</span></h1>
-                    <textarea id="photos-list-tags" cols="30" rows="5"></textarea>
-                    <span id="photos-popular-tags" class="tags small">
-                        {if $popular_tags}
-                            [`Popular tags`]:
-                            {foreach $popular_tags as $tag}
-                                <span><a data-tag-id="{$tag.id}" href="javascript:void(0);" class="inline-link"><b><i>{$tag.name|escape}</i></b></a></span>
-                            {/foreach}
-                        {/if}
-                    </span>
-                    <div id="photo-tags-remove" style="display: none">
-                        <br>
-                        <h3>[`Remove tags`]</h3>
-                        <div id="photos-tags-remove-list">
-                        </div>
-                    </div>
-               </div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <input class="button green" type="submit" value="[`Save`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+    <form action="" class="dialog-body">
+        <h3 class="dialog-header">[`Assign tags`] <span class="gray js-selected-counter">(N)</span></h3>
+        <div class="dialog-content">
+            <textarea id="photos-list-tags" class="full-width" cols="30" rows="5"></textarea>
+            <p id="photos-popular-tags" class="tags small hint">
+                {if $popular_tags}
+                    [`Popular tags`]:
+                    {foreach $popular_tags as $tag}
+                        <span>
+                            <a data-tag-id="{$tag.id}" href="javascript:void(0);" class="inline-link bold italic">
+                                {$tag.name|escape}
+                            </a>
+                        </span>
+                    {/foreach}
+                {/if}
+            </p>
+            <div id="photo-tags-remove" style="display: none">
+                <h3>[`Remove tags`]</h3>
+                <div id="photos-tags-remove-list">
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+        <div class="dialog-footer">
+            <input class="button" type="submit" value="[`Save`]"> [`or`] <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+        </div>
+    </form>
 </div>
 
 
-<div id="photo-blog-dialog" class="dialog width400px height200px">
+<div id="photo-blog-dialog" class="dialog">
     <div class="dialog-background"></div>
-    <div class="dialog-window">
-        <form action="">
-            <div class="dialog-content">
-               <div class="dialog-content-indent">
-                  <h1>[`Private photos selected`] <i class="icon16 exclamation"></i></h1>
-                  <p>[`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]</p>
-               </div>
+    <form action="" class="dialog-body">
+        <h3 class="dialog-header">[`Private photos selected`] <i class="icon16 exclamation"></i></h3>
+        <div class="dialog-content">
+            <p>[`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]</p>
+        </div>
+        <div class="dialog-footer">
+            <div class="dialog-buttons-gradient">
+                <input class="button yellow" type="submit" value="[`Embed anyway`]"> [`or`] <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
             </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    <input class="button yellow" type="submit" value="[`Embed anyway`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
-                </div>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
 </body>

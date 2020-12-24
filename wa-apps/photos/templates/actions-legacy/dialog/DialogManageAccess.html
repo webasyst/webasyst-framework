@@ -1,0 +1,101 @@
+<div class="dialog width600px height300px" id="manage-access-dialog">
+    <div class="dialog-background"></div>
+    <form method="post" action="?module=photo&action=manageAccessSave">
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>
+                    {if isset($photo_count)}
+                        [`Access to photos`] <span class="gray">({$photo_count})</span>
+                    {else}
+                        [`Access`]
+                    {/if}
+                </h1>
+                <div class="fields form">
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`Visibility`]
+                            </div>
+                            <div class="value no-shift">
+                                <label for="manage-access-public">
+                                    <i class="icon10 yes overhanging"></i>
+                                    <input id="manage-access-public" type="radio" name="status" value="1" {if $photo.status == 1}checked{/if}>
+                                    [`Public`]
+                                    <span class="hint">[`Visible in the public gallery`]</span>
+                                </label>
+                            </div>
+                            <div class="value no-shift bottom-padded">
+                                <label for="manage-access-private">
+                                    <i class="icon10 lock-bw overhanging"></i>
+                                    <input id="manage-access-all-groups" type="hidden" name="groups[]" value="0" {if !isset($rights[0])}disabled{/if} >
+                                    <input id="manage-access-private" type="radio" name="status" value="0" {if $photo.status <= 0}checked{/if}>
+                                    [`Private`]
+                                    <span class="hint">
+                                        [`Visible only to authorized users of the Webasyst Photos app`].
+                                        <a class="inline-link p-privacy-settings-link" href="#"><b><i>[`Privacy settings`]</i></b></a>
+                                    </span>
+                                    <div class="hint p-privacy-settings" {if $photo.status == 1 || isset($rights[0])}style="display: none;"{/if}>
+                                        <br><br>
+                                        {if !empty($groups)}
+                                            [`Select user groups you want to have see this album`]:
+                                            <div class="block">
+                                                {foreach from=$groups item=group key=group_id}
+                                                    <label for="manage-album-group-{$group_id}"><input id="manage-album-group-{$group_id}" name="groups[]" value="{$group_id}" type="checkbox" {if isset($rights[0]) || isset($rights[$group_id])}checked{/if} {if isset($rights[0])}disabled{/if}> <span>{$group.name|escape}</span></label><br>
+                                                {/foreach}
+                                            </div>
+                                            <em>[`Uncheck all groups to make this album visible to you only.`]</em>
+                                        {else}
+                                            <input type="hidden" name="groups[]" value="0" {if isset($rights[0])}disabled{/if} >
+                                            <em>[`There are no user groups thus you cant't manage access to photos`]</em>
+                                        {/if}
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="disable_submit" value="{if !empty($disable_submit)}1{else}0{/if}">
+                </div>
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <input type="submit" value="[`Save`]" class="button green">
+                [`or`] <a class="cancel" href="#">[`cancel`]</a>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+        var d = $("#manage-access-dialog"),
+            disable_submit = +d.find('input[name=disable_submit]').val();  // typecast to number
+        if (disable_submit) {
+            $("div.p-privacy-settings", d).hide();
+            $('input[type=radio]', d).attr('checked', false);
+            $('input[type=submit]', d).attr('disabled', true);
+        }
+        $('input[name=status]', d).click(function() {
+            $('input[type=submit]', d).attr('disabled', false);
+        });
+        $("a.p-privacy-settings-link", d).click(function () {
+           if ($("div.p-privacy-settings", d).is(":hidden")) {
+               $("#manage-access-all-groups", d).attr('disabled', 'disabled');
+               $("div.p-privacy-settings input", d).removeAttr('disabled');
+               $("div.p-privacy-settings", d).show();
+               $('#manage-access-private').click();
+           } else {
+               $("#manage-access-all-groups", d).removeAttr('disabled');
+               $("div.p-privacy-settings input", d).attr('disabled', 'disabled');
+               $("div.p-privacy-settings", d).hide();
+           }
+           return false;
+        });
+        $('#manage-access-public', d).click(function() {
+            $("#manage-access-all-groups", d).removeAttr('disabled');
+            $("div.p-privacy-settings input", d).attr('disabled', 'disabled');
+            $("div.p-privacy-settings", d).hide();
+        });
+    });
+</script>

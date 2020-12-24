@@ -204,11 +204,11 @@
         },
 
         _initDragAlbums: function() {
-            var containment = $('#wa-app > .sidebar'),
+            var containment = $('#js-app-sidebar'),
                 containment_pos = containment.position(),
                 containment_metrics = { width: containment.width(), height: containment.height() };
 
-            $("li.dr", $('#album-list')).liveDraggable({
+            $('#album-list').find('li.dr').liveDraggable({
                 containment: [
                       containment_pos.left,
                       containment_pos.top,
@@ -222,7 +222,7 @@
                         clone = self.clone().addClass('ui-draggable').css({
                             position: 'absolute'
                         }).prependTo('#album-list > ul');
-                    clone.find('a:first').append('<i class="icon10 no-bw" style="margin-left: 0; margin-right: 0; display:none;"></i>');
+                    clone.find('a:first').append('<i class="fas fa-times" style="margin-left: 0; margin-right: 0; display:none;"></i>');
                     return clone;
                 },
                 cursor: "move",
@@ -248,7 +248,7 @@
 
         _initDropBetweenAlbums: function() {
             // drop between albums
-            $("li.drag-newposition", $('#album-list')).liveDroppable({
+            $('#album-list').find("li.drag-newposition").liveDroppable({
                 accept: 'li.dr',
                 greedy: true,
                 tolerance: 'pointer',
@@ -353,7 +353,7 @@
                 var self = $(this).find('>a');
                 if (!self.find('i.lock-bw').length) {
                     var next = self.find('.pictures').next();
-                    var html = '<i class="icon10 lock-bw no-overhanging"></i>';
+                    var html = '<i class="fas fa-lock"></i>';
                     if (next.length) {
                         changed = true;
                         next.before(html);
@@ -506,7 +506,7 @@
                         if (self.children('ul').length) {
                             list =  self.children('ul');
                         } else {
-                            list = $('<ul class="menu-v with-icons dr"><li class="drag-newposition"></li></ul>').appendTo(self);
+                            list = $('<ul class="menu dr"><li class="drag-newposition"></li></ul>').appendTo(self);
                             list.find('.drag-newposition').mouseover(); // init droppable
                             $('<i class="icon16 darr overhanging"></i>').insertBefore(self.children('a'));
                         }

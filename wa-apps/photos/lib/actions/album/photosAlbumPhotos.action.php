@@ -58,7 +58,7 @@ class photosAlbumPhotosAction extends waViewAction
             }
         }
 
-        $this->template = 'templates/actions/photo/PhotoList.html';
+        $this->setTemplate('photo/PhotoList.html', true);
 
         /**
          * Extend photo list toolbar in photo-list-page
