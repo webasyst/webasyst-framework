@@ -30,7 +30,7 @@ class teamProfileAccessAction extends waViewAction
         }
 
         $auth = wa()->getAuthConfig();
-        $personal_portal_available = !empty($auth['app']);
+        $personal_portal_available = !empty($auth['app']) && !empty($user['password']);
 
         $user_groups_model = new waUserGroupsModel();
         $groups = $user_groups_model->getGroups($user->getId());
