@@ -6,6 +6,6 @@ class blogFrontendlogoutController extends waController
 	{
         wa()->getAuth()->clearAuth();
 		wa()->getStorage()->remove('auth_user_data');
-		$this->redirect(waRequest::server('HTTP_REFERER'));
+        throw new waException(_ws('Page not found'), 404);
 	}
 }
