@@ -230,7 +230,7 @@ class waRequest
      */
     public static function isMobile($check = true)
     {
-        if ($check) {
+        if ($check && wa()->whichUI() === '1.3') {
             if (self::get('nomobile') !== null) {
                 if (self::get('nomobile')) {
                     waSystem::getInstance()->getStorage()->write('nomobile', true);

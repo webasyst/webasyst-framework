@@ -1,0 +1,423 @@
+{$_title = "[s`Backend authorization`] — {$wa->accountName(false)}"}
+{$_title = $_title|replace:'&nbsp;':' '}
+{$_account_name = {$wa->accountName()}}
+
+{function name="_renderCustomBackground" custom_image=[]}
+    {strip}
+        <div>
+            {if $custom_image !== null && $custom_image !== false}
+                <div class="s-custom-background-preview js-custom-background-preview" data-value="{$custom_image.file_name|default:null}">
+                    <div>
+                        <img class="s-custom-image-preview js-image-img" src="{if !empty($custom_image.file_name)}{$images_url}/{$custom_image.file_name}?t={$custom_image.file_mtime|default:null}{/if}">
+                    </div>
+                    <div class="s-custom-image-params">
+                        {* Image params *}
+                        <span class="hint">
+                        <span class="js-image-width">{$custom_image.width|default:null}</span>
+                        &times;
+                        <span class="js-image-height">{$custom_image.height|default:null}</span>,
+                        <span class="s-image-size js-image-size">
+                        {if !empty($custom_image.file_size)}
+                            {$custom_image.file_size|wa_format_file_size:'%0.0f':'[s`B,KB,MB`]'}
+                        {/if}
+                        </span>
+                    </span>
+                        {* Delete image *}
+                        <span>
+                        <a class="small inline-link js-remove-custom-backgorund" href="javascript:void(0);" title="[s`Delete`]">
+                            &nbsp;<i class="icon10 no"></i>&nbsp;<b><i>[s`Delete`]</i></b>
+                        </a>
+                    </span>
+                    </div>
+                </div>
+            {elseif $custom_image === null}
+                <span class="hint">[s`File not found.`] {$settings.auth_form_background|escape}</span>
+            {/if}
+            <div class="stretch"{if empty($custom_image)} style="display: none;"{/if}>
+                <input class="js-stretch-checkbox" type="checkbox" value="1" name="auth_form_background_stretch" id="installer-auth-stretch-background"{if $settings.auth_form_background_stretch} checked="checked"{/if}>
+                <label for="installer-auth-stretch-background">[s`Stretch to fill entire screen`]</label>
+            </div>
+        </div>
+    {/strip}
+{/function}
+<div class="s-auth-settings-page blank block double-padded" id="s-auth-settings-page">
+    <h1 class="s-page-header">[s`Backend authorization`]</h1>
+    <div class="s-description">[s`Set up how users will log into your Webasyst backend.`]</div>
+
+    {if $is_waid_connected}
+        <div class="s-description">
+            <div>
+                <input type="hidden" name="is_force_auth" value="0" />
+                <input name="is_backend_auth_forced" class="ibutton js-force-auth-toggle"
+                       type="checkbox" value="1"
+                        {if $is_backend_auth_forced} checked="checked"{/if}
+                        {if !$is_user_bound_to_webasyst_id}disabled="disabled"{/if}>
+
+                <div class="s-force-description">
+                    <strong><i class="icon16 ws waid-green"></i> [s`Use only sign-in option with Webasyst ID — <span class="s-green">recommended</span>`]</strong>
+                    <span class="js-force-save-status s-force-save-status"><i class="icon16 yes"></i> [s`Saved`]</span>
+                </div>
+            </div>
+            <div class="hint">
+                {sprintf(
+                    _ws('When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation in section “<a href="%s">Sign-in with Webasyst ID</a>”. Newly added users will get connected to Webasyst ID right away.'),
+                    $waid_settings_link
+                )}
+            </div>
+        </div>
+        <div class="js-auth-settings-fields-block-cover s-auth-settings-fields-block-cover"></div>
+    {/if}
+
+    <div class="s-auth-settings-fields-block js-auth-settings-fields-block">
+
+        <form action="?module=settingsAuthSave">
+            <div class="field-group s-auth-config-params">
+                {* Auth type *}
+                <div class="field">
+                    <div class="name">[s`Passwords type`]</div>
+                    <div class="value js-auth-type-select">
+                        {$_auth_type = $auth_config.auth_type|default:waAuthConfig::AUTH_TYPE_USER_PASSWORD}
+                        {if empty($email_channels)}
+                            {$_auth_type = waAuthConfig::AUTH_TYPE_USER_PASSWORD}
+                        {/if}
+                        <ul class="menu-v" style="margin-top: -4px;">
+                            {foreach $auth_types as $_auth_type_id => $_auth_type_info}
+                                {$_name = $_auth_type_info.name}
+                                {$_is_checked = $_auth_type === $_auth_type_id}
+                                <li class="js-auth-type">
+                                    <label>
+                                        <input type="radio" name="auth_type" value="{$_auth_type_id|escape}"{if $_is_checked} checked="checked"{/if}{if empty($email_channels) && !$_is_checked} disabled{/if}>
+                                        {$_name|escape}
+                                        {if $_auth_type_id === waAuthConfig::AUTH_TYPE_ONETIME_PASSWORD}
+                                            <i class="icon16 exclamation" style="display: none;"></i>
+                                        {/if}
+                                    </label>
+                                </li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </div>
+
+                {* Timeouts *}
+                <div class="field">
+                    <div class="name">[s`Re-sending of verification code`]</div>
+                    <div class="value">
+                        <label>
+                            [s`Waiting period in seconds before sending next verification code:`]
+                            <input type="text" class="semi" name="timeout" value="{$onetime_password_timeout}">
+                        </label>
+                    </div>
+                </div>
+
+                {* Auth by email *}
+                <div class="field">
+                    <div class="name">[s`Email notification templates`]</div>
+                    <div class="value">
+                        {if empty($email_channels)}
+                            <div class="errormsg"><i class="icon16 exclamation"></i> [s`Specify email sender address`] </div>
+                            <div>
+                                {sprintf('[s`No sender email address specified in “<a href="%s">Email settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/")}
+                            </div>
+                            <div>
+                                [s`Please be sure to correctly set up a sender. It will be used to restore a lost password or to regain access to the backend should the one-time password authentication fail.`]
+                            </div>
+                        {else}
+                            <select name="verification_channel_ids[]" class="js-channel-template-selector" data-channel-type="email">
+                                <option value="">[s`Select template`]</option>
+                                {foreach $email_channels as $_id => $_channel}
+                                    {$_selected = in_array($_id, $auth_config.verification_channel_ids)}
+                                    <option value="{$_id|escape}"{if $_selected} selected{/if}>{$_channel.name|escape}</option>
+                                    {if $_selected}
+                                        {$_selected_email_channel = $_channel}
+                                    {/if}
+                                {/foreach}
+                            </select>
+
+                            <span>
+                                {sprintf('[s`Edit the list in “<a href="%s">Email&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/email/template/")}
+                            </span>
+
+                            {* HERE ERROR MESSAGES THAT WILL BE SHOW/HIDE OR RERENDER BY JS *}
+                            <div class="errormsg js-email-template-not-selected-msg" style="display: none;"><i class="icon16 exclamation"></i> [s`No email template group is selected.`] </div>
+
+                            {function name="webasyst_showEmailChannelDiagnosticMessage" message=[] is_template=false}
+                                <div class="s-channel-template-diagnostic-message js-channel-template-diagnostic-message {if $is_template}is-template{/if}" {if $is_template}style="display: none;"{/if}>
+                                    <div class="errormsg s-error-text-wrapper"><i class="icon16 exclamation"></i> <span class="s-error-txt">{$message.text|default:''}</span></div>
+                                    <div class="s-error-help-text-wrapper"> <span class="s-error-txt">{$message.help_text|default:''}</span></div>
+                                </div>
+                            {/function}
+
+                            {foreach $email_channels as $_channel}
+                                <div class="s-channel-template-diagnostic-messages js-channel-template-diagnostic-messages" data-channel-id="{$_channel.id}" style="display: none;">
+                                    {foreach $_channel.diagnostic|default:[] as $_message_id => $_message}
+                                        {webasyst_showEmailChannelDiagnosticMessage message=$_message}
+                                    {/foreach}
+                                </div>
+                            {/foreach}
+
+                            {webasyst_showEmailChannelDiagnosticMessage message=[] is_template=true}
+
+                        {/if}
+                    </div>
+                </div>
+
+                {* Auth by SMS *}
+                <div class="field js-phone-auth-settings-block">
+                    <div class="name">[s`Enable authorization by phone number`]</div>
+                    <div class="value">
+
+                        {$_is_checked = in_array(waVerificationChannelModel::TYPE_SMS, $used_auth_methods)}
+
+                        <div>
+                            <input type="hidden" name="used_auth_methods[sms]" value="0">
+                            <input id="s-login-by-phone-toggle" class="ibutton s-login-by-phone-toggle js-login-by-phone-toggle js-auth-method-checkbox" name="used_auth_methods[sms]" data-method="sms" type="checkbox"{if $_is_checked} checked="checked"{/if}>
+                            <label for="s-login-by-phone-toggle"><span class="js-login-by-phone-status">{if $_is_checked}[s`enabled`]{else}[s`disabled`]{/if}</span></label>
+                        </div>
+
+                        <div class="s-phone-channel-settings-block" {if !$_is_checked}style="display: none;"{/if}>
+                            <select name="verification_channel_ids[]" class="js-channel-template-selector" data-channel-type="sms">
+                                <option value="">[s`Select template`]</option>
+                                {foreach $sms_channels as $_id => $_channel}
+                                    <option value="{$_id|escape}"{if in_array($_id, $auth_config.verification_channel_ids)} selected{/if}>{$_channel.name|escape}</option>
+                                {/foreach}
+                            </select>
+
+                            <span>{sprintf('[s`Edit the list in “<a href="%s">SMS&nbsp;templates</a>” section.`]', "`$wa_backend_url`webasyst/settings/sms/template/")}</span>
+
+                            {* HERE ERROR MESSAGES THAT WILL BE SHOW/HIDE OR RERENDER BY JS *}
+                            <div class="errormsg js-sms-template-not-selected-msg" style="display: none;"><i class="icon16 exclamation"></i> [s`No SMS notifications template group is selected.`] </div>
+
+                        </div>
+
+                        <div class="s-phone-channel-settings-block" {if !$_is_checked}style="display: none;"{/if}>
+                            <div class="field">
+                                <div class="name">[s`National direct-dialing code (NDD)`]</div>
+
+                                {$_phone_transform_prefix = $auth_config.phone_transform_prefix|default:[]}
+
+                                <div class="value">
+                                    {$_input_code = $_phone_transform_prefix['input_code']|default:''}
+                                    <input type="text" class="short" name="phone_transform_prefix[input_code]" value="{$_input_code}">
+                                    <div class="hint" style="margin-top: 10px;">
+                                        [s`Enter the NDD code which is used for making calls within your country.`]<br>
+                                        [s`The NDD, if specified, will be replaced with the country code in website visitors’ phone numbers.`]
+                                    </div>
+                                </div>
+
+                                <div class="name">[s`Country code`]</div>
+                                <div class="value">
+                                    {$_output_code = $_phone_transform_prefix['output_code']|default:''}
+                                    + <input type="text" class="short" name="phone_transform_prefix[output_code]" value="{$_output_code}">
+                                    <div class="hint" style="margin-top: 10px;">
+                                        [s`Enter your country’s phone number code to be used in website visitors’ phone numbers instead of the NDD.`]
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <h2>[s`Login form`]</h2>
+                {* Captcha in auth form *}
+                <div class="field js-captcha-wrapper">
+                    <div class="name">
+                        [s`Captcha`]
+                        <div class="hint">[s`A user must enter characters shown in an image`]</div>
+                    </div>
+                    <div class="value no-shift">
+                        {$_variants = $login_captcha_variants}
+                        <ul class="menu-v" style="margin-top: -4px;">
+                            {foreach $_variants as $_value => $_info}
+                                {$_name = $_info.name}
+                                {$_is_checked = $auth_config.login_captcha === $_value}
+                                <li>
+                                    <label>
+                                        <input type="radio" name="login_captcha" value="{$_value|escape}"{if $_is_checked} checked="checked"{/if}>
+                                        {$_name|escape}
+                                    </label>
+                                </li>
+                            {/foreach}
+                        </ul>
+                        <span class="hint">
+                            {sprintf('<a href="%s">[s`Select Webasyst default captcha or Google reCAPTCHA`]</a>', "{$wa_backend_url}webasyst/settings/captcha/")}
+                        </span>
+                    </div>
+                </div>
+
+                {* "Remember me" in auth *}
+                <div class="field">
+                    <div class="name">
+                        [s`Auto-login`]
+                        <div class="hint">[s`“Remember me” option`]</div>
+                    </div>
+                    <div class="value no-shift">
+                        <input type="hidden" name="rememberme" value="0" />
+                        <input id="s-rememberme-auth" name="rememberme" class="ibutton js-rememberme-auth-toogle" type="checkbox" value="1"{if $auth_config.rememberme} checked="checked"{/if}>
+                        <label for="s-rememberme-auth"><span class="js-rememberme-auth-status">{if $auth_config.rememberme}[s`enabled`]{else}[s`disabled`]{/if}</span></label>
+                    </div>
+                </div>
+
+                {* Background image in authorization page *}
+                <div class="field s-auth-background">
+                    <div class="name">
+                        [s`Login form background`]
+                    </div>
+                    <div class="value">
+                        <ul class="s-background-images js-background-images">
+                            {foreach $backgrounds as $_background}
+                                <li{if $settings.auth_form_background == "stock:`$_background`"} class="selected"{/if}>
+                                    <a href="javascript:void(0);" data-value="stock:{$_background|escape}">
+                                        <img src="{$wa_url}wa-content/img/backgrounds/thumbs/{$_background}" alt="{$_background}">
+                                    </a>
+                                </li>
+                            {/foreach}
+
+                            {foreach $images as $_image}
+                                <li{if $settings.auth_form_background == $_image} class="selected"{/if}>
+                                    <a href="javascript:void(0);" data-value="{$_image|escape}">
+                                        <img src="{$images_url}/{$_image}?t={filemtime("`$images_path`/`$_image`")}" alt="{$_image}">
+                                    </a>
+                                </li>
+                            {/foreach}
+                        </ul>
+                        <input type="hidden" name="auth_form_background" value="{$settings.auth_form_background|escape}">
+                    </div>
+                    {* Upload new image and preview *}
+                    <div class="value js-upload-preview">
+                        <input type="file" class="js-background-upload">
+                        <i class="icon16 loading" style="display: none;"></i>
+                        <span class="errormsg js-error-upload"></span>
+                        <div class="js-custom-preview-wrapper">
+                            {if $settings.auth_form_background}
+                                {_renderCustomBackground custom_image=$custom_image}
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+
+                {* Log in form preview *}
+                <div class="field">
+                    <div class="value">
+                        <div class="s-login-form-preview shadowed">
+                    <div class="s-login-form-constructor js-login-form-constructor">
+                        {* Company name *}
+                        <div class="field">
+                            <h2 class="s-company-name" title="{$_account_name}">
+                                {$_account_name|truncate:20:'...'}
+                            </h2>
+                        </div>
+                        {* Login*}
+                        <div data-field-id="login" class="field" style="position: relative;">
+                            <div class="s-field-name name">
+                                <span class="js-editable-wrapper" title="[s`Edit field label`]">
+                                    <label class="s-editable-item s-editable-text js-editable-item">
+                                        {$auth_config.login_caption|default:_ws('Login')|escape}
+                                    </label>
+                                    <input type="text" class="s-editable-field-label hidden" name="login_caption" value="{$auth_config.login_caption|default:_ws('Login')|escape}"/>
+                                </span>
+                            </div>
+                            <div class="value placeholder" title="[s`Edit hint for this placeholder`]">
+                                <input type="text" class="fill s-placeholder-input" name="login_placeholder" value="{$auth_config.login_placeholder|escape}"/>
+                            </div>
+                        </div>
+
+                        {* Password *}
+                        <div class="field">
+                            <div class="s-field-name name">[s`Password`]</div>
+                            <div class="value">
+                                <input type="text" class="fill s-placeholder-input" name="password_placeholder" value="{$auth_config.password_placeholder|escape}" />
+                            </div>
+                        </div>
+
+                        {* Remember me *}
+                        <div class="field js-remember-me-preview"{if !$auth_config.rememberme} style="display: none;"{/if}>
+                            <div class="value">
+                                <label><input type="checkbox" checked="checked" disabled /> [s`Remember me`]</label>
+                            </div>
+                        </div>
+
+                        {* Captcha *}
+                        <div class="field js-captcha-preview"{if $auth_config.login_captcha !== waAuthConfig::LOGIN_CAPTCHA_ALWAYS} style="display: none;"{/if}>
+                            {if $demo_captcha->getOption('invisible')}
+                                <div class="hint">[s`Invisible captcha will be used`]</div>
+                            {else}
+                                {$demo_captcha->getHtml()}
+                            {/if}
+                        </div>
+
+                        {* Submit *}
+                        <div>
+                            <input type="button" value="[s`Sign In`]" disabled />
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="s-form-buttons">
+                <div class="s-footer-actions js-footer-actions">
+                    <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                    <span class="c-hidden">
+                        <span style="margin: 0 4px;">[s`or`]</span>
+                        <a href="{$wa_backend_url}webasyst/settings/auth/" class="js-cancel">[s`cancel`]</a>
+                    </span>
+                    <i class="icon16 loading s-loading" style="display: none;"></i>
+                </div>
+            </div>
+        </form>
+
+        <div class="js-onetime-password-confirm-dialog">
+            {include file="./SettingsOnetimePasswordAuthConfirmDialog.inc.html" inline}
+        </div>
+
+        {* Templates for js *}
+
+        {* Template for confirm *}
+        {* Text *}
+        <div class="js-remove-text" style="display: none;">
+            <h3>[s`Delete background?`]</h3>
+        </div>
+        {* Buttons *}
+        <div class="js-remove-buttons" style="display: none;">
+            <input type="submit" class="button red" value="[s`Delete`]" />
+            [s`or`]
+            <a class="cancel" href="javascript:void(0);">[s`cancel`]</a>
+        </div>
+
+        {* Template for custom image preview *}
+        <div class="js-preview-template" style="display: none;">
+            {_renderCustomBackground custom_image=[]}
+        </div>
+
+        {* Template for custom image preview in list *}
+        <li class="selected js-list-preview-template" style="display: none;">
+            <a href="javascript:void(0);" data-value="">
+                <img src="" alt="">
+            </a>
+        </li>
+    </div>
+</div>
+
+{$_locale = [
+    'enabled'     => _ws('enabled'),
+    'disabled'    => _ws('disabled'),
+    'login_names' => [
+        'login'          => _ws('Login'),
+        'phone'          => _ws('Phone'),
+        'login_or_phone' => _ws('Login or phone')
+    ],
+    'disabled_toggle_reason' => _ws('You need to connect Webasyst ID to your account.')
+]}
+
+<script type="text/javascript">
+    (function($) {
+        new WASettingsAuth({
+            $wrapper: $("#s-auth-settings-page"),
+            locale: {$_locale|json_encode}
+        });
+        $.wa.setTitle({$_title|json_encode});
+    })(jQuery);
+</script>

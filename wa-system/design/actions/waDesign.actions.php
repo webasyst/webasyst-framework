@@ -41,7 +41,6 @@ class waDesignActions extends waActions
         $routes = $this->getRoutes();
 
         $themes_routes = $this->getThemesRoutes($themes, $routes);
-        $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/Design.html';
 
         $t_id = waRequest::get('theme');
         $route = array();
@@ -74,9 +73,10 @@ class waDesignActions extends waActions
             $current_url .= '&domain='.urlencode($route['_domain']).'&route='.$route['_id'];
         }
 
+        $this->setTemplate('Design.html', true);
+
         $this->display(array(
             'current_url'   => $current_url,
-            'template_path' => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
             'design_url'    => $this->design_url,
             'themes_url'    => $this->themes_url,
             'theme'         => $theme,
@@ -87,7 +87,7 @@ class waDesignActions extends waActions
             'app'           => $app,
             'routing_url'   => $routing_url,
             'options'       => $this->options,
-        ), $template);
+        ));
     }
 
     public function editAction()
@@ -199,7 +199,8 @@ class waDesignActions extends waActions
             }
         }
 
-        $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/DesignEdit.html';
+        $this->setTemplate('DesignEdit.html', true);
+
         $data = array(
             'options'              => $this->options,
             'app_id'               => $app_id,
@@ -214,10 +215,12 @@ class waDesignActions extends waActions
             'route_url_decoded'    => $route_url_decoded,
             'theme_files'          => $theme_files
         );
+
         if ($theme->parent_theme_id) {
             $data['parent_theme'] = $theme->parent_theme;
         }
-        $this->display($data, $template);
+
+        $this->display($data);
     }
 
     protected function getThemesRoutes(&$themes, $routes)
@@ -533,13 +536,14 @@ HTACCESS;
                 $data['parent_theme_problem_files'] = $theme->parent_theme->problemFiles();
             }
 
-            $template_dir = $this->getConfig()->getRootPath().'/wa-system/design/templates/';
 
             if (!empty($data['theme_problem_files']) || !empty($data['parent_theme_problem_files'])) {
-                $this->display($data, $template_dir.'ThemeUpdateProblemDialog.html');
+                $this->setTemplate('ThemeUpdateProblemDialog.html', true);
             } else {
-                $this->display($data, $template_dir.'ThemeUpdateDialog.html');
+                $this->setTemplate('ThemeUpdateDialog.html', true);
             }
+
+            $this->display($data);
         }
     }
 
@@ -788,6 +792,8 @@ HTACCESS;
                 $theme_parent_warning_requirements = $current_theme->parent_theme->getWarningRequirements();
             }
 
+            $this->setTemplate('Theme.html', true);
+
             $this->display(array(
                 'current_locale'                      => $current_locale,
                 'routes'                              => $routes,
@@ -813,7 +819,7 @@ HTACCESS;
                 'route_url'                           => $route_url,
                 'apps'                                => wa()->getApps(),
                 'need_show_review_widget'             => $this->needShowReviewWidget($theme_id),
-            ), $this->getConfig()->getRootPath().'/wa-system/design/templates/Theme.html');
+            ));
         }
     }
 
@@ -931,7 +937,9 @@ HTACCESS;
         $app = wa()->getAppInfo($app_id);
         $theme_id = waRequest::get('theme');
         $theme = new waTheme($theme_id, $app_id);
-        $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/ThemeAbout.html';
+
+        $this->setTemplate('ThemeAbout.html', true);
+
         $this->display(array(
             'design_url' => $this->design_url,
             'app_id'     => $app_id,
@@ -939,8 +947,7 @@ HTACCESS;
             'theme_id'   => $theme_id,
             'theme'      => $theme,
             'options'    => $this->options,
-        ), $template);
-
+        ));
     }
 
     public function themesAction()
@@ -964,7 +971,7 @@ HTACCESS;
         }
         $used_app_themes = array_unique($used_app_themes);
 
-        $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/Themes.html';
+        $this->setTemplate('Themes.html', true);
 
         $this->display(array(
             'routes'          => $this->getRoutes(),
@@ -977,7 +984,7 @@ HTACCESS;
             'app_themes'      => $app_themes,
             'used_app_themes' => $used_app_themes,
             'options'         => $this->options,
-        ), $template);
+        ));
     }
 
     public function themeSettingsAction()
@@ -1290,7 +1297,6 @@ HTACCESS;
     public function viewOriginalAction()
     {
         $theme_id = waRequest::get('theme_id');
-        $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/DesignViewOriginal.html';
 
         $file = array();
         if ($theme_id && $f = waRequest::get('file')) {
@@ -1311,9 +1317,10 @@ HTACCESS;
                 $file['theme_path'] = str_replace(wa()->getConfig()->getRootPath(), '', $theme_path);
             }
         }
-        $this->display(array(
-            'file' => $file
-        ), $template);
+
+        $this->setTemplate('DesignViewOriginal.html', true);
+
+        $this->display(array('file' => $file));
     }
 
     public function getDesignUrl()
@@ -1324,6 +1331,24 @@ HTACCESS;
     protected function getView()
     {
         return wa('webasyst')->getView();
+    }
+
+    /**
+     * Get default dir of templates for these actions
+     * @inheritDoc
+     */
+    protected function getTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/design/templates/';
+    }
+
+    /**
+     * Get default dir of lagacy templates of these actions
+     * @inheritDoc
+     */
+    protected function getLegacyTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/design/templates-legacy/';
     }
 
     public function checkExistenceSettings($theme)

@@ -1,0 +1,44 @@
+{* todo Remove Globals - Only for Alfa Version! *}
+{$wa->globals("wa_dashboard_header_title", $dashboard.name|escape)}
+<section class="wa-dashboard-page widgets">
+    <div class="d-page-header">
+        <h1>{*$dashboard.name|escape*}{$wa->globals("wa_dashboard_header_title")}</h1>
+    </div>
+
+    <div class="d-dashboard-link-wrapper box" id="d-dashboard-link-wrapper">
+        <i class="fas fa-tv"></i>
+        [`TV Link`]:
+        <a href="{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/" target="_blank" class="bold js-dashboard-url">{$wa->domainUrl()}{$wa_backend_url}dashboard/{$dashboard.hash}/</a>
+        <a href="#" class="custom-ml-8 button outlined js-copy-url"><span><i class="fas fa-clipboard"></i>[` Copy`]</span></a></div>
+    <div id="wa_widgets" class="js-dashboard-widgets">
+        {include file="../dashboard/DashboardWidgets.html" inline}
+        <div class="d-settings-wrapper" id="d-settings-wrapper" style="display: none">
+            <div class="d-settings-container" id="d-settings-container">
+                <div class="d-settings-inner-container">
+                    <div class="d-settings-block" id="d-settings-block"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(function () {
+        let $wa_header = document.querySelector('#wa-header'),
+            wa_header_height = $wa_header.clientHeight;
+
+        WaHeader.headerBehavior('.wa-dashboard-page', { rootMargin: `${ wa_header_height }px 0px -100% 0px` });
+
+        let $dashboard_link_wrapper = document.querySelector('#d-dashboard-link-wrapper'),
+            $dashboard_link = $dashboard_link_wrapper.querySelector('.js-dashboard-url'),
+            $copy_btn = $dashboard_link_wrapper.querySelector('.js-copy-url');
+
+        $copy_btn.addEventListener('click', function (event) {
+            document.getSelection().setBaseAndExtent($dashboard_link, 0, $copy_btn, 0);
+            document.execCommand("copy");
+            let $copy_icon = $copy_btn.querySelector('svg');
+            $copy_icon.classList.remove('fa-clipboard')
+            $copy_icon.classList.add('fa-clipboard-check')
+            event.preventDefault();
+        });
+    });
+</script>

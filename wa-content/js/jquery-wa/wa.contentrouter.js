@@ -12,6 +12,9 @@ var ContentRouter = ( function($) {
         that.base_href = (options["base_href"] || null);
         that.api_enabled = !!(window.history && window.history.pushState);
 
+        // METHODS
+        that.onLoad = (typeof options["onLoad"] === "function" ? options["onLoad"] : function() {});
+
         // DYNAMIC VARS
         that.xhr = false;
         that.is_enabled = true;
@@ -123,6 +126,7 @@ var ContentRouter = ( function($) {
 
         if (that.xhr) {
             that.xhr.abort();
+            $(document).trigger("wa_abort");
         }
 
         $(document).trigger('wa_before_load', {
@@ -135,8 +139,21 @@ var ContentRouter = ( function($) {
             url: content_uri,
             dataType: 'html',
             global: false,
-            cache: false
-        }).done(function(html) {
+            cache: false,
+            xhr: function () {
+                let xhr = new XMLHttpRequest();
+
+                xhr.addEventListener("progress", function (event) {
+                    $(document).trigger("wa_loading", event);
+                }, false);
+
+                xhr.addEventListener("abort", function (event) {
+                    console.log("abort", event);
+                }, false);
+
+                return xhr;
+            }
+        }).done(function (html) {
             if (that.api_enabled && !unset_state) {
                 history.pushState({
                     reload: true,               // force reload history state
@@ -144,12 +161,18 @@ var ContentRouter = ( function($) {
                 }, "", content_uri);
             }
 
-            that.setContent( html );
-            that.animate( false );
+            that.setContent(html);
+            that.animate(false);
             that.xhr = false;
-
-            $(document).trigger("wa_loaded");
-        }).fail(function(data) {
+            setTimeout(function() {
+                that.onLoad(that);
+                $(document).trigger("wa_loaded");
+            }, 0);
+        }).fail(function (data) {
+            console.log('Error loading data from ', content_uri, data);
+            setTimeout(function() {
+                $(document).trigger("wa_loaded");
+            }, 0);
             if (data.responseText) {
                 console.log(data.responseText);
             }

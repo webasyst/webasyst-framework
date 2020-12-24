@@ -1,201 +1,218 @@
-<div id="wa-design-sidebar" class="sidebar left200px" style="min-height:300px">
-    <div class="wa-theme-block">
-        <h4 class="heading">{$theme.name}</h4>
-        {if $theme_usages && $route_url}
-        <div class="block">
-            <p class="hint" style="margin-bottom: 0;"><i class="icon10 exclamation"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $theme_usages_decoded), $route_url_decoded)}</p>
-        </div>
-        {/if}
-        <ul class="menu-v with-icons wa-theme wa-theme-templates">
-            {foreach $theme_files as $f_id => $f}
-                <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
-                    <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
-                    <i class="icon16 {if !empty($f.parent_exists)}link{else}script{if substr($f_id, -4)=='.css'}-css{elseif substr($f_id, -3)=='.js'}-js{/if}{/if}"></i>{$f_id|escape|truncate:25:'...':false:true}
+<div class="flexbox">
+    <div id="wa-design-sidebar" class="sidebar scrolls-with-content width-20rem">
+        <div class="wa-theme-block">
+            <h4 class="heading ">{$theme.name}</h4>
+            {if $theme_usages && $route_url}
+                <div class="box">
+                    <p class="hint" style="margin-bottom: 0;"><i class="icon10 exclamation"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $theme_usages_decoded), $route_url_decoded)}</p>
+                </div>
+            {/if}
+            <ul class="menu wa-theme-templates">
+                {foreach $theme_files as $f_id => $f}
+                    <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
+                        <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
+                        <i class="{if !empty($f.parent_exists)}fas fa-link{else}far fa-file-code{if substr($f_id, -4)=='.css'} fab fa-css3{elseif substr($f_id, -3)=='.js'} fab fa-js-square{/if}{/if}"></i>
+                            <span>{$f_id|escape|truncate:25:'...':false:true}</span>
+                        </a>
+                    </li>
+                {/foreach}
+                <li class="add-file top-padded">
+                    <a href="{$design_url}theme={$theme.id}&file=">
+                        <span class="icon"><i class="fas fa-plus-circle fa-sm"></i></span>
+                        <span>[s`New file`]</span>
                     </a>
                 </li>
-            {/foreach}
-            <li class="add-file top-padded"><a href="{$design_url}theme={$theme.id}&file=" class="small"><i class="icon10 add"></i>[s`New file`] </a> </li>
-        </ul>
-        <br>
+            </ul>
+        </div>
     </div>
-</div>
-<div class="content left200px bordered-left blank">
-<div class="wa-design-editor">
-    <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape:'url'}&action=save">
-        <div class="block wa-design-gray-toolbar">
-            {if $file.id}
-            <div class="float-right">
-                <ul class="menu-h">
-                    {if !empty($file.has_original)}
-                        <li id="wa-design-original-link" {if empty($file.modified)} style="display: none"{/if}>
-                            <a href="?module=design&action=viewOriginal" class="wa-design-view-original"><i class="icon16 script-lock"></i>[s`View original`]</a>
-                            <script type="text/javascript">
-                                $(".wa-design-view-original").click(function () {
-                                    var d = $('#wa-design-view-original-dialog').empty().removeClass('dialog');
-                                    if (!d.length) {
-                                        d = $('<div id="wa-design-view-original-dialog"></div>').appendTo('body');
-                                    }
-                                    var url = $(this).attr('href') + '&theme_id={$theme_id}&file={$file.id|escape:'url'}';
-                                    d.waDialog({
-                                        url: url,
-                                        buttons: '<input type="button" class="button cancel" value="[s`Close`]"> <input type="submit" class="button yellow float-right" value="[s`Roll back my file to the original version`]">',
-                                        onSubmit: function (dialog) {
-                                            if (confirm('[s`This will reset all your changes. Are you sure?`]')) {
-                                                $.post('?module=design&action=revertFile', {
-                                                    theme: '{$theme.id}',
-                                                    file: '{$file.id|escape}'
-                                                }, function (response) {
-                                                    if (response.status == 'fail') {
-                                                        alert(response.errors);
-                                                    } else {
-                                                        dialog.trigger('close');
-                                                        waDesignLoad();
-                                                    }
-                                                }, 'json')
+    <div class="content blank bordered-left">
+        <div class="wa-design-editor">
+            <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape:'url'}&action=save">
+                <div class="box wa-design-gray-toolbar flexbox full-width middle">
+                    <h4>
+                        {$file.id|escape}
+                        {if isset($file.description)}<span id="wa-design-desc" class="hint">{$file.description|escape}</span>{/if}
+                    </h4>
+                    {if $file.id}
+                        <ul class="chips">
+                        {if !empty($file.has_original)}
+                            <li id="wa-design-original-link" {if empty($file.modified)} style="display: none"{/if}>
+                                <a href="?module=design&action=viewOriginal" class="wa-design-view-original">
+                                    <i class="fas fa-lock"></i>
+                                    [s`View original`]
+                                </a>
+                                <script type="text/javascript">
+                                    $(".wa-design-view-original").on('click', function (e) {
+                                        e.preventDefault();
+                                        var d = $('#wa-design-view-original-dialog').empty().removeClass('dialog');
+                                        if (!d.length) {
+                                            d = $('<div id="wa-design-view-original-dialog"></div>').appendTo('body');
+                                        }
+                                        var url = $(this).attr('href') + '&theme_id={$theme_id}&file={$file.id|escape:'url'}';
+                                        d.waDialog({
+                                            url: url,
+                                            buttons: '<input type="button" class="button cancel" value="[s`Close`]"> <input type="submit" class="button yellow float-right" value="[s`Roll back my file to the original version`]">',
+                                            onSubmit: function (dialog) {
+                                                if (confirm('[s`This will reset all your changes. Are you sure?`]')) {
+                                                    $.post('?module=design&action=revertFile', {
+                                                        theme: '{$theme.id}',
+                                                        file: '{$file.id|escape}'
+                                                    }, function (response) {
+                                                        if (response.status == 'fail') {
+                                                            alert(response.errors);
+                                                        } else {
+                                                            dialog.trigger('close');
+                                                            waDesignLoad();
+                                                        }
+                                                    }, 'json')
+                                                }
+                                                return false;
                                             }
-                                            return false;
+                                        });
+                                    });
+                                </script>
+                            </li>
+                        {/if}
+                        {if !empty($file.custom)}
+                            <li>
+                                <a href="#" class="bold" id="wa-design-settings-toggle">
+                                    <i class="fas fa-pencil"></i>
+                                    [s`Template settings`]
+                                </a>
+                            </li>
+                            <li>
+                                <a class="wa-design-delete" href="?module=design&action=delete">
+                                    <i class="fas fa-times-circle"></i>
+                                    [s`Delete`]
+                                </a>
+                                <script type="text/javascript">
+                                    $(".wa-design-delete").on('click', function (e) {
+                                        e.preventDefault();
+                                        if (confirm('[s`File will be deleted without the ability to recover. Are you sure?`]')) {
+                                            $.post($(this).attr('href'), { theme_id:"{$theme_id}", file: "{$file.id}"}, function () {
+                                                let li = $("ul.wa-theme li.selected"),
+                                                    hash;
+                                                if (li.prev().length > 0) {
+                                                    hash = li.prev().addClass('selected').find('a').attr('href');
+                                                } else if (li.next().length > 0) {
+                                                    hash = li.next().addClass('selected').find('a').attr('href');
+                                                } else {
+                                                    hash = "{$design_url}theme={$theme_id}&file=";
+                                                }
+                                                li.remove();
+                                                $.wa.setHash(hash);
+                                                {if !$options.is_ajax}
+                                                    waDesignLoad();
+                                                {/if}
+                                            }, "json");
                                         }
                                     });
-                                    return false;
-                                });
-                            </script>
-                        </li>
+                                </script>
+                            </li>
+                        {/if}
+                        </ul>
                     {/if}
-                    {if !empty($file.custom)}
-                        <li><a href="#" class="inline-link" id="wa-design-settings-toggle"><i class="icon16 edit"></i><b><i>[s`Template settings`]</i></b></a></li>
-                        <li>
-                            <a class="wa-design-delete" href="?module=design&action=delete"><i class="icon16 delete"></i>[s`Delete`]</a>
-                            <script type="text/javascript">
-                                $(".wa-design-delete").click(function () {
-                                    if (confirm('[s`File will be deleted without the ability to recover. Are you sure?`]')) {
-                                        $.post($(this).attr('href'), { theme_id:"{$theme_id}", file: "{$file.id}"}, function () {
-                                            var li = $("ul.wa-theme li.selected");
-                                            if (li.prev().length > 0) {
-                                                var hash = li.prev().addClass('selected').find('a').attr('href');
-                                            } else if (li.next().length > 0) {
-                                                var hash = li.next().addClass('selected').find('a').attr('href');
-                                            } else {
-                                                var hash = "{$design_url}theme={$theme_id}&file=";
-                                            }
-                                            li.remove();
-                                            $.wa.setHash(hash);
-                                            {if !$options.is_ajax}
-                                                waDesignLoad();
-                                            {/if}
-                                        }, "json");
-                                    }
-                                    return false;
-                                });
-                            </script>
-                        </li>
-                    {/if}
-                </ul>
-            </div>
-            {/if}
-            <h4>
-                {$file.id|escape}
-                {if isset($file.description)}<span id="wa-design-desc" class="hint">{$file.description|escape}</span>{/if}
-            </h4>
 
-            {if !empty($file.custom)}
-            <div id="wa-design-settings" style="{if $file.id}display: none; {/if}">
-                {if isset($parent_theme) && empty($file.id)}
-                    <ul class="menu-v">
-                        <li><input id="wa-file-create" name="type" type="radio" value="0" checked> <label for="wa-file-create">[s`Create new file`]</label></li>
-                        <li><input id="wa-file-link" name="type" type="radio" value="1"> <label for="wa-file-link">[s`Link from parent theme`]</label></li>
-                    </ul>
-                {/if}
-                <div class="fields form">
-                    <div id="wa-file-create-group" class="field-group">
-                        <div class="field">
-                            <div class="name bold">
-                                [s`File name`]
-                            </div>
-                            <div class="value">
-                                <input name="file" type="text" class="bold" value="{$file.id|escape}" />
-                                <br /><span class="hint">[s`File should have one of the allowed extensions: .html, .css, .js`]</span>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="name">
-                                [s`Description`]
-                            </div>
-                            <div class="value">
-                                <textarea id="s-text-desc" name="description">{$file.description|escape}</textarea>
-                                <br /><span class="hint">[s`Optional template description`]</span>
-                            </div>
-                        </div>
-                    </div>
-                    {if isset($parent_theme)}
-                    <div id="wa-file-link-group" class="field-group" style="display: none;">
-                        <div class="field">
-                            <div class="name">
-                                [s`Select file`]
-                            </div>
-                            <div class="value">
-                                <select id="wa-design-parent" name="parent">
-                                    {$i = 0}
-                                    {foreach $parent_theme.files as $f_id => $f}
-                                    {if !isset($theme.files[$f_id])}
-                                    {$i = $i + 1}
-                                    <option value="{$f_id}">{$f_id}</option>
-                                    {/if}
-                                    {/foreach}
-                                    {if !$i}
-                                    <option value="">[s`all available parent theme files are already linked`]</option>
-                                    {/if}
-                                </select>
-                                {if $i}
-                                    <p class="hint">{sprintf('[s`This list represent all parent theme (<strong>%s</strong>) templates which are currently not linked in this design theme.`]',$parent_theme.app|cat:':':$parent_theme.id)}</p>
+                    {if !empty($file.custom)}
+                        <div id="wa-design-settings" style="{if $file.id}display: none; {/if}">
+                            {if isset($parent_theme) && empty($file.id)}
+                                <ul class="menu">
+                                    <li><input id="wa-file-create" name="type" type="radio" value="0" checked> <label for="wa-file-create">[s`Create new file`]</label></li>
+                                    <li><input id="wa-file-link" name="type" type="radio" value="1"> <label for="wa-file-link">[s`Link from parent theme`]</label></li>
+                                </ul>
+                            {/if}
+                            <div class="fields form">
+                                <div id="wa-file-create-group" class="field-group">
+                                    <div class="field">
+                                        <div class="name bold">
+                                            [s`File name`]
+                                        </div>
+                                        <div class="value">
+                                            <input name="file" type="text" class="bold" value="{$file.id|escape}" />
+                                            <br /><span class="hint">[s`File should have one of the allowed extensions: .html, .css, .js`]</span>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">
+                                            [s`Description`]
+                                        </div>
+                                        <div class="value">
+                                            <textarea id="s-text-desc" name="description">{$file.description|escape}</textarea>
+                                            <br /><span class="hint">[s`Optional template description`]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {if isset($parent_theme)}
+                                <div id="wa-file-link-group" class="field-group" style="display: none;">
+                                    <div class="field">
+                                        <div class="name">
+                                            [s`Select file`]
+                                        </div>
+                                        <div class="value">
+                                            <div class="wa-select">
+                                                <select id="wa-design-parent" name="parent">
+                                                    {$i = 0}
+                                                    {foreach $parent_theme.files as $f_id => $f}
+                                                    {if !isset($theme.files[$f_id])}
+                                                    {$i = $i + 1}
+                                                    <option value="{$f_id}">{$f_id}</option>
+                                                    {/if}
+                                                    {/foreach}
+                                                    {if !$i}
+                                                    <option value="">[s`all available parent theme files are already linked`]</option>
+                                                    {/if}
+                                                </select>
+                                            </div>
+                                            {if $i}
+                                                <p class="hint">{sprintf('[s`This list represent all parent theme (<strong>%s</strong>) templates which are currently not linked in this design theme.`]',$parent_theme.app|cat:':':$parent_theme.id)}</p>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                                <script type="text/javascript">
+                                    $("#wa-file-create, #wa-file-link").on('click', function () {
+                                        if ($("#wa-file-create").is(':checked')) {
+                                            $("#wa-file-link-group").hide();
+                                            $("#wa-file-create-group").show();
+                                            $(".wa-editor-core-wrapper").show();
+                                            $("#wa-editor-help-link").show();
+                                            $("#wa-design-button").removeAttr('disabled');
+                                        } else {
+                                            $("#wa-file-create-group").hide();
+                                            $(".wa-editor-core-wrapper").hide();
+                                            $("#wa-editor-help-link").hide();
+                                            $("#wa-file-link-group").show();
+                                            if ($("#wa-design-parent option:first").attr('value') == '') {
+                                                $("#wa-design-parent").attr('disabled', 'disabled');
+                                                $("#wa-design-button").attr('disabled', 'disabled');
+                                            }
+                                        }
+                                    });
+                                </script>
                                 {/if}
                             </div>
                         </div>
-                    </div>
-                    <script type="text/javascript">
-                        $("#wa-file-create, #wa-file-link").click(function () {
-                            if ($("#wa-file-create").is(':checked')) {
-                                $("#wa-file-link-group").hide();
-                                $("#wa-file-create-group").show();
-                                $(".wa-editor-core-wrapper").show();
-                                $("#wa-editor-help-link").show();
-                                $("#wa-design-button").removeAttr('disabled');
-                            } else {
-                                $("#wa-file-create-group").hide();
-                                $(".wa-editor-core-wrapper").hide();
-                                $("#wa-editor-help-link").hide();
-                                $("#wa-file-link-group").show();
-                                if ($("#wa-design-parent option:first").attr('value') == '') {
-                                    $("#wa-design-parent").attr('disabled', 'disabled');
-                                    $("#wa-design-button").attr('disabled', 'disabled');
-                                }
-                            }
-                        });
-                    </script>
                     {/if}
                 </div>
-                <div class="clear-left"></div>
-            </div>
-            {/if}
+                <div class="wa-editor-core-wrapper ace box">
+                    <div style="clear:both">
+                        <textarea style="display:none" id="wa-design-content" name="content">{$file.content|escape}</textarea>
+                    </div>
+                </div>
+                {if $options.save_panel}
+                    <div class="bottombar bordered-top flexbox middle">
+                        <div class="bottombar-wrapper flexbox middle space-16">
+                            <input id="wa-design-button" type="submit" class="button green" value="[s`Save`]" />
+                            <em class="hint">Ctrl + S</em>
+                            <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
+                            {$wa->getCheatSheetButton(['data' => ["app" =>{$wa->app()}, "index" =>{$file.id|escape:'url'|default:""}]])}
+                        </div>
+                    </div>
+                {/if}
+            </form>
         </div>
-        <div class="wa-editor-core-wrapper ace">
-            <div style="clear:both">
-                <textarea style="display:none" id="wa-design-content" name="content">{$file.content|escape}</textarea>
-            </div>
-        </div>
-        {if $options.save_panel}
-        <div class="wa-design-save-panel block bordered-top">
-            {$wa->getCheatSheetButton(['data' => ["app" =>{$wa->app()}, "index" =>{$file.id|escape:'url'|default:""}]])}
-            <input id="wa-design-button" type="submit" class="button green" value="[s`Save`]" />
-            <em class="hint">Ctrl + S</em>
-            <span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
-
-        </div>
-        {/if}
-    </form>
-    <div class="clear"></div>
-</div>
-</div>
-<script>
+    </div>
+    <script>
     $(document).ready(function () {
         $(".wa-theme-templates").on('click', 'a', function () {
             if (!waDesignConfirm()) return false;
@@ -286,3 +303,4 @@
         });
     });
 </script>
+</div>

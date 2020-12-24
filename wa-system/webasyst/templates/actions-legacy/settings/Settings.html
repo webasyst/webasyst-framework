@@ -1,0 +1,144 @@
+{$_title = "[s`General settings`] — {$wa->accountName(false)}"}
+<div class="s-general-settings-page blank block double-padded" id="s-general-settings-page">
+    <h1 class="s-page-header">[s`General settings`]</h1>
+    <div class="s-general-settings-fields-block">
+        <form action="?module=settingsGeneralSave">
+            <div class="field-group">
+                {* COMPANY NAME *}
+                <div class="field">
+                    <div class="name">
+                        <label for="config-name">[s`Company name`]</label>
+                    </div>
+                    <div class="value">
+                        <input type="text" class="large" name="name" value="{$settings.name|escape}" id="config-name" autocomplete="off">
+                        <br>
+                        <span class="hint">[s`May be displayed on websites and in email notifications.`]</span>
+                        <br>
+                        <span class="hint s-error js-error-place"></span>
+                    </div>
+                </div>
+
+                {* WEBASYST ADDRESS *}
+                <div class="field">
+                    <div class="name">
+                        <label for="config-url">[s`Website address`]</label>
+                    </div>
+                    <div class="value">
+                        <input type="text" name="url" value="{$settings.url|escape}" id="config-url" autocomplete="off">
+                        <br>
+                        <span class="hint">[s`May be used on websites and in email notifications.`]</span>
+                        <br>
+                        <span class="hint s-error js-error-place"></span>
+                    </div>
+                </div>
+
+                {* Webasyst locale *}
+                {if $locales}
+                    <div class="field">
+                        <div class="name">
+                            <label for="config-locale">[s`Locale of software available for installation`]</label>
+                        </div>
+                        <div class="value no-shift">
+                            <select name="locale" id="config-locale">
+                                {foreach $locales as $_locale => $_locale_name}
+                                    <option value="{$_locale|escape}"{if $settings.locale == $_locale} selected="selected"{/if}>{$_locale_name|escape}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                {/if}
+
+                {* Locale adapter *}
+                {if $locale_adapter !== false}
+                    <div class="field">
+                        <div class="name">[s`Localization engine`]</div>
+                        <div class="value no-shift">
+                            <select name="locale_adapter">
+                                {foreach $locale_adapters_list as $_adapter => $_name}
+                                    <option{if $_adapter == $locale_adapter} selected{/if} value="{$_adapter}">{$_name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                {/if}
+                {* Clear cache *}
+                <div class="field">
+                    <div class="name">[s`Clear cache`]</div>
+                    <div class="value">
+                        <input type="button" class="js-clear-cache button gray" value="[s`Clear cache`]">
+                        <i class="icon16 loading js-cache-loading" style="display: none;"></i>
+                    </div>
+                    <div class="value hint">
+                        [`Cache is temporary data that help reduce extensive load on your server. Clear cache to update those data, if you have encountered a malfunction.`]
+                        <br><br>
+                    </div>
+                </div>
+
+                {* Debug mode *}
+                <div class="field">
+                    <div class="name">[s`For developers`]</div>
+                    <div class="value">
+                        <input type="checkbox" name="config[debug]" value="1"{if isset($config.debug) && $config.debug} checked="checked"{/if} id="config-debug-checkbox">
+                        <label for="config-debug-checkbox">
+                            <span>[s`Developer mode`]</span>
+                            <div class="hint">[s`Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development.`]</div>
+                        </label>
+                    </div>
+                </div>
+
+                {* Framework version *}
+                <div class="field">
+                    <div class="name">
+                        [s`Webasyst version`]
+                    </div>
+                    <div class="value no-shift">{$framework_version}</div>
+                </div>
+
+                {* PHP version *}
+                <div class="field">
+                    <div class="name">
+                        [s`PHP version`]
+                    </div>
+                    <div class="value no-shift">{$php_version}</div>
+                    {if !$is_good_php_version}
+                        <div class="value no-shift bold">[`Webasyst is moving to PHP versions 5.6 and higher.`]</div>
+                    {/if}
+                </div>
+
+                {* Image adapter *}
+                <div class="field">
+                    <div class="name">[s`Image processing library`]</div>
+                    <div class="value no-shift">
+                        <select name="config[image_adapter]">
+                            {foreach $image_adapters_list as $_adapter => $_params}
+                                <option {if $_adapter == $image_adapter}selected{/if}
+                                        {if !$_params.enabled}disabled{/if} value="{$_adapter}">
+                                    {$_params.name|escape} {if !$_params.enabled}([`not installed`]){/if}
+                                </option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="s-form-buttons">
+                <div class="s-footer-actions js-footer-actions">
+                    <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                    <span class="s-hidden">
+                        <span style="margin: 0 4px;">[s`or`]</span>
+                        <a href="{$wa_app_url}webasyst/settings" class="js-cancel">[s`cancel`]</a>
+                    </span>
+                    <i class="icon16 loading s-loading" style="display: none;"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    (function($) {
+        new WASettingsGeneral({
+            $wrapper: $('#s-general-settings-page')
+        });
+        $.wa.setTitle({$_title|json_encode});
+    })(jQuery);
+</script>

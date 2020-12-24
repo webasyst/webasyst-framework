@@ -1,0 +1,54 @@
+<div class="dialog-window">
+    <div class="dialog-content">
+
+        <h1>[s`Design theme update failure`] <span class="hint">{if empty($parent_only)}{$theme.name|escape}{else}{$theme.parent_theme.name|escape}{/if} {$theme_original_version|escape}</span></h1>
+
+        <p>[s`This design theme cannot be updated.`]</p>
+
+        {if !empty($parent_theme_problem_files.not_readable) || !empty($theme_problem_files.not_readable)}
+            <p class="bold">[s`Insufficient permissions to read files`]:</p>
+
+            <ul style="line-height: 1.5em;">
+                {if !empty($parent_theme_problem_files.not_readable)}
+                    {foreach $parent_theme_problem_files.not_readable as $_file_path}
+                        <li>{str_replace("\\", '/', $_file_path)|escape}</li>
+                    {/foreach}
+                {/if}
+
+                {if !empty($theme_problem_files.not_readable)}
+                    {foreach $theme_problem_files.not_readable as $_file_path}
+                        <li>{str_replace("\\", '/', $_file_path)|escape}</li>
+                    {/foreach}
+                {/if}
+            </ul>
+
+        {/if}
+
+        {if !empty($parent_theme_problem_files.not_writable) || !empty($theme_problem_files.not_writable)}
+            <p class="bold">[s`Insufficient permissions to write to files`]:</p>
+
+            <ul style="line-height: 1.5em;">
+                {if !empty($parent_theme_problem_files.not_writable)}
+                    {foreach $parent_theme_problem_files.not_writable as $_file_path}
+                        <li>{str_replace("\\", '/', $_file_path)|escape}</li>
+                    {/foreach}
+                {/if}
+
+                {if !empty($theme_problem_files.not_writable)}
+                    {foreach $theme_problem_files.not_writable as $_file_path}
+                        <li>{str_replace("\\", '/', $_file_path)|escape}</li>
+                    {/foreach}
+                {/if}
+            </ul>
+
+        {/if}
+
+        <div class="clear-both"></div>
+
+    </div>
+    <div class="dialog-buttons">
+        <div class="dialog-buttons-gradient">
+            <a href="#/design/themes/" class="button cancel">[s`Cancel`]</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,46 @@
+{* todo Remove Globals - Only for Alfa Version! *}
+{if $team}
+    {$wa->globals("wa_dashboard_header_title", $team.name)}
+{else}
+    {$wa->globals("wa_dashboard_header_title", [`Everyone`])}
+{/if}
+<section class="article wa-dashboard-page users">
+    <div class="article-body">
+        <h1 class="d-page-header">{$wa->globals("wa_dashboard_header_title")|escape}</h1>
+    {if $team && !empty($team.description)}
+        <p>{$team.description|escape}</p>
+    {/if}
+
+        <ul class="thumbs li150px d-users-list">
+            {foreach $users as $user}
+                <li>
+                    <a href="">
+                        <img class="" src="/wa-data/public/contacts/photos/01/00/1/1731030115.144x144@2x.jpg" alt="">
+                        <span class="user-name">{$user.name|escape}</span>
+                        <span class="user-login">{$user.login|escape}</span>
+                    </a>
+                </li>
+            {/foreach}
+        </ul>
+
+        <div id="wa_activity">
+            <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+                {if !empty($activity)}
+                    {include file="../dashboard/DashboardActivity.html" inline}
+                {else}
+                    <div class="empty-activity-text">
+                        <h3>[`No events in the live stream yet.`]</h3>
+                        <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(function () {
+        let $wa_header = document.querySelector('#wa-header'),
+            wa_header_height = $wa_header.clientHeight;
+        WaHeader.headerBehavior('.wa-dashboard-page', { rootMargin: `${ wa_header_height }px 0px -100% 0px` });
+    });
+</script>

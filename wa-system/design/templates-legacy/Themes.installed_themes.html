@@ -1,0 +1,93 @@
+{if !empty($app_themes)}
+    <div class="s-installed-themes-section is-extended" id="js-installed-themes-section">
+        <div class="s-section-header">
+            <span class="s-title js-toggle">
+                <i class="s-icon darr"></i> [`Installed themes`]
+            </span>
+        </div>
+        <div class="s-hidden">
+            <div class="s-themes-list">
+                {foreach $app_themes as $_theme}
+                    {$_name = $_theme->getName()}
+                    {$_cover_image = $_theme->getCover()}
+                    {if empty($_cover_image)}
+                        {$_cover_image = "`$wa_url`wa-content/img/design/themes/no-image.png"}
+                    {/if}
+
+                    {$_theme_id = $_theme->id}
+                    {$_theme_url = "`$design_url`theme=`$_theme_id`"}
+                    {$_is_active = in_array($_theme_id, $used_app_themes)}
+
+                    <div class="s-theme-wrapper" data-id="{$_theme_id|escape}" data-load="?module=design&action=theme&theme={$_theme_id|escape}">
+                        <a class="s-image-wrapper" href="{$_theme_url|escape}" title="{$_name|escape}">
+                            <img src="{$_cover_image|escape}" alt="{$_name|escape}">
+                        </a>
+                        <div class="s-name-wrapper">
+                            <a class="s-name" href="{$_theme_url}" title="{$_name|escape}">
+                                {$_name|escape}
+                            </a>
+                        </div>
+                        <div class="s-statuses">
+                            {if !empty($_is_active)}
+                                <span class="s-status green"><i class="icon16 ss confirmed"></i>[`Used`]</span>
+                            {else}
+                                <span class="s-status gray">[`Not used`]</span>
+                            {/if}
+                        </div>
+                    </div>
+                {/foreach}
+            </div>
+        </div>
+
+        <script>
+            ( function($) {
+                var $wrapper = $("#js-installed-themes-section"),
+                    $toggle = $wrapper.find(".js-toggle");
+
+                var storage_name = "webasyst/backend/installed_themes_view",
+                    active_class = "is-extended";
+
+                $toggle.on("click", function(event) {
+                    event.preventDefault();
+                    var is_active = $wrapper.hasClass(active_class);
+                    toggle(!is_active);
+                });
+
+                $wrapper.on("click", "a", function(event) {
+                    var $theme = $(this).closest(".s-theme-wrapper");
+                    $("#wa-design-container").load( $theme.data("load") );
+                });
+
+                showOnLoad();
+
+                function showOnLoad() {
+                    var storage = localStorage.getItem(storage_name);
+                    toggle( (storage !== "inactive") );
+                }
+
+                function toggle(show) {
+                    var $icon = $toggle.find(".s-icon");
+
+                    var top_icon_class = "rarr",
+                        bottom_icon_class = "darr";
+
+                    if (show) {
+                        $icon.removeClass(top_icon_class).addClass(bottom_icon_class);
+                        $wrapper.addClass(active_class);
+                    } else {
+                        $icon.removeClass(bottom_icon_class).addClass(top_icon_class);
+                        $wrapper.removeClass(active_class);
+                    }
+
+                    localStorage.setItem(storage_name, ( show ? "active" : "inactive") );
+                }
+
+            })(jQuery);
+        </script>
+    </div>
+
+{elseif isset($app_themes)}
+    <div class="s-installed-themes-section">
+        <div class="s-empty-message">[`No installed themes.`]</div>
+    </div>
+{/if}

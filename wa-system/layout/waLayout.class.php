@@ -13,9 +13,11 @@
  */
 class waLayout extends waController
 {
+    use waActionTemplatePathBuilder;
 
     protected $blocks = array();
     protected $template = null;
+
     /**
      * @var waSmarty3View
      */
@@ -78,8 +80,15 @@ class waLayout extends waController
         $this->setBlock($name, $content);
     }
 
+    /**
+     * Get template path for current layout in current app (or plugin)
+     * @return string
+     * @throws waException
+     */
     protected function getTemplate()
     {
+        $app_id = $this->getAppId();
+
         if ($this->template === null) {
             $prefix = waSystem::getInstance()->getConfig()->getPrefix();
             $template = substr(get_class($this), strlen($prefix), -6);
@@ -87,15 +96,15 @@ class waLayout extends waController
                 $plugin_root = $this->getPluginRoot();
                 if ($plugin_root) {
                     $template = preg_replace("~^.*Plugin~", '', $template);
-                    return $plugin_root.'templates/layouts/' . $template . $this->view->getPostfix();
+                    return $this->buildTemplatePath($this->view, $app_id, $template, $plugin_root);
                 }
             }
-            return 'templates/layouts/' . $template . $this->view->getPostfix();
+            return $this->buildTemplatePath($this->view, $app_id, $template);
         } else {
             if (strpbrk($this->template, '/:') !== false) {
                 return $this->template;
             }
-            return 'templates/layouts/' . $this->template . $this->view->getPostfix();
+            return $this->buildTemplatePath($this->view, $app_id, $this->template);
         }
     }
 
@@ -114,6 +123,7 @@ class waLayout extends waController
      * Return current theme
      *
      * @return waTheme
+     * @throws waException
      */
     public function getTheme()
     {
@@ -152,5 +162,21 @@ class waLayout extends waController
         $html = $this->view->fetch($this->getTemplate());
         wa()->getResponse()->sendHeaders();
         echo $html;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getTemplateDir()
+    {
+        return 'templates/layouts/';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getLegacyTemplateDir()
+    {
+        return 'templates/layouts-legacy/';
     }
 }

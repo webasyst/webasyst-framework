@@ -113,6 +113,20 @@ var config = {
             "target": "./wa-content/js/dropdown/styl/dropdown.styl"
         }
     },
+    'dashboard': {
+        'styl': {
+            "directory": "./wa-content/css/dashboard/",
+            "sources": "./wa-content/css/dashboard/styl/*.styl",
+            "target": "./wa-content/css/dashboard/styl/dashboard.styl"
+        }
+    },
+    'dashboard-mobile': {
+        'styl': {
+            "directory": "./wa-content/css/dashboard/",
+            "sources": "./wa-content/css/dashboard/styl/*.styl",
+            "target": "./wa-content/css/dashboard/styl/mobile.styl"
+        }
+    },
     'waid': {
         'styl': {
             "directory": "./wa-content/css/wa/waid/",

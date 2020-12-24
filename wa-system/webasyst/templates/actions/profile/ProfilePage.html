@@ -35,7 +35,7 @@
                     </p>
                 {/if}
 
-                <ul class="menu-v compact" id="contact-info-top">
+                <ul class="menu compact" id="contact-info-top">
                     {foreach $top as $top_field}
                         <li class="top-field-{$top_field.id}">{if $top_field.id != 'im'}{if $top_field.icon}<i class="icon16 {$top_field.id}"></i>{/if}{/if}{$top_field.value}</li>
                     {/foreach}

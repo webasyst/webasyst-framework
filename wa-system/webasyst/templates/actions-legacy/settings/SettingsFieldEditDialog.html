@@ -1,0 +1,229 @@
+{$_class = 's-field-edit-dialog'}
+{$_id = uniqid($_class)}
+
+{function localized_name_input_block locale=[] localized_name_value='' is_main_locale='' editable=''}
+    <div class="value s-local-input-wrapper">
+        <input type="text"
+               name="name[{$locale.id}]"
+               autocomplete="off"
+               data-error-id="{$locale.id}"
+               value="{$localized_name_value|escape}"
+               {if $is_main_locale}data-main-locale="1"{/if}
+                {if !$editable}disabled="disabled"{/if}>
+        <span class="errormsg"></span>
+        <span class="ellipsis small s-name-region">{$locale.name_region}</span>
+    </div>
+{/function}
+<div class="s-dialog-wrapper {$_class}" id="{$_id}">
+    <div class="s-dialog-background"></div>
+    <div class="s-dialog-block">
+        <header class="s-dialog-header">
+            <h1>{if $field}[s`Edit field`]{else}[s`New field`]{/if}</h1>
+        </header>
+        <form method="post" class="js-field-form-edit" action="?module=settingsFieldSave{if $field}&id={$field.id}{/if}">
+            <div class="s-dialog-content">
+                <div class="fields">
+                    {* Field name *}
+                    <div class="field">
+                        <div class="name">[s`Field name`]</div>
+
+                        {localized_name_input_block
+                            locale=$locale
+                            localized_name_value=$field.localized_names[$locale.id]|default:null
+                            editable=!$field || $field.editable
+                            is_main_locale=true
+                        }
+
+                        {$rest_locales = []}
+                        {foreach $other_locales as $loc}
+                            {$localized_name = $field.localized_names[$loc.id]|default:null}
+                            {if $localized_name}
+                                {localized_name_input_block
+                                    locale=$loc
+                                    localized_name_value=$localized_name
+                                    editable=!$field || $field.editable
+                                }
+                            {else}
+                                {$rest_locales[] = $loc}
+                            {/if}
+                        {/foreach}
+
+                        {if $rest_locales}
+                            <div class="value">
+                                <ul class="menu-h dropdown animated js-name-another-language-wrapper">
+                                    <li>
+                                        <a href="javascript:void(0)" class="inline-link"><b><i><span class="small">[s`Add name in another language`]</span></i></b> <i class="icon10 darr"></i></a>
+                                        <ul class="menu-v">
+                                            {foreach $rest_locales as $loc}
+                                                <li class="js-name-another-language" data-name-region="{$loc.name_region}" data-id="{$loc.id}">
+                                                    <a href="javascript:void(0);"><span class="small">{$loc.name_region}</span></a>
+                                                </li>
+                                            {/foreach}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+
+                {* Field id *}
+                <div class="field">
+                    <div class="name">[s`Field ID`]</div>
+                    <div class="value">
+                        {if !$field}
+                            <input type="text" name="id_val" data-error-id="id_val" value="{$field.id}">
+                        {else}
+                            <span>{$field.id|escape}</span>
+                        {/if}
+                        <span class="errormsg"></span>
+                    </div>
+                </div>
+
+                {* Field type *}
+                <div class="field">
+                    <div class="name">[s`Type of field`]</div>
+                    <div class="value">
+                        {if !$field}
+                            <select name="ftype" class="s-field-type-select">
+                                {foreach $field_types as $ftype => $ftype_str}
+                                    <option value="{$ftype}">{$ftype_str}</option>
+                                {/foreach}
+                            </select>
+                        {else}
+                            <span>{$field.type_name|default:$field.type}</span>
+                        {/if}
+                    </div>
+                </div>
+
+                {* Type values *}
+                <div class="field s-values-textarea-wrapper" {if !$field || empty($field.options)}style="display: none;"{/if}>
+                    <div class="name">[s`List items`]</div>
+                    <div class="value" data-field-value="Menu">
+                        <textarea name="select_field_value" placeholder="[s`Enter each new item on new line`]"
+                            {if $field && !$field.editable}disabled="disabled"{/if}>{$field.options|default:[]|join:"\n"}</textarea>
+                    </div>
+                </div>
+
+                {* Applied to *}
+                <div class="field">
+                    <div class="name">[s`Applied to`]</div>
+                    <div class="value">
+                        {* Person *}
+                        <label>
+                            {if $field.type == 'Address'} <input type="hidden" name="type[]" value="person" />{/if}
+                            <input type="checkbox" name="type[]"
+                                value="person"
+                                {if !$field || $field.pStatus != 'disabled' || $field.type == 'Address'}checked="checked"{/if}
+                                {if $field.type === 'Email'}disabled="disabled"{/if}{if $field.type == 'Address'} disabled="disabled"{/if}>
+                            [s`Person`]
+                        </label>
+                        <br>
+                        {* Company *}
+                        <label>
+                            {if $field.type == 'Address'} <input type="hidden" name="type[]" value="company" />{/if}
+                            <input type="checkbox" name="type[]"
+                                value="company"
+                                {if $field && ($field.cStatus != 'disabled' || $field.type == 'Address')}checked="checked"{/if}{if $field.type == 'Address'} disabled="disabled"{/if}>
+                            [s`Company`]
+                        </label>
+                    </div>
+                    {if $field.type == 'Address'}
+                        <div class="value hint">
+                            [`“Address” is a complex field, which cannot be completely disabled; you can only edit its components listed below.`]
+                        </div>
+                    {/if}
+                </div>
+
+                {* Adress fields *}
+                {if !empty($field.id) && $field.type == 'Address' && !$field.disabled}
+                    <div class="field">
+                        <div class="name">[s`Address fields`]</div>
+                    </div>
+                    <div class="field">
+                        <table class="subfields-list zebra">
+                            <tbody class="ui-sortable">
+                                {foreach $cf->getParameter('fields') as $_sf}
+                                    {wa_action app="webasyst" module="settings" action="FieldFormRow" fid=$_sf->getId() f=$_sf parent='address' css_class='field-row editor-off'}
+                                {/foreach}
+                                {wa_action app="webasyst" module="settings" action="FieldFormRow" fid='%FID%' f=null parent='address' css_class='hidden field-row template editor-on just-added'}
+                                <tr class="white add-field">
+                                    <td class="min-width">&nbsp;</td>
+                                    <td class="min-width"><a class="js-add-subfield" href="#"><i class="icon16 add"></i></a>
+                                    </td>
+                                    <td>
+                                        <a href="javascript:void(0)" class="inline-link js-add-subfield"><b><i>[s`Add field`]</i></b></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {/if}
+
+                <em class="errormsg s-common-errors"></em>
+            </div>
+            <footer class="s-dialog-footer">
+                <div class="s-actions">
+                    <div class="s-layout">
+                        <div class="s-column">
+                            <input class="button green s-button js-save" type="submit" value="[s`Save`]">
+                            <span style="margin: 0 4px;">[s`or`]</span>
+                            <a class="js-close-dialog" href="javascript:void(0);">[s`cancel`]</a>
+                        </div>
+                        {if $field}
+                            <div class="c-column middle right">
+                                {if $field.editable}
+                                    {if $field.type !== 'Address'}
+                                        <a href="javascript:void(0);" class="red small float-right s-field-delete">[s`Delete field`]</a>
+                                    {/if}
+                                {elseif $field.disabled}
+                                    <a href="javascript:void(0);" class="red small float-right s-field-enable">[s`Enable field`]</a>
+                                {else}
+                                    {if $field.type !== 'Address'}
+                                        <a href="javascript:void(0);" class="red small float-right s-field-disable">[s`Disable field`]</a>
+                                    {/if}
+                                {/if}
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            </footer>
+        </form>
+
+        {capture assign="_remove_subitem_confirm"}
+            {strip}
+                <div class="s-dialog-wrapper s-confirm-dialog" id="s-confirm-dialog">
+                    <div class="s-dialog-background"></div>
+                    <div class="s-dialog-block">
+                        <header class="s-dialog-header">
+                            <h1>[s`Delete field`]</h1>
+                        </header>
+                        <div class="s-dialog-content js-content">
+                            [s`This will remove field and all its data from all existing contacts. Are you sure?`]
+                        </div>
+                        <footer class="s-dialog-footer">
+                            <div class="s-actions">
+                                <input class="button red s-button js-confirm-dialog js-confirm-button" type="button" value="[s`Delete`]">
+                                <span style="margin: 0 4px;">[`or`]</span>
+                                <a class="js-close-dialog js-cancel-dialog" href="javascript:void(0);">[s`cancel`]</a>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            {/strip}
+        {/capture}
+
+        <script>
+            $(function () {
+                new WASettingsFieldEdit({
+                    field: {$field|json_encode},
+                    '$wrapper': $('#{$_id}'),
+                    'remove_subitem_confirm': {$_remove_subitem_confirm|json_encode},
+                    'locales': {
+                        'field_is_required': {"[s`This field is required.`]"|json_encode}
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>

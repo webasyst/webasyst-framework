@@ -1,0 +1,42 @@
+    <div class="activity-filter-wrapper">
+        {$checked = ""}
+        {$is_not_full = false}
+        {$check_count = 0}
+        {capture assign="select_options"}
+            {foreach $apps as $app_id => $app}
+                {if in_array($app_id, $user_filters) || !$user_filters}
+                    {$checked = "checked"}
+                    {$check_count = $check_count + 1}
+                {else}
+                    {$checked = ""}
+                    {$is_not_full = true}
+                {/if}
+                <li>
+                    <span class="chip">
+                        <label for="field_{$app_id}">
+                            <span class="wa-checkbox">
+                                <input {$checked} type="checkbox" id="field_{$app_id}" name="app_id[]" value="{$app_id}">
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                            {$app.name}
+                        </label>
+                    </span>
+                </li>
+            {/foreach}
+        {/capture}
+        <i class="fas fa-spinner fa-pulse loading" title="[`Loading`]" style="display: none"></i>
+        <a href="javascript:void(0);" class="gray activity-filter-toggler js-activity-filter-toggler"><i class="fas fa-check-square"></i>
+            <span id="activity-select-text" data-full-text="[`All apps`]" data-not-full-text="[`Selected apps`]">
+                    {if $is_not_full}[`Selected apps`] ({$check_count}){else}[`All apps`]{/if}
+                </span>
+        </a>
+    </div>
+    <form action="" id="activity-filter" style="display: none">
+        <ul class="chips">
+            {$select_options|strip}
+        </ul>
+    </form>

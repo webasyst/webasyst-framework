@@ -2,6 +2,8 @@
 
 class webasystBackendHeaderAction extends waViewAction
 {
+    use webasystHeaderTrait;
+
     public function execute()
     {
         if (wa()->getEnv() == 'frontend') {
@@ -51,8 +53,10 @@ class webasystBackendHeaderAction extends waViewAction
             }
         }
 
+        $app_info = wa()->getAppInfo();
+
         $push_params = array(
-            'current_app_info' => wa()->getAppInfo(),
+            'current_app_info' => $app_info,
         );
         $backend_push = wa()->event(array('webasyst', 'backend_push'), $push_params);
         $include_wa_push = false;
@@ -68,28 +72,34 @@ class webasystBackendHeaderAction extends waViewAction
 
         $app_settings_model = new waAppSettingsModel();
 
-        $this->view->assign(array(
+        $request_uri = waRequest::server('REQUEST_URI');
+        $backend_url = wa()->getConfig()->getBackendUrl(true);
+
+        $this->view->assign([
             'root_url'        => wa()->getRootUrl(),
-            'backend_url'     => wa()->getConfig()->getBackendUrl(true),
+            'backend_url'     => $backend_url,
+            'request_uri'     => $request_uri,
             'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
             'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8'),
+            'logo'            => (new webasystLogoSettings())->get(),
             'company_url'     => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
             'date'            => $date,
             'user'            => $user,
             'header_items'    => $this->getHeaderItems(),
-            'reuqest_uri'     => waRequest::server('REQUEST_URI'),
             'current_app'     => $current_app,
             'counts'          => $counts,
             'wa_version'      => wa()->getVersion('webasyst'),
             'announcements'   => $announcements,
+            'notifications'   => $this->getAnnouncements(),
             'header_top'      => $header_top,
             'header_middle'   => $header_middle,
             'header_bottom'   => $header_bottom,
             'include_wa_push' => $include_wa_push,
             'webasyst_id_auth_banner' => $this->getWebasystIDAuthBanner(),
             'show_connection_banner' => $this->showConnectionBanner(),
-            'current_domain' => $this->getCurrentDomain()
-        ));
+            'current_domain' => $this->getCurrentDomain(),
+            'app_info'        => $app_info,
+        ]);
 
         $this->setTemplate(wa()->getAppPath('templates/actions/backend/BackendHeader.html', 'webasyst'));
     }
@@ -100,89 +110,6 @@ class webasystBackendHeaderAction extends waViewAction
         return waIdna::dec($domain);
     }
 
-    /**
-     * @return array
-     * @throws waDbException
-     * @throws waException
-     */
-    protected function getHeaderItems()
-    {
-        $user = wa()->getUser();
-        $apps = wa()->getApps(true);
-        $right_model = new waContactRightsModel();
-
-        $is_admin = $user->isAdmin();
-        if (!$is_admin) {
-            $rights = $right_model->getApps(-$user->getId(), 'backend', true, false);
-            foreach ($apps as $app_id => $app_info) {
-                if (!isset($rights[$app_id])) {
-                    unset($apps[$app_id]);
-                }
-            }
-        }
-
-        $header_items = array();
-        foreach ($apps as $app_id => $app_info) {
-            if ($app_id !== 'webasyst' && !isset($app_info['header_items'])) {
-                $header_items[$app_id] = $app_info;
-            }
-            if (isset($app_info['header_items']) && is_array($app_info['header_items'])) {
-                foreach ($app_info['header_items'] as $item_id => $item_info) {
-                    // Add version
-                    if (empty($item_info['version']) && !empty($app_info['version'])) {
-                        $item_info['version'] = $app_info['version'];
-                    }
-
-                    // Check rights
-                    if (!$is_admin && !empty($item_info['rights'])) {
-                        $access_is_allowed = true;
-                        $app_rights = $right_model->get($user->getId(),$app_id);
-                        $needed_rights = $item_info['rights'];
-                        if (is_array($needed_rights)) {
-                            foreach ($needed_rights as $_r) {
-                                if ((ifempty($app_rights[$_r], 0) < 1)) {
-                                    $access_is_allowed = false;
-                                    break;
-                                }
-                            }
-                        } else {
-                            $access_is_allowed = (ifempty($app_rights[$needed_rights], 0) >= 1);
-                        }
-
-                        if (!$access_is_allowed) {
-                            continue;
-                        }
-                    }
-
-                    $item_info['app_id'] = $app_id;
-                    $item_id = ($app_id === $item_id) ? $item_id : $app_id.'.'.$item_id;
-                    $header_items[$item_id] = $item_info;
-                }
-            }
-        }
-
-        $sort = explode(',', $user->getSettings('', 'apps'));
-
-        // By default, the Settings app, if available
-        // for current user, is in fifth place in apps list
-        if (!in_array('webasyst.settings', $sort) && array_key_exists('webasyst.settings', $header_items)) {
-            array_splice($sort, 4, 0, array('webasyst.settings'));
-        }
-
-        $sorted_header_items = array();
-        foreach ($sort as $item_id) {
-            if (isset($header_items[$item_id])) {
-                $sorted_header_items[$item_id] = $header_items[$item_id];
-                unset($header_items[$item_id]);
-            }
-        }
-
-        foreach ($header_items as $item_id => $item) {
-            $sorted_header_items[$item_id] = $item;
-        }
-
-        return $sorted_header_items;
-    }
 
     protected function getWebasystIDSettingsUrl()
     {

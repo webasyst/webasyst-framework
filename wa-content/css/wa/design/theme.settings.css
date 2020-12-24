@@ -238,6 +238,7 @@
 }
 #wa-theme-import-settings-dialog .wa-archive-name {
   font-weight: bold;
+  word-break: break-word;
 }
 #wa-theme-import-settings-dialog .wa-theme-settings-import-dialog-error {
   color: #f00;

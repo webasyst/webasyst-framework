@@ -1,0 +1,18 @@
+<form class="wa-form" method="post" action="javascript:void(0);">
+    <h1 class="header-block">[s`Settings`]</h1>
+
+    {$wa->csrf()}
+    <div class="fields form width100px">
+        {foreach $settings_controls as $name => $control}
+            <div class="field">
+                {$control}
+            </div>
+        {/foreach}
+    </div>
+
+    <div class="buttons-block">
+        <input type="submit" class="button green" value="[s`Save`]">
+        [s`or`]
+        <a class="hide-settings-link" href="javascript:void(0);">[s`cancel`]</a>
+    </div>
+</form>

@@ -1,0 +1,202 @@
+{* Header item *}
+{strip}
+{function name="_renderHeaderItem" _id="" _info=[]}
+    {* Build item url *}
+
+    {* pseudo-app *}
+    {if !empty($_info.app_id) && !empty($_info.link)}
+        {$_item_url = "`$backend_url``$_info.app_id`/`$_info.link`/"}
+    {* real app *}
+    {else}
+        {$_item_url = "`$backend_url``$_id`/"}
+    {/if}
+
+    {* Version *}
+    {if !empty($_info.version)}
+        {$_version = "?v=`$_info.version|escape`"}
+    {else}
+        {$_version = null}
+    {/if}
+
+    <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($request_uri, $_item_url) !== false} class="selected"{/if}>
+        {* Build app icon count *}
+        {$_count = null}
+        {if $counts && isset($counts[$_id])}
+            {if is_array($counts[$_id])}
+                {$_item_url = $counts[$_id]['url']}
+                {$_count = $counts[$_id]['count']}
+            {else}
+                {$_count = $counts[$_id]}
+            {/if}
+        {/if}
+        <a href="{$_item_url}"{if !$wa->isMobile()} class="tooltip bottom"{/if} data-title="{$_info.name|ifempty}">
+            {if isset($_info.img)}
+                <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
+            {/if}
+            <span class="wa-app-name">{$_info.name|ifempty}</span>
+            {if $_count}
+                <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
+            {/if}
+        </a>
+    </li>
+{/function}
+{* @event backend_header *}
+{* $return[%app_id%]['header_top'] *}
+{if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
+{if !empty($include_wa_push)}
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+{/if}
+
+<div id="wa-header">
+    <div id="wa-header-logo-area">
+        {* Account name *}
+        {include file="./BackendLogo.inc.html" backend_url=$backend_url company_name=$company_name position="header" inline}
+        <p class="wa-header-sitename flexbox middle space-16">
+            {* todo Remove Globals - Only for Alfa Version! *}
+            {if $request_uri == $backend_url || $request_uri == "`$backend_url`/"}
+                {$wa->globals('wa_dashboard_header_title', $wa->accountName())}
+            {/if}
+            <span class="h2 wa-sitename">{$wa->accountName()|truncate:42}</span>
+            {if $wa->globals('wa_dashboard_header_title')}<span class="h2 wa-pagename">{$wa->globals('wa_dashboard_header_title')|truncate:42}</span>{/if}
+        </p>
+    </div>
+    <div id="wa-header-content-area">
+        {* App list *}
+        <div id="wa-applist" class="js-applist js-applist-header{if is_array($counts)} counts-cached{/if}">
+            {strip}
+                <ul>
+                    {foreach $header_items as $_id => $_info}
+                        {_renderHeaderItem _id=$_id _info=$_info}
+                    {/foreach}
+                </ul>
+            {/strip}
+        </div>
+    </div>
+    <div id="wa-header-user-area" class="flexbox space-16">
+        {* Current user *}
+        {$dashboards = strpos($request_uri, "/webasyst/dashboard/")}
+        {$dashboard_url = strpos($request_uri, "/webasyst/dashboard/dashboard/")}
+        {$is_dashboards = false}
+        {$is_dashboard = false}
+        {if $dashboards !== false}
+            {$is_dashboards = true}
+        {/if}
+        {if $dashboard_url !== false}
+            {$is_dashboard = true}
+        {/if}
+
+        {strip}
+
+            {* user quick action tools *}
+
+            {*
+                TEASING THE WAY FOR APPS TO ADD A SYSTEM-WIDE MENU ELEMENTS
+                <div class="wa-header-custom-element">
+                    <input id="close-dashboard-editable-mode" class="button yellow smaller" type="button" value="[s`Upgrade`]">
+                </div>
+            *}
+
+            {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboards}
+                <a class="wa-toggle-panel-lock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-down"></i></a>
+                <a class="wa-toggle-panel-unlock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-up"></i></a>
+            {else}
+                <a class="wa-toggle-apps js-toggle-apps large" href="#" title="[s`All apps`]"><i class="fas fa-th"></i></a>
+            {/if}
+
+            {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard}
+                <!-- <a href="#" class="button nobutton gray"><i class="fas fa-sliders-h"></i> [`Customize`]</a> -->
+                <div class="dashboard-customize">
+                    <a href="javascript:void(0);"
+                       class="button nobutton gray js-dashboard-edit"
+                       data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
+                       id="show-dashboard-editable-mode_">
+                        <i class="fas fa-sliders-h"></i> <span>[s`Edit Widgets`]</span>
+                    </a>
+                    <a href="javascript:void(0);"
+                       class="button nobutton gray js-dashboard-edit-close"
+                       style="display: none;">
+                        <i class="fas fa-check"></i> <span>[s`Done`]</span>
+                    </a>
+                </div>
+            {/if}
+
+        <div class="dropdown" id="wa-notifications-dropdown">
+            <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
+            {include file="../dashboard/DashboardAnnouncement.html" notifications=$notifications inline}
+        </div>
+
+            {*
+                TEASING WEBASYST GLOBAL SEARCH
+                <form class="wa-header-search-form input-with-inner-icon right collapsed">
+                    <input type="search" inputmode="search" placeholder="[`Search`]" class="short">
+                    <button class="icon"><i class="fas fa-search"></i></button>
+                </form>
+            *}
+
+            {* Current user *}
+            <div class="dropdown" id="wa-userprofile" data-user-id="{$user['id']}">
+                <a href="{$backend_url}?module=profile" title="[s`My profile`]" class="dropdown-toggle without-arrow">
+                    <img src="{$user->getPhoto(96)}" alt="" class="wa-userpic" />
+                </a>
+                <div class="dropdown-body right">
+                    <ul class="menu">
+                        <li>
+                            <a href="{$backend_url}?module=profile">
+                                <i class="fas fa-user"></i>
+                                <span>[s`My profile`]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{$backend_url}?action=logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>[s`Logout`]</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {/strip}
+    </div>
+</div>
+<script id="wa-header-js"
+        type="text/javascript"
+        src="{$root_url}wa-content/js/jquery-wa/wa.header.js?{$wa_version}"
+        {if !$user['timezone']} data-determine-timezone="1"{/if}>
+</script>
+    <script>
+        $(function () {
+            new WaHeader();
+
+            /* Notification Actions */
+            const $notifications_bell = $('.js-notifications-bell');
+            $notifications_bell.on('click', function (e){
+                e.preventDefault();
+                $(this).next('.js-notification-wrapper').toggle();
+            });
+            /* Active All Notifications On Main Dashboard */
+            {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)}
+                $notifications_bell.trigger('click');
+            {/if}
+
+            /* User Profile Dropdown*/
+            const userprofile_options = { };
+            {if $wa->isMobile()}
+                userprofile_options.hover = false;
+            {/if}
+            $("#wa-userprofile").waDropdown(userprofile_options);
+        });
+    </script>
+
+    {$_request_uri = $request_uri|rtrim:'/'}
+    {$_bashend_url = $backend_url|rtrim:'/'}
+
+    {if $_request_uri == $_bashend_url || $dashboards}
+        <script src="{$wa_url}wa-content/js/jquery-wa/dashboard.js?v={$wa->version()}"></script>
+    {/if}
+{* @event backend_header *}
+{* $return[%app_id%] *}
+{if !empty($header_middle)}{foreach $header_middle as $_}{$_}{/foreach}{/if}
+{* @event backend_header *}
+{* $return[%app_id%]['header_bottom'] *}
+{if !empty($header_bottom)}{foreach $header_bottom as $_}{$_}{/foreach}{/if}
+{/strip}

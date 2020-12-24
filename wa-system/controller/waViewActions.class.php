@@ -14,9 +14,17 @@
  */
 abstract class waViewActions extends waController
 {
+    use waActionTemplatePathBuilder;
+
     protected $action;
     protected $template;
-    protected $template_folder = 'templates/actions/';
+
+    /**
+     * Is relative template path ($this->template), so we can use auto mechanism of choosing template folder (waActionTemplatePathBuilder)
+     * Relative means relative from template dir of current application (plugin)
+     * @var bool
+     */
+    protected $is_relative = false;
 
     /**
      * @var waLayout
@@ -116,7 +124,10 @@ abstract class waViewActions extends waController
             preg_match("/Plugin([A-Z][^A-Z]+)/", get_class($this), $match);
         }
 
-        $full_template = $pluginRoot.$this->template_folder.strtolower($match[1])."/".$match[1].$template.$this->view->getPostfix();
+        $app_id = $this->getAppId();
+
+        $template_path = strtolower($match[1])."/".$match[1].$template;
+        $full_template = $this->buildTemplatePath($this->view, $app_id, $template_path, $pluginRoot);
         if (!$pluginRoot || file_exists(wa()->getAppPath().'/'.$full_template)) {
             return $full_template;
         }
@@ -124,7 +135,8 @@ abstract class waViewActions extends waController
         // There used to be a bug that made this class look for plugin templates in the wrong place.
         // The bug was fixed, and the path calculated above should go for all modern uses.
         // But for compatibility with older plugins we still check for a template in old place.
-        $full_template2 = $pluginRoot.$this->template_folder.strtolower($old_style_match[1])."/".$old_style_match[1].$template.$this->view->getPostfix();
+        $template_path = strtolower($old_style_match[1])."/".$old_style_match[1].$template;
+        $full_template2 = $this->buildTemplatePath($this->view, $app_id, $template_path, $pluginRoot);
         if (file_exists(wa()->getAppPath().'/'.$full_template2)) {
             return $full_template2;
         }
@@ -132,9 +144,20 @@ abstract class waViewActions extends waController
         return $full_template;
     }
 
-    public function setTemplate($template)
+    /**
+     * Set custom template
+     *
+     * @param string $template
+     * Template path
+     *
+     * @param bool $is_relative
+     * Is relative from template dir of current application (plugin)
+     */
+    public function setTemplate($template, $is_relative = false)
     {
         $this->template = $template;
+        // TODO: not implement case when we set relative template path, see how implemented in waViewAction
+        $this->is_relative = $is_relative;
     }
 
     protected function setThemeTemplate($template)
@@ -157,7 +180,6 @@ abstract class waViewActions extends waController
         return $this->theme;
     }
 
-
     public function display()
     {
         if ($this->layout && $this->layout instanceof waLayout) {
@@ -167,6 +189,22 @@ abstract class waViewActions extends waController
             waSystem::getInstance()->getResponse()->sendHeaders();
             $this->view->display($this->getTemplate());
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getTemplateDir()
+    {
+        return 'templates/actions/';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getLegacyTemplateDir()
+    {
+        return 'templates/actions-legacy/';
     }
 }
 

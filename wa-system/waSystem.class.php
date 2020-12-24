@@ -701,6 +701,39 @@ class waSystem
     }
 
     /**
+     * Which UI version supported current app
+     * @param string|null|false $app_id - app for which need to check webasyst UI version, default is current app (null)
+     *                                  If pass FALSE will returns version from cookie, ignoring app ui option in app config
+     * @return string '1.3' or '2.0'
+     * @throws waException
+     */
+    public function whichUI($app_id = null)
+    {
+        $force_version = waRequest::cookie('force_set_wa_backend_ui_version');
+        $force_version = $force_version === '2.0' ? '2.0' : '1.3';
+
+        // special case if pass FALSE - return current value of version saved in cookie
+        if ($app_id === false) {
+            return $force_version;
+        }
+
+        if (!$app_id) {
+            $app_id = $this->getApp();
+        }
+        $info = wa()->getAppInfo($app_id);
+
+        $app_ui_version = ifset($info, 'ui', '1.3,2.0');
+
+        // if app supports 2 version of webasyst UI return current value of version saved in cookie
+        if ($app_ui_version === '1.3,2.0') {
+            return $force_version;
+        }
+
+        // otherwise app supports only specified app version
+        return $app_ui_version;
+    }
+
+    /**
      * Returns path to app's source files directory.
      *
      * @param string|null $path Optional path to a subdirectory inside app's source files directory.
@@ -924,6 +957,10 @@ class waSystem
                             }
                             unset($params);
                         }
+
+                        // UI version info
+                        $this->normalizeUIVersionOption($app_info);
+
                         self::$apps[$app] = array(
                                 'id' => $app,
                             ) + $app_info;
@@ -944,6 +981,42 @@ class waSystem
             unset($apps['webasyst']);
             return $apps;
         }
+    }
+
+    /**
+     * Normalize 'ui' option in app info array
+     * @param array &$app_info
+     * Variants:
+     *      '1.3' - app supports only '1.3' version of webasyst UI
+     *      '2.0' - app supports only '2.0' version of webasyst UI
+     *      '1.3,2.0' or '2.0,1.3' - app supports both versions of webasyst UI. Default variant
+     */
+    private function normalizeUIVersionOption(&$app_info)
+    {
+        $default_ui_variant = '1.3,2.0';
+
+        // typecast
+        if (!isset($app_info['ui']) || !is_string($app_info['ui'])) {
+            $app_info['ui'] = $default_ui_variant;
+        }
+
+        // parse to array and clean
+        $ui_support = array_map('trim', explode(',', $app_info['ui']));
+        $ui_support = array_filter($ui_support, function ($v) {
+            return $v !== '1.3' || $v !== '2.0';
+        });
+
+        // covert to nice and clean string
+        if ($ui_support) {
+            sort($ui_support, SORT_STRING);      // always 1.3,2.0 variant, to prevent double checking (double if) in application code
+            $ui_support = join(',', $ui_support);
+        } else {
+            $ui_support = $default_ui_variant;
+        }
+
+        // set back to info array
+        $app_info['ui'] = $ui_support;
+
     }
 
     /**

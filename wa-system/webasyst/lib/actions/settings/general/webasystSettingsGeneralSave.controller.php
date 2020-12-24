@@ -86,8 +86,30 @@ class webasystSettingsGeneralSaveController extends webasystSettingsJsonControll
         if ($config_changed) {
             waUtils::varExportToFile($config, $config_path);
         }
+
         if ($flush) {
             wa()->getConfig()->clearCache();
+        }
+
+        $this->saveLogoSettings();
+    }
+
+    protected function saveLogoSettings()
+    {
+        $settings = new webasystLogoSettings();
+
+        $logo = $this->getRequest()->post('logo');
+        $logo = is_array($logo) ? $logo : [];
+
+        $settings->set($logo);
+
+        $file = waRequest::file('logo_image');
+        if ($file && $file->uploaded()) {
+            $settings->setImage($file);
+        }
+
+        if (!$file->uploaded() && $this->getRequest()->post('logo_image_delete')) {
+            $settings->deleteImage();
         }
     }
 }

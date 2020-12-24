@@ -7,6 +7,17 @@ class webasystSettingsAction extends webasystSettingsViewAction
 {
     const STABLE_PHP_VERSION_FOR_FRAMEWORK = '5.6';
 
+    /**
+     * @var webasystLogoSettings
+     */
+    protected $logo_settings;
+
+    public function __construct($params = null)
+    {
+        parent::__construct($params);
+        $this->logo_settings = new webasystLogoSettings();
+    }
+
     public function execute()
     {
         $model = new waAppSettingsModel();
@@ -68,8 +79,11 @@ class webasystSettingsAction extends webasystSettingsViewAction
             'framework_version'    => wa()->getVersion('webasyst'),
             'php_version'          => $php_version,
             'is_good_php_version'  => $is_good_php_version,
+            'logo'                 => $this->logo_settings->get(),
+            'gradients'            => $this->logo_settings->getGradients(),
             'image_adapters_list'  => $image_adapter_list,
             'image_adapter'        => $image_adapter,
         ));
     }
+
 }

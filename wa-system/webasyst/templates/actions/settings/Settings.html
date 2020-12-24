@@ -1,49 +1,296 @@
 {$_title = "[s`General settings`] — {$wa->accountName(false)}"}
-<div class="s-general-settings-page blank block double-padded" id="s-general-settings-page">
-    <h1 class="s-page-header">[s`General settings`]</h1>
-    <div class="s-general-settings-fields-block">
-        <form action="?module=settingsGeneralSave">
-            <div class="field-group">
+<link href="{$wa_url}wa-content/js/pickr/themes/classic.min.css" rel="stylesheet" type="text/css">
+<script src="{$wa_url}wa-content/js/pickr/pickr.min.js" type="text/javascript"></script>
+<div class="s-general-settings-page" id="s-general-settings-page">
+    <h1 class="s-page-title">[s`General settings`]</h1>
+        <form action="?module=settingsGeneralSave" enctype="multipart/form-data" class="fields">
+            <div class="fields-group">
                 {* COMPANY NAME *}
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-input">
                         <label for="config-name">[s`Company name`]</label>
                     </div>
                     <div class="value">
-                        <input type="text" class="large" name="name" value="{$settings.name|escape}" id="config-name" autocomplete="off">
-                        <br>
-                        <span class="hint">[s`May be displayed on websites and in email notifications.`]</span>
-                        <br>
-                        <span class="hint s-error js-error-place"></span>
+                        <input type="text" class="bold large" name="name" value="{$settings.name|escape}" id="config-name" autocomplete="off">
+                        <p class="hint">[s`May be displayed on websites and in email notifications.`]</p>
+                        <p class="hint s-error js-error-place"></p>
                     </div>
                 </div>
 
                 {* WEBASYST ADDRESS *}
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-input">
                         <label for="config-url">[s`Website address`]</label>
                     </div>
                     <div class="value">
-                        <input type="text" name="url" value="{$settings.url|escape}" id="config-url" autocomplete="off">
-                        <br>
-                        <span class="hint">[s`May be used on websites and in email notifications.`]</span>
-                        <br>
-                        <span class="hint s-error js-error-place"></span>
+                        <input type="text" name="url" value="{$settings.url|escape}" id="config-url" autocomplete="off" class="long">
+                        <p class="hint">[s`May be used on websites and in email notifications.`]</p>
+                        <p class="hint s-error js-error-place"></p>
+                    </div>
+                </div>
+
+
+                {* COMPANY LOGO *}
+                <div class="field">
+                    <div class="name for-input">
+                        <label for="config-logo">[`Company logo`]</label>
+                    </div>
+                    <div class="value">
+                        <ul>
+                            <li>
+                                <div class="toggle small js-logo-type-toggle" id="logo-type-toggle">
+                                    {$logo_mode = $logo.mode|default:'gradient'|escape}
+                                    <span{if $logo_mode == 'gradient'} class="selected"{/if} data-logo-type="gradient">[`Text`]</span>
+                                    <span{if $logo_mode == 'image'} class="selected"{/if} data-logo-type="image">[`Image`]</span>
+                                    <input type="hidden" name="logo[mode]">
+                                </div>
+                            </li>
+
+                            <li class="config-text-logo js-config-text-logo flexbox space-16" {if $logo_mode == 'image'}  style="display: none"{/if}>
+                                {$two_lines = $logo.two_lines}
+                                {$text_value = $logo.text.value|trim|escape}
+                                <div class="logo-area js-logo-area {if $two_lines} two-lines{/if}"
+                                     data-background="gradient1"
+                                     style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:'#000000'}">
+                                    {if $text_value}
+                                        {if $two_lines}
+                                            {$logo.text.formatted_value|trim|escape|nl2br}
+                                        {else}
+                                            {$text_value}
+                                        {/if}
+                                    {else}
+                                        {$settings.name|escape|truncate:2:''}
+                                    {/if}
+                                </div>
+                                <div class="logo-input flexbox vertical">
+                                    <input type="text" class="shorter bold js-logo-text"
+                                           maxlength="4"{if !$text_value} placeholder="{$settings.name|escape|truncate:2:''}"{/if}
+                                           name="logo[text][value]" value="{$logo.text.value|escape}"
+                                           id="config-logo-text" autocomplete="off">
+                                    <span class="hint">[`1-4 symbols`]</span>
+                                    <label>
+                                    <span class="switch middle smaller js-switch-two-line" id="two_line_text">
+                                        <input type="hidden" name="logo[two_lines]" value="0">
+                                        <input type="checkbox" id="two-line-text" name="logo[two_lines]"
+                                               value="1"{if $logo.two_lines} checked="checked"{/if}>
+                                    </span>
+                                        <span class="small">[`Larger font, two lines`]</span>
+                                    </label>
+                                </div>
+                                <div class="color-picker">
+                                    <button type="button" class="color-picker-button js-color-picker-button" data-background="gradient1" style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:'#000000'}">
+                                        <i class="fas fa-eye-dropper"></i>
+                                    </button>
+                                </div>
+                                <div class="settings-logo js-settings-logo" style="display: none">
+                                    <div class="fields vertical">
+                                        <div class="fields-group">
+                                            {*<h5 class="heading">[`Logo background`]</h5>
+                                            <div class="field">
+                                                <div class="value">
+                                                    <div class="toggle js-color-type-toggle" id="color-type-toggle">
+                                                        <span class="selected">[s`Gradient`]</span>
+                                                        <span>[s`Solid`]</span>
+                                                    </div>
+                                                </div>
+                                            </div>*}
+                                        </div>
+                                        <div class="fields-group">
+                                            <div class="field">
+                                                <div class="value">
+                                                    <div class="color-items">
+                                                        {$selected = 1}
+                                                        {$gradients = [
+                                                            ['start' => '#FF248B', 'end' => '#FF5900'],
+                                                            ['start' => '#FFA629', 'end' => '#FF743D'],
+                                                            ['start' => '#E6CF00', 'end' => '#F5A300'],
+                                                            ['start' => '#E0E000', 'end' => '#99CC00'],
+                                                            ['start' => '#28F500', 'end' => '#88CC00'],
+                                                            ['start' => '#42F642', 'end' => '#00D66B'],
+                                                            ['start' => '#00FA7D', 'end' => '#00CCAA'],
+                                                            ['start' => '#00F0F0', 'end' => '#00BBFA'],
+                                                            ['start' => '#57C7FF', 'end' => '#668CFF'],
+                                                            ['start' => '#B18AFF', 'end' => '#4C6AFF'],
+                                                            ['start' => '#E252FF', 'end' => '#A05CFF'],
+                                                            ['start' => '#F370FF', 'end' => '#F23DA7'],
+                                                            ['start' => '#C4C4C4', 'end' => '#808080'],
+                                                            ['start' => '#FF0F80', 'end' => '#CC4700'],
+                                                            ['start' => '#F58F00', 'end' => '#FA4700'],
+                                                            ['start' => '#DBC500', 'end' => '#C78500'],
+                                                            ['start' => '#CCCC00', 'end' => '#7EA800'],
+                                                            ['start' => '#24DB00', 'end' => '#669900'],
+                                                            ['start' => '#0BDF0B', 'end' => '#00994C'],
+                                                            ['start' => '#00EB75', 'end' => '#00A88C'],
+                                                            ['start' => '#00D6D6', 'end' => '#0091C2'],
+                                                            ['start' => '#05ACFF', 'end' => '#1F57FF'],
+                                                            ['start' => '#8B52FF', 'end' => '#1E42F5'],
+                                                            ['start' => '#D91AFF', 'end' => '#6A00FF'],
+                                                            ['start' => '#EE2EFF', 'end' => '#BF0D75'],
+                                                            ['start' => '#999999', 'end' => '#545454'],
+                                                            ['start' => '#DB0067', 'end' => '#993500'],
+                                                            ['start' => '#DB8000', 'end' => '#C73800'],
+                                                            ['start' => '#A89700', 'end' => '#8A5C00'],
+                                                            ['start' => '#A3A300', 'end' => '#547000'],
+                                                            ['start' => '#1FBD00', 'end' => '#4E7500'],
+                                                            ['start' => '#09B909', 'end' => '#00753B'],
+                                                            ['start' => '#00B359', 'end' => '#006B59'],
+                                                            ['start' => '#00ADAD', 'end' => '#006B8F'],
+                                                            ['start' => '#008BD1', 'end' => '#0029A3'],
+                                                            ['start' => '#793EEF', 'end' => '#0724B0'],
+                                                            ['start' => '#A600C7', 'end' => '#4A00B3'],
+                                                            ['start' => '#B600C7', 'end' => '#690740'],
+                                                            ['start' => '#757575', 'end' => '#333333'],
+                                                            ['start' => '#A3004D', 'end' => '#5C2000'],
+                                                            ['start' => '#995900', 'end' => '#8A2700'],
+                                                            ['start' => '#706500', 'end' => '#473000'],
+                                                            ['start' => '#707000', 'end' => '#2E3D00'],
+                                                            ['start' => '#147A00', 'end' => '#334D00'],
+                                                            ['start' => '#067E06', 'end' => '#004D26'],
+                                                            ['start' => '#007A3D', 'end' => '#003D33'],
+                                                            ['start' => '#006080', 'end' => '#003838'],
+                                                            ['start' => '#00527A', 'end' => '#001452'],
+                                                            ['start' => '#4000C2', 'end' => '#000E52'],
+                                                            ['start' => '#73008A', 'end' => '#280061'],
+                                                            ['start' => '#670070', 'end' => '#30031D'],
+                                                            ['start' => '#5E5E5E', 'end' => '#171717'],
+                                                            ['start' => '#520026', 'end' => '#1A0900'],
+                                                            ['start' => '#523000', 'end' => '#1F0900'],
+                                                            ['start' => '#474000', 'end' => '#140E00'],
+                                                            ['start' => '#474700', 'end' => '#0F1400'],
+                                                            ['start' => '#0C4700', 'end' => '#0E1400'],
+                                                            ['start' => '#044904', 'end' => '#00140A'],
+                                                            ['start' => '#004221', 'end' => '#001411'],
+                                                            ['start' => '#00394D', 'end' => '#000F0F'],
+                                                            ['start' => '#003652', 'end' => '#00061A'],
+                                                            ['start' => '#23006B', 'end' => '#000624'],
+                                                            ['start' => '#440052', 'end' => '#110029'],
+                                                            ['start' => '#410047', 'end' => '#18020F'],
+                                                            ['start' => '#383838', 'end' => '#0F0F0F']
+                                                        ]}
+                                                        {foreach $gradients as $grad}
+                                                            {if $grad.start == $logo.gradient.from && $grad.end == $logo.gradient.to}
+                                                                {$selected = $grad@iteration}
+                                                            {/if}
+                                                        {/foreach}
+                                                        {for $gradient = 1 to count($gradients)}
+                                                            <button type="button"
+                                                                    class="color-picker-button gradient{$gradient} js-switch-color"
+                                                                    data-gradient="{$gradient}"
+                                                                    data-gradient-start="{$gradients[$gradient-1].start}"
+                                                                    data-gradient-end="{$gradients[$gradient-1].end}">
+                                                                {if $selected == $gradient}
+                                                                    <i class="fas fa-check"></i>
+                                                                {else}
+                                                                    <i>&nbsp;</i>
+                                                                {/if}
+                                                            </button>
+                                                        {/for}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="fields-group">
+                                            <div class="field">
+                                                <div class="name">
+                                                    <a href="#" class="js-custom-color-toggle">[`Custom colors`] <i class="fas fa-caret-down"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="field custom-colors js-custom-colors" style="display: none">
+                                                <div class="value">
+                                                    <ul>
+                                                        <li>
+                                                            <div class="field">
+                                                                <div class="name">[`Color A`]</div>
+                                                                <div class="value">
+                                                                    <input type="text"
+                                                                           class="shorter js-first-color"
+                                                                           name="logo[gradient][from]"
+                                                                           value="{$logo.gradient.from|escape|default:'#FF0078'}">
+                                                                    <span role="button" class="pickr-color-picker"></span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="field">
+                                                                <div class="name">[`Color B`]</div>
+                                                                <div class="value">
+                                                                    <input type="text"
+                                                                           class="shorter js-second-color"
+                                                                           name="logo[gradient][to]"
+                                                                           value="{$logo.gradient.to|escape|default:'#FF5900'}">
+                                                                    <span role="button" class="pickr-color-picker"></span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="field">
+                                                                <div class="name">[`Angle (&deg;)`]</div>
+                                                                <div class="value">
+                                                                    <input type="number"
+                                                                           class="shorter"
+                                                                           name="logo[gradient][angle]"
+                                                                           value="{$logo.gradient.angle|escape|default:'90'}">
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <div class="field">
+                                                                <div class="name">[`Text color`]</div>
+                                                                <div class="value">
+                                                                    <input type="text"
+                                                                           class="shorter js-text-color"
+                                                                           name="logo[text][color]"
+                                                                           value="{$logo.text.color|escape|default:'#000000'}">
+                                                                    <span role="button" class="pickr-color-picker"></span>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="config-image-logo flexbox space-16 js-config-image-logo"{if $logo_mode == 'gradient'}  style="display: none"{/if}>
+                                <div class="logo-area js-logo-area">
+                                    {if !empty($logo.image.thumbs['128x128'])}
+                                        <img src="{$logo.image.thumbs['128x128'].url}" style="max-height: 66px">
+                                    {/if}
+                                </div>
+                                <div class="logo-input flexbox vertical space-8 file-upload">
+                                    <div class="upload">
+                                        <label class="link">
+                                            <i class="fas fa-image"></i>
+                                            <span>[`Upload new image`]</span>
+                                            <input type="file" name="logo_image" autocomplete="off">
+                                        </label>
+                                    </div>
+                                    {if !empty($logo.image.thumbs)}
+                                    <a href="#" class="image-logo-delete js-image-logo-delete"><i class="fas fa-trash-alt"></i> [`Delete`]</a>
+                                    {/if}
+                                    <input type="hidden" name="logo_image_delete" class="js-image-logo-delete-input">
+                                </div>
+                            </li>
+                        </ul>
+                        <p class="hint s-error js-error-place"></p>
                     </div>
                 </div>
 
                 {* Webasyst locale *}
                 {if $locales}
                     <div class="field">
-                        <div class="name">
+                        <div class="name middle">
                             <label for="config-locale">[s`Locale of software available for installation`]</label>
                         </div>
-                        <div class="value no-shift">
+                        <div class="value">
+                            <div class="wa-select small">
                             <select name="locale" id="config-locale">
                                 {foreach $locales as $_locale => $_locale_name}
                                     <option value="{$_locale|escape}"{if $settings.locale == $_locale} selected="selected"{/if}>{$_locale_name|escape}</option>
                                 {/foreach}
                             </select>
+                        </div>
                         </div>
                     </div>
                 {/if}
@@ -51,38 +298,62 @@
                 {* Locale adapter *}
                 {if $locale_adapter !== false}
                     <div class="field">
-                        <div class="name">[s`Localization engine`]</div>
-                        <div class="value no-shift">
-                            <select name="locale_adapter">
+                        <div class="name for-input">
+                            <label for="config-locale-adapter">
+                                [s`Localization engine`]
+                            </label>
+                        </div>
+                        <div class="value">
+                            <div class="wa-select small">
+                            <select name="locale_adapter" id="config-locale-adapter">
                                 {foreach $locale_adapters_list as $_adapter => $_name}
                                     <option{if $_adapter == $locale_adapter} selected{/if} value="{$_adapter}">{$_name}</option>
                                 {/foreach}
                             </select>
                         </div>
+                        </div>
                     </div>
                 {/if}
+
+                {* Image adapter *}
+                <div class="field">
+                    <div class="name">[s`Image processing library`]</div>
+                    <div class="value no-shift">
+                        <div class="wa-select small">
+                        <select name="config[image_adapter]">
+                            {foreach $image_adapters_list as $_adapter => $_params}
+                                <option {if $_adapter == $image_adapter}selected{/if}
+                                        {if !$_params.enabled}disabled{/if} value="{$_adapter}">
+                                    {$_params.name|escape} {if !$_params.enabled}([`not installed`]){/if}
+                                </option>
+                            {/foreach}
+                        </select>
+                        </div>
+                    </div>
+                </div>
+
                 {* Clear cache *}
                 <div class="field">
-                    <div class="name">[s`Clear cache`]</div>
-                    <div class="value">
-                        <input type="button" class="js-clear-cache button gray" value="[s`Clear cache`]">
-                        <i class="icon16 loading js-cache-loading" style="display: none;"></i>
+                    <div class="name for-button">
+                        [s`Clear cache`]
                     </div>
-                    <div class="value hint">
-                        [`Cache is temporary data that help reduce extensive load on your server. Clear cache to update those data, if you have encountered a malfunction.`]
-                        <br><br>
+                    <div class="value">
+                        <button type="button" class="js-clear-cache button rounded outlined gray"><span>[s`Clear cache`]</span></button>
+                        <p class="hint">[`Cache is temporary data that help reduce extensive load on your server. Clear cache to update those data, if you have encountered a malfunction.`]</p>
                     </div>
                 </div>
 
                 {* Debug mode *}
                 <div class="field">
-                    <div class="name">[s`For developers`]</div>
+                    <div class="name for-checkbox">[s`For developers`]</div>
                     <div class="value">
-                        <input type="checkbox" name="config[debug]" value="1"{if isset($config.debug) && $config.debug} checked="checked"{/if} id="config-debug-checkbox">
-                        <label for="config-debug-checkbox">
-                            <span>[s`Developer mode`]</span>
-                            <div class="hint">[s`Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development.`]</div>
+                        <label>
+                            <span class="switch middle smaller shift-3" id="debug">
+                                <input type="checkbox" name="config[debug]" value="1"{if isset($config.debug) && $config.debug} checked="checked"{/if} id="config-debug-checkbox">
+                            </span>
+                            [s`Developer mode`]
                         </label>
+                        <p class="hint">[s`Debug mode disables caching and enables verbose error messages. Recommended for debugging and during software development.`]</p>
                     </div>
                 </div>
 
@@ -105,40 +376,27 @@
                     {/if}
                 </div>
 
-                {* Image adapter *}
-                <div class="field">
-                    <div class="name">[s`Image processing library`]</div>
-                    <div class="value no-shift">
-                        <select name="config[image_adapter]">
-                            {foreach $image_adapters_list as $_adapter => $_params}
-                                <option {if $_adapter == $image_adapter}selected{/if}
-                                        {if !$_params.enabled}disabled{/if} value="{$_adapter}">
-                                    {$_params.name|escape} {if !$_params.enabled}([`not installed`]){/if}
-                                </option>
-                            {/foreach}
-                        </select>
-                    </div>
-                </div>
             </div>
 
-            <div class="s-form-buttons">
-                <div class="s-footer-actions js-footer-actions">
-                    <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
-                    <span class="s-hidden">
-                        <span style="margin: 0 4px;">[s`or`]</span>
-                        <a href="{$wa_app_url}webasyst/settings" class="js-cancel">[s`cancel`]</a>
-                    </span>
-                    <i class="icon16 loading s-loading" style="display: none;"></i>
-                </div>
-            </div>
+            {include file="./SettingsSaveBtn.inc.html" inline}
+
         </form>
-    </div>
 </div>
+
 <script type="text/javascript">
     (function($) {
         new WASettingsGeneral({
-            $wrapper: $('#s-general-settings-page')
+            $wrapper: $('#s-general-settings-page'),
+            local: {
+                "save": "[`Save`]",
+                "cancel": "[`Cancel`]"
+            }
         });
-        $.wa.setTitle({$_title|json_encode});
+
+        $(".file-upload").waUpload();
+
+        // Switch Debug Mode
+        $("#debug").waSwitch();
     })(jQuery);
+    $.wa.title.set({$_title|json_encode});
 </script>

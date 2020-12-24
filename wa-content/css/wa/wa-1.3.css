@@ -102,7 +102,7 @@ a#wa-launchpad-add { float: right; margin-right: 12px; color: #888; text-decorat
 #wa-announcement a.wa-announcement-close { float: right; display: inline-block; margin-right: 12px; margin-top: 7px; margin-left: 13px; color: #aa6; text-decoration: none; font-size: 1.6em; }
 #wa-announcement .w-webasyst-id-banner { background: #e2ffdb; }
 #wa-announcement .w-webasyst-id-banner a.wa-announcement-close { color: #71aa64; }
-#wa-announcement .w-webasyst-id-banner .icon16.waid-green { background-image: url("../../img/wa-settings/ws-waid-green.svg"); background-size: 16px 16px; }
+#wa-announcement .w-webasyst-id-banner .icon16.waid-green { background-image: url("../../../img/wa-settings/ws-waid-green.svg"); background-size: 16px 16px; }
 #wa-account { width: 200px; }
 #wa-account { float: left; text-align: center; }
 #wa-account h3 { font-weight: normal; font-size: 16px; text-decoration: none; margin: 15px 0 5px; }

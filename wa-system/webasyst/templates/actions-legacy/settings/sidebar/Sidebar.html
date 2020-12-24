@@ -1,0 +1,11 @@
+<div class="s-sidebar-block" id="s-sidebar-block">
+    <ul class="menu-v with-icons">
+        {foreach $items as $_id => $item}
+            <li data-id="{$_id}">
+                <a href="{$item.url}">
+                    <i class="icon16 ws {$_id}"></i>{$item.name}
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+</div>

@@ -487,4 +487,50 @@ class waPlugin
     {
         return array($this->app_id, $this->id);
     }
+
+    /**
+     * Render template when root directory of templates is folder "template/" of current application plugin
+     * This method take into account which UI version of webasyst is currently set up for current application
+     * @param string $scope - scope (root folder without "-legacy" prefix) inside "templates/" of current application plugin
+     * @param string $template_path - relative template path inside scope
+     * @param array $assign - assign for templates
+     * @param string|null|true $cache_id
+     * If NULL - without caching
+     * If TRUE cache_id is full path of template
+     * Otherwise custom cache_id as specified in passed parameter
+     * @return mixed
+     * @throws waException
+     */
+    protected function renderTemplate($scope, $template_path, $assign = [], $cache_id = null)
+    {
+        $scope = trim(trim($scope), '/');
+        $full_templates_path = $this->buildFullTemplatePath($scope, $template_path);
+        if ($cache_id === true) {
+            $cache_id = $full_templates_path;
+        }
+        return wa()->getView()->renderTemplate($full_templates_path, $assign, false, $cache_id);
+    }
+
+    /**
+     * Build full template path with taking into account which UI
+     * @param string $scope
+     * @param string $template_path
+     * @return string
+     * @throws waException
+     */
+    protected function buildFullTemplatePath($scope, $template_path)
+    {
+        $app_id = $this->app_id;
+        $plugin_id = $this->id;
+
+        $scope = trim(trim($scope), '/');
+
+        if (wa()->whichUI($app_id) !== '2.0') {
+            $scope .= '-legacy';
+        }
+
+        $templates_dir = wa()->getAppPath('plugins/' . $plugin_id . '/templates/' . $scope, $app_id);
+        return $templates_dir . '/' . $template_path;
+    }
+
 }

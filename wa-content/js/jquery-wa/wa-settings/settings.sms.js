@@ -1,7 +1,7 @@
-var WASettingsSMS = ( function($) {
+class WASettingsSMS {
 
-    WASettingsSMS = function(options) {
-        var that = this;
+    constructor(options) {
+        let that = this;
 
         // DOM
         that.$wrapper = options["$wrapper"];
@@ -18,19 +18,20 @@ var WASettingsSMS = ( function($) {
 
         // INIT
         that.init();
-    };
+    }
 
-    WASettingsSMS.prototype.init = function() {
-        var that = this;
-        //
-        $('#s-sidebar-wrapper').find('ul li').removeClass('selected');
-        $('#s-sidebar-wrapper').find('[data-id="sms"]').addClass('selected');
+    init() {
+        let that = this;
+
+        let $sidebar = $('#js-sidebar-wrapper');
+        $sidebar.find('ul li').removeClass('selected');
+        $sidebar.find('[data-id="sms"]').addClass('selected');
 
         that.initSubmit();
-    };
+    }
 
-    WASettingsSMS.prototype.initSubmit = function () {
-        var that = this,
+    initSubmit() {
+        let that = this,
             $form = that.$form;
 
         $form.on('change', function () {
@@ -44,24 +45,31 @@ var WASettingsSMS = ( function($) {
             }
             that.is_locked = true;
             that.$button.prop('disabled', true);
-            that.$loading.removeClass('yes').addClass('loading').show();
 
-            var href = that.$form.attr('action'),
+            let $button_text = that.$button.text(),
+                $loader_icon = ' <i class="fas fa-spinner fa-spin"></i>',
+                $success_icon = ' <i class="fas fa-check-circle"></i>';
+
+            that.$button.empty().html($button_text + $loader_icon);
+
+
+            let href = that.$form.attr('action'),
                 data = that.$form.serialize();
 
             that.clearValidateErrors();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
-                    that.$button.removeClass('yellow').addClass('green');
-                    that.$loading.removeClass('loading').addClass('yes');
+
+                    that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
                     that.$footer_actions.removeClass('is-changed');
-                    setTimeout(function(){
-                        that.$loading.hide();
-                    },2000);
+
+                    setTimeout(function () {
+                        that.$button.empty().html($button_text);
+                    }, 2000);
                 } else {
                     that.showValidateErrors(res.errors);
-                    that.$loading.hide();
+                    that.$button.empty().html($button_text);
                 }
                 that.is_locked = false;
                 that.$button.prop('disabled', false);
@@ -70,41 +78,37 @@ var WASettingsSMS = ( function($) {
 
         that.$form.on('input', function () {
             that.$footer_actions.addClass('is-changed');
-            that.$button.removeClass('green').addClass('yellow');
+            that.$button.addClass('yellow').next().show();
         });
 
         // Reload on cancel
         that.$cancel.on('click', function (e) {
             e.preventDefault();
             $.wa.content.reload();
-            return;
         });
-    };
+    }
 
-    WASettingsSMS.prototype.showValidateErrors = function (errors) {
-        var that = this,
+    showValidateErrors(errors) {
+        let that = this,
             $form = that.$form;
         $.each(errors || {}, function (field_name, error) {
-            var $field = $form.find('[name="' + field_name + '"]').addClass('error');
+            let $field = $form.find('[name="' + field_name + '"]').addClass('error');
             $field.after('<div class="errormsg">' + $.wa.encodeHTML(error) + '</div>')
         });
-    };
+    }
 
-    WASettingsSMS.prototype.clearValidateErrors = function () {
-        var that = this,
+    clearValidateErrors() {
+        let that = this,
             $form = that.$form;
         $form.find('.error').removeClass('error');
         $form.find('.errormsg').remove();
-    };
+    }
+}
 
-    return WASettingsSMS;
+class WASettingsSMSTemplate {
 
-})(jQuery);
-
-var WASettingsSMSTemplate = ( function($) {
-
-    WASettingsSMSTemplate = function(options) {
-        var that = this;
+    constructor(options) {
+        let that = this;
 
         // DOM
         that.$wrapper = options["$wrapper"];
@@ -133,14 +137,15 @@ var WASettingsSMSTemplate = ( function($) {
 
         // INIT
         that.initClass();
-    };
+    }
 
-    WASettingsSMSTemplate.prototype.initClass = function() {
-        var that = this;
+    initClass() {
+        let that = this;
 
         //
-        $('#s-sidebar-wrapper').find('ul li').removeClass('selected');
-        $('#s-sidebar-wrapper').find('[data-id="sms-template"]').addClass('selected');
+        let $sidebar = $('#js-sidebar-wrapper');
+        $sidebar.find('ul li').removeClass('selected');
+        $sidebar.find('[data-id="sms-template"]').addClass('selected');
 
         // Init Ace
         if (that.template_areas.length) {
@@ -161,14 +166,14 @@ var WASettingsSMSTemplate = ( function($) {
         that.initChannelActions();
         //
         that.initSubmit();
-    };
+    }
 
-    WASettingsSMSTemplate.prototype.initAce = function() {
-        var that = this,
+    initAce() {
+        let that = this,
             sessions = {};
 
         that.template_areas.each(function (i, textarea) {
-            var template_id = $(textarea).data('template'),
+            let template_id = $(textarea).data('template'),
                 div = $('<div></div>');
 
             that.selected_template = template_id;
@@ -205,20 +210,20 @@ var WASettingsSMSTemplate = ( function($) {
                 that.selected_template = template_id;
             });
         });
-    };
+    }
 
-    WASettingsSMSTemplate.prototype.initCheatSheet = function () {
-        var that = this,
+    initCheatSheet() {
+        let that = this,
             cheat_sheet_name = that.cheat_sheet_name;
 
-        var getViewRight = function() {
+        let getViewRight = function () {
             return ($(window).width() - (that.$wrapper.offset().left + that.$wrapper.outerWidth()));
         };
 
         $(document).bind('wa_cheatsheet_init.' + cheat_sheet_name, function () {
             $.cheatsheet[cheat_sheet_name].insertVarEvent = function () {
                 $("#wa-editor-help-" + cheat_sheet_name).on('click', "div.fields a.inline-link", function () {
-                    var el = $(this).find('i');
+                    let el = $(this).find('i');
                     if (el.children('b').length) {
                         el = el.children('b');
                     }
@@ -242,15 +247,15 @@ var WASettingsSMSTemplate = ( function($) {
                 }
             }, function () {
 
-                $(document).one('wa_cheatsheet_load.' + cheat_sheet_name, function() {
-                    var $help = $("#wa-editor-help-" + cheat_sheet_name);
+                $(document).one('wa_cheatsheet_load.' + cheat_sheet_name, function () {
+                    let $help = $("#wa-editor-help-" + cheat_sheet_name);
 
 
-                    var getHelpRight = function() {
+                    let getHelpRight = function () {
                         return $(window).width() - ($help.offset().left + $help.outerWidth());
                     };
 
-                    var adjustHelpOffset = function () {
+                    let adjustHelpOffset = function () {
                         if ($help.length) {
                             $help.css('right', 0);
                             var diff = getHelpRight() - getViewRight();
@@ -258,8 +263,8 @@ var WASettingsSMSTemplate = ( function($) {
                         }
                     };
 
-                    var watcher = function() {
-                        var timer = setInterval(function () {
+                    let watcher = function () {
+                        let timer = setInterval(function () {
                             if (!$.contains(document, $help.get(0))) {
                                 $(window).off('resize.' + cheat_sheet_name);
                                 clearInterval(timer);
@@ -279,11 +284,10 @@ var WASettingsSMSTemplate = ( function($) {
                 });
             }
         );
+    }
 
-    };
-
-    WASettingsSMSTemplate.prototype.initPreview = function() {
-        var that = this,
+    initPreview() {
+        let that = this,
             $dialog_wrapper = that.$sms_preview_dialog,
             is_locked = false;
 
@@ -294,7 +298,7 @@ var WASettingsSMSTemplate = ( function($) {
 
             is_locked = true;
 
-            var $template_field = $(this).parents('.field'),
+            let $template_field = $(this).parents('.field'),
                 template_id = $template_field.data('template'),
                 template_value = that.ace[template_id].getValue(),
                 href = '?module=settingsTemplateSMSPreview',
@@ -305,7 +309,8 @@ var WASettingsSMSTemplate = ( function($) {
                     $dialog_wrapper.find('.js-template-name').text(res.data.template);
                     $dialog_wrapper.find('.js-message-place').text(res.data.preview);
                     $dialog_wrapper.find('.js-time').text(res.data.time);
-                    $dialog_wrapper.waDialog({
+                    $.waDialog({
+                        html: $dialog_wrapper,
                         width: '400px',
                         height: '220px'
                     });
@@ -315,10 +320,10 @@ var WASettingsSMSTemplate = ( function($) {
             });
             is_locked = false;
         });
-    };
+    }
 
-    WASettingsSMSTemplate.prototype.initCheck = function() {
-        var that = this,
+    initCheck() {
+        let that = this,
             $dialog_wrapper = that.$sms_check_dialog,
             $form = $dialog_wrapper.find('form'),
             $dialog_buttons = $dialog_wrapper.find('.dialog-buttons'),
@@ -342,7 +347,7 @@ var WASettingsSMSTemplate = ( function($) {
 
         // Update templates counter
         $form.on('change', '.js-template-item-checkbox', function () {
-            var $checked_templates = $form.find('.js-template-item-checkbox:checked'),
+            let $checked_templates = $form.find('.js-template-item-checkbox:checked'),
                 checked_templates_count = $checked_templates.length;
 
             $button.val(that.locales.send_nan_sms.replace('%s', checked_templates_count));
@@ -363,34 +368,35 @@ var WASettingsSMSTemplate = ( function($) {
             $loading.removeClass('yes').addClass('loading').show();
             $form.find('.js-field-error').remove();
 
-            var href = $form.attr('action'),
+            let href = $form.attr('action'),
                 data = $form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
                     $button.removeClass('yellow').addClass('green');
                     $loading.removeClass('loading').addClass('yes');
-                    setTimeout(function(){
+                    setTimeout(function () {
                         $loading.hide();
                         $dialog_buttons.find('.cancel').click();
-                    },2000);
+                    }, 2000);
                 } else {
                     if (res.errors) {
                         $.each(res.errors, function (i, error) {
-                            var field = error.field,
-                                message = error.message;
+                            let field = error.field,
+                                message = error.message,
+                                $input;
 
                             if (field == 'template') {
-                                var $input = $dialog_wrapper.find('.js-templates-list');
+                                $input = $dialog_wrapper.find('.js-templates-list');
                             } else {
-                                var $input = $form.find('input[name="data' + field + '"]').parent();
+                                $input = $form.find('input[name="data' + field + '"]').parent();
                             }
                             $input.addClass('shake animated');
-                            $input.after('<div class="s-field-error js-field-error">'+ message +'</div>');
-                            setTimeout(function(){
+                            $input.after('<div class="s-field-error js-field-error">' + message + '</div>');
+                            setTimeout(function () {
                                 $input.removeClass('shake animated');
                                 //$form.find('.js-field-error').remove();
-                            },2000);
+                            }, 2000);
                         })
                     }
                     $loading.hide();
@@ -399,20 +405,20 @@ var WASettingsSMSTemplate = ( function($) {
                 $button.prop('disabled', false);
             });
         });
-    };
+    }
 
-    WASettingsSMSTemplate.prototype.initChannelActions = function() {
-        var that = this,
+    initChannelActions() {
+        let that = this,
             $duplicate_link = that.$footer_actions.find('.js-duplicate'),
             $delete_link = that.$footer_actions.find('.js-delete');
 
         $duplicate_link.on('click', function () {
-            var href = '?module=settingsTemplateDuplicate',
+            let href = '?module=settingsTemplateDuplicate',
                 data = {id: that.channel_id};
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
-                    $.wa.content.load(that.path_to_template + res.data.id +'/');
+                    $.wa.content.load(that.path_to_template + res.data.id + '/');
                 } else {
                     $.wa.content.reload();
                 }
@@ -420,26 +426,27 @@ var WASettingsSMSTemplate = ( function($) {
         });
 
         $delete_link.on('click', function () {
-            var href = '?module=settingsTemplateDelete',
+            let href = '?module=settingsTemplateDelete',
                 data = {id: that.channel_id};
 
-            that.$delete_confirm_dialog.waDialog({
-                width: '400px',
-                height: '100px',
-                onSubmit: function () {
-                    $.post(href, data, function () {
-                        $.wa.content.load(that.path_to_template);
+            $.waDialog({
+                $wrapper: that.$delete_confirm_dialog,
+                onOpen: function ($dialog, dialog) {
+                    let $form = $dialog.find('form')
+                    $form.on('submit', function (e) {
+                        e.preventDefault();
+                        $.post(href, data, function () {
+                            $.wa.content.load(that.path_to_template);
+                            dialog.close()
+                        });
                     });
-                    return false;
                 }
             });
         });
+    }
 
-
-    };
-
-    WASettingsSMSTemplate.prototype.initSubmit = function () {
-        var that = this;
+    initSubmit() {
+        let that = this;
 
         that.$form.on('submit', function (e) {
             e.preventDefault();
@@ -450,7 +457,7 @@ var WASettingsSMSTemplate = ( function($) {
             that.$button.prop('disabled', true);
             that.$loading.removeClass('yes').addClass('loading').show();
 
-            var href = that.$form.attr('action'),
+            let href = that.$form.attr('action'),
                 data = that.$form.serialize();
 
             $.post(href, data, function (res) {
@@ -472,19 +479,19 @@ var WASettingsSMSTemplate = ( function($) {
 
                     }
 
-                    setTimeout(function(){
+                    setTimeout(function () {
                         that.$loading.hide();
-                    },2000);
+                    }, 2000);
                 } else {
                     if (res.errors) {
                         $.each(res.errors, function (field, message) {
-                            var $input = that.$form.find(':input[name="data['+field+']"]');
+                            let $input = that.$form.find(':input[name="data[' + field + ']"]');
                             $input.addClass('shake animated');
-                            $input.after('<span style="color: red; margin-left: 12px;">'+ message +'</span>');
-                            setTimeout(function(){
+                            $input.after('<span style="color: red; margin-left: 12px;">' + message + '</span>');
+                            setTimeout(function () {
                                 $input.removeClass('shake animated');
                                 $input.next().remove();
-                            },2000);
+                            }, 2000);
                         });
                         $("html, body").scrollTop(that.$wrapper.offset().top);
                     }
@@ -504,20 +511,22 @@ var WASettingsSMSTemplate = ( function($) {
         that.$cancel.on('click', function (e) {
             e.preventDefault();
             $.wa.content.reload();
-            return;
         });
-    };
+    }
 
-    WASettingsSMSTemplate.prototype.initFixedActions = function() {
-        var that = this;
+    /**
+     * @deprecated
+     */
+    initFixedActions() {
+        let that = this;
 
         /**
          * @class FixedBlock
          * @description used for fixing form buttons
          * */
-        var FixedBlock = ( function($) {
+        var FixedBlock = (function ($) {
 
-            FixedBlock = function(options) {
+            FixedBlock = function (options) {
                 var that = this;
 
                 // DOM
@@ -539,21 +548,21 @@ var WASettingsSMSTemplate = ( function($) {
                 that.initClass();
             };
 
-            FixedBlock.prototype.initClass = function() {
+            FixedBlock.prototype.initClass = function () {
                 var that = this,
                     $window = that.$window,
                     resize_timeout = 0;
 
-                $window.on("resize", function() {
+                $window.on("resize", function () {
                     clearTimeout(resize_timeout);
-                    resize_timeout = setTimeout( function() {
+                    resize_timeout = setTimeout(function () {
                         that.resize();
                     }, 100);
                 });
 
                 $window.on("scroll", watcher);
 
-                that.$wrapper.on("resize", function() {
+                that.$wrapper.on("resize", function () {
                     that.resize();
                 });
 
@@ -575,7 +584,7 @@ var WASettingsSMSTemplate = ( function($) {
                 that.$wrapper.data("block", that);
             };
 
-            FixedBlock.prototype.init = function() {
+            FixedBlock.prototype.init = function () {
                 var that = this;
 
                 if (!that.$clone) {
@@ -596,7 +605,7 @@ var WASettingsSMSTemplate = ( function($) {
                 };
             };
 
-            FixedBlock.prototype.resize = function() {
+            FixedBlock.prototype.resize = function () {
                 var that = this;
 
                 switch (that.type) {
@@ -622,7 +631,7 @@ var WASettingsSMSTemplate = ( function($) {
             /**
              * @param {Number} scroll_top
              * */
-            FixedBlock.prototype.onScroll = function(scroll_top) {
+            FixedBlock.prototype.onScroll = function (scroll_top) {
                 var that = this,
                     window_w = that.$window.width(),
                     window_h = that.$window.height();
@@ -647,7 +656,7 @@ var WASettingsSMSTemplate = ( function($) {
             /**
              * @param {Boolean|Object} set
              * */
-            FixedBlock.prototype.fix2top = function(set) {
+            FixedBlock.prototype.fix2top = function (set) {
                 var that = this,
                     fixed_class = "is-top-fixed";
 
@@ -675,7 +684,7 @@ var WASettingsSMSTemplate = ( function($) {
             /**
              * @param {Boolean|Object} set
              * */
-            FixedBlock.prototype.fix2bottom = function(set) {
+            FixedBlock.prototype.fix2bottom = function (set) {
                 var that = this,
                     fixed_class = "is-bottom-fixed";
 
@@ -711,15 +720,15 @@ var WASettingsSMSTemplate = ( function($) {
             type: "bottom"
         });
 
-    };
+    }
 
-    WASettingsSMSTemplate.prototype.initReset = function () {
-        var that = this,
+    initReset() {
+        let that = this,
             $link = that.$footer_actions.find('.js-reset');
 
         $link.on('click', function () {
             that.template_areas.each(function () {
-                var template_id = $(this).data('template'),
+                let template_id = $(this).data('template'),
                     ace = that.ace[template_id];
 
                 ace.setValue(that.default_templates[template_id]);
@@ -728,44 +737,41 @@ var WASettingsSMSTemplate = ( function($) {
             that.$button.removeClass('green').addClass('yellow');
         });
 
-    };
+    }
 
-    return WASettingsSMSTemplate;
+}
 
-})(jQuery);
+class WaSettingsSMSNewTemplateDialog {
 
-var WaSettingsSMSNewTemplateDialog = ( function($) {
-
-    WaSettingsSMSNewTemplateDialog = function(id, options) {
-        var that = this;
+    constructor(id, options) {
+        let that = this;
         that.id = id;
         that.path_to_template = options.path_to_template;
-    };
+    }
 
+    open() {
+        let that = this,
+            $dialog_wrapper = that.getDialogWrapper(),
+            html = $dialog_wrapper.clone();
 
-    WaSettingsSMSNewTemplateDialog.prototype.open = function() {
-        var that = this,
-            $dialog_wrapper = that.getDialogWrapper();
-
-        if (!$dialog_wrapper.data('init')) {
-            that.init();
-            $dialog_wrapper.data('init', true);
-        }
-
-        $dialog_wrapper.waDialog({
-            width: '400px',
-            height: '190px'
+        $.waDialog({
+            $wrapper: html,
+            onOpen: function ($dialog, dialog) {
+                if (!$dialog.data('init')) {
+                    that.init($dialog, dialog);
+                    $dialog.data('init', true);
+                }
+            }
         });
-    };
+    }
 
     /**
      * Init on first open of dialog
      */
-    WaSettingsSMSNewTemplateDialog.prototype.init = function() {
-        var that = this,
-            $dialog_wrapper = that.getDialogWrapper(),
-            $form = $dialog_wrapper.find('form'),
-            $dialog_buttons = $dialog_wrapper.find('.dialog-buttons'),
+    init($dialog, dialog) {
+        let that = this,
+            $form = $dialog.find('form'),
+            $dialog_buttons = $dialog.find('.dialog-footer'),
             $button = $dialog_buttons.find('.js-submit-button'),
             $loading = $dialog_buttons.find('.s-loading'),
             is_locked = false;
@@ -779,58 +785,56 @@ var WaSettingsSMSNewTemplateDialog = ( function($) {
             is_locked = true;
             $button.prop('disabled', true);
             $form.find('.s-error-message-wrapper').text('');
-            $loading.removeClass('yes').addClass('loading').show();
+            $loading.show();
 
-            var href = $form.attr('action'),
+            let href = $form.attr('action'),
                 data = $form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
                     $button.removeClass('yellow').addClass('green');
-                    $loading.removeClass('loading').addClass('yes');
-                    setTimeout(function(){
+                    setTimeout(function () {
                         $loading.hide();
-                        $.wa.content.load(that.path_to_template + res.data.id +'/');
-                    },2000);
+                        $.wa.content.load(that.path_to_template + res.data.id + '/');
+                        dialog.close()
+                    }, 2000);
                 } else {
                     if (res.errors) {
                         $.each(res.errors, function (i, error) {
-                            var $filed = $form.find('[name="data['+ error.field +']"]'),
-                                $error_message = $form.find('.js-error-'+error.field);
+                            let $filed = $form.find('[name="data[' + error.field + ']"]'),
+                                $error_message = $form.find('.js-error-' + error.field);
 
                             $filed.addClass('error shake animated');
                             $error_message.text(error.message);
-                            setTimeout(function(){
+                            setTimeout(function () {
                                 $error_message.text('');
                                 $filed.removeClass('error shake animated');
                             }, 2000);
                         });
                     }
+                    is_locked = false;
+                    $button.prop('disabled', false);
                     $loading.hide();
+                    dialog.close()
                 }
-                is_locked = false;
-                $button.prop('disabled', false);
             });
         });
         $form.on('input', function () {
             $button.removeClass('green').addClass('yellow');
         });
-    };
+    }
 
-    WaSettingsSMSNewTemplateDialog.prototype.getDialogWrapper = function() {
-        var that = this,
+    getDialogWrapper() {
+        let that = this,
             id = that.id;
         return $("#" + id);
-    };
+    }
+}
 
-    return WaSettingsSMSNewTemplateDialog;
+class WASettingsSMSTemplateSidebar {
 
-})(jQuery);
-
-var WASettingsSMSTemplateSidebar = ( function($) {
-
-    WASettingsSMSTemplateSidebar = function(options) {
-        var that = this;
+    constructor(options) {
+        let that = this;
 
         // DOM
         that.$wrapper = options["$wrapper"];
@@ -840,16 +844,13 @@ var WASettingsSMSTemplateSidebar = ( function($) {
         that.dialog = options.dialog;
 
         that.initLink();
-    };
+    }
 
-
-    WASettingsSMSTemplateSidebar.prototype.initLink = function() {
-        var that = this;
-        that.$add_new.on('click', function () {
+    initLink() {
+        let that = this;
+        that.$add_new.on('click', function (e) {
+            e.preventDefault();
             that.dialog && that.dialog.open();
         });
-    };
-
-    return WASettingsSMSTemplateSidebar;
-
-})(jQuery);
+    }
+}

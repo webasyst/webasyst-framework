@@ -1,0 +1,265 @@
+{$_title = "[s`Email settings`] — {$wa->accountName(false)}"}
+{function name="_renderConfig" key=key config=[] is_template=is_template}
+    {$_transport = $config.type|default:mail}
+    {$_rand = rand()}
+    {strip}
+        <div class="s-item {if $is_template}js-template{else}js-item{/if}">
+            {if $key != 'default'}
+                <div class="s-remove js-remove">
+                    <a href="javascript:void(0);" class="inline-link"><i class="icon10 no"></i>&nbsp;<b><i>[s`Remove`]</i></b></a>
+                </div>
+            {/if}
+            <div class="field-group">
+                {* KEY *}
+                <div class="field">
+                    {if $key != 'default'}
+                        <div class="name">[s`Email or domain`]*</div>
+                    {/if}
+                    <div class="value">
+                        {if $key == 'default'}
+                            <h4>[s`Default`]</h4>
+                            <input class="js-key" data-name="key" value="{$key|escape}" type="hidden">
+                        {else}
+                            <input class="js-key" data-name="key" value="{$key|escape}" type="text" autocomplete="off">
+                            <br>
+                            <span class="hint">[s`Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>.`]</span>
+                        {/if}
+                    </div>
+                </div>
+                {* TRANSPORT *}
+                <div class="field">
+                    <div class="name">[s`Transport`]</div>
+                    <div class="value">
+                        <select class="js-transport" data-name="type">
+                            {foreach $available_transports as $id => $transport}
+                                <option value="{$id|escape}"{if $_transport == $id} selected{/if}>
+                                    {if is_string($transport)}
+                                        {$transport}
+                                    {else}
+                                        {ifset($transport.name)}
+                                    {/if}
+                                </option>
+                            {/foreach}
+                        </select>
+                        <br/>
+                        {foreach $available_transports as $id => $transport}
+                            <span class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}; width: 50%;">{$transport.description|default:null}</span>
+                        {/foreach}
+                    </div>
+                </div>
+                {* MAIL PARAMS *}
+                {if isset($available_transports.mail)}
+                    <div class="s-params js-params js-mail-params"{if $_transport !== 'mail'} style="display:none"{/if}>
+                        <div class="field">
+                            <div class="name">[s`Options`]</div>
+                            <div class="value">
+                                <input type="text" placeholder="-f%s" data-name="options" value="{$config.options|default:null|escape}" />
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+                {* SMTP PARAMS *}
+                {if isset($available_transports.smtp)}
+                    <div class="s-params js-params js-smtp-params"{if $_transport != 'smtp'} style="display:none"{/if}>
+                        <div class="field">
+                            <div class="name">[s`Host`]</div>
+                            <div class="value">
+                                <input type="text" data-name="host" value="{$config.host|default:null|escape}" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Port`]</div>
+                            <div class="value">
+                                <input type="text" placeholder="25" data-name="port" value="{$config.port|default:null|escape}" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Login name`]</div>
+                            <div class="value">
+                                <input type="text" data-name="login" value="{$config.login|default:null|escape}" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Password`]</div>
+                            <div class="value">
+                                <input type="text" data-name="password" value="{$config.password|default:null|escape}" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`Encryption`]</div>
+                            <div class="value">
+                                <select data-name="encryption">
+                                    <option value="">[s`None`]</option>
+                                    <option{if $config.encryption|default:null == 'ssl'} selected{/if} value="ssl">[s`SSL/TLS`]</option>
+                                    <option{if $config.encryption|default:null == 'tls'} selected{/if} value="tls">[s`STARTTLS`]</option>
+                                </select>
+                            </div>
+                        </div>
+                        {if !empty($config.pop3_host)}
+                            <div class="field">
+                                <div class="name">[s`POP3 host name`]</div>
+                                <div class="value">
+                                    <input type="text" data-name="pop3_host" value="{$config.pop3_host|default:null|escape}" />
+                                </div>
+                            </div>
+                        {/if}
+                        {if !empty($config.pop3_port)}
+                            <div class="field">
+                                <div class="name">[s`POP3 port`]</div>
+                                <div class="value">
+                                    <input type="text" data-name="pop3_port" value="{$config.pop3_port|default:null|escape}" />
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
+                {* SENDMAIL PARAMS *}
+                {if isset($available_transports.sendmail)}
+                    <div class="s-params js-params js-sendmail-params"{if $_transport != 'sendmail'} style="display:none"{/if}>
+                        <div class="field">
+                            <div class="name">[s`Command`]</div>
+                            <div class="value">
+                                <input type="text" placeholder="/usr/sbin/sendmail -bs" data-name="command" value="{ifset($config.command)|escape}" />
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+
+                {* DKIM *}
+                {if $key !== 'default'}
+                    <div class="s-dkim-field js-dkim-field">
+                        <div class="field">
+                            <div class="name">
+                                <label for="dkim-{$_rand}">DKIM</label>
+                            </div>
+                            <div class="value">
+                                <input type="checkbox" data-name="dkim" id="dkim-{$_rand}" class="js-dkim-checkbox" value="1"{if $config.dkim|default:null == 1} checked{/if}{if !$ssl_is_set || !$php_version_ok} disabled{/if} />
+                                <div class="hint js-dkim-error"></div>
+                                <div class="hint">[s`Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address.`]</div>
+                                <div class="hint bold js-dkim-needs-email" style="margin-right: 50px;{if mb_strlen($key) != 0} display: none;{/if}">[s`Enter an email address in “Sender” field to use DKIM.`]</div>
+                                <input type="hidden" data-name="dkim_pvt_key" class="js-dkim-pvt-key" value="{ifset($config.dkim_pvt_key)|escape}" />
+                                <input type="hidden" data-name="dkim_pub_key" class="js-dkim-pub-key" value="{ifset($config.dkim_pub_key)|escape}" />
+                                <input type="hidden" data-name="dkim_selector" class="js-dkim-selector" value="{ifset($config.dkim_selector)|escape}" />
+                                {if !$ssl_is_set}
+                                    <div>[s`You need to install openssl php extention to use DKIM`]</div>
+                                {/if}
+                                {if !$php_version_ok}
+                                    <div>[s`You need PHP version 5.3 or higher to use DKIM. Your current version is:`] <b>{$php_version}</b></div>
+                                {/if}
+                            </div>
+
+                            {* DKIM INFO *}
+                            <div class="value">
+                                <div class="js-dkim-info"{if !isset($config.dkim)} style="display:none;"{/if}>
+                                    <div class="field">
+                                        <p>
+                                            [s`Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name`]
+                                            &nbsp;<span class="js-sender-domain-0" style="font-weight: bold;">{ifset($config.domain)|escape}</span>
+                                        </p>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">[s`Host `]</div>
+                                        <div class="value">
+                                            <code>
+                                                {strip}
+                                                    <span class="js-dkim-host-selector">
+                                                            {ifempty($config.dkim_selector, 'key1')|escape}
+                                                        </span>
+                                                    ._domainkey
+                                                {/strip}
+                                            </code>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">[s`Domain`]</div>
+                                        <div class="value"><span class="js-domain">{ifset($config.domain)|escape}</span></div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">[s`Record type`]</div>
+                                        <div class="value">
+                                            <code>TXT</code>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="name">[s`Value`]</div>
+                                        <div class="value" style="word-wrap:break-word; width:500px;">
+                                            <code>
+                                                v=DKIM1; k=rsa; t=s; p=<span class="js-one-string-key">{ifset($config.one_string_key)}</span>
+                                            </code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        </div>
+    {/strip}
+{/function}
+<div class="s-email-settings-page blank block double-padded" id="s-email-settings-page">
+    <h1 class="s-page-header">[s`Email settings`]</h1>
+
+    {* Incoming / outgoing emails *}
+    <form action="?module=settingsEmailSave">
+        <div class="field-group">
+            <div class="field">
+                <div class="name">
+                    <label for="config-email">[s`Email address for notifications`]</label>
+                </div>
+                <div class="value">
+                    <input type="text" name="email" value="{$email|escape}" id="config-email" placeholder="your@email"><br>
+                    <span class="hint">[s`Main account administrative email where system notification will be sent.`]</span>
+                    <span class="hint s-error js-error-place"></span>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="name">
+                    <label for="config-sender">[s`Sender email address`]</label>
+                </div>
+                <div class="value">
+                    <input type="text" name="sender" value="{$sender|escape}" id="config-sender" placeholder="noreply@email"><br>
+                    <span class="hint">[s`Reply-To address for system email notifications sent by Webasyst.`]</span>
+                    <span class="hint s-error js-error-place"></span>
+                </div>
+            </div>
+        </div>
+
+        {* Editor for wa-config/mail.php *}
+        <div class="s-description">
+            [s`Select how email messages must be sent by default from your Webasyst.`]
+        </div>
+        <div class="s-email-settings-fields-block">
+            <div class="s-settings-items js-settings-items">
+                {foreach $main_configs as $key => $config}
+                    {_renderConfig key=$key config=$config is_template=false}
+                {/foreach}
+            </div>
+            <div class="s-description">[s`If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section.`]</div>
+            <a href="javascript:void(0);" class="inline-link s-add-item js-add-item">
+                <i class="icon10 add"></i>
+                <b><i>[s`Add email sending rule`]</i></b>
+            </a>
+            <div class="s-form-buttons">
+                <div class="s-footer-actions js-footer-actions">
+                    <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                    <span class="s-hidden">
+                        <span style="margin: 0 4px;">[s`or`]</span>
+                        <a href="{$wa_backend_url}webasyst/settings/email/" class="js-cancel">[s`cancel`]</a>
+                    </span>
+                    <i class="icon16 loading s-loading" style="display: none;"></i>
+                </div>
+            </div>
+        </div>
+    </form>
+    {_renderConfig key=null is_template=true}
+</div>
+<script type="text/javascript">
+    (function($) {
+        new WASettingsEmail({
+            $wrapper: $("#s-email-settings-page")
+        });
+        $.wa.setTitle({$_title|json_encode});
+    })(jQuery);
+</script>

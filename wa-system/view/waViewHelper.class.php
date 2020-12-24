@@ -351,25 +351,55 @@ HTML;
         return waRequest::get('module', $default);
     }
 
+    /**
+     * If in backend intentionally need use legacy wa-1.3.css UI
+     * @param bool $strict
+     * @return string
+     * @throws waException
+     */
+    public function legacyCss($strict = false)
+    {
+        //legacy wa-1.3.css UI environment
+        $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.3.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
+            <!--[if IE 9]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
+            <!--[if IE 8]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
+            <!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
+            <link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
+
+        // for handling iPad and tablet computer default view properly
+        if (!waRequest::isMobile(false)) {
+            $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n";
+        }
+
+        return $css.wa()->getResponse()->getCss(true, $strict);
+    }
+
+    /**
+     * @param bool $strict
+     * @return string
+     * @throws waException
+     */
     public function css($strict = false)
     {
-        if (wa()->getEnv() == 'backend' || wa()->getEnv() == 'api') {
-            $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.3.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
-<!--[if IE 9]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
-<!--[if IE 8]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
-<!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
-<link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
+        $ui_version = $this->whichUI();
 
-            if (!waRequest::isMobile(false)) {
-                $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n";
-            } //for handling iPad and tablet computer default view properly
+        $css = '';
+        if (wa()->getEnv() == 'backend' || wa()->getEnv() == 'api') {
+
+            if ($ui_version != '2.0') {
+                return $this->legacyCss($strict);
+            }
+
+            $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css">
+            <link id="wa-dark-mode" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0-dark.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" media="(prefers-color-scheme: dark)">
+            <script src="'.wa()->getRootUrl().'wa-content/js/jquery-wa/wa.switch-mode.js?v'.$this->version(true).'"></script>
+    <script defer src="'.wa()->getRootUrl().'wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0" />';
 
             // no referrer for backend urls
             $css .= '<meta name="referrer" content="origin-when-cross-origin" />';
-
-        } else {
-            $css = '';
         }
+
         return $css.wa()->getResponse()->getCss(true, $strict);
     }
 
@@ -531,7 +561,6 @@ HTML;
     {
         return waRequest::isMobile();
     }
-
 
     public function userAgent($type = null)
     {
@@ -1303,6 +1332,18 @@ HTML;
     public function getCdn($url = null)
     {
         return wa()->getCdn($url);
+    }
+
+    /**
+     * Which UI version supported current app
+     * @param string|null|false $app_id - app for which need to check webasyst UI version, default is current app (null)
+     *                                  If pass FALSE will returns version from cookie, ignoring app ui option in app config
+     * @return string '1.3' or '2.0'
+     * @throws waException
+     */
+    public function whichUI($app_id = null)
+    {
+        return wa()->whichUI($app_id);
     }
 
     public function __get($app)

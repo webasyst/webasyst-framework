@@ -1,6 +1,9 @@
 <?php
+
 $__id = '(\w[\w\d_]*)';
+
 return array(
+
     'settings/sms/template/<id>/?'              => 'settingsTemplateSMS',
     'settings/sms/template/?'                   => 'settingsTemplateSMS',
     'settings/email/template/<id>/<template>/?' => 'settingsTemplateEmail',
@@ -16,6 +19,12 @@ return array(
     'settings/db/?'                             => 'settingsDatabase',
     'settings/waid/?'                           => 'settingsWaID',
     'settings/?'                                => 'settings/',
+
+    'dashboard/apps/?'                          => 'dashboardApps',
+    'dashboard/team/<id>/?'                     => 'dashboardUsers',
+    'dashboard/users/?'                      => 'dashboardUsers',
+    'dashboard/dashboard/<id>/?'                => 'dashboardDashboard',
+
     'repair'                                    => array(
         'url'    => 'repair/<action:(\w+)?>/?',
         'module' => 'repair',
