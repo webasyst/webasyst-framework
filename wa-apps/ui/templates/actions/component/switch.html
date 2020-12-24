@@ -1,0 +1,177 @@
+{$_title = ".waSwitch()"}
+{$wa->title($_title)}
+
+{function name="_render" class="" id=""}
+<span class="switch {$class|default:""}" id="switch-{$id|default:""}">
+    <input type="checkbox" name="" checked>
+</span>
+
+<script>
+    ( function($) {
+        $("#switch-{$id}").waSwitch({
+            change: function(active, wa_switch) { }
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_example_1" id=""}
+<span class="switch shift-6" id="switch-no-input-1"></span>
+<script>
+    ( function($) {
+        var switcher = $.waSwitch({
+            $wrapper: $("#switch-no-input-1"),
+            active: true,
+            disabled: false,
+            ready: function(wa_switch) {
+                console.log("i'm ready");
+            },
+            change: function(active, wa_switch) {
+                console.log("i'm changed");
+            }
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_example_2"}
+<span class="switch shift-6" id="switch-no-input-2"></span>
+<script>
+    ( function($) {
+        var switcher = $.waSwitch({
+            $wrapper: $("#switch-no-input-2"),
+            active: true,
+            disabled: true
+        });
+    })(jQuery);
+</script>
+{/function}
+
+{function name="_render_example_3"}
+<span class="switch shift-6" id="switch-no-input-3"></span>
+<script>
+    ( function($) {
+        var $switch = $("#switch-no-input-3").waSwitch({
+            active: false
+        });
+
+        var switcher = $switch.waSwitch("switch");
+        var active = true;
+
+        switcher.set(active);
+        switcher.disable(true);
+
+        setInterval( function() {
+            active = !active;
+            switcher.disable( !!Math.round(Math.random()) );
+            switcher.set(active);
+        }, 1000);
+    })(jQuery);
+</script>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.switch</code></h2>
+
+    <p>Переключатель «ВКЛ/ВЫКЛ» <code>.switch</code>, работающий на основе чекбокса.</p>
+    <p>{_render class="" id="2"}</p>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="" id="2"}</pre>
+    </div>
+
+    <div class="u-example-section">
+        <h3>Размеры</h3>
+        <p>Как и для кнопок, регулировать размеры переключателя можно с помощью классов <code>.small</code>, <code>.smaller</code>, <code>.smallest</code>, <code>.large</code>, <code>.larger</code>, <code>.largest</code>.</p>
+        <p>
+            {_render class="smallest" id="11"}
+            {_render class="smaller" id="12"}
+            {_render class="small" id="13"}
+
+            {_render id="16"}
+
+            {_render class="large" id="21"}
+            {_render class="larger" id="22"}
+            {_render class="largest" id="23"}
+        </p>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.switch<code>.baseline</code></h3>
+        <p>
+            Для управления вертикальной позицией элемента относительно окружения используйте дополнительные классы:
+        </p>
+        <ul>
+            <li><code>.switch<span class="bold">.top</span></code> — верх строки</li>
+            <li><code>.switch<span class="bold">.baseline</span></code> — базовая линия</li>
+            <li><code>.switch<span class="bold">.middle</span></code> — середина строки</li>
+            <li><code>.switch<span class="bold">.shift-x</span></code> — со смещением вниз на x пикселей относительно baseline. Актуально в ситуациях с разными размерами шрифта у соседних элементов.
+                Пример <code>.switch<span class="bold">.shift-6</span></code>&nbsp;—&nbsp;{_render class="shift-6" id="4"}</li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.switch <code>options</code></h3>
+        <ul>
+            <li><span class="bold">active</span> (boolean, по умолчанию false) — изначальное положение переключателя.
+                <div class="hint">При наличии внутри <code>&lt;input&gt;</code> унаследует значение поля "checked".</div>
+                <br>
+            </li>
+            <li><span class="bold">disabled</span> (boolean, по умолчанию false) — значение, показывающее запрет на изменение переключателя.
+                <div class="hint">При наличии внутри <code>&lt;input&gt;</code> унаследует значение поля "disabled".</div>
+                <br>
+            </li>
+            <li><span class="bold">ready</span> (function) — событие, которое происходит после рендера компонента и его готовности в DOM.
+                <div class="hint"><code>function(switch_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">change</span> (function) — событие, которое происходит при изменении значения переключателя.
+                <div class="hint"><code>function(active, switch_instance) { ... }</code></div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.switch <code>API</code></h3>
+        <ul>
+            <li><span class="bold">set</span> (function) — устанавливает значение переключателя (boolean).
+                <br>
+            </li>
+            <li><span class="bold">disable</span> (function) — блокирует переключатель (boolean).
+                <br>
+            </li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>Примеры</h3>
+        <ul>
+            <li>
+                Пример переключателя без привязки к <code>&lt;input&gt;</code>: {_render_example_1}
+                <br><br>
+                <pre class="prettyprint">{_render_example_1|escape}</pre>
+                <br>
+            </li>
+            <li>
+                Пример заблокированого переключателя: {_render_example_2}
+                <br><br>
+                <pre class="prettyprint">{_render_example_2|escape}</pre>
+                <br>
+            </li>
+            <li>
+                Устанавливаем переключатель в активный режим и блокируем его с помощью методов: {_render_example_3}
+                <br><br>
+                <pre class="prettyprint">{_render_example_3|escape}</pre>
+                <br>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

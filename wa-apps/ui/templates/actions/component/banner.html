@@ -1,0 +1,65 @@
+{$_title = ".banner"}
+{$wa->title($_title)}
+
+{function name="_render_banner" class=""}
+<div id="banner-fixed-demo" class="banner">
+    YOUR APPEAL HERE
+</div>
+{/function}
+
+<div class="u-component-page">
+
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Баннеры — для полного отвлечения внимания пользователя от контекста и всего, что происходит в приложении.</p>
+    <p><b>Этот компонент следует использовать только в самых исключительных случаях.</b> Например, когда надо сообщить пользователю о какой-то критической проблеме, блокирующей работу приложения. Когда же нужно просто привлечь внимание пользователя и сообщить ему некоторую важную информацию, лучше использовать компонент <a href="{$wa_app_url}component/alert/">.alert</a>. </p>
+
+    <p>
+        <button id="banner-fixed-toggle" class="button red">Все равно хочу баннер!</button>
+    </p>
+
+    {_render_banner}
+
+    <hr class="banner-additional-hint">
+
+    <p class="banner-additional-hint">Баннер выводится над областью приложения (под <a href="{$wa_app_url}component/waheader/">wa_header</a>) и имеет абсолютное позиционирование (position: fixed).</p>
+
+    <p class="banner-additional-hint">Вывести баннер без абсолютного позицирования среди других компонентов (position: static) легко — с помощью дополнительного класса <code>.banner<strong>.static</strong></code>. Однако в этом случае вам следует самостоятельно разместить его в шаблоне (в интерфейсе) в подходящем месте.</p>
+
+    <p class="banner-additional-hint">Раскраска баннера — на ваше усмотрение. По умолчанию — красная (для показа сообщений о критических ошибках).</p>
+
+    <div class="line banner-additional-hint">
+        <pre class="prettyprint">{_render_banner|escape}</pre>
+    </div>
+
+    <style>
+        #banner-fixed-demo { display: none; }
+        .banner-additional-hint { display: none; }
+    </style>
+    <script>
+
+        var _demo_banners = [
+            'Hasta la vista, baby!',
+            'This is my weak arm, Sully!',
+            'You have to buy it!',
+            'Maria, come on!',
+            'Get to da choppa!',
+            'I’ll be back!'
+        ];
+
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+
+        $('#banner-fixed-toggle').click(function(){
+            $('#banner-fixed-demo').show();
+            $('.banner-additional-hint').show();
+            $('#banner-fixed-demo').html( '<div class="align-center italic bold large">' + _demo_banners[ Math.floor( Math.random() * _demo_banners.length ) ] + '<a href="#" class="banner-close"><i class="fas fa-times"></i></a>' + '</div>' );
+            return false;
+        });
+
+    </script>
+
+</div>

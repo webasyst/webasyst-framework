@@ -1,0 +1,331 @@
+{$_title = ".fields"}
+{$wa->title($_title)}
+
+{function name="_render"}
+<div class="fields">
+    <div class="fields-group">
+        <div class="field">
+            <div class="name">
+                Company
+            </div>
+            <div class="value">
+                <strong>Webasyst LLC</strong>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">
+                Phone
+            </div>
+            <div class="value">
+                <ul>
+                    <li>+1 312 300-5125</li>
+                    <li>+7 495 000-13-12</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="fields-group">
+
+        <h5 class="heading">An input form goes here</h5>
+        <div class="field">
+            <div class="name for-input large">
+                Email
+            </div>
+            <div class="value">
+
+                <input class="long large bold" type="email" name="" placeholder="your@email.here">
+
+                <p class="hint">Use <code>.large</code> class for making individual inputs larger</p>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input">
+                Name
+            </div>
+            <div class="value">
+                <div class="flexbox space-16">
+                    <div>
+                        <input class="bold" type="text" name="" value="Jimmy" placeholder="First name">
+                    </div>
+                    <label>
+                        <input class="bold" type="text" name="" value="Clark" placeholder="Last name">
+                        <span class="icon">
+                            <i class="fas fa-church"></i>
+                        </span>
+                    </label>
+                </div>
+                <p class="hint">Inner <code>.flexbox</code> helps placing two inputs in a single line</p>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input small">
+                Ш Б
+            </div>
+            <div class="value">
+                <div class="flexbox space-16">
+                    <div>
+                        <input class="small" type="text" name="" placeholder=".small">
+                    </div>
+                    <div>
+                        <input class="small" type="text" name="" placeholder=".small">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input smaller">
+                М Н К
+            </div>
+            <div class="value">
+                <div class="flexbox space-16">
+                    <div>
+                        <input class="smaller" type="text" name="" placeholder=".smaller">
+                    </div>
+                    <div>
+                        <input class="smaller" type="text" name="" placeholder=".smaller">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input smallest">
+                П З Д Ц
+            </div>
+            <div class="value">
+                <div class="flexbox space-16">
+                    <div>
+                        <input class="smallest" type="text" name="" placeholder=".smallest">
+                    </div>
+                    <div>
+                        <input class="smallest" type="text" name="" placeholder=".smallest">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input smaller">
+                Tell us why you wish to be added to our beta list
+            </div>
+            <div class="value">
+                <textarea class="small" placeholder="Go ahead, write something"></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-checkbox">
+                <label for="checkbox">.wa-checkbox</label>
+            </div>
+            <div class="value">
+                <label>
+                    <span class="wa-checkbox">
+                        <input type="checkbox" name="1" id="checkbox" checked>
+                        <span>
+                            <span class="icon">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </span>
+                    </span>
+                    A checkbox with <code>.wa-checkbox</code> styling
+                </label>
+                <p class="hint">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+
+                <label>
+                    <input type="checkbox" checked>
+                    Simple checkbox with no styling is still available
+                </label>
+
+                <label>
+                    <input type="radio" selected>
+                    And a radio, too
+                </label>
+
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-checkbox">
+                .wa-radio
+            </div>
+            <div class="value">
+                <label>
+                    <span class="wa-radio">
+                        <input type="radio" name="name-1">
+                        <span></span>
+                    </span>
+                    Option 1
+                </label>
+            </div>
+            <div class="value">
+                <label>
+                    <span class="wa-radio">
+                        <input type="radio" name="name-1">
+                        <span></span>
+                    </span>
+                    Option 2
+                </label>
+            </div>
+            <div class="value">
+                <label>
+                    <span class="wa-radio">
+                        <input type="radio" name="name-1">
+                        <span></span>
+                    </span>
+                    Option 3
+                </label>
+            </div>
+            <div class="value">
+                <label>
+                    <span class="wa-radio">
+                        <input type="radio" name="name-1">
+                        <span></span>
+                    </span>
+                    Option 4
+                </label>
+            </div>
+        </div>
+
+        <div class="field custom-mt-32">
+            <div class="name for-input largest">
+                Username
+            </div>
+            <div class="value">
+                <div class="wa-select largest">
+                    <select name="">
+                        <option value="">Mr.</option>
+                        <option value="">Mrs.</option>
+                        <option value="">Miss</option>
+                        <option value="">Ms.</option>
+                    </select>
+                </div>
+                <input class="long largest bold" type="text" name="" placeholder=".largest">
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input larger">
+                Password
+            </div>
+            <div class="value">
+                <div class="wa-select larger solid">
+                    <select name="">
+                        <option value="">Mr.</option>
+                        <option value="">Mrs.</option>
+                        <option value="">Miss</option>
+                        <option value="">Ms.</option>
+                    </select>
+                </div>
+                <input class="long larger bold solid" type="text" name="" placeholder=".larger.solid">
+            </div>
+        </div>
+
+        <h5 class="heading">How about a title here as well?</h5>
+        <div class="field">
+            <div class="name for-input">
+                Select
+            </div>
+            <div class="value middle">
+                <div class="wa-select">
+                    <select name="">
+                        <option value="">Saint-Petersburg</option>
+                        <option value="moscow">Moscow</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input">
+                Textarea
+            </div>
+            <div class="value middle">
+                <textarea class="wide" name=""></textarea>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name for-input">
+                One more
+            </div>
+            <div class="value middle">
+                <textarea class="solid" name="" placeholder=".solid"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="fields-group">
+        <div class="field">
+            <div class="value submit">
+                <input type="button" class="button" value="Save">
+            </div>
+        </div>
+    </div>
+</div>
+{/function}
+
+<div class="u-component-page" id="js-fields-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <blockquote>
+        <strong class="black">TLDR</strong> wa-1.3 -> wa-2.0:
+        реализация основана <strong class="black">теперь на flexbox, а не на float</strong>. Дополнительный класс-модификатор <code>.fields.form</code> более не требуется и не поддерживается. Также более не действует класс <code>.value.no-shift</code>. Вместо него отступ сверху задается для элемента <code>.name</code>. А внутри одного <code>.field</code> несколько <code>.value</code> теперь работают иначе: выстраиваются по горизонтали, а не по вертикали.
+    </blockquote>
+
+    <p>Компонент <code>.fields</code> используется для отображения структурированных данных в формате «ключ — значение» и любых форм ввода данных.</p>
+    <p><code>.fields</code> в wa-2.0.css сохранил свою внутренную семантику по сравнению с wa-1.3.css, однако реализация полностью обновлена. Теперь никаких <code>float: left</code>. Все основано на жестком <code>display: table;</code>.</p>
+    <p><b>Важное отличие <code>.fields</code> в wa-2.0.css от wa-1.3.css</b> состоит в том, в обновленной реализации расположение нескольких <code>.value</code> подряд внутри одного <code>.field</code> выстроят их в один горизонтальный, а не вертикальный ряд. Для вертикального отображения необходимо реализовывать оформление контента в виде списков <code>ul &gt; li</code> внутри одного <code>.value</code> (стандартное оформление <code>ul</code> внутри <code>.field &gt; .value</code> в этой связи отключено).</p>
+
+    <hr>
+
+    <p>Внутри <code>.fields</code> каждый элемент списка (формы) оформляется в виде элемент <code>.field</code> с дочерними элементами <code>.name</code> и <code>.value</code>.</p>
+    <p>С помощью <code>.fields-group</code> можно выделить несколько элементов <code>.field</code> в одну логическую и визуально слегка обособленную группу.</p>
+    <p>Между элементами с классом <code>.field</code> допускается использование заголовков класса <a href="{$wa_app_url}component/heading/">.heading</a>.</p>
+    <p><code>.field &gt; .value<strong>.submit</strong></code> добавляет отступ слева для расположения кнопки по одной вертикальной линии с элементами <code>input</code> и позволяет обойтись без добавления пустого элемента <code>.name</code>.</p>
+
+    <p>Дополнительный класс на общий элемент <code>.fields<strong>.vertical</strong></code> позволяет разместить весь компонент <code>.fields</code> в одну узкую колонку. В этом случае <code>.fields</code> будет выглядеть, как на мобильных устройствах. Полезно для формата отображения в сайдбаре (узкой боковой колонке).</p>
+
+    <h5>Отступ для <code>.name</code></h5>
+    <p>Вариаций контента, располагающегося в <code>.value</code>, невообразимое множество. Поэтому неизбежно, что <code>.name</code> может быть слегко визуально не быть выровненным в соответствии с контентом <code>.value</code>.</p>
+    <p>Но в связи с тем, что основных типов контента внутри <code>.value</code> встречается не так много — <em>просто текст, <code>input</code>> для ввода текста, <code>textarea</code> или <code>select</code>, кнопка, чекбокс/радиокнопка</em> — для выравнивания контента <code>.name</code> в зависимости от содержимого <code>.value</code> предусмотрены следующие классы-модификаторы:</p>
+    <ul>
+        <li><code>.name</code> (без дополнительных классов): если в <em>.value</em> какой-то обычный статический текст,</li>
+        <li><code>.name<strong>.for-input</strong></code>: если в <em>.value</em> элемент ввода данных: <a href="{$wa_app_url}component/inputs/">input, textarea, select</a>,</li>
+        <li><code>.name<strong>.for-button</strong></code>: если в <em>.value</em> кнопка <a href="{$wa_app_url}component/button/">.button</a>,</li>
+        <li><code>.name<strong>.for-checkbox</strong></code>: если в <em>.value</em> чекбокс или радиокнопка <a href="{$wa_app_url}component/inputs/">.wa-*</a>,</li>
+        <li><code>.name<strong>.middle</strong></code> и <code>.value<strong>.middle</strong></code>: для вертикального центрирования содержимого ячеек.</li>
+    </ul>
+
+    <hr>
+
+    <p>
+        Все описанные варианты применены в большом примере <code>.fields</code> ниже:
+        <button class="button gray js-vertical-unset" type="button">Убрать .vertical (по умолчанию)</button>
+        <button class="button js-vertical-set" type="button">Добавить .vertical</button>
+
+        <script>
+            ( function($) {
+                var $wrapper = $("#js-fields-component-page"),
+                    class_name = "vertical";
+
+                $wrapper.on("click", ".js-vertical-set", function() {
+                    $wrapper.find(".fields").addClass(class_name);
+                });
+
+                $wrapper.on("click", ".js-vertical-unset", function() {
+                    $wrapper.find(".fields").removeClass(class_name);
+                });
+            })(jQuery);
+        </script>
+    </p>
+
+    <div class="line">
+        {_render}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

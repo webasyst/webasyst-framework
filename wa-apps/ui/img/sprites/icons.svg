@@ -1,0 +1,29 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="toggle-full" viewBox="0 0 16 16">
+        <g><path fill="currentColor" d="M15 2C15 1.44772 14.5523 1 14 1H2C1.44772 1 1 1.44772 1 2V6C1 6.55228 1.44772 7 2 7H14C14.5523 7 15 6.55228 15 6V2ZM15 10C15 9.44772 14.5523 9 14 9H2C1.44772 9 1 9.44772 1 10V14C1 14.5523 1.44772 15 2 15H14C14.5523 15 15 14.5523 15 14V10Z" /></g>
+    </symbol>
+
+    <symbol id="toggle-thin" viewBox="0 0 16 16">
+        <g><path fill="currentColor" d="M15 2C15 1.44772 14.5523 1 14 1H2C1.44772 1 1 1.44772 1 2V2C1 2.55228 1.44772 3 2 3H14C14.5523 3 15 2.55228 15 2V2ZM15 6C15 5.44772 14.5523 5 14 5H2C1.44772 5 1 5.44772 1 6V6C1 6.55228 1.44772 7 2 7H14C14.5523 7 15 6.55228 15 6V6ZM1 10C1 9.44772 1.44772 9 2 9H14C14.5523 9 15 9.44772 15 10V10C15 10.5523 14.5523 11 14 11H2C1.44772 11 1 10.5523 1 10V10ZM15 14C15 13.4477 14.5523 13 14 13H2C1.44772 13 1 13.4477 1 14V14C1 14.5523 1.44772 15 2 15H14C14.5523 15 15 14.5523 15 14V14Z" /></g>
+    </symbol>
+
+    <symbol id="delete" viewBox="0 0 9.9 9.9">
+        <g><path fill="currentColor" d="M0,8.5l3.5-3.5L0,1.4L1.4,0l3.5,3.5L8.5,0l1.4,1.4L6.4,4.9l3.5,3.5L8.5,9.9L4.9,6.4L1.4,9.9L0,8.5z"/></g>
+    </symbol>
+
+    <symbol id="edit" viewBox="0 0 10.9 10.8">
+        <g><path fill="currentColor" d="M0,10.8L0,10.8l0.1-3.5l5.8-5.8l3.4,3.4l-5.8,5.8L0,10.8L0,10.8z M0.8,8.3V10h1.7L0.8,8.3z M5.9,3.2L1.7,7.4 l0.8,0.8L6.7,4L5.9,3.2z M10.1,4.1L6.7,0.7c0.9-0.9,2.4-0.9,3.4,0S11.1,3.1,10.1,4.1z"/></g>
+    </symbol>
+
+    <symbol id="minus" viewBox="0 0 12 12">
+        <g><rect fill="currentColor" y="5" width="12" height="2" /></g>
+    </symbol>
+
+    <symbol id="plus" viewBox="0 0 12 12">
+        <g><path fill="currentColor" d="M5,12V7H0V5H5V0H7V5h5V7H7v5Z" /></g>
+    </symbol>
+
+    <symbol id="arrow-bottom" viewBox="0 0 8 5">
+        <g><path fill="currentColor" d="M4,3.806,7.368,0,8,.714,4.208,5,4,4.765,3.792,5,0,.714.632,0Z"/></g>
+    </symbol>
+</svg>

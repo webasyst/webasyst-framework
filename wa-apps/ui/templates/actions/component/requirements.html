@@ -1,0 +1,20 @@
+{$_title = "Требования"}
+{$wa->title($_title)}
+
+<h1>{$_title}</h1>
+
+<p class="large">В Webasyst 2 мы официально <strong>не поддерживаем Internet Explorer</strong>.</p>
+
+<p>wa-2.0.css для поддержки <a href="{$wa_app_url}component/theming/">тем оформления</a> уже использует <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties" target="_blank">CSS custom properties (variables)</a>, которые не поддерживаются никакими версиями Internet Explorer. Их использование стратегически гораздо важнее, чем поддержка общей доли IE &lt;1% в общей массе браузеров.</p>
+
+<p>Бекенд Webasyst 2 работает в рамках стандарта HTML 5.</p>
+
+<p>Других минимальных требований у wa-2.0.css пока нет. Высказывайте свои предложения!</p>
+
+<p class="align-center">* * *</p>
+
+<p><em>У нас бекенд, а не промосайт. Поэтому мы можем (и будем!) решительно отказываться от поддержки браузеров, которые мешают Вебасисту расти.</em></p>
+
+<script>
+    $.wa_ui.title.set({$_title|json_encode});
+</script>

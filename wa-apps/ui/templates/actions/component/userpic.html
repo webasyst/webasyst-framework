@@ -1,0 +1,101 @@
+{$_title = ".userpic"}
+{$wa->title($_title)}
+
+{function name="_render_icon"}
+<!-- в базовом варианте юзерпик-иконка будет смасштабирована до 20х20px -->
+<span class="icon userpic" style="background-image: url('/wa-content/img/userpic.svg');"></span>
+
+<!-- можно использовать модификаторы размера иконок .icon -->
+<span class="icon userpic size-24">
+    <i style="background-image: url('/wa-content/img/userpic.svg');"></i>
+</span>
+{/function}
+
+{function name="_render1"}
+<p>
+    Без .userpic:
+    <img src="/wa-content/img/company.svg" alt="" />
+    <img src="/wa-content/img/userpic.svg" alt="" />
+</p>
+<p>
+    С .userpic:
+    <img class="userpic" src="/wa-content/img/company.svg" alt="" />
+    <img class="userpic" src="/wa-content/img/userpic.svg" alt="" />
+</p>
+{/function}
+
+{function name="_render2"}
+<p>
+    <img class="userpic userpic-20" src="/wa-content/img/userpic.svg" />
+    <img class="userpic userpic-32" src="/wa-content/img/userpic.svg" />
+    <img class="userpic userpic-48" src="/wa-content/img/userpic.svg" />
+    <img class="userpic userpic-96" src="/wa-content/img/userpic.svg" />
+    <img class="userpic userpic-144" src="/wa-content/img/userpic.svg" />
+    <img class="userpic userpic-192" src="/wa-content/img/userpic.svg" />
+</p>
+<p>
+    <i class="userpic userpic-20" style="background-image: url('/wa-content/img/company.svg');"></i>
+    <i class="userpic userpic-32" style="background-image: url('/wa-content/img/company.svg');"></i>
+    <a href="#" class="userpic userpic-48" style="background-image: url('/wa-content/img/company.svg');"></a>
+    <span class="userpic userpic-96" style="background-image: url('/wa-content/img/company.svg');"></span>
+    <span class="userpic userpic-144" style="background-image: url('/wa-content/img/company.svg');"></span>
+    <span class="userpic userpic-192" style="background-image: url('/wa-content/img/company.svg');"></span>
+</p>
+{/function}
+
+<div class="u-component-page">
+
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <blockquote>
+        <strong class="black">TLDR</strong> wa-1.3 -> wa-2.0:
+        Старые заглушки юзерпики <code>userpic20.jpg</code>, <code>company32.jpg</code>, <code>userpic96@2x.jpg</code> и подобные изображения упразднены и требуют замены на <b>userpic.svg</b> и <b>company.svg</b>. Новые векторные версии автоматически масштабируются к нужному размеру.
+    </blockquote>
+
+    <p>Все юзерпики в приложении следует оформлять в простом классе <code>.userpic</code>, который добавляет скругление краев.</p>
+    <p>Компонент <code>.userpic</code> минималистичен и введен для унификации стиля и размеров отображения юзерпиков повсеместно в интерфейсе Webasyst. Так, внутри других компонентов (например, внутри <a href="{$wa_app_url}component/menu/">.menu</a>, <a href="{$wa_app_url}component/bottombar/">.bottombar</a> или <a href="{$wa_app_url}component/icon/">.icon</a>) он корректирует размеры юзерпика и отступы для оптимального внешнего вида — 1.25rem&times;1.25rem ≈ 20&times;20px. Если же компонент, внутри которого используется юзерпик, явный размер не задает, то будет использоваться базовый размер контейнера или изображения.</p>
+
+    <div class="line">
+        {_render1}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render1|escape}</pre>
+    </div>
+
+    <div class="line">
+        <h3>.icon<code>.userpic</code></h3>
+        <p>В рамках произвольного текстового контента рекомендуется оформлять юзерпики в виде иконок <code>.icon.userpic</code>, чтобы все было <span class="icon userpic" style="background-image: url('/wa-content/img/userpic.svg');"></span> ровно и <span class="icon userpic" style="background-image: url('/wa-content/img/company.svg');"></span> красиво.</p>
+        <p>Для управления вертикальной позацией относительно окружения используйте модификаторы <code>.baseline</code> и <code>.top</code>.</p>
+        <div class="u-example">{_render_icon}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render_icon|escape}</pre>
+        </div>
+    </div>
+
+    <div class="line">
+        <h3>.userpic<code>.userpic-XX</code></h3>
+        <p>Явный размер юзерпика задается с помощью дополнительных классов (когда обертка в <a href="{$wa_app_url}component/icon/">.icon</a> не применима):</p>
+        <ul>
+            <li><code>.userpic<strong>.userpic-20</strong></code> (1.25rem&times;1.25rem ≈ 20&times;20px),</li>
+            <li><code>.userpic<strong>.userpic-32</strong></code> (2rem&times;2rem ≈ 32&times;32px),</li>
+            <li><code>.userpic<strong>.userpic-48</strong></code> (3rem&times;3rem ≈ 48&times;48px),</li>
+            <li><code>.userpic<strong>.userpic-96</strong></code> (6rem&times;6rem ≈ 96&times;96px).</li>
+            <li><code>.userpic<strong>.userpic-144</strong></code> (9rem&times;9rem ≈ 144&times;144px).</li>
+            <li><code>.userpic<strong>.userpic-192</strong></code> (12rem&times;12rem ≈ 192&times;192px).</li>
+        </ul>
+        <p>Другие размеры юзерпиков можно оформить с помощью классов <code>.icon.size-XX</code>, однако <em>рекомендуется</em> придерживаться только базовых размеров <code>.userpic-XX</code> с целью сохранения единого оформления в разных приложениях Webasyst.</p>
+        {_render2}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render2|escape}</pre>
+    </div>
+
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

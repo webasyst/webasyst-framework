@@ -1,0 +1,99 @@
+{$_title = ".box"}
+{$wa->title($_title)}
+
+{function name="_render1"}
+<div style="width: 300px; border: 1px dashed gold;">
+    <div class="box">
+        Lorem ipsum
+    </div>
+</div>
+{/function}
+
+{function name="_render2"}
+<div style="width: 400px; border: 1px dashed gold;">
+    <div class="box contentbox">
+        <h1>Lorem</h1>
+        <ul class="chips">
+            <li class="selected"><a href="#">All</a></li>
+            <li><a href="#">Public</a></li>
+            <li><a href="#"><span>Private <span class="small"><i class="fas fa-lock"></i></span></span></a></li>
+        </ul>
+        <p>An amazing photo gallery could be here.</p>
+    </div>
+</div>
+{/function}
+
+{function name="_render_rounded"}
+<div class="box rounded align-center" style="background: #5080a4 url('https://www.vofka.ru/wa-data/public/photos/45/44/4445/4445.970x0@2x.jpg') center center;">
+    <button class="button larger">Buy Now</button>
+</div>
+{/function}
+
+{function name="_render_dragndrop"}
+<div class="box dragndrop">
+    Drop files here
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <blockquote>
+        <strong class="black">TLDR</strong> wa-1.3 -> wa-2.0: .box — это <strong class="black">замена .block из wa-1.3.css.</strong> Но в отличие от wa-1.3.css, применение <code>.box</code> в wa-2.0.css не является повсеместным, так как отступы уже заложены в каждом компоненте. Название <code>.block</code> изменено на <code>.box</code> намеренно именно по причине изменения роли (частоты применения) этого компонента в интерфейсе.
+    </blockquote>
+
+    <p>Компонент <code>.box</code> — простейший контейнер с отступами для визуально гармоничного размещения произвольного контента в интерфейсе бекенда Webasyst.</p>
+    <p>Отступы выверены в соответствии с другим компонентами библиотеки wa-2.0.css (меню, заголовками, кнопками и т. д.). Когда рядом с такими навигационными компонентами нужно разметить какой-то нестандартный элемент интерфейса, например, просто какой-то текст, кнопку, чекбокс, класс <code>.box</code> поможет добавить отступы правильно и в рамках визуальной «сетки» бекенда Webasyst.</p>
+
+    <p>Оборачивать базовые навигионные компоненты (например, <code>.menu</code>) в <code>.box</code> не нужно. Использовать <code>.box</code> нужно только для произвольного кастомного контента.</p>
+
+    <h3><code>.box</code></h3>
+    <p><code>&lt;div class="box"&gt;...&lt;/div&gt;</code> — и готово. В простейшем виде <code>.box</code> идеально подходит для небольших блоков с некоторым кастомным контентом.</p>
+
+    <div class="line">
+        {_render1}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render1|escape}</pre>
+    </div>
+
+    <h3>.box<code>.contentbox</code></h3>
+    <p>Если содержимое основного контейнера <code>.content</code> (из пары <a href="{$wa_app_url}component/sidebar/">.sidebar / .content</a>) не поддается оформлению в <a href="{$wa_app_url}component/article/">.article</a>, но требует визуальных отступов, то рекомендуется использовать вариант <code>.box.contentbox</code>. Этот вариант предполагает отступы большего размера и оптимально подойдет, например, для больших таблиц или фотогалереи.</p>
+    <div class="line">
+        {_render2}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render2|escape}</pre>
+    </div>
+
+    <h3>.box<code>.rounded</code></h3>
+    <p>Иногда <code>.box</code> может быть полезен и в рамках текстового контента, который уже имеет отступы. Например, внутри <code>.article</code>. В таких случаях может быть полезно добавить дополнительные стили с помощью <code>.rounded</code>, <code>.align-center</code>, <code>.largest</code> и прочих классов-модификаторов.</p>
+    <p>
+    <div class="line">
+        {_render_rounded}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_rounded|escape}</pre>
+    </div>
+
+    <h3>.box<code>.uploadbox</code></h3>
+    <p>Оформление блока для драг-н-дропа файлов. Для явного регулирования высоты блока используйте собственные локальные стили <code>height</code>.</p>
+    <p>
+    <div class="line">
+        {_render_dragndrop}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_dragndrop|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

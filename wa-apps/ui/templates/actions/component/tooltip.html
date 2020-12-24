@@ -1,0 +1,235 @@
+{$_title = ".tooltip"}
+{$wa->title($_title|json_encode)}
+
+{capture assign="_example_1"}
+<div class="tooltip custom" id="tooltip-example-1">
+    <span class="tooltip-toggle"><i class="fas fa-question"></i></span>
+    <div class="tooltip-text">
+        <p>Какой-то большой контент</p>
+        <ul>
+            <li><a href="javascript:void(0);">Ссылка #1</a></li>
+            <li><a href="javascript:void(0);">Ссылка #2</a></li>
+            <li><a href="javascript:void(0);">Ссылка #3</a></li>
+            <li><a href="javascript:void(0);">Ссылка #4</a></li>
+        </ul>
+    </div>
+    <script>
+        ( function($) {
+            $("#tooltip-example-1").waTooltip();
+        })(jQuery);
+    </script>
+</div>
+{/capture}
+
+{capture assign="_example_2"}
+<div class="tooltip custom" id="tooltip-example-2">
+    <span class="tooltip-toggle"><i class="fas fa-question"></i></span>
+    <div class="tooltip-text">
+        <p>Какой-то большой контент</p>
+        <ul>
+            <li><a href="javascript:void(0);">Ссылка #1</a></li>
+            <li><a href="javascript:void(0);">Ссылка #2</a></li>
+            <li><a href="javascript:void(0);">Ссылка #3</a></li>
+            <li><a href="javascript:void(0);">Ссылка #4</a></li>
+        </ul>
+    </div>
+    <script>
+        ( function($) {
+            $("#tooltip-example-2").waTooltip({
+                hover: true,
+                hover_delay: 1000
+            });
+        })(jQuery);
+    </script>
+</div>
+{/capture}
+
+{function name="_render"}
+<ul>
+    <li>
+         <span class="tooltip" id="tooltip-2" data-title="Я подсказка справа">Подсказка справа при наведении на текст</span>
+    </li>
+    <li>
+        Подсказка слева <span class="tooltip left" data-title="Я подсказка слева"><i class="fas fa-info-circle"></i></span>
+    </li>
+    <li>
+        <span class="tooltip top" data-title="Я подсказка сверху">Подсказка сверху при наведении на текст</span>
+    </li>
+    <li>
+        Подсказка снизу <span class="tooltip bottom" data-title="Я подсказка снизу"><i class="fas fa-info"></i></span>
+    </li>
+    <li>
+        <div class="tooltip custom">
+            Сложная подсказка справа при наведении на текст
+            <div class="tooltip-text">HTML</div>
+        </div>
+    </li>
+    <li>
+        Сложная подсказка слева
+        <div class="tooltip custom left">
+            <i class="fas fa-question-circle"></i>
+            <div class="tooltip-text">HTML</div>
+        </div>
+    </li>
+    <li>
+        <div class="tooltip custom top">
+            Сложная подсказка сверху при наведении на текст
+            <div class="tooltip-text">HTML</div>
+        </div>
+    </li>
+    <li>
+        Сложная подсказка снизу
+        <div class="tooltip custom bottom">
+            <i class="fas fa-star"></i>
+            <div class="tooltip-text">HTML</div>
+        </div>
+    </li>
+    <li>
+        Сложная подсказка с отображением по клику
+        <div class="tooltip custom bottom" id="tooltip-1">
+            <i class="fas fa-question"></i>
+            <div class="tooltip-text">HTML</div>
+
+            <script>
+                ( function($) {
+                    $("#tooltip-1").waTooltip({
+                        hover: false,
+                        open: function(that) {
+                            console.log("open", that);
+                        },
+                        close: function(that) {
+                            console.log("close", that);
+                        }
+                    });
+                })(jQuery);
+            </script>
+        </div>
+    </li>
+</ul>
+{/function}
+
+{capture assign="_example_3"}
+<div class="tooltip custom">
+    <span class="tooltip-toggle">
+        <i class="fas fa-question"></i>
+    </span>
+    <div class="tooltip-text">
+        <p>Абзац текста</p>
+        <ul>
+            <li>Список #1</li>
+            <li>Список #2</li>
+        </ul>
+    </div>
+</div>
+{/capture}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Этот компонент показывает скрытый текст при наведении курсора мыши. Есть 2 варианта использования:</p>
+    <ul>
+        <li>
+            {capture assign="_example"}<span class="tooltip" data-title="Подсказка"><i class="fas fa-question"></i></span>{/capture}
+
+            Простой <code class="bold">.tooltip</code>: {$_example}
+            <div class="hint">Текст подсказки располагается в data-title отрибуте и содержит простой текст без разметки.</div>
+
+            <div class="line">
+                <pre class="prettyprint">{$_example|escape}</pre>
+            </div>
+
+            <br>
+        </li>
+        <li>
+
+            Сложный <code class="bold">.tooltip.custom</code>: {$_example_3}
+
+            <div class="hint">Текст подсказки содержит HTML-разметку и располагается в скрытом стилями блоке <code>div.tooltip-text</code> внутри подсказки.</div>
+
+            <div class="line">
+                <pre class="prettyprint">{$_example_3|trim|escape}</pre>
+            </div>
+
+            <br>
+        </li>
+    </ul>
+    <p>В варианте по умолчанию подсказка носит вспомогательный характер и не предполагает каких-то действий пользователя внутри себя. Если вы хотите поместить внутрь подсказки ссылки или другой динамичный контент, то изучите раздел о <code>.waTooltip()</code> чуть ниже.</p>
+
+    <div class="u-example-section">
+        <h3>Модификаторы</h3>
+        <ul>
+            <li>
+                <div>.tooltip<code class="bold">.inline</code>: <span class="tooltip inline" data-title="Простая подсказка"><i class="fas fa-question"></i></span></div>
+                <div class="hint">Текст подсказки будет показан в одну строку. Актуально для маленького текста без переносов строк.</div>
+                <br>
+            </li>
+            <li>
+                Используйте <code class="bold">.left</code>, <code class="bold">.right</code>(по умолчанию), <code class="bold">.top</code>, <code class="bold">.bottom</code> для управления позицией подсказки.
+            </li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>Примеры</h3>
+
+        <div class="line">
+            {_render}
+        </div>
+
+        <div class="line">
+            <pre class="prettyprint">{_render|escape}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3><code>.waTooltip</code></h3>
+        <p>Используйте JavaScript-компонент <code>.waTooltip()</code>, чтобы показывать подсказку при клике по видимому элементу. Отображение при наведении осталось, но является опцией, зависящей от параметра <code>hover</code>, указанного при инициализации. Рекомендуется использовать в ситуациях, когда в теле подсказки есть ссылки или другой контент, с которым пользователь может взаимодействовать.</p>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.waTooltip <code>параметры</code></h3>
+        <p>Опции</p>
+        <ul>
+            <li><span class="bold">hover</span> (boolean, по умолчанию false) — показывает подсказку при наведении курсора.
+                <br>
+            </li>
+            <li><span class="bold">hover_delay</span> (number, по умолчанию 1000) — время, в течение которого подсказка остается видимой перед закрытием (после потери фокуса).
+                <br>
+            </li>
+        </ul>
+        <p>Функции:</p>
+        <ul>
+            <li><span class="bold">onOpen</span> (function) — событие при показе подсказки.
+                <div class="hint"><code>function(tooltip_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">onClose</span> (function) — событие при скрытии подсказки.
+                <div class="hint"><code>function(tooltip_instance) { ... }</code></div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="u-example-section">
+        <h3>Примеры использования <code>.waTooltip</code></h3>
+        <ul>
+            <li>
+                Показываем подсказку при клике по иконке: {$_example_1}
+                <pre class="prettyprint">{$_example_1|escape}</pre>
+                <br>
+            </li>
+            <li>
+                Показываем подсказку при наведении или клике по иконке: {$_example_2}
+                <pre class="prettyprint">{$_example_2|escape}</pre>
+                <br>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

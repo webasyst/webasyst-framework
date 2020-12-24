@@ -1,0 +1,87 @@
+{$_title = ".card"}
+{$wa->title($_title)}
+
+{function name="_render_1"}
+<figure class="card" style="width: 300px;">
+    <div class="image">
+        <a href="https://ru.wikipedia.org/wiki/Кавказский_заповедник">
+            <img src="https://www.vofka.ru/wa-data/public/photos/72/49/4972/4972.500.jpg">
+        </a>
+    </div>
+    <div class="details">
+        <h5>Кавказский заповедник</h5>
+        <p class="small">Государственный природный заповедник. Самая большая по территории и старейшая, особо охраняемая природная территория на Северном Кавказе. <a href="https://ru.wikipedia.org/wiki/Кавказский_заповедник">Википедия</a>.</p>
+        <hr>
+        <div class="fields vertical small">
+            <div class="fields-group">
+                <div class="field">
+                    <div class="name">
+                        Координаты
+                    </div>
+                    <div class="value">
+                        <strong>43°50′10″ с. ш. 40°24′03″ в. д.</strong>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">
+                        Дата основания
+                    </div>
+                    <div class="value">
+                        12 мая 1924 года
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</figure>
+{/function}
+
+{function name="_render_2"}
+<figure class="card" style="width: 250px;">
+    <div class="details">
+        <h5 class="heading">
+            <span>Featured</span>
+            <span class="count"><i class="fas fa-star" style="color: gold;"></i></span>
+        </h5>
+    </div>
+    <div class="image" style="height: 150px; background: #1b94ee url('https://pocketlists.com/wa-apps/site/themes/pl2site/img/pl2promo-iconmix-background.jpg') no-repeat; background-size: 320%; background-position: bottom right;">
+    </div>
+    <div class="details">
+        <h3><a href="https://pocketlists.com">Pocket Lists</a></h3>
+        <p class="small">The design of Pocket Lists is inspired by the real life experience of making lists of things and keeping them in our pockets. Instantly familiar, robust, and dead simple to use — the ultimate to-do list app that helps families and individuals stay productive.</p>
+        <input type="button" class="button full-width large" value="Download" />
+        <p class="hint align-center">
+            &copy; 1312 Inc.
+        </p>
+    </div>
+</figure>
+{/function}
+
+<div class="u-component-page">
+
+    <h1>{$_title}</h1>
+    <p>Компонент <code>.card</code> «поднимает» блок над базовым уровнем контента и показывает его в виде карточки.</p>
+
+    {_render_1}
+    <div class="line">
+        <pre class="prettyprint">{_render_1|escape}</pre>
+    </div>
+
+    <p>Внутри карточки есть два основных дочерних элемента: <code>.image</code>, предназначенный для отображения какой-то графической информации (CSS-фон, фото <code>&lt;img&gt;</code>, видео), и <code>.details</code> для произвольного контента с внутренними отступами. Хотя бы один из этих элементов внутри карточки должен присутствовать.</p>
+    <p>Ширина элемента <code>.card</code> определяется ее родительским элементом или явно выставленным значением ширины.</p>
+    <p><code>.image</code> и <code>.details</code> можно комбинировать друг с другом.</p>
+
+    {_render_2}
+    <div class="line">
+        <pre class="prettyprint">{_render_2|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+
+</div>

@@ -1,0 +1,162 @@
+{$_title = ".icon"}
+{$wa->title($_title)}
+
+{function name="_render_icon"}
+<span class="icon userpic top" style="background-image: url('/wa-content/img/userpic.svg');"></span>
+
+<span class="icon userpic size-32 top">
+    <i style="background-image: url('/wa-content/img/userpic.svg');"></i>
+</span>
+
+<span class="icon userpic size-48 top">
+    <img src="/wa-content/img/userpic.svg" alt="">
+</span>
+
+<span class="icon userpic size-72 top">
+    <img src="/wa-content/img/userpic.svg" alt="">
+</span>
+
+<span class="icon userpic size-96" style="background-image: url('/wa-content/img/company.svg');"></span>
+{/function}
+
+{function name="_render"}
+<div class="inlinebox space-10">
+    <i class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#toggle-full"></use></svg></i>
+    <i class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#toggle-thin"></use></svg></i>
+    <i class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#delete"></use></svg></i>
+    <i class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#edit"></use></svg></i>
+    <i class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#minus"></use></svg></i>
+    <i class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#plus"></use></svg></i>
+    <i class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#arrow-bottom"></use></svg></i>
+</div>
+{/function}
+
+
+{function name="_render_1"}
+<div style="color: #aaa; font-size: 5rem;">
+    <i class="fas fa-book"></i>
+    <i class="fas fa-smile"></i>
+    <i class="fas fa-crown" style="color: gold;"></i>
+    <i class="fas fa-star"></i>
+</div>
+{/function}
+
+<div class="u-component-page">
+
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <blockquote>
+        <strong class="black">TLDR</strong> wa-1.3 -> wa-2.0:
+        Растровых иконок <strong class="black">.icon16 больше нет</strong>. Вместо них — векторные иконки Font Awesome.
+    </blockquote>
+
+    <p>Все вспомогательные иконки в интерфейсе — векторные, в формате SVG. По умолчанию используется и рекомендуется к использованию библиотека <a href="https://fontawesome.com"><b>Font Awesome 5</b></a>.</p>
+
+    <p>Текущая версия библиотеки, используемой во фреймворке Webasyst — Font Awesome <strong>5.13.0</strong>.</p>
+
+    {_render_1}
+    <div class="line">
+        <pre class="prettyprint">{_render_1|escape}</pre>
+    </div>
+
+    <p>Допускается использовать все <a href="https://fontawesome.com/how-to-use/on-the-web/referencing-icons/basic-use">документированные возможности</a> Font Awesome, например, менять базовый размер или цвет иконок и т. д. Если в некоторых случаях что-то не сработает, то только в силу специфики отдельных интерфейсных компонентов Webasyst (например, в <code>.menu</code> все иконки — фиксированного размера 1rem; это сделано намеренно с целью уменьшения энтропии).</p>
+
+    <p>Растровые спрайты <code>.icon16</code> остались в истории и в рамках wa-2.0.css недоступны.</p>
+
+    <hr>
+
+    <h3>Индивидуальные иконки <code>span.icon</code></h3>
+
+    <p>Компонент <code>.icon</code> предназначен для ситуаций, когда необходимо вставить свою <em>индивидуальную</em> иконку (например, в <code>&lt;svg&gt;</code> формате или <code>&lt;img&gt;</code>). Помещенная внутрь контейнера <code>span.icon</code>, иконка будет стилистически оформлена в соотетствие с текущий кеглем.</p>
+    <p>Этот класс — необязательный, т. е. все подряд иконки не нужно оборачивать в <code>.icon</code>. Так, иконки <strong>Font Awesome в <code>span.icon</code> оборачивать не нужно</strong> в связи с разными свойствами геометрии иконок (Font Awesome имеет максимальную ширину 1.25rem, а индивидуальная иконка <code>.icon</code> всегда считается квадратной с размерами 1x1rem).</p>
+    <p>Типовые ситуации применения <code>.icon</code>:</p>
+    <ul>
+        <li>
+            <p><code>svg</code> без дополнительных стилей может сломать вёрстку, при использовании с <code>.icon</code> она будет находиться внутри конейнера с нормальными размерами.</p>
+            <p>
+                <code>&lt;span class="icon"&gt;<strong>&lt;svg&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><svg><use xlink:href="{$wa_url}wa-apps/ui/img/sprites/icons.svg?v={$wa->version()}#edit"></use></svg></span>
+            </p>
+            <br>
+        </li>
+        <li>
+            <p><code>img</code> больших размеров внутри <code>.icon</code> будет сужен до размера контейнера.</p>
+            <p>
+                <code>&lt;span class="icon"&gt;<strong>&lt;img&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><img src="/wa-apps/ui/img/ui.svg?v={$wa->version()}" alt=""></span>
+            </p>
+            <br>
+        </li>
+        <li>
+            <p>Прочие ситуации, когда нужно иконку, картинку или цвет реализовать через фон. Стили <code>.icon</code> адаптированы для этого.</p>
+            <p>Класс <code>.rounded</code> на внутренний элемент сделает иконку круглой.</p>
+            <p>
+                <code>&lt;span class="icon"&gt;<strong>&lt;i style="background-image: url('/wa-apps/ui/img/ui.svg?v={$wa->version()}');"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><i style="background-image: url('/wa-apps/ui/img/ui.svg?v={$wa->version()}');"></i></span>
+            </p>
+            <p>
+                <code>&lt;span class="icon"&gt;<strong>&lt;i class="rounded" style="background: orangered;"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><i class="rounded" style="background-color: orangered;"></i></span>
+            </p>
+            <p>Класс <code>.userpic</code> на внутренний элемент сделает иконку чуть более различимой (1.25rem&times;1.25rem ≈ 20&times;20px) и правильно расставит отступы.</p>
+            <p>
+                <code>&lt;span class="icon"&gt;<strong>&lt;i class="userpic" style="background-image: url('/wa-content/img/userpic20@2x.jpg');"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><i class="userpic" style="background-image: url('/wa-content/img/userpic20@2x.jpg');"></i></span>
+            </p>
+        </li>
+    </ul>
+
+    <div class="line">
+        {function name="_icon_example"}
+svg:
+<span class="icon"><svg>...</svg></span>
+
+image:
+<span class="icon"><img src="..." alt=""></span>
+
+css-background:
+<span class="icon"><i class="rounded" style="background-image: url('...');"></i></span>
+<span class="icon"><i class="rounded" style="background-color: #abc;"></i></span>
+        {/function}
+        <pre class="prettyprint">{_icon_example|escape}</pre>
+    </div>
+
+
+    <h3>span.icon<code>.space-16</code></h3>
+    <p>Изначально <code>.icon</code> — это квадратный контейнет с размерами 1x1rem. Размерами контейнера можно управлять, используя дополнительный класс <code>.size-<strong>xx</strong></code>, где xx — число, обозначающее размер в пикселях при условии 1rem = 16px (при изменении размера rem иконки масштабируются аналогичным образом).</p>
+    <p class="inlinebox space-10">
+        {strip}
+        {foreach [10,12,14,16,18,20,22,24,26,28,30] as $_size}
+            <span class="icon size-{$_size|escape} rounded" style="background-image: url('/wa-apps/ui/img/ui.svg?v={$wa->version()}');"></span>
+        {/foreach}
+        {/strip}
+    </p>
+
+    <h3>span.icon<code>.baseline</code></h3>
+    <p>
+        Для управления вертикальной позицией элементов относительно друг друга используйте дополнительные классы:
+    </p>
+    <ul>
+        <li><code>.icon<span class="bold">.top</span></code> — верх строки</li>
+        <li><code>.icon<span class="bold">.baseline</span></code> — базовая линия</li>
+        <li><code>.icon<span class="bold">.middle</span></code> — середина строки</li>
+        <li><code>.icon<span class="bold">.shift-x</span></code> — со смещением вниз на x пикселей относительно baseline. Актуально в ситуациях с разными размерами шрифта у соседних элементов.</li>
+    </ul>
+
+    <div class="line">
+        <h3>.icon<code>.userpic</code></h3>
+        <p>Ниже показаны примеры, когда <a href="{$wa_app_url}component/userpic/">.userpic</a> сделан на основе <code>.icon</code>. По умолчанию такой <code>.userpic</code> имеет смещение относительно текста. Для управления вертикальной позацией относительно окружения используйте модификаторы <code>.baseline</code>, <code>.top</code></p>
+        <div class="u-example">{_render_icon}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render_icon|escape}</pre>
+        </div>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

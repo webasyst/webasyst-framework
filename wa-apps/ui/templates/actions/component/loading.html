@@ -1,0 +1,86 @@
+{$_title = ".waLoading()"}
+{$wa->title($_title)}
+
+{capture assign="_example_1"}
+<div class="line inlinebox space-10">
+    <button id="js-show">Показать загрузку</button>
+    <button id="js-load">Процесс загрузки</button>
+    <button id="js-emulate">Эмуляция загрузки</button>
+</div>
+<div class="line inlinebox space-10">
+    <button id="js-done" class="green">Успешная загрузка</button>
+    <button id="js-abort" class="yellow">Прерывание</button>
+    <button id="js-close" class="purple">Закрытие</button>
+</div>
+
+<p class="hint">Чтобы увидеть события «Успешная загрузка», «Закрытие» и «Прерывание», сначала покажите индикатор закгрузки кликом по кнопке «Показать загрузку» или «Процесс загрузки».</p>
+
+<script>
+( function($) {
+    var waLoading = $.waLoading();
+
+    $("#js-show").on("click", function() { waLoading.show(20); });
+    $("#js-load").on("click", function() { waLoading.show(); waLoading.set(100); });
+    $("#js-emulate").on("click", function() { waLoading.animate(6000, 99, false); });
+
+    $("#js-done").on("click", function() { waLoading.done(); });
+    $("#js-abort").on("click", function() { waLoading.abort(); });
+    $("#js-close").on("click", function() { waLoading.hide(); });
+})(jQuery);
+</script>
+{/capture}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.wa-loading</code></h2>
+
+    <div class="b-example-section">
+        <p>Рекомендованный индикатор процесса загрузки страницы. Рекомендуется использовать при обновлении большой площади контента (большей части экрана). Например, при ожидании от сервера нового содержимого для отображения в <code>.content</code>.</p>
+        {$_example_1}
+        <div class="line">
+            <pre class="prettyprint">{$_example_1|escape}</pre>
+        </div>
+
+        <p>.waLoading <code>параметры</code>:</p>
+        <ul>
+            <li><span class="bold">top</span> ("css-top-property-value", по умолчанию "4rem") — смещение индикатора загрузки сверху.
+                <br>
+            </li>
+        </ul>
+        <p>.waLoading <code>методы</code>:</p>
+        <ul>
+            <li><span class="bold">show</span> ( function(percent) ) — показывает индикатор в DOM.
+                <div class="hint">Можно также указать стартовое положение активной ширины в параметре <code>percent</code>.</div>
+                <div class="hint">Значение параметра <code>percent</code> должен быть в диапазоне от 0 до 100 (number).</div>
+                <br>
+            </li>
+            <li><span class="bold">set</span> ( function(percent) ) — устанавливает активный процент ширины.
+                <div class="hint">Значение параметра <code>percent</code> должен быть в диапазоне от 0 до 100 (number).</div>
+                <br>
+            </li>
+            <li><span class="bold">animate</span> ( function(duration, end_percent, close) ) — эмуляция загрузки.
+                <div class="hint">Параметр <code>duration</code> должен быть числом, обозначающим время в милисекундах, по умолчанию — 4000 (4 секунды).</div>
+                <div class="hint">Значение параметра <code>percent</code> должен быть в диапазоне от 0 до 100 (number), по умолчанию 100</div>
+                <div class="hint">Параметр close (boolean, по умолчанию true) отвечает за закрытие индикатора загрузки по истечении времени таймера.</div>
+                <br>
+            </li>
+            <li><span class="bold">abort</span> ( function() ) — окрашивает полоску в красный цвет и закроет индикатор.
+                <br>
+            </li>
+            <li><span class="bold">done</span> ( function() ) — Покрасит полоску в зеленый цвет и закроет индикатор.
+                <br>
+            </li>
+            <li><span class="bold">hide</span> ( function() ) — закроет индикатор.
+                <br>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>
