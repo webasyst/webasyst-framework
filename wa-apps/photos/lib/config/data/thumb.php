@@ -40,7 +40,7 @@ $main_thumbnail_size = photosPhoto::getBigPhotoSize();
 
 $enable_2x = false;
 
-if (preg_match('#((?:\d{2}/){2}([0-9]+)(?:\.[0-9a-f]+)?)/\\2\.(\d+(?:x\d+)?)(@2x)?\.([a-z]{3,4})#i', $request_file, $matches)) {
+if (preg_match('#^((?:\d{2}/){2}([0-9]+)(?:\.[0-9a-f]+)?)/\\2\.(\d+(?:x\d+)?)(@2x)?\.([a-z]{3,4})$#i', $request_file, $matches)) {
     $file = $matches[1].'.'.$matches[5];
     $main_thumb_file = $matches[1].'/'.$matches[2].'.'.$main_thumbnail_size.'.'.$matches[5];
     $size = $matches[3];
