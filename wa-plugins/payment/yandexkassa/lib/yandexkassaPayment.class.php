@@ -1214,6 +1214,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     );
                     $view[] = sprintf('Из общей суммы %s', $value);
 
+                } elseif (isset($transaction_raw_data['cancellation_details']['party'])
+                    && $transaction_raw_data['cancellation_details']['party'] == 'merchant'
+                ) {
+                    $data['state'] = self::STATE_CANCELED;
+                    $data['type'] = self::OPERATION_CANCEL;
                 } else {
                     $data['state'] = self::STATE_VERIFIED;
                     $data['type'] = self::OPERATION_CHECK;
@@ -1244,7 +1249,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             'country_forbidden'             => 'Нельзя заплатить банковской картой, выпущенной в этой стране. Клиенту следует использовать другое платёжное средство. Вы можете настроить ограничения на оплату иностранными банковскими картами.',
             'fraud_suspected'               => 'Платёж заблокирован из-за подозрения в мошенничестве. Клиенту следует использовать другое платёжное средство.',
             'general_decline'               => 'Причина не детализирована. Клиенту следует обратиться к инициатору отмены платежа за уточнением подробностей.',
-            'identification_required'       => 'Превышены ограничения на платежи для кошелька в «Яндекс.Деньгах». Клиенту следует идентифицировать кошелёк или выбрать другое платёжное средство.',
+            'identification_required'       => 'Превышены ограничения на платежи для кошелька в «ЮMoney». Клиенту следует идентифицировать кошелёк или выбрать другое платёжное средство.',
             'insufficient_funds'            => 'Недостаточно денег для оплаты. Клиенту следует пополнить баланс или использовать другое платёжное средство.',
             'invalid_card_number'           => 'Неправильно указан номер карты. Клиенту следует повторить платёж и ввести корректные данные.',
             'invalid_csc'                   => 'Неправильно указан код CVV2 (CVC2, CID). Клиенту следует повторить платёж и ввести корректные данные.',
@@ -1259,7 +1264,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $view = 'Продавец товаров и услуг (вы)';
                 break;
             case 'yandex_checkout':
-                $view = 'Яндекс.Касса';
+                $view = 'ЮKassa';
                 break;
             case 'payment_network':
                 $view = '«Внешние» участники платёжного процесса';
@@ -1440,7 +1445,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
             //Электронные деньги
             'yandex_money'   => array(
                 'value'     => 'yandex_money',
-                'title'     => 'Яндекс.Деньги',
+                'title'     => 'ЮMoney (Яндекс.Деньги)',
                 'ttl'       => '1 час',
                 'hold'      => '7 дней',
                 'code'      => 'PC',
@@ -1570,9 +1575,9 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
                 ''         => array(
                     'value' => '',
-                    'title' => 'На выбор покупателя после перехода на сайт «Яндекс.Кассы» (рекомендуется)',
+                    'title' => 'На выбор покупателя после перехода на сайт «ЮKassa» (рекомендуется)',
                 ),
-                'customer' => 'На выбор покупателя до перехода на сайт «Яндекс.Кассы»',
+                'customer' => 'На выбор покупателя до перехода на сайт «ЮKassa»',
             ) + self::settingsCustomerPaymentTypeOptions();
     }
 
