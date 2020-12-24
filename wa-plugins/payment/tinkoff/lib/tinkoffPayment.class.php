@@ -31,6 +31,8 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
         'USD' => 840,
     );
 
+    const CHESTNYZNAK_PRODUCT_CODE = 'chestnyznak';
+
     /**
      * @return string callback gateway url
      */
@@ -682,6 +684,77 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
     }
 
     /**
+     * @param array<int, array> $item_product_codes - array of product code records indexed by id of record
+     *  id => [
+     *      int      'id'
+     *      string   'code'
+     *      string   'name' [optional]
+     *      string   'icon' [optional]
+     *      string   'logo' [optional]
+     *      string[] 'values' - promo code item value for each instance of product item
+     *  ]
+     * @return array - chestnyznak values
+     */
+    protected function getChestnyznakCodeValues(array $item_product_codes)
+    {
+        $values = [];
+        foreach ($item_product_codes as $product_code) {
+            if (isset($product_code['code']) && $product_code['code'] === self::CHESTNYZNAK_PRODUCT_CODE) {
+                if (isset($product_code['values'])) {
+                    $values = $product_code['values'];
+                    break;
+                }
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Split one product item to several items because chestnyznak marking code must be related for single product instance
+     * Extend each new item with 'fiscal_code' value from $values and converted to fiscal code
+     * Invariant $item['quantity'] === count($values)
+     * @param array $item - order item
+     * @param array $values - chestnyznak values
+     * @return array[] - array of items. Each item has 'product_code'
+     */
+    protected function splitItem(array $item, array $values)
+    {
+        $quantity = (int)ifset($item, 'quantity', 0);
+        $items = [];
+        for ($i = 0; $i < $quantity; $i++) {
+            $value = isset($values[$i]) ? $values[$i] : '';
+            $item['fiscal_code'] = $this->convertToFiscalCode($value);
+            $item['quantity'] = 1;
+            $item['total'] = $item['price'];
+            $items[] = $item;
+        }
+        return $items;
+    }
+
+    /**
+     * Конвертация из DataMatrix кода (Честный знак) в код фискализации
+     * @param $uid
+     * @return bool|string
+     */
+    protected function convertToFiscalCode($uid)
+    {
+        if (!class_exists('shopChestnyznakPluginCodeParser')) {
+            return false;
+        }
+
+        $code = shopChestnyznakPluginCodeParser::convertToFiscalCode($uid, [
+            'with_tag_code' => false
+        ]);
+        if (!$code) {
+            return false;
+        }
+
+        return $code;
+    }
+
+
+    /**
      * Convert transaction raw data to formatted data
      * @param array $data - transaction raw data
      * @return array $transaction_data
@@ -872,7 +945,9 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                 $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
                 if ($item['price'] > 0 && $item['quantity'] > 0) {
 
-                    switch (ifset($item['type'])) {
+                    $item_type = ifset($item['type']);
+
+                    switch ($item_type) {
                         case 'shipping':
                             $item['payment_object_type'] = $this->payment_object_type_shipping;
                             break;
@@ -885,21 +960,38 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
                             break;
                     }
 
-                    $this->receipt['Items'][] = array(
-                        'Name'          => mb_substr($item['name'], 0, 64),
-                        'Price'         => round($item['amount'] * 100),
-                        'Quantity'      => floatval($item['quantity']),
-                        'Amount'        => round($item['amount'] * $item['quantity'] * 100),
-                        'PaymentMethod' => $this->payment_method_type,
-                        'PaymentObject' => $item['payment_object_type'],
-                        'Tax'           => $this->getTaxId($item),
-                    );
+                    $items_data = [$item];
+                    if ($item_type === 'product') {
+                        $values = $this->getChestnyznakCodeValues($item['product_codes']);
+                        if ($values) {
+                            $items_data = $this->splitItem($item, $values);
+                        }
+                    }
+
+                    foreach ($items_data as $item_data) {
+                        $receipt_item = [
+                            'Name' => mb_substr($item_data['name'], 0, 64),
+                            'Price' => round($item_data['amount'] * 100),
+                            'Quantity' => floatval($item_data['quantity']),
+                            'Amount' => round($item_data['amount'] * $item_data['quantity'] * 100),
+                            'PaymentMethod' => $this->payment_method_type,
+                            'PaymentObject' => $item_data['payment_object_type'],
+                            'Tax' => $this->getTaxId($item_data),
+                        ];
+
+                        if (isset($item_data['fiscal_code'])) {
+                            $receipt_item['Ean13'] = $item_data['fiscal_code'];
+                        }
+
+                        $this->receipt['Items'][] = $receipt_item;
+                    }
                 }
 
                 if (!empty($item['tax_rate']) && (!$item['tax_included'] || !in_array($item['tax_rate'], array(0, 10, 18, 20)))) {
                     return null;
                 }
             }
+
             if ($order->shipping && $order->shipping > 0) {
                 $item = array(
                     'tax_rate'     => $order->shipping_tax_rate,
