@@ -1,4 +1,16 @@
-# Webasyst #
+# Webasyst 2 UI preview (alpha) #
+
+**BEFORE YOU BEGIN: 'webasyst2' branch is in the alpha status and to be used for development & preview purposes only. Do not switch your production Webasyst installations to this branch!**
+
+To preview the new Webasyst 2 UI:
+1. Switch your Webasyst copy to the 'webasyst2' branch.
+2. Edit wa-config/apps.php and add 'ui' => true, line in the end (install the 'UI' app).
+3. Use 1.3 / 2.0 UI mode toggle in the bottom right corner.
+4. Head on to the UI app in the backend and see all the details about the new UI.
+
+P. S. The UI app is only available in Russian at the moment. We apologize for any inconvenience caused.
+
+--
 
 Webasyst is an open-source PHP framework for fast development of web apps with a password-protected user backend and a publicly available website frontend.
 Distributed under the terms of LGPL license.
