@@ -323,7 +323,7 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper im
         $points = $handbook_manager->getHandbook();
 
         $city = mb_strtolower($this->bxb->getAddress('city'));
-        $region_code = $this->bxb->getAddress('region');
+        $region_code = $this->getRegionCode();
 
         $cities_points = ifset($points, 'cities', []);
 
@@ -350,5 +350,24 @@ class boxberryShippingCalculatePoints extends boxberryShippingCalculateHelper im
         uasort($result, $comparator);
 
         return $result;
+    }
+
+    protected function getRegionCode()
+    {
+        $region_code = $this->bxb->getAddress('region');
+
+        // no region for the selected country in the settings
+        if (!is_numeric($region_code)) {
+            $country_iso3_name = $this->bxb->getAddress('country');
+            $allowed_countries = boxberryShippingCountriesAdapter::getAllowedCountries();
+            $country_code = $allowed_countries[$country_iso3_name];
+            $regions = boxberryShippingCountriesAdapter::getRegionCodes($country_code);
+            $region_name = trim(str_replace('область', '', mb_strtolower($region_code)));
+            if (isset($regions[$region_name])) {
+                $region_code = $regions[$region_name];
+            }
+        }
+
+        return $region_code;
     }
 }

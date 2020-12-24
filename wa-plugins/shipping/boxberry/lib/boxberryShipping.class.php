@@ -259,10 +259,10 @@ class boxberryShipping extends waShipping
      */
     public function getParcelWeight()
     {
-        $weight = (float)$this->getTotalWeight();
+        $weight = (int)ceil($this->getTotalWeight());
 
         if (!$weight) {
-            $weight = (float)$this->default_weight;
+            $weight = (int)ceil($this->default_weight);
         }
         return $weight;
     }

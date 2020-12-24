@@ -52,7 +52,7 @@ class boxberryShippingViewHelper
      */
     protected function getPoint($code)
     {
-        $handbook = new boxberryShippingHandbookAvailablePoints($this->getApiManger());
+        $handbook = new boxberryShippingHandbookAvailablePoints($this->getApiManger(), [], $this->bxb);
         return $handbook->getPointByCode($code);
     }
 

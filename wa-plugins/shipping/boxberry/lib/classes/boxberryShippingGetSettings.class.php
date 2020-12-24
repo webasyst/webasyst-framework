@@ -140,7 +140,7 @@ class boxberryShippingGetSettings
         if ($targetstart) {
             foreach ($points_for_parcel as $city => $points) {
                 foreach ($points as $point_data) {
-                    if (ifset($point_data, 'code', false) == $targetstart) {
+                    if ((string)ifset($point_data, 'code', '') === $targetstart) {
                         $result['city'] = $city;
                         $result['points'] = $points;
                         break 2;
@@ -157,7 +157,7 @@ class boxberryShippingGetSettings
      */
     public function getAllPointsForParcels()
     {
-        $handbook_manager = new boxberryShippingHandbookPointsForParcels($this->getApiManager());
+        $handbook_manager = new boxberryShippingHandbookPointsForParcels($this->getApiManager(), [], $this->bxb);
         $points = $handbook_manager->getHandbook();
 
         return $points;

@@ -49,7 +49,7 @@ class boxberryShippingCalculateHelper
             $free_price = (float)$this->bxb->free_price;
 
             // Check if you need to make delivery free
-            if ($free_price > 0 && $this->bxb->getTotalPrice() > $free_price) {
+            if ($free_price > 0 && $this->bxb->getTotalPrice() >= $free_price) {
                 $rate['price'] = 0;
             }
         }
