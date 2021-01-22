@@ -439,7 +439,6 @@ class paypalPayment extends waPayment implements waIPayment
         @curl_setopt($ch, CURLOPT_USERAGENT, sprintf('Webasyst %s plugin (%s)', $this->id, $host));
         @curl_setopt($ch, CURLOPT_TIMEOUT, 120);
         @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
-        @curl_setopt($ch, CURLE_OPERATION_TIMEOUTED, 120);
 
         $response = @curl_exec($ch);
         if (curl_errno($ch) != 0) {
