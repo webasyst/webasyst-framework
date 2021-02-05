@@ -26,7 +26,6 @@ class waAppConfig extends SystemConfig
     protected $options = array();
     protected $routes = null;
     protected $loaded_locale = null;
-    protected $cache = null;
 
     public function __construct($environment, $root_path, $application = null, $locale = null)
     {
@@ -49,32 +48,6 @@ class waAppConfig extends SystemConfig
     public function getApplication()
     {
         return $this->application;
-    }
-
-    public function getCache($type = 'default')
-    {
-        if ($this->cache === null) {
-            $file_path = $this->getPath('config', 'cache');
-            if (file_exists($file_path)) {
-                $cache_config = include($file_path);
-                if (isset($cache_config[$type])) {
-                    $options = $cache_config[$type];
-                    $cache_type = $options['type'];
-                    $cache_class = 'wa'.ucfirst($cache_type).'CacheAdapter';
-
-                    try {
-                        $cache_adapter = new $cache_class($options);
-                        $this->cache = new waCache($cache_adapter, $this->application);
-                    } catch (waException $e) {
-                        waLog::log($e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    }
-                }
-            }
-            if (!$this->cache) {
-                $this->cache = false;
-            }
-        }
-        return $this->cache;
     }
 
     public function getLogActions($full = false, $ignore_system = false)

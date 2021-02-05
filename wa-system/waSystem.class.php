@@ -263,13 +263,12 @@ class waSystem
      */
     public function getCache($type = 'default', $app_id = null)
     {
-        if ($app_id === null) {
-            $app_id = $this->getConfig()->getApplication();
+        if ($app_id) {
+            $config = wa($app_id)->getConfig();
+        } else {
+            $config = $this->getConfig();
         }
-        if ($app_id != $this->getConfig()->getApplication()) {
-            return wa($app_id)->getCache($type);
-        }
-        return $this->getConfig()->getCache($type);
+        return $config->getCache($type);
     }
 
     /**
@@ -1246,15 +1245,13 @@ class waSystem
             if (!isset($plugin_info['app_id'])) {
                 $plugin_info['app_id'] = $app_id;
             }
-            $build_file = $this->getConfig()->getPluginPath($plugin_id).'lib/config/build.php';
+            $build_file = $this->getConfig()->getPluginPath($plugin_id).'/lib/config/build.php';
             if (file_exists($build_file)) {
                 $plugin_info['build'] = include($build_file);
+            } else if (SystemConfig::isDebug()) {
+                $plugin_info['build'] = time();
             } else {
-                if (SystemConfig::isDebug()) {
-                    $plugin_info['build'] = time();
-                } else {
-                    $plugin_info['build'] = 0;
-                }
+                $plugin_info['build'] = 0;
             }
             // load locale
             $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $app_id);

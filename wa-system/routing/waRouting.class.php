@@ -151,20 +151,9 @@ class waRouting
             return $domain;
         }
         if ($this->domain === null || !$return_alias) {
-            $this->domain = waRequest::server('HTTP_HOST');
+            $this->domain = $this->getDomainNoAlias();
             if ($this->domain === null) {
                 return null;
-            }
-            $pos = strpos($this->domain, ':');
-            if ($pos !== false) {
-                $port = substr($this->domain, $pos + 1);
-                if ($port == '80' || $port === '443') {
-                    $this->domain = substr($this->domain, 0, $pos);
-                }
-            }
-            $u = trim($this->system->getRootUrl(), '/');
-            if ($u) {
-                $this->domain .= '/'.$u;
             }
         }
 
@@ -190,6 +179,26 @@ class waRouting
         }
 
         return $this->domain;
+    }
+
+    protected function getDomainNoAlias()
+    {
+        $domain = waRequest::server('HTTP_HOST');
+        if (!$domain) {
+            return null;
+        }
+        $pos = strpos($domain, ':');
+        if ($pos !== false) {
+            $port = substr($domain, $pos + 1);
+            if ($port == '80' || $port === '443') {
+                $domain = substr($domain, 0, $pos);
+            }
+        }
+        $u = trim($this->system->getRootUrl(), '/');
+        if ($u) {
+            $domain .= '/'.$u;
+        }
+        return $domain;
     }
 
     public function getRootUrl()
@@ -586,6 +595,16 @@ class waRouting
         $result_url = null;
 
         if (isset($result)) {
+            if ($absolute &&                                // When asked for an absolute URL
+                $current_domain == $result['domain'] &&     // to current domain,
+                $current_domain != $domain_url &&           // and did not specifically ask for original domain,
+                $this->aliases                              // and there's possibility we're on a mirror (alias) domain
+            ) {
+                $alias_domain = $this->getDomainNoAlias();
+                if ($alias_domain && $alias_domain != $current_domain) { // if we are indeed on a mirror domain,
+                    $result['domain'] = $alias_domain;      // then use full url to mirror instead of original domain.
+                }
+            }
             $result_url = self::getUrlByRoute($result['route'], $result['domain'], ($absolute || $current_domain != $result['domain']));
             $result_url = preg_replace('/<url.*?>/i', '', $result_url);
 

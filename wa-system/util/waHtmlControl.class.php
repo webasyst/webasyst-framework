@@ -1108,13 +1108,7 @@ HTML;
             $root_url = wa()->getRootUrl();
             $multiple = empty($params['multiple']) ? 'false' : 'new Array()';
             $selected_class = ifset($params, 'params', 'selected', 'ui-state-active');
-
-            $start_date = date('Y-m-d');
-            $min_date   = $offset;
-            if (isset($params['delivery_date'])) {
-                $start_date = date('Y-m-d', $params['delivery_date']);
-                $min_date   = date('d.m.Y', $params['delivery_date']);
-            }
+            $min_date = $offset;
             $html .= <<<HTML
 <script>
     ( function() {
@@ -1143,18 +1137,20 @@ HTML;
         });
 
         input_date.data('available_days', {$available_days});
-        input_date.data('start_date', '{$start_date}');
 
         var intervalAllowed = function(option, timestamp, day, day_type) {
-
             var days = option.data('days');
             if ((typeof(days)) === 'undefined') {
                days = input_date.data('available_days');
             }
             var allowed = null;
-
-            var start_timestamp = option.data('start_timestamp');
-            if (timestamp && start_timestamp && (timestamp<start_timestamp*1000)) {
+            var start_timestamp = new Date(option.data('start_date')).getTime();
+            var calendar = new Date(timestamp);
+            var interval_left = /(\d{1,2}):(\d{1,2})-\d{1,2}:\d{1,2}/.exec(option.data('value'));
+            
+            /** выбранная дата в календаре с началом интервала */
+            calendar.setHours(Number(interval_left[1]), Number(interval_left[2]));
+            if (timestamp && start_timestamp && calendar.getTime() < start_timestamp) {
                 allowed = false;
             } else if (day_type==='holiday') {
                 allowed = (days.indexOf(day_type) >= 0);
@@ -1163,7 +1159,6 @@ HTML;
             } else {
                 allowed = (days.indexOf(day) >= 0);
             }
-
 
             return allowed;
         };

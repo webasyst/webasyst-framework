@@ -266,7 +266,7 @@ class waWebasystIDWAAuthController extends waViewController
      *      - string $auth_response_data['refresh_token'] [required] - refresh token to refresh access token
      *      - int    $auth_response_data['expires_in'] [optional] - ttl of expiration in seconds
      *      - string $auth_response_data['token_type'] [optional] - "bearer"
-     * @return array $result - see waWebasystIDAuth::bindWithWebasystContact for format
+     * @return array $result - see waWebasystIDWAAuth::bindWithWebasystContact for format
      *      bool  $result['status']
      *      array $result['details']
      * @throws waException

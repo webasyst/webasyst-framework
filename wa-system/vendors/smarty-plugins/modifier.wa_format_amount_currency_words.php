@@ -18,7 +18,7 @@ function smarty_modifier_wa_format_amount_currency_words($string, $currency_id=n
         $locale = $smarty->getVars('locale');
     }
     if ($locale === null) {
-        $locale = waSystem::getInstance()->getUser()->getLocale();
+        $locale = wa()->getLocale();
     }
     if ($currency_id === null) {
         $currency_id = $smarty->getVars('currency_id');

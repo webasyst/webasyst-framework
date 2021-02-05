@@ -25,21 +25,21 @@
 
                 {if strpos($item.slug,'wa-plugins/') === 0}
 
-                    {sprintf('[`Plugin <a href="%s">%s</a> (id %s)`]', "{$wa_app_url}store/plugin/{str_replace('wa-plugins/','',$item.slug|escape)}/", $item.name|default:$item_id|escape, $item_id|escape)}
+                    {sprintf('[`Plugin <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/plugin/{str_replace('wa-plugins/','',$item.slug|escape)}/", $item.name|default:$item_id|escape, $item_id|escape)}
 
                 {else}
 
-                    {sprintf('[`Plugin <a href="%s">%s</a> (id %s)`]', "{$wa_app_url}store/plugin/{$item.app|default:''}/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
+                    {sprintf('[`Plugin <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/plugin/{$item.app|default:''}/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
 
                 {/if}
 
             {elseif $item_type eq 'theme' }
 
-                {sprintf('[`Theme <a href="%s">%s</a> (id %s)`]', "{$wa_app_url}store/theme/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
+                {sprintf('[`Theme <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/theme/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
 
             {elseif $item_type eq 'widget' }
 
-                {sprintf('[`Widget <a href="%s">%s</a> (id %s)`]', "{$wa_app_url}store/widget/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
+                {sprintf('[`Widget <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/widget/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
 
             {else}
 

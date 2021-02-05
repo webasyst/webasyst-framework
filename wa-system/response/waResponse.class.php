@@ -342,14 +342,20 @@ class waResponse
      * Sets the page CANONICAL link.
      * This link is accessible in Smarty templates using {$wa->head()}.
      *
-     * @param   string  $url  Page CANONICAL link
-     * @return  waResponse  Instance of waResponse class
+     * @param   string  $canonical_url  Page CANONICAL link (defaults to current page without GET params)
+     * @param   bool    $with_header_link Use link in header
      * @since   1.14.2
      */
-    public function setCanonical($canonical_url, $with_header_link = true)
+    public function setCanonical($canonical_url = null, $with_header_link = true)
     {
+        if (!isset($canonical_url)) {
+            $canonical_url = wa()->getConfig()->getRequestUrl(false, true);
+        }
         $actual_url = wa()->getConfig()->getRootUrl(true) . wa()->getConfig()->getRequestUrl();
-        if ($canonical_url != $actual_url) {
+        if (empty($canonical_url)) {
+            unset($this->headers['Link']);
+            unset($this->metas['canonical']);
+        } elseif ($canonical_url != $actual_url) {
             if ($with_header_link) {
                 $this->addHeader('Link', "<{$canonical_url}>; rel='canonical'");
             }

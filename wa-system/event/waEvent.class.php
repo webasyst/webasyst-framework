@@ -358,7 +358,7 @@ class waEvent
         }
 
         foreach ($apps as $app_id => $app) {
-            $plugins = wa($app_id)->getConfig()->getPlugins();
+            $plugins = $this->getPluginList($app_id);
 
             if ($plugins) {
                 foreach ($plugins as $plugin_id => $plugin) {
@@ -368,6 +368,55 @@ class waEvent
                 }
             }
         }
+    }
+
+
+    /**
+     * A slightly simpler variant of wa()->getPlugins()
+     * waEvent is not allowed to call wa($app_id) when building a list of plugins,
+     * therefore we need to make our own version of this method.
+     *
+     * @param $app_id
+     * @return array
+     */
+    protected function getPluginList($app_id)
+    {
+        $path = waConfig::get('wa_path_config').'/apps/'.$app_id.'/plugins.php';
+        if (!file_exists($path)) {
+            return [];
+        }
+        $plugins = array();
+        $all_plugins = include($path);
+        foreach ($all_plugins as $plugin_id => $enabled) {
+            if (!$enabled) {
+                continue;
+            }
+            $plugin_config = waConfig::get('wa_path_apps').'/'.$app_id."/plugins/".$plugin_id."/lib/config/plugin.php";
+            if (!file_exists($plugin_config)) {
+                continue;
+            }
+            $plugin_info = include($plugin_config);
+            $plugin_info['id'] = $plugin_id;
+            $plugin_info['app_id'] = $app_id;
+            if (isset($plugin_info['img'])) {
+                $plugin_info['img'] = 'wa-apps/'.$app_id.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
+            }
+            if (isset($plugin_info['rights']) && $plugin_info['rights']) {
+                if (!isset($plugin_info['handlers']['rights.config'])) {
+                    $plugin_info['handlers']['rights.config'] = 'rightsConfig';
+                }
+            }
+            if (isset($plugin_info['frontend']) && $plugin_info['frontend']) {
+                if (!isset($plugin_info['handlers']['routing'])) {
+                    $plugin_info['handlers']['routing'] = 'routing';
+                }
+            }
+            if (!empty($plugin_info[$app_id.'_settings'])) {
+                $plugin_info['custom_settings'] = $plugin_info[$app_id.'_settings'];
+            }
+            $plugins[$plugin_id] = $plugin_info;
+        }
+        return $plugins;
     }
 
     /**

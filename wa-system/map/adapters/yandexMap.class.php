@@ -84,9 +84,7 @@ class yandexMap extends waMapAdapter
         $link_text = _ws('Link to map');
         $yandex_id = 'yandex-static-map-link' . uniqid();
 
-        return '<a id="' . $yandex_id . '" target="_blank" href="' . $url. '" style="display: none">
-                    <i class="icon16 marker"/>' . $link_text . '
-                </a>';
+        return '<a href="'.$url.'" id="'.$yandex_id.'" target="_blank" style="display: none;"><i class="icon16 marker"></i>'. $link_text .'</a>';
     }
 
     /**

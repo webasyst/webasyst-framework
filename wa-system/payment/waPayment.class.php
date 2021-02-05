@@ -365,7 +365,7 @@ abstract class waPayment extends waSystemPlugin
                     'code'  => $ex->getCode(),
                 );
             }
-        } catch (Error $ex) {
+        } catch (Error $ex) {   // will be caught since 7 version of php
             if (!$module) {
                 $log += array(
                     'plugin_id' => $module_id,
@@ -380,6 +380,8 @@ abstract class waPayment extends waSystemPlugin
                 waPaymentDebug::endDebugCallback($module ? $module->getId() : 'general');
             }
             if ($module) {
+                // Error implements Throwable, but it is not Exception, so wrap to Exception, because callbackExceptionHandler is works with Exception only
+                $ex = new Exception($ex->getMessage(), $ex->getCode(), $ex);
                 return $module->callbackExceptionHandler($ex);
             } else {
                 return array(
