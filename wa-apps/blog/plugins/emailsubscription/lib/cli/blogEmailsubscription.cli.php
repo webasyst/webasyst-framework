@@ -5,7 +5,7 @@
  */
 class blogEmailsubscriptionCli extends waCliController
 {
-    public function run($params = NULL)
+    public function execute()
     {
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->set(array('blog', 'emailsubscription'), 'last_emailsubscription_cron_time', time());
