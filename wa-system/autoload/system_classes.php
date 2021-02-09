@@ -201,6 +201,7 @@ return array(
     'waView'                            => 'view/waView.class.php',
     'waViewHelper'                      => 'view/waViewHelper.class.php',
     'waAppViewHelper'                   => 'view/waAppViewHelper.class.php',
+    'waPluginViewHelper'                => 'view/waPluginViewHelper.class.php',
 
     'waWorkflow'                        => 'workflow/waWorkflow.class.php',
     'waWorkflowAction'                  => 'workflow/waWorkflowAction.class.php',
