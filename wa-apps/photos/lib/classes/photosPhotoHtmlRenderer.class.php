@@ -117,7 +117,7 @@ class photosPhotoHtmlRenderer
         $html .= '  <ul class="photostream" style="display:none;">';
         for ($i = 0; $i < $count; ++$i) {
             $html .= "  <li data-photo-id='{$stack[$i]['id']}' ".($i == $current ? 'class="selected"' : '').">";
-            $html .= "    <a href='{$stack[$i]['url']}'><img class='thumb' src='{$stack[$i]['thumb']['url']}". (!is_null($stack[$i]['edit_datetime']) ? '?'.strtotime($stack[$i]['edit_datetime']) : '')."' alt=''></a>";
+            $html .= "    <a href='{$stack[$i]['url']}' rel='nofollow'><img class='thumb' src='{$stack[$i]['thumb']['url']}". (!is_null($stack[$i]['edit_datetime']) ? '?'.strtotime($stack[$i]['edit_datetime']) : '')."' alt=''></a>";
             $html .= "  </li>";
         }
         $html .= '  </ul>';
