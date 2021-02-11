@@ -135,7 +135,11 @@ class siteRoutingSaveController extends waJsonController
                 }
             }
 
-            if (($new['url'] != $old['url']) || (ifset($new['theme']) != ifset($old['theme'])) || (ifset($new['theme_mobile']) != ifset($old['theme_mobile']))) {
+            if (
+                ($new['url'] != $old['url'])
+                || (ifset($new['theme']) != ifset($old['theme']))
+                || (ifset($new['theme_mobile']) != ifset($old['theme_mobile']))
+            ) {
                 $this->response['change'] = 1;
             }
 
@@ -199,6 +203,9 @@ class siteRoutingSaveController extends waJsonController
             // log
             $this->logAction('route_edit', $domain.'/'.$routes[$domain][$route_id]['url']);
         }
+
+        $config_cache = waConfigCache::getInstance();
+        $config_cache->setFileContents($path, $routes);
 
         //Delete cache problem domains
         $cache_domain = new waVarExportCache('problem_domains', 3600, 'site/settings/');

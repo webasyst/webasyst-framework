@@ -34,6 +34,9 @@ class siteRoutingDeleteController extends waJsonController
             } else {
                 $this->logAction('route_delete', $old_route);
                 wa()->event('route_delete.after', $params);
+
+                $config_cache = waConfigCache::getInstance();
+                $config_cache->setFileContents($path, $all_routes);
             }
         }
 
