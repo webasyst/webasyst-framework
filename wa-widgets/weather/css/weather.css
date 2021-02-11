@@ -48,7 +48,6 @@
   background: linear-gradient(to bottom, #133682 0%, #2793df 100%);
 }
 .s-weather.s-weather-night {
-  background: #0f2657 url("../img/night.jpg") no-repeat;
   background-size: cover;
 }
 .s-weather.s-weather-notavailable {

@@ -182,11 +182,11 @@ class weatherWidget extends waWidget
         }
         $week_ago = strtotime('-1 week');
         $changed = false;
-        foreach ($weathers as $dt_with_hour => $w) {
-            $dt_with_hour .= ':00:00';
-            if (strtotime($dt_with_hour) < $week_ago) {
+        foreach ($weathers as $date_with_hour => $w) {
+            $date_with_time = $date_with_hour . ':00:00';
+            if (strtotime($date_with_time) < $week_ago) {
                 $changed = true;
-                unset($weathers[$dt_with_hour]);
+                unset($weathers[$date_with_hour]);
             }
         }
         if ($changed) {
