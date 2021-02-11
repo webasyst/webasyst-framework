@@ -82,6 +82,19 @@ class courierShipping extends waShipping
             $assign_map[$addr_field] = $add_field;
         }
 
+        /**
+         * Если правая граница интервала "00:00", то считается что интервал относится
+         * ко следующему дню и в некоторых случаях становится недоступным для выбора
+         */
+        if (is_array($settings['customer_interval']['intervals'])) {
+            foreach ($settings['customer_interval']['intervals'] as &$interval) {
+                if (0 === (int) $interval['to'] && 0 === (int) $interval['to_m']) {
+                    $interval['to']   = '23';
+                    $interval['to_m'] = '59';
+                }
+            }
+        }
+
         return '';
     }
 
@@ -487,10 +500,15 @@ class courierShipping extends waShipping
      *
      * @param $interval
      * @param int $timestamp дата с учетом всех 3-х временных надбавок влияющих на срок доставки
-     * @return false|string|null
+     * @return string|null
+     * @throws Exception
      */
     private function workupInterval(&$interval, $timestamp)
     {
+        /** Часовой пояс из настроек магазина */
+        $shop_time_zone = $this->getPackageProperty('shop_time_zone');
+        $shop_time_zone = new DateTimeZone(ifset($shop_time_zone, date_default_timezone_get()));
+
         $interval += array(
             'from_m' => '00',
             'to_m'   => '00',
@@ -503,39 +521,34 @@ class courierShipping extends waShipping
 
         $interval = array_map('trim', $interval);
 
-        $service_delivery_date = null;
-        $start = $timestamp ? (is_array($timestamp) ? reset($timestamp) : $timestamp) : $this->time;
-
         /** Формируем строковое представление интервала доставки */
         $interval_from = sprintf('%02d:%02d', $interval['from'], $interval['from_m']);
         $interval_to = sprintf('%02d:%02d', $interval['to'], $interval['to_m']);
         $interval['interval'] = sprintf('%s-%s', $interval_from, $interval_to);
 
-        // safety loop limiter
-        $limit = 60;
+        /** @var int $start временная метка, раньше которой никакая доставка не возможна */
+        $start = $timestamp ? (is_array($timestamp) ? reset($timestamp) : $timestamp) : $this->time;
 
-        // loop day by day while not found free day to delivery OR while not overstep safety loop limiter $limit
-        while (empty($service_delivery_date)) {
+        $service_delivery_date = null;
+        $stepwise_date = new DateTime();
+        $stepwise_date->setTimestamp($start);
+        $stepwise_date->setTimezone($shop_time_zone);
+        $start_tz = clone $stepwise_date;
 
-            if ($interval['offset'] >= $limit) {
-                break;
+        /** поиск первого свободного дня в который возможна доставка в текущем интервале */
+        for ($loop = 0; $loop < 60; $loop++) {
+            $interval['offset']++;
+            if ($loop > 0) {
+                $stepwise_date->modify('+1 day');
             }
+            $service_date = $stepwise_date->format('Y-m-d');
+            $week_day     = $stepwise_date->format('N') - 1;
 
-            $service_datetime = strtotime(sprintf('+%d days', $interval['offset']++), $start);
-            $service_date = date('Y-m-d', $service_datetime);
-
-            $week_day = date('N', $service_datetime) - 1;
-
-            // is extra holiday on current $service_date?
-            $is_extra_holiday = false;
-            $is_extra_holidays_enabled = !empty($days['holiday']);
-            if ($is_extra_holidays_enabled) {
-                $is_extra_holiday = in_array($service_date, $this->holidays, true);
-            }
-
-            // Extra holiday day has maximum priority.
-            // If current $service_date is holiday it is not delivery day for sure
-            if ($is_extra_holiday) {
+            /** является ли текущая дата ($service_date) дополнительным выходным днем */
+            $is_extra_holiday = in_array($service_date, $this->holidays, true);
+            if (empty($days['holiday']) && $is_extra_holiday) {
+                /** $days['holiday'] = 1, если выбрана галка "Доп. выходной" у текущего интервала в таблице "Интервалы доставки".
+                 *  Для таких дней могут быть доступные интервалы доставки. Поэтому пропускаем текущее условие */
                 continue;
             }
 
@@ -549,16 +562,13 @@ class courierShipping extends waShipping
             $is_workday = $is_extra_workday || !empty($days[$week_day]);
 
             if ($is_workday) {
-                $is_same_day = date('Y-m-d', $this->time) === $service_date;
-                if ($is_same_day) {
-                    /** если доставка возможна в день заказа, то сравниваем текущий час с
-                     *  часом из интервала и если уже поздно, то переходим ко следующему дню */
-                    if ((int)date('H', $this->time) >= (int)$interval_to) {
-                        continue;
-                    }
+                $right_i = new DateTime("$service_date $interval_to", $shop_time_zone);
+                if ($right_i < $start_tz) {
+                    /** интервал недоступен в этот день, если стартовая дата наступает позже даты текущей итерации */
+                    continue;
                 }
-                $service_delivery_date = $service_date;
-                $service_delivery_date .= ' ' . $interval_from;
+                $service_delivery_date = $service_date.' '.$interval_from;
+                break;
             }
         }
 
@@ -719,6 +729,12 @@ class courierShipping extends waShipping
     {
         $fields = parent::customFields($order);
         $errors = array();
+
+        /**
+         * $setting['interval']  - "Запрашивать желаемый интервал доставки"
+         * $setting['date']      - "Запрашивать желаемую дату доставки"
+         * $setting['intervals'] - "Интервалы доставки"
+         */
         $setting = $this->getSettings('customer_interval');
 
         if (!empty($setting['interval']) || !empty($setting['date'])) {
@@ -726,7 +742,13 @@ class courierShipping extends waShipping
             if (!strlen($this->delivery_time)) {
                 $from = time();
             } else {
-                $from = strtotime(preg_replace('@,.+$@', '', $this->delivery_time));
+                if ('exact_delivery_time' === $this->delivery_time) {
+                    /** случай если у курьера указано "Прибавить указанное количество часов ко времени готовности заказа" */
+                    $from = strtotime('+'.(int) $this->exact_delivery_time.' hours');
+                } else {
+                    /** случаи "+1 day", "+1 day, +2 day", "+2 day, +3 day", "+1 week" */
+                    $from = strtotime(preg_replace('@,.+$@', '', $this->delivery_time));
+                }
             }
             $offset = max(0, round(($from - time()) / (24 * 3600)));
             $shipping_params = $order->shipping_params;
@@ -748,10 +770,13 @@ class courierShipping extends waShipping
             }
 
             if (!empty($setting['intervals'])) {
+                if (isset($order->params['departure_datetime'])) {
+                    $this->setParams($order->params);
+                }
                 $delivery_times = $this->getDeliveryTimes();
                 foreach ($setting['intervals'] as &$interval) {
                     $start = $this->workupInterval($interval, $delivery_times);
-                    $interval['start_date'] = date('Y-m-d', strtotime($start));
+                    $interval['start_date'] = date('Y-m-d H:i:s', strtotime($start));
                 }
                 unset($interval);
             }
