@@ -962,7 +962,11 @@ class tinkoffPayment extends waPayment implements waIPayment, waIPaymentRefund, 
 
                     $items_data = [$item];
                     if ($item_type === 'product') {
-                        $values = $this->getChestnyznakCodeValues($item['product_codes']);
+
+                        // typecast workaround for old versions of framework where 'product_codes' key is missing
+                        $product_codes = isset($item['product_codes']) && is_array($item['product_codes']) ? $item['product_codes'] : [];
+
+                        $values = $this->getChestnyznakCodeValues($product_codes);
                         if ($values) {
                             $items_data = $this->splitItem($item, $values);
                         }
