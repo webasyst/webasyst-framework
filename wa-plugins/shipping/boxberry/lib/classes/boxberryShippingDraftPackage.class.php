@@ -206,13 +206,17 @@ class boxberryShippingDraftPackage
     protected function getParcelVolume()
     {
         $item = current(ref($this->order->items));
-        $dimensions = array('x' => 'width', 'y' => 'height', 'z' => 'length');
+        // On boxberry side:
+        // X becomes HEIGHT
+        // Y becomes WIDTH
+        // Z becomes LENGTH
+        $dimensions = array('x' => 'height', 'y' => 'width', 'z' => 'length');
         foreach ($dimensions as $key => $dimension) {
             if (
                 isset($item[$dimension])
                 && !empty($item[$dimension])
                 && $item['dimensions_unit']
-                && $item[$dimension] < floatval($this->bxb->getSettings('max_' . $dimension))
+                && $item[$dimension] <= floatval($this->bxb->getSettings('max_' . $dimension))
             ) {
                 $dimensions[$key] = ceil(shopDimension::getInstance()->convert($item[$dimension], 'length', 'cm', $item['dimensions_unit']));
             } else {
