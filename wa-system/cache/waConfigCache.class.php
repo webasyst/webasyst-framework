@@ -24,12 +24,26 @@ class waConfigCache
     public static function getInstance()
     {
         if (!isset(self::$instance)) {
-            self::$instance = new self();
             self::$cache_adapter = false;
 
+            $framework_is_ready = function_exists('wa') && class_exists('waConfig') && waConfig::has('wa_path_root');
+
             // Do not use cache unless explicitly enabled
-            if (waSystemConfig::systemOption('config_cache_enable') === true) {
-                self::$cache_adapter = wa('wa-system')->getCache();
+            if ($framework_is_ready && waSystemConfig::systemOption('config_cache_enable') === true) {
+                try {
+                    self::$cache_adapter = wa('wa-system')->getCache();
+                } catch (Exception $e) {
+                    $framework_is_ready = false;
+                }
+            }
+
+            if (!$framework_is_ready) {
+                // Framework is not ready, called too early.
+                // Return an instance of self but do not save it to self::$instance
+                // so that we attempt to do that again later.
+                return new self();
+            } else {
+                self::$instance = new self();
             }
         }
         return self::$instance;
@@ -43,7 +57,10 @@ class waConfigCache
      */
     public function includeFile($file, $compare_filemtime = true)
     {
-        $normalized_key = $this->normalizeKey($file);
+        $normalized_key = false;
+        if (self::$cache_adapter) {
+            $normalized_key = $this->normalizeKey($file);
+        }
 
         if (self::$cache_adapter && $normalized_key) {
             $cache = self::$cache_adapter->get($normalized_key);
@@ -123,14 +140,19 @@ class waConfigCache
      */
     protected function normalizeKey($file)
     {
-        if (mb_strlen($file) <= 0) {
+        if (!function_exists('wa') || mb_strlen($file) <= 0) {
             return false;
         }
         $file = realpath($file);
         if (!$file) {
             return false;
         }
-        $root_path = wa()->getConfig()->getRootPath().DIRECTORY_SEPARATOR;
+        try {
+            $root_path = wa()->getConfig()->getRootPath().DIRECTORY_SEPARATOR;
+        } catch (Exception $e) {
+            // Framework is not ready, called too early
+            return false;
+        }
         if (mb_substr($file, 0, mb_strlen($root_path)) !== $root_path) {
             // do not cache anything outside of framework directory
             return false;
