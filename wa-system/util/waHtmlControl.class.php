@@ -1108,7 +1108,13 @@ HTML;
             $root_url = wa()->getRootUrl();
             $multiple = empty($params['multiple']) ? 'false' : 'new Array()';
             $selected_class = ifset($params, 'params', 'selected', 'ui-state-active');
-            $min_date = $offset;
+
+            $start_date = date('Y-m-d');
+            $min_date   = $offset;
+            if (isset($params['delivery_date'])) {
+                $start_date = date('Y-m-d', $params['delivery_date']);
+                $min_date   = date('d.m.Y', $params['delivery_date']);
+            }
             $html .= <<<HTML
 <script>
     ( function() {
@@ -1137,6 +1143,7 @@ HTML;
         });
 
         input_date.data('available_days', {$available_days});
+        input_date.data('start_date', '{$start_date}');
 
         var intervalAllowed = function(option, timestamp, day, day_type) {
             var days = option.data('days');

@@ -1302,3 +1302,15 @@ msgstr "Установка продуктов доступна только по
 
 msgid "License binding is allowed only to users with admin access to Installer app."
 msgstr "Привязка лицензий доступна только пользователям с административным доступом к приложению «Инсталлер»."
+
+msgid "Product"
+msgstr "Продукт"
+
+msgid "Order ID"
+msgstr "№ заказа"
+
+msgid "reset filters"
+msgstr "очистить фильтры"
+
+msgid "Total rows:"
+msgstr "Всего строк:"

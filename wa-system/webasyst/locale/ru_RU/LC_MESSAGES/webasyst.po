@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-01-26 16:26+0300\n"
+"PO-Revision-Date: 2021-02-09 15:13+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -6297,3 +6297,21 @@ msgstr "доставка"
 
 msgid "billing"
 msgstr "оплата"
+
+msgid "This page has sub-pages with empty addresses."
+msgstr "У этой страницы есть подстраницы с пустыми адресами."
+
+msgid "%s: call of unknown method %s->%s() with arguments %s"
+msgstr "%s: вызов неизвестного метода %s->%s() с аргументами %s"
+
+msgid "%s: attempt to read unknown property %s->%s"
+msgstr "%s: попытка чтения неизвестного свойства %s->%s"
+
+msgid "Plugin “%s” not found."
+msgstr "Плагин «%s» не найден."
+
+msgid "The called plugin “%s” is disabled."
+msgstr "Вызываемый плагин «%s» выключен."
+
+msgid "The called plugin “%s” is not installed."
+msgstr "Вызываемый плагин «%s» не установлен."

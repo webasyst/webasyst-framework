@@ -520,7 +520,7 @@ class waPageActions extends waActions
             foreach ($similar_pages as $similar_page) {
                 if ($similar_page['id'] != $id) {
                     if (empty($similar_page['url']) && !empty($similar_page['parent_id'])) {
-                        $error_message = _ws('Нельзя сохранить из-за наличия подстраниц с пустым адресом');
+                        $error_message = _ws('This page has sub-pages with empty addresses.');
                     } else {
                         $error_message = _ws('Specified URL already exists.');
                     }

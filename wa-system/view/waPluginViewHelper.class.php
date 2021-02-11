@@ -58,7 +58,7 @@ class waPluginViewHelper
     {
         if (SystemConfig::isDebug() === true) {
             waLog::log(sprintf(
-                _ws('%s: unknown method call %s->%s() with arguments: %s'),
+                _ws('%s: call of unknown method %s->%s() with arguments %s'),
                 $this->plugin_id,
                 get_class($this),
                 $name,
@@ -74,7 +74,7 @@ class waPluginViewHelper
     {
         if (SystemConfig::isDebug() === true) {
             waLog::log(sprintf(
-                _ws('%s: unknown property read: %s->%s'),
+                _ws('%s: attempt to read unknown property %s->%s'),
                 $this->plugin_id,
                 get_class($this),
                 $name
@@ -105,6 +105,6 @@ class waPluginViewHelper
         if ($this->plugin) {
             return $this->plugin;
         }
-        throw new waException(sprintf(_ws('Plugin "%s" not found'), $this->plugin_id));
+        throw new waException(sprintf(_ws('Plugin “%s” not found.'), $this->plugin_id));
     }
 }

@@ -208,7 +208,7 @@ class waAppViewHelper
                     self::$p_helpers[$name] = new waPluginViewHelper(null, $plugin_id);
                     $result = self::$p_helpers[$name];
                     if (SystemConfig::isDebug() === true) {
-                        waLog::log(sprintf(_ws('Вызываемый плагин "%s" выключен'), $plugin_id));
+                        waLog::log(sprintf(_ws('The called plugin “%s” is disabled.'), $plugin_id));
                     }
                 }
             }
@@ -217,7 +217,7 @@ class waAppViewHelper
                 self::$p_helpers[$name] = new waPluginViewHelper(null, $plugin_id);
                 $result = self::$p_helpers[$name];
                 if (SystemConfig::isDebug() === true) {
-                    waLog::log(sprintf(_ws('Вызываемый плагин "%s" не установлен'), $plugin_id));
+                    waLog::log(sprintf(_ws('The called plugin “%s” is not installed.'), $plugin_id));
                 }
             }
         }
