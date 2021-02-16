@@ -38,22 +38,20 @@ class webasystLogoSettings
             $logo['mode'] = 'gradient';
         }
 
-        $name = $asm->get('webasyst', 'name');
-        $default_text = substr($name, 0, 2);
-
         $logo['text'] = [
             'value'         => !empty($logo['text']['value']) ? $logo['text']['value'] : '',
             'color'         => !empty($logo['text']['color']) ? $logo['text']['color'] : '',
-            'default_value' => $default_text,
-            'default_color' => '000000'
+            'default_value' => '',
+            'default_color' => '#fff'
         ];
 
         $logo['two_lines'] = !empty($logo['two_lines']);
 
         $logo['gradient'] = !empty($logo['gradient']) ? $logo['gradient'] : [];
+        $logo['gradients'] = $this->getGradients();
 
         if (!$logo['gradient']) {
-            $gradients = $this->getGradients();
+            $gradients = $logo['gradients'];
             $gradient = reset($gradients);
             $logo['gradient'] = $gradient;
         }
@@ -397,8 +395,8 @@ class webasystLogoSettings
 
     /**
      * @return array of [
-     *      'from' => <string:color in hex format without #>
-     *      'to' =>  <string:color in hex format without #>
+     *      'from' => <string:color in hex format>
+     *      'to' =>  <string:color in hex format>
      *      'angle' => <int>
      * ]
      * @throws waException

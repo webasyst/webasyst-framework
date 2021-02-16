@@ -28,6 +28,10 @@
 
         WaHeader.headerBehavior('.wa-dashboard-page', { rootMargin: `${ wa_header_height }px 0px -100% 0px` });
 
+        new Dashboard();
+        new Group();
+        new Page();
+
         let $dashboard_link_wrapper = document.querySelector('#d-dashboard-link-wrapper'),
             $dashboard_link = $dashboard_link_wrapper.querySelector('.js-dashboard-url'),
             $copy_btn = $dashboard_link_wrapper.querySelector('.js-copy-url');

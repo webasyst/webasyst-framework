@@ -1,0 +1,202 @@
+{$_title = ".waTooltip"}
+{$wa->title($_title|json_encode)}
+
+{capture assign="_example_1"}
+<span id="tooltip-example-1" data-wa-tooltip-content="Простой tooltip">
+    <i class="fas fa-question-circle"></i>
+</span>
+
+<script>
+    ( function($) {
+        $("#tooltip-example-1").waTooltip();
+    })(jQuery);
+</script>
+{/capture}
+
+{capture assign="_example_2"}
+<span id="tooltip-example-2" data-wa-tooltip-template="#template-example1">
+    <i class="fas fa-question-circle"></i>
+</span>
+
+<div class="wa-tooltip-template" id="template-example1">
+    <p>Параграф текста.</p>
+    <p>Текст в этой подсказке <strong>поддерживает</strong> HTML тэги.</p>
+</div>
+
+<script>
+    ( function($) {
+        $("#tooltip-example-2").waTooltip();
+    })(jQuery);
+</script>
+{/capture}
+{capture assign="_example_2_2"}
+<script>
+    ( function($) {
+        $("#tooltip-example-2").waTooltip({
+            trigger: 'click',
+            template: '#template-example1'
+        });
+    })(jQuery);
+</script>
+{/capture}
+
+{capture assign="_example_3"}
+<span class="wa-tooltip" data-wa-tooltip-template="#template-example2" title="Абзац текста">
+    <i class="fas fa-question-circle"></i>
+</span>
+
+    <div class="wa-tooltip-template" id="template-example2">
+        <p>Абзац текста</p>
+        <ul>
+            <li>Список #1</li>
+            <li>Список #2</li>
+        </ul>
+    </div>
+    <div class="wa-tooltip-template" id="template-example2">
+        <i class="fas fa-umbrella-beach"></i>
+        <span>Текст с иконкой fa-umbrella-beach</span>
+    </div>
+
+    <script>
+        ( function($) {
+            $(".wa-tooltip").waTooltip();
+        })(jQuery);
+    </script>
+{/capture}
+
+{function name="_render"}
+<ul>
+    <li>
+         <span class="wa-tooltip" data-wa-tooltip-trigger="click" data-wa-tooltip-content="Я подсказка справа" data-wa-tooltip-placement="right">Подсказка справа при наведении на текст</span>
+    </li>
+    <li>
+        Подсказка слева <span class="wa-tooltip" data-wa-tooltip-content="Я подсказка слева" data-wa-tooltip-placement="left"><i class="fas fa-info-circle"></i></span>
+    </li>
+    <li>
+        <span class="wa-tooltip" data-wa-tooltip-content="Я подсказка сверху" data-wa-tooltip-placement="top">Подсказка сверху при наведении на текст</span>
+    </li>
+    <li>
+        Подсказка снизу <span class="wa-tooltip" data-wa-tooltip-content="Я подсказка снизу" data-wa-tooltip-placement="bottom"><i class="fas fa-info"></i></span>
+    </li>
+    <li>
+        <span class="wa-tooltip" data-wa-tooltip-icon="fas fa-home" data-wa-tooltip-content="Подсказка с иконкой" data-wa-tooltip-placement="right">Подсказка с иконкой справа при наведении на текст</span>
+    </li>
+    <li>
+        <span class="wa-tooltip" data-wa-tooltip-icon="fas fa-home" data-wa-tooltip-content="Подсказка с иконкой" data-wa-tooltip-placement="right" data-wa-tooltip-trigger="click" data-wa-tooltip-class="badge purple">Подсказка с иконкой справа при клике на тексте</span>
+    </li>
+    <li>
+        <span class="wa-tooltip2">Подсказка с иконкой справа при клике на тексте</span>
+    </li>
+</ul>
+<script>
+    ( function($) {
+        $(".wa-tooltip").waTooltip();
+        $(".wa-tooltip2").waTooltip({
+            icon:"fas fa-home",
+            content:"Подсказка с иконкой",
+            placement:"right",
+            trigger:"click",
+            class:"badge purple",
+        });
+    })(jQuery);
+</script>
+{/function}
+
+
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Этот компонент показывает скрытый текст при наведении курсора мыши на элементе или клике по нему. Работает на основе <a href="https://atomiks.github.io/tippyjs/" target="_blank" rel="nofollow noopener noreferrer">Tippy.js</a></p>
+    <ul>
+        <li>
+            Простой tooltip: {$_example_1}
+            <div class="hint">Текст подсказки передается в виде параметра <code>content</code> в функцию <code>.waTooltip</code></div>
+            <div class="hint">Вместо передачи текста параметром можно использовать атрибут <code>data-wa-tooltip-content</code>, который будет содержать подсказку.</div>
+
+            <div class="line">
+                <pre class="prettyprint">{$_example_1|escape}</pre>
+            </div>
+            <br>
+        </li>
+        <li>
+            HTML контент: {$_example_2}
+            <div class="hint">Текст подсказки содержит HTML-разметку и располагается в скрытом стилями блоке <code>div.wa-tooltip-template</code>. Атрибут <code>data-wa-tooltip-template</code> должен иметь значение равное идентификатору блока с подсказкой, например <span class="bold">#template-example1</span></div>
+
+            <div class="line">
+                <pre class="prettyprint">{$_example_2|trim|escape}</pre>
+            </div>
+            <br>
+            <div class="hint">Этот пример можно реализовать без использования <code>data-wa-tooltip-*</code> атрибутов, передавая необходимые опции в javascript функцию</div>
+            <div class="line">
+                <pre class="prettyprint">{$_example_2_2|trim|escape}</pre>
+            </div>
+        </li>
+    </ul>
+
+    <div class="u-example-section">
+        <h3>Модификаторы</h3>
+        <p>Управлять опциями можно через <code>data-wa-tooltip-*</code> атрибуты элемента или через javascript.</p>
+        <ul>
+            <li>
+                <div>Для управления позицией подсказки используйте <code>data-wa-tooltip-placement</code> равный <code class="bold">top</code> (по умолчанию), <code class="bold">right</code>, <code class="bold">bottom</code>, <code class="bold">left</code>, <code class="bold">auto</code> (тултип будет отображен на той стороне, где больше всего места).</div>
+                <br>
+            </li>
+            <li>Подсказка по клику вызывается, если у элемента присутствует атрибут <code>data-wa-tooltip-trigger="click"</code>.</li>
+        </ul>
+        <p>С полным списком опций можно ознакомиться на <a href="https://atomiks.github.io/tippyjs/v6/all-props/" target="_blank" rel="nofollow noopener noreferrer">этой странице</a>.</p>
+    </div>
+
+    <div class="u-example-section">
+        <h3>Примеры</h3>
+
+        <div class="line">
+            {_render}
+        </div>
+
+        <div class="line">
+            <pre class="prettyprint">{_render|escape}</pre>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3><code>.waTooltip</code></h3>
+
+    <div class="u-example-section">
+        <h3>.waTooltip <code>параметры</code></h3>
+        <p>Опции</p>
+        <ul>
+            <li><span class="bold">placement</span> (string, по умолчанию "top") — определяет положение подсказки.
+                <br>
+            </li>
+            <li><span class="bold">trigger</span> (string, по умолчанию "mouseenter focus") — определяет события, вызывающие подсказку. Несколько событий разделяются пробелами.
+                <br>
+            </li>
+            <li><span class="bold">allowHTML</span> (boolean, по умолчанию false) — определяет каким образом рендерится содержимое подсказки: как текст или как HTML.
+                <br>
+            </li>
+            <li><span class="bold">delay</span> (number, по умолчанию 100) — время, в течение которого подсказка остается видимой перед закрытием (после потери фокуса).
+                <br>
+            </li>
+        </ul>
+        <p>Функции:</p>
+        <ul>
+            <li><span class="bold">onShow</span> (function) — событие при показе подсказки.
+                <div class="hint"><code>function(tooltip_instance) { ... }</code></div>
+                <br>
+            </li>
+            <li><span class="bold">onHide</span> (function) — событие при скрытии подсказки.
+                <div class="hint"><code>function(tooltip_instance) { ... }</code></div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+
+    </script>
+</div>

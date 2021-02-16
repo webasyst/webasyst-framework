@@ -14,10 +14,13 @@
         <ul class="thumbs li150px d-users-list">
             {foreach $users as $user}
                 <li>
-                    <a href="">
+                    <a class="userpic userpic144" href="">
                         <img class="" src="/wa-data/public/contacts/photos/01/00/1/1731030115.144x144@2x.jpg" alt="">
+                        {if $user._online_status === 'online'}<span class="userstatus"></span>{/if}
                         <span class="user-name">{$user.name|escape}</span>
-                        <span class="user-login">{$user.login|escape}</span>
+                        <span class="badge-user blue"><i class="fas fa-plane"></i><span>Полный улёт</span></span>
+                        {if $user.jobtitle}<span class="user-jobtitle">{$user.jobtitle|escape}</span>{/if}
+                        <span class="user-login small">{$user.login|escape}</span>
                     </a>
                 </li>
             {/foreach}

@@ -1,7 +1,7 @@
 {strip}
     {if $logo.mode === 'gradient' || empty($logo.image.thumbs)}
         {$two_lines = $logo.two_lines}
-        {$text_value = $logo.text.value|default:$logo.text.default_value|trim|escape}
+        {$text_value = $logo.text.value|trim|escape}
 {if $position === 'header'}
 <div id="wa-account" style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color: {$logo.text.color|default:$logo.text.default_color}">
     <a href="{$backend_url}">
@@ -14,7 +14,7 @@
                     {$text_value}
                 {/if}
             {else}
-                {$company_name|truncate:2:''}
+                <i class="fas fa-home"></i>
             {/if}
         </h3>
 {if $position === 'header'}

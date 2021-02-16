@@ -160,7 +160,6 @@ const Dashboard = ( function($) {
         }
     }
 })(jQuery);
-new Dashboard();
 
 const Group = ( function($, backend_url) {
     return class Group {
@@ -1087,7 +1086,6 @@ const Group = ( function($, backend_url) {
         }
     }
 })(jQuery, backend_url);
-new Group();
 
 const Page = ( function($, backend_url) {
     return class Page {
@@ -1242,32 +1240,29 @@ const Page = ( function($, backend_url) {
                 return false;
             });
 
-            /* setTimeout used as hack, because we`re have issue with getting #activity-filter nodes */
-            setTimeout(()=>{
-                $("#activity-filter input:checkbox").on("change", function() {
-                    if (that.storage.activityFilterTimer) {
-                        clearTimeout(that.storage.activityFilterTimer);
-                    }
-                    if (that.storage.topLazyLoadingTimer) {
-                        clearTimeout(that.storage.topLazyLoadingTimer);
-                    }
+            $("#activity-filter input:checkbox").on("change", function() {
+                if (that.storage.activityFilterTimer) {
+                    clearTimeout(that.storage.activityFilterTimer);
+                }
+                if (that.storage.topLazyLoadingTimer) {
+                    clearTimeout(that.storage.topLazyLoadingTimer);
+                }
 
-                    that.showLoadingAnimation($widgetActivity);
+                that.showLoadingAnimation($widgetActivity);
 
-                    that.storage.activityFilterTimer = setTimeout( function() {
-                        that.showFilteredData( $widgetActivity );
-                    }, 2000);
+                that.storage.activityFilterTimer = setTimeout( function() {
+                    that.showFilteredData( $widgetActivity );
+                }, 2000);
 
-                    that.storage.topLazyLoadingTimer = setTimeout( function() {
-                        that.loadNewActivityContent($widgetActivity);
-                    }, that.storage.lazyTime );
+                that.storage.topLazyLoadingTimer = setTimeout( function() {
+                    that.loadNewActivityContent($widgetActivity);
+                }, that.storage.lazyTime );
 
-                    // Change Text
-                    that.changeFilterText();
+                // Change Text
+                that.changeFilterText();
 
-                    return false;
-                });
-            })
+                return false;
+            });
 
 
             // Escape close edit-mode
@@ -1635,8 +1630,10 @@ const Page = ( function($, backend_url) {
                     // Remove Link
                     $linkWrapper.remove();
 
-                    // Render
-                    $wrapper.append(response);
+                    if ( $.trim(response).length && !response.includes('activity-empty-today')) {
+                        // Render
+                        $wrapper.append(response);
+                    }
 
                     that.storage.isBottomLazyLoadLocked = false;
                     that.storage.lazyLoadCounter++;
@@ -1881,7 +1878,6 @@ const Page = ( function($, backend_url) {
         }
     }
 })(jQuery, backend_url);
-new Page();
 
 const DashboardWidget = ( function($) {
     return class DashboardWidget extends Dashboard {

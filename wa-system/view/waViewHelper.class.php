@@ -1249,9 +1249,14 @@ HTML;
             $selected_tab = key($tabs);
         }
 
+        $legacy_suffix = '';
+        if ($this->whichUI() == '1.3') {
+            $legacy_suffix = '-legacy';
+        }
+
         $view = wa()->getView();
         $view->assign(array(
-            'profile_content_layout_template' => wa()->getAppPath('templates/actions/profile/ProfileContent.html', 'webasyst'),
+            'profile_content_layout_template' => wa()->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileContent.html', 'webasyst'),
             'uniqid'                          => str_replace('.', '-', uniqid('s', true)),
             'selected_tab'                    => $selected_tab,
             'contact_id'                      => $id,
@@ -1262,7 +1267,7 @@ HTML;
         if (file_exists($template_file)) {
             return $view->fetch('file:'.$template_file);
         } else {
-            return $view->fetch(wa()->getAppPath('templates/actions/profile/ProfileTabs.html', 'webasyst'));
+            return $view->fetch(wa()->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileTabs.html', 'webasyst'));
         }
     }
 

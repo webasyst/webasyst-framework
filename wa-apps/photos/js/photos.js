@@ -3372,7 +3372,9 @@
             const $wrapper = $("#p-uploader");
             $.waDialog({
                 $wrapper,
-                onOpen: $.photos.onUploadDialog
+                onOpen($_dialog, dialog_instance) {
+                    $.photos.onUploadDialog($_dialog, dialog_instance)
+                }
             });
         },
 
@@ -3386,9 +3388,10 @@
             that.find('#p-upload-step1-buttons').show();
         },
 
-        onUploadDialog: function () {
-            const $dialog = this.$wrapper;
+        onUploadDialog: function ($dialog, dialog_instance) {
+            //const $dialog = this.$wrapper;
 
+            console.log(dialog_instance)
             $dialog.find('.files').empty();
 
             let hash = $.storage.get('photos/hash'),
@@ -3412,6 +3415,11 @@
                 e.preventDefault();
                 $(this).find('#p-start-upload-button').click();
             });
+
+            /* Update upload dialog position */
+            $(document).on('fileuploadsend fileuploaddone', function () {
+                dialog_instance.resize();
+            })
         },
 
         massPost: function(params) {
@@ -3537,16 +3545,54 @@
         // or root albums in Albums page
         initAlbumThumbsDragAndDrop: function($ul, parent_id) {
             $ul.sortable({
-                handle: 'img',
-                distance: 5,
-                tolerance: 'pointer',
-                stop: function(event, ui) {
+                delay: 100,
+                delayOnTouchOnly: true,
+                animation: 150,
+                forceFallback: true,
+                ghostClass:'album-list-ghost',
+                chosenClass:'album-list-chosen',
+                dragClass:'album-list-drag',
+                onEnd: function(event) {
+                    let $item = $(event.item);
                     $.post("?module=album&action=move", {
-                        id: ui.item.data('album-id'),
-                        before_id: ui.item.next().data('album-id') || 0,
+                        id: $item.data('album-id'),
+                        before_id: $item.next().data('album-id') || 0,
                         parent_id: parent_id
                     });
                 }
+            });
+        },
+
+        initPhotoThumbsDragAndDrop: function($ul, album_id) {
+
+            $ul.sortable({
+                delay: 100,
+                delayOnTouchOnly: true,
+                animation: 150,
+                forceFallback: true,
+                ghostClass:'photo-list-ghost',
+                chosenClass:'photo-list-chosen',
+                dragClass:'photo-list-drag',
+                onStart() {
+                    console.log($('.photo-list-drag'))
+                },
+                onEnd(event) {
+                    let $item = $(event.item),
+                        photo_id = [],
+                        before_id = $item.next().data('photo-id') || 0;
+
+                    photo_id.push($item.data('photo-id'));
+
+                    $.post('?module=album&action=photoMove', {
+                        photo_id,
+                        album_id,
+                        before_id
+                    }, function(r) {
+                        if (r.status == 'ok') {
+                            $.photos.photo_stream_cache.move(photo_id, before_id);
+                        }
+                    }, 'json');
+                },
             });
         },
 
@@ -3662,7 +3708,7 @@ $(function () {
     })();
 
     // handler of triggerable 'select' event
-    $("#photo-list li").on('select', function(e, selected, need_count) {
+    $(document).on('select', '#photo-list li', function(e, selected, need_count) {
         selected = selected !== undefined ? selected : true;
         need_count = need_count !== undefined ? need_count : true;
         if (selected) {

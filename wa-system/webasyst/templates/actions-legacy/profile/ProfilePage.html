@@ -1,0 +1,143 @@
+<link type="text/css" href="{$wa_url}wa-content/css/wa/waid/waid.css?{$wa->version()}" rel="stylesheet" />
+
+{*
+ * System profile editor for own contact.
+ * ?module=profile
+ *}
+<div class="t-profile-page">
+    <div class="t-profile block double-padded">
+        <div class="profile image144px">
+            <div class="image">
+                <img src="{$user->getPhoto2x(96)}" class="userpic t-userpic">
+                <div class="wa-contact-photo-buttons">
+                    <div class="photo-change-link">
+                        <a href="javascript:void(0)">[`Change photo`]</a>
+                    </div>
+                </div>
+            </div>
+            <div class="details">
+                <h1>
+                    <span class="title">{$user.title|escape}</span>
+                    <span class="contact-name">{waContactNameField::formatName($user, true)|escape}</span>
+                    <span class="hint">@{$user.login|escape}</span>
+                </h1>
+                {if !$user.is_company}
+                    <p class="jobtitle-company">
+                        {if $user.jobtitle}
+                            <span class="title">{$user.jobtitle|escape}</span>
+                        {/if}
+                        {if $user.jobtitle && $user.company}
+                            <span class="at">[`@`]</span>
+                        {/if}
+                        {if $user.company}
+                            <span class="company">{$user.company|escape}</span>
+                        {/if}
+                    </p>
+                {/if}
+
+                <ul class="menu compact" id="contact-info-top">
+                    {foreach $top as $top_field}
+                        <li class="top-field-{$top_field.id}">{if $top_field.id != 'im'}{if $top_field.icon}<i class="icon16 {$top_field.id}"></i>{/if}{/if}{$top_field.value}</li>
+                    {/foreach}
+                </ul>
+
+                {* Used for trigger event in access tab - don't touch it *}
+                <span class="js-webasyst-id-unbind-auth hidden"></span>
+
+                {if $webasyst_id_auth_url}
+                    <div class="waid-login">
+                        <a class="waid-auth-link js-webasyst-id-auth" href="javascript:void(0)">[s`Enable sign in with`]&nbsp;<span class="wa-logo-web">web</span><span class="wa-logo-a">a</span><span class="wa-logo-s1">s</span><span class="wa-logo-y">y</span><span class="wa-logo-s2">s</span><span class="wa-logo-t">t</span></a>
+                        <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[s`What is Webasyst ID?`]</a>
+                    </div>
+                {elseif $customer_center_auth_url}
+                    {* Auth into customer center *}
+                    <div class="" style="margin-top: 2em;">
+                        <div class="js-customer-center-auth-link-wrapper waid-login">
+                            <a class="waid-auth-link js-customer-center-auth" href="{$customer_center_auth_url}">
+                                <i class="icon16" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 16px 16px; background-position: 0 0;"></i>
+                                [s`Go to the Webasyst Customer Center`]
+                            </a>
+                        </div>
+                    </div>
+                {/if}
+
+            </div>
+        </div>
+    </div>
+
+    {$wa->contactProfileTabs($user.id)}
+
+</div>
+
+<script>jQuery(function($){ "use strict";
+
+    var $contact_info_top = $('#contact-info-top');
+    var $wrapper = $contact_info_top.closest('.t-profile-page');
+
+    // When data in Contact Info tab is saved, update the block above calendar
+    var $profile_tabs_iframes = $wrapper.find('.t-profile-tabs-iframes');
+    $profile_tabs_iframes.on('contact_saved', function(evt, data) {
+        // Name, title, company, job title
+        var $h1 = $wrapper.find('.profile .details h1').first();
+        $h1.children('.contact-name:first').text(data.name);
+        $h1.children('.title:first').text(data.title);
+
+        var $work = $h1.closest('.details').find('.jobtitle-company');
+        $work.children('.company').text(data.company);
+        $work.children('.title').text(data.jobtitle);
+    });
+    $profile_tabs_iframes.on('top_fields_updated', function(evt, top) {
+        // common fields like email, phone and im
+        var html = '';
+        for (var j = 0; j < top.length; j++) {
+            var f = top[j];
+            var icon = f.id != 'im' ? (f.icon ? '<i class="icon16 ' + f.id + '"></i>' : '') : '';
+            html += '<li>' + icon + f.value + '</li>';
+        }
+        $contact_info_top.html(html);
+    });
+
+    $.wa.loadFiles({
+        "{$wa_url}wa-content/js/jquery-wa/profileWebasystID.js?{$wa->version(true)}": typeof ProfileWebasystID === 'undefined'
+    }).then(function () {
+
+        new ProfileWebasystID({
+            is_own_profile: true,
+            wa_app_url: {$wa_app_url|json_encode},
+            user: {
+                id: {$user.id|json_encode}
+            },
+            backend_url: {$wa_backend_url|json_encode},
+            wa_url: {$wa_url|json_encode},
+            wa_version: {$wa->version()|json_encode},
+            webasyst_id_auth_url: {$webasyst_id_auth_url|json_encode},
+        });
+    });
+
+
+    $.wa.loadFiles({
+        "{$wa_url}wa-content/js/jquery-wa/wa.dialog.js?{$wa->version(true)}": typeof $.fn.waDialog !== 'function'
+    }).then(function(){
+
+        // When photo editor dialog changes something, update the contact photo
+        $wrapper.on('photo_updated photo_deleted', function(evt, data) {
+            $wrapper.find('.t-userpic').attr('src', data.url);
+        });
+
+        // Open photo editor when user clicks on "Change photo" link
+        $wrapper.find('.photo-change-link a').click(function() {
+            $('#contact-photo-crop-dialog').remove();
+            $('<div id="contact-photo-crop-dialog">').appendTo($wrapper).waDialog({
+                'class': 'large',
+                url: "?module=profile&action=photo",
+                onLoad: function(d) {
+                    // move buttons where appropriate
+                    var $dialog = $(this);
+                    $dialog.find('.dialog-buttons-gradient').append($dialog.find('.dialog-content-indent .buttons'));
+                }
+            });
+        });
+
+    });
+
+});</script>

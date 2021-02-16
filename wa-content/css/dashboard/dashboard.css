@@ -203,7 +203,8 @@
 }
 #wa-app .content .wa-dashboard-page #wa_activity .activity-list-block .activity-item .item-image-wrapper .image-item,
 #wa-app .content #dashboard-wrapper #wa_activity .activity-list-block .activity-item .item-image-wrapper .image-item {
-  max-width: 48px;
+  max-width: 3rem;
+  min-width: 3rem;
 }
 #wa-app .content .wa-dashboard-page #wa_activity .activity-list-block .activity-item .item-content-wrapper .activity-target,
 #wa-app .content #dashboard-wrapper #wa_activity .activity-list-block .activity-item .item-content-wrapper .activity-target {
@@ -1267,15 +1268,29 @@
 #wa-app .content .wa-dashboard-page.users .d-users-list li a img {
   border-radius: 50%;
 }
-#wa-app .content .wa-dashboard-page.users .d-users-list li a span {
+#wa-app .content .wa-dashboard-page.users .d-users-list li a > span {
+  display: inline-block;
+}
+#wa-app .content .wa-dashboard-page.users .d-users-list li a > span:not(.userstatus):not(:last-child) {
+  margin-bottom: 0.3rem;
+}
+#wa-app .content .wa-dashboard-page.users .d-users-list li a > span.user-name {
   display: block;
-}
-#wa-app .content .wa-dashboard-page.users .d-users-list li a span.user-name {
   color: var(--text-color-link);
+  font-weight: bold;
+  font-size: 1.1rem;
   margin-top: 1rem;
+  margin-bottom: 0.3rem;
 }
-#wa-app .content .wa-dashboard-page.users .d-users-list li a span.user-login {
+#wa-app .content .wa-dashboard-page.users .d-users-list li a > span.user-login {
   color: var(--text-color-hint);
+}
+#wa-app .content .wa-dashboard-page.users .d-users-list li a > span.user-jobtitle {
+  color: var(--text-color);
+  text-transform: lowercase;
+}
+#wa-app .content .wa-dashboard-page.users .d-users-list li a > span.badge-user {
+  margin-bottom: 0.3rem;
 }
 #wa-app .content .wa-dashboard-page.widgets #wa_widgets .d-widgets-block #d-widgets-block {
   justify-content: flex-start;

@@ -11,17 +11,23 @@
     <p>Выравнивание:</p>
     <ul>
         <li><code>.align-left</code> — выравнивание текста по левому краю (text-align: left),</li>
+        <li><code>.align-left-mobile</code> — то же самое, но только на мобильных устройствах,</li>
+
         <li><code>.align-center</code> — выравнивание текста по центру (text-align: center),</li>
-        <li class="custom-mb-24"><code>.align-right</code> — выравнивание текста по правому краю (text-align: right),</li>
+        <li><code>.align-center-mobile</code> — то же самое, но только на мобильных устройствах,</li>
+
+        <li><code>.align-right</code> — выравнивание текста по правому краю (text-align: right),</li>
+        <li class="custom-mb-24"><code>.align-right-mobile</code> — то же самое, но только на мобильных устройствах.</li>
 
         <li><code>.valign-top</code> — вертикальное выравнивание к вершине блока (vertical-align: top),</li>
         <li><code>.valign-middle</code> — вертикальное выравнивание по центру блока (vertical-align: middle),</li>
-        <li><code>.valign-bottom</code> — вертикальное выравнивание к нижней границе блока (vertical-align: bottom),</li>
+        <li><code>.valign-bottom</code> — вертикальное выравнивание к нижней границе блока (vertical-align: bottom).</li>
     </ul>
 
     <p>Типографика:</p>
     <ul>
         <li><code>.bold</code> — <span class="bold">жирное</span> начертание (font-weight: bold),</li>
+        <li><code>.semibold</code> — <span class="semibold">полужирное</span> начертание (font-weight: 500),</li>
         <li><code>.italic</code> — <span class="italic">курсив</span> (font-style: italic),</li>
         <li><code>.underline</code> — <span class="underline">подчеркивание</span> текста (text-decoration: underline),</li>
         <li><code>.strike</code> — <span class="strike">зачеркнутый</span> текст (text-decoration: line-through),</li>
@@ -74,6 +80,7 @@
 
     <p>Прозрачность:</p>
     <ul>
+        <li><code>.opacity-0</code> — <span class="opacity-10">0%,</span></li>
         <li><code>.opacity-10</code> — <span class="opacity-10">10%,</span></li>
         <li><code>.opacity-20</code> — <span class="opacity-20">20%,</span></li>
         <li><code>.opacity-30</code> — <span class="opacity-30">30%,</span></li>
@@ -88,6 +95,7 @@
 
     <p>Ширина:</p>
     <ul>
+        <li class="width-0" style="background: var(--background-color);"><span class="nowrap"><code>.width-0</code> — ширина 0%,</span></li>
         <li class="width-10" style="background: var(--background-color);"><span class="nowrap"><code>.width-10</code> — ширина 10%,</span></li>
         <li class="width-20" style="background: var(--background-color);"><span class="nowrap"><code>.width-20</code> — ширина 20%,</span></li>
         <li class="width-30" style="background: var(--background-color);"><span class="nowrap"><code>.width-30</code> — ширина 30%,</span></li>
@@ -122,6 +130,51 @@
         <li><code>.desktop-only</code> — только на десктопах (display: block при ширине экрана >= 1025px),</li>
         <li><code>.desktop-and-tablet-only</code> — на планшетах и десктопах, но не на телефонах.</li>
     </ul>
+
+    <p>Скроллбар:</p>
+    <ul>
+        <li><code>.hide-scrollbar</code> — визуально скрывает скроллбар, но оставляет возможность совершать прокрутку</li>
+    </ul>
+
+    <p>Z-index:</p>
+    <ul>
+        <li><code>.z-0</code> — z-index: 0;</li>
+        <li><code>.z-10</code> — z-index: 10;</li>
+        <li><code>.z-20</code> — z-index: 20;</li>
+        <li><code>.z-30</code> — z-index: 30;</li>
+        <li><code>.z-40</code> — z-index: 40;</li>
+        <li><code>.z-50</code> — z-index: 50;</li>
+        <li><code>.z-60</code> — z-index: 60;</li>
+        <li><code>.z-70</code> — z-index: 70;</li>
+        <li><code>.z-80</code> — z-index: 80;</li>
+        <li><code>.z-90</code> — z-index: 90;</li>
+        <li><code>.z-100</code> — z-index: 100;</li>
+        <li><code>.z-auto</code> — z-index: auto;</li>
+    </ul>
+    <p>Чтобы интерфейс приложения не конфликтовал с меню навигации $wa->header(), дропдаунами, диалогами, алертами, баннерами и прочими «надвисающими» элементами, рекомендуем работать в диапазоне z-index от 0 до 100.</p>
+
+    <p>Указатель:</p>
+    <ul>
+        <li><code>.cursor-pointer</code> — Добавляет курсор в виде указателя к элементам, которые не имею атрибут или класс <span class="bold">disabled</span></li>
+    </ul>
+
+    <p>Фоновый цвет:</p>
+    <ul>
+        <li class="width-30 flexbox"><code>.bg-red</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-red">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-blue</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-blue">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-pink</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-pink">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-gray</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-gray">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-green</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-green">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-brown</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-brown">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-white</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-white">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-black</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-black">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-orange</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-orange">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-purple</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-purple">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-yellow </code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-yellow">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-dark-gray</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-dark-gray">&nbsp;</span></li>
+        <li class="width-30 flexbox"><code>.bg-light-gray</code> — <span style="width: 3rem; display: inline-block; border-radius: .25rem;" class="custom-ml-auto bg-light-gray">&nbsp;</span></li>
+    </ul>
+    <p>Перечисленные классы предназначены для (пере)определения фонового цвета элемента путем установки свойства <code>background-color</code>.</p>
 
     <script>
         $.wa_ui.title.set({$_title|json_encode});

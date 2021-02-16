@@ -157,7 +157,6 @@
                                 template.addClass('in');
                                 if (!file.error) {
                                     that.filesIds.push(file.id);
-                                    console.log(template)
                                     setTimeout(function () {
                                         template.hide(200);
                                     }, 5000);
@@ -174,7 +173,6 @@
                     template.addClass('in');
                     if (!file.error) {
                         that.filesIds.push(data.result.files[0]);
-                        console.log(template)
                         setTimeout(function () {
                             template.hide(200);
                         }, 5000);

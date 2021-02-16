@@ -47,7 +47,7 @@ class photosViewTree
                     '<ul class="menu-v album-tree">';
         if ($this->ui === '2.0') {
             $result = $view_type == 'backend' ?
-                '<ul class="menu ellipsis"><li class="drag-newposition"></li>' :
+                '<ul class="menu ellipsis nested">' :
                 '<ul class="menu ellipsis album-tree">';
         }
         foreach ($this->childs as $e) {
@@ -239,18 +239,19 @@ class photosViewTreeElement
                 ' <span class="count action p-new-album small" title="'. _w('New album').'"><i class="fas fa-plus-circle"></i></span>'.
                 '</a>' :
                 '<a href="'.photosFrontendAlbum::getLink($this->data).'">'.photosPhoto::escape($this->data['name']).'</a>';
-            if ($this->childs) {
-                $result .= $view_type == 'backend' ?
-                    '<ul class="menu ellipsis"><li class="drag-newposition"></li>' :
-                    '<ul class="menu ellipsis">';
-                foreach ($this->childs as $e) {
-                    $result .= $e->display($view_type);
+                if ($this->getClass() === "filter") {
+                    $result .= '<ul class="menu ellipsis">';
+                }else{
+                    $result .= '<ul class="menu ellipsis nested">';
                 }
-                $result .= '</ul>';
-            }
-            $result .= $view_type == 'backend' ?
-                '</li><li class="drag-newposition"></li>' :
-                '</li>';
+                if ($this->childs) {
+
+                    foreach ($this->childs as $e) {
+                        $result .= $e->display($view_type);
+                    }
+                }
+            $result .= '</ul>';
+            $result .= '</li>';
         }
         return $result;
     }

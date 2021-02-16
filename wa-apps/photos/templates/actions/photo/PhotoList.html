@@ -1,6 +1,6 @@
 <script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v={$wa->version()}"></script>
-<div class="box contentbox flexbox content">
-<section class="content" id="p-content">
+<div class="box contentbox flexbox content hide-scrollbar">
+<section class="content hide-scrollbar" id="p-content">
 
     {if empty($photos) && empty($album) && empty($hash)}
         <div class="article" id="welcome-block">
@@ -37,7 +37,7 @@
                     </span>
                 {/if}
             </h1>
-            <div class="flexbox middle nowrap space-16 p-album-control small">
+            <div class="flexbox middle nowrap space-16 p-album-control small blank">
                 <div class="toggle animate p-content-control" id="js-photos-view-toggle">
                     <span class="selected" data-action="thumbs-view">
                         <svg class="svg-inline--fa fa-th fa-w-16" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="th" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"></path></svg>
@@ -278,13 +278,13 @@
                                 <div class="p-image">
                                     <div class="p-image-corner top left"></div>
                                     <div class="p-image-corner top right"></div>
-                                    <a href="#/album/{$a.id}/">
+                                    <div class="cursor-pointer" onclick="location.href = this.getAttribute('data-href')" data-href="#/album/{$a.id}/">
                                         {if $a.key_photo}
                                             <img src="{$a.key_photo.thumb_96x96.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if}" alt="{$a.name|escape}">
                                         {else}
                                             <img src="{$wa_app_static_url}img/album-dummy.png" alt="{$a.name|escape}" style="max-width:100px">
                                         {/if}
-                                    </a>
+                                    </div>
                                 </div>
                                 <div class="p-details small">
                                     <strong{if $a.status <= 0} class="gray" title="[`Private album`]"{else} class="black"{/if}>{$a.name|default:"[`(no name)`]"|escape}</strong>
@@ -298,7 +298,7 @@
             {/if}
 
 
-            <ul class="thumbs li300px" data-view="flex-thumbs" id="photo-list"></ul>
+            <ul class="thumbs li300px ui-sortable" data-view="flex-thumbs" id="photo-list"></ul>
             <div class="lazyloading-wrapper"></div>
         </div>
     {/if}
@@ -318,7 +318,7 @@
                 {% if (o.selected) { %}selected{% } %}"
                 data-photo-id="{%#p.id%}"
     >
-        <a class="p-image" href="#{%#o.hash%}/photo/{%#p.id%}/">
+        <div class="p-image cursor-pointer" onclick="location.href = this.getAttribute('data-href')" data-href="#{%#o.hash%}/photo/{%#p.id%}/">
                 <span class="p-image-corner top left">
                     {% if ($.photos.album) { %}<span class="button white key-photo-icon"><i class="fas fa-bookmark" title="[`This is a key photo for this album`]"></i></span>{% } %}
                     {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
@@ -336,7 +336,7 @@
                 </span>
                 <img srcset="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb.url2x%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x" src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" alt="" {% if ($.photos.album && $.photos.album.status == 1 && p.status <= 0) { %} style="opacity: 0.5" title="[`Private photos are not visible in public albums`]"{% } %} />
                 {% if (p.stack_count > 0) { %}<div class="p-stack"></div>{% } %}
-        </a>
+        </div>
         <div class="p-details">
             <span class="wa-checkbox">
                 <input
@@ -509,6 +509,9 @@
     $.photos.setOption('sort_method', '{$sort_method}');
     {if !empty($album) && $child_albums}
         $.photos.initAlbumThumbsDragAndDrop($('#album-thumbs-list'), {$album.id});
+    {/if}
+    {if !empty($album)}
+        $.photos.initPhotoThumbsDragAndDrop($('#photo-list'), {$album.id});
     {/if}
 
     //

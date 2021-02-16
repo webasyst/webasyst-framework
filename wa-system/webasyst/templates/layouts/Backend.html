@@ -18,11 +18,11 @@
         {/if}
         <div id="wa-app" class="flexbox">
             {$is_fixed_header = $wa->cookie('wa_header_fixed', 0)}
-            <div class="sidebar overflow-visible flexbox {if !$is_fixed_header} height-full{else} header-fixed{/if} js-main-sidebar">
+            <div class="sidebar hide-scrollbar overflow-visible flexbox {if !$is_fixed_header} height-full{else} header-fixed{/if} js-main-sidebar">
                 <div class="sidebar-header box flexbox middle"{if $is_fixed_header} style="display: none;"{/if}>
                     {include file="../actions/backend/BackendHeaderAccount.inc.html" logo=$logo position="sidebar" inline}
                 </div>
-                <div class="sidebar-body">
+                <div class="sidebar-body hide-scrollbar">
                     <ul class="menu js-dashboards-list">
                         <li{if $selected_sidebar_item === 'my'} class="selected"{/if} data-header-title="[`My Apps`]">
                             <a href="{$backend_url}" data-dashboard="0">
@@ -86,7 +86,7 @@
 
                 </div>
             </div>
-            <div class="content blank box js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
+            <div class="content hide-scrollbar blank box js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
                 {if $wa_app == 'webasyst'}
                     {$wa->header()}
                 {/if}

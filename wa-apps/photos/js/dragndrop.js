@@ -4,12 +4,202 @@
         helper_shift: 20,
 
         init: function() {
-            this._extendJqueryUIDragAndDrop();
+/*            this._extendJqueryUIDragAndDrop();
 
             this._initDragPhotos();
             this._initDropPhotos();
             this._initDragAlbums();
-            this._initDropAlbums();
+            this._initDropAlbums();*/
+
+            // drop between albums
+
+            let nestedSortables = $('#album-list .nested')
+            nestedSortables.each(function () {
+                $(this).sortable({
+                    group: 'nested',
+                    animation: 150,
+                    fallbackOnBody: true,
+                    swapThreshold: 0.65,
+                    onEnd: function (event) {
+                        let $list = $(this),
+                            $item = $(event.item);
+/*
+                        var id = $item.attr('rel');
+                        var prev = $(this).prev('li');
+
+                        if (prev.length && prev.attr('rel') == id && !prev.hasClass('ui-draggable')) {
+                            return false;
+                        }
+                        if (this == $item.next().get(0)) {
+                            return false;
+                        }
+                        var parent_id = $list.parent('li').length ? $list.parent('li').attr('rel') : 0;
+                        var before = $(this).next(),
+                            before_id = null;
+                        if (before.length) {
+                            before_id = before.attr('rel');
+                        }
+*/
+/*                        $.post('?module=album&action=move', {
+                            id: id,
+                            before_id: before_id,
+                            parent_id: parent_id
+                        }, function(r) {
+                            var current_album = $.photos.getAlbum(),
+                                album = r.data.album,
+                                counters = r.data.counters;
+
+                            if (album.status <= 0 &&
+                                $.photos_dragndrop.privateDescendants(album.id))
+                            {
+                                $.photos.dispatch('album/'+album.id+'/');
+                            }
+
+                            if (current_album && current_album.id == album.id) {
+                                var frontend_link = r.data.frontend_link;
+                                if (frontend_link) {
+                                    $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
+                                }
+                                if (album.type == Album.TYPE_DYNAMIC) {
+                                    $.photos.load("?module=album&action=photos&id=" + album.id, $.photos.onLoadPhotoList);
+                                }
+                            }
+                            if (!$.isEmptyObject(counters)) {
+                                for (var album_id in counters) {
+                                    if (counters.hasOwnProperty(album_id)) {
+                                        album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
+                                    }
+                                }
+                            }
+                        }, 'json');*/
+/*
+                        var $parent_list = $item.parent('ul');
+                        var li_count = $parent_list.children('li.dr[rel!='+id+']').length;
+
+                        $item.next().insertAfter($(this));
+                        $item.insertAfter($(this));
+
+                        if (!li_count) {
+                            $parent_list.parent('li').children('i').remove();
+                            $parent_list.remove();
+                        }
+                        */
+                    }
+                });
+            });
+
+/*
+            $('#album-list > ul.menu').sortable({
+                handle: 'li',
+                delay: 100,
+                delayOnTouchOnly: true,
+                animation: 150,
+                forceFallback: true,
+                onStart(event) {
+                    Sortable.ghost.style.opacity = 1;
+                },
+                onEnd: function (event) {
+                    let $item = $(event.item),
+                        id = $item.data('id'),
+                        parent_id = $item.parent('li').length ? $item.parent('li').data('id') : 0,
+                        before_id = $item.next().data('id') || 0;
+
+                    $.post("?module=album&action=move", {
+                        id,
+                        before_id,
+                        parent_id
+                    });
+                }
+            });*/
+
+            $('#album-list > ul._menu').sortable({
+                draggable: 'li',
+                greedy: true,
+                tolerance: 'pointer',
+                setData: function (dataTransfer, dragEl) {
+                    console.log(dataTransfer)
+                    console.log(dragEl)
+                },
+                over: function(event, ui) {
+                    // legal only for album (li)
+                    if (ui.draggable.get(0).tagName == 'IMG') {
+                        return false;
+                    }
+                    $(this).addClass('active').parent().parent().addClass('drag-active');
+                },
+                out: function(event, ui) {
+                    $(this).removeClass('active').parent().parent().removeClass('drag-active');
+                },
+                deactivate: function(event, ui) {
+                    var self = $(this);
+                    if (self.is(':animated') || self.hasClass('dragging')) {
+                        self.stop().animate({height: '0px'}, 300, null, function(){self.removeClass('dragging');});
+                    }
+                    $(this).removeClass('active').parent().parent().removeClass('drag-active');
+                },
+                onEnd: function (event) {
+                    let $list = $(this);
+                    var dr = $(ui.draggable);
+                    var id = dr.attr('rel');
+                    var prev = $(this).prev('li');
+
+                    if (prev.length && prev.attr('rel') == id && !prev.hasClass('ui-draggable')) {
+                        return false;
+                    }
+                    if (this == dr.next().get(0)) {
+                        return false;
+                    }
+                    var parent_id = $list.parent('li').length ? $list.parent('li').attr('rel') : 0;
+                    var before = $(this).next(),
+                        before_id = null;
+                    if (before.length) {
+                        before_id = before.attr('rel');
+                    }
+                    $.post('?module=album&action=move', {
+                        id: id,
+                        before_id: before_id,
+                        parent_id: parent_id
+                    }, function(r) {
+                        var current_album = $.photos.getAlbum(),
+                            album = r.data.album,
+                            counters = r.data.counters;
+
+                        if (album.status <= 0 &&
+                            $.photos_dragndrop.privateDescendants(album.id))
+                        {
+                            $.photos.dispatch('album/'+album.id+'/');
+                        }
+
+                        if (current_album && current_album.id == album.id) {
+                            var frontend_link = r.data.frontend_link;
+                            if (frontend_link) {
+                                $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
+                            }
+                            if (album.type == Album.TYPE_DYNAMIC) {
+                                $.photos.load("?module=album&action=photos&id=" + album.id, $.photos.onLoadPhotoList);
+                            }
+                        }
+                        if (!$.isEmptyObject(counters)) {
+                            for (var album_id in counters) {
+                                if (counters.hasOwnProperty(album_id)) {
+                                    album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
+                                }
+                            }
+                        }
+                    }, 'json');
+
+                    var $parent_list = dr.parent('ul');
+                    var li_count = $parent_list.children('li.dr[rel!='+id+']').length;
+
+                    dr.next().insertAfter($(this));
+                    dr.insertAfter($(this));
+
+                    if (!li_count) {
+                        $parent_list.parent('li').children('i').remove();
+                        $parent_list.remove();
+                    }
+                }
+            });
 
         },
 
@@ -48,58 +238,60 @@
             var onStart = draggable_common_opts.start,
                 onStop  = draggable_common_opts.stop;
 
-            // drag photo to albums or sort
-            $("img", $('#photo-list')).liveDraggable($.extend({}, draggable_common_opts, {
-                containment: [
-                    0,
-                    0,
-                    $(window).width(),
-                    {
-                        toString: function() {
-                            return $(document).height();  // we have lengthened document, so make flexible calculating (use typecast method toString)
+            if($.support.touch != undefined && $.support.touch != true) {
+                // drag photo to albums or sort
+                $("img", $('#photo-list')).liveDraggable($.extend({}, draggable_common_opts, {
+                    containment: [
+                        0,
+                        0,
+                        $(window).width(),
+                        {
+                            toString: function() {
+                                return $(document).height();  // we have lengthened document, so make flexible calculating (use typecast method toString)
+                            }
+                        }
+                    ],
+                    helper: function(event) {
+                        var self = $(this).parents('li:first'),
+                            selected = $('#photo-list li.selected'),
+                            count = selected.length ? selected.length : 1,
+                            photo_ids = [self.attr('data-photo-id')],
+                            included = false;
+
+                        var li = self.get(0);
+                        selected.each(function() {
+                            if (this != li) {
+                                photo_ids.push($(this).attr('data-photo-id'));
+                            } else {
+                                included = true;
+                            }
+                        });
+
+                        // if we have selected list, but drag start with unselected item than inclue this item (and select)
+                        if (!included && selected.length) {
+                            self.addClass('selected').find('input:first').trigger('select', true);
+                            ++count;
+                        }
+                        self.data('photo_ids', photo_ids);
+                        return '<div id="helper"><span class="indicator red">' + count + '</span><i class="icon10 no-bw" style="display:none;"></i></div>';
+                    },
+                    handle: '.p-image',
+                    start: function(event, ui) {
+                        onStart.apply(this, [event, ui]);
+                        var self = $(this).parents('li:first');
+                        if (self.data('photo_ids').length == 1) {
+                            self.addClass('selected');
+                        }
+                    },
+                    stop: function(event, ui) {
+                        onStop.apply(this, [event, ui]);
+                        var self = $(this).parents('li:first');
+                        if (self.data('photo_ids').length == 1) {
+                            self.removeClass('selected');
                         }
                     }
-                ],
-                helper: function(event) {
-                    var self = $(this).parents('li:first'),
-                        selected = $('#photo-list li.selected'),
-                        count = selected.length ? selected.length : 1,
-                        photo_ids = [self.attr('data-photo-id')],
-                        included = false;
-
-                    var li = self.get(0);
-                    selected.each(function() {
-                        if (this != li) {
-                            photo_ids.push($(this).attr('data-photo-id'));
-                        } else {
-                            included = true;
-                        }
-                    });
-
-                    // if we have selected list, but drag start with unselected item than inclue this item (and select)
-                    if (!included && selected.length) {
-                        self.addClass('selected').find('input:first').trigger('select', true);
-                        ++count;
-                    }
-                    self.data('photo_ids', photo_ids);
-                    return '<div id="helper"><span class="indicator red">' + count + '</span><i class="icon10 no-bw" style="display:none;"></i></div>';
-                },
-                handle: '.p-image',
-                start: function(event, ui) {
-                    onStart.apply(this, [event, ui]);
-                    var self = $(this).parents('li:first');
-                    if (self.data('photo_ids').length == 1) {
-                        self.addClass('selected');
-                    }
-                },
-                stop: function(event, ui) {
-                    onStop.apply(this, [event, ui]);
-                    var self = $(this).parents('li:first');
-                    if (self.data('photo_ids').length == 1) {
-                        self.removeClass('selected');
-                    }
-                }
-            }));
+                }));
+            }
 
             // drag one photo (big img in photo-card)
             $('#photo').liveDraggable($.extend({}, draggable_common_opts, {

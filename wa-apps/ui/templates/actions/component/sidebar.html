@@ -2,7 +2,7 @@
 {$wa->title($_title|json_encode)}
 {function name="_render" class=""}
 <div class="flexbox {$class|default:""}" style="border: 1px dashed gold;">
-    <div class="sidebar rail height-auto" style="background: rgba(128,128,127,0.1);">
+    <div class="sidebar hide-scrollbar rail height-auto" style="background: rgba(128,128,127,0.1);">
         <ul class="menu">
             <li>
                 <a href="#">
@@ -25,7 +25,7 @@
             </li>
         </ul>
     </div>
-    <div class="content">
+    <div class="content hide-scrollbar">
         <div class="article">
             <div class="article-body">
                 Looks decent, ha!
@@ -51,10 +51,10 @@
 
 <pre class="prettyprint">
 &lt;div <em>любой контейнер со свойством style="display: flex;"</em>&gt;
-    &lt;div class="<b>sidebar</b>"&gt;
+    &lt;div class="<b>sidebar</b> hide-scrollbar"&gt;
         <em>app navigation</em>
     &lt;/div&gt;
-    &lt;div class="<b>content</b>"&gt;
+    &lt;div class="<b>content</b> hide-scrollbar"&gt;
         <em>app content</em>
     &lt;/div&gt;
 &lt;/div&gt;
@@ -62,21 +62,25 @@
 
 <p>В сайдбаре в случае с длинным контентом автоматически появлятся внутренняя прокрутка, отдельная от прокрутки общего контента, хотя и связанная с ней благодаря использованию <code>position: sticky</code>.</p>
 
+<blockquote class="highlighted green">
+    <b>Класс <code>.hide-scrollbar</code> всегда рекомендуется добавлять и на сайдбар, и на контент.</b> С ним скроллбар будет становится невидимым, когда курсор находится вне текущей области.
+</blockquote>
+
 <p>Если внутри сайдбара необходимо выделить фиксированные блоки наверху и внизу («шапку» и «подвал»), то это реализуется с помощью применения ко всему сайдбару дополнительного класса <code>.flexbox</code> и выделения внутри трех HTML-блоков <code>.sidebar-header</code>, <code>.sidebar-body</code> и <code>.sidebar-footer</code> соответственно.</p>
 
 <pre class="prettyprint">
-&lt;div class="sidebar <b>flexbox</b>"&gt;
+&lt;div class="sidebar hide-scrollbar <b>flexbox</b>"&gt;
     &lt;div class="<b>sidebar-header</b>"&gt;
         <em>sidebar fixed header, e.g. action button</em>
     &lt;/div&gt;
-    &lt;div class="<b>sidebar-body</b>"&gt;
+    &lt;div class="<b>sidebar-body</b> hide-scrollbar"&gt;
         <em>sidebar main scrollable content</em>
     &lt;/div&gt;
     &lt;div class="<b>sidebar-footer</b>"&gt;
         <em>sidebar fixed footer</em>
     &lt;/div&gt;
 &lt;/div&gt;
-&lt;div class="content"&gt;
+&lt;div class="content hide-scrollbar"&gt;
     <em>app content</em>
 &lt;/div&gt;
 </pre>
@@ -92,10 +96,10 @@
 
 <pre class="prettyprint">
 &lt;div id="wa-app" class="<b>with-bottombar</b>"&gt;
-    &lt;div class="sidebar"&gt;
+    &lt;div class="sidebar hide-scrollbar"&gt;
         <em>app content</em>
     &lt;/div&gt;
-    &lt;div class="content"&gt;
+    &lt;div class="content hide-scrollbar"&gt;
         <em>app content</em>
     &lt;/div&gt;
 &lt;/div&gt;
@@ -106,10 +110,10 @@
 <p>Когда нужно, чтобы содержимое сайдбара не обрезалось в случае выхода за его пределы (например, тултип с подсказкой или же какое-то выпадающее меню), достаточно добавить дополнительный класс <code>.overflow-visible</code>.</p>
 
 <pre class="prettyprint">
-&lt;div class="sidebar <b>overflow-visible</b>"&gt;
+&lt;div class="sidebar hide-scrollbar <b>overflow-visible</b>"&gt;
     <em>tooltips & dropdowns will overflow properly</em>
 &lt;/div&gt;
-&lt;div class="content"&gt;
+&lt;div class="content hide-scrollbar"&gt;
     <em>app content</em>
 &lt;/div&gt;
 </pre>
@@ -123,13 +127,13 @@
 <p>Исправить это можно двумя способами: либо использованием дополнительного класса (режима) <code>.scrolls-with-content</code> (см. ниже), который «склеивает» сайдбар и контент вместе, либо добавленим внутреннего блока <code>.sidebar-body</code> и <code>.flexbox</code> следующим образом:</p>
 
 <pre class="prettyprint">
-&lt;div class="sidebar <b>overflow-visible flexbox</b>"&gt;
-    &lt;div class="<b>sidebar-body</b>"&gt;
+&lt;div class="sidebar hide-scrollbar <b>overflow-visible flexbox</b>"&gt;
+    &lt;div class="<b>sidebar-body</b> hide-scrollbar"&gt;
         <em>sidebar main scrollable content with
             overflowy tooltips made possible</em>
     &lt;/div&gt;
 &lt;/div&gt;
-&lt;div class="content"&gt;
+&lt;div class="content hide-scrollbar"&gt;
     <em>app content</em>
 &lt;/div&gt;
 </pre>

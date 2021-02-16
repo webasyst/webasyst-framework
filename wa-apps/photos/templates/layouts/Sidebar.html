@@ -1,4 +1,4 @@
-<div class="p-app-sidebar sidebar flexbox overflow-visible width-adaptive-wider mobile-friendly" id="js-app-sidebar">
+<div class="p-app-sidebar sidebar hide-scrollbar flexbox overflow-visible width-adaptive-wider mobile-friendly" id="js-app-sidebar">
     {if $rights.upload}
     <div class="sidebar-header">
         <div class="p-new-section box">
@@ -14,7 +14,7 @@
             <a href="javascript:void(0);"><i class="fas fa-bars"></i> [`Show navigation`]</a>
         </div>
     </nav>
-    <div class="sidebar-body p-sidebar-block">
+    <div class="sidebar-body hide-scrollbar p-sidebar-block">
         <ul class="menu">
             <li id="sidebar-all-albums">
                 <a href="#/albums/">
@@ -152,7 +152,6 @@
 </div>
 {capture name="template-album-list-item"}
     {literal}
-    <li class="drag-newposition new-item"></li>
     <li class="dr {%#o.type == Album.TYPE_STATIC ? 'static' : 'dynamic'%}" rel="{%#o.id%}">
         <a href="#/album/{%#o.id%}" class="new-item" title="{%#o.name%}">
             <span class="count">

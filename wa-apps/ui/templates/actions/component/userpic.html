@@ -43,6 +43,129 @@
 </p>
 {/function}
 
+{function name="_userstatus"}
+<p>
+    <span class="userpic userpic20" style="background-image: url('/wa-content/img/company.svg');">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic32" style="background-image: url('/wa-content/img/company.svg');">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic48" style="background-image: url('/wa-content/img/company.svg');">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic96" style="background-image: url('/wa-content/img/company.svg');">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic144" style="background-image: url('/wa-content/img/company.svg');">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic192" style="background-image: url('/wa-content/img/company.svg');">
+        <span class="userstatus"></span>
+    </span>
+</p>
+<p>
+    <span class="userpic userpic20">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic32">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic48">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic96">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic144">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic192">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+</p>
+<p>
+    <span class="userpic userpic20">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic32">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic48">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic96">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic144">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic192">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+</p>
+<p>
+    <span class="userpic userpic20 outlined">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic32 outlined">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus bg-blue"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic48 outlined">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus bg-purple"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic96 outlined">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus bg-brown"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic144 outlined">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus bg-red"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+    <span class="userpic userpic192 outlined">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus bg-green"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+</p>
+{/function}
+
+{function name="_tooltip"}
+<p>
+    <span class="userpic userpic32 tooltip-demo" data-wa-tooltip-icon="fas fa-umbrella-beach">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus bg-blue"></span>
+    </span>
+    <span class="userpic userpic48 tooltip-demo">
+        <img src="/wa-content/img/userpic.svg" alt="">
+        <span class="userstatus bg-blue"><i class="fas fa-umbrella-beach"></i></span>
+    </span>
+</p>
+<script>
+    (function($) {
+        $(".tooltip-demo").waTooltip({
+            placement: "bottom",
+            class: 'badge user blue',
+            content: 'Отпуск'
+        });
+    })(jQuery);
+</script>
+{/function}
+
 <div class="u-component-page">
 
     <h1 class="u-page-title">{$_title|escape}</h1>
@@ -90,7 +213,23 @@
         <pre class="prettyprint">{_render2|escape}</pre>
     </div>
 
+    <div class="line">
+        <h3>Статус пользователя</h3>
+        <p>Для отображения юзерпика со статусом следует внутрь элемента с классом <code>.userpic</code> поместить элемент с классом <code>.userstatus</code> как показано на примерах ниже.</p>
+        <p>В случае необходимости обводки юзерпика используйте дополнительный класс <code>.outlined</code> - появится двойная обводка: внутренняя белая и внешняя с назначенным вами цветом (по умолчанию зеленая).</p>
+        {_userstatus}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_userstatus|escape}</pre>
+    </div>
 
+    <div class="line">
+        <h3>Пример юзерпика с <code>.waTooltip</code></h3>
+        {_tooltip}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_tooltip|escape}</pre>
+    </div>
     <script>
         $.wa_ui.title.set({$_title|json_encode});
 

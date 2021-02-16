@@ -25,8 +25,8 @@
 
     <div class="activity-item" data-id="{$activity_item.id}">
         {if !empty($activity_item.contact_photo) && $activity_item.is_user}
-            <header class="item-image-wrapper">
-                <img class="image-item userpic" src="{waContact::getPhotoUrl($activity_item.contact_id, $activity_item.contact_photo, 32, 32)}" alt="">
+            <header class="item-image-wrapper userpic userpic48">
+                <img class="image-item" src="{waContact::getPhotoUrl($activity_item.contact_id, $activity_item.contact_photo, 48, 48)}" alt="">
             </header>
         {/if}
         <div class="item-content-wrapper">

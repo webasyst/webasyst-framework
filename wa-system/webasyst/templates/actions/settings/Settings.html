@@ -49,9 +49,9 @@
                             <li class="config-text-logo js-config-text-logo flexbox space-16" {if $logo_mode == 'image'}  style="display: none"{/if}>
                                 {$two_lines = $logo.two_lines}
                                 {$text_value = $logo.text.value|trim|escape}
-                                <div class="logo-area js-logo-area {if $two_lines} two-lines{/if}"
+                                <div class="logo-area js-logo-area{if $two_lines} two-lines{/if}"
                                      data-background="gradient1"
-                                     style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:'#000000'}">
+                                     style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:$logo.text.default_color}">
                                     {if $text_value}
                                         {if $two_lines}
                                             {$logo.text.formatted_value|trim|escape|nl2br}
@@ -59,12 +59,12 @@
                                             {$text_value}
                                         {/if}
                                     {else}
-                                        {$settings.name|escape|truncate:2:''}
+                                        <i class="fas fa-home"></i>
                                     {/if}
                                 </div>
                                 <div class="logo-input flexbox vertical">
                                     <input type="text" class="shorter bold js-logo-text"
-                                           maxlength="4"{if !$text_value} placeholder="{$settings.name|escape|truncate:2:''}"{/if}
+                                           maxlength="4"
                                            name="logo[text][value]" value="{$logo.text.value|escape}"
                                            id="config-logo-text" autocomplete="off">
                                     <span class="hint">[`1-4 symbols`]</span>
@@ -78,7 +78,7 @@
                                     </label>
                                 </div>
                                 <div class="color-picker">
-                                    <button type="button" class="color-picker-button js-color-picker-button" data-background="gradient1" style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:'#000000'}">
+                                    <button type="button" class="color-picker-button js-color-picker-button" data-background="gradient1" style="background: linear-gradient({$logo.gradient.angle}deg, {$logo.gradient.from}, {$logo.gradient.to}); color:{$logo.text.color|escape|default:$logo.text.default_color}">
                                         <i class="fas fa-eye-dropper"></i>
                                     </button>
                                 </div>
@@ -99,76 +99,10 @@
                                             <div class="field">
                                                 <div class="value">
                                                     <div class="color-items">
+                                                        {$gradients = $logo.gradients}
                                                         {$selected = 1}
-                                                        {$gradients = [
-                                                            ['start' => '#FF248B', 'end' => '#FF5900'],
-                                                            ['start' => '#FFA629', 'end' => '#FF743D'],
-                                                            ['start' => '#E6CF00', 'end' => '#F5A300'],
-                                                            ['start' => '#E0E000', 'end' => '#99CC00'],
-                                                            ['start' => '#28F500', 'end' => '#88CC00'],
-                                                            ['start' => '#42F642', 'end' => '#00D66B'],
-                                                            ['start' => '#00FA7D', 'end' => '#00CCAA'],
-                                                            ['start' => '#00F0F0', 'end' => '#00BBFA'],
-                                                            ['start' => '#57C7FF', 'end' => '#668CFF'],
-                                                            ['start' => '#B18AFF', 'end' => '#4C6AFF'],
-                                                            ['start' => '#E252FF', 'end' => '#A05CFF'],
-                                                            ['start' => '#F370FF', 'end' => '#F23DA7'],
-                                                            ['start' => '#C4C4C4', 'end' => '#808080'],
-                                                            ['start' => '#FF0F80', 'end' => '#CC4700'],
-                                                            ['start' => '#F58F00', 'end' => '#FA4700'],
-                                                            ['start' => '#DBC500', 'end' => '#C78500'],
-                                                            ['start' => '#CCCC00', 'end' => '#7EA800'],
-                                                            ['start' => '#24DB00', 'end' => '#669900'],
-                                                            ['start' => '#0BDF0B', 'end' => '#00994C'],
-                                                            ['start' => '#00EB75', 'end' => '#00A88C'],
-                                                            ['start' => '#00D6D6', 'end' => '#0091C2'],
-                                                            ['start' => '#05ACFF', 'end' => '#1F57FF'],
-                                                            ['start' => '#8B52FF', 'end' => '#1E42F5'],
-                                                            ['start' => '#D91AFF', 'end' => '#6A00FF'],
-                                                            ['start' => '#EE2EFF', 'end' => '#BF0D75'],
-                                                            ['start' => '#999999', 'end' => '#545454'],
-                                                            ['start' => '#DB0067', 'end' => '#993500'],
-                                                            ['start' => '#DB8000', 'end' => '#C73800'],
-                                                            ['start' => '#A89700', 'end' => '#8A5C00'],
-                                                            ['start' => '#A3A300', 'end' => '#547000'],
-                                                            ['start' => '#1FBD00', 'end' => '#4E7500'],
-                                                            ['start' => '#09B909', 'end' => '#00753B'],
-                                                            ['start' => '#00B359', 'end' => '#006B59'],
-                                                            ['start' => '#00ADAD', 'end' => '#006B8F'],
-                                                            ['start' => '#008BD1', 'end' => '#0029A3'],
-                                                            ['start' => '#793EEF', 'end' => '#0724B0'],
-                                                            ['start' => '#A600C7', 'end' => '#4A00B3'],
-                                                            ['start' => '#B600C7', 'end' => '#690740'],
-                                                            ['start' => '#757575', 'end' => '#333333'],
-                                                            ['start' => '#A3004D', 'end' => '#5C2000'],
-                                                            ['start' => '#995900', 'end' => '#8A2700'],
-                                                            ['start' => '#706500', 'end' => '#473000'],
-                                                            ['start' => '#707000', 'end' => '#2E3D00'],
-                                                            ['start' => '#147A00', 'end' => '#334D00'],
-                                                            ['start' => '#067E06', 'end' => '#004D26'],
-                                                            ['start' => '#007A3D', 'end' => '#003D33'],
-                                                            ['start' => '#006080', 'end' => '#003838'],
-                                                            ['start' => '#00527A', 'end' => '#001452'],
-                                                            ['start' => '#4000C2', 'end' => '#000E52'],
-                                                            ['start' => '#73008A', 'end' => '#280061'],
-                                                            ['start' => '#670070', 'end' => '#30031D'],
-                                                            ['start' => '#5E5E5E', 'end' => '#171717'],
-                                                            ['start' => '#520026', 'end' => '#1A0900'],
-                                                            ['start' => '#523000', 'end' => '#1F0900'],
-                                                            ['start' => '#474000', 'end' => '#140E00'],
-                                                            ['start' => '#474700', 'end' => '#0F1400'],
-                                                            ['start' => '#0C4700', 'end' => '#0E1400'],
-                                                            ['start' => '#044904', 'end' => '#00140A'],
-                                                            ['start' => '#004221', 'end' => '#001411'],
-                                                            ['start' => '#00394D', 'end' => '#000F0F'],
-                                                            ['start' => '#003652', 'end' => '#00061A'],
-                                                            ['start' => '#23006B', 'end' => '#000624'],
-                                                            ['start' => '#440052', 'end' => '#110029'],
-                                                            ['start' => '#410047', 'end' => '#18020F'],
-                                                            ['start' => '#383838', 'end' => '#0F0F0F']
-                                                        ]}
                                                         {foreach $gradients as $grad}
-                                                            {if $grad.start == $logo.gradient.from && $grad.end == $logo.gradient.to}
+                                                            {if $grad.from == $logo.gradient.from && $grad.to == $logo.gradient.to}
                                                                 {$selected = $grad@iteration}
                                                             {/if}
                                                         {/foreach}
@@ -176,8 +110,8 @@
                                                             <button type="button"
                                                                     class="color-picker-button gradient{$gradient} js-switch-color"
                                                                     data-gradient="{$gradient}"
-                                                                    data-gradient-start="{$gradients[$gradient-1].start}"
-                                                                    data-gradient-end="{$gradients[$gradient-1].end}">
+                                                                    data-gradient-from="{$gradients[$gradient-1].from}"
+                                                                    data-gradient-to="{$gradients[$gradient-1].to}">
                                                                 {if $selected == $gradient}
                                                                     <i class="fas fa-check"></i>
                                                                 {else}

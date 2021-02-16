@@ -1,7 +1,14 @@
-{$_title = "Градиенты"}
+{$_title = "Цвета и градиенты"}
 {$wa->title($_title)}
 
 <h1>{$_title}</h1>
+
+{function name="_render" class=""}
+html {
+    --accent-color:        #1a9afe;
+    --accent-color-hover:  #05e;
+}
+{/function}
 
 {$gradients = [
     ['start' => '#FF248B', 'end' => '#FF5900'],
@@ -71,6 +78,47 @@
     ['start' => '#383838', 'end' => '#0F0F0F']
 ]}
 
+<p>Базовые цвета для использование в интерфейсе приложения:</p>
+
+{$colors = [
+    'red',
+    'green',
+    'blue',
+    'yellow',
+    'orange',
+    'purple',
+    'brown',
+    'pink',
+    'white',
+    'black',
+    'gray',
+    'light-gray',
+    'dark-gray'
+]}
+
+<div class="ui-color-table">
+    {foreach $colors as $c}
+        <div class="ui-color">
+            <div class="ui-color-box" style="background: var(--{$c});"></div>
+            <span class="ui-color-name">{$c}</span>
+        </div>
+    {/foreach}
+</div>
+
+<p>Все вышеперечисленные цвета доступны для использовании в CSS в виде <code>var(--<b>COLOR</b>)</code>. Например, <code style="background: var(--purple); color: var(--white);">background: var(--purple); color: var(--white);</code>.</p>
+
+<h3>var(<code>--accent-color</code>)</h3>
+
+<p>CSS-переменные <code>var(--accent-color)</code> и <code>var(--accent-color-hover)</code> задают цвет выделения. Например, цвет выбранного пункта в списке, цвет чекбокса и т.д.</p>
+<p>По умолчанию это синий цвет: <span class="icon"><i class="rounded" style="background: var(--accent-color);"></i></span> </p>
+<p>Допускается переопределение цвета выделения на уровне приложения. Устанавливайте свои цвета в CSS приложения, переопределив значение переменных <code>var(--accent-color)</code> и <code>var(--accent-color-hover)</code>, если это помогает сделать интерфейс визуально более выразительным.</p>
+
+<div class="line">
+    <pre class="prettyprint">{_render|escape}</pre>
+</div>
+
+<h3>Градиенты</h3>
+
 <p>В Webasyst 2 градиенты используются повсеместно. В особенности в компонентах, которые требуют повышенного внимания и должны быть заметнее других компонентов в интерфейсе: кнопки, уведомления, логотип компании, иконки приложений, баннеры, уведомления и т.д.</p>
 
 <p>Базовые рекомендации по параметрам градиентов:</p>
@@ -92,14 +140,22 @@
 </div>
 
 <style>
+
+    .ui-color-table { display: flex; width: 100%; flex-wrap: wrap; }
+    .ui-color { flex: 1 0 2.5rem; text-align: center; margin-right: 0.75rem; margin-bottom: 0.75rem; line-height: 0.75; }
+    .ui-color-box { width: 2.5rem; height: 2.5rem; margin: 0 auto 0.25rem; border-radius: 0.25rem; cursor: pointer; border: 1px solid var(--border-color-soft); }
+    .ui-color-name { font-size: 0.675rem; }
+
     .ui-gradient-table { display: flex; width: 100%; flex-wrap: wrap; }
     .ui-gradient-box { flex: 1 0 5.5%; width: 3rem; height: 3rem; margin-right: 1rem; margin-bottom: 1rem; border-radius: 0.25rem; cursor: pointer; }
 
     @media screen and (max-width: 960px) and (min-width: 561px) {
         .ui-gradient-box { flex: 1 0 13%; height: 4rem; }
+        .ui-color { flex: 1 0 4rem; }
     }
     @media screen and (max-width: 560px) {
         .ui-gradient-box { flex: 1 0 20%; height: 4rem; }
+        .ui-color { flex: 1 0 4rem; }
     }
 
 </style>

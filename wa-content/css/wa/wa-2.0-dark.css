@@ -96,6 +96,13 @@ html {
     --chips-tags-background-color:            rgba(30, 160, 0, 0.26);
     --chips-tags-background-color-hover:      rgba(30, 160, 0, 0.36);
 
+    --bricks-link-color:                        #778;
+    --bricks-link-color-hover:                  #aab;
+    --bricks-link-color-selected:               #edd;
+    --bricks-glyph-color:                       #556;
+    --bricks-glyph-color-hover:                 #778;
+    --bricks-glyph-color-selected:              #fff;
+
     --toggle-background-color:                rgba(255, 255, 255, 0.1);
     --toggle-background-color-selected:       #001;
     --toggle-text-color:                      #aab;
@@ -112,6 +119,7 @@ html {
     --thumbs-highlighted-color:               #fe2;
 
     --tooltip-background-color:               #151e29;
+    --tooltip-border-color:                   #000;
     --tooltip-text-color:                     #ccc;
 
     --dialog-background-color:                rgba(0, 0, 0, 0.8);

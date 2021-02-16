@@ -25,6 +25,20 @@
     </p>
 {/function}
 
+{function name="_user"}
+    <p>
+        <span class="badge user">Cтатус</span>
+        <span class="badge user blue">Cтатус</span>
+        <span class="badge user green">Cтатус</span>
+        <span class="badge user yellow">Cтатус</span>
+        <span class="badge user orange">Cтатус</span>
+        <span class="badge user purple"><i class="fas fa-globe"></i>Cтатус</span>
+
+        <span class="badge user small blue"><i class="fas fa-globe"></i>Cтатус</span>
+        <span class="badge user smaller blue"><i class="fas fa-globe"></i>Cтатус</span>
+    </p>
+{/function}
+
 <div class="u-component-page">
     <h1 class="u-page-title">{$_title|escape}</h1>
     <p>Выделение небольших элементов (счетчиков, числовых показателей, иконок, символов) на цветом фоне. По умолчанию — на красном фоне.</p>
@@ -35,6 +49,16 @@
     </div>
     <div class="line">
         <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <h3>.badge<code>.user</code></h3>
+    <p>Для выделения статуса пользователя (совместно с компонентом <a href="{$wa_app_url}component/userpic/">.userpic</a>) используйте дополнительный класс <code>.user</code>.</p>
+
+    <div class="line">
+        {_user}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_user|escape}</pre>
     </div>
 
 

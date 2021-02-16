@@ -55,6 +55,8 @@ const WASettingsGeneral = ( function($) {
             // DYNAMIC VARS
             that.is_locked = false;
             that.logo_text = that.$logo_text_area.text().trim();
+            that.gradient_from = null
+            that.gradient_to = null
 
             // INIT
             that.initClass();
@@ -192,16 +194,17 @@ const WASettingsGeneral = ( function($) {
 
             that.$change_bgcolor_btn.on('click', function(){
                 let $btn = $(this),
-                    gradient = $btn.data('gradient'),
-                    gradient_start = $btn.data('gradient-start'),
-                    gradient_end = $btn.data('gradient-end')
+                    gradient = $btn.data('gradient')
+
+                    that.gradient_from = $btn.data('gradient-from')
+                    that.gradient_to = $btn.data('gradient-to')
 
                 $color_text.val('#FFFFFF')
                 $color_text_pickr.css('color', '#FFFFFF')
-                $first_color.val(gradient_start)
-                $first_color_pickr.css('color', gradient_start)
-                $second_color.val(gradient_end)
-                $second_color_pickr.css('color', gradient_end)
+                $first_color.val(that.gradient_from)
+                $first_color_pickr.css('color', that.gradient_from)
+                $second_color.val(that.gradient_to)
+                $second_color_pickr.css('color', that.gradient_to)
                 that.$logo_text_area.attr('data-background', `gradient${ gradient }`).removeAttr('style').css('color', '#ffffff')
                 $btn.empty().append('<i class="fas fa-check"></i>').siblings().empty().append('<i>&nbsp;</i>')
                 that.$picker_btn.attr('data-background', `gradient${ gradient }`).removeAttr('style')
@@ -330,12 +333,18 @@ const WASettingsGeneral = ( function($) {
                         that.$footer_actions.removeClass('is-changed');
 
                         // Update company name in header
+                        let $logo = $('#wa-account');
                         let company_name = $.trim(that.$form.find('#config-logo-text').val());
                         // $('#wa-account').find('.wa-dashboard-link h3').attr('title', company_name);
                         // if (company_name.length > 18) {
                         //     company_name = company_name.substr(0, 15) +'...';
                         // }
-                        // $('#wa-account').find('.wa-dashboard-link h3').text(company_name);
+
+                        $logo.css({
+                            'background': `linear-gradient(90deg, ${that.gradient_from}, ${that.gradient_to})`
+                        })
+                        $logo.find('h3').text(company_name);
+
                         setTimeout(function(){
                             that.$button.empty().html($button_text);
                         },2000);

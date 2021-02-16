@@ -21,12 +21,11 @@
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
         {$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js
         {$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.min.js
         {$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.min.js
+        {$wa_url}wa-content/js/sortable/sortable.min.js
+        {$wa_url}wa-content/js/sortable/jquery-sortable.min.js
         {$wa_app_static_url}js/sidebar.js
         {$wa_app_static_url}js/dragndrop.js
         {$wa_app_static_url}js/tmpl.min.js
@@ -59,7 +58,7 @@
     <div class="p-app-wrapper" id="wa-app">
         <div class="flexbox">
             {include "templates/layouts/Sidebar.html"}
-            <div class="content blank p-app-content flexbox" id="content">
+            <div class="content blank p-app-content flexbox hide-scrollbar" id="content">
                 {if isset($content)}{$content}{/if}
             </div>
         </div>
@@ -195,7 +194,7 @@
 {/literal}{/capture}
 
 {capture name="template-p-block"}
-<section class="content" id="p-content">
+<section class="content hide-scrollbar" id="p-content">
     <div class="box contentbox" id="p-block"></div>
     <div id="changable-area"></div>
     <div id="cover" class="dialog-background" style="display:none;">

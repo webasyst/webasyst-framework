@@ -23,7 +23,7 @@
             ],
             "cheatsheet" => [
                 "icon" => "fas fa-code",
-                "name" => "Шпаргалка",
+                "name" => "TLDR (шпаргалка)",
                 "url" => "{$_component_base}cheatsheet/",
                 "bottompadded" => true
             ],
@@ -61,22 +61,26 @@
                 "url" => "{$_component_base}animations/"
             ],
             "gradients" => [
-                "name" => "Градиенты",
+                "name" => "Цвета и градиенты",
                 "url" => "{$_component_base}gradients/"
             ],
             "requirements" => [
                 "name" => "Требования",
                 "url" => "{$_component_base}requirements/"
+            ],
+            "misc" => [
+                "name" => "Хелперы CSS",
+                "url" => "{$_component_base}misc/"
+            ],
+            "custom" => [
+                "name" => "Отступы",
+                "url" => "{$_component_base}custom/"
             ]
         ]
     ],
     [
         "title" => "CSS-компоненты",
         "components" => [
-            "misc" => [
-                "name" => ".align-*, +",
-                "url" => "{$_component_base}misc/"
-            ],
             "alert" => [
                 "name" => ".alert",
                 "url" => "{$_component_base}alert/"
@@ -96,6 +100,10 @@
             "breadcrumbs" => [
                 "name" => ".breadcrumbs",
                 "url" => "{$_component_base}breadcrumbs/"
+            ],
+            "bricks" => [
+                "name" => ".bricks",
+                "url" => "{$_component_base}bricks/"
             ],
             "bottombar" => [
                 "name" => ".bottombar",
@@ -117,14 +125,6 @@
                 "name" => ".chips",
                 "url" => "{$_component_base}chips/"
             ],
-            "custom" => [
-                "name" => ".custom-*",
-                "url" => "{$_component_base}custom/"
-            ],
-            "fields" => [
-                "name" => ".fields",
-                "url" => "{$_component_base}fields/"
-            ],
             "flexbox" => [
                 "name" => ".flexbox",
                 "url" => "{$_component_base}flexbox/"
@@ -140,10 +140,6 @@
             "inlinebox" => [
                 "name" => ".inlinebox",
                 "url" => "{$_component_base}inlinebox/"
-            ],
-            "inputs" => [
-                "name" => "input, textarea",
-                "url" => "{$_component_base}inputs/"
             ],
             "list" => [
                 "name" => ".list",
@@ -181,10 +177,6 @@
                 "name" => ".thumbs",
                 "url" => "{$_component_base}thumbs/"
             ],
-            "tooltip" => [
-                "name" => ".tooltip",
-                "url" => "{$_component_base}tooltip/"
-            ],
             "lists" => [
                 "name" => "ul",
                 "url" => "{$_component_base}lists/"
@@ -192,6 +184,19 @@
             "userpic" => [
                 "name" => ".userpic",
                 "url" => "{$_component_base}userpic/"
+            ]
+        ]
+    ],
+    [
+        "title" => "Формы ввода данных",
+        "components" => [
+            "inputs" => [
+                "name" => "input, textarea",
+                "url" => "{$_component_base}inputs/"
+            ],
+            "fields" => [
+                "name" => ".fields",
+                "url" => "{$_component_base}fields/"
             ],
             "wa-checkbox" => [
                 "name" => ".wa-checkbox, +",
@@ -237,6 +242,10 @@
             "toggle" => [
                 "name" => ".waToggle",
                 "url" => "{$_component_base}toggle/"
+            ],
+            "tooltip" => [
+                "name" => ".waTooltip",
+                "url" => "{$_component_base}wa-tooltip/"
             ],
             "upload" => [
                 "name" => ".waUpload",

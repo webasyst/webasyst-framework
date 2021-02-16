@@ -24,6 +24,27 @@
 </p>
 {/function}
 
+{function name="_render_gradient"}
+<p>
+    <a href="#" class="button gradient">.gradient</a>
+    <a href="#" class="button gradient rounded blue">.blue</a>
+    <a href="#" class="button gradient rounded green">.green</a>
+    <a href="#" class="button gradient rounded yellow">.yellow</a>
+    <a href="#" class="button gradient rounded orange">.orange</a>
+    <a href="#" class="button gradient rounded red">.red</a>
+</p>
+<p>
+    <a href="#" class="button gradient rounded purple">.purple</a>
+    <a href="#" class="button gradient rounded pink">.pink</a>
+    <a href="#" class="button gradient rounded brown">.brown</a>
+    <a href="#" class="button gradient rounded gray">.gray</a>
+    <a href="#" class="button gradient rounded dark-gray">.dark-gray</a>
+    <a href="#" class="button gradient rounded black">.black</a>
+    <a href="#" class="button gradient rounded light-gray">.light-gray</a>
+    <a href="#" class="button gradient rounded white">.white</a>
+</p>
+{/function}
+
 {function name="_render_sizing"}
 <p>
     <a href="#" class="button smallest"><span>.smallest</span></a>
@@ -65,7 +86,7 @@
 
 {function name="_render_giant"}
 <p>
-    <a href="#" class="button orange rounded" style="font-size: 5rem;"><span>OMG!</span></a>
+    <a href="#" class="button orange rounded gradient" style="font-size: 5rem;"><span>OMG!</span></a>
 </p>
 {/function}
 
@@ -203,6 +224,17 @@
     </div>
     <div class="line">
         <pre class="prettyprint">{_render_fullwidth|escape}</pre>
+    </div>
+
+    <h3>.button<code>.gradient</code></h3>
+
+    <p>Дополнительный класс <code>.gradient</code> позволяет стилизовать кнопку градиентом (за исключением светло-серой и белой кнопок). Рекомендуется применять только в особых случаях, в которых кнопка (или несколько кнопок) имеет в интерфейсе доминирующую роль. Градиентное выделение хорошо работает в паре с <code>.rounded</code>.</p>
+
+    <div class="line">
+        {_render_gradient}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_gradient|escape}</pre>
     </div>
 
     <h3>Размеры кнопок</h3>

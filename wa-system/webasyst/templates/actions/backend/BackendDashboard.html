@@ -40,6 +40,10 @@
         // make header sticky
         WaHeader.headerBehavior('#wa_apps', { rootMargin: `1px 0px -100% 0px`, threshold: [0, 1] });
 
+        new Dashboard();
+        new Group();
+        new Page();
+
         $(".js-activity-filter-toggler").on("click", function(event) {
             event.preventDefault();
             $('#activity-filter').slideToggle();

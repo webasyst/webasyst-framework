@@ -28,7 +28,7 @@ class WaHeader {
         if (!this.$applist.is('.counts-cached')) {
             this.updateCount()
         } else {
-            setTimeout(this.updateCount, 60000);
+            setInterval(this.updateCount, 60000);
         }
     }
 
@@ -183,6 +183,8 @@ class WaHeader {
 
         const action = function ($toggler) {
             $toggler.toggleClass('down');
+            $toggler.toggleClass('spin');
+            setTimeout(() => $toggler.toggleClass('spin'), 1000);
             that.$content.toggleClass('wa-nav-unfolded');
             that.$wa_nav .toggleClass('wa-nav-unfolded');
         };
@@ -329,13 +331,31 @@ class WaHeader {
      * @description Update Apps action counter value
      */
     updateCount() {
-        let that = this,
+        let is_idle = true,
             $wa_header = $('#wa-header');
+
+        $(document).on("mousemove keyup scroll", function() {
+            is_idle = false;
+        });
+
+        document.addEventListener("touchmove", function () {
+            is_idle = false;
+        }, false);
+
+        const data = {
+            background_process: 1
+        };
+
+        if (is_idle) {
+            data.idle = "true";
+        } else {
+            is_idle = true;
+        }
 
         $.ajax({
             url: backend_url + "?action=count",
-            data: {'background_process': 1},
-            success: function (response) {
+            data,
+            success(response) {
                 if (response && response.status == 'ok') {
                     // announcements
                     if (response.data.__announce) {
@@ -369,10 +389,9 @@ class WaHeader {
                     }
                     $(document).trigger('wa.appcount', response.data);
                 }
-                setTimeout(that.updateCount, 60000);
             },
-            error: function () {
-                setTimeout(that.updateCount, 60000);
+            error(response) {
+                console.error(response);
             },
             dataType: "json",
             async: true
