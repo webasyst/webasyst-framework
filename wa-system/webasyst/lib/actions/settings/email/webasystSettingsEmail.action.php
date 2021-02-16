@@ -42,7 +42,7 @@ class webasystSettingsEmailAction extends webasystSettingsViewAction
 
         if (function_exists('mail')) {
             $senders['mail'] = array(
-                'name'        => _ws('php mail() function'),
+                'name'        => _ws('PHP mail() function'),
                 'description' => _ws('Some web-hosting companies allow sending email messages by means of this transport only. If it is required to specify additional parameters for the mail() function enter them below. The default parameters are -f%s.')
             );
         }

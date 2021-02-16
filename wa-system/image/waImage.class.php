@@ -135,7 +135,7 @@ class waImage
         $class = 'waImage'.$adapter;
 
         if (!class_exists($class, true)) {
-            throw new waException(sprintf(_ws('Not %s image adapter'), $adapter));
+            throw new waException(sprintf(_ws('%s is not an image adapter.'), $adapter));
         }
         if ($class == 'waImage') {
             throw new waException(_ws('No image adapters found. Install ImageMagick or GD extension to enable image-processing functionality.'));

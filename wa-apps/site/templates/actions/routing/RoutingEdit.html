@@ -483,6 +483,11 @@ $(function () {
                             $('#route-{$route_id} .s-app').removeClass('gray');
                         }
                     }
+                    if ($('#ssl_all').prop('checked')) {
+                        $('#route-{$route_id} .lock').removeClass('hidden');
+                    } else {
+                        $('#route-{$route_id} .lock').addClass('hidden');
+                    }
                 {/if}
                     if (response.data.add) {
                         if (response.data.add === 'top') {

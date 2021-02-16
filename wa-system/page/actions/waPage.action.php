@@ -58,6 +58,9 @@ class waPageAction extends waViewAction
                 'description' => isset($page['description']) ? $page['description'] : ''
             ));
 
+            $storefront_url = wa()->getRouteUrl('/frontend/', true);
+            $canonical_url = $storefront_url . $page['full_url'];
+
             // Open Graph
             $og = false;
             foreach (array('title', 'image', 'video', 'description', 'type') as $k) {
@@ -66,6 +69,7 @@ class waPageAction extends waViewAction
                     $this->getResponse()->setOGMeta('og:'.$k, $page['og_'.$k]);
                 }
             }
+            $this->getResponse()->setOGMeta('og:url', $canonical_url);
             if (!$og) {
                 $this->getResponse()->setOGMeta('og:title', $page['title']);
                 if (!empty($page['description'])) {
@@ -83,7 +87,7 @@ class waPageAction extends waViewAction
             $this->view->assign('page', $page);
             $this->setThemeTemplate('page.html');
 
-            $this->addCanonicalUrl($page['full_url']);
+            $this->getResponse()->setCanonical($canonical_url);
         }
     }
 
@@ -145,12 +149,5 @@ class waPageAction extends waViewAction
             $this->model = $this->getAppId().'PageModel';
         }
         return new $this->model();
-    }
-
-    public function addCanonicalUrl($full_url)
-    {
-        $storefront_url = wa()->getRouteUrl('/frontend/', true);
-        $canonical_url = $storefront_url . $full_url;
-        $this->getResponse()->setCanonical($canonical_url);
     }
 }

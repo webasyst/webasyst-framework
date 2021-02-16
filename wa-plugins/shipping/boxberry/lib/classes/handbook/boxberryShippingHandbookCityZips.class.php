@@ -63,7 +63,7 @@ class boxberryShippingHandbookCityZips extends boxberryShippingHandbookManager
         // Save regions that could not match.
         // In the future for support
         if ($bad_regions) {
-            waLog::log("Invalid regions: \n".var_export($bad_regions, true)."\n", 'wa-plugins/shipping/invalid_zip_regions.log');
+            waLog::log("Invalid regions: \n".var_export($bad_regions, true)."\n", 'wa-plugins/shipping/boxberry/invalid_zip_regions.log');
         }
 
         return $result;

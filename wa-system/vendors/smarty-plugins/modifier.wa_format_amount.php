@@ -17,7 +17,7 @@ function smarty_modifier_wa_format_amount($string, $currency_id = null, $format 
         $locale = $smarty->getVars('locale');
     }
     if ($locale === null) {
-        $locale = wa()->getUser()->getLocale();
+        $locale = wa()->getLocale();
     }
     if ($currency_id === null) {
         $currency_id = $smarty->getVars('currency_id');

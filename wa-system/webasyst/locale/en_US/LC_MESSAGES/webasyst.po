@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-12-16 15:53+0300\n"
+"PO-Revision-Date: 2021-01-26 16:26+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -375,8 +375,8 @@ msgstr ""
 msgid "Please enter a filename"
 msgstr ""
 
-msgid "Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
-msgstr "Only Latin characters (a—z, A—Z), numbers (0—9), and the underline character (_) are allowed."
+msgid "Only Latin letters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
+msgstr "Only Latin letters (a—z, A—Z), numbers (0—9), and the underline character (_) are allowed."
 
 msgid "File should have one of the allowed extensions:"
 msgstr "File name should have one of the allowed extensions:"
@@ -432,8 +432,8 @@ msgstr "Unknown field “%s”"
 msgid "Not an image or invalid image: "
 msgstr ""
 
-msgid "Not %s image adapter"
-msgstr "Not a %s image adapter"
+msgid "%s is not an image adapter."
+msgstr ""
 
 msgid "File must be writable: "
 msgstr ""
@@ -1417,7 +1417,7 @@ msgstr ""
 msgid "Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
 msgstr ""
 
-msgid "Ok, thanks"
+msgid "OK, thanks"
 msgstr ""
 
 msgid "Live stream collects all events from installed apps and presents them in a chronological order."
@@ -1943,7 +1943,7 @@ msgstr ""
 msgid "Enter an email address in “Sender” field to use DKIM."
 msgstr ""
 
-msgid "You need to install openssl php extention to use DKIM"
+msgid "You need to install PHP extension openssl to use DKIM."
 msgstr ""
 
 msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
@@ -2117,7 +2117,7 @@ msgstr ""
 msgid "Delete template group?"
 msgstr ""
 
-msgid "Preview SMS-message \"<span class=\"js-template-name\"></span>\""
+msgid "Preview SMS message \"<span class=\"js-template-name\"></span>\""
 msgstr ""
 
 msgid "Checking the sending of SMS messages"
@@ -2132,7 +2132,7 @@ msgstr ""
 msgid "Save your templates"
 msgstr ""
 
-msgid "To check the sending of SMS-messages, you must save the changes you made."
+msgid "To check the sending of SMS messages, you must save the changes you made."
 msgstr ""
 
 msgid "person"
@@ -2273,7 +2273,7 @@ msgstr ""
 msgid "A special server for sending email messages. You can send email via any SMTP server for which you have connection credentials: host, port, user name, and password. It may belong either to your web-hosting company or to a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
 msgstr ""
 
-msgid "php mail() function"
+msgid "PHP mail() function"
 msgstr ""
 
 msgid "Some web-hosting companies allow sending email messages by means of this transport only. If it is required to specify additional parameters for the mail() function enter them below. The default parameters are -f%s."
@@ -2695,7 +2695,7 @@ msgstr ""
 msgid "You have been requesting code too frequently. Try again in <strong>%s:%s</strong>."
 msgstr ""
 
-msgid "System template"
+msgid "System templates"
 msgstr ""
 
 msgid "New channel %s"
@@ -2875,7 +2875,7 @@ msgstr ""
 msgid "Please check in “<a href=\"%s\">%s</a>” section that email notifications based on “%s“ template are correctly sent."
 msgstr ""
 
-msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending mignt not work occasionally; e.g., due to low SMS balance."
+msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending might not work occasionally; e.g., due to low SMS balance."
 msgstr ""
 
 msgid "I'm aware"

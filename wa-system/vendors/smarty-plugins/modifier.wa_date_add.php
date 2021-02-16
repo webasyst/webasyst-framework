@@ -16,7 +16,7 @@ function smarty_modifier_wa_date_add($string, $format, $timezone = null, $locale
         $locale = $smarty->getVars('locale');
     }
     if ($locale === null) {
-        $locale = waSystem::getInstance()->getUser()->getLocale();
+        $locale = wa()->getLocale();
     }
 
     $string = wa_date('date', $string, $timezone, $locale);

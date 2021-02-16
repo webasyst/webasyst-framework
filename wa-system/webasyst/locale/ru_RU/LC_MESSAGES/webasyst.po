@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2020-12-21 14:57+0300\n"
+"PO-Revision-Date: 2021-02-09 15:13+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1582,8 +1582,8 @@ msgstr "Это поле должно быть уникальным"
 msgid "Not an image or invalid image: "
 msgstr "Неправильный формат изображения: "
 
-msgid "Not %s image adapter"
-msgstr "Not %s image adapter"
+msgid "%s is not an image adapter."
+msgstr "%s не является адаптером обработки изображений."
 
 msgid "No image adapters found. Install ImageMagick or GD extension to enable image-processing functionality."
 msgstr "Не найдено ни одного расширения для работы с изображениями. Установите ImageMagick или GD."
@@ -2023,7 +2023,7 @@ msgstr "Недостаточные права доступа для сохран
 msgid "Insufficient access permissions to save the file"
 msgstr "Недостаточные права доступа для сохранения файла."
 
-msgid "Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
+msgid "Only Latin letters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
 msgstr "Допускается использовать только латинские буквы (a—z, A—Z), цифры (0—9) и символ подчеркивания (_)."
 
 msgid "File should have one of the allowed extensions:"
@@ -3976,7 +3976,7 @@ msgstr "Добро пожаловать на вашу панель управл�
 msgid "Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
 msgstr "Настройте вашу панель управления с помощью ссылки выше. Располагайте виджеты так, как удобно именно вам. Набор виджетов на панели управления у каждого пользователя Webasyst индивидуален."
 
-msgid "Ok, thanks"
+msgid "OK, thanks"
 msgstr "Понятно, спасибо"
 
 msgid "Live stream collects all events from installed apps and presents them in a chronological order."
@@ -4330,7 +4330,7 @@ msgstr "Транспорт"
 msgid "Email or domain"
 msgstr "Email или домен"
 
-msgid "php mail() function"
+msgid "PHP mail() function"
 msgstr "PHP-функция mail()"
 
 msgid "Debug mailer"
@@ -4360,8 +4360,8 @@ msgstr "Шифрование"
 msgid "None"
 msgstr "Нет"
 
-msgid "You need to install openssl php extention to use DKIM"
-msgstr "Вам необходимо установить расширение openssl php для использования DKIM"
+msgid "You need to install PHP extension openssl to use DKIM."
+msgstr "Вам необходимо установить расширение openssl php для использования DKIM."
 
 msgid "You need PHP version 5.3 or higher to use DKIM. Your current version is:"
 msgstr "Для использования DKIM вам потребуется PHP версии 5.3 или выше. Текущая версия:"
@@ -4376,7 +4376,7 @@ msgid "Enter an email address in “Sender” field to use DKIM."
 msgstr "Для использования DKIM введите email-адрес в поле «Отправитель»."
 
 msgid "Add a DKIM signature to outgoing email messages to confirm your ownership of the sender’s email address."
-msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом оправителя."
+msgstr "Добавьте DKIM-подпись для исходящих email-сообщений, чтобы подтвердить владение адресом отправителя."
 
 msgid "Add a new <b>TXT record</b> with this public DKIM key to the DNS zone of domain name"
 msgstr "Добавьте новую <b>TXT-запись</b> с данным публичным ключом DKIM в DNS-зону домена"
@@ -4582,8 +4582,8 @@ msgstr "Тема письма"
 msgid "Text of the letter"
 msgstr "Текст письма"
 
-msgid "System template"
-msgstr "Системный шаблон"
+msgid "System templates"
+msgstr "Системные шаблоны"
 
 msgid "Edit channel"
 msgstr "Редактировать канал"
@@ -4597,7 +4597,7 @@ msgstr "Удалить группу шаблонов?"
 msgid "Preview template"
 msgstr "Предварительный просмотр"
 
-msgid "Preview SMS-message \"<span class=\"js-template-name\"></span>\""
+msgid "Preview SMS message \"<span class=\"js-template-name\"></span>\""
 msgstr "Предварительный просмотр SMS-сообщения «<span class=\"js-template-name\"></span>»"
 
 msgid "Checking the sending of SMS messages"
@@ -4633,7 +4633,7 @@ msgstr "Сохраните шаблоны"
 msgid "Save your template"
 msgstr "Сохраните ваш шаблон"
 
-msgid "To check the sending of SMS-messages, you must save the changes you made."
+msgid "To check the sending of SMS messages, you must save the changes you made."
 msgstr "Чтобы проверить отправку SMS-сообщений — необходимо сохранить внесённые вами изменения."
 
 msgid "To check whether you send email message, you must save the changes you made."
@@ -5266,7 +5266,7 @@ msgstr "Как минимум, одно из этих полей являетс�
 msgid "Email confirmation failed"
 msgstr "Подтвердить email-адрес не удалось"
 
-msgid "You have succesully signed up. Please check new mail at <strong>%s</strong>, we have sent you a message with your password."
+msgid "You have successully signed up. Please check new mail at <strong>%s</strong>, we have sent you a message with your password."
 msgstr "Вы успешно зарегистрировались. Проверьте новую почту для адреса <strong>%s</strong> — мы отправили вам сообщение с паролем для входа."
 
 msgid "You have successfully signed up. An SMS message with your password has been sent to phone number <strong>%s</strong>."
@@ -5279,7 +5279,7 @@ msgid "Please check new mail at <strong>%s</strong>, we have sent a message for 
 msgstr "Проверьте почту для адреса <strong>%s</strong> — мы отправили вам сообщение для подтверждения регистрации."
 
 msgid "An SMS message has been sent to phone number <strong>%s</strong> for you to confirm signup."
-msgstr "На номер телефона <strong>%s</strong> отправлено SMS-сообщение для потверждения регистрации."
+msgstr "На номер телефона <strong>%s</strong> отправлено SMS-сообщение для подтверждения регистрации."
 
 msgid "Incorrect phone number value"
 msgstr "Неправильное значение номера телефона"
@@ -5479,7 +5479,7 @@ msgstr "При выборе этого варианта пользователя
 msgid "Please check in “<a href=\"%s\">%s</a>” section that email notifications based on “%s“ template are correctly sent."
 msgstr "Проверьте в разделе «<a href=\"%s\">%s</a>», чтобы правильно отправлялись email-уведомления, основанные на шаблоне «%s»."
 
-msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending mignt not work occasionally; e.g., due to low SMS balance."
+msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending might not work occasionally; e.g., due to low SMS balance."
 msgstr "Проверьте также в разделе «<a href=\"%s\">%s</a>», чтобы правильно отправлялись и SMS-уведомления, основанные на шаблоне «%s». Помните, что отправка SMS иногда может не срабатывать, например, из-за исчерпания баланса в аккаунте SMS-провайдера."
 
 msgid "Email notifications must be enabled."
@@ -5768,7 +5768,7 @@ msgid "Yandex.Maps returns error “%s”"
 msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s»"
 
 msgid "Yandex.Maps returns error “%s”, API key is invalid. Try to fix it in the <a href=\"https://developer.tech.yandex.ru/services/\">developer dashboard</a>."
-msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — неверный ключ API. Попробуйте исправить это в <a href=\"https://developer.tech.yandex.ru/services/\">кабинете разрабтчика</a>."
+msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — неверный ключ API. Попробуйте исправить это в <a href=\"https://developer.tech.yandex.ru/services/\">кабинете разработчика</a>."
 
 msgid "Yandex.Maps returns error “%s”, daily rate limit is exceeded."
 msgstr "Сервис «Яндекс.Карты» вернул ошибку «%s» — превышен суточный лимит."
@@ -6152,7 +6152,7 @@ msgid "Image processing library"
 msgstr "Механизм обработки изображений"
 
 msgid "not installed"
-msgstr "не устновлен"
+msgstr "не установлен"
 
 msgid "Disable Webasyst ID sign-in for all users"
 msgstr "Отключить вход с Webasyst ID для всех пользователей"
@@ -6291,3 +6291,27 @@ msgstr "<a href=\"https://developers.google.com/maps/documentation/javascript/ge
 
 msgid "Backend"
 msgstr "Бекенд"
+
+msgid "shipping"
+msgstr "доставка"
+
+msgid "billing"
+msgstr "оплата"
+
+msgid "This page has sub-pages with empty addresses."
+msgstr "У этой страницы есть подстраницы с пустыми адресами."
+
+msgid "%s: call of unknown method %s->%s() with arguments %s"
+msgstr "%s: вызов неизвестного метода %s->%s() с аргументами %s"
+
+msgid "%s: attempt to read unknown property %s->%s"
+msgstr "%s: попытка чтения неизвестного свойства %s->%s"
+
+msgid "Plugin “%s” not found."
+msgstr "Плагин «%s» не найден."
+
+msgid "The called plugin “%s” is disabled."
+msgstr "Вызываемый плагин «%s» выключен."
+
+msgid "The called plugin “%s” is not installed."
+msgstr "Вызываемый плагин «%s» не установлен."

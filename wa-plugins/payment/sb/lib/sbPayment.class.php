@@ -95,7 +95,17 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 $transaction_data = $this->getGatewayTransactionStatus($order_data['order_id'], $create_transaction);
 
                 if ($transaction_data['amount'] != $order_data['total']) {
-                    return 'Сумма оплаты отличается от суммы заказа';
+                    if ($this->isInstallmentOrder($order_data->id)) {
+                        $data_log = array(
+                            'order_id' => $order_data['id'],
+                            'plugin' => $this->getId(),
+                            'state' => "Стоимость заказа после начисления процентов Сбербанком {$transaction_data['amount']}"
+                        );
+                        $this->getAdapter()->execCallbackHandler(self::CALLBACK_NOTIFY, $data_log);
+                        $this->handleTransaction($transaction_data);
+                    } else {
+                        return 'Сумма оплаты отличается от суммы заказа';
+                    }
                 } elseif (!empty($transaction_data['callback_method'])) {
                     $this->handleTransaction($transaction_data);
                     return 'Состояние платежа изменилось — обновите страницу.';
@@ -306,7 +316,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 $native_id = ifset($transaction_data, 'native_id', null);
             } else {
 
-                $last_data_transaction = $this->getGatewayTransactionStatus($order_data['order_id'], $native_id);
+                $last_data_transaction = $this->getGatewayTransactionStatus($order_data['order_id'], ['native_id' => $native_id]);
                 // We valid that the money is not blocked and it makes sense to re-register
                 if (isset($last_data_transaction['callback_method'])) {
                     switch ($last_data_transaction['callback_method']) {
@@ -741,6 +751,8 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
 
             try {
                 if ($transaction = $this->getGatewayTransactionStatus($order_id, $related)) {
+                    $transaction['credit_type'] = isset($transactions[waPayment::TRANSACTION_CONFIRM]['raw_data']['credit_type']) ? $transactions['confirm']['raw_data']['credit_type'] : null;
+                    $transaction['confirm_amount'] = isset($transactions[waPayment::TRANSACTION_CONFIRM]['amount']) ? (double)$transactions['confirm']['amount'] : null;
                     $transaction_data = $this->handleTransaction($transaction);
                 }
             } catch (waException $ex) {
@@ -981,6 +993,13 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 $view_data,
             );
         }
+
+        if (!empty($transaction_data['credit_type']) && $transaction_data['credit_type'] == 'INSTALLMENT'
+            && !empty($transaction_data['confirm_amount']) && $transaction_data['confirm_amount'] != $transaction_data['amount']
+        ) {
+            $transaction_data['amount'] = $transaction_data['confirm_amount'];
+        }
+
         unset($transaction_data['view_data']);
         if ($this->TESTMODE) {
             $view_data[] = 'Тестовый режим';
@@ -1263,6 +1282,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                     'formUrl' => $response['formUrl'],
                 ),
             );
+            if (!empty($this->credit)) {
+                $transaction_data['raw_data']['credit_type'] = $this->credit_type;
+            }
 
             $transaction_data = $this->handleTransaction($transaction_data);
 
@@ -1428,7 +1450,10 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 $items_data = [];
                 $item_type = ifset($item_data, 'type', null);
                 if ($item_type === 'product') {
-                    $values = $this->getChestnyznakCodeValues($item_data['product_codes']);
+                    // typecast workaround for old versions of framework where 'product_codes' key is missing
+                    $product_codes = isset($item_data['product_codes']) && is_array($item_data['product_codes']) ? $item_data['product_codes'] : [];
+
+                    $values = $this->getChestnyznakCodeValues($product_codes);
                     if ($values) {
                         $items_data = $this->splitItem($item_data, $values);
                     }
@@ -1617,13 +1642,14 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
      * Checks whether there is a Check Transaction. If so, it requests the status of native_id
      * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:getorderstatusextended
      * @param string $order_id
-     * @param array  $previous_transaction
-     * @param bool   $raw
+     * @param array $previous_transaction
+     *      string $previous_transaction['native_id'] - required
+     * @param bool $raw
      * @return array
      * @throws waException
      * @throws waPaymentException
      */
-    protected function getGatewayTransactionStatus($order_id, $previous_transaction, $raw = false)
+    protected function getGatewayTransactionStatus($order_id, array $previous_transaction, $raw = false)
     {
         $response = array();
 
@@ -1635,9 +1661,6 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         if (!$this->credit) {
             if (empty($previous_transaction)) {
                 return $response;
-            }
-            if (!is_array($previous_transaction)) {
-                $previous_transaction['native_id'] = $previous_transaction;
             }
 
             $request['orderId'] = $previous_transaction['native_id'];
@@ -2049,6 +2072,39 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 'value' => 'CREDIT',
             ],
         ];
+    }
+
+    public function isRefundAvailable($order_id)
+    {
+        $transaction = parent::isRefundAvailable($order_id);
+        if ($this->isInstallmentOrder($order_id)
+            && isset($transaction['amount']) && isset($transaction['raw_data']['amount'])
+            && $transaction['amount'] != ($transaction['raw_data']['amount'] / 100)
+        ) {
+            return false;
+        }
+
+        return $transaction;
+    }
+
+    protected function isInstallmentOrder($order_id)
+    {
+        $search = array(
+            'plugin'      => $this->id,
+            'app_id'      => $this->app_id,
+            'merchant_id' => $this->merchant_id,
+            'order_id'    => $order_id,
+            'state'       => waPayment::STATE_VERIFIED,
+        );
+
+        $transactions = self::getTransactionsByFields($search);
+        $is_installment = false;
+        if ($transactions) {
+            $first_transaction = current($transactions);
+            $is_installment = (isset($first_transaction['raw_data']['credit_type']) && $first_transaction['raw_data']['credit_type'] == 'INSTALLMENT');
+        }
+
+        return $is_installment;
     }
 
 

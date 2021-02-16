@@ -31,7 +31,7 @@ class webasystApiTokenHeadlessController extends waController
 
         $result = $this->getAccessToken($code, $scope);
         if (isset($result['error'])) {
-            $this->response($result);
+            $this->response($this->dropKeys($result, ['status_code']), $result['status_code']);
             return;
         }
 
@@ -81,7 +81,7 @@ class webasystApiTokenHeadlessController extends waController
         return $bound_contact;
     }
 
-    protected function response($response)
+    protected function response($response, $status_code = 200)
     {
         if ($format = waRequest::get('format')) {
             $format = strtoupper($format);
@@ -94,7 +94,7 @@ class webasystApiTokenHeadlessController extends waController
             }
         }
 
-        wa()->getResponse()->sendHeaders();
+        wa()->getResponse()->setStatus($status_code)->sendHeaders();
         die(waAPIDecorator::factory($format)->decorate($response));
     }
 
@@ -147,7 +147,7 @@ class webasystApiTokenHeadlessController extends waController
             'timeout' => 20,
             'format' => waNet::FORMAT_JSON,
             'request_format' => waNet::FORMAT_RAW,
-            'expected_http_code' => [200, 400, 401, 403, 500]
+            'expected_http_code' => null
         ];
 
         $net = new waNet($net_options);
@@ -163,15 +163,19 @@ class webasystApiTokenHeadlessController extends waController
             ];
 
             $response = $net->query($url, $params, waNet::METHOD_POST);
+
             if (is_array($response)) {
                 $error_code = isset($response['error_code']) ? $response['error_code'] : '';
                 $error_description = isset($response['error_message']) ? $response['error_message'] : '';
+                $status_code = $net->getResponseHeader('http_code');
                 if ($error_code) {
                     return [
+                        'status_code' => $status_code,
                         'error' => $error_code,
                         'error_description' => $error_description
                     ];
                 }
+                $response['status_code'] = $status_code;
                 return $response;
             }
 
@@ -180,9 +184,19 @@ class webasystApiTokenHeadlessController extends waController
         }
 
         return [
+            'status_code' => 500,
             'error' => 'unexpected_response',
             'error_description' => 'Webasyst ID service returned unexpected response'
         ];
+    }
+
+    protected function dropKeys(array $array, array $keys)
+    {
+        $result = $array;
+        foreach ($keys as $key) {
+            unset($result[$key]);
+        }
+        return $result;
     }
 
     protected function logException(Exception $e)

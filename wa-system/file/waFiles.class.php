@@ -268,6 +268,7 @@ class waFiles
             case 'gif':
             case 'bmp':
             case 'tiff':
+            case 'webp':
                 return 'image/'.strtolower($type);
             case 'ico':
                 return 'image/x-icon';

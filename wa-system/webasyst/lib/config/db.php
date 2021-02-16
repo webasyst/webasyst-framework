@@ -233,7 +233,7 @@ return array(
     'wa_contact_settings' => array(
         'contact_id' => array('int', 11, 'null' => 0),
         'app_id' => array('varchar', 32, 'null' => 0, 'default' => ''),
-        'name' => array('varchar', 32, 'null' => 0),
+        'name' => array('varchar', 64, 'null' => 0),
         'value' => array('text', 'null' => 0),
         ':keys' => array(
             'PRIMARY' => array('contact_id', 'app_id', 'name'),

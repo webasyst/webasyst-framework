@@ -278,7 +278,7 @@ class waInstallerRequirements
         }
         $this->castVersion($requirement);
 
-        $app_name = !empty($requirement['name']) ? $requirement['name'] : _w(ucfirst($subject));
+        $app_name = !empty($requirement['name']) ? $requirement['name'] : ucfirst($subject);
         $requirement['passed'] = empty($requirement['strict']);
         self::setDefaultDescription($requirement, array('Version of %s', htmlentities($app_name, ENT_QUOTES, 'utf-8')), '');
         $requirement['note'] = false;

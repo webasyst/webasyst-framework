@@ -29,6 +29,7 @@ return array(
     'waRuntimeCache'                    => 'cache/waRuntimeCache.class.php',
     'waSerializeCache'                  => 'cache/waSerializeCache.class.php',
     'waSystemCache'                     => 'cache/waSystemCache.class.php',
+    'waConfigCache'                     => 'cache/waConfigCache.class.php',
     'waVarExportCache'                  => 'cache/waVarExportCache.class.php',
     'waiCache'                          => 'cache/waiCache.interface.php',
 
@@ -201,6 +202,7 @@ return array(
     'waView'                            => 'view/waView.class.php',
     'waViewHelper'                      => 'view/waViewHelper.class.php',
     'waAppViewHelper'                   => 'view/waAppViewHelper.class.php',
+    'waPluginViewHelper'                => 'view/waPluginViewHelper.class.php',
 
     'waWorkflow'                        => 'workflow/waWorkflow.class.php',
     'waWorkflowAction'                  => 'workflow/waWorkflowAction.class.php',
@@ -228,7 +230,6 @@ return array(
     'waWebasystIDAccessDeniedAuthException'    => 'waid/exceptions/waWebasystIDAccessDeniedAuthException.class.php',
     'waWebasystIDClientManager'                => 'waid/waWebasystIDClientManager.class.php',
     'waWebasystIDAuthAdapter'                  => 'waid/waWebasystIDAuthAdapter.class.php',
-    'waWebasystIDAuth'                         => 'waid/waWebasystIDAuth.class.php',
     'waWebasystIDWAAuth'                       => 'waid/waWebasystIDWAAuth.class.php',
     'waWebasystIDSiteAuth'                     => 'waid/waWebasystIDSiteAuth.class.php',
     'waWebasystIDWAAuthController'             => 'waid/waWebasystIDWAAuthController.class.php',

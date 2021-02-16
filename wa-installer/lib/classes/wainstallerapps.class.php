@@ -277,8 +277,17 @@ class waInstallerApps
         if (!file_exists(self::$root_path.self::CONFIG_SOURCES) && class_exists('waSystem')) {
             wa('installer')->event('sources_not_found');
         }
-        if (file_exists(self::$root_path.self::CONFIG_SOURCES)) {
-            $this->sources = include(self::$root_path.self::CONFIG_SOURCES);
+
+        $path = self::$root_path . self::CONFIG_SOURCES;
+        if (is_readable($path)) {
+            if (class_exists('waConfigCache')) {
+                $config_cache = waConfigCache::getInstance();
+                $this->sources = $config_cache->includeFile($path, false);
+            } else {
+                $this->sources = include($path);
+            }
+        } else {
+            $this->sources = [];
         }
 
         //TODO USE config or etc

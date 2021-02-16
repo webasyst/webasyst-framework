@@ -894,7 +894,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
             // "Честный знак" marking code for product item leads to splitting by 'quantity'
             if ($item['type'] === 'product') {
-                $values = $this->getChestnyznakCodeValues($item['product_codes']);
+
+                // typecast workaround for old versions of framework where 'product_codes' key is missing
+                $product_codes = isset($item['product_codes']) && is_array($item['product_codes']) ? $item['product_codes'] : [];
+
+                $values = $this->getChestnyznakCodeValues($product_codes);
                 if ($values) {
                     $items = $this->splitItem($item, $values);
                 }

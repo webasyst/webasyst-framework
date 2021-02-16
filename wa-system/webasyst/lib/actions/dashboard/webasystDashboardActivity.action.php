@@ -77,7 +77,19 @@ class webasystDashboardActivityAction extends waViewAction
                     waLocale::loadByDomain($row['app_id']);
                 }
                 $logs = wa($row['app_id'])->getConfig()->getLogActions(true);
-                $row['action_name'] = ifset($logs[$row['action']]['name'], $row['action']);
+                if ($row['action'] == 'order_custom') {
+                    if (isset($logs[$row['action']]['name'])) {
+                        $row_params = json_decode($row['params']);
+                        $custom_action_name = isset($row_params->custom_action_name) ? $row_params->custom_action_name : $row_params;
+                        $action_name = sprintf($logs[$row['action']]['name'], $custom_action_name);
+                        $row['params'] = isset($row_params->id) ? $row_params->id : $row_params;
+                    } else {
+                        $action_name = $row['action'];
+                    }
+                    $row['action_name'] = $action_name;
+                } else {
+                    $row['action_name'] = ifset($logs[$row['action']]['name'], $row['action']);
+                }
                 if (strpos($row['action'], 'del')) {
                     $row['type'] = 4;
                 } elseif (strpos($row['action'], 'add')) {
@@ -134,6 +146,7 @@ class webasystDashboardActivityAction extends waViewAction
 
         $rows = array_slice($rows, 0, 50);
         $count = max($count, count($rows));
+
         return $rows;
     }
 

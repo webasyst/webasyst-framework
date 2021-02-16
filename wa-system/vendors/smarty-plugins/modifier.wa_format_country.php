@@ -17,7 +17,7 @@ function smarty_modifier_wa_format_country($code, $locale=null)
         $locale = $smarty->getVars('locale');
     }
     if ($locale === null) {
-        $locale = waSystem::getInstance()->getUser()->getLocale();
+        $locale = wa()->getLocale();
     }
     $country_model = new waCountryModel();
     $country = $country_model->get($code, $locale);

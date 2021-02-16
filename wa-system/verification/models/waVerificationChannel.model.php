@@ -75,7 +75,7 @@ class waVerificationChannelModel extends waModel
         waLocale::loadByDomain('webasyst', wa()->getLocale());
 
         $this->addChannel(array(
-            'name' => _ws('System template'),
+            'name' => _ws('System templates'),
             'type' => self::TYPE_EMAIL,
             'address' => $email,
             'system' => 1

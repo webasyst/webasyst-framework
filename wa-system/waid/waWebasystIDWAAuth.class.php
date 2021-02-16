@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Class waWebasystIDAuth
+ * Class waWebasystIDWAAuth
  *
  * OAuth2 adapter for auth into WA backend by Webasyst ID service
  */

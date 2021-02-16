@@ -34,6 +34,7 @@ class waSystemConfig
 
     protected static $helpers = false;
 
+    protected $cache = null;
 
     public function __construct($environment = null, $root_path = null)
     {
@@ -337,8 +338,9 @@ class waSystemConfig
     {
         $path = $this->getPath('config', $file);
         if (file_exists($path)) {
-            $result = include($path);
-            if ($result === 1) {
+            $config_cache = waConfigCache::getInstance();
+            $result = $config_cache->includeFile($path);
+            if (empty($result)) {
                 return $default;
             }
             return $result;
@@ -536,6 +538,36 @@ class waSystemConfig
     public function getLocales($type = false)
     {
         return waLocale::getAll($type);
+    }
+
+    public function getCache($type = 'default')
+    {
+        if ($this->cache === null) {
+            $file_path = $this->getPath('config', 'cache');
+            if (file_exists($file_path)) {
+                $cache_config = include($file_path);
+                if (isset($cache_config[$type])) {
+                    $options = $cache_config[$type];
+                    $cache_type = $options['type'];
+                    $cache_class = 'wa'.ucfirst($cache_type).'CacheAdapter';
+
+                    try {
+                        $cache_adapter = new $cache_class($options);
+                        if ($this instanceof waAppConfig) {
+                            $this->cache = new waCache($cache_adapter, $this->application);
+                        } else {
+                            $this->cache = new waCache($cache_adapter, 'wa-system');
+                        }
+                    } catch (waException $e) {
+                        waLog::log($e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                    }
+                }
+            }
+            if (!$this->cache) {
+                $this->cache = false;
+            }
+        }
+        return $this->cache;
     }
 
     public function clearCache()

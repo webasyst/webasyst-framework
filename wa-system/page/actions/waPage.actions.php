@@ -345,28 +345,32 @@ class waPageActions extends waActions
     public function saveAction()
     {
         $id = (int)waRequest::get('id');
-        $data = waRequest::post('info');
-        if (empty($data['name'])) {
-            $data['name'] = '('._ws('no-title').')';
-        }
+        $data = waRequest::post('info', array());
         $data['url'] = ltrim($data['url'], '/');
-        $data['status'] = isset($data['status']) ? 1 : 0;
 
         try {
-            $this->checkGlobalRouting();
+            $this->checkGlobalRouting($id, $data);
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
             return;
         }
+
+        if (empty($data['name'])) {
+            $data['name'] = '('._ws('no-title').')';
+        }
+        $data['status'] = isset($data['status']) ? 1 : 0;
 
         $page_model = $this->getPageModel();
 
         if ($id) {
             $is_new = false;
             $old = $page_model->getById($id);
-            $data['full_url'] = substr($old['full_url'], 0, -strlen($old['url'])).$data['url'];
-            if ($old['full_url'] && substr($old['full_url'], -1, 1) != '/') {
-                $old['full_url'] .= '/';
+            if (!empty($old['parent_id'])) {
+                $parent = $this->getPage($old['parent_id']);
+                $parent_full_url = $parent['full_url'] ? rtrim($parent['full_url'], '/') . '/' : '';
+                $data['full_url'] = $parent_full_url . $data['url'];
+            } else {
+                $data['full_url'] = $data['url'];
             }
             // save to database
             if (!$page_model->update($id, $data)) {
@@ -382,12 +386,10 @@ class waPageActions extends waActions
             if (waRequest::post('translit') && !$data['url']) {
                 $data['url'] = $this->translit($data['name']);
             }
-            if ($data['url'] && substr($data['url'], -1) != '/' && strpos(substr($data['url'], -5), '.') === false) {
-                $data['url'] .= '/';
-            }
             if (!empty($data['parent_id'])) {
                 $parent = $this->getPage($data['parent_id']);
-                $data['full_url'] = ($parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '').$data['url'];
+                $parent_full_url = $parent['full_url'] ? rtrim($parent['full_url'], '/') . '/' : '';
+                $data['full_url'] = $parent_full_url . $data['url'];
                 $data['domain'] = $parent['domain'];
                 $data['route'] = $parent['route'];
                 $this->beforeSave($data, $parent);
@@ -396,7 +398,8 @@ class waPageActions extends waActions
                 $this->beforeSave($data);
             }
             $is_new = true;
-            if ($id = $page_model->add($data)) {
+            $id = $page_model->add($data);
+            if ($id) {
                 $data['id'] = $id;
                 $this->logAction('page_add', $id);
             } else {
@@ -436,38 +439,39 @@ class waPageActions extends waActions
         ));
     }
 
-    protected function checkGlobalRouting()
+    protected function checkGlobalRouting($id, $data)
     {
-        $id = (int)waRequest::get('id');
-        $data = waRequest::post('info', array(), waRequest::TYPE_ARRAY_TRIM);
-        $data['url'] = ltrim($data['url'], '/');
-
         $page_url = $data['url'];
         if ($page_url && substr($page_url, -1) != '/' && strpos(substr($page_url, -5), '.') === false) {
             $page_url .= '/';
         }
 
         // Get Domain
-        if (!empty($data['parent_id'])) {
-            $parent = $this->getPage($data['parent_id']);
+        $parent = null;
+        $page = null;
+        $parent_id = ifset($data['parent_id'], null);
+        if ($id && empty($parent_id)) {
+            $page = $this->getPageModel()->getById($id);
+            $parent_id = ifset($page['parent_id'], null);
+        }
+        if (!empty($parent_id)) {
+            $parent = $this->getPage($parent_id);
             $domain = (!empty($parent['domain'])) ? $parent['domain'] : null;
             $page_url = ($parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '') . $page_url;
         }
 
         if (!empty($data['domain'])) {
             $domain = trim($data['domain']);
-
-        // Find domain by PAGE
         } elseif ($id) {
+            // Find domain by PAGE
             $page = $this->getPageModel()->getById($id);
             $domain = ifempty($page[$this->getPageModel()->getDomainField()]);
             if ($this->getPageModel()->getDomainField() === 'domain_id') {
                 $domain_data = $this->getDomainModel()->getById($page['domain_id']);
                 $domain = ifempty($domain_data['name']);
             }
-
-        // Find domain by domain_id in an external table (e.g. site_domain)
         } elseif (!empty($data['domain_id'])) {
+            // Find domain by domain_id in an external table (e.g. site_domain)
             $domain_data = $this->getDomainModel()->getById($data['domain_id']);
             $domain = ifempty($domain_data['name']);
         }
@@ -484,6 +488,20 @@ class waPageActions extends waActions
         if (empty($domain)) throw new waException(_ws('Unknown page domain'));
         if (empty($route)) throw new waException(_ws('Unknown page route'));
 
+        $this->checkSimilarPages($id, $domain, $route, $data, $page, $parent);
+
+        $page_url = str_replace('*', '', $route) . $page_url;
+        $domain_routes = wa()->getRouting()->getRoutes($domain);
+
+        $rule_for_url = wa()->getRouting()->getRuleForUrl($domain_routes, $page_url);
+
+        if ($route !== ifempty($rule_for_url['url'])) {
+            throw new waException(_ws('Page URL is in conflict with the website structure.'));
+        }
+    }
+
+    protected function checkSimilarPages($id, $domain, $route, $data, $page, $parent)
+    {
         $page_model = $this->getPageModel();
         $domain_field = $page_model->getDomainField();
         if ($domain_field == 'domain_id') {
@@ -506,37 +524,38 @@ class waPageActions extends waActions
                 $full_url = $parent['full_url'] . '/';
             }
         }
+        $full_url .= $data['url'];
 
-        if (isset($page)) {
-            $full_url .= $data['url'];
-        } elseif (substr($data['url'], -1) == '/') {
-            $full_url .= $data['url'];
-        } else {
-            $full_url .= $data['url'] . '/';
+        $blacklist_url = $this->getBlacklistUrl();
+        foreach ($blacklist_url as $url) {
+            if ($full_url === $url) {
+                throw new waException(_ws('Page URL is in conflict with the website structure.'));
+            }
         }
 
-        $same_url = $page_model->getByField(array(
+        $similar_pages = $page_model->getByField(array(
             $domain_field => $domain_name,
             'route' => $route,
             'full_url' => $full_url,
         ), true);
 
-        if (!empty($same_url)) {
-            foreach ($same_url as $page) {
-                if ($page['id'] != $id) {
-                    throw new waException(_ws('Specified URL already exists.'));
+        if (!empty($similar_pages)) {
+            foreach ($similar_pages as $similar_page) {
+                if ($similar_page['id'] != $id) {
+                    if (empty($similar_page['url']) && !empty($similar_page['parent_id'])) {
+                        $error_message = _ws('This page has sub-pages with empty addresses.');
+                    } else {
+                        $error_message = _ws('Specified URL already exists.');
+                    }
+                    throw new waException($error_message);
                 }
             }
         }
+    }
 
-        $page_url = str_replace('*', '', $route) . $page_url;
-        $domain_routes = wa()->getRouting()->getRoutes($domain);
-
-        $rule_for_url = wa()->getRouting()->getRuleForUrl($domain_routes, $page_url);
-
-        if ($route !== ifempty($rule_for_url['url'])) {
-            throw new waException(_ws('Page URL is in conflict with the website structure.'));
-        }
+    protected function getBlacklistUrl()
+    {
+        return array();
     }
 
     public function getPageChilds($id)

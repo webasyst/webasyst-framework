@@ -99,9 +99,9 @@ class photosPhotoLoadController extends waJsonController
         }
 
         // for making inline-editable widget
-        $this->response['frontend_link_template'] = photosFrontendPhoto::getLink(array(
-            'url' => '%url%'
-        ));
+        $this->response['frontend_link_template'] = photosFrontendPhoto::getLink(['url' => '%url%'], null, true, [
+            'type' => 'first'
+        ]);
 
 
         $hooks = array();
