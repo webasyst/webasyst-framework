@@ -459,7 +459,7 @@ class waRouting
             $app = $this->system->getApp();
         }
 
-        if (!wa()->appExists($app)) {
+        if (!$this->appExists($app)) {
             return null;
         }
 
@@ -600,9 +600,10 @@ class waRouting
                 $current_domain != $domain_url &&           // and did not specifically ask for original domain,
                 $this->aliases                              // and there's possibility we're on a mirror (alias) domain
             ) {
+                // if we are indeed on a mirror domain, then use full url to mirror instead of original domain.
                 $alias_domain = $this->getDomainNoAlias();
-                if ($alias_domain && $alias_domain != $current_domain) { // if we are indeed on a mirror domain,
-                    $result['domain'] = $alias_domain;      // then use full url to mirror instead of original domain.
+                if (ifset($this->aliases, $alias_domain, null) == $current_domain) {
+                    $result['domain'] = $alias_domain;
                 }
             }
             $result_url = self::getUrlByRoute($result['route'], $result['domain'], ($absolute || $current_domain != $result['domain']));
@@ -641,6 +642,15 @@ class waRouting
         }
 
         return $result_url;
+    }
+
+    /**
+     * @since 1.14.13
+     */
+    protected function appExists($app_id)
+    {
+        // overriden in unit tests
+        return wa()->appExists($app_id);
     }
 
     protected function getUrlPlaceholders($url) {
