@@ -1,0 +1,35 @@
+<script>
+    (function() {
+        window.onloadWaHcaptchaCallback = function() {
+            var sitekey = {$sitekey|default:''|json_encode};
+            if (!window.hcaptcha) return;
+            $('.h-captcha:not(.initialized)').each(function() {
+                var wrapper = $(this).addClass('initialized');
+                var widget_id = hcaptcha.render(wrapper[0], { sitekey: sitekey});
+                wrapper.siblings('.wa-captcha-refresh, .wa-captcha-img').click(function() {
+                    try {
+                        hcaptcha.reset(widget_id);
+                        $(window).trigger('wa_hcaptcha_loaded');
+                    } catch (e) {
+                        console.log('Unable to reset WA HCaptcha widget id =', widget_id);
+                        console.log(e);
+                    }
+                    return false;
+                });
+            });
+            $(window).trigger('wa_hcaptcha_loaded');
+        };
+
+        $(function() {
+            if (window.hcaptcha) {
+                window.onloadWaHcaptchaCallback();
+            } else {
+                $.getScript("https://hcaptcha.com/1/api.js?onload=onloadWaHcaptchaCallback&render=explicit");
+            }
+        });
+    })();
+</script>
+<div class="{$wrapper_class} wa-hcaptcha">
+    <a class="wa-captcha-refresh wa-captcha-img" style="display:none;"></a>
+    <div class="h-captcha" data-sitekey="{$sitekey|default:''|json_encode}"></div>
+</div>

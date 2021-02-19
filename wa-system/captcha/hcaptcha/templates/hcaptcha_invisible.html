@@ -1,0 +1,38 @@
+<div class="{$wrapper_class} wa-invisible-hcaptcha">
+    <a class="wa-captcha-refresh wa-captcha-img" style="display:none;"></a>
+    <div class="h-captcha" data-sitekey="{$sitekey}" data-size="invisible"></div>
+</div>
+<script>
+    (function() {
+        window.onloadWaHcaptchaCallback = function() {
+            if (!window.hcaptcha) return;
+            $('.h-captcha:not(.initialized)').each(function() {
+                var wrapper = $(this).addClass('initialized'),
+                    widget_id = hcaptcha.render(wrapper[0]);
+
+                hcaptcha.execute(widget_id);
+
+                wrapper.siblings('.wa-captcha-refresh, .wa-captcha-img').click(function() {
+                    try {
+                        hcaptcha.reset(widget_id);
+                        hcaptcha.execute(widget_id);
+                        $(window).trigger('wa_hcaptcha_loaded');
+                    } catch (e) {
+                        console.log('Unable to reset WA HCaptcha widget id =', widget_id);
+                        console.log(e);
+                    }
+                    return false;
+                });
+            });
+            $(window).trigger('wa_hcaptcha_loaded');
+        };
+
+        $(function() {
+            if (window.hcaptcha) {
+                window.onloadWaHcaptchaCallback();
+            } else {
+                $.getScript("https://hcaptcha.com/1/api.js?hl=ru&onload=onloadWaHcaptchaCallback&render=explicit");
+            }
+        });
+    })();
+</script>

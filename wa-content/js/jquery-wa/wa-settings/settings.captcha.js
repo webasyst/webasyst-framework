@@ -42,7 +42,7 @@ var WASettingsCaptcha = ( function($) {
         var that = this;
 
         that.$form.find(':input[name="captcha"]').on('change', function(){
-            if (this.value == 'waReCaptcha') {
+            if (this.value === 'waReCaptcha' || this.value === 'waHCaptcha') {
                 that.$form.find('div.js-captcha-adapter-settings').slideDown();
             } else {
                 that.$form.find('div.js-captcha-adapter-settings').slideUp();
