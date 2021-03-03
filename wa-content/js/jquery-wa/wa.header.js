@@ -13,6 +13,7 @@ class WaHeader {
         this.$applist = this.$wa_header.find('.js-applist-header');
         this.$applists = $('.js-applist');
         this.$notification_close = this.$notification_wrapper.find('.js-announcement-close');
+        this.header_apps_tooltips = $('.js-applist-header a[data-wa-tooltip-content]') || null;
         /// params
 
         // Fns Init
@@ -24,11 +25,27 @@ class WaHeader {
         this.appsToggle()
         this.searchPanel()
 
+        this.appsTooltip()
+
         // update counts immediately if there are no cached counts; otherwise, update later
         if (!this.$applist.is('.counts-cached')) {
             this.updateCount()
         } else {
             setInterval(this.updateCount, 60000);
+        }
+    }
+
+    /**
+     * @description Add tooltips for apps icons
+     */
+    appsTooltip() {
+        if (this.header_apps_tooltips) {
+            this.header_apps_tooltips.waTooltip({
+                arrow: false,
+                placement: "bottom",
+                theme: "bordered",
+                offset:[0, 3]
+            });
         }
     }
 
@@ -98,15 +115,20 @@ class WaHeader {
 
     /**
      * @description Insert page title into header
-     * @param {Object} $sidebar jQuery Object
-     * @param {Object} $wa_header jQuery Object
+     * @param {Object} options
      */
-    static setHeaderTitle($sidebar, $wa_header) {
-        let title = $sidebar.find('li.selected').data('header-title'),
-            header_title = $wa_header.find('.wa-header-sitename > span')
+    static setHeaderTitle(options) {
+        let title_text = options.title_text || '',
+            place_after = options.place_after || '.wa-sitename',
+            truncate = options.truncate || false;
 
-        if(title) {
-            header_title.text(title)
+        if (title_text) {
+            if (truncate && (title_text.length > truncate)) {
+                title_text= title_text.substring(0,truncate);
+            }
+
+            let $place_after = document.querySelector('#wa-header').querySelector(place_after);
+            $place_after.insertAdjacentHTML("afterEnd", `<span class="h2 wa-pagename">${title_text}</span>`);
         }
     }
 
@@ -187,6 +209,18 @@ class WaHeader {
             setTimeout(() => $toggler.toggleClass('spin'), 1000);
             that.$content.toggleClass('wa-nav-unfolded');
             that.$wa_nav .toggleClass('wa-nav-unfolded');
+
+            // Disable tooltip when apps panel is down
+            if ($toggler.hasClass('down')) {
+                that.header_apps_tooltips.each(function () {
+                    this._tippy.disable();
+                })
+            }else{
+                that.header_apps_tooltips.each(function () {
+                    this._tippy.enable();
+                })
+            }
+
         };
 
         $(document).keyup(function(e) {

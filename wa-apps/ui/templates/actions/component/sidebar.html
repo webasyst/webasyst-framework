@@ -185,6 +185,8 @@
 <p>На мобильных устройствах <code>.sidebar</code> и <code>.content</code> располагаются по вертикали один за другим. Если необходимо автоматически скрыть сайдбар и сделать его открывающимся нажатием на некоторый элемент-триггер (например, «гамбургер»), то есть упрощенная возможность сделать это с помощью системного механизма <code>.sidebar<strong>.mobile-friendly</strong></code>:</p>
 <ol class="separated">
 
+    <li>К родительскому контейнеру <code>.flexbox</code>, объединяющего сайдбар и контент, необходимо добавить класс <code><strong>.wrap-mobile</strong></code>: <code>class="flexbox <strong>wrap-mobile</strong>"</code>.</li>
+
     <li>К основному сайдбару необходимо добавить класс <code>class="sidebar <strong>mobile-friendly</strong>"</code> и <code><strong>id="MY-APP-CUSTOM-SIDEBAR-ID-123"</strong></code>. В режиме <code>.mobile-friendly</code> все внутренние блоки <code>.sidebar-header</code>, <code>.sidebar-body</code>, <code>.sidebar-footer</code> будут по умолчанию скрыты.</li>
 
     <li>Внутри сайдбара <code>.sidebar</code> необходимо добавить элемент-контейнер <code>.sidebar &gt; <strong>.sidebar-mobile-toggle</strong></code>, внутри которого будет размещен триггер (ссылка, кнопка) для показа содержимого сайдбара. Элемент-контейнер <code>.sidebar-mobile-toggle</code> будет виден только на мобильных устройствах (ширина устройства &lt;= 760px) и скрыт на более широких экранах.</li>

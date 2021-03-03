@@ -67,15 +67,31 @@ class webasystDashboardUsersAction extends webasystDashboardViewAction
     {
         $col = $this->getCollection($team);
         $col->orderBy('name', 'ASC');
-        return $col->getContacts('*', 0, $col->count());
+        $users = $col->getContacts('*,photo_url_144', 0, $col->count());
+        $this->workupUsers($users);
+        return $users;
+    }
+
+    protected function workupUsers(&$users)
+    {
+        $team_exists = wa()->appExists('team');
+        foreach ($users as &$user) {
+            $user['name'] = waContactNameField::formatName($user);
+            $user['link'] = $team_exists ? wa()->getAppUrl('team') . "u/{$user['login']}/info/" : '';
+            $user['is_current_contact'] = $user['id'] == $this->getUserId();
+        }
+        unset($user);
     }
 
     protected function getCollection($team)
     {
+        $options = ['photo_url_2x' => true];
         if ($team) {
-            return new waContactsCollection('group/' . $team['id']);
+            $col = new waContactsCollection('group/' . $team['id'], $options);
         } else {
-            return new waContactsCollection('users');
+            $col = new waContactsCollection('users', $options);
         }
+        $col->addWhere('is_user=1');
+        return $col;
     }
 }

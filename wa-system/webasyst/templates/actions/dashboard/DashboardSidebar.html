@@ -1,47 +1,131 @@
 {strip}
-    <header class="widgets-list-header-wrapper">
-        <h4 class="widgets-list-header">
+{* uncomment later, when functionality will be ready
+    <div class="toggle smaller" id="widgets-toggle">
+        <span class="selected" data-toggle-widgets="installed">[`Установленные виджеты`]</span>
+        <span data-toggle-widgets="all">[`Все виджеты`]</span>
+    </div>
+*}
+    <script>
+        ( function($) {
+            let $widgets_list_wrapper = $('.widgets-list-wrapper');
+            {* uncomment later, when functionality will be ready
+            let $installed_widgets = $widgets_list_wrapper.find('div[data-installed-widgets]'),
+            $all_widgets = $widgets_list_wrapper.find('div[data-all-widgets]');
+
+            $("#widgets-toggle").waToggle({
+                change: function(event, target, toggle) {
+                    /*alert( $(target).text() );*/
+                    $installed_widgets.toggle();
+                    $all_widgets.toggle();
+                }
+            });
+        *}
+            $widgets_list_wrapper.on('hover', function () {
+                let $element = $(this),
+                    element_class = 'hide-scrollbar';
+
+                if($element.hasClass(element_class)){
+                    $element.removeClass(element_class)
+                }else{
+                    $element.addClass(element_class)
+                }
+            })
+        })(jQuery);
+    </script>
+    <div data-installed-widgets>
+        <p class="widgets-list-header hint align-center">
             [`Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]
-            {if $wa->user()->getRights('installer', 'backend')} <a href="./installer/store/?filters%5Btype%5D=widget">[`Install new widgets`]</a>{/if}
-        </h4>
-        <div class="cl"></div>
-    </header>
+        </p>
+        <p class="align-center custom-mt-0">
+            {if $wa->user()->getRights('installer', 'backend')} <a class="bold small" href="./installer/store/?filters%5Btype%5D=widget">[`Install new widgets`]</a>{/if}
+        </p>
+        <section class="d-widgets-list-block">
+            {foreach $widgets as $app_id => $app_widgets}
+                <div class="list-group-wrapper {$app_id}-list-group">
+                    {if $app_id != 'webasyst'}
+                        <header class="group-header-wrapper">
+                            <h5 class="group-header heading">{$apps[$app_id].name}</h5>
+                        </header>
+                    {/if}
+                    <div class="list-wrapper">
+                        {foreach $app_widgets as $widget}
 
-    <section class="d-widgets-list-block">
-        {foreach $widgets as $app_id => $app_widgets}
-            <div class="list-group-wrapper {$app_id}-list-group">
-                {if $app_id != 'webasyst'}
-                    <header class="group-header-wrapper">
-                        <h5 class="group-header heading">{$apps[$app_id].name}</h5>
-                    </header>
-                {else}
-                    <header class="group-header-wrapper is-hidden">
-                        <h5 class="group-header heading">[`Add widgets`]</h5>
-                    </header>
-                {/if}
-                <div class="list-wrapper">
-                    {foreach $app_widgets as $widget}
-
-                        <div class="widget-item-wrapper"
-                             id="list-widget-{$widget.widget}"
-                             data-app_id="{$widget.app_id}"
-                             data-size="{$widget.size}"
-                             data-widget="{$widget.widget}"
+                            <div class="widget-item-wrapper"
+                                 id="list-widget-{$widget.widget}"
+                                 data-app_id="{$widget.app_id}"
+                                 data-size="{$widget.size}"
+                                 data-widget="{$widget.widget}"
                             >
-                            <div class="image-wrapper">
-                                <div class="image-block" draggable="true" title="[`Click or drag this widget to install it on your dashboard`]">
-                                    {if !empty($widget.img)}
-                                        <img class="image-item" src="{$wa_url}{$widget.img}" alt="{$widget.name}">
-                                    {/if}
+                                <div class="image-wrapper">
+                                    <div class="image-block">
+                                        {if !empty($widget.img)}
+                                            <img class="image-item" src="{$wa_url}{$widget.img}" alt="{$widget.name}">
+                                        {/if}
+                                    </div>
                                 </div>
+                                <div class="text-block">
+                                    {$widget.name}
+                                </div>
+                                <a class="add-widget-link" href="javascript:void(0);" title="[`Добавить виджет`]"><i class="fas fa-times"></i></a>
                             </div>
-                            <div class="text-block">
-                                {$widget.name}
-                            </div>
+                        {/foreach}
+                    </div>
+                </div>
+            {/foreach}
+        </section>
+    </div>
+    {* uncomment later, when functionality will be ready
+    <div data-all-widgets style="display: none">
+        {function skeleton}
+            <div class="skeleton list-group-wrapper custom-mt-32">
+                <div class="list-wrapper">
+                    {for $i=1 to 8}
+                        <div class="widget-item-wrapper">
+                            <span class="skeleton-custom-box image-wrapper"></span>
+                            <span class="skeleton-line custom-mt-16"></span>
                         </div>
-                    {/foreach}
+                    {/for}
                 </div>
             </div>
-        {/foreach}
-    </section>
+        {/function}
+        {skeleton}
+    </div>
+    *}
+    <script>
+        $(function () {
+            let $widgets_list = $('.d-widgets-list-block'),
+                $list_wrapper = $widgets_list.find('.list-wrapper'),
+                $widget = $widgets_list.find('.widget-item-wrapper');
+
+            const group = new Group();
+            group.is_widget_list_page = true;
+
+            $list_wrapper.each(function () {
+                let element = this;
+
+                let options = {
+                    sort: false,
+                    handle: '.image-block',
+                    group: {
+                        name: 'nestedq',
+                        put: false,
+                        pull: false,
+                        revertClone: true
+                    },
+                    animation: 150,
+                    fallbackOnBody: true,
+                    swapThreshold: 0.65,
+                    onChoose: function (event) {
+                        Sortable.get(event.from).options.sort = false;
+                    },
+                    onEnd(event) {
+                        console.log(event);
+                        group.onWidgetListClick(event.originalEvent, $(event.from).find('.image-block'));
+                        event.clone.remove();
+                    }
+                };
+                $(element).sortable(options);
+            })
+        });
+    </script>
 {/strip}

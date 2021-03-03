@@ -89,7 +89,10 @@ trait webasystHeaderTrait
      * Get list of announcements
      * @param array $options
      *      - bool $options['one_per_app'] - show no more than 1 message per application. Default is TRUE
-     * @return array
+     *      - string[] $options['backend_header_notification'] - merge into notifications from backend_header.notification event
+     * @return array $announcements
+     *      $announcements[<id>] [*] - all fields from wa_announcement table
+     *      $announcements[<id>]['app'] - application info
      * @throws waException
      */
     public function getAnnouncements(array $options = [])
@@ -99,11 +102,28 @@ trait webasystHeaderTrait
             $one_per_app = boolval($options['one_per_app']);
         }
 
+        $backend_header_notification = isset($options['backend_header_notification']) && is_array($options['backend_header_notification']) ?
+            $options['backend_header_notification'] : [];
+
         // announcement
         $user = wa()->getUser();
         $announcement_model = new waAnnouncementModel();
         $apps = $user->getApps();
         $data = $announcement_model->getByApps($user->getId(), array_keys($apps), $user['create_datetime']);
+
+        if ($backend_header_notification && isset($apps['installer'])) {
+            $virtual_id = intval($announcement_model->select('MAX(id)')->fetchField()) + 1;
+            foreach ($backend_header_notification as $notification) {
+                $data[] = [
+                    'id' => $virtual_id,
+                    'app_id' => 'installer',
+                    'text' => $notification,
+                    'datetime' => date('Y-m-d H:i:s')
+                ];
+                $virtual_id++;
+            }
+        }
+
         $announcements = array();
         $announcements_apps = array();
         foreach ($data as $row) {

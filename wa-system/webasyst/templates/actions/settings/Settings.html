@@ -67,7 +67,7 @@
                                            maxlength="4"
                                            name="logo[text][value]" value="{$logo.text.value|escape}"
                                            id="config-logo-text" autocomplete="off">
-                                    <span class="hint">[`1-4 symbols`]</span>
+                                    <span class="hint">{sprintf('[`%s symbols`]', '1-4')}</span>
                                     <label>
                                     <span class="switch middle smaller js-switch-two-line" id="two_line_text">
                                         <input type="hidden" name="logo[two_lines]" value="0">

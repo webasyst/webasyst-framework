@@ -1,12 +1,6 @@
-{* todo Remove Globals - Only for Alfa Version! *}
-{if $team}
-    {$wa->globals("wa_dashboard_header_title", $team.name)}
-{else}
-    {$wa->globals("wa_dashboard_header_title", [`Everyone`])}
-{/if}
 <section class="article wa-dashboard-page users">
     <div class="article-body">
-        <h1 class="d-page-header">{$wa->globals("wa_dashboard_header_title")|escape}</h1>
+        <h1 class="d-page-header">{if $team}{$team.name|escape}{else}[`Everyone`]{/if}</h1>
     {if $team && !empty($team.description)}
         <p>{$team.description|escape}</p>
     {/if}
@@ -14,11 +8,11 @@
         <ul class="thumbs li150px d-users-list">
             {foreach $users as $user}
                 <li>
-                    <a class="userpic userpic144" href="">
-                        <img class="" src="/wa-data/public/contacts/photos/01/00/1/1731030115.144x144@2x.jpg" alt="">
+                    <a class="userpic userpic144" href="{$user.link}">
+                        <img class="" src="{$user.photo_url_144}" alt="">
                         {if $user._online_status === 'online'}<span class="userstatus"></span>{/if}
                         <span class="user-name">{$user.name|escape}</span>
-                        <span class="badge-user blue"><i class="fas fa-plane"></i><span>Полный улёт</span></span>
+                        {*<span class="badge-user blue"><i class="fas fa-plane"></i><span>Полный улёт</span></span>*}
                         {if $user.jobtitle}<span class="user-jobtitle">{$user.jobtitle|escape}</span>{/if}
                         <span class="user-login small">{$user.login|escape}</span>
                     </a>
@@ -43,7 +37,13 @@
 <script>
     $(function () {
         let $wa_header = document.querySelector('#wa-header'),
-            wa_header_height = $wa_header.clientHeight;
+            wa_header_height = $wa_header.clientHeight,
+            title_text = document.querySelector('.d-page-header').textContent;
+
         WaHeader.headerBehavior('.wa-dashboard-page', { rootMargin: `${ wa_header_height }px 0px -100% 0px` });
+        WaHeader.setHeaderTitle({
+            title_text,
+            truncate: 42
+        })
     });
 </script>

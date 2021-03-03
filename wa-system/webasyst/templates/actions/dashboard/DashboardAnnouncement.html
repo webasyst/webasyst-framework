@@ -1,4 +1,4 @@
-<div class="alert-fixed-box d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
+<div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
     {if !empty($notifications)}
         {foreach $notifications as $n}
             <div class="alert wa-notification">
@@ -27,7 +27,7 @@
     {else}
         <div class="alert wa-notification">
             <div class="wa-notification-body-empty">
-                [s`No new notifications for now.`]
+                [s`No new notifications`]
             </div>
         </div>
     {/if}

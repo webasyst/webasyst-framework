@@ -112,6 +112,21 @@
                     </form>
                 </div>
             </div>
+            <div class="widgets-list-wrapper hide-scrollbar" data-backend-url="{$wa_backend_url|escape}">
+            {function skeleton}
+                <div class="skeleton list-group-wrapper">
+                    <div class="list-wrapper">
+                        {for $i=1 to 12}
+                            <div class="widget-item-wrapper">
+                                <span class="skeleton-custom-box image-wrapper"></span>
+                                <span class="skeleton-line custom-mt-16"></span>
+                            </div>
+                        {/for}
+                    </div>
+                </div>
+            {/function}
+            {skeleton}
+            </div>
         </div>
     </div>
 </body>

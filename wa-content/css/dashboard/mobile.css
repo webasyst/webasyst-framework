@@ -131,6 +131,23 @@ html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .ac
 html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper #activity-filter {
   padding: 3rem 0 1rem 0;
 }
+html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group {
+  display: inline-flex;
+  flex-direction: row-reverse;
+}
+html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group + .users-group {
+  margin-left: 1.25rem;
+}
+html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group > .userpic {
+  margin-left: -0.5rem;
+}
+html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group > .userpic:last-child {
+  margin: 0;
+}
+html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group > .userpic::before {
+  box-shadow: none;
+  border: var(--border-width) solid var(--background-color-blank);
+}
 html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .activity-divider:not(:first-child) {
   margin-top: 1rem;
 }
@@ -278,12 +295,12 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper {
   position: relative;
-  width: 310px;
-  height: 310px;
+  width: 300px;
+  height: 300px;
   box-sizing: border-box;
   -webkit-transition: all 300ms linear;
   -moz-transition: all 300ms linear;
@@ -314,8 +331,8 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   position: absolute;
   top: 10px;
   left: 10px;
-  width: 300px;
-  height: 300px;
+  width: 290px;
+  height: 290px;
   border: 0 dashed #aaa;
   box-sizing: border-box;
 }
@@ -326,7 +343,7 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   top: 10px;
   left: 2px;
   width: 6px;
-  height: 300px;
+  height: 290px;
   background: #c0ffc0;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper {
@@ -490,7 +507,7 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
-  background: var(--dashboard-widget-background-color);
+  background-color: var(--dashboard-widget-background-color);
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-draggable-block {
   content: "";
@@ -567,44 +584,77 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   bottom: 0.125rem;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item {
-  display: inline-block;
+  --color: var(--light-gray);
+  display: inline-flex;
   vertical-align: top;
-  width: 28px;
-  height: 28px;
-  margin: 0 2px;
+  width: 1rem;
+  height: 1rem;
   box-sizing: border-box;
-  background: transparent 50% 0 no-repeat;
-  background-size: auto 112px;
   font-size: 0;
+}
+html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item:not(.show-settings-link) {
+  margin-bottom: 0.5rem;
+  margin-right: 0.75rem;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.is-active {
   cursor: default;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item:hover,
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.is-active {
-  background-position: 50% -28px;
+  --color: var(--accent-color);
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.delete-widget-link {
   margin: 0;
-  background-image: url("../../img/dashboard/widget-delete-icon.png?v=1.2");
-  background-color: #fff;
+  background-color: var(--text-color);
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
-  -webkit-box-shadow: 0 0 10px rgba(123,123,123,0.66);
-  box-shadow: 0 0 10px rgba(123,123,123,0.66);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #fff;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-small-size {
-  background-image: url("../../img/dashboard/widget-1x1.png?v=1.2");
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+}
+html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-small-size span {
+  border-radius: 0.0625rem;
+  height: 0.4375rem;
+  width: 0.4375rem;
+  box-sizing: border-box;
+  border: 0.0625rem solid var(--color);
+}
+html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-small-size span:first-child {
+  border: 0 none;
+  background-color: var(--color);
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-medium-size {
-  background-image: url("../../img/dashboard/widget-2x1.png?v=1.2");
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-content: space-between;
+}
+html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-medium-size span {
+  border-radius: 0.0625rem;
+  height: 0.4375rem;
+  width: 0.4375rem;
+  box-sizing: border-box;
+  border: 0.0625rem solid var(--color);
+}
+html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-medium-size span:first-child {
+  border: 0 none;
+  width: 100%;
+  background-color: var(--color);
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-big-size {
-  background-image: url("../../img/dashboard/widget-2x2.png?v=1.2");
-}
-html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.show-settings-link {
-  background-image: url("../../img/dashboard/widget-settings.png?v=1.2");
+  border-radius: 0.125rem;
+  background-color: var(--color);
 }
 html.mobile .widget-1x1 h1 {
   font-size: 3em;

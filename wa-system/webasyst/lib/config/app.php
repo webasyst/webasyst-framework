@@ -15,4 +15,5 @@ return array(
             'rights' => 'backend'
         ),
     ),
+    'ui'           => '1.3,2.0'
 );

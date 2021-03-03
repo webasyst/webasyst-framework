@@ -3478,7 +3478,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         /* hide/show scrollbar */
         $('.sidebar, .sidebar-body, .content').on('hover', function () {
-            $(this).toggleClass('hide-scrollbar')
+            let $element = $(this),
+                element_class = 'hide-scrollbar';
+
+            if($element.hasClass(element_class)){
+                $element.removeClass(element_class)
+            }else{
+                $element.addClass(element_class)
+            }
         })
     });
 })(jQuery);

@@ -25,6 +25,8 @@ class webasystDashboardActivityAction extends waViewAction
             $this->view->assign('datetime_group', $this->getDatetimeGroup($row['datetime']));
         }
         $this->view->assign('activity_load_more', $count == 50);
+
+        $this->view->assign('today_users', $this->getTodayUsers());
     }
 
     public function getLogs($filters = array(), &$count = null, $autoload_more = true)
@@ -168,5 +170,14 @@ class webasystDashboardActivityAction extends waViewAction
         } else {
             return _ws('365 Days');
         }
+    }
+
+    private function getTodayUsers()
+    {
+        $today_users_domain = new webasystTodayUsers();
+        return [
+            'birthdays' => $today_users_domain->getBirthdayUsers(),
+            'statuses' => $today_users_domain->getUserStatuses(),
+        ];
     }
 }

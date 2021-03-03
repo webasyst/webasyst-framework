@@ -30,16 +30,17 @@
     <div id="wa-app">
 
         <div class="block align-center" style="margin-top: 15vh;">
-            <h1>Switch to 2.0!</h1>
-            <p><strong class="red">Use the 1.3 / 2.0 global UI toggle in the bottom right corner.</strong></p>
-            <p class="gray" style="max-width: 760px; margin: 0 auto 1rem;">This app was designed to promote and document the new Webasyst 2.0 UI generation. Thus, no friendly wa-1.3 UI version is available for this app — you are seeing this text instead of some useful UI.</p>
-            <p class="gray" style="max-width: 500px; margin: 0 auto 1rem;">Developers: check out how easy it is to keep the legacy version of the wa-1.3 UI in the <code>templates/<b>layouts-legacy/</b></code> and <code>templates/<b>actions-legacy/</b></code> folders functionable at the same time.</p>
+            <h1>Пора переходить на Webasyst 2!</h1>
+            <p><strong class="red">Переключите режим интерфейса на <code class="highlighted">2.0</code> в нижнем правом углу экрана.</strong></p>
+            <p style="max-width: 760px; margin: 0 auto 1rem;">Это приложение предоставляет полную документацию и примеры кода Webasyst 2, и поэтому работает только в режиме нового интерфейса — <code>2.0</code>.</p>
 
             <p>&#123;$wa->whichUI()&#125; = <code>'<strong>{$wa->whichUI()}</strong>'</code></p>
 
+            <p class="gray">This app is available in Russian only.</p>
+
         </div>
 
-        <img src="{$wa_app_static_url}img/red-arrow.png" style="position: fixed; bottom: 80px; right: 10px; width: 100px;" />
+        <img src="{$wa_app_static_url}img/red-arrow.png" style="position: fixed; bottom: {if $wa->debug()}80px{else}240px{/if}; right: {if $wa->debug()}10px{else}420px{/if}; width: 100px;" />
 
     </div>
 

@@ -4,6 +4,24 @@ class webasystBackendHeaderAction extends waViewAction
 {
     use webasystHeaderTrait;
 
+    protected $params = [];
+
+    /**
+     * webasystBackendHeaderAction constructor.
+     * @param array $params
+     *      array  $params['custom']            some custom data for injecting into the webasyst main header
+     *      string $params['custom']['main']    html content that will be shown in the main section instead of an app list
+     *      string $params['custom']['aux']     html content that will be shown inside user area
+     */
+    public function __construct($params = null)
+    {
+        $params = is_array($params) ? $params : [];
+        $params['custom'] = isset($params['custom']) && is_array($params['custom']) ? $params['custom'] : [];
+        $params['custom'] = waUtils::extractValuesByKeys($params['custom'], ['main', 'aux'], false, '');
+        $params['custom'] = waUtils::toStrArray($params['custom']);
+        parent::__construct($params);
+    }
+
     public function execute()
     {
         if (wa()->getEnv() == 'frontend') {
@@ -33,20 +51,32 @@ class webasystBackendHeaderAction extends waViewAction
         /**
          * @event backend_header
          * @return array[string]array $return[%plugin_id%] array of html output
-         * @return array[string][string]string $return[%plugin_id%]['header_top'] html output
-         * @return array[string][string]string $return[%plugin_id%]['header_bottom'] html output
+         * @return array[string][string]string $return[%plugin_id%]['header_top'] html output (will be rendered only in UI v1.3)
+         * @return array[string][string]string $return[%plugin_id%]['header_middle'] html output (will be rendered only in UI v1.3)
+         * @return array[string][string]string $return[%plugin_id%]['header_bottom'] html output (will be rendered only in UI v1.3)
+         * @return array[string][string]string $return[%plugin_id%]['notification'] html output (will be rendered only in UI v2.0, "under the bell")
          */
         $params = array();
         $backend_header = wa()->event(array('webasyst', 'backend_header'), $params);
 
-        $header_top = $header_middle = $header_bottom = array();
+        $header_top = [];
+        $header_middle = [];
+        $header_bottom = [];
+        $header_notification = [];
+
         foreach ($backend_header as $app_id => $header) {
             if (is_array($header)) {
                 if (!empty($header['header_top'])) {
                     $header_top[] = $header['header_top'];
                 }
+                if (!empty($header['header_middle'])) {
+                    $header_bottom[] = $header['header_middle'];
+                }
                 if (!empty($header['header_bottom'])) {
                     $header_bottom[] = $header['header_bottom'];
+                }
+                if (!empty($header['notification'])) {
+                    $header_notification[] = $header['notification'];
                 }
             } elseif (is_string($header)) {
                 $header_middle[] = $header;
@@ -90,15 +120,16 @@ class webasystBackendHeaderAction extends waViewAction
             'counts'          => $counts,
             'wa_version'      => wa()->getVersion('webasyst'),
             'announcements'   => $announcements,
-            'notifications'   => $this->getAnnouncements(),
+            'notifications'   => $this->getAnnouncements(['backend_header_notification' => $header_notification]),
             'header_top'      => $header_top,
             'header_middle'   => $header_middle,
             'header_bottom'   => $header_bottom,
             'include_wa_push' => $include_wa_push,
             'webasyst_id_auth_banner' => $this->getWebasystIDAuthBanner(),
-            'show_connection_banner' => $this->showConnectionBanner(),
-            'current_domain' => $this->getCurrentDomain(),
+            'show_connection_banner'  => $this->showConnectionBanner(),
+            'current_domain'  => $this->getCurrentDomain(),
             'app_info'        => $app_info,
+            'custom_params'   => $this->params['custom']
         ]);
 
         $this->setTemplate(wa()->getAppPath('templates/actions/backend/BackendHeader.html', 'webasyst'));

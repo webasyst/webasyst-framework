@@ -5,7 +5,9 @@
     </section>
 
     <section id="wa_activity">
-        {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
+        {if !empty($activity)}
+            {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
+        {/if}
         <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
             {if !empty($activity)}
                 {include file="../dashboard/DashboardActivity.html" inline}
@@ -47,6 +49,11 @@
         $(".js-activity-filter-toggler").on("click", function(event) {
             event.preventDefault();
             $('#activity-filter').slideToggle();
+        });
+
+        $('#wa_activity [data-wa-tooltip-content]').waTooltip({
+            arrow: false,
+            placement: "bottom"
         });
     });
 </script>

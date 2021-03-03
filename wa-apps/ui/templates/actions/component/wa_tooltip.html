@@ -87,6 +87,30 @@
     <li>
         <span class="wa-tooltip2">Подсказка с иконкой справа при клике на тексте</span>
     </li>
+    <li>
+        <span id="big-tooltip">Длинный текст в подсказке</span>
+        <div class="wa-tooltip-template" id="big-tooltip-example">
+            <div class="box">
+                <h4>Параграф текста</h4>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet blanditiis culpa cupiditate debitis dolor, ea earum et ex iusto minima nemo non numquam omnis perspiciatis placeat reiciendis repellendus sed similique.</p>
+            </div>
+        </div>
+    </li>
+    <li>
+        <span id="skeleton-tooltip">«Скелетон» в подсказке</span>
+        <div class="wa-tooltip-template" id="skeleton-tooltip-example">
+            <div class="skeleton box" style="width: 500px;">
+                <div class="flexbox space-16">
+                    <span class="skeleton-custom-box" style="width: 140px; height: 100px;"></span>
+                    <div class="wide">
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line"></span>
+                        <span class="skeleton-line" style="width: 70%;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
 </ul>
 <script>
     ( function($) {
@@ -97,6 +121,14 @@
             placement:"right",
             trigger:"click",
             class:"badge purple",
+        });
+        $("#big-tooltip").waTooltip({
+            template: '#big-tooltip-example',
+            placement: 'bottom',
+        });
+        $("#skeleton-tooltip").waTooltip({
+            template: '#skeleton-tooltip-example',
+            placement: 'bottom',
         });
     })(jQuery);
 </script>

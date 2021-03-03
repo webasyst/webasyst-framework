@@ -1,11 +1,59 @@
-{$_group = ifset($datetime_group, '')}
+{$_group = $datetime_group|default:''}
+
+{$today = "[`Today`]"}
+
+<div class="activity-divider today h3">[`Today`]</div>
+
+{*$users_birthdays = $today_users.birthdays}
+{$users_statuses = $today_users.statuses*}
+
+{*if $users_birthdays}
+    <div class="users-group">
+    {foreach $users_birthdays as $birthday}
+        {if $status@index == 4}
+            <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
+                <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
+            </span>
+            {break}
+        {/if}
+        <span class="userpic userpic48 outlined" data-wa-tooltip-content="[`Birthday`]">
+            <img src="{$birthday.photo_url_48}" alt="{$birthday.formatted_name|escape}">
+            {if $status@last || $status@index < 4}
+                <span class="userstatus birthday"><i class="fas fa-birthday-cake"></i></span>
+            {/if}
+        </span>
+    {/foreach}
+    </div>
+{/if*}
+
+{*if $users_statuses}
+    <div class="users-group">
+        {foreach $users_statuses as $status}
+            {if $status@index == 4}
+                <span class="userpic userpic48 outlined" style="background-image: linear-gradient(to top, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3));">
+                    <span class="userstatus"></span>
+                </span>
+                {break}
+            {/if}
+            <span class="userpic userpic48 outlined" data-wa-tooltip-content="{$status.statuses[1].calendar.name|escape}">
+                <img src="{$status.photo_url_48}" alt="{$status.formatted_name|escape}">
+                {if $status@last || $status@index < 4}
+                    <span class="userstatus" style="background-color: {$status.statuses[1].calendar.bg_color}"></span>
+                {/if}
+            </span>
+        {/foreach}
+    </div>
+{/if*}
+
+{*if $users_birthdays || $users_statuses}
+<hr class="custom-mt-16">
+{/if*}
 
 {if strtotime($activity[0]['datetime']) < strtotime(date('Y-m-d'))}
-    <div class="activity-divider h3">[`Today`]</div>
     <div class="activity-item activity-empty-today">
         <div class="item-content-wrapper">
             <div class="inline-content">
-                [`No activity for today yet`]
+                [`No activity today yet.`]
             </div>
         </div>
     </div>
@@ -18,7 +66,7 @@
 {foreach $activity as $activity_item}
     {$app_name = $activity_item.app.name}
     {$app_color = ifset($activity_item.app.sash_color, "#aaa")}
-    {if $activity_item.datetime_group != $_group}
+    {if $activity_item.datetime_group != $_group && $activity_item.datetime_group != $today}
         <div class="activity-divider h3">{$activity_item.datetime_group}</div>
     {/if}
     {$_group=$activity_item.datetime_group}
@@ -30,7 +78,7 @@
             </header>
         {/if}
         <div class="item-content-wrapper">
-            <div class="inline-content">
+            <div class="inline-content small">
                 <a class="activity-username" href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|escape}</a>
                 <span class="activity-action gray">{$activity_item.action_name|escape}</span>
                 {if !empty($activity_item.params_html)}

@@ -1,8 +1,6 @@
-{* todo Remove Globals - Only for Alfa Version! *}
-{$wa->globals("wa_dashboard_header_title", "[`Apps`]")}
 <section class="article wa-dashboard-page apps">
     <div class="article-body">
-        <h1 class="d-page-header">{$wa->globals("wa_dashboard_header_title")}</h1>
+        <h1 class="d-page-header">[`Apps`]</h1>
         {include file="./DashboardAppsBlock.html"}
     </div>
 </section>
@@ -11,5 +9,9 @@
         let $wa_header = document.querySelector('#wa-header'),
             wa_header_height = $wa_header.clientHeight;
         WaHeader.headerBehavior('.wa-dashboard-page', { rootMargin: `${ wa_header_height }px 0px -100% 0px` });
+        WaHeader.setHeaderTitle({
+            title_text: "[`Apps`]",
+            truncate: 42
+        })
     });
 </script>

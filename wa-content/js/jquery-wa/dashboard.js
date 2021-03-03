@@ -9,6 +9,201 @@ const DashboardWidgets = {};
 // Контейнер для контроллеров виджетов
 const DashboardControllers = {};
 
+const WidgetSort = ( function($) {
+    return class WidgetSort {
+        $root_widget_groups;
+        $grouped_widgets;
+
+        constructor() {
+            let that = this;
+
+            that.nested_selector = '.js-nested-sortable';
+            that.root_selector = '#d-widgets-block';
+            that.$grouped_widgets = $(that.nested_selector);
+            that.$root_widget_groups = $(that.root_selector);
+            that.$empty_group = that.$root_widget_groups.find(':last-of-type.js-empty-group');
+            that.options = {};
+            that.$dragged= null;
+
+            that.init();
+            //wa_widget_changed_type
+            $(document).on('wa_new_widget_create', function (event) {
+                that.init();
+            })
+        }
+
+        init() {
+            this.groupedWidgets();
+            this.rootWidgetGroups();
+        }
+
+        groupedWidgets() {
+            const that = this;
+            let options = {};
+            that.$grouped_widgets.each(function () {
+                let element = this;
+
+                options = {
+                    group: {
+                        name: 'nested',
+                        put(to, from) {
+                            let $element = $(to.el),
+                                count_small_widgets = $element.children('.widget-1x1').length,
+                                count_middle_widgets = $element.children('.widget-2x1').length,
+                                is_middle = that.$dragged?.classList.contains('widget-2x1');
+
+                            return !(count_small_widgets === 4
+                                || count_middle_widgets === 2
+                                || (count_small_widgets === 2 && count_middle_widgets)
+                                || from.el.getAttribute('id') === 'd-widgets-block'
+                                || (count_middle_widgets && is_middle)
+                                || (count_small_widgets === 3 && is_middle));
+                        }
+                    },
+                    handle: '.widget-wrapper',
+                    animation: 150,
+                    fallbackOnBody: true,
+                    swapThreshold: 0.65,
+                    ghostClass: 'widget-ghost',
+                    chosenClass: 'widget-chosen',
+                    dragClass: 'widget-drag',
+                    filter: '.is-removed',
+                    onAdd(event) {
+                        // Если положили виджет в пустую группу, то создаем новую пустую группу
+                        if (event.to.classList.contains('js-empty-group')) {
+                            event.to.classList.remove('js-empty-group')
+                            event.to.parentElement.insertAdjacentHTML('beforeend', '<div class="widget-group-wrapper js-nested-sortable js-empty-group"></div>');
+                            Sortable.create(document.querySelector('.js-empty-group'), options)
+                        }
+
+                        let widget_id = event.item.dataset.widgetId;
+                        let group_index = [].indexOf.call(event.to.parentElement?.children, event.to);
+
+                        if (widget_id) {
+                            that.saveWidget({
+                                widget_id,
+                                widget_sort: event.newIndex,
+                                group_index,
+                                is_new: false
+                            });
+                        }
+                    },
+                    onRemove(event) {
+                        // Удаляем пустую группу, когда из нее был перенесен последний виджет
+                        if (event.from.children.length === 0) {
+                            Sortable.get(event.from).destroy()
+                            event.from.remove();
+                        }
+                    },
+                    onMove(event) {
+
+                        if (event.originalEvent.type === 'dragenter' && event.originalEvent.target.classList.contains('widget-group-wrapper')) {
+                            event.originalEvent.target.classList.toggle('hover')
+                        }
+                        if (event.originalEvent.type === 'dragleave' && event.originalEvent.target.classList.contains('widget-group-wrapper')) {
+                            event.originalEvent.target.classList.toggle('hover')
+                        }
+
+                    },
+                    onStart(event){
+                        that.$dragged = event.item;
+                        that.$empty_group.toggleClass('is-active', true)
+                    },
+                    onEnd(event) {
+/*                        let widget_id = event.item.dataset.widgetId;
+                        let group_index = [].indexOf.call(event.to.parentElement?.children, event.to);
+                        if (widget_id) {
+                            that.saveWidget({
+                                widget_id,
+                                widget_sort: event.newIndex,
+                                group_index,
+                                is_new: false
+                            });
+                        }*/
+                        that.setGroupSortable(event.to)
+                        that.setGroupSortable(event.from)
+
+                        that.$empty_group.toggleClass('is-active', false)
+
+                        // Reinit widget sets
+                        that.init();
+                    }
+                };
+
+                $(element).sortable(options);
+            })
+            that.options = options;
+        }
+
+        rootWidgetGroups() {
+            const that = this;
+            that.$root_widget_groups.sortable({
+                animation: 150,
+                ghostClass: 'widget-ghost',
+                chosenClass: 'widget-chosen',
+                dragClass: 'widget-drag',
+                forceFallback: true,
+                onChoose(event) {
+                    event.item.classList.remove('zoomIn');
+                },
+                onEnd(event) {
+                    let $item = $(event.item),
+                        $widget = $item.find('.widget-wrapper'),
+                        widget_id = $widget.data('widget-id');
+
+                    if (widget_id) {
+                        that.saveWidget({
+                            widget_id,
+                            widget_sort: 0,
+                            group_index: event.newIndex,
+                            is_new: true
+                        });
+                    }
+                }
+            });
+        }
+
+        setGroupSortable(node) {
+            // Запрещаем сортировку, если в группе есть виджеты 2x1 и несколько 1x1 (иначе имеем баг с позиционированием)
+            let children = Array.from(node.childNodes),
+                small_widget = children.filter(el => el.classList.contains('widget-1x1')).length,
+                middle_widget = children.filter(el => el.classList.contains('widget-2x1')).length;
+            Sortable.get(node).options.sort = !(middle_widget > 1 || (middle_widget && small_widget > 1));
+        }
+
+        saveWidget(options) {
+            let $deferred = $.Deferred(),
+                href = "?module=dashboard&action=widgetMove&id=" + options.widget_id,
+                dataArray = {
+                    block: options.group_index,
+                    sort: options.widget_sort
+                };
+
+            if (options.is_new) {
+                dataArray.new_block = 1;
+            }
+
+            $.post(href, dataArray, function (request) {
+                $deferred.resolve(request);
+            }, "json");
+        }
+
+        sortingState(state) {
+            let _state = state === 'disable' || false;
+            this.$root_widget_groups.each(function () {
+                Sortable.get(this)?.option('disabled', _state);
+                let nested = Array.from(this.children).filter(el => !el.firstElementChild?.classList.contains('widget-2x2'))
+                nested.forEach(function(el){
+                    let _sortable = Sortable.get(el)
+                    if(_sortable) {
+                        _sortable.option('disabled', _state);
+                    }
+                })
+            })
+        }
+    }
+})(jQuery);
+
 const Dashboard = ( function($) {
     return class Dashboard {
 
@@ -167,58 +362,63 @@ const Group = ( function($, backend_url) {
             let that = this
             $(document).ready(function () {
                 that.storage = {
-                dropArea: {},
-                draggedWidget: false,
-                is_new_group: false,
-                is_new_widget: false,
-                $widget_group: false,
-                $hover_group: false,
-                doDragOver: true,
-                newDraggedWidget: false,
-                target_group_offset: false,
-                is_widget_list_locked: false,
-                $activeWidgetOrnament: false,
-                isDraggedClass: "is-dragged",
-                hoverGroupClass: "is-hovered",
-                lockedGroupClass: "is-locked",
-                activeClass: "is-active",
-                lockedClass: "is-locked",
-                showGroupOrnamentClass: "is-ornament-shown",
-                showClass: "is-shown",
-                max_group_area: 4,
-                border_space: 10,
-                getGroupsWrapper: function () {
-                    return $(document).find("#wa_widgets");
-                },
-                getGroupsBlock: function () {
-                    return $(document).find("#d-widgets-block");
-                },
-                getWidgetGroups: function () {
-                    return this.getGroupsWrapper().find(".widget-group-wrapper");
-                },
-                getNewWidgetHref: function () {
-                    return "?module=dashboard&action=widgetAdd";
-                },
-                getSaveHref: function (widget_id) {
-                    return "?module=dashboard&action=widgetMove&id=" + widget_id;
-                },
-                getLastGroupIndex: function () {
-                    return parseInt(this.getWidgetGroups().last().index());
-                },
-                getNewGroupHTML: function() {
-                    return $("<div />").addClass("widget-group-wrapper");
-                },
-                getListWrapper: function() {
-                    return $("#widgets-list-wrapper");
-                }
-                //getDropOrnament: function() {
-                //    return $("#d-drop-ornament");
-                //}
-            };
-            // Main Initialize
+                    dropArea: {},
+                    draggedWidget: false,
+                    is_new_group: false,
+                    is_new_widget: false,
+                    $widget_group: false,
+                    $hover_group: false,
+                    doDragOver: true,
+                    newDraggedWidget: false,
+                    target_group_offset: false,
+                    is_widget_list_locked: false,
+                    $activeWidgetOrnament: false,
+                    isDraggedClass: "is-dragged",
+                    hoverGroupClass: "is-hovered",
+                    lockedGroupClass: "is-locked",
+                    activeClass: "is-active",
+                    lockedClass: "is-locked",
+                    showGroupOrnamentClass: "is-ornament-shown",
+                    showClass: "is-shown",
+                    max_group_area: 4,
+                    border_space: 10,
+                    getGroupsWrapper: function () {
+                        return $(document).find("#wa_widgets");
+                    },
+                    getGroupsBlock: function () {
+                        return $(document).find("#d-widgets-block");
+                    },
+                    getWidgetGroups: function () {
+                        return this.getGroupsWrapper().find(".widget-group-wrapper");
+                    },
+                    getNewWidgetHref: function () {
+                        return "?module=dashboard&action=widgetAdd";
+                    },
+                    getSaveHref: function (widget_id) {
+                        return "?module=dashboard&action=widgetMove&id=" + widget_id;
+                    },
+                    getLastGroupIndex: function () {
+                        return parseInt(this.getWidgetGroups().last().index());
+                    },
+                    getNewGroupHTML: function() {
+                        return $("<div />").addClass("widget-group-wrapper");
+                    },
+                    getListWrapper: function() {
+                        return $(".widgets-list-wrapper");
+                    }
+                    //getDropOrnament: function() {
+                    //    return $("#d-drop-ornament");
+                    //}
+                };
+
+                this.nested_selector = '.js-nested-sortable';
+                this.root_selector = '#d-widgets-block';
+                this.$grouped_widgets = $(this.nested_selector);
+                this.$root_widget_groups = $(this.root_selector);
+
+                // Main Initialize
 
                 that.bindEvents();
-
 
             });
         }
@@ -232,12 +432,14 @@ const Group = ( function($, backend_url) {
                 that.onSortWidgetList( $(this) );
             });
 
-            $widgetList.on("dragstart", ".widget-item-wrapper .image-block", function(event) {
-                that.onWidgetListDragStart(event, $(this));
+            $widgetList.on("click", ".widget-item-wrapper .add-widget-link", function(event) {
+                if(!that.is_widget_list_page) {
+                    that.onWidgetListClick(event, $(this));
+                }
             });
 
-            $widgetList.on("click", ".widget-item-wrapper .image-block", function(event) {
-                that.onWidgetListClick(event, $(this));
+            /*$widgetList.on("dragstart", ".widget-item-wrapper .image-block"", function(event) {
+                that.onWidgetListDragStart(event, $(this));
             });
 
             $widgetList.on("dragend", ".widget-item-wrapper .image-block", function() {
@@ -283,7 +485,7 @@ const Group = ( function($, backend_url) {
             $groups_wrapper.on("drop", ".ornament-widget-group", function(event) {
                 that.onEmptyGroupDrop(event);
                 event.preventDefault();
-            });
+            });*/
         }
 
         // Group Functions
@@ -773,7 +975,7 @@ const Group = ( function($, backend_url) {
 
             // Создаём группу перед группой
             if ($group && $group.length) {
-                $group.before($new_group);
+                $group.before($new_group.addClass('zoomIn'));
                 return $new_group;
 
                 // Иначе создаём группу в конце
@@ -782,7 +984,7 @@ const Group = ( function($, backend_url) {
 
                 // After last group
                 let $lastGroup = $wrapper.find(".widget-group-wrapper").last();
-                $lastGroup.after($new_group);
+                $lastGroup.after($new_group.addClass('zoomIn'));
             }
 
         }
@@ -990,6 +1192,7 @@ const Group = ( function($, backend_url) {
                     // Render HTML
                     let $widget = $(response.data.html),
                         $new_group = that.addNewGroup( that.storage.getWidgetGroups().eq(0) );
+
                     $new_group.append($widget);
 
                     // Init new Widget
@@ -1002,6 +1205,7 @@ const Group = ( function($, backend_url) {
 
                         that.replaceWidgetAfterCreate(event, $group);
                     }
+
                 }
             });
         }
@@ -1013,6 +1217,8 @@ const Group = ( function($, backend_url) {
             that.prepareDrop(event, $group);
 
             that.storage.draggedWidget = false;
+
+            $(document).trigger('wa_new_widget_create');
         }
 
         addNewWidget() {
@@ -1135,7 +1341,7 @@ const Page = ( function($, backend_url) {
                     return $(".js-dashboard-edit-close");
                 },
                 getWidgetList: function() {
-                    return $("#widgets-list-wrapper")
+                    return $(".widgets-list-wrapper")
                 },
                 getWidgetActivity: function() {
                     return $("#wa_activity");
@@ -1159,6 +1365,11 @@ const Page = ( function($, backend_url) {
                     return $(".js-new-dashboard");
                 }
             };
+
+            this.sortable = {};
+
+            this.$sortable_grouped_widgets = {};
+            this.$sortable_root_widget_groups = {};
 
             this.new_dashboard_dialog = $("#dashboard-editor-dialog") || false
             // todo @deprecated
@@ -1201,8 +1412,7 @@ const Page = ( function($, backend_url) {
             // edit dashboard
             $edit_dashboard.on('click', function (e) {
                 e.preventDefault()
-                let id = $(this).parent('a').data("dashboard")
-                that.onShowLinkClick(id);
+                that.onShowLinkClick();
             });
 
             // $dashboardList.on("click", 'a', function() {
@@ -1222,17 +1432,11 @@ const Page = ( function($, backend_url) {
                 that.hideFirstNotice();
             });
 
-            $showLink.on("click", function(e) {
-                e.preventDefault()
-                that.onShowLinkClick( $(this) );
-            });
-
             $hideLink.on("click", function(e) {
                 e.preventDefault()
                 $showLink.show();
                 $hideLink.hide();
                 that.hideEditMode();
-                that.hideWidgetList();
             });
 
             $widgetActivity.on("click", "#d-load-more-activity", function () {
@@ -1345,7 +1549,17 @@ const Page = ( function($, backend_url) {
                 $firstNotice.find(".close-notice-link").trigger("click");
             }
 
-            //
+            // Define Sortable variable if it not yet
+            if(Object.getOwnPropertyNames(that.sortable).length === 0) {
+                that.sortable = new WidgetSort();
+            }
+
+            that.$sortable_grouped_widgets = that.sortable.$grouped_widgets;
+            that.$sortable_root_widget_groups = that.sortable.$root_widget_groups;
+
+            // Включаем сортировку
+            that.sortable.sortingState('enable');
+
             that.showEditMode();
             //
             that.showWidgetList();
@@ -1393,8 +1607,7 @@ const Page = ( function($, backend_url) {
 
         changeFilterText() {
             let $filterText = $("#activity-select-text"),
-                full_text = $filterText.data("full-text"),
-                not_full_text = $filterText.data("not-full-text"),
+                text = $filterText.data("text"),
                 $form = $("#activity-filter"),
                 check_count = 0,
                 full_checked = true;
@@ -1411,10 +1624,10 @@ const Page = ( function($, backend_url) {
             });
 
             if (full_checked) {
-                $filterText.text(full_text);
+                $filterText.text(text);
             } else {
-                not_full_text += " (" + check_count + ")";
-                $filterText.text(not_full_text);
+                text += " (" + check_count + ")";
+                $filterText.text(text);
             }
         }
 
@@ -1520,7 +1733,7 @@ const Page = ( function($, backend_url) {
                 is_custom_dashboard = ( dashboard_id !== "default_dashboard" && dashboard_id !== "new_dashboard" );
 
             // if we in Custom Dashboard
-            if (is_custom_dashboard) {
+            if (!is_custom_dashboard) {
                 that.reloadDashboard();
 
             } else {
@@ -1530,8 +1743,12 @@ const Page = ( function($, backend_url) {
                 }
 
                 $dashboard.removeClass(that.storage.dashboardEditableClass);
+                $('body').removeClass(that.storage.dashboardCustomEditClass);
 
                 that.toggleHighlighterGroups();
+
+                // Отключаем сортировку
+                that.sortable.sortingState('disable');
 
                 that.storage.isEditModeActive = false;
             }
@@ -1557,14 +1774,10 @@ const Page = ( function($, backend_url) {
                 is_loaded = that.storage.isWidgetListLoaded;
 
             // Show block
-            $widgetList.removeClass(that.storage.hiddenClass);
-
             $("body").addClass(that.storage.dashboardCustomEditClass);
 
             // Render
             if (!is_loaded) {
-                // Start Animation
-                that.startAnimateWidgetList();
 
                 that.storage.isWidgetListLoaded = true;
 
@@ -1573,36 +1786,13 @@ const Page = ( function($, backend_url) {
                 });
 
                 $deferred.done( function(response) {
-                    // Stop animation
-                    that.stopAnimateWidgetList();
                     // Adding html to wrapper
-                    $widgetList.prepend(response);
+                    setTimeout(()=> {
+                        $widgetList.empty().html(response);
+                    }, 1000)
                 });
             }
 
-        }
-
-        hideWidgetList() {
-            let that = this,
-                $widgetList = that.storage.getWidgetList();
-
-            $widgetList.addClass(that.storage.hiddenClass);
-        }
-
-        startAnimateWidgetList() {
-            let that = this,
-                $widgetList = that.storage.getWidgetList(),
-                activeClass = that.storage.isLoadingClass;
-
-            $widgetList.addClass(activeClass);
-        }
-
-        stopAnimateWidgetList() {
-            let that = this,
-                $widgetList = that.storage.getWidgetList(),
-                activeClass = that.storage.isLoadingClass;
-
-            $widgetList.removeClass(activeClass);
         }
 
         loadOldActivityContent($link, $widgetActivity) {
@@ -2000,6 +2190,7 @@ const DashboardWidget = ( function($) {
 
             $widgetControls.on("click", ".control-item", function () {
                 let $link = $(this),
+                    $parent_group_wrapper = $link.closest('.widget-group-wrapper'),
                     activeClass = that.storage.activeControlClass,
                     is_click_myself = ($link.hasClass(activeClass));
 
@@ -2013,6 +2204,61 @@ const DashboardWidget = ( function($) {
 
                     // Set active control
                     $link.addClass(activeClass);
+
+                    let groupedWidgetsInstance = Sortable.get($parent_group_wrapper[0]);
+
+                    if (!groupedWidgetsInstance && !$link.hasClass('set-big-size')) {
+                        let options = {
+                            group: 'nested',
+                            handle: '.widget-wrapper',
+                            animation: 150,
+                            fallbackOnBody: true,
+                            swapThreshold: 0.65,
+                            ghostClass: 'widget-ghost',
+                            dragClass: 'widget-drag',
+                            onEnd(event) {
+                                // Удаляем пустую группу, когда из нее был перенесен последний виджет
+                                if($(event.from).children().length === 0) {
+                                    $(event.from).remove();
+                                }
+                            }
+                        }
+                        groupedWidgetsInstance = Sortable.create($parent_group_wrapper[0], options);
+                    }else{
+                        //groupedWidgetsInstance.destroy();
+                    }
+
+                    let $group = $(groupedWidgetsInstance.el);
+
+                    if($link.hasClass('set-medium-size')) {
+                        $(document).on('wa_widget_changed_type', function () {
+                            if ($group.children('.widget-1x1').length > 1) {
+                                //groupedWidgetsInstance.options.sort = false;
+                                //$group.attr('data-sort-disabled', true);
+                            } else {
+                                //$group.removeAttr('data-sort-disabled');
+                                //groupedWidgetsInstance.options.sort = true;
+                            }
+                        })
+                        $parent_group_wrapper.addClass('js-nested-sortable');
+                    }
+
+                    if($link.hasClass('set-small-size')) {
+                        $(document).on('wa_widget_changed_type', function () {
+                            if ($group.children('.widget-2x1').length > 0) {
+                                //groupedWidgetsInstance.options.sort = false;
+                                //$group.attr('data-sort-disabled', true);
+                            } else {
+                                //$group.removeAttr('data-sort-disabled');
+                                //groupedWidgetsInstance.options.sort = true;
+                            }
+                        })
+                        $parent_group_wrapper.addClass('js-nested-sortable');
+                    }
+
+                    if($link.hasClass('set-big-size')) {
+                        $parent_group_wrapper.removeClass('js-nested-sortable');
+                    }
                 }
             });
 
@@ -2090,7 +2336,6 @@ const DashboardWidget = ( function($) {
                 is_available = that.checkAvailability(size);
 
             if (is_available) {
-                console.log(size)
                 that.changeWidgetType(size);
             }
         }
@@ -2122,6 +2367,7 @@ const DashboardWidget = ( function($) {
 
                 // Снимаем блок
                 that.lockToggle();
+                $(document).trigger('wa_widget_changed_type');
             })
         }
 
@@ -2410,21 +2656,30 @@ const DashboardWidget = ( function($) {
 
         showWidgetSettings() {
             let that = this,
-                $widget = that.$widget_wrapper,
-                activeClass = that.storage.isControlsShownClass;
-
-            $widget.addClass(activeClass);
-
-            that.renderSettings();
+                $widget = that.$widget_wrapper
 
             let $deferred = that.getWidgetSettings();
 
             $deferred.done(function (response) {
-                let $settings = that.storage.getSettingsBlock();
 
-                $settings.html(response);
+                $.waDialog({
+                    html: response,
+                    onOpen($dialog, dialog_instance) {
+                        let $form = $dialog.find('form')
 
-                //that.liftSettings(that);
+                        $form.on('submit', function(){
+                            let saveSettingsHref = "?module=dashboard&action=widgetSave&id=" + $widget.data('widget-id'),
+                                dataArray = $form.serializeArray();
+
+                            $.post(saveSettingsHref, dataArray, function (request) {
+                                if(request.status === 'ok') {
+                                    that.renderWidget(true);
+                                }
+                                dialog_instance.close();
+                            }, "json");
+                        })
+                    }
+                });
             });
         }
 

@@ -29,14 +29,14 @@
             {/foreach}
         {/capture}
         <i class="fas fa-spinner fa-pulse loading" title="[`Loading`]" style="display: none"></i>
-        <a href="javascript:void(0);" class="gray activity-filter-toggler js-activity-filter-toggler"><i class="fas fa-check-square"></i>
-            <span id="activity-select-text" data-full-text="[`All apps`]" data-not-full-text="[`Selected apps`]">
-                    {if $is_not_full}[`Selected apps`] ({$check_count}){else}[`All apps`]{/if}
-                </span>
+        <a href="javascript:void(0);" class="gray activity-filter-toggler js-activity-filter-toggler">
+            <i class="fas fa-filter"></i>
+            <span id="activity-select-text" data-text="[`Filter by app`]">[`Filter by app`]{if $is_not_full}  ({$check_count}){/if}</span>
+            <i class="fas fa-caret-down"></i>
         </a>
     </div>
     <form action="" id="activity-filter" style="display: none">
-        <ul class="chips">
+        <ul class="chips custom-ml-16">
             {$select_options|strip}
         </ul>
     </form>
