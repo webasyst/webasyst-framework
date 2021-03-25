@@ -16,6 +16,9 @@ class waModel
 {
     const INSERT_ON_DUPLICATE_KEY_UPDATE = 1;
     const INSERT_IGNORE = 2;
+    
+    const ORDER_ASC = 'ASC';
+    const ORDER_DESC = 'DESC';
 
     /**
      * Database Adapter
@@ -38,10 +41,15 @@ class waModel
     protected $fields = array();
 
     /**
-     * Primary key of the table
-     * @var string
+     * Primary key(s) of the table
+     * @var string|array
      */
     protected $id = 'id';
+    /**
+     * Sort order as pairs field => order
+     * @var array
+     */
+    protected $sort = array('id' => self::ORDER_ASC);
 
     /**
      * Cache
@@ -75,7 +83,24 @@ class waModel
         $this->type = $type ? $type : 'default';
         $this->adapter = waDbConnector::getConnection($this->type, $this->writable);
         if ($this->table && !$this->fields) {
-            $this->getMetadata();
+            $fields = $this->getMetadata();
+            $fields = array_keys($fields);
+
+            $not_existed_fields = array_diff((array) $this->id, $fields);
+            if ($not_existed_fields) {
+                throw new waDbException(sprintf(
+                    'ID field "%s" not exists.', 
+                    implode('", "', $not_existed_fields)
+                ));
+            }
+
+            $not_existed_fields = array_diff(array_keys($this->sort), $fields);
+            if ($not_existed_fields) {
+                throw new waDbException(sprintf(
+                    'Sort field "%s" not exists.', 
+                    implode('", "', $not_existed_fields)
+                ));
+            }
         }
     }
 
@@ -482,10 +507,10 @@ class waModel
             $this->clearMetadataCache();
         }
         if (!isset($this->fields[$field])) {
-            throw new waException(sprintf('Unknown field %s', $field));
+            throw new waDbException(sprintf('Unknown field %s', $field));
         }
         if (!isset($this->fields[$field]['type'])) {
-            throw new waException(sprintf('Incorrect metadata for field %s', $field));
+            throw new waDbException(sprintf('Incorrect metadata for field %s', $field));
         }
         $type = strtolower($this->fields[$field]['type']);
         if ($value === null && (!isset($this->fields[$field]['null']) || $this->fields[$field]['null'])) {
@@ -746,7 +771,8 @@ class waModel
      */
     public function getAll($key = null, $normalize = false)
     {
-        $sql = "SELECT * FROM ".$this->table;
+        $sql = "SELECT * FROM ".$this->table;    
+        $sql .= $this->orderBySort();
         return $this->query($sql)->fetchAll($key, $normalize);
     }
 
@@ -822,11 +848,39 @@ class waModel
     /**
      * Returns the name of id field defined in model class.
      *
-     * @return string
+     * @return string|array
      */
     public function getTableId()
     {
         return $this->id;
+    }
+    
+    /**
+     * Returns the default sort order.
+     *
+     * @return array
+     */
+    public function getTableSort()
+    {
+        return $this->sort;
+    }
+    
+    /**
+     * Returns the default sort order.
+     *
+     * @return string
+     */
+    protected function orderBySort()
+    {
+        if (!$this->sort) {
+            return '';
+        }
+        
+        $sort = array();
+        foreach ($this->sort as $field => $order) {
+            $sort[] = $field.' '.$order;
+        };
+        return ' ORDER BY '.implode(', ', $sort);
     }
 
     /**
@@ -886,6 +940,7 @@ class waModel
         }
         $sql = "SELECT * FROM ".$this->table;
         $sql .= " WHERE ".$this->getWhereByField($field, $value);
+        $sql .= $this->orderBySort();
         if ($limit) {
             $sql .= " LIMIT ".(int) $limit;
         } elseif (!$all) {
@@ -948,7 +1003,7 @@ class waModel
                 $this->clearMetadataCache();
             }
             if (!isset($this->fields[$field])) {
-                throw new waException(sprintf(_ws('Unknown field %s'), $field));
+                throw new waDBException(sprintf(_ws('Unknown field %s'), $field));
             }
             if ($value) {
                 return $prefix.$this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
@@ -1063,8 +1118,7 @@ class waModel
      */
     public function select($select)
     {
-        $query = new waDbQuery($this);
-        return $query->select($select);
+        return $this->getQueryConstructor()->select($select);
     }
 
     /**
@@ -1077,8 +1131,7 @@ class waModel
     {
         $params = func_get_args();
         $where = array_shift($params);
-        $query = new waDbQuery($this);
-        return $query->where($where, $params);
+        return $this->getQueryConstructor()->where($where, $params);
     }
 
     /**
@@ -1089,8 +1142,7 @@ class waModel
      */
     public function order($order)
     {
-        $query = new waDbQuery($this);
-        return $query->order($order);
+        return $this->getQueryConstructor()->order($order);
     }
 
     /**
