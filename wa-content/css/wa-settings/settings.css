@@ -1,465 +1,199 @@
 .s-general-settings-page .gradient1 {
-  background: -webkit-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -moz-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -o-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -ms-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
   background: linear-gradient(90deg, #ff0078 0%, #ff5900 100%);
 }
 .s-general-settings-page .gradient2 {
-  background: -webkit-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -moz-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -o-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -ms-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
   background: linear-gradient(90deg, #ff682d 0%, #ff9500 100%);
 }
 .s-general-settings-page .gradient3 {
-  background: -webkit-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -moz-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -o-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -ms-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
   background: linear-gradient(90deg, #f7a500 0%, #e5cf00 100%);
 }
 .s-general-settings-page .gradient4 {
-  background: -webkit-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -moz-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -o-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -ms-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
   background: linear-gradient(90deg, #a3d900 0%, #d9d900 100%);
 }
 .s-general-settings-page .gradient5 {
-  background: -webkit-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -moz-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -o-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -ms-linear-gradient(0deg, #26e500 0%, #99e500 100%);
   background: linear-gradient(90deg, #26e500 0%, #99e500 100%);
 }
 .s-general-settings-page .gradient6 {
-  background: -webkit-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -moz-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -o-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -ms-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
   background: linear-gradient(90deg, #0be50b 0%, #00ed77 100%);
 }
 .s-general-settings-page .gradient7 {
-  background: -webkit-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -moz-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -o-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -ms-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
   background: linear-gradient(90deg, #00ec76 0%, #00e5bf 100%);
 }
 .s-general-settings-page .gradient8 {
-  background: -webkit-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -moz-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -o-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -ms-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
   background: linear-gradient(90deg, #00bfff 0%, #00d9d9 100%);
 }
 .s-general-settings-page .gradient9 {
-  background: -webkit-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -moz-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -o-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -ms-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
   background: linear-gradient(90deg, #7396ff 0%, #26b7ff 100%);
 }
 .s-general-settings-page .gradient10 {
-  background: -webkit-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -moz-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -o-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -ms-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
   background: linear-gradient(90deg, #5975ff 0%, #a173ff 100%);
 }
 .s-general-settings-page .gradient11 {
-  background: -webkit-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -moz-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -o-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -ms-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
   background: linear-gradient(90deg, #a565ff 0%, #df3eff 100%);
 }
 .s-general-settings-page .gradient12 {
-  background: -webkit-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -moz-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -o-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -ms-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
   background: linear-gradient(90deg, #f23da7 0%, #ef3eff 100%);
 }
 .s-general-settings-page .gradient13 {
-  background: -webkit-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -moz-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -o-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -ms-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
   background: linear-gradient(90deg, #c4c4c4 0%, #808080 100%);
 }
 .s-general-settings-page .gradient14 {
-  background: -webkit-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -moz-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -o-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -ms-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
   background: linear-gradient(90deg, #ff0f80 0%, #cc4700 100%);
 }
 .s-general-settings-page .gradient15 {
-  background: -webkit-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -moz-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -o-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -ms-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
   background: linear-gradient(90deg, #f58f00 0%, #fa4700 100%);
 }
 .s-general-settings-page .gradient16 {
-  background: -webkit-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -moz-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -o-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -ms-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
   background: linear-gradient(90deg, #dbc500 0%, #c78500 100%);
 }
 .s-general-settings-page .gradient17 {
-  background: -webkit-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -moz-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -o-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -ms-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
   background: linear-gradient(90deg, #cc0 0%, #7ea800 100%);
 }
 .s-general-settings-page .gradient18 {
-  background: -webkit-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -moz-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -o-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -ms-linear-gradient(0deg, #24db00 0%, #690 100%);
   background: linear-gradient(90deg, #24db00 0%, #690 100%);
 }
 .s-general-settings-page .gradient19 {
-  background: -webkit-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -moz-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -o-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -ms-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
   background: linear-gradient(90deg, #0bdf0b 0%, #00994c 100%);
 }
 .s-general-settings-page .gradient20 {
-  background: -webkit-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -moz-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -o-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -ms-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
   background: linear-gradient(90deg, #00eb75 0%, #00a88c 100%);
 }
 .s-general-settings-page .gradient21 {
-  background: -webkit-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -moz-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -o-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -ms-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
   background: linear-gradient(90deg, #00d6d6 0%, #0091c2 100%);
 }
 .s-general-settings-page .gradient22 {
-  background: -webkit-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -moz-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -o-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -ms-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
   background: linear-gradient(90deg, #05acff 0%, #1f57ff 100%);
 }
 .s-general-settings-page .gradient23 {
-  background: -webkit-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -moz-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -o-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -ms-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
   background: linear-gradient(90deg, #8b52ff 0%, #1e42f5 100%);
 }
 .s-general-settings-page .gradient24 {
-  background: -webkit-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -moz-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -o-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -ms-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
   background: linear-gradient(90deg, #d91aff 0%, #6a00ff 100%);
 }
 .s-general-settings-page .gradient25 {
-  background: -webkit-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -moz-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -o-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -ms-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
   background: linear-gradient(90deg, #ee2eff 0%, #bf0d75 100%);
 }
 .s-general-settings-page .gradient26 {
-  background: -webkit-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -moz-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -o-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -ms-linear-gradient(0deg, #999 0%, #545454 100%);
   background: linear-gradient(90deg, #999 0%, #545454 100%);
 }
 .s-general-settings-page .gradient27 {
-  background: -webkit-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -moz-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -o-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -ms-linear-gradient(0deg, #db0067 0%, #993500 100%);
   background: linear-gradient(90deg, #db0067 0%, #993500 100%);
 }
 .s-general-settings-page .gradient28 {
-  background: -webkit-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -moz-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -o-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -ms-linear-gradient(0deg, #db8000 0%, #c73800 100%);
   background: linear-gradient(90deg, #db8000 0%, #c73800 100%);
 }
 .s-general-settings-page .gradient29 {
-  background: -webkit-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -moz-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -o-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -ms-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
   background: linear-gradient(90deg, #a89700 0%, #8a5c00 100%);
 }
 .s-general-settings-page .gradient30 {
-  background: -webkit-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -moz-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -o-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -ms-linear-gradient(0deg, #a3a300 0%, #547000 100%);
   background: linear-gradient(90deg, #a3a300 0%, #547000 100%);
 }
 .s-general-settings-page .gradient31 {
-  background: -webkit-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -moz-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -o-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -ms-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
   background: linear-gradient(90deg, #1fbd00 0%, #4e7500 100%);
 }
 .s-general-settings-page .gradient32 {
-  background: -webkit-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -moz-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -o-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -ms-linear-gradient(0deg, #09b909 0%, #00753b 100%);
   background: linear-gradient(90deg, #09b909 0%, #00753b 100%);
 }
 .s-general-settings-page .gradient33 {
-  background: -webkit-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -moz-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -o-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -ms-linear-gradient(0deg, #00b359 0%, #006b59 100%);
   background: linear-gradient(90deg, #00b359 0%, #006b59 100%);
 }
 .s-general-settings-page .gradient34 {
-  background: -webkit-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -moz-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -o-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -ms-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
   background: linear-gradient(90deg, #00adad 0%, #006b8f 100%);
 }
 .s-general-settings-page .gradient35 {
-  background: -webkit-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -moz-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -o-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -ms-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
   background: linear-gradient(90deg, #008bd1 0%, #0029a3 100%);
 }
 .s-general-settings-page .gradient36 {
-  background: -webkit-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -moz-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -o-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -ms-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
   background: linear-gradient(90deg, #793eef 0%, #0724b0 100%);
 }
 .s-general-settings-page .gradient37 {
-  background: -webkit-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -moz-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -o-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -ms-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
   background: linear-gradient(90deg, #a600c7 0%, #4a00b3 100%);
 }
 .s-general-settings-page .gradient38 {
-  background: -webkit-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -moz-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -o-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -ms-linear-gradient(0deg, #b600c7 0%, #690740 100%);
   background: linear-gradient(90deg, #b600c7 0%, #690740 100%);
 }
 .s-general-settings-page .gradient39 {
-  background: -webkit-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -moz-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -o-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -ms-linear-gradient(0deg, #757575 0%, #333 100%);
   background: linear-gradient(90deg, #757575 0%, #333 100%);
 }
 .s-general-settings-page .gradient40 {
-  background: -webkit-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -moz-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -o-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -ms-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
   background: linear-gradient(90deg, #a3004d 0%, #5c2000 100%);
 }
 .s-general-settings-page .gradient41 {
-  background: -webkit-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -moz-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -o-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -ms-linear-gradient(0deg, #995900 0%, #8a2700 100%);
   background: linear-gradient(90deg, #995900 0%, #8a2700 100%);
 }
 .s-general-settings-page .gradient42 {
-  background: -webkit-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -moz-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -o-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -ms-linear-gradient(0deg, #706500 0%, #473000 100%);
   background: linear-gradient(90deg, #706500 0%, #473000 100%);
 }
 .s-general-settings-page .gradient43 {
-  background: -webkit-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -moz-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -o-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -ms-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
   background: linear-gradient(90deg, #707000 0%, #2e3d00 100%);
 }
 .s-general-settings-page .gradient44 {
-  background: -webkit-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -moz-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -o-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -ms-linear-gradient(0deg, #147a00 0%, #334d00 100%);
   background: linear-gradient(90deg, #147a00 0%, #334d00 100%);
 }
 .s-general-settings-page .gradient45 {
-  background: -webkit-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -moz-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -o-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -ms-linear-gradient(0deg, #067e06 0%, #004d26 100%);
   background: linear-gradient(90deg, #067e06 0%, #004d26 100%);
 }
 .s-general-settings-page .gradient46 {
-  background: -webkit-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -moz-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -o-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -ms-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
   background: linear-gradient(90deg, #007a3d 0%, #003d33 100%);
 }
 .s-general-settings-page .gradient47 {
-  background: -webkit-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -moz-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -o-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -ms-linear-gradient(0deg, #006080 0%, #003838 100%);
   background: linear-gradient(90deg, #006080 0%, #003838 100%);
 }
 .s-general-settings-page .gradient48 {
-  background: -webkit-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -moz-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -o-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -ms-linear-gradient(0deg, #00527a 0%, #001452 100%);
   background: linear-gradient(90deg, #00527a 0%, #001452 100%);
 }
 .s-general-settings-page .gradient49 {
-  background: -webkit-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -moz-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -o-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -ms-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
   background: linear-gradient(90deg, #4000c2 0%, #000e52 100%);
 }
 .s-general-settings-page .gradient50 {
-  background: -webkit-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -moz-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -o-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -ms-linear-gradient(0deg, #73008a 0%, #280061 100%);
   background: linear-gradient(90deg, #73008a 0%, #280061 100%);
 }
 .s-general-settings-page .gradient51 {
-  background: -webkit-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -moz-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -o-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -ms-linear-gradient(0deg, #670070 0%, #30031d 100%);
   background: linear-gradient(90deg, #670070 0%, #30031d 100%);
 }
 .s-general-settings-page .gradient52 {
-  background: -webkit-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -moz-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -o-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -ms-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
   background: linear-gradient(90deg, #5e5e5e 0%, #171717 100%);
 }
 .s-general-settings-page .gradient53 {
-  background: -webkit-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -moz-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -o-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -ms-linear-gradient(0deg, #520026 0%, #1a0900 100%);
   background: linear-gradient(90deg, #520026 0%, #1a0900 100%);
 }
 .s-general-settings-page .gradient54 {
-  background: -webkit-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -moz-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -o-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -ms-linear-gradient(0deg, #523000 0%, #1f0900 100%);
   background: linear-gradient(90deg, #523000 0%, #1f0900 100%);
 }
 .s-general-settings-page .gradient55 {
-  background: -webkit-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -moz-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -o-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -ms-linear-gradient(0deg, #474000 0%, #140e00 100%);
   background: linear-gradient(90deg, #474000 0%, #140e00 100%);
 }
 .s-general-settings-page .gradient56 {
-  background: -webkit-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -moz-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -o-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -ms-linear-gradient(0deg, #474700 0%, #0f1400 100%);
   background: linear-gradient(90deg, #474700 0%, #0f1400 100%);
 }
 .s-general-settings-page .gradient57 {
-  background: -webkit-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -moz-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -o-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -ms-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
   background: linear-gradient(90deg, #0c4700 0%, #0e1400 100%);
 }
 .s-general-settings-page .gradient58 {
-  background: -webkit-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -moz-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -o-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -ms-linear-gradient(0deg, #044904 0%, #00140a 100%);
   background: linear-gradient(90deg, #044904 0%, #00140a 100%);
 }
 .s-general-settings-page .gradient59 {
-  background: -webkit-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -moz-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -o-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -ms-linear-gradient(0deg, #004221 0%, #001411 100%);
   background: linear-gradient(90deg, #004221 0%, #001411 100%);
 }
 .s-general-settings-page .gradient60 {
-  background: -webkit-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -moz-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -o-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -ms-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
   background: linear-gradient(90deg, #00394d 0%, #000f0f 100%);
 }
 .s-general-settings-page .gradient61 {
-  background: -webkit-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -moz-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -o-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -ms-linear-gradient(0deg, #003652 0%, #00061a 100%);
   background: linear-gradient(90deg, #003652 0%, #00061a 100%);
 }
 .s-general-settings-page .gradient62 {
-  background: -webkit-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -moz-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -o-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -ms-linear-gradient(0deg, #23006b 0%, #000624 100%);
   background: linear-gradient(90deg, #23006b 0%, #000624 100%);
 }
 .s-general-settings-page .gradient63 {
-  background: -webkit-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -moz-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -o-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -ms-linear-gradient(0deg, #440052 0%, #110029 100%);
   background: linear-gradient(90deg, #440052 0%, #110029 100%);
 }
 .s-general-settings-page .gradient64 {
-  background: -webkit-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -moz-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -o-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -ms-linear-gradient(0deg, #410047 0%, #18020f 100%);
   background: linear-gradient(90deg, #410047 0%, #18020f 100%);
 }
 .s-general-settings-page .gradient65 {
-  background: -webkit-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -moz-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -o-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -ms-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
   background: linear-gradient(90deg, #383838 0%, #0f0f0f 100%);
 }
 .s-general-settings-page .settings-logo {
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  -o-box-flex: 1;
-  box-flex: 1;
-  -webkit-flex: 1 1 100%;
-  -ms-flex: 1 1 100%;
   flex: 1 1 100%;
   margin-left: 0;
 }
@@ -488,12 +222,10 @@
   padding: 0;
   letter-spacing: unset;
   font-size: 0.85em;
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 .s-general-settings-page .settings-logo .custom-colors .pcr-save:focus,
 .s-general-settings-page .settings-logo .custom-colors .pcr-cancel:focus {
-  -webkit-box-shadow: none;
   box-shadow: none;
 }
 .s-general-settings-page .settings-logo .custom-colors .pcr-save {
@@ -514,517 +246,218 @@
   margin: 0 !important;
 }
 .s-general-settings-page .settings-logo .custom-colors ul li .field {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-orient: vertical;
-  -moz-box-orient: vertical;
-  -o-box-orient: vertical;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
 }
 .s-general-settings-page .config-text-logo {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-lines: multiple;
-  -moz-box-lines: multiple;
-  -o-box-lines: multiple;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 .s-general-settings-page .config-text-logo .logo-area {
   width: 64px;
   height: 64px;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  -o-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
   justify-content: center;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -o-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
   color: #fff;
   font-size: 0.9em;
   font-weight: bold;
-  -webkit-transition: all 300ms;
-  -moz-transition: all 300ms;
-  -o-transition: all 300ms;
-  -ms-transition: all 300ms;
   transition: all 300ms;
   text-transform: uppercase;
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient1'] {
-  background: -webkit-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -moz-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -o-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -ms-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
   background: linear-gradient(90deg, #ff0078 0%, #ff5900 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient2'] {
-  background: -webkit-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -moz-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -o-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -ms-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
   background: linear-gradient(90deg, #ff682d 0%, #ff9500 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient3'] {
-  background: -webkit-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -moz-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -o-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -ms-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
   background: linear-gradient(90deg, #f7a500 0%, #e5cf00 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient4'] {
-  background: -webkit-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -moz-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -o-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -ms-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
   background: linear-gradient(90deg, #a3d900 0%, #d9d900 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient5'] {
-  background: -webkit-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -moz-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -o-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -ms-linear-gradient(0deg, #26e500 0%, #99e500 100%);
   background: linear-gradient(90deg, #26e500 0%, #99e500 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient6'] {
-  background: -webkit-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -moz-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -o-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -ms-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
   background: linear-gradient(90deg, #0be50b 0%, #00ed77 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient7'] {
-  background: -webkit-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -moz-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -o-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -ms-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
   background: linear-gradient(90deg, #00ec76 0%, #00e5bf 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient8'] {
-  background: -webkit-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -moz-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -o-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -ms-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
   background: linear-gradient(90deg, #00bfff 0%, #00d9d9 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient9'] {
-  background: -webkit-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -moz-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -o-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -ms-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
   background: linear-gradient(90deg, #7396ff 0%, #26b7ff 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient10'] {
-  background: -webkit-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -moz-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -o-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -ms-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
   background: linear-gradient(90deg, #5975ff 0%, #a173ff 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient11'] {
-  background: -webkit-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -moz-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -o-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -ms-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
   background: linear-gradient(90deg, #a565ff 0%, #df3eff 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient12'] {
-  background: -webkit-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -moz-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -o-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -ms-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
   background: linear-gradient(90deg, #f23da7 0%, #ef3eff 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient13'] {
-  background: -webkit-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -moz-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -o-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -ms-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
   background: linear-gradient(90deg, #c4c4c4 0%, #808080 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient14'] {
-  background: -webkit-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -moz-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -o-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -ms-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
   background: linear-gradient(90deg, #ff0f80 0%, #cc4700 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient15'] {
-  background: -webkit-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -moz-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -o-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -ms-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
   background: linear-gradient(90deg, #f58f00 0%, #fa4700 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient16'] {
-  background: -webkit-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -moz-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -o-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -ms-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
   background: linear-gradient(90deg, #dbc500 0%, #c78500 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient17'] {
-  background: -webkit-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -moz-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -o-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -ms-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
   background: linear-gradient(90deg, #cc0 0%, #7ea800 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient18'] {
-  background: -webkit-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -moz-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -o-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -ms-linear-gradient(0deg, #24db00 0%, #690 100%);
   background: linear-gradient(90deg, #24db00 0%, #690 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient19'] {
-  background: -webkit-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -moz-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -o-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -ms-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
   background: linear-gradient(90deg, #0bdf0b 0%, #00994c 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient20'] {
-  background: -webkit-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -moz-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -o-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -ms-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
   background: linear-gradient(90deg, #00eb75 0%, #00a88c 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient21'] {
-  background: -webkit-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -moz-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -o-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -ms-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
   background: linear-gradient(90deg, #00d6d6 0%, #0091c2 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient22'] {
-  background: -webkit-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -moz-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -o-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -ms-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
   background: linear-gradient(90deg, #05acff 0%, #1f57ff 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient23'] {
-  background: -webkit-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -moz-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -o-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -ms-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
   background: linear-gradient(90deg, #8b52ff 0%, #1e42f5 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient24'] {
-  background: -webkit-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -moz-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -o-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -ms-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
   background: linear-gradient(90deg, #d91aff 0%, #6a00ff 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient25'] {
-  background: -webkit-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -moz-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -o-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -ms-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
   background: linear-gradient(90deg, #ee2eff 0%, #bf0d75 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient26'] {
-  background: -webkit-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -moz-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -o-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -ms-linear-gradient(0deg, #999 0%, #545454 100%);
   background: linear-gradient(90deg, #999 0%, #545454 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient27'] {
-  background: -webkit-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -moz-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -o-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -ms-linear-gradient(0deg, #db0067 0%, #993500 100%);
   background: linear-gradient(90deg, #db0067 0%, #993500 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient28'] {
-  background: -webkit-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -moz-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -o-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -ms-linear-gradient(0deg, #db8000 0%, #c73800 100%);
   background: linear-gradient(90deg, #db8000 0%, #c73800 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient29'] {
-  background: -webkit-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -moz-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -o-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -ms-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
   background: linear-gradient(90deg, #a89700 0%, #8a5c00 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient30'] {
-  background: -webkit-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -moz-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -o-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -ms-linear-gradient(0deg, #a3a300 0%, #547000 100%);
   background: linear-gradient(90deg, #a3a300 0%, #547000 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient31'] {
-  background: -webkit-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -moz-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -o-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -ms-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
   background: linear-gradient(90deg, #1fbd00 0%, #4e7500 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient32'] {
-  background: -webkit-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -moz-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -o-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -ms-linear-gradient(0deg, #09b909 0%, #00753b 100%);
   background: linear-gradient(90deg, #09b909 0%, #00753b 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient33'] {
-  background: -webkit-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -moz-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -o-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -ms-linear-gradient(0deg, #00b359 0%, #006b59 100%);
   background: linear-gradient(90deg, #00b359 0%, #006b59 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient34'] {
-  background: -webkit-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -moz-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -o-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -ms-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
   background: linear-gradient(90deg, #00adad 0%, #006b8f 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient35'] {
-  background: -webkit-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -moz-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -o-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -ms-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
   background: linear-gradient(90deg, #008bd1 0%, #0029a3 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient36'] {
-  background: -webkit-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -moz-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -o-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -ms-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
   background: linear-gradient(90deg, #793eef 0%, #0724b0 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient37'] {
-  background: -webkit-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -moz-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -o-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -ms-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
   background: linear-gradient(90deg, #a600c7 0%, #4a00b3 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient38'] {
-  background: -webkit-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -moz-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -o-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -ms-linear-gradient(0deg, #b600c7 0%, #690740 100%);
   background: linear-gradient(90deg, #b600c7 0%, #690740 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient39'] {
-  background: -webkit-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -moz-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -o-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -ms-linear-gradient(0deg, #757575 0%, #333 100%);
   background: linear-gradient(90deg, #757575 0%, #333 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient40'] {
-  background: -webkit-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -moz-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -o-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -ms-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
   background: linear-gradient(90deg, #a3004d 0%, #5c2000 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient41'] {
-  background: -webkit-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -moz-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -o-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -ms-linear-gradient(0deg, #995900 0%, #8a2700 100%);
   background: linear-gradient(90deg, #995900 0%, #8a2700 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient42'] {
-  background: -webkit-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -moz-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -o-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -ms-linear-gradient(0deg, #706500 0%, #473000 100%);
   background: linear-gradient(90deg, #706500 0%, #473000 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient43'] {
-  background: -webkit-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -moz-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -o-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -ms-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
   background: linear-gradient(90deg, #707000 0%, #2e3d00 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient44'] {
-  background: -webkit-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -moz-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -o-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -ms-linear-gradient(0deg, #147a00 0%, #334d00 100%);
   background: linear-gradient(90deg, #147a00 0%, #334d00 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient45'] {
-  background: -webkit-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -moz-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -o-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -ms-linear-gradient(0deg, #067e06 0%, #004d26 100%);
   background: linear-gradient(90deg, #067e06 0%, #004d26 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient46'] {
-  background: -webkit-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -moz-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -o-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -ms-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
   background: linear-gradient(90deg, #007a3d 0%, #003d33 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient47'] {
-  background: -webkit-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -moz-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -o-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -ms-linear-gradient(0deg, #006080 0%, #003838 100%);
   background: linear-gradient(90deg, #006080 0%, #003838 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient48'] {
-  background: -webkit-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -moz-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -o-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -ms-linear-gradient(0deg, #00527a 0%, #001452 100%);
   background: linear-gradient(90deg, #00527a 0%, #001452 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient49'] {
-  background: -webkit-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -moz-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -o-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -ms-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
   background: linear-gradient(90deg, #4000c2 0%, #000e52 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient50'] {
-  background: -webkit-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -moz-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -o-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -ms-linear-gradient(0deg, #73008a 0%, #280061 100%);
   background: linear-gradient(90deg, #73008a 0%, #280061 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient51'] {
-  background: -webkit-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -moz-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -o-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -ms-linear-gradient(0deg, #670070 0%, #30031d 100%);
   background: linear-gradient(90deg, #670070 0%, #30031d 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient52'] {
-  background: -webkit-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -moz-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -o-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -ms-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
   background: linear-gradient(90deg, #5e5e5e 0%, #171717 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient53'] {
-  background: -webkit-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -moz-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -o-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -ms-linear-gradient(0deg, #520026 0%, #1a0900 100%);
   background: linear-gradient(90deg, #520026 0%, #1a0900 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient54'] {
-  background: -webkit-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -moz-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -o-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -ms-linear-gradient(0deg, #523000 0%, #1f0900 100%);
   background: linear-gradient(90deg, #523000 0%, #1f0900 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient55'] {
-  background: -webkit-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -moz-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -o-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -ms-linear-gradient(0deg, #474000 0%, #140e00 100%);
   background: linear-gradient(90deg, #474000 0%, #140e00 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient56'] {
-  background: -webkit-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -moz-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -o-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -ms-linear-gradient(0deg, #474700 0%, #0f1400 100%);
   background: linear-gradient(90deg, #474700 0%, #0f1400 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient57'] {
-  background: -webkit-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -moz-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -o-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -ms-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
   background: linear-gradient(90deg, #0c4700 0%, #0e1400 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient58'] {
-  background: -webkit-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -moz-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -o-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -ms-linear-gradient(0deg, #044904 0%, #00140a 100%);
   background: linear-gradient(90deg, #044904 0%, #00140a 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient59'] {
-  background: -webkit-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -moz-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -o-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -ms-linear-gradient(0deg, #004221 0%, #001411 100%);
   background: linear-gradient(90deg, #004221 0%, #001411 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient60'] {
-  background: -webkit-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -moz-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -o-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -ms-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
   background: linear-gradient(90deg, #00394d 0%, #000f0f 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient61'] {
-  background: -webkit-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -moz-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -o-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -ms-linear-gradient(0deg, #003652 0%, #00061a 100%);
   background: linear-gradient(90deg, #003652 0%, #00061a 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient62'] {
-  background: -webkit-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -moz-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -o-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -ms-linear-gradient(0deg, #23006b 0%, #000624 100%);
   background: linear-gradient(90deg, #23006b 0%, #000624 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient63'] {
-  background: -webkit-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -moz-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -o-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -ms-linear-gradient(0deg, #440052 0%, #110029 100%);
   background: linear-gradient(90deg, #440052 0%, #110029 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient64'] {
-  background: -webkit-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -moz-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -o-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -ms-linear-gradient(0deg, #410047 0%, #18020f 100%);
   background: linear-gradient(90deg, #410047 0%, #18020f 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area[data-background='gradient65'] {
-  background: -webkit-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -moz-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -o-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -ms-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
   background: linear-gradient(90deg, #383838 0%, #0f0f0f 100%);
 }
 .s-general-settings-page .config-text-logo .logo-area.two-lines {
@@ -1033,7 +466,6 @@
   text-align: center;
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button {
-  -webkit-box-shadow: none;
   box-shadow: none;
   font-size: 0.75rem;
   font-weight: normal;
@@ -1043,478 +475,203 @@
   margin-bottom: 0.5rem;
   border-radius: 0.25rem;
   cursor: pointer;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  -o-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
   justify-content: center;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -o-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient1'] {
-  background: -webkit-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -moz-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -o-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
-  background: -ms-linear-gradient(0deg, #ff0078 0%, #ff5900 100%);
   background: linear-gradient(90deg, #ff0078 0%, #ff5900 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient2'] {
-  background: -webkit-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -moz-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -o-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
-  background: -ms-linear-gradient(0deg, #ff682d 0%, #ff9500 100%);
   background: linear-gradient(90deg, #ff682d 0%, #ff9500 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient3'] {
-  background: -webkit-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -moz-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -o-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
-  background: -ms-linear-gradient(0deg, #f7a500 0%, #e5cf00 100%);
   background: linear-gradient(90deg, #f7a500 0%, #e5cf00 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient4'] {
-  background: -webkit-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -moz-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -o-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
-  background: -ms-linear-gradient(0deg, #a3d900 0%, #d9d900 100%);
   background: linear-gradient(90deg, #a3d900 0%, #d9d900 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient5'] {
-  background: -webkit-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -moz-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -o-linear-gradient(0deg, #26e500 0%, #99e500 100%);
-  background: -ms-linear-gradient(0deg, #26e500 0%, #99e500 100%);
   background: linear-gradient(90deg, #26e500 0%, #99e500 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient6'] {
-  background: -webkit-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -moz-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -o-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
-  background: -ms-linear-gradient(0deg, #0be50b 0%, #00ed77 100%);
   background: linear-gradient(90deg, #0be50b 0%, #00ed77 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient7'] {
-  background: -webkit-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -moz-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -o-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
-  background: -ms-linear-gradient(0deg, #00ec76 0%, #00e5bf 100%);
   background: linear-gradient(90deg, #00ec76 0%, #00e5bf 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient8'] {
-  background: -webkit-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -moz-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -o-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
-  background: -ms-linear-gradient(0deg, #00bfff 0%, #00d9d9 100%);
   background: linear-gradient(90deg, #00bfff 0%, #00d9d9 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient9'] {
-  background: -webkit-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -moz-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -o-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
-  background: -ms-linear-gradient(0deg, #7396ff 0%, #26b7ff 100%);
   background: linear-gradient(90deg, #7396ff 0%, #26b7ff 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient10'] {
-  background: -webkit-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -moz-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -o-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
-  background: -ms-linear-gradient(0deg, #5975ff 0%, #a173ff 100%);
   background: linear-gradient(90deg, #5975ff 0%, #a173ff 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient11'] {
-  background: -webkit-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -moz-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -o-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
-  background: -ms-linear-gradient(0deg, #a565ff 0%, #df3eff 100%);
   background: linear-gradient(90deg, #a565ff 0%, #df3eff 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient12'] {
-  background: -webkit-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -moz-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -o-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
-  background: -ms-linear-gradient(0deg, #f23da7 0%, #ef3eff 100%);
   background: linear-gradient(90deg, #f23da7 0%, #ef3eff 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient13'] {
-  background: -webkit-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -moz-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -o-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
-  background: -ms-linear-gradient(0deg, #c4c4c4 0%, #808080 100%);
   background: linear-gradient(90deg, #c4c4c4 0%, #808080 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient14'] {
-  background: -webkit-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -moz-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -o-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
-  background: -ms-linear-gradient(0deg, #ff0f80 0%, #cc4700 100%);
   background: linear-gradient(90deg, #ff0f80 0%, #cc4700 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient15'] {
-  background: -webkit-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -moz-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -o-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
-  background: -ms-linear-gradient(0deg, #f58f00 0%, #fa4700 100%);
   background: linear-gradient(90deg, #f58f00 0%, #fa4700 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient16'] {
-  background: -webkit-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -moz-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -o-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
-  background: -ms-linear-gradient(0deg, #dbc500 0%, #c78500 100%);
   background: linear-gradient(90deg, #dbc500 0%, #c78500 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient17'] {
-  background: -webkit-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -moz-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -o-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
-  background: -ms-linear-gradient(0deg, #cc0 0%, #7ea800 100%);
   background: linear-gradient(90deg, #cc0 0%, #7ea800 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient18'] {
-  background: -webkit-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -moz-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -o-linear-gradient(0deg, #24db00 0%, #690 100%);
-  background: -ms-linear-gradient(0deg, #24db00 0%, #690 100%);
   background: linear-gradient(90deg, #24db00 0%, #690 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient19'] {
-  background: -webkit-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -moz-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -o-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
-  background: -ms-linear-gradient(0deg, #0bdf0b 0%, #00994c 100%);
   background: linear-gradient(90deg, #0bdf0b 0%, #00994c 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient20'] {
-  background: -webkit-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -moz-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -o-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
-  background: -ms-linear-gradient(0deg, #00eb75 0%, #00a88c 100%);
   background: linear-gradient(90deg, #00eb75 0%, #00a88c 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient21'] {
-  background: -webkit-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -moz-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -o-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
-  background: -ms-linear-gradient(0deg, #00d6d6 0%, #0091c2 100%);
   background: linear-gradient(90deg, #00d6d6 0%, #0091c2 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient22'] {
-  background: -webkit-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -moz-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -o-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
-  background: -ms-linear-gradient(0deg, #05acff 0%, #1f57ff 100%);
   background: linear-gradient(90deg, #05acff 0%, #1f57ff 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient23'] {
-  background: -webkit-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -moz-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -o-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
-  background: -ms-linear-gradient(0deg, #8b52ff 0%, #1e42f5 100%);
   background: linear-gradient(90deg, #8b52ff 0%, #1e42f5 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient24'] {
-  background: -webkit-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -moz-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -o-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
-  background: -ms-linear-gradient(0deg, #d91aff 0%, #6a00ff 100%);
   background: linear-gradient(90deg, #d91aff 0%, #6a00ff 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient25'] {
-  background: -webkit-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -moz-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -o-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
-  background: -ms-linear-gradient(0deg, #ee2eff 0%, #bf0d75 100%);
   background: linear-gradient(90deg, #ee2eff 0%, #bf0d75 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient26'] {
-  background: -webkit-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -moz-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -o-linear-gradient(0deg, #999 0%, #545454 100%);
-  background: -ms-linear-gradient(0deg, #999 0%, #545454 100%);
   background: linear-gradient(90deg, #999 0%, #545454 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient27'] {
-  background: -webkit-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -moz-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -o-linear-gradient(0deg, #db0067 0%, #993500 100%);
-  background: -ms-linear-gradient(0deg, #db0067 0%, #993500 100%);
   background: linear-gradient(90deg, #db0067 0%, #993500 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient28'] {
-  background: -webkit-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -moz-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -o-linear-gradient(0deg, #db8000 0%, #c73800 100%);
-  background: -ms-linear-gradient(0deg, #db8000 0%, #c73800 100%);
   background: linear-gradient(90deg, #db8000 0%, #c73800 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient29'] {
-  background: -webkit-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -moz-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -o-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
-  background: -ms-linear-gradient(0deg, #a89700 0%, #8a5c00 100%);
   background: linear-gradient(90deg, #a89700 0%, #8a5c00 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient30'] {
-  background: -webkit-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -moz-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -o-linear-gradient(0deg, #a3a300 0%, #547000 100%);
-  background: -ms-linear-gradient(0deg, #a3a300 0%, #547000 100%);
   background: linear-gradient(90deg, #a3a300 0%, #547000 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient31'] {
-  background: -webkit-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -moz-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -o-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
-  background: -ms-linear-gradient(0deg, #1fbd00 0%, #4e7500 100%);
   background: linear-gradient(90deg, #1fbd00 0%, #4e7500 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient32'] {
-  background: -webkit-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -moz-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -o-linear-gradient(0deg, #09b909 0%, #00753b 100%);
-  background: -ms-linear-gradient(0deg, #09b909 0%, #00753b 100%);
   background: linear-gradient(90deg, #09b909 0%, #00753b 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient33'] {
-  background: -webkit-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -moz-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -o-linear-gradient(0deg, #00b359 0%, #006b59 100%);
-  background: -ms-linear-gradient(0deg, #00b359 0%, #006b59 100%);
   background: linear-gradient(90deg, #00b359 0%, #006b59 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient34'] {
-  background: -webkit-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -moz-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -o-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
-  background: -ms-linear-gradient(0deg, #00adad 0%, #006b8f 100%);
   background: linear-gradient(90deg, #00adad 0%, #006b8f 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient35'] {
-  background: -webkit-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -moz-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -o-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
-  background: -ms-linear-gradient(0deg, #008bd1 0%, #0029a3 100%);
   background: linear-gradient(90deg, #008bd1 0%, #0029a3 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient36'] {
-  background: -webkit-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -moz-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -o-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
-  background: -ms-linear-gradient(0deg, #793eef 0%, #0724b0 100%);
   background: linear-gradient(90deg, #793eef 0%, #0724b0 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient37'] {
-  background: -webkit-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -moz-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -o-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
-  background: -ms-linear-gradient(0deg, #a600c7 0%, #4a00b3 100%);
   background: linear-gradient(90deg, #a600c7 0%, #4a00b3 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient38'] {
-  background: -webkit-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -moz-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -o-linear-gradient(0deg, #b600c7 0%, #690740 100%);
-  background: -ms-linear-gradient(0deg, #b600c7 0%, #690740 100%);
   background: linear-gradient(90deg, #b600c7 0%, #690740 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient39'] {
-  background: -webkit-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -moz-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -o-linear-gradient(0deg, #757575 0%, #333 100%);
-  background: -ms-linear-gradient(0deg, #757575 0%, #333 100%);
   background: linear-gradient(90deg, #757575 0%, #333 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient40'] {
-  background: -webkit-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -moz-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -o-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
-  background: -ms-linear-gradient(0deg, #a3004d 0%, #5c2000 100%);
   background: linear-gradient(90deg, #a3004d 0%, #5c2000 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient41'] {
-  background: -webkit-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -moz-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -o-linear-gradient(0deg, #995900 0%, #8a2700 100%);
-  background: -ms-linear-gradient(0deg, #995900 0%, #8a2700 100%);
   background: linear-gradient(90deg, #995900 0%, #8a2700 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient42'] {
-  background: -webkit-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -moz-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -o-linear-gradient(0deg, #706500 0%, #473000 100%);
-  background: -ms-linear-gradient(0deg, #706500 0%, #473000 100%);
   background: linear-gradient(90deg, #706500 0%, #473000 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient43'] {
-  background: -webkit-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -moz-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -o-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
-  background: -ms-linear-gradient(0deg, #707000 0%, #2e3d00 100%);
   background: linear-gradient(90deg, #707000 0%, #2e3d00 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient44'] {
-  background: -webkit-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -moz-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -o-linear-gradient(0deg, #147a00 0%, #334d00 100%);
-  background: -ms-linear-gradient(0deg, #147a00 0%, #334d00 100%);
   background: linear-gradient(90deg, #147a00 0%, #334d00 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient45'] {
-  background: -webkit-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -moz-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -o-linear-gradient(0deg, #067e06 0%, #004d26 100%);
-  background: -ms-linear-gradient(0deg, #067e06 0%, #004d26 100%);
   background: linear-gradient(90deg, #067e06 0%, #004d26 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient46'] {
-  background: -webkit-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -moz-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -o-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
-  background: -ms-linear-gradient(0deg, #007a3d 0%, #003d33 100%);
   background: linear-gradient(90deg, #007a3d 0%, #003d33 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient47'] {
-  background: -webkit-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -moz-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -o-linear-gradient(0deg, #006080 0%, #003838 100%);
-  background: -ms-linear-gradient(0deg, #006080 0%, #003838 100%);
   background: linear-gradient(90deg, #006080 0%, #003838 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient48'] {
-  background: -webkit-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -moz-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -o-linear-gradient(0deg, #00527a 0%, #001452 100%);
-  background: -ms-linear-gradient(0deg, #00527a 0%, #001452 100%);
   background: linear-gradient(90deg, #00527a 0%, #001452 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient49'] {
-  background: -webkit-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -moz-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -o-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
-  background: -ms-linear-gradient(0deg, #4000c2 0%, #000e52 100%);
   background: linear-gradient(90deg, #4000c2 0%, #000e52 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient50'] {
-  background: -webkit-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -moz-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -o-linear-gradient(0deg, #73008a 0%, #280061 100%);
-  background: -ms-linear-gradient(0deg, #73008a 0%, #280061 100%);
   background: linear-gradient(90deg, #73008a 0%, #280061 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient51'] {
-  background: -webkit-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -moz-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -o-linear-gradient(0deg, #670070 0%, #30031d 100%);
-  background: -ms-linear-gradient(0deg, #670070 0%, #30031d 100%);
   background: linear-gradient(90deg, #670070 0%, #30031d 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient52'] {
-  background: -webkit-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -moz-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -o-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
-  background: -ms-linear-gradient(0deg, #5e5e5e 0%, #171717 100%);
   background: linear-gradient(90deg, #5e5e5e 0%, #171717 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient53'] {
-  background: -webkit-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -moz-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -o-linear-gradient(0deg, #520026 0%, #1a0900 100%);
-  background: -ms-linear-gradient(0deg, #520026 0%, #1a0900 100%);
   background: linear-gradient(90deg, #520026 0%, #1a0900 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient54'] {
-  background: -webkit-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -moz-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -o-linear-gradient(0deg, #523000 0%, #1f0900 100%);
-  background: -ms-linear-gradient(0deg, #523000 0%, #1f0900 100%);
   background: linear-gradient(90deg, #523000 0%, #1f0900 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient55'] {
-  background: -webkit-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -moz-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -o-linear-gradient(0deg, #474000 0%, #140e00 100%);
-  background: -ms-linear-gradient(0deg, #474000 0%, #140e00 100%);
   background: linear-gradient(90deg, #474000 0%, #140e00 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient56'] {
-  background: -webkit-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -moz-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -o-linear-gradient(0deg, #474700 0%, #0f1400 100%);
-  background: -ms-linear-gradient(0deg, #474700 0%, #0f1400 100%);
   background: linear-gradient(90deg, #474700 0%, #0f1400 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient57'] {
-  background: -webkit-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -moz-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -o-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
-  background: -ms-linear-gradient(0deg, #0c4700 0%, #0e1400 100%);
   background: linear-gradient(90deg, #0c4700 0%, #0e1400 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient58'] {
-  background: -webkit-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -moz-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -o-linear-gradient(0deg, #044904 0%, #00140a 100%);
-  background: -ms-linear-gradient(0deg, #044904 0%, #00140a 100%);
   background: linear-gradient(90deg, #044904 0%, #00140a 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient59'] {
-  background: -webkit-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -moz-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -o-linear-gradient(0deg, #004221 0%, #001411 100%);
-  background: -ms-linear-gradient(0deg, #004221 0%, #001411 100%);
   background: linear-gradient(90deg, #004221 0%, #001411 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient60'] {
-  background: -webkit-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -moz-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -o-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
-  background: -ms-linear-gradient(0deg, #00394d 0%, #000f0f 100%);
   background: linear-gradient(90deg, #00394d 0%, #000f0f 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient61'] {
-  background: -webkit-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -moz-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -o-linear-gradient(0deg, #003652 0%, #00061a 100%);
-  background: -ms-linear-gradient(0deg, #003652 0%, #00061a 100%);
   background: linear-gradient(90deg, #003652 0%, #00061a 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient62'] {
-  background: -webkit-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -moz-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -o-linear-gradient(0deg, #23006b 0%, #000624 100%);
-  background: -ms-linear-gradient(0deg, #23006b 0%, #000624 100%);
   background: linear-gradient(90deg, #23006b 0%, #000624 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient63'] {
-  background: -webkit-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -moz-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -o-linear-gradient(0deg, #440052 0%, #110029 100%);
-  background: -ms-linear-gradient(0deg, #440052 0%, #110029 100%);
   background: linear-gradient(90deg, #440052 0%, #110029 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient64'] {
-  background: -webkit-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -moz-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -o-linear-gradient(0deg, #410047 0%, #18020f 100%);
-  background: -ms-linear-gradient(0deg, #410047 0%, #18020f 100%);
   background: linear-gradient(90deg, #410047 0%, #18020f 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient65'] {
-  background: -webkit-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -moz-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -o-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
-  background: -ms-linear-gradient(0deg, #383838 0%, #0f0f0f 100%);
   background: linear-gradient(90deg, #383838 0%, #0f0f0f 100%);
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button > svg {
@@ -1523,23 +680,16 @@
   padding: 0.5em;
 }
 .s-general-settings-page .config-image-logo {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-lines: multiple;
-  -moz-box-lines: multiple;
-  -o-box-lines: multiple;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 .s-general-settings-page .config-image-logo .logo-area {
   border: 1px solid var(--light-gray);
   width: 64px;
   height: 64px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
 }
 .s-general-settings-page .config-image-logo .logo-input .file-upload {
   position: relative;
@@ -1556,29 +706,16 @@
   z-index: -1;
   margin: 0;
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
 }
 .s-general-settings-page .config-image-logo .logo-input .image-logo-delete {
   color: var(--red);
 }
 .s-general-settings-page .color-items {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
   width: 100%;
-  -webkit-box-lines: multiple;
-  -moz-box-lines: multiple;
-  -o-box-lines: multiple;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 .s-general-settings-page .color-items .color-picker-button {
-  -webkit-box-shadow: none;
   box-shadow: none;
   font-size: 0.75rem;
   font-weight: normal;
@@ -1588,23 +725,8 @@
   margin-bottom: 0.5rem;
   border-radius: 0.25rem;
   cursor: pointer;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  -o-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
   justify-content: center;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -o-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
 }
 .s-general-settings-page .color-items .color-picker-button > svg {
@@ -1649,17 +771,9 @@
   display: inline-block;
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper section header .caret.darr {
-  -webkit-transform: rotate(0);
-  -moz-transform: rotate(0);
-  -o-transform: rotate(0);
-  -ms-transform: rotate(0);
   transform: rotate(0);
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper section header .caret.rarr {
-  -webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg);
-  -o-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg);
   transform: rotate(-90deg);
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-new-templates {
@@ -1684,20 +798,12 @@
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-sidebar-items .s-channel-edit {
   margin-top: 1px;
   opacity: 0.6;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
-  filter: alpha(opacity=60);
-  -webkit-transition: opacity 200ms linear;
-  -moz-transition: opacity 200ms linear;
-  -o-transition: opacity 200ms linear;
-  -ms-transition: opacity 200ms linear;
   transition: opacity 200ms linear;
   cursor: pointer;
   float: right;
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-sidebar-items .s-channel-edit:hover {
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-sidebar-items .s-template-item {
   padding-left: 44px !important;
@@ -1729,19 +835,15 @@
   margin: 0;
   border: 0;
   width: 100%;
-  height: 10em;
+  height: auto;
   min-height: 2.5em;
   background: var(--background-color-input);
   border-radius: 0.25em;
   font-size: inherit;
   line-height: 1.5em;
   color: var(--text-color-input);
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   outline: none;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   resize: vertical;
 }
@@ -1752,7 +854,6 @@
   background: var(--background-color-input);
 }
 .s-email-templates-page .content .s-template-form .ace .ace_scroller.ace_scroll-left {
-  -webkit-box-shadow: initial !important;
   box-shadow: initial !important;
 }
 .s-email-templates-page .content .s-template-form .ace .ace_print-margin {
@@ -1787,14 +888,6 @@
 }
 .s-email-edit-channel-dialog .s-channel-actions a:not(:first-child) {
   margin-left: 12px;
-}
-.s-sms-settings-page .s-sms-hint {
-  margin-bottom: 20px;
-}
-.s-sms-settings-page .s-sms-adapter:not(:first-child) {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #888;
 }
 .s-sms-templates-page .s-sms-template-sidebar-wrapper .s-new-templates {
   display: block;
@@ -1840,12 +933,8 @@
   font-size: inherit;
   line-height: 1.5em;
   color: var(--text-color-input);
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   outline: none;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   resize: vertical;
 }
@@ -1856,7 +945,6 @@
   background: var(--background-color-input);
 }
 .s-sms-templates-page .content .ace .ace_scroller.ace_scroll-left {
-  -webkit-box-shadow: initial !important;
   box-shadow: initial !important;
 }
 .s-sms-templates-page .content .ace .ace_print-margin {
@@ -1918,10 +1006,6 @@
   width: 30px;
   z-index: -1;
   left: -50px;
-  -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-  -o-transform: rotateY(180deg);
-  -ms-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 .s-sms-preview-template-dialog .s-sender-wrapper {
@@ -1985,18 +1069,10 @@
   max-width: 95px;
   overflow: hidden;
   opacity: 0.7;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
-  filter: alpha(opacity=70);
-  -webkit-transition: opacity 100ms linear;
-  -moz-transition: opacity 100ms linear;
-  -o-transition: opacity 100ms linear;
-  -ms-transition: opacity 100ms linear;
   transition: opacity 100ms linear;
 }
 .s-auth-settings-page .s-auth-settings-fields-block .s-auth-background .s-background-images li a:hover {
   opacity: 0.9;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
-  filter: alpha(opacity=90);
 }
 .s-auth-settings-page .s-auth-settings-fields-block .s-auth-background .s-background-images li a img {
   width: 95px;
@@ -2007,8 +1083,6 @@
   border-color: #fdda3b;
   border-radius: 4px;
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-auth-settings-page .s-auth-settings-fields-block .s-custom-background-preview .s-custom-image-preview {
   display: block;
@@ -2121,8 +1195,6 @@
   z-index: -1;
   margin: 0;
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
 }
 .s-field-settings-page .s-field-constructor .hint {
   padding: 0 2px;
@@ -2134,11 +1206,8 @@
   min-width: 370px;
 }
 .s-field-settings-page .s-field-constructor .fieldset .field .name {
-  color: #000;
+  color: var(--text-color-stronger);
   width: 360px;
-}
-.s-field-settings-page .s-field-constructor .fieldset .field .value {
-  margin: -1px 0 0 400px;
 }
 .s-field-settings-page .s-field-constructor .fieldset .field .sort {
   cursor: move;
@@ -2167,8 +1236,6 @@
 }
 .s-field-edit-dialog .subfields-list tr:hover .c-link-wrapper a {
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-field-edit-dialog .editor-on .edit {
   visibility: hidden;
@@ -2210,18 +1277,10 @@
 }
 .s-field-edit-dialog .s-link-wrapper a {
   opacity: 0.5;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-  filter: alpha(opacity=50);
-  -webkit-transition: opacity 200ms linear;
-  -moz-transition: opacity 200ms linear;
-  -o-transition: opacity 200ms linear;
-  -ms-transition: opacity 200ms linear;
   transition: opacity 200ms linear;
 }
 .s-field-edit-dialog .s-link-wrapper a:hover {
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-field-edit-dialog .s-link-wrapper .icon16 {
   margin: 0 4px 0 0;
@@ -2231,7 +1290,6 @@
 }
 .s-field-edit-dialog .ellipsis {
   white-space: nowrap;
-  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   width: 210px;
   display: inline-block;
@@ -2273,23 +1331,8 @@
   color: #808080;
 }
 .s-db-list-dialog .s-dialog-header {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -o-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  -moz-box-pack: justify;
-  -o-box-pack: justify;
-  -ms-flex-pack: justify;
-  -webkit-justify-content: space-between;
   justify-content: space-between;
 }
 .s-db-list-dialog .s-dialog-header a.is-selected b {
@@ -2305,23 +1348,8 @@
   color: #000;
 }
 .s-db-list-dialog .s-dialog-footer {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -o-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  -moz-box-pack: justify;
-  -o-box-pack: justify;
-  -ms-flex-pack: justify;
-  -webkit-justify-content: space-between;
   justify-content: space-between;
 }
 @-webkit-keyframes pending {
@@ -2337,10 +1365,6 @@
 }
 .s-db-list-dialog .s-dialog-footer .s-dialog-notice {
   -webkit-animation: pending 2s linear infinite;
-  -webkit-animation: pending 2s linear infinite;
-  -moz-animation: pending 2s linear infinite;
-  -o-animation: pending 2s linear infinite;
-  -ms-animation: pending 2s linear infinite;
   animation: pending 2s linear infinite;
 }
 @-moz-keyframes pending {
@@ -2404,32 +1428,8 @@
 .s-waid-settings-page h2 {
   margin-bottom: 1.5rem;
 }
-.s-waid-settings-page .s-connected-users tr {
-  padding: 5px;
-}
-.s-waid-settings-page .s-connected-users tr th {
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: bold;
-  background: transparent;
-  border: 0 none;
-}
-.s-waid-settings-page .s-connected-users tr th:nth-child(1) {
-  width: 32px;
-}
-.s-waid-settings-page .s-connected-users tr th:nth-child(2) {
-  width: 15%;
-}
-.s-waid-settings-page .s-connected-users tr th:nth-child(3) {
-  width: 15%;
-}
-.s-waid-settings-page .s-connected-users tr td img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50px;
-}
-.s-waid-settings-page a.bold {
-  font-weight: bold;
+.s-waid-settings-page .s-connected-users tr td {
+  font-size: 87.5%;
 }
 .s-waid-settings-page .s-waid-not-connected-users-block {
   margin-bottom: 70px;
@@ -2437,35 +1437,8 @@
 .s-waid-settings-page .s-waid-not-connected-users-block .s-waid-description-block .s-description {
   margin-top: 10px;
 }
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users {
-  width: 70%;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr {
-  padding: 5px;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th {
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: bold;
-  background: transparent;
-  border: 0 none;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(1) {
-  width: 32px;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(2) {
-  width: 50%;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(3) {
-  width: 50%;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(4) {
-  min-width: 150px;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr td img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50px;
+.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr td {
+  font-size: 100%;
 }
 .s-waid-settings-page .s-waid-not-connected-block .w-waid-connect-panel {
   margin-top: 10px;

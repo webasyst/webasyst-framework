@@ -11,8 +11,6 @@ var WASettingsCaptcha = ( function($) {
         that.$cancel = that.$footer_actions.find('.js-cancel');
         that.$loading = that.$footer_actions.find('.s-loading');
 
-        // VARS
-        that.wa2 = options['wa2'] || false;
         // DYNAMIC VARS
         that.is_locked = false;
 
@@ -30,10 +28,8 @@ var WASettingsCaptcha = ( function($) {
         var that = this;
 
         //
-        var $sidebar = $('#s-sidebar-wrapper');
-        if (that.wa2) {
-            $sidebar = $('#js-sidebar-wrapper');
-        }
+        var $sidebar = $('#js-sidebar-wrapper');
+
         $sidebar.find('ul li').removeClass('selected');
         $sidebar.find('[data-id="captcha"]').addClass('selected');
         //
@@ -64,54 +60,32 @@ var WASettingsCaptcha = ( function($) {
             }
             that.is_locked = true;
             that.$button.prop('disabled', true);
-            if (that.wa2) {
-                var $button_text = that.$button.text(),
-                    $loader_icon = ' <i class="fas fa-spinner fa-spin"></i>',
-                    $success_icon = ' <i class="fas fa-check-circle"></i>';
-                that.$button.empty().html($button_text + $loader_icon);
-            } else {
-                that.$loading.removeClass('yes').addClass('loading').show();
-            }
+            var $button_text = that.$button.text(),
+                $loader_icon = ' <i class="fas fa-spinner fa-spin"></i>',
+                $success_icon = ' <i class="fas fa-check-circle"></i>';
+            that.$button.empty().html($button_text + $loader_icon);
 
             var href = that.$form.attr('action'),
                 data = that.$form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
-                    if (that.wa2) {
-                        that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
-                        that.$footer_actions.removeClass('is-changed');
-                    }else{
-                        that.$button.removeClass('yellow').addClass('green');
-                        that.$loading.removeClass('loading').addClass('yes');
-                        that.$footer_actions.removeClass('is-changed');
-                    }
+                    that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
+                    that.$footer_actions.removeClass('is-changed');
                     setTimeout(function(){
-                        if (that.wa2) {
-                            that.$button.empty().html($button_text);
-                        }else{
-                            that.$loading.hide();
-                        }
+                        that.$button.empty().html($button_text);
                     },2000);
                 } else {
-                    if (that.wa2) {
-                        that.$button.empty().html($button_text);
-                    }else{
-                        that.$loading.hide();
-                    }
+                    that.$button.empty().html($button_text);
                 }
                 that.is_locked = false;
                 that.$button.prop('disabled', false);
             });
         });
 
-        that.$form.on('input', function () {
+        that.$form.on('input change', function () {
             that.$footer_actions.addClass('is-changed');
-            if (that.wa2) {
-                that.$button.addClass('yellow').next().show();
-            }else{
-                that.$button.removeClass('green').addClass('yellow');
-            }
+            that.$button.addClass('yellow').next().show();
         });
 
         // Reload on cancel

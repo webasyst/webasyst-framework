@@ -54,7 +54,7 @@ class WASettingsWaIDDisconnectConfirm {
 
                 if (r && r.status === 'ok') {
                     that.$success_block.show();
-                    that.$dialog.find('.wa-dialog-footer').hide();
+                    that.$dialog.find('.js-disconnect-dialog-footer').hide();
                     that.$dialog.find('.js-success-dialog-footer').show();
                     return;
                 }

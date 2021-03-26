@@ -1,93 +1,99 @@
 {$_cheat_sheet_name = "wa-settings-email-templates"}
 
-<div class="s-email-templates-page flexbox space-1_5rem" id="s-email-templates-page">
-    {* CONTENT *}
-    <div class="content" id="s-email-template-wrapper">
-        {if $channel->getId()}
-        <form class="s-template-form fields vertical" action="?module=settingsTemplateEmailSave&id={$channel->getId()|escape}">
-            {$_template = $channel->getParams('template')|default:[]}
-            <div class="s-email-templates">
-                    <h1 class="s-template-name">{$templates_list[$template_id]}</h1>
-                    <div class="fields-group">
-                        <div class="field">
-                            <div class="name">[s`Sender`]</div>
-                            <div class="value">
-                                {$channel->getAddress()|escape}
-                                <p class="hint">{sprintf('[`<a class="%s" href="javascript:void(0);">Change sender address</a> <i class="fas fa-cog"></i> for entire template group`]', 'js-inline-settings-link')}</p>
-                            </div>
-                        </div>
-                        {* Subject *}
-                        <div class="field">
-                            <div class="name">[s`Letter subject`]</div>
-                            <div class="value">
-                                <input class="js-subject full-width" type="text" name="data[subject]" value="{$template.subject|escape}" />
-                            </div>
-                        </div>
-                        {* Text *}
-                        <div class="field">
-                            <div class="name">
-                                [s`Text of the letter`]
-                                <p class="hint">HTML + Smarty</p>
-                            </div>
-                            <div class="value">
-                                <textarea class="js-template-text" name="data[text]">{$template.text|escape}</textarea>
-                                {* Default template *}
-                                <p class="hint s-channel-actions">
-                                    <a href="javascript:void(0);" class="inline-link js-reset" title="[s`Restore default text`]">
-                                        <i class="fas fa-home"></i>
-                                        <b class="hide-on-small-screens">[s`Restore default text`]</b>
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+<div class="s-email-templates-page flexbox{if $wa->isMobile()} vertical{/if}" id="s-email-templates-page">
 
-                    <input type="hidden" name="data[template]" value="{$template_id|escape}" />
-
-                <div class="fields-group s-footer-actions js-footer-actions">
-
-                </div>
-                <div class="bottombar flexbox middle">
-                    <div class="article flexbox middle space-40 js-footer-actions">
-                        <div>
-                            {* Save *}
-                            <input class="button js-submit-button" type="submit" name="" value="[s`Save`]">
-                            {* Cancel *}
-                            <span class="c-hidden">
-                                <span style="margin: 0 4px;">[s`or`]</span>
-                                <a href="{$wa_backend_url}webasyst/settings/email/template/{$channel->getId()|escape}/{$template_id}/" class="js-cancel">[s`cancel`]</a>
-                            </span>
-                            <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
-                        </div>
-                        <div>
-                            {* Check sending *}
-                            <input class="small button gray rounded js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
-                            {* Cheat sheet *}
-                            <div class="s-cheat-sheet-wrapper js-cheat-sheet-wrapper"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
-        {else}
-            <div class="s-no-templates">
-                {if !empty($channels)}
-                    [s`Templates not found`]
-                {else}
-                    [s`No templates`]
-                {/if}
-            </div>
-        {/if}
-    </div>
     {* SIDEBAR *}
     {include file="./sidebar/SidebarEmail.html" inline}
+
+    {* CONTENT *}
+    <div class="content" id="s-email-template-wrapper">
+        <div class="article">
+            <div class="article-body">
+                {if $channel->getId()}
+                <form class="s-template-form fields vertical" action="?module=settingsTemplateEmailSave&id={$channel->getId()|escape}">
+                    {$_template = $channel->getParams('template')|default:[]}
+                    <div class="s-email-templates">
+                            <h1 class="s-template-name">{$templates_list[$template_id]}</h1>
+                            <div class="fields-group">
+                                <div class="field">
+                                    <div class="name">[s`Sender`]</div>
+                                    <div class="value">
+                                        {$channel->getAddress()|escape}
+                                        <p class="hint">{sprintf('[`<a class="%s" href="javascript:void(0);">Change sender address</a> <i class="fas fa-cog"></i> for entire template group`]', 'js-inline-settings-link')}</p>
+                                    </div>
+                                </div>
+                                {* Subject *}
+                                <div class="field">
+                                    <div class="name">[s`Letter subject`]</div>
+                                    <div class="value">
+                                        <input class="js-subject full-width" type="text" name="data[subject]" value="{$template.subject|escape}" />
+                                    </div>
+                                </div>
+                                {* Text *}
+                                <div class="field">
+                                    <div class="name">
+                                        [s`Text of the letter`]
+                                        <p class="hint">HTML + Smarty</p>
+                                    </div>
+                                    <div class="value">
+                                        <textarea class="js-template-text" name="data[text]">{$template.text|escape}</textarea>
+                                        {* Default template *}
+                                        <p class="hint s-channel-actions">
+                                            <a href="javascript:void(0);" class="inline-link js-reset" title="[s`Restore default text`]">
+                                                <i class="fas fa-home"></i>
+                                                <b class="hide-on-small-screens">[s`Restore default text`]</b>
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="data[template]" value="{$template_id|escape}" />
+
+                        <div class="fields-group s-footer-actions js-footer-actions">
+
+                        </div>
+                        <div class="bottombar flexbox middle"{if $wa->isMobile()} style="overflow-x: scroll;"{/if}>
+                            <div class="article flexbox middle space-40 js-footer-actions"{if $wa->isMobile()} style="overflow-x: scroll; min-width: max-content; padding: 0 1rem;"{/if}>
+                                <div>
+                                    {* Save *}
+                                    <input class="button js-submit-button" type="submit" name="" value="[s`Save`]">
+                                    {* Cancel *}
+                                    <span class="c-hidden">
+                                        <span style="margin: 0 4px;">[s`or`]</span>
+                                        <a href="{$wa_backend_url}webasyst/settings/email/template/{$channel->getId()|escape}/{$template_id}/" class="js-cancel">[s`cancel`]</a>
+                                    </span>
+                                    <i class="fas fa-spinner fa-spin s-loading" style="display: none;"></i>
+                                </div>
+                                <div>
+                                    {* Check sending *}
+                                    <input class="small button gray rounded js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
+                                    {* Cheat sheet *}
+                                    <div class="s-cheat-sheet-wrapper js-cheat-sheet-wrapper"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                {else}
+                    <div class="s-no-templates">
+                        {if !empty($channels)}
+                            [s`Templates not found`]
+                        {else}
+                            [s`No templates`]
+                        {/if}
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
 </div>
 
 {* Check email template dialog *}
 <div class="dialog s-email-check-template-dialog" id="s-email-check-template-dialog">
     <div class="dialog-background"></div>
         <form action="?module=settingsTemplateCheckSending" class="dialog-body">
-            <h3 class="dialog-header">[s`Checking the sending of email message`]</h3>
+            <h3 class="dialog-header">[s`Checking the sending of email messages`]</h3>
             <div class="dialog-content fields">
                 <div class="field-group">
                     {* Recipient *}
@@ -118,7 +124,7 @@
             <p>[s`To check whether you send email message, you must save the changes you made.`]</p>
         </div>
         <div class="dialog-footer">
-            <a href="javascript:void(0);" class="button js0close-dialog">[s`Close`]</a>
+            <a href="javascript:void(0);" class="button js-close-dialog">[s`Close`]</a>
         </div>
     </div>
 </div>

@@ -5,18 +5,18 @@
     <div class="dialog-body">
         <h3 class="dialog-header js-title">[s`Disable sign-in with Webasyst ID`]</h3>
         <div class="dialog-content">
-            <p>
+            <p class="state-error">
                 <i class="fas fa-exclamation-triangle"></i>
                 [s`If you disable sign-in with Webasyst ID, all configured user associations with Webasyst ID accounts will be deleted. Users will not be able to sign into the backend with Webasyst ID.`]</p>
             <div class="js-success-block" style="display: none">
                 <p>[s`Sign-in with Webasyst ID has been disabled.`] <i class="fas fa-check-circle"></i></p>
             </div>
             <div class="js-fail-block" style="display: none">
-                <p class="errormsg">[s`Failed to disable sign-in with Webasyst ID.`] <i class="fas fa-times-circle"></i></p>
+                <p class="errormsg state-error">[s`Failed to disable sign-in with Webasyst ID.`] <i class="fas fa-times-circle"></i></p>
             </div>
 
         </div>
-        <footer class="dialog-footer">
+        <footer class="dialog-footer js-disconnect-dialog-footer">
             <input type="button" class="button red js-disconnect" value="[s`Disable Webasyst ID for everyone`]"> [s`or`]
             <a href="javascript:void(0)" class="js-close-dialog">[s`cancel`]</a> <i class="fas fa-spinner fa-spin js-loading" style="display: none"></i>
         </footer>

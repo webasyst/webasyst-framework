@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-03-03 15:09+0300\n"
+"PO-Revision-Date: 2021-03-25 13:03+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4079,7 +4079,7 @@ msgid "Dashboard public link"
 msgstr "Ссылка"
 
 msgid "You are about to permanently delete this dashboard. Are you sure?"
-msgstr "Дашборд будет удалена без возможности восстановления. Вы уверены?"
+msgstr "Дашборд будет удален без возможности восстановления. Вы уверены?"
 
 msgid "Delete dashboard"
 msgstr "Удалить дашборд"
@@ -4634,10 +4634,10 @@ msgid "Save your template"
 msgstr "Сохраните ваш шаблон"
 
 msgid "To check the sending of SMS messages, you must save the changes you made."
-msgstr "Чтобы проверить отправку SMS-сообщений — необходимо сохранить внесённые вами изменения."
+msgstr "Чтобы проверить отправку SMS-сообщений — необходимо сохранить внесенные вами изменения."
 
 msgid "To check whether you send email message, you must save the changes you made."
-msgstr "Чтобы проверить отправку Email сообщение — необходимо сохранить внесённые вами изменения."
+msgstr "Чтобы проверить отправку Email сообщение — необходимо сохранить внесенные вами изменения."
 
 msgid "Found the password?"
 msgstr "Вспомнили пароль?"
@@ -4662,6 +4662,9 @@ msgstr "Удалить шаблоны"
 
 msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"icon10 settings\"></i> for entire template group"
 msgstr "<a class=\"%s\" href=\"javascript:void(0);\">Измените адрес отправителя </a> <i class=\"icon10 settings\"></i> для всей группы шаблонов"
+
+msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"fas fa-cog\"></i> for entire template group"
+msgstr "<a class=\"%s\" href=\"javascript:void(0);\">Измените адрес отправителя </a> <i class=\"fas fa-cog\"></i> для всей группы шаблонов"
 
 msgid "Sender IDs"
 msgstr "Идентификаторы отправителя"
@@ -5669,7 +5672,7 @@ msgid "Each domain used by your backend users has to be configured separately in
 msgstr "Для каждого домена, на котором работают ваши пользователи, нужна отдельная настройка в аккаунте OneSignal."
 
 msgid "To add a different domain, open Webasyst backend on that domain and save settings again."
-msgstr "Чтобы добавить другой домен, войдите в бекенд Webasyst на этом домене и сохраните настройки ещё раз."
+msgstr "Чтобы добавить другой домен, войдите в бекенд Webasyst на этом домене и сохраните настройки еще раз."
 
 msgid "Connected"
 msgstr "Подключен"
@@ -6107,7 +6110,7 @@ msgid "How to use it?"
 msgstr "Как этим пользоваться?"
 
 msgid "Simply click the Webasyst login button, which will appear on your website’s backend authorization page. You won’t even need to enter a password if you recently signed into your Customer Center account."
-msgstr "Используйте кнопку для входа с Webasyst, которая появится на странице входа на ваш сайт. А если вы недавно уже входили в Центр заказчика Webasyst, то вам даже не придётся вводить пароль."
+msgstr "Используйте кнопку для входа с Webasyst, которая появится на странице входа на ваш сайт. А если вы недавно уже входили в Центр заказчика Webasyst, то вам даже не придется вводить пароль."
 
 msgid "Will I be able to use again the ordinary login option, without Webasyst ID?"
 msgstr "Можно ли будет вернуться к обычному способу входа &mdash; без Webasyst ID?"
@@ -6388,8 +6391,8 @@ msgstr "Цвет А"
 msgid "Color B"
 msgstr "Цвет Б"
 
-msgid "Angle (&deg;)"
-msgstr "Угол (&deg;)"
+msgid "Gradient angle (&deg;)"
+msgstr "Угол градиента (&deg;)"
 
 msgid "Text color"
 msgstr "Цвет текста"
@@ -6429,3 +6432,6 @@ msgstr "Скопировано"
 
 msgid "This dashboard can be opened in both browser and TV with the support for basic access to browsing websites. Get the private TV link and open it using an internal browser on your TV."
 msgstr "Этот дашборд можно открыть на любом телевизоре с поддержкой доступа в интернет. Просто перейдите по приватной ссылке этого дашборда в браузере телевизора."
+
+msgid "Show navigation"
+msgstr "Показать меню"

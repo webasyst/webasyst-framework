@@ -7,28 +7,26 @@
             {if $is_template}
             <div class="fields-group">
             {/if}
-            {if $key != 'default'}
-            <div class="s-remove js-remove">
-                <a href="javascript:void(0);" class="button nobutton small red outlined">
-                    <span><i class="fas fa-times-circle"></i>&nbsp;[s`Remove`]</span>
-                </a>
-            </div>
-            {/if}
+
             {* KEY *}
-            <div class="field">
-                {if $key != 'default'}
-                    <div class="name for-input">[s`Email or domain`]*</div>
-                {/if}
-                <div class="value{if $key == 'default'} submit{/if}">
-                    {if $key == 'default'}
-                        <h4>[s`Default`]</h4>
-                        <input class="js-key" data-name="key" value="{$key|escape}" type="hidden">
-                    {else}
-                        <input class="js-key" data-name="key" value="{$key|escape}" type="text" autocomplete="off">
+            {if $key == 'default'}
+                <h4 class="heading black">[s`Default`]</h4>
+                <input class="js-key" data-name="key" value="{$key|escape}" type="hidden">
+            {else}
+                <div class="flexbox">
+                    <div class="wide">
+                        <input class="js-key long bold" placeholder="[s`Email / domain`]" data-name="key" value="{$key|escape}" type="text" autocomplete="off">
                         <p class="hint">[s`Enter an <strong>email address</strong> to set up a transport <em>for one sender email</em>.<br>Enter a <strong>domain name</strong> to set up a transport <em>for all sender emails on that domain</em>.`]</p>
-                    {/if}
+                    </div>
+                    <div>
+                        <div class="s-remove js-remove">
+                            <a href="javascript:void(0);" class="button nobutton small red outlined">
+                                <span><i class="fas fa-times-circle"></i>&nbsp;[s`Remove`]</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            {/if}
             {* TRANSPORT *}
             <div class="field">
                 <div class="name for-input">[s`Transport`]</div>
@@ -213,7 +211,8 @@
         </div>
     {/strip}
 {/function}
-<div class="s-email-settings-page blank block double-padded" id="s-email-settings-page">
+<div class="article s-email-settings-page" id="s-email-settings-page">
+  <div class="article-body">
     <h1 class="s-page-header">[s`Email settings`]</h1>
 
     {* Incoming / outgoing emails *}
@@ -224,7 +223,7 @@
                     <label for="config-email">[s`Email address for notifications`]</label>
                 </div>
                 <div class="value">
-                    <input type="text" name="email" value="{$email|escape}" id="config-email" placeholder="your@email"><br>
+                    <input type="text" class="long" name="email" value="{$email|escape}" id="config-email" placeholder="your@email"><br>
                     <p class="hint">[s`Main account administrative email where system notification will be sent.`]</p>
                     <p class="hint s-error js-error-place"></p>
                 </div>
@@ -235,7 +234,7 @@
                     <label for="config-sender">[s`Sender email address`]</label>
                 </div>
                 <div class="value">
-                    <input type="text" name="sender" value="{$sender|escape}" id="config-sender" placeholder="noreply@email"><br>
+                    <input type="text" class="long" name="sender" value="{$sender|escape}" id="config-sender" placeholder="noreply@email"><br>
                     <p class="hint">[s`Reply-To address for system email notifications sent by Webasyst.`]</p>
                     <p class="hint s-error js-error-place"></p>
                 </div>
@@ -243,16 +242,16 @@
         </div>
 
         {* Editor for wa-config/mail.php *}
-        <p class="s-description">
+        {* <p class="s-description">
             [s`Select how email messages must be sent by default from your Webasyst.`]
-        </p>
+        </p> *}
         <div class="fields-group s-settings-items js-settings-items">
             {foreach $main_configs as $key => $config}
                 {_renderConfig key=$key config=$config is_template=false}
             {/foreach}
         </div>
         <p class="s-description">[s`If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section.`]</p>
-        <a href="javascript:void(0);" class="button gray rounded s-add-item js-add-item"><i class="fas fa-plus-circle"></i> [s`Add email sending rule`]</a>
+        <a href="javascript:void(0);" class="button gray rounded outlined s-add-item js-add-item"><span><i class="fas fa-plus-circle"></i> [s`Add email sending rule`]</span></a>
         <div class="s-form-buttons fields-group">
             <div class="s-footer-actions js-footer-actions field">
                 <div class="value submit">
@@ -267,6 +266,7 @@
         </div>
     </form>
     {_renderConfig key=null is_template=true}
+  </div>
 </div>
 <script type="text/javascript">
     (function($) {

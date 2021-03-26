@@ -1153,10 +1153,14 @@ HTML;
             var allowed = null;
             var start_timestamp = new Date(option.data('start_date')).getTime();
             var calendar = new Date(timestamp);
-            var interval_left = /(\d{1,2}):(\d{1,2})-\d{1,2}:\d{1,2}/.exec(option.data('value'));
             
-            /** выбранная дата в календаре с началом интервала */
-            calendar.setHours(Number(interval_left[1]), Number(interval_left[2]));
+            if (typeof option.data('value') !== 'undefined') {
+                var interval_left = /(\d{1,2}):(\d{1,2})-\d{1,2}:\d{1,2}/.exec(option.data('value'));
+                
+                /** выбранная дата в календаре с началом интервала */
+                calendar.setHours(Number(interval_left[1]), Number(interval_left[2]));
+            }
+
             if (timestamp && start_timestamp && calendar.getTime() < start_timestamp) {
                 allowed = false;
             } else if (day_type==='holiday') {

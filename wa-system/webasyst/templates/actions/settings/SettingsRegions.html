@@ -1,5 +1,6 @@
 {$_title = "[s`Countries & regions`] — {$wa->accountName(false)}"}
-<div class="s-regions-settings-page blank block double-padded" id="s-regions-settings-page">
+<div class="article s-regions-settings-page" id="s-regions-settings-page">
+  <div class="article-body">
     <h1 class="s-page-header">[s`Countries & regions`]</h1>
     <div class="s-regions-settings-fields-block">
         <form action="?module=settingsRegions" class="fields vertical">
@@ -9,21 +10,21 @@
                         [s`Country`]
                     </div>
                     <div class="value">
-                        <i class="icon16 overhanging" style="background: url('{$wa_url}wa-content/img/country/{$country.iso3letter}.gif') no-repeat; top: 3px;"></i>
+                        <span class="icon" style="background: url('{$wa_url}wa-content/img/country/{$country.iso3letter}.gif')  no-repeat center;"></span>
                         {$selected = false}
-                        <div class="wa-select">
-                        <select class="js-country-selector">
-                            {if !$country.iso3letter}
-                                <option value="">[s`Select a country`]</option>
-                            {/if}
-                            {foreach $countries as $c}
-                                {if $c.name}
-                                    <option value="{$c.iso3letter|escape}"{if !$selected && $c.iso3letter === $country.iso3letter} selected {$selected = true} {/if}>{$c.name|escape}</option>
-                                {else}
-                                    <option disabled></option>
+                        <div class="wa-select full-width">
+                            <select class="js-country-selector">
+                                {if !$country.iso3letter}
+                                    <option value="">[s`Select a country`]</option>
                                 {/if}
-                            {/foreach}
-                        </select>
+                                {foreach $countries as $c}
+                                    {if $c.name}
+                                        <option value="{$c.iso3letter|escape}"{if !$selected && $c.iso3letter === $country.iso3letter} selected {$selected = true} {/if}>{$c.name|escape}</option>
+                                    {else}
+                                        <option disabled></option>
+                                    {/if}
+                                {/foreach}
+                            </select>
                         </div>
                         <a class="js-country-fav-icon" href="javascript:void(0)" style="position:relative; top:0; left:5px;" title="[s`Clone on top of the list`]">
                             <input class="js-contry-fav-input" type="hidden" name="country_fav" value="{ifset($country.fav_sort, '')}">
@@ -40,14 +41,8 @@
                         [s`Regions`]
                     </div>
                     <div class="value">
-                        <div class="trow">
-                            <div class="tregion"></div>
-                            <div class="tcode"></div>
-                            <div class="tcenter"></div>
-                            <div class="taction"></div>
-                        </div>
-
-                        <table class="js-regions-table zebra">
+                        <div style="display: block; width: calc(100vw - 2rem); overflow-x: auto; -webkit-overflow-scrolling: touch">
+                        <table class="js-regions-table zebra small">
                             <thead>
                             <tr>
                                 <th>[s`Region name`]</th>
@@ -61,9 +56,9 @@
                                 <tr data-orig-code="{$r.code|escape}">
                                     <td><input type="text" class="js-input-required" name="region_names[]" placeholder="[s`Region name`]" value="{$r.name|escape}"
                                                rel="{$r.name|escape}"></td>
-                                    <td><input type="text" class="js-input-required short" name="region_codes[]" placeholder="[s`Region code`]" value="{$r.code|escape}"></td>
+                                    <td><input type="text" class="js-input-required shorter" name="region_codes[]" placeholder="[s`Region code`]" value="{$r.code|escape}"></td>
                                     <td><input type="text" name="region_centers[]" placeholder="[s`Administrative center`]" value="{$r.region_center|escape}"></td>
-                                    {strip}<td><a class="nowrap js-action-fav" href="javascript:void(0)">
+                                    {strip}<td><a class="nowrap js-action-fav custom-mr-16" href="javascript:void(0)">
                                             {if $r.fav_sort === null}
                                                 <input type="hidden" name="region_favs[]" value="">
                                                 <i class="far fa-star fav" title="[s`Clone on top of the list`]"></i>
@@ -78,25 +73,29 @@
                                 </tr>
                                 {foreachelse}
                                 <tr class="empty-stub">
-                                    <td colspan="3">
+                                    <td colspan="4">
                                         <em class="grey">[s`No regions (states, provinces) are defined for this country.`]</em>
                                     </td>
                                 </tr>
                             {/foreach}
 
-                            <tr class="white">
-                                <td colspan="3">
-                                    <a href="javascript:void(0)" class="js-add-region-link inline-link button rounded dark-gray">
-                                        <i class="fas fa-plus-circle"></i>
-                                        [s`Add region`]
-                                    </a>
+                            <tr class="transparent">
+                                <td colspan="4">
+                                    <div class="box">
+                                        <a href="javascript:void(0)" class="js-add-region-link button rounded outlined dark-gray">
+                                            <span>
+                                                <i class="fas fa-plus-circle"></i>
+                                                [s`Add region`]
+                                            </span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
 
                             {* Template for new rows *}
-                            <tr class="hidden highlighted just-added js-template-new">
+                            <tr class="hidden just-added js-template-new">
                                 <td><input type="text" class="js-input-required" name="region_names[]" value="" placeholder="[s`Region name`]"></td>
-                                <td><input type="text" class="js-input-required short" name="region_codes[]" value="" placeholder="[s`Region code`]"></td>
+                                <td><input type="text" class="js-input-required shorter" name="region_codes[]" value="" placeholder="[s`Region code`]"></td>
                                 <td><input type="text" name="region_centers[]" value="" placeholder="[s`Administrative center`]"></td>
                                 <td><a class="js-action-del" href="javascript:void(0)">
                                         <input type="hidden" name="region_favs[]" value="">
@@ -105,14 +104,13 @@
                             </tr>
 
                             {* Template for deleted rows *}
-                            <tr class="gray hidden highlighted js-template-deleted">
+                            <tr class="gray hidden js-template-deleted">
                                 <td class="bold strike insert-name-here"></td>
-                                <td><em class="small">[s`Click “Save” button below to commit the delete.`]</em></td>
-                                <td class="min-width"></td>
+                                <td colspan="3"><em class="hint">[s`Click “Save” button below to commit the delete.`]</em></td>
                             </tr>
-
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,6 +118,7 @@
             {include file="./SettingsSaveBtn.inc.html" settings_page="regions" inline}
         </form>
     </div>
+  </div>
 </div>
 <script type="text/javascript">
     (function ($) {

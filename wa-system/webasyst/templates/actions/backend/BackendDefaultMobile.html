@@ -46,9 +46,9 @@
 <body>
     <div id="wa">
         <div id="wa-nav">
-            <div id="wa-header" class="blank">
+            <div id="wa-header" class="blank flexbox space-16">
                 {include file="./BackendHeaderAccount.inc.html" inline}
-                <div class="wa-header-sitename box flexbox middle space-16">
+                <div class="wa-header-sitename">
                     <span class="h3">{$wa->accountName()|truncate:42}</span>
                 </div>
                 <div class="dropdown" id="wa-notifications-dropdown">
@@ -156,6 +156,11 @@
                     <section class="dashboard-widgets js-dashboard-widgets" data-nav="widgets" style="display: none">
                         <div class="dashboard-tabs">
                             <ul class="tabs">
+                                <li class="selected">
+                                    <a href="javascript:void(0);" class="js-dashboard-widgets-page" data-dashboard="0">
+                                        <i class="fas fa-home"></i>
+                                    </a>
+                                </li>
                                 {foreach $public_dashboards as $d}
                                     <li>
                                         <a href="javascript:void(0);" class="js-dashboard-widgets-page" data-dashboard="{$d.id}">
@@ -210,8 +215,8 @@
             const $notifications_bell = $('.js-notifications-bell');
             $notifications_bell.on('click', function (e){
                 e.preventDefault();
-                $(this).toggleClass('swing');
-                setTimeout(() => $(this).toggleClass('swing'), 1000);
+                $(this).toggleClass('wa-animation-swing');
+                setTimeout(() => $(this).toggleClass('wa-animation-swing'), 1000);
                 $(this).next('.js-notification-wrapper').toggle();
             });
             {if !empty($notifications)}

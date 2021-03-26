@@ -1,7 +1,8 @@
 {$_title = "[s`General settings`] — {$wa->accountName(false)}"}
 <link href="{$wa_url}wa-content/js/pickr/themes/classic.min.css" rel="stylesheet" type="text/css">
 <script src="{$wa_url}wa-content/js/pickr/pickr.min.js" type="text/javascript"></script>
-<div class="s-general-settings-page" id="s-general-settings-page">
+<div class="article s-general-settings-page" id="s-general-settings-page">
+  <div class="article-body">
     <h1 class="s-page-title">[s`General settings`]</h1>
         <form action="?module=settingsGeneralSave" enctype="multipart/form-data" class="fields">
             <div class="fields-group">
@@ -11,7 +12,7 @@
                         <label for="config-name">[s`Company name`]</label>
                     </div>
                     <div class="value">
-                        <input type="text" class="bold large" name="name" value="{$settings.name|escape}" id="config-name" autocomplete="off">
+                        <input type="text" class="bold large long" name="name" value="{$settings.name|escape}" id="config-name" autocomplete="off">
                         <p class="hint">[s`May be displayed on websites and in email notifications.`]</p>
                         <p class="hint s-error js-error-place"></p>
                     </div>
@@ -40,9 +41,9 @@
                             <li>
                                 <div class="toggle small js-logo-type-toggle" id="logo-type-toggle">
                                     {$logo_mode = $logo.mode|default:'gradient'|escape}
+                                    <input type="hidden" name="logo[mode]">
                                     <span{if $logo_mode == 'gradient'} class="selected"{/if} data-logo-type="gradient">[`Text`]</span>
                                     <span{if $logo_mode == 'image'} class="selected"{/if} data-logo-type="image">[`Image`]</span>
-                                    <input type="hidden" name="logo[mode]">
                                 </div>
                             </li>
 
@@ -158,7 +159,7 @@
                                                         </li>
                                                         <li>
                                                             <div class="field">
-                                                                <div class="name">[`Angle (&deg;)`]</div>
+                                                                <div class="name">[`Gradient angle (&deg;)`]</div>
                                                                 <div class="value">
                                                                     <input type="number"
                                                                            class="shorter"
@@ -174,7 +175,7 @@
                                                                     <input type="text"
                                                                            class="shorter js-text-color"
                                                                            name="logo[text][color]"
-                                                                           value="{$logo.text.color|escape|default:'#000000'}">
+                                                                           value="{$logo.text.color|escape|default:'#fff'}">
                                                                     <span role="button" class="pickr-color-picker"></span>
                                                                 </div>
                                                             </div>
@@ -315,6 +316,7 @@
             {include file="./SettingsSaveBtn.inc.html" inline}
 
         </form>
+  </div>
 </div>
 
 <script type="text/javascript">
@@ -327,7 +329,24 @@
             }
         });
 
-        $(".file-upload").waUpload();
+        let $file_upload = $(".file-upload")
+
+        $file_upload.waUpload();
+
+        let $file_input = $file_upload.find('[type="file"]');
+        $file_input.on('change', function () {
+            let file = this.files[0],
+                reader = new FileReader();
+
+            reader.readAsDataURL(file)
+            reader.onloadend = function() {
+                $('.js-logo-area:visible').empty().css({
+                    'background-image': 'url('+reader.result+')',
+                    'background-size': 'cover',
+                    'background-position': 'center',
+                })
+            }
+        })
 
         // Switch Debug Mode
         $("#debug").waSwitch();

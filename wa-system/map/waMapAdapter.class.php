@@ -93,10 +93,10 @@ abstract class waMapAdapter
         $default = array(
             'instance'            => & $this,
             'title_wrapper'       => '%s',
-            'description_wrapper' => '<br><span class="hint">%s</span>',
+            'description_wrapper' => wa()->whichUI() == '2.0' ? '<p class="hint">%s</p>' : '<br><span class="hint">%s</span>',
             'control_wrapper'     => '
 <div class="field">
-    <div class="name">%s</div>
+    <div class="name' . ( wa()->whichUI() == '2.0' ? ' for-input' : '') .'">%s</div>
     <div class="value">%s%s</div>
 </div>
 ',

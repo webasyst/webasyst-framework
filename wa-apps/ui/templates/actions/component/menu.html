@@ -29,6 +29,13 @@
         "count" => 23
     ],
     [
+        "name" => ".tag",
+        "url" => "javascript:void(0);",
+        "icon_class" => "fas fa-hashtag",
+        "count" => 2,
+        "tag" => true
+    ],
+    [
         "name" => "Разработка занимает все свободное время, когда я уже смогу нормально отдохнуть?",
         "url" => "javascript:void(0);",
         "icon_url" => "/wa-content/img/userpic.svg",
@@ -49,7 +56,7 @@
 <div style="width: 300px;">
     <ul class="menu">
 {foreach $_menu as $_item}
-            <li {if !empty($_item.selected)}class="selected rounded"{elseif !empty($_item.bottom_padded)}class=" bottom-padded"{/if}>
+            <li {if !empty($_item.selected)}class="selected rounded"{elseif !empty($_item.bottom_padded)}class="bottom-padded"{elseif !empty($_item.tag)}class="tag"{/if}>
                 <a href="{$_item.url|escape}">
                     {if !empty($_item.count)}<span class="count">{if !empty($_item.badge)}<span class="badge">{$_item.count}</span>
                     {else}{$_item.count}{/if}</span>

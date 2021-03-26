@@ -17,7 +17,6 @@ var WASettingsDBListDialog = ( function($) {
 
         // VARS
         that.templates = options["templates"];
-        that.wa2 = options['wa2'] || false;
 
         // DYNAMIC VARS
         that.is_locked = false;
@@ -90,31 +89,19 @@ var WASettingsDBListDialog = ( function($) {
         that.columns_converted = 0;
         that.columns_error = 0;
 
-        if (that.wa2) {
-            $.waDialog({
-                html: that.templates["confirm"],
-                onOpen: function (html, dialog) {
-                    html.on("click", ".js-confirm-dialog", function() {
-                        process_hash = Date.now();
-                        that.initFilter(0);
-                        that.$js_action.hide();
-                        that.$notice.show();
-                        convertCharset(0);
-                        dialog.close();
-                    });
-                }
-            });
-        } else {
-            new WASettingsDialog({
-                html: that.templates["confirm"],
-                onConfirm: function () {
+        $.waDialog({
+            html: that.templates["confirm"],
+            onOpen: function (html, dialog) {
+                html.on("click", ".js-confirm-dialog", function() {
                     process_hash = Date.now();
                     that.initFilter(0);
+                    that.$js_action.hide();
                     that.$notice.show();
                     convertCharset(0);
-                }
-            });
-        }
+                    dialog.close();
+                });
+            }
+        });
         
         function convertCharset(i) {
             if (typeof items_for_convert[i] === 'undefined') {
@@ -138,10 +125,10 @@ var WASettingsDBListDialog = ( function($) {
                 };
 
             var $loading = $(that.templates["loading"]).clone();
-            if (that.wa2) {
-                var $success = $(that.templates["success"]).clone(),
-                    $error = $(that.templates["error"]).clone();
-            }
+
+            var $success = $(that.templates["success"]).clone(),
+                $error = $(that.templates["error"]).clone();
+
             $status.html($loading);
 
             // Scroll to item
@@ -159,11 +146,7 @@ var WASettingsDBListDialog = ( function($) {
                     $item.data('is-mb4', 1);
                     $item.attr('data-is-mb4', 1);
                     $collation.text(res.data['collation']).removeClass('bad gray').addClass('good green');
-                    if (that.wa2) {
-                        $status.empty().html($success);
-                    } else {
-                        $loading.removeClass('loading').addClass('yes');
-                    }
+                    $status.empty().html($success);
 
                     if (item_column) {
                         ++that.columns_converted;
@@ -172,11 +155,7 @@ var WASettingsDBListDialog = ( function($) {
                     }
 
                 } else {
-                    if (that.wa2) {
-                        $status.empty().html($error);
-                    } else {
-                        $loading.removeClass('loading').addClass('no');
-                    }
+                    $status.empty().html($error);
                     if (res.errors["log_path"]) {
                         that.$log_path.text(res.errors["log_path"]);
                         that.$log_path_wrapper.show();

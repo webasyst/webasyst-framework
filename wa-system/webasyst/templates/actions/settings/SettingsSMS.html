@@ -1,5 +1,6 @@
 {$_title = "[s`SMS providers`] — {$wa->accountName(false)}"}
-<div class="s-sms-settings-page" id="s-sms-settings-page">
+<div class="article s-sms-settings-page" id="s-sms-settings-page">
+  <div class="article-body">
     <h1 class="s-page-title">[s`SMS providers`]</h1>
 
     {* Incoming / outgoing emails *}
@@ -17,7 +18,7 @@
                             {if !empty($a.config.from)}{implode("\n", $a.config.from)}{/if}
                         </textarea>
                     {/strip}
-                    <p class="hint">{if isset($a.controls.from.description)}{$a.controls.from.description}{else}[`Enter sender IDs to use with this SMS gateway. A sender ID is either your phone number or up-to-11-characters text label. Enter * to use the default sender ID issued for your account by the gateway.`]{/if}</p>
+                    <p class="hint">{if isset($a.controls.from.description)}{$a.controls.from.description}{else}[`Enter sender IDs, each on a separate line, to use with this SMS gateway. A sender ID is either your phone number or an up to 11 characters long text label. Enter * (asterisk) to use a default sender ID issued by the gateway for your account.`]{/if}</p>
                 </div>
             </div>
             {foreach $a.controls as $k => $v}
@@ -59,6 +60,7 @@
         {include file="./SettingsSaveBtn.inc.html" settings_page="sms" inline}
     {/if}
     </form>
+  </div>
 </div>
 <script>
     (function ($) {

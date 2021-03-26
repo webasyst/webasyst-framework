@@ -204,11 +204,7 @@ class webasystBackendActions extends waViewActions
 
     private function getTodayUsers()
     {
-        $today_users_domain = new webasystTodayUsers();
-        return [
-            'birthdays' => $today_users_domain->getBirthdayUsers(),
-            'statuses' => $today_users_domain->getUserStatuses(),
-        ];
+        return (new webasystTodayUsers())->getGroups();
     }
 
 }

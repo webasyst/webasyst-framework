@@ -33,8 +33,10 @@
                         {foreach $public_dashboards as $d}
                         <li{if $selected_sidebar_item === "dashboard/`$d.id`"} class="selected"{/if} data-header-title="[`Everyone`]">
                             <a href="{$dashboard_module_url}dashboard/{$d.id}/" data-dashboard="{$d.id}">
-                                {* <span class="count action small js-dashboard-delete"><i class="fas fa-times-circle"></i></span> *}
-                                <i class="fas fa-chart-line"></i>
+                                {if $selected_sidebar_item === "dashboard/`$d.id`"}
+                                    <span class="count action small js-dashboard-delete"><i class="fas fa-times-circle"></i></span>
+                                {/if}
+                                <i class="fas fa-table"></i>
                                 <span>{$d.name|escape}</span>
                             </a>
                         </li>
@@ -105,11 +107,24 @@
                                 <p class="hint">[`Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs.`]</p>
                             </div>
                             <div class="dialog-footer">
-                                <input type="submit" value="[`Save`]" class="button green">
+                                <input type="submit" value="[`Save`]" class="button">
                                 [`or`] <a class="js-close-dialog" href="#">[`cancel`]</a>
                             </div>
                         </div>
                     </form>
+                </div>
+                <div class="dialog" id="dashboard-delete-dialog">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-body">
+                        <h1 class="dialog-header">[`Delete dashboard`]</h1>
+                        <div class="dialog-content">
+                            <p>[`You are about to permanently delete this dashboard. Are you sure?`]</p>
+                        </div>
+                        <div class="dialog-footer">
+                            <input type="submit" value="[`Delete`]" class="button red">
+                            [`or`] <a class="js-close-dialog" href="#">[`cancel`]</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="widgets-list-wrapper hide-scrollbar" data-backend-url="{$wa_backend_url|escape}">

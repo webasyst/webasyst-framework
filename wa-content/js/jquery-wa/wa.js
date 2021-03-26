@@ -2402,7 +2402,11 @@
 
             function getName(file) {
                 let filename = file.name,
+                    $span = that.$upload_wrapper.querySelector('.filename');
+
+                if (!$span) {
                     $span = document.createElement("span");
+                }
 
                 $span.classList.add('filename', 'hint');
                 $span.textContent = filename;

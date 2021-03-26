@@ -1,5 +1,6 @@
 {$_title = "[s`Web push notifications settings`] — {$wa->accountName(false)}"}
-<div class="s-push-settings-page" id="s-push-settings-page">
+<div class="article s-push-settings-page" id="s-push-settings-page">
+  <div class="article-body">
     <h1 class="s-page-title">[s`Web push notifications`]</h1>
     <p class="s-description">[s`Select and configure a service for sending web push notifications.`]</p>
     <form action="?module=settingsPushSave" class="fields">
@@ -32,7 +33,7 @@
                                 {$_adapter_name|escape}
                             </label>
                             {if !empty($_adapter_settings)}
-                            <div class="js-push-adapter-settings fields-group" data-adapter-id="{$_adapter_id}" style="display: none;">
+                            <div class="js-push-adapter-settings small box" data-adapter-id="{$_adapter_id}" style="display: none;">
                                 {$_adapter_settings}
                             </div>
                         </li>
@@ -48,6 +49,7 @@
         </div>
         {include file="./SettingsSaveBtn.inc.html" settings_page="push" inline}
     </form>
+  </div>
 </div>
 <script type="text/javascript">
     (function($) {

@@ -9,7 +9,7 @@ class WASettingsWaID {
         that.$upgrade_all_checkbox = that.$wrapper.find('.js-upgrade-all');
         that.$connect_youself = that.$wrapper.find('.js-connect-yourself');
         that.$disconnect_button = that.$wrapper.find('.js-disconnect-to-waid');
-        that.$sidebar_wrapper = $('#s-sidebar-wrapper');
+        that.$sidebar_wrapper = $('#js-sidebar-wrapper');
 
         // VARS
         that.wa_backend_url = options.wa_backend_url || '';
@@ -25,10 +25,6 @@ class WASettingsWaID {
 
     init() {
         const that = this;
-
-        let $sidebar = $('#js-sidebar-wrapper');
-        $sidebar.find('ul li').removeClass('selected');
-        $sidebar.find('[data-id="waid"]').addClass('selected');
 
         that.$connect_button.on('click', function (e) {
             e.preventDefault();
@@ -130,12 +126,13 @@ class WASettingsWaID {
 
     runBulkInviting() {
         const that = this,
-            $wrapper = that.$wrapper;
+            $wrapper = that.$wrapper,
+            $progressbar_wrapper = $wrapper.find('.js-waid-invite-progressbar-wrapper');
 
-        $wrapper.find('.js-waid-invite-progressbar-wrapper').show();
+        $progressbar_wrapper.removeClass('hidden');
 
         const progress = new WASettingsWaIDInviteProgress({
-            $wrapper: $wrapper.find('.s-waid-description-block'),
+            $wrapper: $progressbar_wrapper,
             url: that.wa_backend_url + "?module=settings&action=waIDInviteUsers",
             onStepDone: function (response) {
                 if (response && !$.isEmptyObject(response.sent)) {

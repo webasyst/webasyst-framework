@@ -1404,9 +1404,19 @@ const Page = ( function($, backend_url) {
             });
 
             // delete dashboard
-            $delete_dashboard.on('click', function () {
+            $delete_dashboard.on('click', function (e) {
+                e.preventDefault();
                 let id = $(this).parent('a').data("dashboard")
-                that.deleteCustomDashboard(id);
+                let $wrapper = $('#dashboard-delete-dialog')
+                $.waDialog({
+                    $wrapper,
+                    onOpen: function ($dialog) {
+                        let $submit = $dialog.find('[type="submit"]')
+                        $submit.on('click', function (e) {
+                            that.deleteCustomDashboard(id);
+                        });
+                    }
+                });
             });
 
             // edit dashboard

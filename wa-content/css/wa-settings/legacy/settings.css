@@ -443,60 +443,60 @@ table.zebra tr.selected .s-single-line:after {
   background-position: center;
 }
 .icon16.ws.general {
-  background-image: url("../../img/wa-settings/ws-general.svg");
+  background-image: url("../../../img/wa-settings/ws-general.svg");
 }
 .icon16.ws.email {
-  background-image: url("../../img/wa-settings/ws-email.svg");
+  background-image: url("../../../img/wa-settings/ws-email.svg");
 }
 .icon16.ws.maps {
-  background-image: url("../../img/wa-settings/ws-map.svg");
+  background-image: url("../../../img/wa-settings/ws-map.svg");
 }
 .icon16.ws.captcha {
-  background-image: url("../../img/wa-settings/ws-lock.svg");
+  background-image: url("../../../img/wa-settings/ws-lock.svg");
 }
 .icon16.ws.sms {
-  background-image: url("../../img/wa-settings/ws-sms.svg");
+  background-image: url("../../../img/wa-settings/ws-sms.svg");
 }
 .icon16.ws.auth {
-  background-image: url("../../img/wa-settings/ws-key.svg");
+  background-image: url("../../../img/wa-settings/ws-key.svg");
 }
 .icon16.ws.email-template,
 .icon16.ws.sms-template {
-  background-image: url("../../img/wa-settings/ws-template.svg");
+  background-image: url("../../../img/wa-settings/ws-template.svg");
 }
 .icon16.ws.db {
-  background-image: url("../../img/wa-settings/ws-db.svg");
+  background-image: url("../../../img/wa-settings/ws-db.svg");
 }
 .s-error-message-wrapper {
   color: #f00;
   margin-top: 6px;
 }
 .icon16.ws.field {
-  background-image: url("../../img/wa-settings/ws-fields.svg");
+  background-image: url("../../../img/wa-settings/ws-fields.svg");
   -webkit-background-size: contain;
   -moz-background-size: contain;
   background-size: contain;
   background-position: center;
 }
 .icon16.ws.regions {
-  background-image: url("../../img/wa-settings/ws-regions.svg");
+  background-image: url("../../../img/wa-settings/ws-regions.svg");
   -webkit-background-size: contain;
   -moz-background-size: contain;
   background-size: contain;
   background-position: center;
 }
 .icon16.ws.push {
-  background-image: url("../../img/wa-settings/ws-push.svg");
+  background-image: url("../../../img/wa-settings/ws-push.svg");
   -webkit-background-size: contain;
   -moz-background-size: contain;
   background-size: contain;
   background-position: center;
 }
 .icon16.ws.waid {
-  background-image: url("../../img/wa-settings/ws-waid.svg");
+  background-image: url("../../../img/wa-settings/ws-waid.svg");
 }
 .icon16.ws.waid-green {
-  background-image: url("../../img/wa-settings/ws-waid-green.svg");
+  background-image: url("../../../img/wa-settings/ws-waid-green.svg");
 }
 .s-email-settings-page .s-settings-items .s-item:hover > .s-remove {
   opacity: 0.6;

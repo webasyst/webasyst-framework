@@ -13,7 +13,7 @@ class WASettingsAuth {
 
         that.$backgrounds_wrapper = that.$wrapper.find('.js-background-images');
         that.$preview_wrapper = that.$wrapper.find('.js-custom-preview-wrapper');
-        that.$background_input = that.$wrapper.find('input[name="auth_form_background"]:visible');
+        that.$background_input = that.$wrapper.find('input[name="auth_form_background"]');
         that.$upload_preview_background_wrapper = that.$wrapper.find('.js-upload-preview');
 
         // VARS
@@ -390,7 +390,13 @@ class WASettingsAuth {
             $form = that.$form;
 
         let markAsHasError = function ($select, with_animate) {
-            $select.addClass('error');
+            let $wa_select = $select.parent('.wa-select');
+            if($wa_select.length) {
+                $wa_select.addClass('state-error');
+            }else{
+                $select.addClass('state-error');
+            }
+
             if (!with_animate) {
                 return;
             }
@@ -528,9 +534,9 @@ class WASettingsAuth {
             return errors;
         }
 
-        that.$form.on('input', function () {
+        that.$form.on('input change', function () {
             that.$footer_actions.addClass('is-changed');
-            that.$button.removeClass('green').addClass('yellow');
+            that.$button.addClass('yellow').next().show();
         });
 
         // Reload on cancel

@@ -346,7 +346,10 @@ class waPageActions extends waActions
     {
         $id = (int)waRequest::get('id');
         $data = waRequest::post('info', array());
-        $data['url'] = ltrim($data['url'], '/');
+        $data['url'] = trim($data['url'], '/');
+        if (strlen($data['url']) > 0) {
+            $data['url'] .= '/';
+        }
 
         try {
             $this->checkGlobalRouting($id, $data);
@@ -442,9 +445,6 @@ class waPageActions extends waActions
     protected function checkGlobalRouting($id, $data)
     {
         $page_url = $data['url'];
-        if ($page_url && substr($page_url, -1) != '/' && strpos(substr($page_url, -5), '.') === false) {
-            $page_url .= '/';
-        }
 
         // Get Domain
         $parent = null;

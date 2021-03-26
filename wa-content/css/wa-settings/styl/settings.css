@@ -943,7 +943,7 @@ table.zebra tr.selected .s-single-line:after {
   min-width: 370px;
 }
 .s-field-settings-page .s-field-constructor .fieldset .field .name {
-  color: #000;
+  color: var(--text-color-stronger);
   width: 360px;
 }
 .s-field-settings-page .s-field-constructor .fieldset .field .value {

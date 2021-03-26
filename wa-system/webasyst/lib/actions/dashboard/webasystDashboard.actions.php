@@ -304,7 +304,8 @@ class webasystDashboardActions extends waActions
             if ($i % 5 == 0) {
                 $result .= '00';
             } else {
-                $result .= $chars{mt_rand(0, strlen($chars)-1)};
+                $index = mt_rand(0, strlen($chars)-1);
+                $result .= $chars[$index];
             }
         }
         return $result;

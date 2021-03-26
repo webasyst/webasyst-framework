@@ -108,6 +108,7 @@ const WASettingsGeneral = ( function($) {
                             that.$logo_text_area.css('color', color.toHEXA().toString(0));
                         }
                         pickr.hide();
+                        that.changeSaveBtnColor()
                     })
                     .on('cancel', () => pickr.hide());
             });
@@ -208,6 +209,8 @@ const WASettingsGeneral = ( function($) {
                 that.$logo_text_area.attr('data-background', `gradient${ gradient }`).removeAttr('style').css('color', '#ffffff')
                 $btn.empty().append('<i class="fas fa-check"></i>').siblings().empty().append('<i>&nbsp;</i>')
                 that.$picker_btn.attr('data-background', `gradient${ gradient }`).removeAttr('style')
+                that.$footer_actions.addClass('is-changed');
+                that.$button.addClass('yellow').next().show();
             })
         }
 
@@ -332,18 +335,32 @@ const WASettingsGeneral = ( function($) {
                         that.$button.empty().html($button_text + $success_icon).removeClass('yellow');
                         that.$footer_actions.removeClass('is-changed');
 
-                        // Update company name in header
-                        let $logo = $('#wa-account');
-                        let company_name = $.trim(that.$form.find('#config-logo-text').val());
-                        // $('#wa-account').find('.wa-dashboard-link h3').attr('title', company_name);
-                        // if (company_name.length > 18) {
-                        //     company_name = company_name.substr(0, 15) +'...';
-                        // }
+                        let logo_type = $('[name="logo[mode]"]').val()
 
-                        $logo.css({
-                            'background': `linear-gradient(90deg, ${that.gradient_from}, ${that.gradient_to})`
-                        })
-                        $logo.find('h3').text(company_name);
+                        if ( logo_type === 'image') {
+                            let uploaded_image = $('.js-logo-area:visible').attr('style')
+                            let $header_logo = $('#wa-account > a');
+                            if (uploaded_image) {
+                                $header_logo.empty().attr('style', uploaded_image)
+                            }
+                        }else{
+                            // Update company name in header
+                            let $logo = $('#wa-account'),
+                                $h3 = $logo.find('h3'),
+                                company_name = $.trim(that.$form.find('#config-logo-text').val());
+
+                            if($('#two-line-text').is(':checked')){
+                                $logo.css('width', '64px')
+                                company_name = that.insertChar(company_name, '\n', 2)
+                                $h3.addClass('two-lines').text(company_name);
+                            }else{
+                                $logo.find('h3').removeClass('two-lines').text(company_name);
+                            }
+
+                            $logo.css({
+                                'background': `linear-gradient(-90deg, ${that.gradient_from}, ${that.gradient_to})`
+                            })
+                        }
 
                         setTimeout(function(){
                             that.$button.empty().html($button_text);
@@ -379,8 +396,11 @@ const WASettingsGeneral = ( function($) {
             }
 
             that.$form.on('input change', function () {
-                that.$footer_actions.addClass('is-changed');
-                that.$button.addClass('yellow').next().show();
+                that.changeSaveBtnColor()
+            });
+
+            that.$change_bgcolor_btn.on('click', function () {
+                that.changeSaveBtnColor()
             });
 
             that.$cancel.on('click', function (e) {
@@ -393,6 +413,11 @@ const WASettingsGeneral = ( function($) {
             const array = str.split('');
             array.splice(pos, 0, substr);
             return array.join('');
+        }
+
+        changeSaveBtnColor() {
+            this.$footer_actions.addClass('is-changed');
+            this.$button.addClass('yellow').next().show();
         }
     }
 })(jQuery);

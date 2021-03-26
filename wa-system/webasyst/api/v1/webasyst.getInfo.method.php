@@ -32,7 +32,7 @@ class webasystGetInfoMethod extends waAPIMethod
 {
     public function execute()
     {
-        if (!$this->getRights('backend')) {
+        if (wa()->getUser()->get('is_user') <= 0) {
             throw new waAPIException('access_denied', 403);
         }
 

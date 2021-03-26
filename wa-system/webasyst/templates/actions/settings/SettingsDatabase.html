@@ -1,5 +1,6 @@
 {$_title = "[s`Database`] — {$wa->accountName(false)}"}
-<div class="s-db-page" id="s-db-page">
+<div class="article s-db-page" id="s-db-page">
+  <div class="article-body">
     <h1 class="s-page-title">[s`Database`]</h1>
     <form action="?module=settingsGeneralSave" class="fields">
         <div class="fields-group">
@@ -46,7 +47,7 @@
 
                     <div class="value">
                         {if $is_debug}
-                            <a href="javascript:void(0);" class="inline-link js-show-list button rounded gray"><i class="fas fa-plus-circle"></i> [s`Proceed to adding emoji support`]</a>
+                            <a href="javascript:void(0);" class="{if $wa->isMobile()}smallest {/if}inline-link js-show-list button rounded gray"><i class="fas fa-plus-circle"></i> [s`Proceed to adding emoji support`]</a>
                         {else}
                             <p>[s`To add emoji support enable <b>Debug mode</b> in <b>General settings</b>.`]</p>
                         {/if}
@@ -55,6 +56,7 @@
             {/if}
         </div>
     </form>
+  </div>
 </div>
 <script type="text/javascript">
     (function($) {

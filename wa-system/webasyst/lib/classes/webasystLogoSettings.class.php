@@ -407,6 +407,12 @@ class webasystLogoSettings
         return false;
     }
 
+    public static function isLogoFileName($filepath)
+    {
+        $info = pathinfo($filepath);
+        return isset($info['basename']) && substr($info['basename'], 0, 5) === 'logo.';
+    }
+
     /**
      * @return array of [
      *      'from' => <string:color in hex format>

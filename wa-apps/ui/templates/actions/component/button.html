@@ -24,6 +24,14 @@
 </p>
 {/function}
 
+{function name="_render_dws"}
+<p>
+    <a href="#" class="button danger">.danger</a>
+    <a href="#" class="button warning">.warning</a>
+    <button class="success">.success</button>
+</p>
+{/function}
+
 {function name="_render_gradient"}
 <p>
     <a href="#" class="button gradient">.gradient</a>
@@ -153,6 +161,18 @@
 </p>
 {/function}
 
+{function name="_render_circle"}
+<p>
+    <button class="circle"><i class="fas fa-plus"></i></button>
+    <button class="circle green"><i class="fas fa-arrow-right"></i></button>
+    <button class="circle yellow"><i class="fas fa-exclamation"></i></button>
+    <button class="circle red"><i class="fas fa-times"></i></button>
+    <button class="circle light-gray"><i class="fas fa-ellipsis-h"></i></button>
+</p>
+<p>
+    <button class="circle pink" style="font-size: 3rem;"><i class="fas fa-magic"></i></button>
+</p>
+{/function}
 
 {function name="_render_nobutton"}
 <p>
@@ -170,7 +190,7 @@
 <div class="u-component-page">
     <h1 class="u-page-title">{$_title|escape}</h1>
 
-    <p>Кнопки разных цветов. Небольшой градиент поверх цвета подчеркивает явную принадлежность элемента к визуальной парадигме Webasyst 2.</p>
+    <p>Кнопки разных цветов на все случаи жизни.</p>
 
     <p>В подавляющем большинстве случаев, включающих любое сохранение данных, рекомендуется использовать стандартные кнопки <code>.button</code> с небольшими скругленными краями:</p>
 
@@ -256,6 +276,24 @@
     </div>
     <div class="line">
         <pre class="prettyprint">{_render_giant|escape}</pre>
+    </div>
+
+    <h3>button<code>.circle</code></h3>
+    <p>Для кнопок действий с иконкой и без текста рекомендуется использовать строгую круглую форму и вместо .rounded использовать класс <code>.circle</code>. Работает только для элемента button без .outlined.</p>
+    <div class="line">
+        {_render_circle}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_circle|escape}</pre>
+    </div>
+
+    <h3><code>.danger</code>, <code>.warning</code>, <code>.success</code></h3>
+    <p>Если вы привыкли к семнатике <a href="{$wa_app_url}component/alert/">.alert</a>, то цвет кнопки можно также задать с помощью классов <code>.danger</code> (то же, что и .red), <code>.warning</code> (то же, что и .yellow), <code>.success</code> (то же, что и .success):</p>
+    <div class="line">
+        {_render_dws}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_dws|escape}</pre>
     </div>
 
     <h3>Общие рекомендации</h3>

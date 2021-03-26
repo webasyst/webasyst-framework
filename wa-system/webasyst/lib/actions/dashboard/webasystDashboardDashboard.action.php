@@ -2,6 +2,15 @@
 
 class webasystDashboardDashboardAction extends webasystDashboardViewAction
 {
+    public function preExecute()
+    {
+        // This page doesn't exist in old webasyst UI 
+        if (wa()->whichUI() !== '2.0') {
+            $this->redirect(wa()->getConfig()->getBackendUrl(true));
+        }
+        parent::preExecute();
+    }
+
     public function execute()
     {
         $id = $this->getDashboardId();

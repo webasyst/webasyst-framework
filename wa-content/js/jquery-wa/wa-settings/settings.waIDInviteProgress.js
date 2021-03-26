@@ -86,9 +86,9 @@ class WASettingsWaIDInviteProgress {
         const onComplete = function (response) {
             $.post(that.url, {processId: that.processId, cleanup: 1}, 'json');
 
-            that.$in_progress_icon.addClass('hidden');
-            that.$warning.addClass('hidden');
-            that.$done_icon.removeClass('hidden');
+            that.$wrapper[0].querySelector('.js-in-progress').classList.toggle('hidden')
+            that.$wrapper[0].querySelector('.js-done').classList.toggle('hidden')
+            that.$wrapper[0].querySelector('.js-warning').classList.toggle('hidden')
 
             if (response && response.report) {
                 that.$report.removeClass('hidden').text(response.report);

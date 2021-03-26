@@ -62,7 +62,10 @@
             {$custom_params.main}
         </div>
 
-        <div id="wa-applist" class="js-applist js-applist-header{if is_array($counts)} counts-cached{/if}{if $custom_params.main} wa-applist-with-custom-main-content{/if}">
+        <div id="wa-applist" class="js-applist js-applist-header
+            {if is_array($counts)} counts-cached{/if}
+            {if $custom_params.main} wa-applist-with-custom-main-content{/if}
+            {if $wa->isMobile()} is-mobile{/if}">
             {strip}
                 <ul>
                     {foreach $header_items as $_id => $_info}
@@ -100,8 +103,11 @@
 
 
             {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboards}
-                <a class="wa-toggle-panel-lock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-down"></i></a>
-                <a class="wa-toggle-panel-unlock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-up"></i></a>
+                {*
+                    EXPERIMENTAL wa_header lock/unlock on the main dashboard
+                    <a class="wa-toggle-panel-lock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-down"></i></a>
+                    <a class="wa-toggle-panel-unlock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-up"></i></a>
+                *}
             {else}
                 <a class="wa-toggle-apps js-toggle-apps large" href="#" title="[s`All apps`]"><i class="fas fa-th"></i></a>
             {/if}
@@ -116,7 +122,7 @@
                         <i class="fas fa-sliders-h"></i> <span>[s`Edit Widgets`]</span>
                     </a>
                     <a href="javascript:void(0);"
-                       class="button green js-dashboard-edit-close"
+                       class="button js-dashboard-edit-close"
                        style="display: none;">
                         <i class="fas fa-check"></i> <span>[s`Done`]</span>
                     </a>
@@ -206,8 +212,8 @@
             const $notifications_bell = $('.js-notifications-bell');
             $notifications_bell.on('click', function (e){
                 e.preventDefault();
-                $(this).toggleClass('swing');
-                setTimeout(() => $(this).toggleClass('swing'), 1000);
+                $(this).toggleClass('wa-animation-swing');
+                setTimeout(() => $(this).toggleClass('wa-animation-swing'), 1000);
                 $(this).next('.js-notification-wrapper').toggle();
             });
             /* Active All Notifications On Main Dashboard */

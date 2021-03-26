@@ -63,12 +63,15 @@ class WaHeader {
             $wa_header = document.querySelector('#wa-header'),
             $content = document.querySelector('.js-main-content')
 
-            const handler = (entries) => {
-                let entry = entries[0],
-                    {boundingClientRect, isIntersecting} = entry;
+        const handler = () => {
+            let rect = $target.getBoundingClientRect(),
+                $target_height = rect.height,
+                $target_top = rect.top,
+                is_edit_mode = document.querySelector('body').classList.contains('is-custom-edit-mode');
 
+            if (!is_edit_mode) {
                 if (target === '.wa-dashboard-page') {
-                    if (isIntersecting) {
+                    if ($target_top < 0 && (0 - $target_top) > $target_height) {
                         $content.classList.add('header-apps')
                     } else {
                         if (!$content.classList.contains('header-fixed')) {
@@ -76,41 +79,26 @@ class WaHeader {
                         }
                     }
                 } else {
-                    let target_height = boundingClientRect.height,
-                        target_offset = boundingClientRect.y,
-                        scroll_direction;
-
-                    // detect scroll direction
-                    if ((0 - target_height / 2) >= target_offset && isIntersecting) {
-                        scroll_direction = 'up'
-                    } else if ((0 - target_height / 2) <= target_offset && isIntersecting) {
-                        scroll_direction = 'down'
+                    // элемент полностью не виден
+                    if ((0 - $target_top) > $target_height) {
+                        $wa_header.style.cssText = 'opacity:1';
+                        $content.classList.add('header-apps')
+                    }else{
+                        $wa_header.style.cssText = 'opacity:0';
                     }
-
-                    if (scroll_direction === 'down') {
-                        $wa_header.style.cssText = 'transform: translateY(-4rem)';
-                    }
-
-                    if (target_offset < (0 - target_height)) {
-                        $wa_header.style.cssText = 'transform: translateY(0)';
-                        $content.classList.add('header-apps');
-                    }else if(target_offset > 0 && !isIntersecting){
-                        $wa_header.style.cssText = 'transform: translateY(0)';
-                    } else {
-                        new Promise((resolve) => {
-                            if (scroll_direction === 'up') {
-                                $wa_header.style.cssText = 'transform: translateY(-4rem)';
-                                setTimeout(() => resolve(), 10)
-                            }
-                        }).finally(() => {
-                            $wa_header.style.cssText = 'transform: translateY(0)';
-                            $content.classList.remove('header-apps');
-                        })
+                    // элемент полностью виден
+                    if ($target_top < $target_height && $target_top > 0) {
+                        $content.classList.remove('header-apps');
+                        $wa_header.style.cssText = 'opacity:1';
                     }
                 }
             }
-            const observer = new IntersectionObserver(handler, settings);
-            observer.observe($target)
+        }
+
+        addEventListener('load', handler, false);
+        addEventListener('scroll', handler, false);
+        addEventListener('resize', handler, false);
+
     }
 
     /**
@@ -205,8 +193,8 @@ class WaHeader {
 
         const action = function ($toggler) {
             $toggler.toggleClass('down');
-            $toggler.toggleClass('spin');
-            setTimeout(() => $toggler.toggleClass('spin'), 1000);
+            $toggler.toggleClass('wa-animation-spin');
+            setTimeout(() => $toggler.toggleClass('wa-animation-spin'), 1000);
             that.$content.toggleClass('wa-nav-unfolded');
             that.$wa_nav .toggleClass('wa-nav-unfolded');
 
@@ -244,16 +232,26 @@ class WaHeader {
      * @description Able to sort apps
      */
     sortableApps() {
-        let that = this;
+        let that = this,
+            is_mobile = that.$applists.hasClass('is-mobile'),
+            $app_list = that.$applists.find('ul');
+
         const app_list_sortable = () => {
-            that.$applists.find('ul').sortable({
-                distance: 5,
-                helper: 'clone',
-                items: 'li[id]',
-                opacity: 0.75,
-                tolerance: 'pointer',
-                stop: function () {
-                    let data = $(this).sortable("toArray", {attribute: 'data-app'}),
+            const options = {
+                animation: 150,
+                dataIdAttr: 'data-app',
+                forceFallback: true,
+                onStart(event) {
+
+                },
+                onEnd(event) {
+                    /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
+                    let $link = $(event.item).find('a'),
+                        href = $link.attr('href');
+                    $link.attr('href', 'javascript:void(0);');
+                    setTimeout(() => $link.attr('href', href),500)
+
+                    let data = this.toArray(),
                         apps = [];
 
                     for (let i = 0; i < data.length; i++) {
@@ -266,24 +264,22 @@ class WaHeader {
                     let url = backend_url + "?module=settings&action=save";
                     $.post(url, {name: 'apps', value: apps});
                 }
-            })
+            };
+
+            if (is_mobile) {
+                options.delay = 100;
+                options.delayOnTouchOnly = true;
+            }
+
+            $app_list.sortable(options);
         }
 
-        if ($.fn.sortable) {
+        if(typeof Sortable !== 'undefined') {
             app_list_sortable()
         } else if (!$('#wa').hasClass('disable-sortable-header')) {
             let urls = [];
-            if (!$.browser) {
-                urls.push('wa-content/js/jquery/jquery-migrate-1.2.1.min.js');
-            }
-            if (!$.ui) {
-                urls.push('wa-content/js/jquery-ui/jquery.ui.core.min.js');
-                urls.push('wa-content/js/jquery-ui/jquery.ui.widget.min.js');
-                urls.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
-            } else if (!$.ui.mouse) {
-                urls.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
-            }
-            urls.push('wa-content/js/jquery-ui/jquery.ui.sortable.min.js');
+            urls.push('wa-content/js/sortable/sortable.min.js');
+            urls.push('wa-content/js/sortable/jquery-sortable.min.js');
 
             let $script = $("#wa-header-js"),
                 path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');

@@ -993,9 +993,9 @@ class waSystem
     private function normalizeUIVersionOption(&$app_info)
     {
         $default_ui_variant = '1.3';
-        if (waSystemConfig::isDebug()) {
-            $default_ui_variant = '1.3,2.0';
-        }
+        // if (waSystemConfig::isDebug()) {
+            // $default_ui_variant = '1.3,2.0'; //enable when most apps are migrated
+        // }
 
         // typecast
         if (!isset($app_info['ui']) || !is_string($app_info['ui'])) {

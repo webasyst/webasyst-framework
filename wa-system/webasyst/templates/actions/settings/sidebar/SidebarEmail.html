@@ -1,8 +1,8 @@
 {strip}
     {$class = "s-email-template-sidebar-wrapper"}
     {$id = uniqid($class)}
-    <aside class="sidebar hide-scrollbar js-sidebar scrolls-with-content right width-15rem {$class}" id="{$id}">
-        <h5 class="heading">
+    <aside class="sidebar hide-scrollbar js-sidebar scrolls-with-content blank bordered-right width-18rem {$class}" id="{$id}"{if $wa->isMobile()} style="position: relative; width: 100%; min-height: auto;"{/if}>
+        <h5 class="heading custom-mt-20 custom-mb-12">
             <span>[s`New template group`]</span>
             <a href="#" class="js-new-templates count action"><i class="fas fa-plus-circle"></i></a>
         </h5>
@@ -25,7 +25,7 @@
             </header>
             <ul class="menu js-sidebar-items">
                 {foreach $templates_list as $_template_id => $_template_name}
-                    <li class="rounded js-template{if $_id == $channel->getId() && $_template_id == $template_id} selected{/if}" data-channel-id="{$_id|escape}" style="display: none;">
+                    <li class="js-template{if $_id == $channel->getId() && $_template_id == $template_id} selected{/if}" data-channel-id="{$_id|escape}" style="display: none;">
                         <a href="{$_channel_url}{$_template_id}" class="s-template-item">
                             <i class="fas fa-envelope"></i>
                             <span>
@@ -73,7 +73,7 @@
             </div>
 
             <div class="dialog-footer">
-                <input type="submit" class="button green js-submit-button" value="[s`Save`]">
+                <input type="submit" class="button js-submit-button" value="[s`Save`]">
                 &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-close-dialog">[s`cancel`]</a>
                 <i class="fas fa-spinner fa-spin loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
             </div>
@@ -115,7 +115,7 @@
             </div>
             <div class="dialog-footer flexbox full-width middle">
                 <div class="s-dialog-actions">
-                    <input type="submit" class="button green js-submit-button" value="[s`Save`]">
+                    <input type="submit" class="button js-submit-button" value="[s`Save`]">
                     &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="js-dialog-close">[s`cancel`]</a>
                     <i class="fas fa-spinner fa-spin loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
                 </div>

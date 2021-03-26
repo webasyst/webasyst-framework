@@ -54,9 +54,10 @@
         </div>
     {/strip}
 {/function}
-<div class="s-auth-settings-page" id="s-auth-settings-page">
-    <h1 class="s-page-title">[s`Backend authorization`]</h1>
-    <p class="s-description">[s`Set up how users will log into your Webasyst backend.`]</p>
+<div class="article s-auth-settings-page" id="s-auth-settings-page">
+    <div class="article-body">
+        <h1 class="s-page-title">[s`Backend authorization`]</h1>
+        <p class="s-description">[s`Set up how users will log into your Webasyst backend.`]</p>
         <form action="?module=settingsAuthSave" class="fields">
             <div class="fields-group s-auth-config-params">
                 {* Auth type *}
@@ -128,7 +129,7 @@
                                     </div>
                                     {else}
 
-                                    <div class="wa-select">
+                                    <div class="wa-select solid">
                                     <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;" data-channel-type="email">
                                         <option value="">[s`Select template`]</option>
                                         {foreach $email_channels as $_id => $_channel}
@@ -182,7 +183,7 @@
                                     [`Phone`]
                                 </label>
                                 <div class="hint s-template-link">
-                                    <div class="wa-select">
+                                    <div class="wa-select solid">
                                     <select name="verification_channel_ids[]" class="js-template" style="margin: 0 10px;" data-channel-type="sms">
                                         <option value="">[s`Select template`]</option>
                                         {foreach $sms_channels as $_id => $_channel}
@@ -274,11 +275,13 @@
                             {* Upload new image and preview *}
                             <li class="js-upload-preview">
                                 <div class="file-upload">
-                                    <label class="link">
-                                        <i class="fas fa-image"></i>
-                                        <span>[`Загрузить изображение`]</span>
-                                        <input type="file" class="file-upload-input js-background-upload" id="file_input" autocomplete="off">
-                                    </label>
+                                    <div class="upload">
+                                        <label class="link">
+                                            <i class="fas fa-image"></i>
+                                            <span>[`Загрузить изображение`]</span>
+                                            <input type="file" class="file-upload-input js-background-upload" id="file_input" autocomplete="off">
+                                        </label>
+                                    </div>
                                 </div>
                                 {*<input type="file" class="js-background-upload">*}
                                 <i class="fas fa-spinner fa-spin loading" style="display: none;"></i>
@@ -290,70 +293,6 @@
                                 </div>
                             </li>
                         </ul>
-                    </div>
-                </div>
-
-                {* TODO Deprecate this preview *}
-                <div class="field">
-                    <div class="value submit">
-                        <p><em><b class="highlighted green">TODO:</b> Deprecate this preview</em></p>
-                        <figure class="card" style="opacity: 0.2;">
-                            <div class="details js-login-form-constructor">
-                                <h4 class="s-company-name" title="{$_account_name}">
-                                    {$_account_name|truncate:20:'...'}
-                                </h4>
-                                <div class="fields">
-                                    <div class="fields-group">
-                                        <div class="field" data-field-id="login">
-                                            <div class="name">
-                                                <span class="js-editable-wrapper" title="[`Edit field label`]">
-                                                    <label class="s-editable-item s-editable-text js-editable-item">
-                                                        {$auth_config.login_caption|default:_w('Login')|escape}
-                                                    </label>
-                                                    <input type="text" class="s-editable-field-label hidden" name="login_caption" value="{$auth_config.login_caption|default:_w('Login')|escape}"/>
-                                                </span>
-                                            </div>
-                                            <div class="value placeholder"  title="[`Edit hint for this placeholder`]">
-                                                <input type="text" class="fill s-placeholder-input" name="login_placeholder" value="{$auth_config.login_placeholder|escape}"/>
-                                            </div>
-                                        </div>
-
-                                        <div class="field">
-                                            <div class="name">
-                                                [s`Password`]
-                                            </div>
-                                            <div class="value">
-                                                <input type="text" class="fill s-placeholder-input" name="password_placeholder" value="{$auth_config.password_placeholder|escape}" />
-                                            </div>
-                                        </div>
-                                        {* Remember me *}
-                                        <div {if !$auth_config.rememberme}style="display: none;" {/if} class="field js-remember-me-preview">
-                                            <div class="value">
-                                                <label><input type="checkbox" checked="checked" disabled /> [s`Remember me`]</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="fields-group">
-                                        {* Captcha *}
-                                        <div class="field js-captcha-preview"{if $auth_config.login_captcha !== waAuthConfig::LOGIN_CAPTCHA_ALWAYS} style="display: none;"{/if}>
-                                            {if $demo_captcha->getOption('invisible')}
-                                            <div class="hint">[`Invisible captcha will be used`]</div>
-                                        {else}
-                                            {$demo_captcha->getHtml()}
-                                        {/if}
-                                        </div>
-                                    </div>
-                                    <div class="fields-group">
-                                    {* Submit *}
-                                        <div class="field">
-                                            <div class="value submit">
-                                                <input type="button" class="button" value="[s`Sign In`]" disabled />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </figure>
                     </div>
                 </div>
             </div>
@@ -391,6 +330,7 @@
                 <img src="" alt="">
             </a>
         </li>
+    </div>
 </div>
 
 {$_locale = [

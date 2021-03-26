@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-03-03 15:09+0300\n"
+"PO-Revision-Date: 2021-03-25 13:02+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1991,6 +1991,9 @@ msgstr ""
 msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"icon10 settings\"></i> for entire template group"
 msgstr ""
 
+msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"fas fa-cog\"></i> for entire template group"
+msgstr ""
+
 msgid "Letter subject"
 msgstr ""
 
@@ -3686,7 +3689,7 @@ msgstr ""
 msgid "Color B"
 msgstr ""
 
-msgid "Angle (&deg;)"
+msgid "Gradient angle (&deg;)"
 msgstr ""
 
 msgid "Text color"
@@ -3726,4 +3729,7 @@ msgid "Copied"
 msgstr ""
 
 msgid "This dashboard can be opened in both browser and TV with the support for basic access to browsing websites. Get the private TV link and open it using an internal browser on your TV."
+msgstr ""
+
+msgid "Show navigation"
 msgstr ""

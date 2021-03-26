@@ -14,13 +14,14 @@ const WaMobileDashboard = ( function($) {
             this.$dashboard_widgets_wrapper = $('.js-dashboard-widgets-wrapper')
             this.$bottombar = $('.js-bottombar')
             this.$dashboard_tabs = this.$wrapper.find('.dashboard-tabs')
+            this.$dashboard_apps = this.$wrapper.find('.js-dashboard-apps > ul')
 
             this.switchBottombar()
             this.searchPanel()
             setInterval(this.updateCount, 60000);
             this.closeNotification()
             this.switchDashboards()
-            this.setActiveTab()
+            this.sortableApps()
         }
 
         searchPanel() {
@@ -44,7 +45,8 @@ const WaMobileDashboard = ( function($) {
         switchBottombar() {
             let that = this,
                 $bottombar_item = that.$bottombar.find('li'),
-                current_item = localStorage.getItem('wa/dashboard/mobile/nav') || false;
+                current_item = localStorage.getItem('wa/dashboard/mobile/nav') || false,
+                $dashboard_home_tab = that.$dashboard_tabs.find('ul > li:first-child');
 
             $bottombar_item.each(function () {
                 let $item = $(this),
@@ -62,6 +64,7 @@ const WaMobileDashboard = ( function($) {
                     $item = $(this).closest('li');
 
                 $item.addClass('selected').siblings().removeClass('selected')
+                $dashboard_home_tab.addClass('selected').siblings().removeClass('selected')
                 that.$wrapper.find(`section[data-nav="${nav}"]`).show().siblings().hide()
                 localStorage.setItem('wa/dashboard/mobile/nav', nav);
 
@@ -76,7 +79,6 @@ const WaMobileDashboard = ( function($) {
                 url: backend_url + "?action=count",
                 data: {'background_process': 1},
                 success: function (response) {
-                    console.log(response)
                     if (response && response.status == 'ok') {
                         // announcements
                         if (response.data.__announce) {
@@ -157,17 +159,27 @@ const WaMobileDashboard = ( function($) {
                 $default_dashboard = document.querySelector('.d-widgets-block'),
                 $user_dashboard = $('.js-dashboard-widgets-page');
 
-            /**
-             * Get Default Dashboard From Controller
-            $.post('?module=backend&action=defaultMobileAction', { }, function(response) {
-                $default_dashboard = $(response)[0].querySelector('.d-widgets-block');
-            });
-             */
+            let is_move_event = false;
 
-            $user_dashboard.on('click touchstart', function (e) {
-                e.preventDefault();
-                let id = $(this).data('dashboard'),
+            $user_dashboard.on('touchmove', function () {
+                is_move_event = true;
+            })
+
+            $user_dashboard.on('touchend', function () {
+                if (is_move_event) {
+                    is_move_event = false
+                    return;
+                }
+
+                let self = $(this),
+                    id = self.data('dashboard'),
                     waLoading = $.waLoading();
+
+                if (id == 0) {
+                    that.$bottombar.find('[data-nav="widgets"]').trigger('click')
+                    self.parent().addClass('selected').siblings().removeClass('selected');
+                    return;
+                }
 
                 waLoading.show();
 
@@ -196,6 +208,8 @@ const WaMobileDashboard = ( function($) {
                         if ($dashboard_page_html !== undefined) {
                             that.$dashboard_widgets_wrapper.empty().html($dashboard_page_html);
                         }
+
+                        self.parent().addClass('selected').siblings().removeClass('selected');
                     }
                 });
 
@@ -221,6 +235,7 @@ const WaMobileDashboard = ( function($) {
                 }
             });
 
+            is_move_event = false;
             /* Set Default Dashboard */
             that.$bottombar.on('click touchstart', 'a[data-nav="widgets"]', function (e){
                 e.preventDefault();
@@ -228,11 +243,48 @@ const WaMobileDashboard = ( function($) {
             })
         }
 
-        setActiveTab() {
-            this.$dashboard_tabs.on('click touchstart', 'li', function (e) {
-                e.preventDefault();
-                $(this).addClass('selected').siblings().removeClass('selected');
-            })
+        sortableApps() {
+            let that = this;
+
+            const app_list_sortable = () => {
+                that.$dashboard_apps.sortable({
+                    delay: 100,
+                    delayOnTouchOnly: true,
+                    animation: 150,
+                    dataIdAttr: 'data-app',
+                    forceFallback: true,
+                    onEnd() {
+                        let data = this.toArray(),
+                            apps = [];
+
+                        for (let i = 0; i < data.length; i++) {
+                            let id = $.trim(data[i]);
+                            if (id) {
+                                apps.push(id);
+                            }
+                        }
+
+                        let url = backend_url + "?module=settings&action=save";
+                        $.post(url, {name: 'apps', value: apps});
+                    }
+                })
+            }
+
+            if(typeof Sortable !== 'undefined') {
+                app_list_sortable()
+            } else {
+                let urls = [];
+                urls.push('/wa-content/js/sortable/sortable.min.js');
+                urls.push('/wa-content/js/sortable/jquery-sortable.min.js');
+
+                $.when.apply($, $.map(urls, function(file) {
+                    return $.ajax({
+                        cache: true,
+                        dataType: "script",
+                        url: file
+                    });
+                })).done(app_list_sortable);
+            }
         }
     }
 })(jQuery);

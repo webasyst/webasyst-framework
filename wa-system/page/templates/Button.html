@@ -1,7 +1,7 @@
 <div class="wa-cheatsheet-dropdown">
     <div class="wa-drop-link">
         <a class="inline-link" id="wa-editor-help-link-{$cheat_sheet_name|escape}" href="#">
-            <i class="far fa-file-alt"></i> [s`Cheat sheet`]
+            <i class="fas fa-code"></i> [s`Cheat sheet`]
             <i class="fas fa-caret-up"></i>
         </a>
         <div id="wa-editor-help-{$cheat_sheet_name|escape}" class="wa-cheatsheet-dropdown-block blank"></div>
@@ -17,8 +17,8 @@
                         this.insertVarEvent();
                     },
                     getHelpEvent: function () {
-                        $("#wa-editor-help-link-" + cheat_sheet_name).on('click', function(e) {
-                            e.preventDefault();
+                        $("#wa-editor-help-link-" + cheat_sheet_name).on('click', function() {
+
                             let $help = $("#wa-editor-help-" + cheat_sheet_name),
                                 data = $.cheatsheet[cheat_sheet_name].data;
 
@@ -52,16 +52,20 @@
                             } else {
                                 showHelp();
                             }
+                            return false;
                         });
                     },
                     insertVarEvent: function () {
                         $("#wa-editor-help-" + cheat_sheet_name).on('click', ".fields a", function(e) {
                             e.preventDefault();
-                            let el = $(this).find('i'),
+                            let el = $(this),
                                 $design_content = $("#wa-design-content"),
                                 $el_rte = $(".el-rte"),
                                 $page_content = $('#wa-page-content');
 
+                            if (el.children('i').length) {
+                                el = el.children('i');
+                            }
                             if (el.children('b').length) {
                                 el = el.children('b');
                             }
@@ -104,5 +108,3 @@
         </script>
     </div>
 </div>
-
-

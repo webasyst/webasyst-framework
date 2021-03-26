@@ -6,20 +6,11 @@ html.mobile #wa-nav #wa-header {
   background: var(--background-color-wa-header);
 }
 html.mobile #wa-nav #wa-header .wa-header-sitename {
-  flex: 1;
+  display: inline-block;
   overflow: hidden;
-  margin-right: 1rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   position: relative;
-}
-html.mobile #wa-nav #wa-header .wa-header-sitename::after {
-  content: '';
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, var(--background-color-wa-header) 100%);
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 1rem;
-  height: 100%;
-  z-index: 1;
 }
 html.mobile #wa-nav #wa-header .wa-header-sitename .h3 {
   margin-bottom: 0;
@@ -183,7 +174,7 @@ html.mobile #wa-app .content .dashboard-widgets {
 }
 html.mobile #wa-app .content .dashboard-widgets .dashboard-tabs {
   width: 100vw;
-  background: #e5e5e5;
+  background: var(--background-color);
   top: 4rem;
   left: 0;
   z-index: 1;
@@ -193,7 +184,7 @@ html.mobile #wa-app .content .dashboard-widgets .dashboard-tabs::before {
   content: '';
   width: 1rem;
   height: 3.25rem;
-  background: linear-gradient(-90deg, rgba(255,255,255,0) 0%, #e5e5e5 50%);
+  background: linear-gradient(-90deg, var(--dashboard-widget-fade-background-start) 0%, var(--background-color) 50%);
   display: block;
   position: absolute;
   top: 0;
@@ -204,7 +195,7 @@ html.mobile #wa-app .content .dashboard-widgets .dashboard-tabs::after {
   content: '';
   width: 1rem;
   height: 3.25rem;
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, #e5e5e5 50%);
+  background: linear-gradient(90deg, var(--dashboard-widget-fade-background-start) 0%, var(--background-color) 50%);
   display: block;
   position: absolute;
   top: 0;
@@ -295,7 +286,7 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  justify-content: flex-start;
+  justify-content: center;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper {
   position: relative;
@@ -405,9 +396,9 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   -moz-transition: box-shadow 300ms linear;
   -ms-transition: box-shadow 300ms linear;
   transition: box-shadow 300ms linear;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 0.5rem;
+  -moz-border-radius: 0.5rem;
+  border-radius: 0.5rem;
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container {
   position: absolute;
@@ -504,9 +495,9 @@ html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-bloc
   width: 100%;
   height: 100%;
   overflow: hidden;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+  -webkit-border-radius: 0.5rem;
+  -moz-border-radius: 0.5rem;
+  border-radius: 0.5rem;
   background-color: var(--dashboard-widget-background-color);
 }
 html.mobile #wa-app .content .dashboard-widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-draggable-block {

@@ -1,4 +1,5 @@
 {$_group = $datetime_group|default:''}
+{$_activity_datetime = $activity[0]['datetime']|default:0}
 
 {$today = "[`Today`]"}
 
@@ -49,7 +50,7 @@
 <hr class="custom-mt-16">
 {/if*}
 
-{if strtotime($activity[0]['datetime']) < strtotime(date('Y-m-d'))}
+{if strtotime($_activity_datetime) < strtotime(date('Y-m-d'))}
     <div class="activity-item activity-empty-today">
         <div class="item-content-wrapper">
             <div class="inline-content">

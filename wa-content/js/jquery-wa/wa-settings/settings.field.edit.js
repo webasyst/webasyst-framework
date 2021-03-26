@@ -43,7 +43,7 @@ class WASettingsFieldEdit {
             }
         });
 
-        $form.on('click change', '.js-name-another-language, .js-name-another-language-wrapper', function () {
+        $form.on('change', '.js-name-another-language-wrapper', function () {
             let $el = $(this).find('option:selected'),
                 id = $el.data('id'),
                 region = $el.data('name-region'),
@@ -57,12 +57,12 @@ class WASettingsFieldEdit {
                 .attr('disabled', false)
                 .attr('data-main-locale', '')
                 .attr('data-error-id', id)
-                .removeClass('error')
+                .removeClass('state-error')
                 .end()
                 .find('.s-name-region')
                 .text(region)
                 .end()
-                .find('.errormsg')
+                .find('.state-error-hint')
                 .text('')
                 .end()
                 .insertAfter($main_wrapper);
@@ -90,7 +90,7 @@ class WASettingsFieldEdit {
             $form = that.$form,
             xhr = null;
 
-        $form.on('input', function () {
+        $form.on('input change', function () {
             that.toggleButton(true);
         });
 
@@ -158,7 +158,7 @@ class WASettingsFieldEdit {
         let that = this,
             $form = that.$form,
             $button = that.$button,
-            $loading = $('<i class="fas fa-spinner fa-spin" style="vertical-align: middle;margin-left: 10px;"></i>'),
+            $loading = $('<i class="fas fa-spinner fa-spin loading" style="vertical-align: middle;margin-left: 10px;"></i>'),
             href = $form.attr('action'),
             data = $form.serialize();
 
@@ -168,14 +168,14 @@ class WASettingsFieldEdit {
 
         // Validation
         let validation_passed = true;
-        $form.find('.errormsg').text('');
-        $form.find('.error').removeClass('error');
+        $form.find('.state-error-hint').text('');
+        $form.find('.state-error').removeClass('state-error');
         $('[name$="[localized_names]"]').each(function() {
             let self = $(this);
             if (!self.val() && self.parents('.template').length <= 0) {
                 if (self.closest('tr').find('[name$="[_disabled]"]:checked').length) {
                     validation_passed = false;
-                    self.addClass('error').parent().append($('<em class="errormsg"></em>').text(that.locales["field_is_required"]));
+                    self.addClass('state-error').parent().append($('<em class="state-error"></em>').text(that.locales["field_is_required"]));
                 }
             }
         });
@@ -190,7 +190,7 @@ class WASettingsFieldEdit {
         $.post(href, data, function (r) {
             if (r.status == 'ok') {
                 $('.loading').remove();
-                let $done = $('<i class="icon16 yes" style="vertical-align: middle;margin-left: 10px;"></i>');
+                let $done = $('<i class="fas fa-check-circle" style="vertical-align: middle;margin-left: 10px;"></i>');
                 $done.appendTo($button.parent());
                 setTimeout(function() {
                     $.wa.content.reload();
@@ -204,17 +204,17 @@ class WASettingsFieldEdit {
                 for (let i = 0, l = r.errors.length; i < l; i += 1) {
                     let e = r.errors[i];
                     if (typeof e === 'string') {
-                        $form.find('.errormsg.s-common-errors').append(e);
+                        $form.find('.state-error').append(e);
                     } else if (typeof e === 'object') {
                         for (let k in e) {
                             if (e.hasOwnProperty(k)) {
                                 let input = $form.find('[data-error-id="' + k + '"]');
-                                input.addClass('error');
-                                input.nextAll('.errormsg:first').text(e[k]);
+                                input.addClass('state-error');
+                                input.nextAll('.state-error-hint:first').text(e[k]);
 
-                                $form.one('input, keydown', '.error', function () {
-                                    $(this).removeClass('error')
-                                        .nextAll('.errormsg:first').empty();
+                                $form.one('input, keydown', '.state-error', function () {
+                                    $(this).removeClass('state-error')
+                                        .nextAll('.state-error-hint:first').empty();
                                 });
                             }
                         }
@@ -271,7 +271,7 @@ class WASettingsFieldEdit {
 
                 $submit.prop('disabled', true);
 
-                $loading = $loading.length ? $loading : $('<i class="icon16 loading"></i>');
+                $loading = $loading.length ? $loading : $('<i class="fas fa-spinner fa-spin loading" style="vertical-align: middle;margin-left: 10px;"></i>');
                 $loading.insertAfter($id_val_input);
 
                 transliterateTimer && clearTimeout(transliterateTimer);
@@ -388,7 +388,7 @@ class WASettingsFieldEdit {
             let $select = $(this),
                 $tr = $select.closest('tr'),
                 $table = $tr.closest('table'),
-                $adv_settings_block = $tr.find('.field-advanced-settings').html('<i class="fas fa-spinner fa-spin"></i>');
+                $adv_settings_block = $tr.find('.field-advanced-settings').html('<i class="fas fa-spinner fa-spin loading" style="vertical-align: middle;margin-left: 10px;"></i>');
 
             $.post('?module=settingsFieldEditor', {
                 ftype: $select.val(),
@@ -411,9 +411,9 @@ class WASettingsFieldEdit {
             $button = that.$button;
 
         if (is_changed) {
-            $button.removeClass("green").addClass("yellow").removeAttr("disabled");
+            $button.addClass("yellow").removeAttr("disabled");
         } else {
-            $button.removeClass("yellow").addClass("green");
+            $button.removeClass("yellow");
         }
     }
 }

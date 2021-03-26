@@ -72,7 +72,7 @@
                     <div class="name">[s`Field ID`]</div>
                     <div class="value">
                         {if !$field}
-                            <input type="text" name="id_val" data-error-id="id_val" value="{$field.id}">
+                            <input type="text" name="id_val" data-error-id="id_val" value="">
                         {else}
                             <span>{$field.id|escape}</span>
                         {/if}
@@ -111,24 +111,24 @@
                     <div class="value">
                         {* Person *}
                         <label>
-                            {if $field.type == 'Address'} <input type="hidden" name="type[]" value="person" />{/if}
+                            {if $field && $field.type == 'Address'} <input type="hidden" name="type[]" value="person" />{/if}
                             <input type="checkbox" name="type[]"
                                 value="person"
                                 {if !$field || $field.pStatus != 'disabled' || $field.type == 'Address'}checked="checked"{/if}
-                                {if $field.type === 'Email'}disabled="disabled"{/if}{if $field.type == 'Address'} disabled="disabled"{/if}>
+                                {if $field && $field.type === 'Email'}disabled="disabled"{/if}{if $field && $field.type == 'Address'} disabled="disabled"{/if}>
                             [s`Person`]
                         </label>
                         <br>
                         {* Company *}
                         <label>
-                            {if $field.type == 'Address'} <input type="hidden" name="type[]" value="company" />{/if}
+                            {if $field && $field.type == 'Address'} <input type="hidden" name="type[]" value="company" />{/if}
                             <input type="checkbox" name="type[]"
                                 value="company"
-                                {if $field && ($field.cStatus != 'disabled' || $field.type == 'Address')}checked="checked"{/if}{if $field.type == 'Address'} disabled="disabled"{/if}>
+                                {if $field && ($field.cStatus != 'disabled' || $field.type == 'Address')}checked="checked"{/if}{if $field && $field.type == 'Address'} disabled="disabled"{/if}>
                             [s`Company`]
                         </label>
                     </div>
-                    {if $field.type == 'Address'}
+                    {if $field && $field.type == 'Address'}
                         <div class="value hint">
                             [`“Address” is a complex field, which cannot be completely disabled; you can only edit its components listed below.`]
                         </div>
@@ -136,7 +136,7 @@
                 </div>
 
                 {* Adress fields *}
-                {if !empty($field.id) && $field.type == 'Address' && !$field.disabled}
+                {if $field && !empty($field.id) && $field.type == 'Address' && !$field.disabled}
                     <div class="field">
                         <div class="name">[s`Address fields`]</div>
                     </div>
