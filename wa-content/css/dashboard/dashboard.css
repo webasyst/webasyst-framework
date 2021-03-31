@@ -99,9 +99,41 @@
 }
 #wa-app .content .wa-dashboard-page,
 #wa-app .content #dashboard-wrapper {
+  --widget-width: 323px;
+  --widgets-count: 1;
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: auto minmax(calc(var(--widget-width) * var(--widgets-count)), min-content);
   gap: 1rem;
+}
+@media screen and (min-width: 1333px) {
+  #wa-app .content .wa-dashboard-page,
+  #wa-app .content #dashboard-wrapper {
+    --widgets-count: 2;
+  }
+}
+@media screen and (min-width: 1656px) {
+  #wa-app .content .wa-dashboard-page,
+  #wa-app .content #dashboard-wrapper {
+    --widgets-count: 3;
+  }
+}
+@media screen and (min-width: 1979px) {
+  #wa-app .content .wa-dashboard-page,
+  #wa-app .content #dashboard-wrapper {
+    --widgets-count: 4;
+  }
+}
+@media screen and (min-width: 2302px) {
+  #wa-app .content .wa-dashboard-page,
+  #wa-app .content #dashboard-wrapper {
+    --widgets-count: 5;
+  }
+}
+@media screen and (min-width: 2625px) {
+  #wa-app .content .wa-dashboard-page,
+  #wa-app .content #dashboard-wrapper {
+    --widgets-count: 6;
+  }
 }
 #wa-app .content .wa-dashboard-page #wa_announcement,
 #wa-app .content #dashboard-wrapper #wa_announcement {
@@ -1386,6 +1418,7 @@
   box-shadow: inset 1px 0 0 var(--list-item-selected-background-color);
   padding: 2rem 2.5rem;
   box-sizing: border-box;
+  overflow-y: auto; /* for Firefox */
   overflow-y: overlay;
 }
 .widgets-list-wrapper .list-group-wrapper:not(last-child) {
@@ -1542,4 +1575,7 @@
 }
 .is-custom-edit-mode .widget-group-wrapper .widget-inner-container .widget-block {
   background-color: var(--background-color-blank) !important;
+}
+.widget-item-wrapper.sortable-drag > *:not(.image-wrapper) {
+  display: none;
 }

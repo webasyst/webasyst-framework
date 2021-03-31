@@ -460,9 +460,9 @@ textarea.largest { font-size: 150%; height: 11em; }
 .wa-radio input:checked + span { background: var(--accent-color); }
 .wa-radio input:checked + span:before { background: var(--white); }
 
-.wa-select { position: relative; display: inline-block; background: var(--background-color-input); border-radius: 0.25em; margin-right: 0.25em; transition: 0.1s; }
-.wa-select:before { content: ""; display: block; position: absolute; top: 50%; right: 1em; margin: -0.125em 0 0; border: solid transparent; border-width: 0.375em; border-top-color: var(--text-color-hint); }
-.wa-select select { position: relative; display: inline-block; padding: 0.3125em 2em 0.3125em 0.5em; line-height: 1.5em; margin: 0; border: 0.125em solid var(--border-color-input); border-radius: 0.25em; color: var(--text-color-input); -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none; background: transparent; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; cursor: pointer; font-size: 100%; min-width: 100%; }
+.wa-select { position: relative; display: inline-block; background: var(--background-color-input); border-radius: 0.25em; margin-right: 0.25em; transition: 0.1s; max-width: 100%; }
+.wa-select:before { content: ""; display: block; position: absolute; top: 50%; right: 0.75em; margin: -0.125em 0 0; border: solid transparent; border-width: 0.375em; border-top-color: var(--text-color-hint); }
+.wa-select select { position: relative; display: inline-block; padding: 0.1875em 2.25em 0.1875em 0.375em; line-height: 1.5em; margin: 0; border: 0.125em solid var(--border-color-input); border-radius: 0.25em; color: var(--text-color-input); -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none; background: transparent; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; cursor: pointer; font-size: 100%; min-width: 100%; }
 
 .wa-select:hover { background: var(--background-color-input-solid); }
 
@@ -476,6 +476,8 @@ textarea.largest { font-size: 150%; height: 11em; }
 .wa-select.large { font-size: 112.5%; }
 .wa-select.larger { font-size: 125%; }
 .wa-select.largest { font-size: 150%; }
+
+.wa-select.full-width,
 .wa-select.full-width select { width: 100%; }
 
 input.state-error, textarea.state-error, select.state-error { border-color: var(--red) !important; }
@@ -1965,7 +1967,7 @@ ul.thumbs > li.highlighted > a img { box-shadow: 0 0.25rem 1.5rem -0.25rem var(-
 .upload { position: relative; width: 100%;}
 .upload > label { z-index: 0; }
 .upload > label > svg { margin-right: .25rem; }
-.upload > label > [type="file"] { position: absolute; top: 0; left: 0; z-index: -1; margin: 0; opacity: 0; }
+.upload > label > [type="file"] { position: absolute; top: 0; left: 0; z-index: -1; margin: 0; opacity: 0; width: 0 }
 .upload > label ~ .filename { display: block; }
 
 /* Custom paddings & margins

@@ -1,0 +1,126 @@
+.s-weather
+    height: 100%;
+    box-sizing: border-box
+    display flex
+    flex-direction column
+    justify-content flex-end
+    background: #1c60ac;
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+    padding: 16px;
+
+    .s-weather-icon-wrapper
+        position absolute
+        top: -1rem
+        left: 0
+        width 100%
+        height auto
+        text-align center
+
+        .s-weather-icon
+            position relative
+            display inline-block
+            width: 16em;
+            height: 16em;
+            background-size: 16em 16em;
+
+    .info-wrapper
+        & > *
+            color: #fff
+        h2
+            margin: 0 0 4px 0
+            font-weight: 700;
+            font-size: 3.5rem;
+            padding-left 6%
+
+        h4
+            margin: .75em 0 0
+            opacity: 0.8;
+            font-weight: normal;
+
+    .wa-no-weather
+        padding: 2em 0;
+        font-weight: normal;
+        color: #fff;
+
+    &.s-weather-day
+        background: radial-gradient(68.67% 68.67% at 50% 31.33%, #8AD6E6 0%, #45A2E6 100%);
+
+    &.s-weather-night
+        background: radial-gradient(68.67% 68.67% at 50% 31.33%, #2F2D73 0%, #270E33 100%);
+        background-image: url("/wa-widgets/weather/img/night.jpg");
+        background-size: cover;
+
+    &.s-weather-notavailable
+        background: #aaa;
+
+.widget-2x1
+    .s-weather
+        justify-content: center;
+        align-items: center;
+        padding-left: calc(8.063rem + 16px);
+        &.s-weather-notavailable
+            padding-top: 0
+        .wa-no-weather
+            padding: 2em 2.75em;
+        .info-wrapper
+            h2
+                font-size: 2.5rem
+            h6
+                font-size .875rem
+                margin-top 0
+        .s-weather-icon-wrapper
+            top: .5rem
+            left .5rem
+            text-align left
+
+            .s-weather-icon
+                width: 8.063rem;
+                height: 8.063rem;
+                background-size: 8.063rem 8.063rem;
+
+
+
+.widget-1x1
+    .s-weather
+        &.s-weather-notavailable
+            padding-top: 0
+        .s-weather-icon-wrapper
+            top: -.25rem
+            text-align center
+            .s-weather-icon
+                width: 6rem;
+                height: 6rem;
+                background-size: 6rem 6rem;
+
+        h2
+            font-size: 1.3rem
+        h6
+            margin 0
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 100%;
+
+.widget-2x2
+    .s-weather
+        &.s-weather-notavailable
+            padding-top: 0
+        .info-wrapper
+            h6
+                font-size 1.125rem
+                margin 0
+
+        .wa-no-weather
+            padding: 4em 1.5em;
+
+.mobile
+    .s-weather
+        font-size: 1.1rem;
+    .widget-1x1
+    .widget-2x1
+        .s-weather
+            h2
+                font-size: 2em;

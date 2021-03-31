@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-03-25 13:03+0300\n"
+"PO-Revision-Date: 2021-03-30 16:52+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -6435,3 +6435,6 @@ msgstr "Этот дашборд можно открыть на любом тел
 
 msgid "Show navigation"
 msgstr "Показать меню"
+
+msgid "Your dashboard is empty. Add widgets by clicking \"Edit Widgets\" button on the top."
+msgstr "Дашборд пока пустой. Добавьте виджеты, щелкнув по ссылке «Виджеты» выше."

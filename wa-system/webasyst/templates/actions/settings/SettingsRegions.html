@@ -12,7 +12,7 @@
                     <div class="value">
                         <span class="icon" style="background: url('{$wa_url}wa-content/img/country/{$country.iso3letter}.gif')  no-repeat center;"></span>
                         {$selected = false}
-                        <div class="wa-select full-width">
+                        <div class="wa-select"{if $wa->isMobile()} style="max-width: 250px;"{/if}>
                             <select class="js-country-selector">
                                 {if !$country.iso3letter}
                                     <option value="">[s`Select a country`]</option>
@@ -41,7 +41,7 @@
                         [s`Regions`]
                     </div>
                     <div class="value">
-                        <div style="display: block; width: calc(100vw - 2rem); overflow-x: auto; -webkit-overflow-scrolling: touch">
+                        <div style="display: block; max-width: calc(100vw - 2rem); overflow-x: auto; -webkit-overflow-scrolling: touch">
                         <table class="js-regions-table zebra small">
                             <thead>
                             <tr>

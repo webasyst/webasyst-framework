@@ -6,7 +6,7 @@
     {include file="./sidebar/SidebarEmail.html" inline}
 
     {* CONTENT *}
-    <div class="content" id="s-email-template-wrapper">
+    <div class="content" id="s-email-template-wrapper"{if $wa->isMobile()} style="margin-bottom: 1rem"{/if}>
         <div class="article">
             <div class="article-body">
                 {if $channel->getId()}

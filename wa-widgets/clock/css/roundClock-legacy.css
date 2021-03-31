@@ -1,0 +1,137 @@
+.round-clock-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+}
+.round-clock-wrapper .town-name-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  text-align: center;
+  font-weight: bold;
+  color: #555;
+}
+.round-clock-wrapper .round-clock-block {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.round-clock-wrapper .round-clock-block svg {
+  display: block;
+  margin: auto;
+  stroke: #aaa;
+}
+.round-clock-wrapper .round-clock-block .second-hand {
+  stroke: #a00;
+  stroke-width: 0.25em;
+}
+.round-clock-wrapper .round-clock-block .minute-hand {
+  stroke: #000;
+  stroke-width: 0.5em;
+  stroke-linecap: round;
+}
+.round-clock-wrapper .round-clock-block .hour-hand {
+  stroke: #000;
+  stroke-width: 0.75em;
+  stroke-linecap: round;
+}
+.round-clock-wrapper .round-clock-block .hands-cover {
+  stroke-width: 0.25em;
+  fill: #fff;
+  stroke: #a00;
+}
+.round-clock-wrapper .round-clock-block .second-tick {
+  stroke-width: 0.125em;
+  fill: #000;
+}
+.round-clock-wrapper .round-clock-block .hour-tick {
+  stroke-width: 0.25em;
+}
+.round-clock-wrapper .round-clock-block .second-label {
+  font-size: 1em;
+  fill: #aaa;
+}
+.round-clock-wrapper .round-clock-block .hour-label {
+  font-size: 1.5em;
+}
+.widget-1x1 .round-clock-wrapper .round-clock-block .second-hand,
+.widget-2x1 .round-clock-wrapper .round-clock-block .second-hand {
+  stroke-width: 0.125em;
+}
+.widget-1x1 .round-clock-wrapper .round-clock-block .minute-hand,
+.widget-2x1 .round-clock-wrapper .round-clock-block .minute-hand,
+.widget-1x1 .round-clock-wrapper .round-clock-block .hour-hand,
+.widget-2x1 .round-clock-wrapper .round-clock-block .hour-hand {
+  stroke-width: 0.25em;
+}
+.widget-1x1 .round-clock-wrapper .round-clock-block .hands-cover,
+.widget-2x1 .round-clock-wrapper .round-clock-block .hands-cover {
+  stroke-width: 0.125em;
+}
+.widget-1x1 .round-clock-wrapper .round-clock-block .second-tick,
+.widget-2x1 .round-clock-wrapper .round-clock-block .second-tick {
+  stroke-width: 0.125em;
+}
+.widget-1x1 .round-clock-wrapper .round-clock-block .hour-tick,
+.widget-2x1 .round-clock-wrapper .round-clock-block .hour-tick {
+  stroke-width: 0.125em;
+}
+.widget-1x1 .round-clock-wrapper .round-clock-block .second-label,
+.widget-2x1 .round-clock-wrapper .round-clock-block .second-label {
+  font-size: 0.75em;
+}
+.widget-1x1 .round-clock-wrapper .round-clock-block .hour-label,
+.widget-2x1 .round-clock-wrapper .round-clock-block .hour-label {
+  font-size: 0.75em;
+}
+.widget-1x1 .round-clock-wrapper.has-town .round-clock-block .second-label,
+.widget-2x1 .round-clock-wrapper.has-town .round-clock-block .second-label,
+.widget-2x2 .round-clock-wrapper.has-town .round-clock-block .second-label {
+  display: none;
+}
+.widget-1x1 .round-clock-wrapper .town-name-wrapper,
+.widget-2x1 .round-clock-wrapper .town-name-wrapper {
+  padding: 0 0 0.5em;
+}
+.widget-2x1 .round-clock-wrapper .round-clock-block {
+  left: 25%;
+  width: 50%;
+}
+.widget-2x2 .round-clock-wrapper .town-name-wrapper {
+  padding: 0 0 1em;
+}
+.tv .round-clock-wrapper {
+  background: #000;
+  width: 100.5%;
+  height: 100.5%;
+  font-size: 1rem;
+}
+.tv .round-clock-wrapper .town-name-wrapper {
+  color: #d0d0d0;
+}
+.tv .round-clock-wrapper .round-clock-block .minute-hand,
+.tv .round-clock-wrapper .round-clock-block .hour-hand {
+  stroke: #fff;
+}
+.tv .round-clock-wrapper .round-clock-block .hour-tick {
+  stroke: #d0d0d0;
+}
+.tv .round-clock-wrapper .round-clock-block .second-tick {
+  stroke: #aaa;
+}
+.tv .round-clock-wrapper .round-clock-block .hands-cover {
+  fill: #000;
+}
+.mobile .round-clock-wrapper {
+  font-size: 1rem;
+}

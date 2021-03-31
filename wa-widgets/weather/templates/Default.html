@@ -1,52 +1,105 @@
-<style>
-    {include file="../css/weather.css" inline}
-.s-weather.s-weather-night {
-  background: #0f2657 url("{$wa_url}img/night.jpg") no-repeat;
-}
-</style>
+{* WA2 Widget*}
+{if $wa->whichUI() == '2.0'}
+    <style>
+        {include file="../css/weather.css" inline}
+    </style>
 
-{$_widget_class = "s-weather-day"}
-{if empty($weather.weather.icon)}
-    {$_widget_class = "s-weather-notavailable"}
-{else}
-    {if $weather.weather.icon|strstr:'n'}
-        {$_widget_class = "s-weather-night"}
-    {/if}
-{/if}
-
-<div class="s-weather {$_widget_class}" id="s-weather-widget-{$info['id']}">
-
-    {if empty($weather) || !empty($weather.message)}
-        {if !empty($weather.message) && $weather.message !== 'Error: Not found city'}
-            <div class="errormsg">{$weather.message}</div>
-        {else}
-            <h5 class="align-center hint wa-no-weather">
-                {if $city}
-                    {sprintf('[`Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|escape|default:'[`(unknown city)`]')}
-                {else}
-                    [`Please enter city name in your contact information or in this widget settings.`]
-                {/if}
-            </h5>
-        {/if}
+    {$_widget_class = "s-weather-day"}
+    {if empty($weather.weather.icon)}
+        {$_widget_class = "s-weather-notavailable"}
     {else}
-
-        <div class="s-weather-icon-wrapper">
-            <div class="s-weather-icon" style="background-image: url('{$wa_url}wa-widgets/weather/img/{$weather.weather.icon|default:'unknown'}.png');"></div>
-        </div>
-
-        <h2>{$weather.main.temp}&deg;{if $unit == "F"}F{/if}</h2>
-        <h6>{$city|escape}</h6>
-
+        {if $weather.weather.icon|strstr:'n'}
+            {$_widget_class = "s-weather-night"}
+        {/if}
     {/if}
-</div>
 
-<script>(function($) {
+    <div class="s-weather {$_widget_class}" id="s-weather-widget-{$info['id']}">
 
-    setTimeout(function() {
-        var widget_id = "{$info['id']}";
-        try {
-            DashboardWidgets[widget_id].renderWidget();
-        } catch (e) {}
-    }, 15 * 60 * 1000);
+        {if empty($weather) || !empty($weather.message)}
+            {if !empty($weather.message) && $weather.message !== 'Error: Not found city'}
+                <div class="state-error">{$weather.message}</div>
+            {else}
+                <h5 class="align-center hint wa-no-weather">
+                    {if $city}
+                        {sprintf('[`Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|escape|default:'[`(unknown city)`]')}
+                    {else}
+                        [`Please enter city name in your contact information or in this widget settings.`]
+                    {/if}
+                </h5>
+            {/if}
+        {else}
 
-})(jQuery);</script>
+            <div class="s-weather-icon-wrapper">
+                <div class="s-weather-icon" style="background-image: url('{$wa_url}wa-widgets/weather/img/{$weather.weather.icon|default:'unknown'}.png');"></div>
+            </div>
+            <div class="info-wrapper">
+                <h2>{$weather.main.temp}&deg;{if $unit == "F"}F{/if}</h2>
+                <h6>{$city|escape}</h6>
+            </div>
+        {/if}
+    </div>
+
+    <script>(function($) {
+
+        setTimeout(function() {
+            var widget_id = "{$info['id']}";
+            try {
+                DashboardWidgets[widget_id].renderWidget();
+            } catch (e) {}
+        }, 15 * 60 * 1000);
+
+    })(jQuery);</script>
+{else}
+    <style>
+        {include file="../css/weather-legacy.css" inline}
+        .s-weather.s-weather-night {
+            background: #0f2657 url("{$wa_url}wa-widgets/weather/img-legacy/night.jpg") no-repeat;
+        }
+    </style>
+
+    {$_widget_class = "s-weather-day"}
+    {if empty($weather.weather.icon)}
+        {$_widget_class = "s-weather-notavailable"}
+    {else}
+        {if $weather.weather.icon|strstr:'n'}
+            {$_widget_class = "s-weather-night"}
+        {/if}
+    {/if}
+
+    <div class="s-weather {$_widget_class}" id="s-weather-widget-{$info['id']}">
+
+        {if empty($weather) || !empty($weather.message)}
+            {if !empty($weather.message) && $weather.message !== 'Error: Not found city'}
+                <div class="errormsg">{$weather.message}</div>
+            {else}
+                <h5 class="align-center hint wa-no-weather">
+                    {if $city}
+                        {sprintf('[`Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|escape|default:'[`(unknown city)`]')}
+                    {else}
+                        [`Please enter city name in your contact information or in this widget settings.`]
+                    {/if}
+                </h5>
+            {/if}
+        {else}
+
+            <div class="s-weather-icon-wrapper">
+                <div class="s-weather-icon" style="background-image: url('{$wa_url}wa-widgets/weather/img-legacy/{$weather.weather.icon|default:'unknown'}.png');"></div>
+            </div>
+
+            <h2>{$weather.main.temp}&deg;{if $unit == "F"}F{/if}</h2>
+            <h6>{$city|escape}</h6>
+
+        {/if}
+    </div>
+
+    <script>(function($) {
+
+            setTimeout(function() {
+                var widget_id = "{$info['id']}";
+                try {
+                    DashboardWidgets[widget_id].renderWidget();
+                } catch (e) {}
+            }, 15 * 60 * 1000);
+
+        })(jQuery);</script>
+{/if}

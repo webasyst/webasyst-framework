@@ -50,14 +50,16 @@ const WidgetSort = ( function($) {
                             let $element = $(to.el),
                                 count_small_widgets = $element.children('.widget-1x1').length,
                                 count_middle_widgets = $element.children('.widget-2x1').length,
-                                is_middle = that.$dragged?.classList.contains('widget-2x1');
+                                is_middle = that.$dragged?.classList.contains('widget-2x1'),
+                                is_widgets_list_block = from.el.classList.contains('list-wrapper');
 
                             return !(count_small_widgets === 4
                                 || count_middle_widgets === 2
                                 || (count_small_widgets === 2 && count_middle_widgets)
                                 || from.el.getAttribute('id') === 'd-widgets-block'
                                 || (count_middle_widgets && is_middle)
-                                || (count_small_widgets === 3 && is_middle));
+                                || (count_small_widgets === 3 && is_middle)
+                                || is_widgets_list_block);
                         }
                     },
                     handle: '.widget-wrapper',
@@ -67,10 +69,10 @@ const WidgetSort = ( function($) {
                     ghostClass: 'widget-ghost',
                     chosenClass: 'widget-chosen',
                     dragClass: 'widget-drag',
-                    filter: '.is-removed',
+                    filter: '.is-removed, .js-empty-group',
                     onAdd(event) {
                         // Если положили виджет в пустую группу, то создаем новую пустую группу
-                        if (event.to.classList.contains('js-empty-group')) {
+                        if (event.to.classList.contains('js-empty-group') && !event.from.classList.contains('list-wrapper')) {
                             event.to.classList.remove('js-empty-group')
                             event.to.parentElement.insertAdjacentHTML('beforeend', '<div class="widget-group-wrapper js-nested-sortable js-empty-group"></div>');
                             Sortable.create(document.querySelector('.js-empty-group'), options)
@@ -139,6 +141,9 @@ const WidgetSort = ( function($) {
             const that = this;
             that.$root_widget_groups.sortable({
                 animation: 150,
+                group: {
+                    name: 'root',
+                },
                 ghostClass: 'widget-ghost',
                 chosenClass: 'widget-chosen',
                 dragClass: 'widget-drag',
@@ -1067,7 +1072,7 @@ const Group = ( function($, backend_url) {
             let that = this
             that.prepareToDropNewWidget(event, $widgetImage);
             // Hack. In FF D&D doesn't work without dataTransfer
-            event.originalEvent.dataTransfer.setData("text/html", "<div class=\"anything\"></div>");
+            //event.originalEvent.dataTransfer.setData("text/html", "<div class=\"anything\"></div>");
         }
 
         onWidgetListDragEnd() {
@@ -1245,13 +1250,15 @@ const Group = ( function($, backend_url) {
         // For Custom Dashboard
         onEmptyGroupDrop(event) {
             let that = this,
-                $group = that.storage.getWidgetGroups().last();
+                evt = event.originalEvent,
+                index = event.newIndex,
+                $group = that.storage.getWidgetGroups().eq(index);
 
             if (that.storage.draggedWidget) {
-                that.prepareDrop(event, $group);
+                that.prepareDrop(evt, $group);
 
             } else if (that.storage.newDraggedWidget) {
-                that.onWidgetListDrop(event, $group);
+                that.onWidgetListDrop(evt, $group);
             }
         }
 
@@ -2303,6 +2310,7 @@ const DashboardWidget = ( function($) {
 
             $widgetControls.on("click", ".delete-widget-link", function (e) {
                 e.preventDefault();
+                e.stopPropagation();
                 // Hide button
                 $(this).css("visibility", "hidden");
                 // Delete

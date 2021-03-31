@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-03-25 13:02+0300\n"
+"PO-Revision-Date: 2021-03-30 16:52+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3732,4 +3732,7 @@ msgid "This dashboard can be opened in both browser and TV with the support for 
 msgstr ""
 
 msgid "Show navigation"
+msgstr ""
+
+msgid "Your dashboard is empty. Add widgets by clicking \"Edit Widgets\" button on the top."
 msgstr ""

@@ -1,0 +1,125 @@
+.round-clock-wrapper
+    position absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    font-size: 16px;
+
+    .town-name-wrapper
+        position absolute
+        bottom: 0
+        left: 0
+        width: 100%
+        box-sizing border-box
+
+        white-space nowrap
+        text-overflow ellipsis
+        overflow hidden
+
+        text-align center
+        font-weight bold
+        font-size 18px
+        color: var(--text-color)
+
+    .round-clock-block
+        position absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
+
+        svg
+            display block
+            margin: auto
+            stroke: #aaa;
+
+        .second-hand
+            stroke: #a00;
+            stroke-width: (1em * 0.25)
+
+        .minute-hand
+            stroke: #000;
+            stroke-width: (1em * 0.5)
+            stroke-linecap: round;
+
+        .hour-hand
+            stroke: #000;
+            stroke-width: (1em * 0.75)
+            stroke-linecap: round;
+
+        .hands-cover
+            stroke-width: (1em * 0.25)
+            fill: #fff;
+            stroke: #a00;
+
+        .second-tick
+            stroke-width: (1em * 0.125)
+            fill: #000;
+
+        .hour-tick
+            stroke-width: (1em * 0.25)
+
+        .second-label
+            font-size: (1em * 1)
+            fill: #aaa
+
+        .hour-label
+            font-size (1em * 1.5)
+
+.widget-1x1
+.widget-2x1
+    .round-clock-wrapper
+        .round-clock-block
+            .second-hand
+                stroke-width: (1em * 0.125)
+
+            .minute-hand
+            .hour-hand
+                stroke-width: (1em * 0.25)
+
+            .hands-cover
+                stroke-width: (1em * 0.125)
+
+            .second-tick
+                stroke-width: (1em * 0.125)
+
+            .hour-tick
+                stroke-width: (1em * 0.125)
+
+            .second-label
+                font-size: (1em * 0.75)
+
+            .hour-label
+                font-size: (1em * 0.75)
+
+.widget-1x1
+.widget-2x1
+.widget-2x2
+    .round-clock-wrapper
+        &.has-town
+            .round-clock-block
+                .second-label
+                    display none;
+
+.widget-1x1
+.widget-2x1
+    .round-clock-wrapper
+        .town-name-wrapper
+            padding: 0 0 .5em
+            font-size 14px
+
+.widget-2x1
+    .round-clock-wrapper
+        .round-clock-block
+            left: 25%
+            width: 50%
+
+.widget-2x2
+    .round-clock-wrapper
+        .town-name-wrapper
+            padding: 0 0 1em
+
+.mobile
+    .round-clock-wrapper
+        font-size: 1rem

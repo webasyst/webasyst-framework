@@ -1,55 +1,86 @@
 .electronic-clock-wrapper {
-  display: table;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
+  padding: 16px;
   box-sizing: border-box;
-  text-align: center;
-  line-height: 1;
-  color: #000;
 }
 .electronic-clock-wrapper .electronic-clock-block {
-  display: table-cell;
-  vertical-align: middle;
+  display: flex;
+  height: 100%;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
 }
-.electronic-clock-wrapper .time-wrapper {
-  margin-bottom: 0;
+.electronic-clock-wrapper .electronic-clock-block .date-block {
+  display: flex;
+  height: 100%;
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+}
+.electronic-clock-wrapper .electronic-clock-block .date-block .date-wrapper {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--text-color);
+  margin-bottom: 16px;
+}
+.electronic-clock-wrapper .electronic-clock-block .date-block .date-wrapper span {
+  text-transform: lowercase;
+}
+.electronic-clock-wrapper .electronic-clock-block .date-block .time-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: 3.5rem;
   white-space: nowrap;
+  color: var(--text-color-strongest);
 }
-.electronic-clock-wrapper .time-wrapper .time-format {
-  font-size: 0.66em;
+.electronic-clock-wrapper .electronic-clock-block .date-block .time-wrapper .divider {
+  margin: 0 8px;
+  color: var(--text-color-hint);
 }
-.electronic-clock-wrapper .time-wrapper .divider {
-  position: relative;
-  top: -0.15em;
-  display: inline-block;
-  font-size: 0.8em;
+.electronic-clock-wrapper .electronic-clock-block .date-block .time-wrapper .divider.step-1 {
+  color: var(--text-color);
+}
+.electronic-clock-wrapper .electronic-clock-block .town-wrapper {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-color-strong);
+}
+.electronic-clock-wrapper:not(.has-town) .electronic-clock-block .date-block {
+  justify-content: center;
+}
+.widget-2x1 .electronic-clock-wrapper {
+  padding: 8px 16px;
+}
+.widget-2x1 .electronic-clock-wrapper .electronic-clock-block .date-block .date-wrapper {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+.widget-2x1 .electronic-clock-wrapper .electronic-clock-block .date-block .time-wrapper {
+  font-size: 2.5rem;
+}
+.widget-2x1 .electronic-clock-wrapper .electronic-clock-block .date-block .time-wrapper .divider {
+  margin: 0 6px;
+}
+.widget-2x1 .electronic-clock-wrapper .electronic-clock-block .town-wrapper {
+  font-size: 14px;
+}
+.widget-1x1 .electronic-clock-wrapper {
+  padding: 8px;
+}
+.widget-1x1 .electronic-clock-wrapper .electronic-clock-block .date-block .date-wrapper {
+  font-weight: 700;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}
+.widget-1x1 .electronic-clock-wrapper .electronic-clock-block .date-block .time-wrapper {
+  font-size: 1.6rem;
+}
+.widget-1x1 .electronic-clock-wrapper .electronic-clock-block .date-block .time-wrapper .divider {
   margin: 0 3px;
-  opacity: 0.7;
 }
-.electronic-clock-wrapper .time-wrapper .divider.step-1 {
-  opacity: 0.3;
-}
-.electronic-clock-wrapper .date-wrapper,
-.electronic-clock-wrapper .town-wrapper {
-  display: inline-block;
-}
-.electronic-clock-wrapper .town-wrapper {
-  margin-left: 4px;
-}
-.electronic-clock-wrapper .day-wrapper {
-  color: #aaa;
-}
-.electronic-clock-wrapper .date-wrapper {
-  color: #aaa;
-}
-.tv .electronic-clock-wrapper {
-  background: #000;
-  width: 100.5%;
-  height: 100.5%;
-}
-.tv .electronic-clock-wrapper .town-name-wrapper {
-  color: #d0d0d0;
+.widget-1x1 .electronic-clock-wrapper .electronic-clock-block .town-wrapper {
+  font-size: 14px;
 }

@@ -3,6 +3,7 @@
 class clockWidget extends waWidget
 {
     protected $params;
+    
     const TYPE_ELECTRONIC = 'electronic';
     const TYPE_ROUND = 'round';
     const FORMAT_24 = '24';
