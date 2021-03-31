@@ -1,17 +1,147 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{$wa->accountName()}</title>
     {$wa->css()}
+    {if $wa_app == 'webasyst'}
+        <link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/dashboard.css?v={$wa->version()}">
+    {/if}
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
     <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
 </head>
 <body{if $wa_app == 'webasyst' && $wa->get('tv')===''} class="tv"{/if}>
     <div id="wa">
-        {$wa->header()}
-        <div id="wa-app" class="block double-padded">
-            {$content}
+        {if $wa_app != 'webasyst'}
+            {$wa->header()}
+        {/if}
+        <div id="wa-app" class="flexbox">
+            {$is_fixed_header = $wa->cookie('wa_header_fixed', 0)}
+            <div class="sidebar hide-scrollbar overflow-visible flexbox {if !$is_fixed_header} height-full{else} header-fixed{/if} js-main-sidebar">
+                <div class="sidebar-header box flexbox middle"{if $is_fixed_header} style="display: none;"{/if}>
+                    {include file="../actions/backend/BackendHeaderAccount.inc.html" logo=$logo position="sidebar" inline}
+                </div>
+                <div class="sidebar-body hide-scrollbar">
+                    <ul class="menu js-dashboards-list">
+                        <li{if $selected_sidebar_item === 'my'} class="selected"{/if} data-header-title="[`My Apps`]">
+                            <a href="{$backend_url}" data-dashboard="0">
+                                <i class="fas fa-home"></i>
+                                <span>[`My Apps`]</span>
+                            </a>
+                        </li>
+                        {foreach $public_dashboards as $d}
+                        <li{if $selected_sidebar_item === "dashboard/`$d.id`"} class="selected"{/if} data-header-title="[`Everyone`]">
+                            <a href="{$dashboard_module_url}dashboard/{$d.id}/" data-dashboard="{$d.id}">
+                                {if $selected_sidebar_item === "dashboard/`$d.id`"}
+                                    <span class="count action small js-dashboard-delete"><i class="fas fa-times-circle"></i></span>
+                                {/if}
+                                <i class="fas fa-table"></i>
+                                <span>{$d.name|escape}</span>
+                            </a>
+                        </li>
+                        {/foreach}
+
+                        <li class="small">
+                            <a class="count action js-new-dashboard" href="javascript:void(0);" data-dashboard="new_dashboard" title="[`New dashboard`]">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>[`New dashboard`]</span>
+                            </a>
+                        </li>
+
+                        {*
+                            TEASING THE NEW INSTALLER'S SECTION FOR APPS
+                            <li{if $selected_sidebar_item === 'apps'} class="selected"{/if} data-header-title="[`Apps`]">
+                                <a href="{$dashboard_module_url}apps/">
+                                    <i class="fas fa-th"></i>
+                                    <span>[`Apps`]</span>
+                                </a>
+                            </li>
+                        *}
+                    </ul>
+
+                    <header class="heading">
+                        [`Teams`]
+                    </header>
+                    <ul class="menu">
+                        {foreach $teams as $team}
+                            <li{if $selected_sidebar_item === "team/`$team.id`"} class="selected"{/if} data-header-title="{$team.name|escape}">
+                                <a href="{$dashboard_module_url}team/{$team.id}/">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{$team.name|escape}</span>
+                                    {if $team.cnt > 0}
+                                        <span class="count"><span class="badge light-gray">{$team.cnt}</span></span>
+                                    {/if}
+                                </a>
+                            </li>
+                        {/foreach}
+                        <li{if $selected_sidebar_item === "users"} class="selected"{/if} data-header-title="[`Everyone`]">
+                            <a href="{$dashboard_module_url}users/">
+                                <i class="fas fa-users"></i>
+                                <span>[`Everyone`]</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="box align-center custom-pt-0">
+                        <p class="hint">[`Use the Team app to set up your team and customize access rights.`]</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="content hide-scrollbar blank box js-main-content{if $is_fixed_header} header-apps header-fixed{/if}">
+                {if $wa_app == 'webasyst'}
+                    {$wa->header()}
+                {/if}
+                {$content}
+                {* New dashboard dialog *}
+                <div class="dialog" id="dashboard-editor-dialog">
+                    <div class="dialog-background"></div>
+                    <form action="?module=dashboard&action=dashboardSave" data-dashboard-url="{$wa->domainUrl()}{$dashboard_module_url}dashboard/">
+                        <div class="dialog-body">
+                            <h1 class="dialog-header">[`New dashboard`]</h1>
+                            <div class="dialog-content fields">
+                                <div class="field">
+                                    <div class="name for-input">[`Dashboard title`]</div>
+                                    <div class="value"><input type="text" name="dashboard[name]" value=""></div>
+                                </div>
+                                <p class="hint">[`Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs.`]</p>
+                            </div>
+                            <div class="dialog-footer">
+                                <input type="submit" value="[`Save`]" class="button">
+                                [`or`] <a class="js-close-dialog" href="#">[`cancel`]</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="dialog" id="dashboard-delete-dialog">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-body">
+                        <h1 class="dialog-header">[`Delete dashboard`]</h1>
+                        <div class="dialog-content">
+                            <p>[`You are about to permanently delete this dashboard. Are you sure?`]</p>
+                        </div>
+                        <div class="dialog-footer">
+                            <input type="submit" value="[`Delete`]" class="button red">
+                            [`or`] <a class="js-close-dialog" href="#">[`cancel`]</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="widgets-list-wrapper hide-scrollbar" data-backend-url="{$wa_backend_url|escape}">
+            {function skeleton}
+                <div class="skeleton list-group-wrapper">
+                    <div class="list-wrapper">
+                        {for $i=1 to 12}
+                            <div class="widget-item-wrapper">
+                                <span class="skeleton-custom-box image-wrapper"></span>
+                                <span class="skeleton-line custom-mt-16"></span>
+                            </div>
+                        {/for}
+                    </div>
+                </div>
+            {/function}
+            {skeleton}
+            </div>
         </div>
     </div>
 </body>

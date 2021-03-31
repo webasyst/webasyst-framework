@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>[s`Go to the Webasyst Customer Center`]</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 40px;
+                font-size: 16px;
+                font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif;
+                display: flex;
+                height: 100vh;
+                justify-content: center;
+                align-items: center;
+            }
+            h1 {
+                font-size: 1.5em;
+                margin: 0;
+                color: red;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>
+            {if $details.error|default:'' === 'unsupported_scope'}
+                [s`User revoked permission to log into the Webasyst Customer Center`]
+            {else}
+                [s`Failed to log into the Webasyst Customer Center`]<br>
+                [s`Please refer to your system administrator.`]
+            {/if}
+        </h1>
+    </body>
+</html>

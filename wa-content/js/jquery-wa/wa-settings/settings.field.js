@@ -1,7 +1,6 @@
-var WASettingsField = (function ($) {
-
-    var WASettingsField = function (options) {
-        var that = this;
+class WASettingsField {
+    constructor(options) {
+        let that = this;
 
         // DOM
         that.$wrapper = options.$wrapper;
@@ -10,45 +9,49 @@ var WASettingsField = (function ($) {
         // DYNAMIC VARS
         // INIT
         that.initClass();
-    };
+    }
 
-    WASettingsField.prototype.initClass = function () {
-        var that = this;
-
+    initClass() {
+        let that = this;
         //
-        $('#s-sidebar-wrapper').find('ul li').removeClass('selected');
-        $('#s-sidebar-wrapper').find('[data-id="field"]').addClass('selected');
+        let $sidebar = $('#js-sidebar-wrapper');
+        $sidebar
+            .find('ul li')
+            .removeClass('selected')
+            .end()
+            .find('[data-id="field"]')
+            .addClass('selected');
 
         that.initSortable();
         that.bindEvents();
-    };
+    }
 
-    WASettingsField.prototype.initSortable = function () {
-        var that = this,
+    initSortable() {
+        let that = this,
             href = "?module=settingsFieldSortSave",
             item_index,
             xhr = false,
             $block = that.$wrapper.find('.wa-other-fields');
-
+        console.log($block)
         $block.sortable({
             handle: '.sort',
             items: '.field',
             axis: 'y',
             tolerance: 'pointer',
             delay: 200,
-            start: function(event,ui) {
+            start: function (event, ui) {
                 item_index = ui.item.index();
             },
-            stop: function(event,ui) {
+            stop: function (event, ui) {
                 if (item_index != ui.item.index()) {
-                    var fields = getSortArray($block);
-                    saveSort(href, { fields: fields });
+                    let fields = getSortArray($block);
+                    saveSort(href, {fields: fields});
                 }
             }
         });
 
         function getSortArray($block) {
-            return $block.find(".field").map(function() {
+            return $block.find(".field").map(function () {
                 return $.trim($(this).data("id")) || '';
             }).toArray();
         }
@@ -62,29 +65,26 @@ var WASettingsField = (function ($) {
                 xhr = null;
             });
         }
-    };
+    }
 
-    WASettingsField.prototype.bindEvents = function () {
-        var that = this,
+    bindEvents() {
+        let that = this,
             href = "?module=settingsFieldEditDialog",
             xhr = null;
 
         that.$wrapper.on('click', '.js-edit-field-link', function () {
-            var $el = $(this);
+            let $el = $(this);
 
             if (xhr) {
                 xhr.abort();
                 xhr = null;
             }
 
-            xhr = $.post(href, { id: $el.data('id') || null }, function(html) {
-                new WASettingsDialog({
+            xhr = $.post(href, {id: $el.data('id') || null}, function (html) {
+                $.waDialog({
                     html: html
                 });
             });
         });
-    };
-
-    return WASettingsField;
-
-})(jQuery);
+    }
+}

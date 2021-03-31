@@ -3,19 +3,20 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <title>{$wa->accountName()}</title>
-    <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.1.min.js"></script>
-    <script src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
-    <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css?v={$wa->version(true)}" />
-{*    <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css?v={$wa->version(true)}" rel="stylesheet" type="text/css">*}
+    <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-2.0.css?v={$wa->version(true)}" />
+    <link id="wa-dark-mode" href="{$wa_url}wa-content/css/wa/wa-2.0-dark.css?v{$wa->version(true)}" rel="stylesheet" media="(prefers-color-scheme: dark)">
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.switch-mode.js?v{$wa->version(true)}"></script>
+    <link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/mobile.css?v={$wa->version()}">
+    <script defer src="/wa-content/js/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version()}"></script>
 
     <script src="{$wa_url}wa-content/js/d3/d3.min.js"></script>
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
-    <script src="{$wa_url}wa-content/js/jquery-wa/dashboard-mobile.js?v={$wa->version(true)}"></script>
-    <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-1.3.css?v={$wa->version(true)}" />
-    <link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/dashboard.css?v={$wa->version(true)}">
+    <script src="{$wa_url}wa-content/js/jquery-wa/dashboard-mobile.js?v={$wa->version()}"></script>
 
     <script>
     var backend_url = {$wa_backend_url|json_encode};
@@ -43,34 +44,189 @@
     </script>
 </head>
 <body>
-<div id="wa" class="wa-app-list" data-role="page">
-    <div id="apps">
-        <div data-role="header" data-position="inline">
-            <a href="{$backend_url}?nomobile=1"  rel="external" data-role="button" data-iconpos="notext"  data-icon="mobile-desktop-only"></a>
-            <a href="{$backend_url}?action=logout" rel="external" data-icon="arrow-r" class="ui-btn-right">[`Logout`]</a>
-            <h1>{$wa->accountName()}</h1>
-        </div>
-
-        <div class="d-mobile-toggle-wrapper">
-            <div class="d-mobile-view-toggle">
-                <span class="link-item d-mobile-show-apps is-active" id="d-mobile-show-apps">[s`Apps`]</span>
-                <span class="link-item d-mobile-show-dashboard" id="d-mobile-show-dashboard">[s`Widgets`]</span>
+    <div id="wa">
+        <div id="wa-nav">
+            <div id="wa-header" class="blank flexbox space-16">
+                {include file="./BackendHeaderAccount.inc.html" inline}
+                <div class="wa-header-sitename">
+                    <span class="h3">{$wa->accountName()|truncate:42}</span>
+                </div>
+                <div class="dropdown" id="wa-notifications-dropdown">
+                    <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
+                    {include file="../dashboard/DashboardAnnouncement.html" inline}
+                </div>
+                {*
+                    TEASING WEBASYST GLOBAL SEARCH
+                    <button class="button rounded small outlined js-header-search"><span><i class="fas fa-search"></i></span></button>
+                *}
+                <div class="wa-corner">
+                {strip}
+                    {*
+                        TEASING WEBASYST GLOBAL SEARCH
+                        <form class="wa-header-search-form input-with-inner-icon right">
+                            <input type="search" placeholder="[`Search`]" class="short">
+                            <button class="icon"><i class="fas fa-search"></i></button>
+                        </form>
+                    *}
+                    {* Current user *}
+                    <div class="dropdown" id="wa-userprofile" data-user-id="{$user['id']}">
+                        <a class="dropdown-toggle without-arrow" href="javascript:void(0)">
+                            <img src="{$user->getPhoto(96)}" alt="" class="wa-userpic" />
+                        </a>
+                        <div class="dropdown-body right">
+                            <ul class="menu">
+                                <li>
+                                    <a href="{$backend_url}?module=profile">
+                                        <i class="fas fa-user"></i>
+                                        <span>[s`My profile`]</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{$backend_url}?action=logout">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        <span>[s`Logout`]</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {/strip}
+                </div>
             </div>
         </div>
 
-        <div id="wa-mobile-apps-list" data-role="content" data-theme="d">
-            <ul data-role="listview" class="wa-mobile-list-thumb" data-theme="d">
-                {foreach from=$apps key=app_id item=app}
-                    <li><a href="{$backend_url}{$app_id}" rel="external">
-                        {if $app.img}<img {if !empty($app.icon.96)}data-src2="{$wa_url}{$app.icon.96}"{/if} src="{$wa_url}{$app.img}" />{/if}
-                        <h3{if empty($app.mobile)} class="wa-only-desktop"{/if}>{$app.name}</h3>
-                    </a></li>
-                {/foreach}
-            </ul>
-        </div>
+        <div id="wa-app" class="with-bottombar">
 
-        <div class="wa-mobile-dashboard-wrapper" id="wa-mobile-dashboard-wrapper" style="display: none;"></div>
+            <!-- YOUR APP HERE -->
+            <div class="flexbox">
+                <div class="content hide-scrollbar blank">
+                    <section class="dashboard-apps js-dashboard-apps" data-nav="apps">
+                        <ul>
+                            {foreach $header_items as $app_id => $app}
+
+                                {* Build item url *}
+
+                                {* pseudo-app *}
+                                {if !empty($app.app_id) && !empty($app.link)}
+                                    {$_item_url = "`$backend_url``$app.app_id`/`$app.link`/"}
+                                {* real app *}
+                                {else}
+                                    {$_item_url = "`$backend_url``$app_id`/"}
+                                {/if}
+
+                                {* Build app icon count *}
+                                {$_count = null}
+                                {if $counts && isset($counts[$app_id])}
+                                    {if is_array($counts[$app_id])}
+                                        {$_item_url = $counts[$app_id]['url']}
+                                        {$_count = $counts[$app_id]['count']}
+                                    {else}
+                                        {$_count = $counts[$app_id]}
+                                    {/if}
+                                {/if}
+
+                                <li data-app="{$app_id}">
+                                    <a href="{$_item_url}" rel="external">
+                                        {if $app.img}<img {if !empty($app.icon.96)}data-src2="{$wa_url}{$app.icon.96}"{/if} src="{$wa_url}{if !empty($app.icon.96)}{$app.icon.96}{else}{$app.img}{/if}" />{/if}
+                                        <span>{$app.name}</span>
+                                        {if $_count}
+                                            <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
+                                        {/if}
+                                    </a></li>
+                            {/foreach}
+                        </ul>
+                    </section>
+                    <section id="wa_activity" class="dashboard-activity js-dashboard-activity box" data-nav="activity" style="display: none">
+                        <div class="dashboard-activity-wrapper">
+                            {if !empty($activity)}
+                                {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
+                            {/if}
+                            <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+                            {if !empty($activity)}
+                                {include file="../dashboard/DashboardActivity.html" inline}
+                            {else}
+                                <div class="empty-activity-text">
+                                    <h2>[`No events in the live stream yet.`]</h2>
+                                    <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
+                                </div>
+                            {/if}
+                            </div>
+                        </div>
+                    </section>
+                    <section class="dashboard-widgets js-dashboard-widgets" data-nav="widgets" style="display: none">
+                        <div class="dashboard-tabs">
+                            <ul class="tabs">
+                                <li class="selected">
+                                    <a href="javascript:void(0);" class="js-dashboard-widgets-page" data-dashboard="0">
+                                        <i class="fas fa-home"></i>
+                                    </a>
+                                </li>
+                                {foreach $public_dashboards as $d}
+                                    <li>
+                                        <a href="javascript:void(0);" class="js-dashboard-widgets-page" data-dashboard="{$d.id}">
+                                            {$d.name|escape}
+                                        </a>
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                        <div class="js-dashboard-widgets-wrapper">
+                            {include file="../dashboard/DashboardWidgets.html" inline}
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="bottombar js-bottombar">
+                <ul>
+                    <li class="selected">
+                        <a href="#" data-nav="apps">
+                            <i class="fas fa-th"></i>
+                            <span>[`Apps`]</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-nav="activity">
+                            <i class="fas fa-star"></i>
+                            <span>[`Activity`]</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-nav="widgets">
+                            <i class="fas fa-chart-line"></i>
+                            <span>[`Dashboards`]</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
+    <script>
+        $(function () {
+            new WaMobileDashboard({
+                $wrapper: $('.content'),
+                $header: $('#wa-nav')
+            });
+
+            $(".js-activity-filter-toggler").on("click", function(event) {
+                event.preventDefault();
+                $('#activity-filter').slideToggle();
+            });
+
+            const $notifications_bell = $('.js-notifications-bell');
+            $notifications_bell.on('click', function (e){
+                e.preventDefault();
+                $(this).toggleClass('wa-animation-swing');
+                setTimeout(() => $(this).toggleClass('wa-animation-swing'), 1000);
+                $(this).next('.js-notification-wrapper').toggle();
+            });
+            {if !empty($notifications)}
+                $notifications_bell.trigger('click');
+            {/if}
+
+            $("#wa-userprofile").waDropdown({
+                hover: false
+            });
+        });
+    </script>
 </body>
 </html>

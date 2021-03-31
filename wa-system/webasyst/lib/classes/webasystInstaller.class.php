@@ -245,4 +245,17 @@ CLI;
         $sql = "ALTER TABLE `{$table}` CHANGE `{$column_name}` `{$column_name}` {$column_definition}";
         $m->query($sql);
     }
+
+    public function addUniqueIndex($table, $index_name, array $columns, $ensure_unique = null)
+    {
+        if (is_callable($ensure_unique)) {
+            $ensure_unique($table, $index_name, $columns);
+        }
+
+        $m = new waModel();
+        $columns_str = join(',', $columns);
+
+        $sql = "CREATE UNIQUE INDEX `{$index_name}` ON `{$table}` ({$columns_str})";
+        $m->query($sql);
+    }
 }

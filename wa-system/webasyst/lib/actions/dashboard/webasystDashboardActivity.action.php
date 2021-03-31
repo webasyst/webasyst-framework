@@ -16,6 +16,7 @@ class webasystDashboardActivityAction extends waViewAction
             unset($filters['save_filters']);
             wa()->getUser()->setSettings('webasyst', 'dashboard_activity', waRequest::post('app_id'));
         }
+
         $logs  = $this->getLogs($filters, $count);
         $this->view->assign('activity', $logs);
         $this->view->assign('datetime_group', '');
@@ -24,6 +25,8 @@ class webasystDashboardActivityAction extends waViewAction
             $this->view->assign('datetime_group', $this->getDatetimeGroup($row['datetime']));
         }
         $this->view->assign('activity_load_more', $count == 50);
+
+        $this->view->assign('today_users', $this->getTodayUsers());
     }
 
     public function getLogs($filters = array(), &$count = null, $autoload_more = true)
@@ -153,7 +156,7 @@ class webasystDashboardActivityAction extends waViewAction
     {
         $ts = strtotime($datetime);
         if (date('Y-m-d') == date('Y-m-d', $ts)) {
-            return '';
+            return _ws('Today');
         } elseif (date('Y-m-d', $ts) == date('Y-m-d', strtotime('-1 day'))) {
             return _ws('Yesterday');
         } elseif ($ts > time() - 7 * 86400) {
@@ -167,5 +170,10 @@ class webasystDashboardActivityAction extends waViewAction
         } else {
             return _ws('365 Days');
         }
+    }
+
+    private function getTodayUsers()
+    {
+        return (new webasystTodayUsers())->getGroups();
     }
 }

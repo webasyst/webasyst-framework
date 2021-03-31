@@ -1,143 +1,59 @@
-{* LOAD RESOURCES *}
-<link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/dashboard.css?v={$wa->version()}">
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js"></script>
+<div id="dashboard-wrapper" >
+    {* APPS *}
+    <section id="wa_apps">
+        {include file="../dashboard/DashboardAppsBlock.html"}
+    </section>
 
-<div class="d-page-wrapper" id="d-page-wrapper">
-
-    <div class="d-content-wrapper">
-        <section class="d-activity-wrapper" id="d-activity-wrapper">
-            {* NOTIFICATIONS *}
-            {if !empty($notifications)}
-                {include file="../dashboard/DashboardAnnouncement.html" inline}
+    <section id="wa_activity">
+        {if !empty($activity)}
+            {include file="../dashboard/DashboardActivityFilter.inc.html" inline}
+        {/if}
+        <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+            {if !empty($activity)}
+                {include file="../dashboard/DashboardActivity.html" inline}
+            {else}
+                <div class="empty-activity-text">
+                    <h3>[`No events in the live stream yet.`]</h3>
+                    <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
+                </div>
             {/if}
+        </div>
+    </section>
 
-            {* ACTIVITY LIST *}
-            <div class="d-activity-block {if empty($show_tutorial)}is-shown{/if}" id="widget-activity">
-                <header class="activity-header-wrapper block">
-                    <h4 class="activity-header heading">[`Live Stream`]<i class="icon16 loading" style="display: none;"></i></h4>
-                    <div class="activity-filter-wrapper">
-                        <ul class="menu-h dropdown">
-                            <li>
-                                {$checked = ""}
-                                {$is_not_full = false}
-                                {$check_count = 0}
-                                {capture assign="select_options"}
-                                    {foreach $apps as $app_id => $app}
-                                        {if in_array($app_id, $user_filters) || !$user_filters}
-                                            {$checked = "checked"}
-                                            {$check_count = $check_count + 1}
-                                        {else}
-                                            {$checked = ""}
-                                            {$is_not_full = true}
-                                        {/if}
-                                        <li>
-                                            <label><input {$checked} type="checkbox" name="app_id[]" value="{$app_id}">&nbsp;{$app.name}</label>
-                                        </li>
-                                    {/foreach}
-                                {/capture}
-                                <a href="javascript:void(0);" class="inline-link"><b><i id="activity-select-text" data-full-text="[`All apps`]" data-not-full-text="[`Selected apps`]">{if $is_not_full}[`Selected apps`] ({$check_count}){else}[`All apps`]{/if}</i></b><i class="icon10 darr-tiny"></i></a>
-                                <form action="" id="activity-filter">
-                                    <ul class="menu-v">
-                                        {$select_options|strip}
-                                    </ul>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="cl"></div>
-                </header>
-                <section class="activity-list-wrapper">
-                    <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
-                        {if !empty($activity)}
-                            {include file="../dashboard/DashboardActivity.html" datetime_group='' inline}
-                        {else}
-                            <div class="empty-activity-text">
-                                <h2>[`No events in the live stream yet.`]</h2>
-                                <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
-                            </div>
-                        {/if}
-                    </div>
-                </section>
-            </div>
-
-            {* FIRST NOTICE *}
-            <div class="d-first-notice-wrapper" id="d-first-notice-wrapper" data-show-notice="{if !empty($show_tutorial)}true{else}false{/if}">
-                <div class="d-first-notice-block">
-                    <div class="notice-ornament"></div>
-                    <div class="notice-content">
-                        <h3>[`Welcome to your personal dashboard!`]</h3>
-                        <p>[`Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]</p>
-                    </div>
-                    <div class="notice-buttons">
-                        <input class="close-notice-link" type="button" value="[`OK, thanks`]">
-                    </div>
-                </div>
-            </div>
-
-            {* WIDGETS *}
-            <div class="d-widgets-list-wrapper" id="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}">
-
-                {* ANIMATION WRAPPER *}
-                <div class="rotated-image-wrapper">
-                    <img class="rotated-image" src="{$wa_url}wa-content/img/loading32.gif" title="[`Loading`]">
-                </div>
-            </div>
-        </section>
-
-        {* WIDGETS *}
+    {* WIDGETS *}
+    <section id="wa_widgets" class="js-dashboard-widgets">
         {include file="../dashboard/DashboardWidgets.html" inline}
+        <div class="d-settings-wrapper" id="d-settings-wrapper" style="display: none">
+            <div class="d-settings-container" id="d-settings-container">
 
-    </div>
-
-    <div class="d-settings-wrapper" id="d-settings-wrapper">
-        <div class="d-settings-container" id="d-settings-container">
-
-            <div class="d-settings-inner-container">
-                <div class="d-settings-block" id="d-settings-block"></div>
-            </div>
-
-        </div>
-    </div>
-
-    {if $is_admin}
-
-        {* Dashboard selector *}
-        <select class="d-dashboards-select" id="d-dashboards-select" name="">
-            <option value="default_dashboard" selected>[`My dashboard`]</option>
-            <optgroup label="[`Webasyst TV`]">
-                {foreach $public_dashboards as $d}
-                    <option value="{$d.id}">{$d.name|escape}</option>
-                {/foreach}
-                <option value="new_dashboard">[`New Webasyst TV dashboard...`]</option>
-            </optgroup>
-        </select>
-
-        {* New dashboard dialog *}
-        <div class="dialog width400px height200px" id="dashboard-editor-dialog">
-            <div class="dialog-background"></div>
-            <form action="?module=dashboard&action=dashboardSave">
-                <div class="dialog-window">
-                    <div class="dialog-content">
-                        <div class="dialog-content-indent">
-                            <h1>[`New dashboard`]</h1>
-                            <div class="fields form width100px">
-                                <div class="field">
-                                    <div class="name">[`Dashboard title`]</div>
-                                    <div class="value"><input type="text" name="dashboard[name]" value=""></div>
-                                </div>
-                            </div>
-                            <p class="hint">[`Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs.`]</p>
-                        </div>
-                    </div>
-                    <div class="dialog-buttons">
-                        <div class="dialog-buttons-gradient">
-                            <input type="submit" value="[`Save`]" class="button green">
-                            [`or`] <a class="cancel" href="#">[`cancel`]</a>
-                        </div>
-                    </div>
+                <div class="d-settings-inner-container">
+                    <div class="d-settings-block" id="d-settings-block"></div>
                 </div>
-            </form>
-        </div>
 
-    {/if}
+            </div>
+        </div>
+        {*if $request_uri == $backend_url || $request_uri == "`$backend_url`/"}
+            <div class="d-dashboard-link-wrapper" id="d-dashboard-link-wrapper"></div>
+        {/if*}
+    </section>
 </div>
+<script>
+    $(function () {
+        // make header sticky
+        WaHeader.headerBehavior('#wa_apps', { rootMargin: `1px 0px -100% 0px`, threshold: [0, 1] });
+
+        new Dashboard();
+        new Group();
+        new Page();
+
+        $(".js-activity-filter-toggler").on("click", function(event) {
+            event.preventDefault();
+            $('#activity-filter').slideToggle();
+        });
+
+        $('#wa_activity [data-wa-tooltip-content]').waTooltip({
+            arrow: false,
+            placement: "bottom"
+        });
+    });
+</script>

@@ -1,0 +1,97 @@
+{$_class = 's-db-list-dialog'}
+{$_id = uniqid($_class)}
+
+<div class="s-dialog-wrapper {$_class}" id="{$_id}">
+    <div class="s-dialog-background"></div>
+    <div class="s-dialog-block" style="min-width: 740px;">
+
+        <header class="s-dialog-header">
+            <h1>[s`Add emoji support`]</h1>
+            <div class="s-list-filter js-list-filter" style="display: none;">
+                <a href="javascript:void(0);" class="js-filter-item is-selected inline-link" data-filter="all"><b><i>[s`All`]</i></b></a>
+                <a href="javascript:void(0);" class="js-filter-item inline-link" data-filter="1"><b><i>[s`New encoding`]</i></b></a>
+                <a href="javascript:void(0);" class="js-filter-item inline-link" data-filter="0"><b><i>[s`Old encoding`]</i></b></a>
+            </div>
+        </header>
+
+        <div class="s-dialog-content js-content">
+            <p>[s`For emoji support to be enabled, tables in your database need to be converted to another encoding.`]
+                [`Click the button below to start the conversion.`]</p>
+            <p class="gray">[s`Some tables and fields will not be converted. Do not try to run the conversion again to fix it.`]
+                [s`Repeat the conversion after the installation of apps or plugins whenever you need to add emoji support for them.`]</p>
+
+            <div class="s-list-wrapper js-list-wrapper">
+                <i class="icon16 loading"></i> [s`Loading...`]
+            </div>
+
+            <div class="s-runner-stats-wrapper js-runner-stats-wrapper" style="display: none;">
+
+                <ul>
+                    <li>[s`Total tables`]: <span class="bold js-all-tables-count"></span></li>
+                    <li>[s`Total fields`]: <span class="bold js-all-columns-count"></span></li>
+                    <li class="good">[s`Converted tables`]: <span class="bold js-converted-tables-count"></span></li>
+                    <li class="good">[s`Converted fields`]: <span class="bold js-converted-columns-count"></span></li>
+                    <li class="bad">[s`Not converted tables`]: <span class="bold js-error-tables-count"></span></li>
+                    <li class="bad">[s`Not converted fields`]: <span class="bold js-error-columns-count"></span></li>
+                    <li class="js-log-path-wrapper" style="display: none;">[s`Path to log file`]: <code class="bold js-log-path"></code></li>
+                </ul>
+
+            </div>
+
+        </div>
+
+        <footer class="s-dialog-footer">
+            <div class="s-actions">
+                <input class="button green js-button" type="button" value="[s`Change encoding`]" disabled="disabled">
+                <span style="margin: 0 4px;">[`or`]</span>
+                <a class="js-close-dialog" href="javascript:void(0);">[s`cancel`]</a>
+            </div>
+            <div class="s-dialog-notice js-dialog-notice" style="display: none;">[s`Do not close this form until the conversion is completed.`]</div>
+        </footer>
+    </div>
+</div>
+
+{capture assign="loading_template"}<i class="icon16 loading"></i>{/capture}
+
+{capture assign="confirm_template"}
+<div class="s-dialog-wrapper s-confirm-db-convert">
+    <div class="s-dialog-background"></div>
+    <div class="s-dialog-block" style="min-width: 740px;">
+
+        <header class="s-dialog-header">
+            <h1>[s`Start changing encoding for tables and fields?`]</h1>
+        </header>
+
+        <div class="s-dialog-content js-content">
+
+            <p>[s`This will start the conversion of your database tables and fields to <code>utf8mb4</code> encoding.`]</p>
+            <p>[s`It will enable you and your website visitors use emoji (smilies), hieroglyphs, and other Unicode symbols.`]</p>
+            <p class="bold">[s`The encoding change may last a few seconds or minutes.`]</p>
+            <p>[s`It is essential to wait until the process completion to ensure that no tables or fields with outdated encoding remain.`]</p>
+            <p>[s`Do not close this browser tab until the process is completed. It is recommended to start conversion during a period of minimum load on your website.`]</p>
+
+        </div>
+
+
+        <footer class="s-dialog-footer">
+            <div class="s-actions">
+                <input class="button green js-confirm-dialog" type="button" value="[s`Run`]">
+                <span style="margin: 0 4px;">[`or`]</span>
+                <a class="js-close-dialog" href="javascript:void(0);">[s`cancel`]</a>
+            </div>
+        </footer>
+    </div>
+</div>
+{/capture}
+
+<script>
+    (function ($) {
+        new WASettingsDBListDialog({
+            $wrapper: $("#{$_id}"),
+            templates: {
+                loading: {$loading_template|json_encode},
+                confirm: {$confirm_template|json_encode}
+            }
+        });
+    })(jQuery);
+</script>

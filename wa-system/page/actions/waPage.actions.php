@@ -69,8 +69,8 @@ class waPageActions extends waActions
         $event_params = array();
         $data['backend_pages_sidebar'] = wa()->event('backend_pages_sidebar', $event_params);
 
-        $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/Page.html';
-        $this->display($this->prepareData($data), $template);
+        $this->setTemplate('Page.html', true);
+        $this->display($this->prepareData($data));
     }
 
     protected function settleAction()
@@ -190,8 +190,8 @@ class waPageActions extends waActions
             'settings_section'
         ));
 
-        $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/PageEdit.html';
-        $this->display($data, $template);
+        $this->setTemplate('PageEdit.html', true);
+        $this->display($data);
     }
 
     protected function getPagesTree($pages)
@@ -217,24 +217,47 @@ class waPageActions extends waActions
 
     public static function printPagesTree($p, $pages, $prefix_url)
     {
-        $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'">';
-        foreach ($pages as $page) {
-            $html .= '<li class="drag-newposition"></li>';
-            $html .= '<li class="dr" id="page-'.$page['id'].'">'.
-            (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').'<i class="icon16 notebook"></i>'.
-            '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span>'.
-            htmlspecialchars($page['name']).
-            ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span>';
-            if (!$page['status']) {
-                $html .= ' <span class="wa-page-draft">'._ws('draft').'</span>';
+        if (wa()->whichUI() == '2.0') {
+            $html = '<ul class="menu" data-parent-id="'.$p['id'].'">';
+            foreach ($pages as $page) {
+                $html .= '<li class="drag-newposition"></li>';
+                $html .= '<li class="dr" id="page-'.$page['id'].'" data-page-id="'.$page['id'].'">'.
+                    (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').
+                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><i class="far fa-file-alt"></i>'.
+                    '<span>'.htmlspecialchars($page['name']).
+                    ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span></span>'.
+                    '<span class="count action small"><i class="fas fa-plus-circle wa-page-add"></i></span>';
+                if (!$page['status']) {
+                    $html .= ' <span class="wa-page-draft">'._ws('draft').'</span>';
+                }
+                $html .= '</a>';
+                if (!empty($page['childs'])) {
+                    $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
+                }
+                $html .= '</li>';
             }
-            $html .= '</a>';
-            if (!empty($page['childs'])) {
-                $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
+            $html .= '<li class="drag-newposition"></li></ul>';
+        }else{
+            $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'">';
+            foreach ($pages as $page) {
+                $html .= '<li class="drag-newposition"></li>';
+                $html .= '<li class="dr" id="page-'.$page['id'].'">'.
+                    (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').'<i class="icon16 notebook"></i>'.
+                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span>'.
+                    htmlspecialchars($page['name']).
+                    ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span>';
+                if (!$page['status']) {
+                    $html .= ' <span class="wa-page-draft">'._ws('draft').'</span>';
+                }
+                $html .= '</a>';
+                if (!empty($page['childs'])) {
+                    $html .= self::printPagesTree($page, $page['childs'], $prefix_url);
+                }
+                $html .= '</li>';
             }
-            $html .= '</li>';
+            $html .= '<li class="drag-newposition"></li></ul>';
         }
-        $html .= '<li class="drag-newposition"></li></ul>';
+
         return $html;
     }
 
@@ -323,7 +346,10 @@ class waPageActions extends waActions
     {
         $id = (int)waRequest::get('id');
         $data = waRequest::post('info', array());
-        $data['url'] = ltrim($data['url'], '/');
+        $data['url'] = trim($data['url'], '/');
+        if (strlen($data['url']) > 0) {
+            $data['url'] .= '/';
+        }
 
         try {
             $this->checkGlobalRouting($id, $data);
@@ -419,9 +445,6 @@ class waPageActions extends waActions
     protected function checkGlobalRouting($id, $data)
     {
         $page_url = $data['url'];
-        if ($page_url && substr($page_url, -1) != '/' && strpos(substr($page_url, -5), '.') === false) {
-            $page_url .= '/';
-        }
 
         // Get Domain
         $parent = null;
@@ -775,6 +798,22 @@ class waPageActions extends waActions
     protected function getView()
     {
         return wa('webasyst')->getView();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getLegacyTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/page/templates-legacy/';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getTemplateDir()
+    {
+        return $this->getConfig()->getRootPath().'/wa-system/page/templates/';
     }
 
 }

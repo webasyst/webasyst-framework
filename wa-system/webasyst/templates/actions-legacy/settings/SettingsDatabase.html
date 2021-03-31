@@ -1,0 +1,72 @@
+{$_title = "[s`Database`] — {$wa->accountName(false)}"}
+<div class="s-db-page blank block double-padded" id="s-db-page">
+    <h1 class="s-page-header">[s`Database`]</h1>
+    <div class="s-db-fields-block">
+        <form action="?module=settingsGeneralSave">
+
+            <div class="field-group">
+                {* MySQL version *}
+                <div class="field">
+                    <div class="name">
+                        <label for="config-name">[s`MySQL version`]</label>
+                    </div>
+                    <div class="value">
+                        {$mysql_version} <span class="gray">{if $mb4_is_supported}[s`supports emoji`]{else}[s`does not support emoji`]{/if}</span>
+                    </div>
+                </div>
+
+                {* DB Name *}
+                <div class="field">
+                    <div class="name">
+                        <label for="config-name">[s`Database`]</label>
+                    </div>
+                    <div class="value">
+                        {$db_name}
+                    </div>
+                </div>
+
+                {if !empty($connection_charset)}
+
+                    {* Connection charset *}
+                    <div class="field">
+                        <div class="name">
+                            <label for="config-name">[s`Connection charset`]</label>
+                        </div>
+                        <div class="value">
+                            {$connection_charset}
+                        </div>
+                    </div>
+
+                {/if}
+
+                {*  *}
+                {if $mb4_is_supported}
+                    <div class="field">
+                        <div class="name">
+                            <label for="config-name">[s`Tables and fields without emoji support`]</label>
+                        </div>
+
+                        <div class="value" style="padding-bottom: 12px;">
+                            {if $is_debug}
+                                <a href="javascript:void(0);" class="inline-link js-show-list"><b><i>[s`Proceed to adding emoji support`]</i></b></a>
+                            {else}
+                                <span>[s`To add emoji support enable <b>Debug mode</b> in <b>General settings</b>.`]</span>
+                            {/if}
+                        </div>
+                    </div>
+                {/if}
+
+            </div>
+
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    (function($) {
+        $.wa.setTitle({$_title|json_encode});
+
+        new WASettingsDatabase({
+            $wrapper: $("#s-db-page")
+        });
+    })(jQuery);
+</script>

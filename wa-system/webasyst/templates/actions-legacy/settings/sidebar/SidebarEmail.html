@@ -1,0 +1,172 @@
+{strip}
+    {$class = "s-email-template-sidebar-wrapper"}
+    {$id = uniqid($class)}
+    <aside class="{$class}" id="{$id}">
+        <a class="s-new-templates bold js-new-templates"><i class="icon16 add"></i>[s`New template group`]</a>
+        <ul class="menu-v stack with-icons s-sidebar-items js-sidebar-items">
+            {foreach $channels as $_id => $_channel}
+                {$_channel_url = "`$wa_backend_url`webasyst/settings/email/template/`$_id|escape`/"}
+                <li class="s-channel js-channel{if $_id == $channel->getId()} bold{/if}"
+                    data-id="{$_id|escape}"
+                    data-name="{$_channel.name|escape}"
+                    data-email="{$_channel.address|escape}"
+                    data-system="{$_channel.system}">
+                    <span class="js-expand-collapse">
+                        <i class="icon16 rarr js-expand-collapse-icon"></i>
+                        {$_channel.name|escape}
+                    </span>
+                    <i class="icon16 settings s-channel-edit js-channel-edit" title="[s`Edit channel`]" style="display: none;"></i>
+                </li>
+                {foreach $templates_list as $_template_id => $_template_name}
+                    <li class="js-template{if $_id == $channel->getId() && $_template_id == $template_id} selected{/if}" data-channel-id="{$_id|escape}" style="display: none;">
+                        <a href="{$_channel_url}{$_template_id}" class="s-template-item">
+                            <i class="icon16 email"></i>
+                            {$_template_name|escape}
+                        </a>
+                    </li>
+                {/foreach}
+            {/foreach}
+        </ul>
+    </aside>
+
+    {* New channel dialog *}
+    <div class="dialog" id="s-email-new-template-dialog">
+        <div class="dialog-background"> </div>
+        <div class="dialog-window">
+            <form action="?module=settingsTemplateEmailNew">
+                <div class="dialog-content">
+                    <div class="dialog-content-indent">
+                        <h1>[s`Creating new templates`]</h1>
+                        <div class="fields form">
+                            <div class="field">
+                                <div class="name">
+                                    [s`Template group name`]
+                                </div>
+                                <div class="value">
+                                    <input type="text" name="data[name]" />
+                                    <div class="s-error-message-wrapper js-error-name"></div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name">
+                                    [s`Sender`]
+                                </div>
+                                <div class="value">
+                                    <select name="data[address]">
+                                        {foreach $emails as $_email}
+                                            <option value="{$_email|escape}">{$_email|escape}</option>
+                                        {/foreach}
+                                    </select>
+                                    <div class="s-error-message-wrapper js-error-address"></div>
+                                </div>
+                                <div class="value">
+                                    <span class="hint">{sprintf('[s`Senders are edited in “<a class="js-disable-router" href="%s">Email&nbsp;settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email")}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="dialog-buttons">
+                    <div class="dialog-buttons-gradient">
+                        <input type="submit" class="button green js-submit-button" value="[s`Save`]">
+                        &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+                        <i class="icon16 loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {* Edit channel dialog *}
+    <div class="dialog s-email-edit-channel-dialog" id="s-email-edit-channel-dialog">
+        <div class="dialog-background"> </div>
+        <div class="dialog-window">
+            <form>
+                <div class="dialog-content">
+                    <div class="dialog-content-indent">
+                        <h1 class="js-channel-name"></h1>
+                        <div class="fields form">
+                            <div class="field">
+                                <div class="name">
+                                    [s`Template group name`]
+                                </div>
+                                <div class="value">
+                                    <div class="js-name-text" style="margin-top: 6px; display: none;">{$channel->getName()|escape}</div>
+                                    <input class="js-name-input" type="text" name="data[name]" style="display: none;"/>
+                                    <div class="s-error-message-wrapper js-error-name"></div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name">
+                                    [s`Sender`]
+                                </div>
+                                <div class="value">
+                                    <select name="data[address]" class="js-email-select">
+                                        {foreach $emails as $_email}
+                                            <option value="{$_email|escape}">{$_email|escape}</option>
+                                        {/foreach}
+                                    </select>
+                                    <div class="s-error-message-wrapper js-error-address"></div>
+                                </div>
+                                <div class="value">
+                                    <span class="hint">{sprintf('[s`Senders are edited in “<a class="js-disable-router" href="%s">Email&nbsp;settings</a>” section.`]', "`$wa_backend_url`webasyst/settings/email")}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="dialog-buttons">
+                    <div class="dialog-buttons-gradient">
+                        <input type="submit" class="button green js-submit-button" value="[s`Save`]">
+                        &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+                        <i class="icon16 loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                        <div class="s-channel-actions">
+                            <a href="javascript:void(0);" class="js-duplicate"><i class="icon16 split"></i> [s`Duplicate`]</a>
+                            <a href="javascript:void(0);" class="js-delete" style="display: none;"><i class="icon16 delete"></i> [s`Delete`]</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {* Delete channel confirm dialog *}
+    <div class="dialog" id="s-email-delete-channel-dialog">
+        <div class="dialog-background"> </div>
+        <div class="dialog-window">
+            <form>
+                <div class="dialog-content">
+                    <div class="dialog-content-indent">
+                        <h1>[s`Delete template group?`]</h1>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="dialog-buttons">
+                    <div class="dialog-buttons-gradient">
+                        <input type="submit" class="button red js-submit-button" value="[s`Delete`]">
+                        &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+                        <i class="icon16 loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{/strip}
+
+<script>
+    (function ($) {
+        new WASettingsEmailTemplateSidebar({
+            $wrapper: $("#{$id}"),
+            $new_templates_group_dialog: $("#s-email-new-template-dialog"),
+            $edit_channel_dialog: $("#s-email-edit-channel-dialog"),
+            $delete_confirm_dialog: $("#s-email-delete-channel-dialog"),
+            channel_id: {$channel->getId()|json_encode},
+            path_to_templates: "{"`$wa_backend_url`webasyst/settings/email/template/"}"
+        });
+    })(jQuery);
+</script>

@@ -1,0 +1,94 @@
+{function localizedType f=null}
+    {strip}
+        {if $f instanceof waContactBranchField}
+            {$ftypes['Branch']}
+        {elseif $f instanceof waContactStringField && $f->getParameter('input_height') > 1}
+            {$ftypes['Text']}
+        {elseif $f instanceof waContactRadioSelectField}
+            {$ftypes['Radio']}
+        {else}
+            {ifempty($ftypes[$f->getType()], $f->getType())}
+        {/if}
+    {/strip}
+{/function}
+
+{if $f->getType() != "Hidden"}
+    <tr class="{$tr_classes}" data-field-id="{$fid}"{if !$new_field} data-field-type="{$f->getType()}"{/if}>
+        <td class="min-width"><i class="icon16 sort js-subfield-sort"></i></td>
+        <td class="min-width">
+            {if $f->getParameter('always_required')}
+                <input type="hidden" name="{$prefix}[{$fid}][_disabled]" value="">
+                <input type="checkbox" checked disabled>
+            {else}
+                <input type="hidden" name="{$prefix}[{$fid}][_disabled]" value="1">
+                <input type="checkbox" id="enbl-{$uniqid}" name="{$prefix}[{$fid}][_disabled]" value=""{if !$f->getParameter('_disabled')} checked{/if}>
+            {/if}
+        </td>
+        <td>
+            <label for="enbl-{$uniqid}" class="name-label">{$f->getName(null, true)}</label>
+            <input type="text" class="name-input" placeholder="[s`Field name`]" name="{$prefix}[{$fid}][localized_names]" value="{$f->getName(null, true)}">
+
+            {if !$new_field}
+                <span class="name-hint hint">{localizedType f=$f}</span>
+                {if $f->getType() === 'Composite'}
+                    <ul class="hint">
+                        {foreach $f->getParameter('fields') as $sf}
+                            <li>{$sf->getName(null, true)}</li>
+                        {/foreach}
+                    </ul>
+                {/if}
+            {/if}
+        </td>
+        <td class="{if $new_field} min-width{/if}" style="vertical-align: middle;">
+            {if !$new_field}
+                <div class="s-link-wrapper">
+                    <div style="min-width: 36px; display: inline-block; text-align: left;">
+                        <a href="javascript:void(0)" class="inline" title="[s`Edit`]"><i class="icon16 edit"></i></a>
+                        {if $can_delete}
+                            <a href="javascript:void(0)" class="inline" title="[s`Delete`]"><i class="icon16 no js-delete-subfield"></i></a>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+
+            {if $new_field}
+                <div class="hide-when-field-disabled">
+                    <select class="type-selector" name="{$prefix}[%FID%][_type]">
+                        <option value="string">[s`Text (input)`]</option>
+                        <option value="textarea">[s`Text (textarea)`]</option>
+                        <option value="number">[s`Number (input)`]</option>
+                        <option value="branch">[s`Selectable (radio)`]</option>
+                        <option value="select">[s`Selectable (select)`]</option>
+                        <option value="conditional">[s`Conditional (select/input)`]</option>
+                        <option value="checkbox">[s`Checkbox`]</option>
+                    </select>
+                    <div class="field-advanced-settings"></div>
+                </div>
+            {else}
+                <div class="hide-when-field-enabled">
+                    <input type="hidden" name="{$prefix}[{$fid}][_default_value_enabled]" value="{if ifset($default_value) !== null}1{/if}">
+                    {if ifset($default_value) === null}
+                        <a href="javascript:void(0)" class="setup-default-value-link small hint inline-link"><b><i>[s`Set default fixed value`]</i></b></a>
+                    {else}
+                        <a href="javascript:void(0)" class="setup-default-value-link hint inline-link"><b><i>[s`Default fixed value:`]
+                                    <strong>{$default_value|escape}</strong></i></b></a>
+                    {/if}
+                    <div class="hidden default-value-editor">
+                        <div class="small">[s`Default fixed value:`]</div>
+                        {if $f instanceof waContactConditionalField || $f instanceof waContactRegionField || $f instanceof waContactBranchField}
+                            <input type="text" name="{$prefix}[{$fid}][_default_value]" value="{ifset($default_value)|escape}">
+                        {else}
+                            <div class="field value" style="padding:0;margin:0">{$form->html('_default_value')}</div>
+                        {/if}
+                    </div>
+                </div>
+                {* Parent *}
+                <div class="hide-when-field-disabled">
+                    <div class="field-advanced-settings">
+                        {wa_action app="webasyst" module="settings" action="fieldEditor" f=$f fid=$fid prefix=$prefix parent=$parent}
+                    </div>
+                </div>
+            {/if}
+        </td>
+    </tr>
+{/if}

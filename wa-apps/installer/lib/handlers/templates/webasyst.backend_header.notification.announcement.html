@@ -1,0 +1,9 @@
+{if $announcements}
+    <div class="js-wa-announcement-wrap">
+        {foreach $announcements as $_key => $_a}
+            <div class="js-wa-announcement" data-key="{$_key}">
+                {$_a.html}
+            </div>
+        {/foreach}
+    </div>
+{/if}

@@ -114,6 +114,7 @@ return array(
         'default_status' => array('varchar', 255),
         ':keys' => array(
             'PRIMARY' => 'id',
+            'sort' => array('id', 'unique' => 1)
         ),
     ),
     'wa_contact_categories' => array(

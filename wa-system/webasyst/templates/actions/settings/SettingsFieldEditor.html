@@ -45,7 +45,7 @@
 
     <div class="show-in-readonly" style="margin-right: 40px;">
         {if $f->getParameter('options')}
-            <ul class="menu-v compact small with-icons read-only-items-list hide-when-field-disabled" style="max-width:200px;">
+            <ul class="menu compact small read-only-items-list hide-when-field-disabled" style="max-width:200px;">
                 {foreach $f->getOptions() as $value => $label}
                     <li>{$label|escape}</li>
                 {/foreach}
@@ -61,7 +61,7 @@
                 <div class="field hidden option template">
                     <div class="name insert-option-name-here"></div>
                     <div class="value">
-                        <ul class="menu-v" style="margin-top:0">
+                        <ul class="menu" style="margin-top:0">
                             <li class="field-checkbox template" style="display:none">
                                 <label>
                                     <input type="checkbox">{* JS assigns attrs at dialog creation time: name = option name, value = field id *}

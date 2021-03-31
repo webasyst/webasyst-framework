@@ -1,0 +1,48 @@
+{* Header item *}
+{strip}
+    {function name="_renderAppsItem" _id="" _info=[]}
+        {* Build item url *}
+        {* pseudo-app *}
+        {if !empty($_info.app_id) && !empty($_info.link)}
+            {$_item_url = "`$backend_url``$_info.app_id`/`$_info.link`/"}
+            {* real app *}
+        {else}
+            {$_item_url = "`$backend_url``$_id`/"}
+        {/if}
+        {* Version *}
+        {if !empty($_info.version)}
+            {$_version = "?v=`$_info.version|escape`"}
+        {else}
+            {$_version = null}
+        {/if}
+
+        <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($request_uri, $_item_url) !== false} class="selected"{/if}>
+            {* Build app icon count *}
+            {$_count = null}
+            {if $counts && isset($counts[$_id])}
+                {if is_array($counts[$_id])}
+                    {$_item_url = $counts[$_id]['url']}
+                    {$_count = $counts[$_id]['count']}
+                {else}
+                    {$_count = $counts[$_id]}
+                {/if}
+            {/if}
+            <a href="{$_item_url}">
+                {if isset($_info.img)}
+                    <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
+                {/if}
+                <span>{$_info.name|ifempty}</span>
+                {if $_count}
+                    <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
+                {/if}
+            </a>
+        </li>
+    {/function}
+<div id="wa-applist" class="js-applist">
+    <ul class="{if is_array($counts)}counts-cached {/if}">
+        {foreach $header_items as $_id => $_info}
+            {_renderAppsItem _id=$_id _info=$_info}
+        {/foreach}
+    </ul>
+</div>
+{/strip}

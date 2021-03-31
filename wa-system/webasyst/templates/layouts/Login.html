@@ -6,7 +6,8 @@
 
     {if $env == 'backend'}<meta name="robots" content="noindex, nofollow"/>{/if}
 
-    {$wa->css()}
+    {* for login layout we intentionally include legacy UI css styles *}
+    {$wa->legacyCss()}
 
     <link href="{$wa_url}wa-content/css/login/backend/login-page.css?{$wa->version(true)}" rel="stylesheet">
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js"></script>

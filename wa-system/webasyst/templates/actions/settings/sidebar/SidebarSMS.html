@@ -1,33 +1,41 @@
 {$class = "s-sms-template-sidebar-wrapper"}
 {$id = uniqid($class)}
-<aside class="{$class}" id="{$id}">
-    <a class="s-new-templates bold js-new-templates"><i class="icon16 add"></i>[s`New template group`]</a>
-    <ul class="menu-v stack with-icons">
-        {foreach $channels as $_id => $_channel}
-            {$_channel_url = "`$wa_backend_url`webasyst/settings/sms/template/`$_id|escape`/"}
-            <li{if $_id == $channel->getId()} class="selected bold"{/if}>
-                <a href="{$_channel_url}">
-                    <i class="icon16 mobile"></i>
-                    {$_channel.name|escape}
-                </a>
-            </li>
-        {/foreach}
-    </ul>
+{$is_ui_update = $wa->post('is_ui_update')}
+{if !$is_ui_update}
+<aside class="sidebar hide-scrollbar scrolls-with-content blank bordered-right width-18rem {$class}" id="{$id}"{if $wa->isMobile()} style="position: relative; width: 100%; min-height: auto; top: 0"{/if}>
+{/if}
+        <h5 class="heading custom-mt-20 custom-mb-12">
+            <span>[s`New template group`]</span>
+            <a href="#" class="js-new-templates count action"><i class="fas fa-plus-circle"></i></a>
+        </h5>
+        <ul class="menu">
+            {foreach $channels as $_id => $_channel}
+                {$_channel_url = "`$wa_backend_url`webasyst/settings/sms/template/`$_id|escape`/"}
+                <li class="{if $_channel@index === 0}top-padded{/if}{if $_id == $channel->getId()} selected bold{/if}">
+                    <a href="{$_channel_url}">
+                        <span class="count action"><i class="fas fa-mobile-alt"></i></span>
+                        <span>{$_channel.name|escape}</span>
+                    </a>
+                </li>
+            {/foreach}
+        </ul>
+    {if !$is_ui_update}
 </aside>
 
 <script>
     (function ($) {
 
         // instance of dialog that create new sms templates
-        var dialog = new WaSettingsSMSNewTemplateDialog("wa-sms-new-template-dialog", {
+        const dialog = new WaSettingsSMSNewTemplateDialog("wa-sms-new-template-dialog", {
             path_to_template: "{"`$wa_backend_url`webasyst/settings/sms/template/"}"
         });
 
         // sidebar js
         new WASettingsSMSTemplateSidebar({
             $wrapper: $("#{$id}"),
-            dialog: dialog
+            dialog
         });
 
     })(jQuery);
 </script>
+{/if}

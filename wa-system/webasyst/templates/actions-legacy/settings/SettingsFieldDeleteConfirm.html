@@ -1,0 +1,54 @@
+{$_class = 's-delete-field-confirm-dialog-wrapper'}
+{$_id = uniqid($_class)}
+
+<style>
+    .s-delete-field-confirm-dialog-wrapper .error-text { color: red; font-weight: bold; }
+    .s-delete-field-confirm-dialog-wrapper .s-dialog-block { min-width: 600px; }
+</style>
+
+<div class="s-dialog-wrapper {$_class}" id="{$_id}">
+    <div class="s-dialog-background"></div>
+    <div class="s-dialog-block">
+        <header class="s-dialog-header">
+            <h1>[s`Delete field`] {$name|escape}</h1>
+        </header>
+
+        <form method="post" action="?module=settingsFieldDelete">
+            <div class="s-dialog-content">
+                {if !$count}
+                    <p>[s`No data in the field`]</p>
+                    <p>[s`Deleting this field will not cause a loss of any contact information.`]</p>
+                {else}
+                    <p class="error-text">{_ws(
+                        '%d contact have data in the field',
+                        '%d contacts have data in the field',
+                        $count
+                        )} {$name}.</p>
+                    <p class="error-text">{_ws(
+                        'Deleting the field will cause a loss of this contact information.',
+                        'Deleting the field will cause a loss of these contacts information.',
+                        $count, false)}</p>
+                {/if}
+                <em class="errormsg"></em>
+            </div>
+
+            <footer class="s-dialog-footer">
+                <div class="s-actions">
+                    <input class="button red s-button" type="submit" value="[s`Delete field`]">
+                    <span style="margin: 0 4px;">[s`or`]</span>
+                    <a class="s-cancel" href="javascript:void(0);">[s`cancel`]</a>
+                    <input type="hidden" name="id" value="{$id}">
+                    {$wa->csrf()}
+                </div>
+            </footer>
+        </form>
+
+        <script>
+            $(function () {
+                new WASettingsFieldDeleteConfirm({
+                    '$wrapper': $('#{$_id}')
+                });
+            });
+        </script>
+    </div>
+</div>

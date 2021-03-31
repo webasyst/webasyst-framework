@@ -5,18 +5,9 @@
  * wa-config/apps/webasyst/ProfileTabs.html
  *}
 
-<style>
-.t-profile-tabs{ display:block;padding:0;margin:0;border:solid #ccc;border-width:1px 0;background:#fff;}
-.t-profile-tabs .t-tab{ display:inline-block;vertical-align:top;list-style:none;margin:0;padding:0;}
-.t-profile-tabs .t-tab.is-selected a{ color:#000;font-weight:bold;border-bottom-color:#5c5}
-.t-profile-tabs .t-tab a{ display:block;padding:12px 12px 8px;border-bottom:4px solid #fff}
-.t-profile-tabs .t-button{ padding:7px 10px;background:#fea;color:#000;border-radius:13px}
-.t-profile-tabs-iframes iframe{ width: 100%;}
-</style>
-
-<ul class="t-profile-tabs" id="t-profile-tabs-{$uniqid}">
+<ul class="t-profile-tabs tabs overflow-arrows" id="t-profile-tabs-{$uniqid}">
     {foreach $tabs as $tab_id => $tab}
-        <li class="t-tab {if $selected_tab == $tab_id}is-selected{/if}" data-tab-id="{$tab_id|escape}">
+        <li class="t-tab {if $selected_tab == $tab_id}selected{/if}" data-tab-id="{$tab_id|escape}">
             <a href="javascript:void('{$tab_id|escape:javascript}')" data-url="{$tab.url|default:''}" data-tab-id="{$tab_id|escape}">
                 {$tab.title}
                 {if !empty($tab.count)}
@@ -62,11 +53,11 @@
             var $link = $(this);
             var $tab = $link.closest(".t-tab");
 
-            if ($tab.hasClass('is-selected')) {
+            if ($tab.hasClass('selected')) {
                 return false;
             }
 
-            $tab.addClass('is-selected').siblings('.is-selected').removeClass('is-selected');
+            $tab.addClass('selected').siblings('.selected').removeClass('selected');
             var tab_id = $link.data('tab-id');
 
             // Is there an iframe ready to show?
@@ -221,4 +212,5 @@
         }
     }
 
-});</script>
+});
+</script>

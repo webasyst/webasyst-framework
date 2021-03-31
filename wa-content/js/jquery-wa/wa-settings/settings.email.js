@@ -1,7 +1,196 @@
-var WASettingsEmail = ( function($) {
+/**
+ * @class FixedBlock
+ * @description used for fixing form buttons
+ * */
+class FixedBlock {
 
-    WASettingsEmail = function(options) {
-        var that = this;
+    constructor(options) {
+        let that = this;
+
+        // DOM
+        that.$window = $(window);
+        that.$wrapper = options["$section"];
+        that.$wrapperW = options["$wrapper"];
+        that.$form = that.$wrapper.parents('form');
+
+        // VARS
+        that.type = (options["type"] || "bottom");
+        that.lift = (options["lift"] || 0);
+
+        // DYNAMIC VARS
+        that.offset = {};
+        that.$clone = false;
+        that.is_fixed = false;
+
+        // INIT
+        that.initClass();
+    }
+
+    initClass() {
+        let that = this,
+            $window = that.$window,
+            resize_timeout = 0;
+
+        $window.on("resize", function() {
+            clearTimeout(resize_timeout);
+            resize_timeout = setTimeout( function() {
+                that.resize();
+            }, 100);
+        });
+
+        $window.on("scroll", watcher);
+
+        that.$wrapper.on("resize", function() {
+            that.resize();
+        });
+
+        that.$form.on("input", function () {
+            that.resize();
+        });
+
+        that.init();
+
+        function watcher() {
+            let is_exist = $.contains($window[0].document, that.$wrapper[0]);
+            if (is_exist) {
+                that.onScroll($window.scrollTop());
+            } else {
+                $window.off("scroll", watcher);
+            }
+        }
+
+        that.$wrapper.data("block", that);
+    }
+
+    init() {
+        let that = this;
+
+        if (!that.$clone) {
+            let $clone = $("<div />").css("margin", "0");
+            that.$wrapper.after($clone);
+            that.$clone = $clone;
+        }
+
+        that.$clone.hide();
+
+        let offset = that.$wrapper.offset();
+
+        that.offset = {
+            left: offset.left,
+            top: offset.top,
+            width: that.$wrapper.outerWidth(),
+            height: that.$wrapper.outerHeight()
+        };
+    }
+
+    resize() {
+        let that = this;
+
+        switch (that.type) {
+            case "top":
+                that.fix2top(false);
+                break;
+            case "bottom":
+                that.fix2bottom(false);
+                break;
+        }
+
+        let offset = that.$wrapper.offset();
+        that.offset = {
+            left: offset.left,
+            top: offset.top,
+            width: that.$wrapper.outerWidth(),
+            height: that.$wrapper.outerHeight()
+        };
+
+        that.$window.trigger("scroll");
+    }
+
+    /**
+     * @param {Number} scroll_top
+     * */
+    onScroll(scroll_top) {
+        let that = this,
+            window_w = that.$window.width(),
+            window_h = that.$window.height();
+
+        // update top for dynamic content
+        that.offset.top = (that.$clone && that.$clone.is(":visible") ? that.$clone.offset().top : that.$wrapper.offset().top);
+
+        switch (that.type) {
+            case "top":
+                let use_top_fix = (that.offset.top - that.lift < scroll_top);
+
+                that.fix2top(use_top_fix);
+                break;
+            case "bottom":
+                let use_bottom_fix = (that.offset.top && scroll_top + window_h < that.offset.top + that.offset.height);
+                that.fix2bottom(use_bottom_fix);
+                break;
+        }
+    }
+
+    /**
+     * @param {Boolean|Object} set
+     * */
+    fix2top(set) {
+        let that = this,
+            fixed_class = "is-top-fixed";
+
+        if (set) {
+            that.$wrapper
+                .css({
+                    position: "fixed",
+                    top: that.lift,
+                    left: that.offset.left
+                })
+                .addClass(fixed_class);
+
+            that.$clone.css({
+                height: that.offset.height
+            }).show();
+
+        } else {
+            that.$wrapper.removeClass(fixed_class).removeAttr("style");
+            that.$clone.removeAttr("style").hide();
+        }
+
+        that.is_fixed = !!set;
+    }
+
+    /**
+     * @param {Boolean|Object} set
+     * */
+    fix2bottom(set) {
+        let that = this,
+            fixed_class = "is-bottom-fixed";
+
+        if (set) {
+            that.$wrapper
+                .css({
+                    position: "fixed",
+                    bottom: 0,
+                    left: that.offset.left,
+                    width: that.offset.width
+                })
+                .addClass(fixed_class);
+
+            that.$clone.css({
+                height: that.offset.height
+            }).show();
+
+        } else {
+            that.$wrapper.removeClass(fixed_class).removeAttr("style");
+            that.$clone.removeAttr("style").hide();
+        }
+
+        that.is_fixed = !!set;
+    }
+}
+
+class WASettingsEmail {
+    constructor(options) {
+        let that = this;
 
         // DOM
         that.$wrapper = options['$wrapper'];
@@ -19,21 +208,19 @@ var WASettingsEmail = ( function($) {
         that.transport_class = ".js-transport";
         that.dkim_checkbox_class = ".js-dkim-checkbox";
 
-        // VARS
-
         // DYNAMIC VARS
         that.is_locked = false;
 
         // INIT
         that.initClass();
-    };
+    }
 
-    WASettingsEmail.prototype.initClass = function() {
-        var that = this;
-
+    initClass() {
+        let that = this;
         //
-        $('#s-sidebar-wrapper').find('ul li').removeClass('selected');
-        $('#s-sidebar-wrapper').find('[data-id="email"]').addClass('selected');
+        let $sidebar = $('#js-sidebar-wrapper');
+        $sidebar.find('ul li').removeClass('selected');
+        $sidebar.find('[data-id="email"]').addClass('selected');
         //
         that.initChangeTransport();
         //
@@ -42,13 +229,13 @@ var WASettingsEmail = ( function($) {
         that.initAddRemoveItem();
         //
         that.initSubmit();
-    };
+    }
 
-    WASettingsEmail.prototype.initChangeTransport = function() {
-        var that = this;
+    initChangeTransport() {
+        let that = this;
 
         that.$wrapper.on('change', that.transport_class, function () {
-            var $item = $(this).parents(that.item_class),
+            let $item = $(this).parents(that.item_class),
                 transport = $item.find(that.transport_class).val();
 
             $item.find('.js-params').hide(); // Hide all params
@@ -56,14 +243,14 @@ var WASettingsEmail = ( function($) {
             $item.find('.js-'+ transport +'-description').css('display', 'inline-block'); // Show needed description
             $item.find('.js-'+ transport +'-params').show(); // Show needed params
         });
-    };
+    }
 
-    WASettingsEmail.prototype.initDkim = function () {
-        var that = this;
+    initDkim() {
+        let that = this;
 
 
         that.$wrapper.on('change', that.dkim_checkbox_class, function () {
-            var $dkim_checkbox = $(this),
+            let $dkim_checkbox = $(this),
                 $item = $dkim_checkbox.parents(that.item_class),
                 is_on = $dkim_checkbox.is(':checked');
 
@@ -76,7 +263,7 @@ var WASettingsEmail = ( function($) {
 
         // Remove dkim settings if email or domain is changed
         that.$wrapper.on('input', that.key_class, function () {
-            var $item = $(this).parents(that.item_class);
+            let $item = $(this).parents(that.item_class);
             if (!$.trim($(this).val())) {
                 dkim($item, 'showNeedEmail');
             } else {
@@ -86,7 +273,7 @@ var WASettingsEmail = ( function($) {
 
 
         function dkim($item, action) {
-            var $dkim_checkbox = $item.find('.js-dkim-checkbox'),
+            let $dkim_checkbox = $item.find('.js-dkim-checkbox'),
                 $dkim_sender_input = $item.find('.js-key'),
                 $dkim_wrapper = $item.find('.js-dkim-field'),
                 $dkim_private_key = $dkim_wrapper.find('.js-dkim-pvt-key'),
@@ -101,7 +288,7 @@ var WASettingsEmail = ( function($) {
                 $dkim_error = $dkim_wrapper.find('.js-dkim-error');
 
             if (action === "generateDkim") {
-                var email = $.trim($dkim_sender_input.val()),
+                let email = $.trim($dkim_sender_input.val()),
                     href = '?module=settingsGenerateDkim',
                     data = { email: email };
 
@@ -155,15 +342,15 @@ var WASettingsEmail = ( function($) {
                 $dkim_domain.text('');
             }
         }
-    };
+    }
 
-    WASettingsEmail.prototype.initAddRemoveItem = function () {
-        var that = this;
+    initAddRemoveItem () {
+        let that = this;
 
         // Add item
         that.$item_add.on('click', function (e) {
             e.preventDefault();
-            var $item = that.$item_template.clone().removeClass('js-template').addClass('js-item');
+            let $item = that.$item_template.clone().removeClass('js-template').addClass('js-item');
             $item.find('.js-key').val('');
             that.$items_wrapper.append($item);
             that.$form.trigger('input');
@@ -172,21 +359,21 @@ var WASettingsEmail = ( function($) {
         // Remove item
         that.$wrapper.on('click', that.item_remove_class, function (e) {
             e.preventDefault();
-            var $item = $(this).parents(that.item_class);
+            let $item = $(this).parents(that.item_class);
             $item.remove();
             that.$form.trigger('input');
         });
-    };
+    }
 
-    WASettingsEmail.prototype.initSubmit = function () {
-        var that = this;
+    initSubmit () {
+        let that = this;
 
         that.$form.on('submit', function (e) {
             e.preventDefault();
 
             // Set attribute name for all item fields
             // by data-name attribute
-            var $all_items = that.$items_wrapper.find('.js-item');
+            let $all_items = that.$items_wrapper.find('.js-item');
             $.each($all_items, function (i, item) {
                 setNames($(item));
             });
@@ -200,12 +387,12 @@ var WASettingsEmail = ( function($) {
             that.$button.prop('disabled', true);
             that.$loading.removeClass('yes').addClass('loading').show();
 
-            var href = that.$form.attr('action'),
+            let href = that.$form.attr('action'),
                 data = that.$form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
-                    that.$button.removeClass('yellow').addClass('green');
+                    that.$button.removeClass('yellow');
                     that.$loading.removeClass('loading').addClass('yes');
                     that.$footer_actions.removeClass('is-changed');
                     setTimeout(function(){
@@ -226,7 +413,7 @@ var WASettingsEmail = ( function($) {
             });
 
             function setNames($item) {
-                var item_key = $item.find(that.key_class).val(),
+                let item_key = $item.find(that.key_class).val(),
                     item_fields = $item.find('[data-name]');
 
                 if (typeof item_key !== 'string' || !item_key) {
@@ -234,14 +421,14 @@ var WASettingsEmail = ( function($) {
                 }
 
                 $.each(item_fields, function (i, field) {
-                    var $field = $(field);
+                    let $field = $(field);
                     $field.attr('name', 'data['+ item_key +']['+ $field.data('name') +']');
                 });
             }
         });
 
         function fieldError(error) {
-            var $field = that.$form.find('input[name='+error.field+']'),
+            let $field = that.$form.find('input[name='+error.field+']'),
                 $hint = $field.parent('.value').find('.js-error-place');
 
             $field.addClass('shake animated').focus();
@@ -252,27 +439,22 @@ var WASettingsEmail = ( function($) {
             }, 1000);
         }
 
-        that.$form.on('input', function () {
+        that.$form.on('input change', function () {
             that.$footer_actions.addClass('is-changed');
-            that.$button.removeClass('green').addClass('yellow');
+            that.$button.addClass('yellow');
         });
 
         // Reload on cancel
         that.$cancel.on('click', function (e) {
             e.preventDefault();
             $.wa.content.reload();
-            return;
         });
-    };
+    }
+}
 
-    return WASettingsEmail;
-
-})(jQuery);
-
-var WASettingsEmailTemplate = ( function($) {
-
-    WASettingsEmailTemplate = function(options) {
-        var that = this;
+class WASettingsEmailTemplate {
+    constructor(options) {
+        let that = this;
 
         // DOM
         that.$wrapper = options["$wrapper"];
@@ -297,21 +479,22 @@ var WASettingsEmailTemplate = ( function($) {
 
         // INIT
         that.initClass();
-    };
+    }
 
-    WASettingsEmailTemplate.prototype.initClass = function() {
-        var that = this;
+    initClass() {
+        let that = this;
 
         //
-        $('#s-sidebar-wrapper').find('ul li').removeClass('selected');
-        $('#s-sidebar-wrapper').find('[data-id="email-template"]').addClass('selected');
+        let $sidebar = $('#js-sidebar-wrapper');
+        $sidebar.find('ul li').removeClass('selected');
+        $sidebar.find('[data-id="email-template"]').addClass('selected');
 
         if (that.$template_text.length) {
             that.initAce();
             //
             that.initCheatSheet();
             //
-            that.initFixedActions();
+            //that.initFixedActions();
             //
             that.initReset();
         }
@@ -321,10 +504,10 @@ var WASettingsEmailTemplate = ( function($) {
         that.initCheck();
         //
         that.initSubmit();
-    };
+    }
 
-    WASettingsEmailTemplate.prototype.initAce = function() {
-        var that = this,
+    initAce() {
+        let that = this,
             div = $('<div></div>');
 
         // Init Ace
@@ -334,9 +517,29 @@ var WASettingsEmailTemplate = ( function($) {
         // Set options
         that.ace.commands.removeCommand('find');
         ace.config.set("basePath", window.wa_url + 'wa-content/js/ace/');
-        that.ace.setTheme("ace/theme/eclipse");
+
+        let $them_mode = document.querySelector('#wa-dark-mode').getAttribute('media');
+        if ($them_mode === '(prefers-color-scheme: dark)') {
+            that.ace.setTheme("ace/theme/eclipse");
+        }else{
+            that.ace.setTheme("ace/theme/monokai");
+        }
+        document.addEventListener('wa_theme_mode_dark', function() {
+            that.ace.setTheme("ace/theme/monokai");
+        })
+        document.addEventListener('wa_theme_mode_light', function() {
+            that.ace.setTheme("ace/theme/eclipse");
+        })
+        document.addEventListener('wa_theme_mode_auto', function() {
+            if ($them_mode === '(prefers-color-scheme: dark)') {
+                that.ace.setTheme("ace/theme/eclipse");
+            }else{
+                that.ace.setTheme("ace/theme/monokai");
+            }
+        })
+
         that.ace.renderer.setShowGutter(false);
-        var session = that.ace.getSession();
+        let session = that.ace.getSession();
         session.setMode("ace/mode/smarty");
         if (navigator.appVersion.indexOf('Mac') != -1) {
             that.ace.setFontSize(13);
@@ -350,31 +553,27 @@ var WASettingsEmailTemplate = ( function($) {
         } else {
             session.setValue(' ');
         }
-        that.ace.setOption("minLines", 5);
+        that.ace.setOption("minLines", 10);
         that.ace.setOption("maxLines", 100);
         session.on('change', function () {
             that.$template_text.val(that.ace.getValue());
         });
-    };
+    }
 
-    WASettingsEmailTemplate.prototype.initCheatSheet = function () {
-        var that = this,
+    initCheatSheet() {
+        let that = this,
             cheat_sheet_name = that.cheat_sheet_name;
 
-        var getViewRight = function() {
+        let getViewRight = function() {
             return ($(window).width() - (that.$wrapper.offset().left + that.$wrapper.outerWidth()));
         };
 
-        $(document).bind('wa_cheatsheet_init.' + cheat_sheet_name, function () {
+        $(document).on('wa_cheatsheet_init.' + cheat_sheet_name, function () {
             $.cheatsheet[cheat_sheet_name].insertVarEvent = function () {
-                $("#wa-editor-help-" + cheat_sheet_name).on('click', "div.fields a.inline-link", function () {
-                    var el = $(this).find('i');
-                    if (el.children('b').length) {
-                        el = el.children('b');
-                    }
+                $("#wa-editor-help-" + cheat_sheet_name).on('click', ".js-var", function () {
                     if (that.ace) {
-                        that.ace.insert(el.text());
-                        that.$button.removeClass('green').addClass('yellow');
+                        that.ace.insert($(this).text());
+                        that.$button.addClass('yellow');
                     }
                     $("#wa-editor-help-" + cheat_sheet_name).hide();
                     return false;
@@ -394,23 +593,23 @@ var WASettingsEmailTemplate = ( function($) {
             function () {
 
                 $(document).one('wa_cheatsheet_load.' + cheat_sheet_name, function() {
-                    var $help = $("#wa-editor-help-" + cheat_sheet_name);
+                    let $help = $("#wa-editor-help-" + cheat_sheet_name);
 
 
-                    var getHelpRight = function() {
+                    let getHelpRight = function() {
                         return $(window).width() - ($help.offset().left + $help.outerWidth());
                     };
 
-                    var adjustHelpOffset = function () {
+                    let adjustHelpOffset = function () {
                         if ($help.length) {
                             $help.css('right', 0);
-                            var diff = getHelpRight() - getViewRight();
+                            let diff = getHelpRight() - getViewRight();
                             $help.css('right', (-diff) + 'px');
                         }
                     };
 
-                    var watcher = function() {
-                        var timer = setInterval(function () {
+                    let watcher = function() {
+                        let timer = setInterval(function () {
                             if (!$.contains(document, $help.get(0))) {
                                 $(window).off('resize.' + cheat_sheet_name);
                                 clearInterval(timer);
@@ -431,87 +630,86 @@ var WASettingsEmailTemplate = ( function($) {
 
             }
         );
-    };
+    }
 
-    WASettingsEmailTemplate.prototype.initInlineSettingsLink = function() {
-        var that = this,
+    initInlineSettingsLink() {
+        let that = this,
             $inline_settings_link = that.$wrapper.find('.js-inline-settings-link');
 
         $inline_settings_link.on('click', function () {
-            var $current_channel = $(document).find('.js-channel[data-id="'+ that.channel_id +'"]');
+            let $current_channel = $(document).find('.js-channel[data-id="'+ that.channel_id +'"]');
             $current_channel.find('.js-channel-edit').click();
         });
-    };
+    }
 
-    WASettingsEmailTemplate.prototype.initCheck = function() {
-        var that = this,
+    initCheck() {
+        let that = this,
             $dialog_wrapper = that.$email_check_dialog,
-            $form = $dialog_wrapper.find('form'),
-            $dialog_buttons = $dialog_wrapper.find('.dialog-buttons'),
-            $button = $dialog_buttons.find('.js-submit-button'),
-            $loading = $dialog_buttons.find('.s-loading'),
             is_locked = false;
 
         that.$wrapper.on('click', '.js-check-button', function () {
             if (that.$button.hasClass('yellow')) {
-                that.$requirement_to_save.waDialog({
-                    width: '400px',
-                    height: '110px'
+                $.waDialog({
+                    $wrapper: that.$requirement_to_save
                 });
             } else {
-                $dialog_wrapper.waDialog({
-                    width: '400px',
-                    height: '126px'
+                $.waDialog({
+                    $wrapper: $dialog_wrapper,
+                    onOpen($dialog, dialog) {
+                        const $form = $dialog.find('form'),
+                            $dialog_buttons = $form.find('.dialog-footer'),
+                            $button = $dialog_buttons.find('.js-submit-button'),
+                            $loading = $dialog_buttons.find('.loading');
+
+                        $form.on('submit', function (e) {
+                            e.preventDefault();
+                            if (is_locked) {
+                                return;
+                            }
+                            is_locked = true;
+                            $button.prop('disabled', true);
+                            $loading.show();
+                            $form.find('.js-field-error').text('');
+
+                            let href = $form.attr('action'),
+                                data = $form.serialize();
+
+                            $.post(href, data, function (res) {
+                                if (res.status === 'ok') {
+                                    $button.removeClass('yellow');
+                                    setTimeout(function(){
+                                        $loading.hide();
+                                        dialog.close();
+                                    },2000);
+                                } else {
+                                    if (res.errors) {
+                                        $.each(res.errors, function (i, error) {
+                                            let field = error.field,
+                                                message = error.message;
+
+                                            let $input = $form.find('input[name="data' + field + '"]').parent();
+                                            $input.addClass('shake animated');
+                                            $input.after('<div class="js-field-error" style="color: red; margin-left: 12px;">'+ message +'</div>');
+                                            setTimeout(function(){
+                                                $input.removeClass('shake animated');
+                                                $input.next().remove();
+                                            },2000);
+                                        })
+                                    }
+                                    $loading.hide();
+                                    is_locked = false;
+                                    $button.prop('disabled', false);
+                                }
+                            });
+                        });
+                    }
                 });
             }
         });
+    }
 
-        $form.on('submit', function (e) {
-            e.preventDefault();
-            if (is_locked) {
-                return;
-            }
-            is_locked = true;
-            $button.prop('disabled', true);
-            $loading.removeClass('yes').addClass('loading').show();
-            $form.find('.js-field-error').text('');
-
-            var href = $form.attr('action'),
-                data = $form.serialize();
-
-            $.post(href, data, function (res) {
-                if (res.status === 'ok') {
-                    $button.removeClass('yellow').addClass('green');
-                    $loading.removeClass('loading').addClass('yes');
-                    setTimeout(function(){
-                        $loading.hide();
-                        $dialog_buttons.find('.cancel').click();
-                    },2000);
-                } else {
-                    if (res.errors) {
-                        $.each(res.errors, function (i, error) {
-                            var field = error.field,
-                                message = error.message;
-
-                            var $input = $form.find('input[name="data' + field + '"]').parent();
-                            $input.addClass('shake animated');
-                            $input.after('<div class="js-field-error" style="color: red; margin-left: 12px;">'+ message +'</div>');
-                            setTimeout(function(){
-                                $input.removeClass('shake animated');
-                                $input.next().remove();
-                            },2000);
-                        })
-                    }
-                    $loading.hide();
-                }
-                is_locked = false;
-                $button.prop('disabled', false);
-            });
-        });
-    };
-
-    WASettingsEmailTemplate.prototype.initSubmit = function () {
-        var that = this;
+    initSubmit() {
+        let that = this;
 
         that.$form.on('submit', function (e) {
             e.preventDefault();
@@ -522,12 +720,12 @@ var WASettingsEmailTemplate = ( function($) {
             that.$button.prop('disabled', true);
             that.$loading.removeClass('yes').addClass('loading').show();
 
-            var href = that.$form.attr('action'),
+            let href = that.$form.attr('action'),
                 data = that.$form.serialize();
 
             $.post(href, data, function (res) {
                 if (res.status === 'ok') {
-                    that.$button.removeClass('yellow').addClass('green');
+                    that.$button.removeClass('yellow');
                     that.$loading.removeClass('loading').addClass('yes');
                     that.$footer_actions.removeClass('is-changed');
                     setTimeout(function(){
@@ -541,227 +739,33 @@ var WASettingsEmailTemplate = ( function($) {
             });
         });
 
-        that.$form.on('input', function () {
+        that.$form.on('input change', function () {
             that.$footer_actions.addClass('is-changed');
-            that.$button.removeClass('green').addClass('yellow');
+            that.$button.addClass('yellow');
         });
 
         // Reload on cancel
         that.$cancel.on('click', function (e) {
             e.preventDefault();
             $.wa.content.reload();
-            return;
         });
-    };
+    }
 
-    WASettingsEmailTemplate.prototype.initFixedActions = function() {
-        var that = this;
-
-        /**
-         * @class FixedBlock
-         * @description used for fixing form buttons
-         * */
-        var FixedBlock = ( function($) {
-
-            FixedBlock = function(options) {
-                var that = this;
-
-                // DOM
-                that.$window = $(window);
-                that.$wrapper = options["$section"];
-                that.$wrapperW = options["$wrapper"];
-                that.$form = that.$wrapper.parents('form');
-
-                // VARS
-                that.type = (options["type"] || "bottom");
-                that.lift = (options["lift"] || 0);
-
-                // DYNAMIC VARS
-                that.offset = {};
-                that.$clone = false;
-                that.is_fixed = false;
-
-                // INIT
-                that.initClass();
-            };
-
-            FixedBlock.prototype.initClass = function() {
-                var that = this,
-                    $window = that.$window,
-                    resize_timeout = 0;
-
-                $window.on("resize", function() {
-                    clearTimeout(resize_timeout);
-                    resize_timeout = setTimeout( function() {
-                        that.resize();
-                    }, 100);
-                });
-
-                $window.on("scroll", watcher);
-
-                that.$wrapper.on("resize", function() {
-                    that.resize();
-                });
-
-                that.$form.on("input", function () {
-                    that.resize();
-                });
-
-                that.init();
-
-                function watcher() {
-                    var is_exist = $.contains($window[0].document, that.$wrapper[0]);
-                    if (is_exist) {
-                        that.onScroll($window.scrollTop());
-                    } else {
-                        $window.off("scroll", watcher);
-                    }
-                }
-
-                that.$wrapper.data("block", that);
-            };
-
-            FixedBlock.prototype.init = function() {
-                var that = this;
-
-                if (!that.$clone) {
-                    var $clone = $("<div />").css("margin", "0");
-                    that.$wrapper.after($clone);
-                    that.$clone = $clone;
-                }
-
-                that.$clone.hide();
-
-                var offset = that.$wrapper.offset();
-
-                that.offset = {
-                    left: offset.left,
-                    top: offset.top,
-                    width: that.$wrapper.outerWidth(),
-                    height: that.$wrapper.outerHeight()
-                };
-            };
-
-            FixedBlock.prototype.resize = function() {
-                var that = this;
-
-                switch (that.type) {
-                    case "top":
-                        that.fix2top(false);
-                        break;
-                    case "bottom":
-                        that.fix2bottom(false);
-                        break;
-                }
-
-                var offset = that.$wrapper.offset();
-                that.offset = {
-                    left: offset.left,
-                    top: offset.top,
-                    width: that.$wrapper.outerWidth(),
-                    height: that.$wrapper.outerHeight()
-                };
-
-                that.$window.trigger("scroll");
-            };
-
-            /**
-             * @param {Number} scroll_top
-             * */
-            FixedBlock.prototype.onScroll = function(scroll_top) {
-                var that = this,
-                    window_w = that.$window.width(),
-                    window_h = that.$window.height();
-
-                // update top for dynamic content
-                that.offset.top = (that.$clone && that.$clone.is(":visible") ? that.$clone.offset().top : that.$wrapper.offset().top);
-
-                switch (that.type) {
-                    case "top":
-                        var use_top_fix = (that.offset.top - that.lift < scroll_top);
-
-                        that.fix2top(use_top_fix);
-                        break;
-                    case "bottom":
-                        var use_bottom_fix = (that.offset.top && scroll_top + window_h < that.offset.top + that.offset.height);
-                        that.fix2bottom(use_bottom_fix);
-                        break;
-                }
-
-            };
-
-            /**
-             * @param {Boolean|Object} set
-             * */
-            FixedBlock.prototype.fix2top = function(set) {
-                var that = this,
-                    fixed_class = "is-top-fixed";
-
-                if (set) {
-                    that.$wrapper
-                        .css({
-                            position: "fixed",
-                            top: that.lift,
-                            left: that.offset.left
-                        })
-                        .addClass(fixed_class);
-
-                    that.$clone.css({
-                        height: that.offset.height
-                    }).show();
-
-                } else {
-                    that.$wrapper.removeClass(fixed_class).removeAttr("style");
-                    that.$clone.removeAttr("style").hide();
-                }
-
-                that.is_fixed = !!set;
-            };
-
-            /**
-             * @param {Boolean|Object} set
-             * */
-            FixedBlock.prototype.fix2bottom = function(set) {
-                var that = this,
-                    fixed_class = "is-bottom-fixed";
-
-                if (set) {
-                    that.$wrapper
-                        .css({
-                            position: "fixed",
-                            bottom: 0,
-                            left: that.offset.left,
-                            width: that.offset.width
-                        })
-                        .addClass(fixed_class);
-
-                    that.$clone.css({
-                        height: that.offset.height
-                    }).show();
-
-                } else {
-                    that.$wrapper.removeClass(fixed_class).removeAttr("style");
-                    that.$clone.removeAttr("style").hide();
-                }
-
-                that.is_fixed = !!set;
-            };
-
-            return FixedBlock;
-
-        })(jQuery);
-
+    /**
+     * @deprecated
+     */
+    initFixedActions() {
+        let that = this;
         new FixedBlock({
             $wrapper: that.$wrapper,
             $section: that.$wrapper.find(".js-footer-actions"),
             type: "bottom"
         });
+    }
 
-    };
-
-    WASettingsEmailTemplate.prototype.initReset = function () {
-        var that = this,
-            $link = that.$footer_actions.find('.js-reset'),
+    initReset() {
+        let that = this,
+            $link = that.$form.find('.js-reset'),
             ace = that.ace.getSession(),
             $subject = that.$wrapper.find('.js-subject'),
             subject = $('<div />').text(that.default_template["subject"]).html();
@@ -769,18 +773,14 @@ var WASettingsEmailTemplate = ( function($) {
         $link.on('click', function () {
             $subject.val(subject);
             ace.setValue(that.default_template["text"]);
-            that.$button.removeClass('green').addClass('yellow');
+            that.$button.addClass('yellow');
         });
-    };
+    }
+}
 
-    return WASettingsEmailTemplate;
-
-})(jQuery);
-
-var WASettingsEmailTemplateSidebar = ( function($) {
-
-    WASettingsEmailTemplateSidebar = function(options) {
-        var that = this;
+class WASettingsEmailTemplateSidebar {
+    constructor(options) {
+        let that = this;
 
         // DOM
         that.$wrapper = options["$wrapper"];
@@ -788,7 +788,6 @@ var WASettingsEmailTemplateSidebar = ( function($) {
         that.$edit_channel_dialog = options["$edit_channel_dialog"];
         that.$delete_confirm_dialog = options["$delete_confirm_dialog"];
         that.$add_new = that.$wrapper.find('.js-new-templates');
-        that.$sidebar_items_wrapper = that.$wrapper.find('.js-sidebar-items');
 
         // VARS
         that.channel_id = options["channel_id"];
@@ -798,10 +797,10 @@ var WASettingsEmailTemplateSidebar = ( function($) {
 
         // INIT
         that.initClass();
-    };
+    }
 
-    WASettingsEmailTemplateSidebar.prototype.initClass = function() {
-        var that = this;
+    initClass() {
+        let that = this;
 
         //
         that.initExpandCollapseChannelTemplates();
@@ -809,256 +808,262 @@ var WASettingsEmailTemplateSidebar = ( function($) {
         that.initNewTemplatesGroup();
         //
         that.initEditChannel();
-    };
+    }
 
-    WASettingsEmailTemplateSidebar.prototype.initExpandCollapseChannelTemplates = function() {
-        var that = this,
+    initExpandCollapseChannelTemplates() {
+        let that = this,
+            $wrapper = that.$wrapper[0],
             storage_name = 'wa/settings/expand-email-templates',
             expand_templates = getExpandTemplates();
 
-        if ($.inArray(that.channel_id, expand_templates) === -1) {
+        if (!expand_templates.some((id) => id == that.channel_id)) {
             expand_templates.push(that.channel_id);
         }
 
         // Expand on start template groups
-        $.each(expand_templates, function (i, channel_id) {
-            var $channel = that.$sidebar_items_wrapper.find('.js-channel[data-id="'+ channel_id +'"]');
-            expandOrCollapse($channel);
-        });
+        expand_templates.forEach((channel_id) => {
+            let $channel = $wrapper.querySelector('.js-channel[data-id="'+ channel_id +'"]');
+            if ($channel) {
+                expandOrCollapse($channel);
+            }
+        })
 
         // On click
-        that.$sidebar_items_wrapper.on('click', '.js-expand-collapse', function () {
-            var $channel = $(this).parents('.js-channel');
+        $($wrapper).on('click', '.js-expand-collapse', function (e) {
+            e.preventDefault();
+            let $channel = this.closest('.js-channel');
             expandOrCollapse($channel);
         });
 
         function expandOrCollapse($channel) {
-            var channel_id = $channel.data('id'),
-                $expand_collapse_icon = $channel.find('.js-expand-collapse-icon'),
-                $settings_icon = $channel.find('.js-channel-edit'),
-                $channel_templates = that.$sidebar_items_wrapper.find('.js-template[data-channel-id="'+ channel_id +'"]'),
-                action = null;
+            let channel_id = $channel.dataset.id,
+                expand_collapse_icon_class = $channel.querySelector('.js-expand-collapse-icon').classList,
+                $settings_icon = $channel.querySelector('.js-channel-edit'),
+                $channel_templates = $channel.querySelectorAll('.js-template[data-channel-id="'+ channel_id +'"]'),
+                action;
 
-            if ($expand_collapse_icon.hasClass('rarr')) {
+            if (expand_collapse_icon_class.contains('rarr')) {
                 action = 'show';
-                $expand_collapse_icon.removeClass('rarr').addClass('darr');
-                $settings_icon.show();
-                $channel_templates.each(function (i, template) {
-                    $(template).show();
+                expand_collapse_icon_class.remove('rarr')
+                expand_collapse_icon_class.add('darr');
+                $settings_icon.style.display = 'block';
+                $channel_templates.forEach(function (template) {
+                    template.style.display = 'block';
                 });
             } else {
                 action = 'hide';
-                $expand_collapse_icon.removeClass('darr').addClass('rarr');
-                $settings_icon.hide();
-                $channel_templates.each(function (i, template) {
-                    $(template).hide();
+                expand_collapse_icon_class.remove('darr')
+                expand_collapse_icon_class.add('rarr');
+                $settings_icon.style.display = 'none';
+                $channel_templates.forEach(function (template) {
+                    template.style.display = 'none';
                 });
             }
 
-            if (action == 'show' && $.inArray(channel_id, expand_templates) === -1) {
-                expand_templates.push(channel_id);
-            } else if (action == 'hide') {
-                expand_templates = $.grep(expand_templates, function(id) {
-                    return id != channel_id;
-                });
+            if (action === 'show' && !expand_templates.some((id) => id == channel_id)) {
+                expand_templates.push(parseInt(channel_id, 10));
+            } else if (action === 'hide') {
+                expand_templates = expand_templates.filter((id) => id != channel_id)
             }
 
             setExpandTemplates(expand_templates);
         }
 
         function getExpandTemplates() {
-            var local_storage = ( localStorage.getItem(storage_name) || "[]" );
+            let local_storage = ( localStorage.getItem(storage_name) || "[]" );
             return JSON.parse(local_storage);
         }
 
         function setExpandTemplates(expand_templates) {
             localStorage.setItem(storage_name, JSON.stringify(expand_templates));
         }
-    };
+    }
 
-    WASettingsEmailTemplateSidebar.prototype.initNewTemplatesGroup = function() {
-        var that = this,
+    initNewTemplatesGroup() {
+        let that = this,
             $dialog_wrapper = that.$new_templates_group_dialog,
-            $form = $dialog_wrapper.find('form'),
-            $dialog_buttons = $dialog_wrapper.find('.dialog-buttons'),
-            $button = $dialog_buttons.find('.js-submit-button'),
-            $loading = $dialog_buttons.find('.s-loading'),
             is_locked = false;
 
-        that.$add_new.on('click', function () {
-            $dialog_wrapper.waDialog({
-                width: '400px',
-                height: '190px'
-            });
-        });
-
-        // Submit
-        $form.on('submit', function (e) {
+        that.$add_new.on('click', function (e) {
             e.preventDefault();
-            if (is_locked) {
-                return;
-            }
-            is_locked = true;
-            $button.prop('disabled', true);
-            $form.find('.s-error-message-wrapper').text('');
-            $loading.removeClass('yes').addClass('loading').show();
+            $.waDialog({
+                $wrapper: $dialog_wrapper,
+                onOpen($dialog, dialog) {
+                    const $form = $dialog.find('form'),
+                        $dialog_buttons = $dialog.find('.dialog-footer'),
+                        $button = $dialog_buttons.find('.js-submit-button'),
+                        $loading = $dialog_buttons.find('.loading');
 
-            var href = $form.attr('action'),
-                data = $form.serialize();
+                    $form.on('submit', function (e) {
+                        e.preventDefault();
+                        if (is_locked) {
+                            return;
+                        }
 
-            $.post(href, data, function (res) {
-                if (res.status === 'ok') {
-                    $button.removeClass('yellow').addClass('green');
-                    $loading.removeClass('loading').addClass('yes');
-                    setTimeout(function(){
-                        $loading.hide();
-                        $.wa.content.load(that.path_to_template + res.data.id +'/');
-                    },2000);
-                } else {
-                    if (res.errors) {
-                        $.each(res.errors, function (i, error) {
-                            var $filed = $form.find('[name="data['+ error.field +']"]'),
-                                $error_message = $form.find('.js-error-'+error.field);
+                        is_locked = true;
+                        $button.prop('disabled', true);
+                        $form.find('.s-error-message-wrapper').text('');
+                        $loading.show();
 
-                            $filed.addClass('error shake animated');
-                            $error_message.text(error.message);
-                            setTimeout(function(){
-                                $error_message.text('');
-                                $filed.removeClass('error shake animated');
-                            }, 2000);
+                        let href = $form.attr('action'),
+                            data = $form.serialize();
+
+                        $.post(href, data, function (res) {
+                            if (res.status === 'ok') {
+                                $button.removeClass('yellow');
+                                setTimeout(function () {
+                                    $loading.hide();
+                                    $.wa.content.load(that.path_to_template + res.data.id + '/');
+                                    dialog.close();
+                                }, 2000);
+                            } else {
+                                if (res.errors) {
+                                    $.each(res.errors, function (i, error) {
+                                        let $filed = $form.find('[name="data[' + error.field + ']"]'),
+                                            $error_message = $form.find('.js-error-' + error.field);
+
+                                        $filed.addClass('error shake animated');
+                                        $error_message.text(error.message);
+                                        setTimeout(function () {
+                                            $error_message.text('');
+                                            $filed.removeClass('error shake animated');
+                                        }, 2000);
+                                    });
+                                }
+                                $loading.hide();
+                                is_locked = false;
+                                $button.prop('disabled', false);
+                            }
                         });
-                    }
-                    $loading.hide();
+                    })
+                        .on('input', function () {
+                            $button.addClass('yellow');
+                        });
                 }
-                is_locked = false;
-                $button.prop('disabled', false);
             });
         });
-        $form.on('input', function () {
-            $button.removeClass('green').addClass('yellow');
-        });
-    };
+    }
 
-    WASettingsEmailTemplateSidebar.prototype.initEditChannel = function () {
-        var that = this;
+    initEditChannel() {
+        let that = this;
 
-        that.$sidebar_items_wrapper.on('click', '.js-channel-edit', function () {
-            var $channel = $(this).parents('.js-channel'),
+        that.$wrapper.on('click', '.js-channel-edit', function (e) {
+            e.preventDefault();
+            let $channel = $(this).parents('.js-channel'),
                 channel_id = $channel.data('id'),
                 channel_name = $channel.data('name'),
                 channel_email = $channel.data('email'),
                 channel_system = $channel.data('system'),
                 $dialog_wrapper = that.$edit_channel_dialog.clone(),
-                $form = $dialog_wrapper.find('form'),
-                $dialog_buttons = $dialog_wrapper.find('.dialog-buttons'),
-                $button = $dialog_buttons.find('.js-submit-button'),
-                $loading = $dialog_buttons.find('.s-loading'),
                 is_locked = false;
 
-            $dialog_wrapper.find('.js-channel-name').text(channel_name);
-            $dialog_wrapper.find('.js-email-select').val(channel_email);
-            if (channel_system) {
-                $dialog_wrapper.find('.js-name-text').text(channel_name).show();
-            } else {
-                $dialog_wrapper.find('.js-delete').show();
-                $dialog_wrapper.find('.js-name-input').val(channel_name).show();
-            }
+            $.waDialog({
+                html: $dialog_wrapper,
+                onOpen($dialog, dialog) {
+                    const $form = $dialog.find('form'),
+                        $dialog_buttons = $dialog.find('.dialog-footer'),
+                        $button = $dialog_buttons.find('.js-submit-button'),
+                        $loading = $dialog_buttons.find('.loading');
 
-            $dialog_wrapper.waDialog({
-                width: '400px',
-                height: '190px'
-            });
-
-            // Submit
-            $form.on('submit', function (e) {
-                e.preventDefault();
-                if (is_locked) {
-                    return;
-                }
-                is_locked = true;
-                $button.prop('disabled', true);
-                $form.find('.s-error-message-wrapper').text('');
-                $loading.removeClass('yes').addClass('loading').show();
-
-                var href = '?module=settingsTemplateEmailEdit&id='+ channel_id,
-                    data = $form.serialize();
-
-                $.post(href, data, function (res) {
-                    if (res.status === 'ok') {
-                        $button.removeClass('yellow').addClass('green');
-                        $loading.removeClass('loading').addClass('yes');
-                        setTimeout(function(){
-                            $loading.hide();
-                            $.wa.content.reload();
-                            $dialog_wrapper.trigger('close');
-                        },2000);
+                    $dialog.find('.js-channel-name').text(channel_name);
+                    $dialog.find('.js-email-select').val(channel_email);
+                    if (channel_system) {
+                        $dialog.find('.js-name-text').text(channel_name).show();
                     } else {
-                        if (res.errors) {
-                            $.each(res.errors, function (i, error) {
-                                var $filed = $form.find('[name="data['+ error.field +']"]'),
-                                    $error_message = $form.find('.js-error-'+error.field);
+                        $dialog.find('.js-delete').show();
+                        $dialog.find('.js-name-input').val(channel_name).show();
+                    }
 
-                                $filed.addClass('error shake animated');
-                                $error_message.text(error.message);
-                                setTimeout(function(){
-                                    $error_message.text('');
-                                    $filed.removeClass('error shake animated');
-                                }, 2000);
-                            });
+                    $form.on('submit', function (e) {
+                        e.preventDefault();
+                        if (is_locked) {
+                            return;
                         }
-                        $loading.hide();
-                    }
-                    is_locked = false;
-                    $button.prop('disabled', false);
-                });
-            });
+                        is_locked = true;
+                        $button.prop('disabled', true);
+                        $form.find('.s-error-message-wrapper').text('');
+                        $loading.addClass('loading').show();
 
-            $form.on('input', function () {
-                $button.removeClass('green').addClass('yellow');
-            });
+                        let href = '?module=settingsTemplateEmailEdit&id='+ channel_id,
+                            data = $form.serialize();
 
-            // Duplicate and Delete channel
-            var $duplicate_link = $dialog_buttons.find('.js-duplicate'),
-                $delete_link = $dialog_buttons.find('.js-delete');
+                        $.post(href, data, function (res) {
+                            if (res.status === 'ok') {
+                                $button.removeClass('yellow');
+                                setTimeout(function(){
+                                    $loading.hide();
+                                    $.wa.content.reload();
+                                    dialog.close();
+                                },2000);
+                            } else {
+                                if (res.errors) {
+                                    $.each(res.errors, function (i, error) {
+                                        let $filed = $form.find('[name="data['+ error.field +']"]'),
+                                            $error_message = $form.find('.js-error-'+error.field);
 
-            $duplicate_link.on('click', function () {
-                var href = '?module=settingsTemplateDuplicate',
-                    data = {id: channel_id};
-
-                $.post(href, data, function (res) {
-                    if (res.status === 'ok') {
-                        $.wa.content.load(that.path_to_template + res.data.id +'/');
-                        $dialog_wrapper.trigger('close');
-                    } else {
-                        $.wa.content.reload();
-                    }
-                });
-            });
-
-            $delete_link.on('click', function () {
-                var href = '?module=settingsTemplateDelete',
-                    data = {id: channel_id};
-
-                that.$delete_confirm_dialog.waDialog({
-                    width: '400px',
-                    height: '100px',
-                    onLoad: function () {
-                        $dialog_wrapper.hide();
-                    },
-                    onSubmit: function () {
-                        $.post(href, data, function () {
-                            $.wa.content.load(that.path_to_template);
+                                        $filed.addClass('error shake animated');
+                                        $error_message.text(error.message);
+                                        setTimeout(function(){
+                                            $error_message.text('');
+                                            $filed.removeClass('error shake animated');
+                                        }, 2000);
+                                    });
+                                }
+                                $loading.hide();
+                                is_locked = false;
+                                $button.prop('disabled', false);
+                            }
                         });
-                        return false;
-                    },
-                    onCancel: function () {
-                        $dialog_wrapper.show();
-                    }
-                });
+                    })
+                        .on('input', function () {
+                        $button.addClass('yellow');
+                    });
+
+                    // Duplicate and Delete channel
+                    let $duplicate_link = $dialog_buttons.find('.js-duplicate'),
+                        $delete_link = $dialog_buttons.find('.js-delete');
+
+                    $duplicate_link.on('click', function () {
+                        let href = '?module=settingsTemplateDuplicate',
+                            data = {id: channel_id};
+
+                        $.post(href, data, function (res) {
+                            if (res.status === 'ok') {
+                                $.wa.content.load(that.path_to_template + res.data.id +'/');
+                                dialog.close();
+                            } else {
+                                $.wa.content.reload();
+                            }
+                        });
+                    });
+
+                    $delete_link.on('click', function () {
+                        let href = '?module=settingsTemplateDelete',
+                            data = {id: channel_id};
+
+                        $.waDialog({
+                            $wrapper:that.$delete_confirm_dialog,
+                            onOpen($del_dialog, del_dialog) {
+                                dialog.hide();
+                                let $form = $del_dialog.find('form');
+                                $form.on('submit', function (e) {
+                                    e.preventDefault()
+                                    $.post(href, data, function () {
+                                        $.wa.content.load(that.path_to_template);
+                                        $.wa.content.reload();
+                                       // location.reload();
+                                        del_dialog.close();
+                                        dialog.close();
+                                    });
+                                });
+                            },
+                            onClose() {
+                                dialog.show();
+                            }
+                        });
+                    });
+                }
             });
         });
-    };
-
-    return WASettingsEmailTemplateSidebar;
-
-})(jQuery);
+    }
+}

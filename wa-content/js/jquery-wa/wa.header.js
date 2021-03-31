@@ -1,236 +1,378 @@
-$(function () {
+class WaHeader {
+    constructor() {
+        // Variables
+        let that = this
+        /// dom
+        this.$notification_wrapper = $('.js-notification-wrapper')
+        this.$wa_nav = $('#wa-nav')
+        this.$dashboard_wrapper = $('#dashboard-wrapper')
+        this.$content = $('.js-main-content')
+        this.$sidebar = $('.js-main-sidebar')
+        this.dashboard_wa_apps = this.$dashboard_wrapper.find('#wa_apps')
+        this.$wa_header = this.$wa_nav.find('#wa-header');
+        this.$applist = this.$wa_header.find('.js-applist-header');
+        this.$applists = $('.js-applist');
+        this.$notification_close = this.$notification_wrapper.find('.js-announcement-close');
+        this.header_apps_tooltips = $('.js-applist-header a[data-wa-tooltip-content]') || null;
+        /// params
 
-    $(window).resize(function() {
-        var list_width = $('#wa-applist ul').width() - 1,
-            icon_width = 75, // 72px + space symbol
-            icons_count = $('#wa-applist li[id]').length,
-            max_icons = parseInt(list_width / icon_width);
+        // Fns Init
+        this.sortableApps()
+        this.setRetina()
+        this.closeNotification()
 
-        if (max_icons-- < icons_count) {
-            if ( !$("#wa-moreapps").hasClass('uarr') && $('#wa-applist li:eq('+ max_icons +')').attr('id')) {
-                if ($('#wa-applist li[id]:eq(' + (max_icons - 1) + ')').length) {
-                    $('#wa-moreapps').show().parent().insertAfter($('#wa-applist li[id]:eq(' + (max_icons - 1) + ')'));
-                } else {
-                    $('#wa-moreapps').hide().parent().insertAfter($('#wa-applist li:last'));
-                }
-            }
-        } else if ($('#wa-applist li:last').attr('id')) {
-            $('#wa-moreapps').hide().parent().insertAfter($('#wa-applist li:last'));
+        this.panelToggle()
+        this.appsToggle()
+        this.searchPanel()
+
+        this.appsTooltip()
+
+        // update counts immediately if there are no cached counts; otherwise, update later
+        if (!this.$applist.is('.counts-cached')) {
+            this.updateCount()
         } else {
-            if ($('#wa-moreapps').hasClass('uarr')) {
-                $('#wa-header').css('height', '83px');
-                $('#wa-moreapps').removeClass('uarr');
-            }
-            $('#wa-moreapps').hide();
+            setInterval(this.updateCount, 60000);
         }
-    }).resize();
+    }
 
-    var sortableApps = function () {
-        $("#wa-applist ul").sortable({
-            distance: 5,
-            helper: 'clone',
-            items: 'li[id]',
-            opacity: 0.75,
-            tolerance: 'pointer',
-            stop: function () {
-            var data = $(this).sortable("toArray", {attribute: 'data-app'});
-            var apps = [];
-            for (var i = 0; i < data.length; i++) {
-                var id = $.trim(data[i]);
-                if (id) {
-                    apps.push(id);
-                }
-            }
-            var url = backend_url + "?module=settings&action=save";
-            $.post(url, {name: 'apps', value: apps});
-        }});
-    };
-
-    if ($.fn.sortable) {
-        sortableApps();
-    } else if (!$('#wa').hasClass('disable-sortable-header')) {
-
-        var urls = [];
-        if (!$.browser) {
-            urls.push('wa-content/js/jquery/jquery-migrate-1.2.1.min.js');
-        }
-        if (!$.ui) {
-            urls.push('wa-content/js/jquery-ui/jquery.ui.core.min.js');
-            urls.push('wa-content/js/jquery-ui/jquery.ui.widget.min.js');
-            urls.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
-        } else if (!$.ui.mouse) {
-            urls.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
-        }
-        urls.push('wa-content/js/jquery-ui/jquery.ui.sortable.min.js');
-
-        var $script = $("#wa-header-js");
-        var path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
-        $.when.apply($, $.map(urls, function(file) {
-            return $.ajax({
-                cache: true,
-                dataType: "script",
-                url: path + file
-            });
-        })).done(sortableApps);
-
-        // Determine user timezone when "Timezone: Auto" is saved in profile
-        if ($script.data('determine-timezone') && !document.cookie.match(/\btz=/)) {
-            var version = $script.attr('src').split('?', 2)[1];
-            $.ajax({
-                cache: true,
-                dataType: "script",
-                url: path + "wa-content/js/jquery-wa/wa.core.js?" + version,
-                success: function() {
-                    $.wa.determineTimezone(path);
-                }
+    /**
+     * @description Add tooltips for apps icons
+     */
+    appsTooltip() {
+        if (this.header_apps_tooltips) {
+            this.header_apps_tooltips.waTooltip({
+                arrow: false,
+                placement: "bottom",
+                theme: "bordered",
+                offset:[0, 3]
             });
         }
     }
 
-/*
-    $('#wa-header').on('mousemove', function () {
-        if ($('#wa-moreapps').is(':visible') && !$('#wa-moreapps').hasClass('uarr')) {
-            var self = this;
-            if (this.timeout) {
-                clearTimeout(this.timeout);
-            }
-            this.timeout = setTimeout(function () {
-                if (!$('#wa-moreapps').hasClass('uarr')) {
-                    $('#wa-moreapps').click();
+    /**
+     * @description Make header sticky
+     * @param {string} target .class or #id
+     * @param {Object} settings
+     */
+    static headerBehavior(target, settings) {
+        if (!target || !settings) {
+            throw new Error('Some method param is not set');
+        }
+
+        const $target = document.querySelector(target),
+            $wa_header = document.querySelector('#wa-header'),
+            $content = document.querySelector('.js-main-content')
+
+        const handler = () => {
+            let rect = $target.getBoundingClientRect(),
+                $target_height = rect.height,
+                $target_top = rect.top,
+                is_edit_mode = document.querySelector('body').classList.contains('is-custom-edit-mode');
+
+            if (!is_edit_mode) {
+                if (target === '.wa-dashboard-page') {
+                    if ($target_top < 0 && (0 - $target_top) > $target_height) {
+                        $content.classList.add('header-apps')
+                    } else {
+                        if (!$content.classList.contains('header-fixed')) {
+                            $content.classList.remove('header-apps')
+                        }
+                    }
+                } else {
+                    // элемент полностью не виден
+                    if ((0 - $target_top) > $target_height) {
+                        $wa_header.style.cssText = 'opacity:1';
+                        $content.classList.add('header-apps')
+                    }else{
+                        $wa_header.style.cssText = 'opacity:0';
+                    }
+                    // элемент полностью виден
+                    if ($target_top < $target_height && $target_top > 0) {
+                        $content.classList.remove('header-apps');
+                        $wa_header.style.cssText = 'opacity:1';
+                    }
                 }
-                self.timeout = null;
-            }, 2000);
-        }
-    }).on('blur', function () {
-        if (this.timeout) {
-            clearTimeout(this.timeout)
-            this.timeout = null;
-        }
-    }).on('mouseleave', function () {
-        if (this.timeout) {
-            clearTimeout(this.timeout)
-            this.timeout = null;
-        }
-    });
-*/
-
-    // Webasyst ID auth announcement :: click on auth link
-
-    // Bind contact with Webasyst ID contact
-    var bindWithWebasystID = function(href, oauth_modal) {
-        if (!oauth_modal) {
-            var referrer_url = window.location.href;
-            window.location = href + '&referrer_url=' + referrer_url;
-            return;
-        }
-        var width = 600;
-        var height = 500;
-        var left = (screen.width - width) / 2;
-        var top = (screen.height - height) / 2;
-        window.open(href,'oauth', "width=" + 600 + ",height=" + height + ",left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
-    };
-
-    $('.js-webasyst-id-connect-announcement .js-webasyst-id-connect').on('click', function (e) {
-        e.preventDefault();
-        var in_webasyst_settings_page = location.href.indexOf(webasyst_id_settings_url) !== -1;
-        if (!in_webasyst_settings_page) {
-            location.href = webasyst_id_settings_url;
-        }
-    });
-
-    $('.js-webasyst-id-auth-announcement .js-webasyst-id-auth').on('click', function (e) {
-        e.preventDefault();
-        bindWithWebasystID($(this).attr('href'));
-    });
-
-    var showWebasystIDHelp = function() {
-        var help_url = backend_url + "?module=backend&action=webasystIDHelp",
-            is_now_in_settings_page = (location.pathname || '').indexOf('webasyst/settings/waid/') !== -1;
-
-        if (is_now_in_settings_page) {
-            help_url += '&caller=webasystSettings'
+            }
         }
 
-        $.get(help_url, function (html) {
-            $('body').append(html);
+        addEventListener('load', handler, false);
+        addEventListener('scroll', handler, false);
+        addEventListener('resize', handler, false);
+
+    }
+
+    /**
+     * @description Insert page title into header
+     * @param {Object} options
+     */
+    static setHeaderTitle(options) {
+        let title_text = options.title_text || '',
+            place_after = options.place_after || '.wa-sitename',
+            truncate = options.truncate || false;
+
+        if (title_text) {
+            if (truncate && (title_text.length > truncate)) {
+                title_text= title_text.substring(0,truncate);
+            }
+
+            let $place_after = document.querySelector('#wa-header').querySelector(place_after);
+            $place_after.insertAdjacentHTML("afterEnd", `<span class="h2 wa-pagename">${title_text}</span>`);
+        }
+    }
+
+    /**
+     * @description Toggle search block
+     */
+    searchPanel() {
+        let that = this,
+            $button = that.$wa_header.find('.js-header-search'),
+            button_text_default = $button.html(),
+            button_text_close = '<i class="fas fa-times"></i>',
+            $form = that.$wa_header.find('.wa-header-search-form')
+
+        $button.on('click', function (e) {
+            e.preventDefault();
+            $form.toggleClass('active')
+            if ($form.hasClass('active')) {
+                $form.find('input').focus();
+                $button.html(button_text_close);
+            } else {
+                $button.html(button_text_default);
+            }
+        })
+
+        // toggle search field
+        let $search_form_input = $form.find('input'),
+            $search_form_button = $form.find('button')
+
+        $search_form_button.on('click', function (e) {
+            e.preventDefault()
+            if($form.hasClass('collapsed')) {
+                $form.removeClass('collapsed')
+                $search_form_input.focus()
+            }
         });
-    };
+        $search_form_input.on('blur', function (e) {
+            e.preventDefault()
+            $form.toggleClass('collapsed', true)
+        });
+    }
 
-    $('.js-webasyst-id-connect-announcement .js-webasyst-id-helplink').on('click', function (e) {
-        e.preventDefault();
-        showWebasystIDHelp();
-    });
+    /**
+     * @description Expand/Shrink header by horizontal
+     */
+    panelToggle() {
+        let that = this,
+            $toggle_btn = that.$wa_header.find('.js-toggle-panel'),
+            $sidebar = $('#wa-app').find('.sidebar'),
+            $sidebar_header = $sidebar.find('.sidebar-header');
 
-    $('.js-webasyst-id-auth-announcement .js-webasyst-id-helplink').on('click', function (e) {
-        e.preventDefault();
-        showWebasystIDHelp();
-    });
+        $toggle_btn.on('click', function (e) {
+            e.preventDefault();
+            let is_fixed = that.$content.toggleClass('header-fixed').hasClass('header-fixed');
+            $sidebar.toggleClass('height-full').toggleClass('header-fixed');
+            $sidebar_header.toggle();
+            localStorage.setItem('wa/dashboard/header/fixed', is_fixed);
+            JsCookie.setCookie('wa_header_fixed', is_fixed ? 1 : 0, {secure: true, 'max-age': 3600});
+            if(!is_fixed) {
+                that.$content.removeClass('header-apps')
+            }
+            $('body,html').animate({
+                scrollTop: 0,
+            }, 500);
+        })
+    }
 
-    var pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;
-    $(window).on("load", function() {
-        if (pixelRatio > 1) {
-            $('#wa-applist img').each(function() {
-                if ($(this).data('src2')) {
-                    $(this).attr('src', $(this).data('src2'));
+    /**
+     * @description Expand/Shrink header apps menu by vertical
+     */
+    appsToggle() {
+        let that = this,
+            $toggle_apps = that.$wa_header.find('.js-toggle-apps'),
+            $background = that.$wa_nav.next('.js-header-background');
+
+        const action = function ($toggler) {
+            $toggler.toggleClass('down');
+            $toggler.toggleClass('wa-animation-spin');
+            setTimeout(() => $toggler.toggleClass('wa-animation-spin'), 1000);
+            that.$content.toggleClass('wa-nav-unfolded');
+            that.$wa_nav .toggleClass('wa-nav-unfolded');
+
+            // Disable tooltip when apps panel is down
+            if ($toggler.hasClass('down')) {
+                that.header_apps_tooltips.each(function () {
+                    this._tippy.disable();
+                })
+            }else{
+                that.header_apps_tooltips.each(function () {
+                    this._tippy.enable();
+                })
+            }
+
+        };
+
+        $(document).keyup(function(e) {
+            if (e.keyCode === 27 && $toggle_apps.hasClass('down')) {
+                action($toggle_apps);
+            }
+        });
+
+        $background.on('click', function () {
+            action($toggle_apps);
+        });
+
+        $toggle_apps.on('click', function (e) {
+            e.preventDefault();
+            action($(this));
+        });
+
+    }
+
+    /**
+     * @description Able to sort apps
+     */
+    sortableApps() {
+        let that = this,
+            is_mobile = that.$applists.hasClass('is-mobile'),
+            $app_list = that.$applists.find('ul');
+
+        const app_list_sortable = () => {
+            const options = {
+                animation: 150,
+                dataIdAttr: 'data-app',
+                forceFallback: true,
+                onStart(event) {
+
+                },
+                onEnd(event) {
+                    /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
+                    let $link = $(event.item).find('a'),
+                        href = $link.attr('href');
+                    $link.attr('href', 'javascript:void(0);');
+                    setTimeout(() => $link.attr('href', href),500)
+
+                    let data = this.toArray(),
+                        apps = [];
+
+                    for (let i = 0; i < data.length; i++) {
+                        let id = $.trim(data[i]);
+                        if (id) {
+                            apps.push(id);
+                        }
+                    }
+
+                    let url = backend_url + "?module=settings&action=save";
+                    $.post(url, {name: 'apps', value: apps});
                 }
-            });
-        }
-    });
+            };
 
-    $('#wa-moreapps').click(function() {
-        if ($(this).hasClass('uarr'))
-        {
-            $('#wa-header').css('height', '83px');
-            $('#wa-moreapps').removeClass('uarr');
-            $('#wa-header').removeClass('wa-moreapps');
-            $(window).resize();
-        } else {
-            if ($('#wa-applist li:last').attr('id')) {
-                $('#wa-moreapps').parent().insertAfter($('#wa-applist li:last'));
+            if (is_mobile) {
+                options.delay = 100;
+                options.delayOnTouchOnly = true;
             }
-            $('#wa-header').css('height', 'auto');
-            $('#wa-moreapps').addClass('uarr');
-            $('#wa-header').addClass('wa-moreapps');
+
+            $app_list.sortable(options);
         }
-        return false;
-    });
 
-    $('#wa').on('click', 'a.wa-announcement-close', function (e) {
-        e.preventDefault();
+        if(typeof Sortable !== 'undefined') {
+            app_list_sortable()
+        } else if (!$('#wa').hasClass('disable-sortable-header')) {
+            let urls = [];
+            urls.push('wa-content/js/sortable/sortable.min.js');
+            urls.push('wa-content/js/sortable/jquery-sortable.min.js');
 
-        var $link = $(this),
-            name = $link.data('name') || 'announcement_close',
-            app_id = $link.attr('rel');
+            let $script = $("#wa-header-js"),
+                path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
 
-        if ($link.closest('.d-notification-block').length) {
-            $link.closest('.d-notification-block').remove();
-            if (!$('.d-notification-wrapper').children().length) {
-                $('.d-notification-wrapper').hide();
+            $.when.apply($, $.map(urls, function(file) {
+                return $.ajax({
+                    cache: true,
+                    dataType: "script",
+                    url: path + file
+                });
+            })).done(app_list_sortable);
+
+            // Determine user timezone when "Timezone: Auto" is saved in profile
+            if ($script.data('determine-timezone') && !document.cookie.match(/\btz=/)) {
+                let version = $script.attr('src').split('?', 2)[1];
+                $.ajax({
+                    cache: true,
+                    dataType: "script",
+                    url: path + "wa-content/js/jquery-wa/wa.js?" + version,
+                    success: function () {
+                        $.wa.determineTimezone(path);
+                    }
+                });
             }
-        } else {
-            $link.next('p').remove();
-            $link.remove();
         }
+    }
 
-        var url = backend_url + "?module=settings&action=save";
-        $.post(url, {app_id: app_id, name: name, value: 'now()'});
+    /**
+     * @description Set retina image
+     */
+    setRetina() {
+        let that = this,
+            pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;
+        $(window).on("load", function () {
+            if (pixelRatio > 1) {
+                that.$applist.find('img').each(function () {
+                    if ($(this).data('src2')) {
+                        $(this).attr('src', $(this).data('src2'));
+                    }
+                });
+            }
+        });
+    }
 
-        return false;
-    });
+    /**
+     * @description Close Announcement notification
+     */
+    closeNotification() {
+        let that = this,
+            $wa_notifications_bell = $('.wa-notifications-bell'),
+            $wa_announcement_counter = $wa_notifications_bell.find('.badge');
 
-    var is_idle = true;
+        that.$notification_close.on('click', function (e) {
+            e.preventDefault()
 
-    $(document).on("mousemove keyup scroll", function() {
-        is_idle = false;
-    });
+            let $close = $(this),
+                app_id = $close.data('app-id'),
+                $notification_block = $close.closest('.wa-notification');
 
-    document.addEventListener("touchmove", function () {
-        is_idle = false;
-    }, false);
+            if ($notification_block.length) {
+                $notification_block.remove();
+                let counter = that.$notification_wrapper.children().length;
+                if (counter) {
+                    $wa_announcement_counter.text(counter)
+                }else{
+                    that.$notification_wrapper.parent('.dropdown-body').remove()
+                }
+            } else {
+                that.$notification_wrapper.parent('.dropdown-body').remove()
+                $wa_announcement_counter.remove();
+            }
 
-    var updateCount = function() {
+            let url = backend_url + "?module=settings&action=save";
+            $.post(url, {app_id: app_id, name: 'announcement_close', value: 'now()'});
+        });
+    }
 
-        var data = {
+    /**
+     * @description Update Apps action counter value
+     */
+    updateCount() {
+        let is_idle = true,
+            $wa_header = $('#wa-header');
+
+        $(document).on("mousemove keyup scroll", function() {
+            is_idle = false;
+        });
+
+        document.addEventListener("touchmove", function () {
+            is_idle = false;
+        }, false);
+
+        const data = {
             background_process: 1
         };
 
@@ -242,55 +384,99 @@ $(function () {
 
         $.ajax({
             url: backend_url + "?action=count",
-            data: data,
-            success: function (response) {
+            data,
+            success(response) {
                 if (response && response.status == 'ok') {
                     // announcements
                     if (response.data.__announce) {
                         $('#wa-announcement').remove();
-                        $('#wa-header').before(response.data.__announce);
+                        $wa_header.before(response.data.__announce);
                         delete response.data.__announce;
                     }
 
                     // applications
-                    $('#wa-header a span.indicator').hide();
-                    for (var app_id in response.data) {
-                        var n = response.data[app_id];
+                    $wa_header.find('a span.badge').hide();
+                    for (let app_id in response.data) {
+                        let n = response.data[app_id];
                         if (n) {
-                            var a = $('#wa-applist li[data-app="'+ app_id +'"] a');
-                            if (typeof(n) == 'object') {
+                            let a = $('.js-applist li[data-app="' + app_id + '"] a');
+                            if (typeof (n) == 'object') {
                                 a.attr('href', n.url);
                                 n = n.count;
                             }
-                            if (a.find('span.indicator').length) {
-                                if(n) {
-                                    a.find('span.indicator').html(n).show();
+                            if (a.find('span.badge').length) {
+                                if (n && n !== "0") {
+                                    a.find('span.badge').html(n).show();
                                 } else {
-                                    a.find('span.indicator').remove();
+                                    a.find('span.badge').remove();
                                 }
-                            } else if(n) {
-                                a.append('<span class="indicator">' + n + '</span>');
+                            } else if(n && n !== "0") {
+                                a.append('<span class="badge">' + n + '</span>');
                             }
                         } else {
-                            $('#wa-applist li[data-app="'+ app_id +'"] a span.indicator').remove();
+                            $('.js-applist li[data-app="' + app_id + '"] a span.badge').remove();
                         }
                     }
                     $(document).trigger('wa.appcount', response.data);
                 }
-                setTimeout(updateCount, 60000);
             },
-            error: function () {
-                setTimeout(updateCount, 60000);
+            error(response) {
+                console.error(response);
             },
             dataType: "json",
             async: true
         });
-    };
 
-    // update counts immidiately if there are no cached counts; otherwise, update later
-    if (!$('#wa-applist').is('.counts-cached')) {
-        updateCount();
-    } else {
-        setTimeout(updateCount, 60000);
     }
-});
+}
+
+class JsCookie {
+    /**
+     *
+     * @param {string} name
+     * @param {string|int} value
+     * @param {Object} options
+     */
+    static setCookie(name, value, options = {}) {
+
+        options = { path: '/', }
+
+        if (options.expires instanceof Date) {
+            options.expires = options.expires.toUTCString()
+        }
+
+        let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value)
+
+        for (let optionKey in options) {
+            updatedCookie += "; " + optionKey
+            let optionValue = options[optionKey]
+            if (optionValue !== true) {
+                updatedCookie += "=" + optionValue
+            }
+        }
+
+        document.cookie = updatedCookie
+    }
+
+    /**
+     *
+     * @param {string} name
+     * @returns {string|undefined}
+     */
+    static getCookie(name) {
+        let matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    /**
+     *
+     * @param {string} name
+     */
+    static deleteCookie(name) {
+        this.setCookie(name, "", {
+            'max-age': -1
+        })
+    }
+}

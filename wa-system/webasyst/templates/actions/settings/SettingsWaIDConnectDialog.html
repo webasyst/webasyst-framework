@@ -1,25 +1,23 @@
 {$dialog_class = 'w-waid-connect-dialog'}
 {$dialog_id = uniqid($dialog_class)}
-<div class="wa-dialog {$dialog_class} js-waid-connect-dialog" id="{$dialog_id}">
-    <div class="wa-dialog-background"></div>
-    <div class="wa-dialog-body">
-        <header class="wa-dialog-header">
-            <h1 class="js-title">[s`Enable sign-in with Webasyst ID`]</h1>
-        </header>
-        <div class="wa-dialog-content">
+<div class="dialog {$dialog_class} js-waid-connect-dialog" id="{$dialog_id}">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <h3 class="dialog-header js-title">[s`Enable sign-in with Webasyst ID`]</h3>
+        <div class="dialog-content">
             <div class="js-process-block">
-                <p>[s`Connecting to the Webasyst ID authentication server...`] <i class="icon16 loading js-loading"></i></p>
+                <p>[s`Connecting to the Webasyst ID authentication server...`] <i class="fas fa-spinner fa-spin js-loading"></i></p>
             </div>
             <div class="js-success-block" style="display: none">
-                <p>[s`Sign-in with Webasyst ID has been enabled.`] <i class="icon16 yes"></i></p>
+                <p>[s`Sign-in with Webasyst ID has been enabled.`] <i class="fas fa-check-circle"></i></p>
             </div>
             <div class="js-fail-block" style="display: none">
-                <p class="errormsg">[s`Failed to connect to Webasyst ID authentication server.`] <i class="icon16 cross"></i></p>
+                <p>[s`Failed to connect to Webasyst ID authentication server.`]</p>
             </div>
 
         </div>
-        <footer class="wa-dialog-footer">
-            <input type="button" class="button gray js-close-dialog" value="[s`Close`]" disabled="disabled">
+        <footer class="dialog-footer">
+            <button class="button gray outlined js-close-dialog" disabled="disabled"><span>[s`Close`]</span></button>
         </footer>
     </div>
 

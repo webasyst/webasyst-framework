@@ -1,14 +1,14 @@
 <div class="wa-cheatsheet-dropdown">
     <div class="wa-drop-link">
         <a class="inline-link" id="wa-editor-help-link-{$cheat_sheet_name|escape}" href="#">
-            <i class="icon16 cheatsheet"></i><b><i>[s`Cheat sheet`]</i></b>
-            <i class="icon10 uarr no-overhanging"></i>
+            <i class="fas fa-code"></i> [s`Cheat sheet`]
+            <i class="fas fa-caret-up"></i>
         </a>
-        <div id="wa-editor-help-{$cheat_sheet_name|escape}" class="wa-cheatsheet-dropdown-block"></div>
+        <div id="wa-editor-help-{$cheat_sheet_name|escape}" class="wa-cheatsheet-dropdown-block blank"></div>
         <script type="text/javascript">
             (function () {
                 "use strict";
-                var cheat_sheet_name = {$cheat_sheet_name|json_encode};
+                const cheat_sheet_name = {$cheat_sheet_name|json_encode};
                 $.cheatsheet = $.cheatsheet || { };
                 $.cheatsheet[cheat_sheet_name] = {
                     data: {$data|json_encode},
@@ -17,8 +17,9 @@
                         this.insertVarEvent();
                     },
                     getHelpEvent: function () {
-                        $("#wa-editor-help-link-" + cheat_sheet_name).click(function () {
-                            var $help = $("#wa-editor-help-" + cheat_sheet_name),
+                        $("#wa-editor-help-link-" + cheat_sheet_name).on('click', function() {
+
+                            let $help = $("#wa-editor-help-" + cheat_sheet_name),
                                 data = $.cheatsheet[cheat_sheet_name].data;
 
                             if ($help.is(":visible")) {
@@ -26,13 +27,13 @@
                                 return false;
                             }
 
-                            var loadHelp = function (afterLoad) {
+                            let loadHelp = function (afterLoad) {
                                 $help.load('{$wa_backend_url}?module=backendCheatSheet&action=cheatSheet', data, afterLoad);
                             };
 
-                            var showHelp = function () {
+                            let showHelp = function () {
                                 $help.show();
-                                var f = function (e) {
+                                let f = function (e) {
                                     if ($(e.target).attr('id') == 'wa-editor-help-' + cheat_sheet_name || $(e.target).parents('#wa-editor-help-' + cheat_sheet_name).length) {
                                         $(document).one('click', f);
                                     } else {
@@ -51,21 +52,29 @@
                             } else {
                                 showHelp();
                             }
-
                             return false;
                         });
                     },
                     insertVarEvent: function () {
-                        $("#wa-editor-help-" + cheat_sheet_name).on('click', "div.fields a.inline-link", function () {
-                            var el = $(this).find('i');
+                        $("#wa-editor-help-" + cheat_sheet_name).on('click', ".fields a", function(e) {
+                            e.preventDefault();
+                            let el = $(this),
+                                $design_content = $("#wa-design-content"),
+                                $el_rte = $(".el-rte"),
+                                $page_content = $('#wa-page-content');
+
+                            if (el.children('i').length) {
+                                el = el.children('i');
+                            }
                             if (el.children('b').length) {
                                 el = el.children('b');
                             }
-                            if ($("#wa-design-content").length) {
+
+                            if ($design_content.length) {
                                 //If the design reactor is turned on and the html editor is selected
-                                if ($(".el-rte").length && $(".el-rte").is(':visible')) {
+                                if ($el_rte.length && $el_rte.is(':visible')) {
                                     try {
-                                        $("#wa-design-content").elrte()[0].elrte.selection.insertHtml(el.text());
+                                        $design_content.elrte()[0].elrte.selection.insertHtml(el.text());
                                     } catch (e) {
 
                                     }
@@ -85,12 +94,11 @@
 
                                 }
                             }
-                            if ($('#wa-page-content').length) {
+                            if ($page_content.length) {
                                 $.wa_editor_ready.then(function (method) {
-                                    $('#wa-page-content')[method]('insert', el.text());
+                                    $page_content[method]('insert', el.text());
                                 });
                             }
-                            return false;
                         });
                     }
                 };
@@ -100,5 +108,3 @@
         </script>
     </div>
 </div>
-
-

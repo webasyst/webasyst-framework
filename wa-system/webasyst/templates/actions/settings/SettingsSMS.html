@@ -1,75 +1,72 @@
 {$_title = "[s`SMS providers`] — {$wa->accountName(false)}"}
-<div class="s-sms-settings-page blank block double-padded" id="s-sms-settings-page">
-    <h1 class="s-page-header">[s`SMS providers`]</h1>
+<div class="article s-sms-settings-page" id="s-sms-settings-page">
+  <div class="article-body">
+    <h1 class="s-page-title">[s`SMS providers`]</h1>
 
     {* Incoming / outgoing emails *}
-    <form action="?module=settingsSMSSave">
-        <div class="field-group">
-            {if count($sms_adapters)}
-                {foreach $sms_adapters as $i => $a}
-                    <div class="s-sms-adapter">
-                        <input name="sms[{$i}][adapter]" type="hidden" value="{$a.id}">
-                        <h3><i class="icon16" style="background-image: url('{$a.icon}');"></i>{$a.name}</h3><br>
-                        <div class="field">
-                            <div class="name">{if isset($a.controls.from.title)}{$a.controls.from.title}{else}[`Sender IDs`]{/if}</div>
-                            <div class="value">
-                                {strip}
-                                    <textarea name="sms[{$i}][from]">
-                                        {if !empty($a.config.from)}{implode("\n", $a.config.from)}{/if}
-                                    </textarea>
-                                {/strip}
-                                <p class="hint">{if isset($a.controls.from.description)}{$a.controls.from.description}{else}[`Enter sender IDs, each on a separate line, to use with this SMS gateway. A sender ID is either your phone number or an up to 11 characters long text label. Enter * (asterisk) to use a default sender ID issued by the gateway for your account.`]{/if}</p>
-                            </div>
-                        </div>
-                        {foreach $a.controls as $k => $v}
-                            {if $k != 'from'}
-                                <div class="field">
-                                    <div class="name">{_ws($v.title)}</div>
-                                    <div class="value">
-                                        {if ifset($v.control_type) == 'checkbox'}
-                                            <input type="hidden" name="sms[{$i}][{$k}]" value="">
-                                            <input type="checkbox" name="sms[{$i}][{$k}]" value="1"{if !empty($a.config[$k])} checked{/if}>
-                                        {else}
-                                            <input type="{if mb_strtolower(_ws($v.title)) == _ws('password')}password{else}text{/if}" name="sms[{$i}][{$k}]" value="{if !empty($a.config[$k])}{$a.config[$k]|escape}{/if}">
-                                        {/if}
-                                        {if !empty($v.description)}
-                                            <p class="hint">{$v.description}</p>
-                                        {/if}
-                                    </div>
-                                </div>
-                            {/if}
-                        {/foreach}
-                    </div>
-                {/foreach}
-            {else}
-                <div class="value no-shift">
-                    <p>
-                        {sprintf('[`To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway.<br> <a href="%s">Browse for SMS gateway plugins</a> in Installer app.`]', $wa_backend_url|cat:'installer/#/plugins/wa-plugins/sms/')}
-                    </p>
+    <form action="?module=settingsSMSSave" class="fields">
+    {if count($sms_adapters)}
+        {foreach $sms_adapters as $i => $a}
+        <div class="s-sms-adapter fields-group">
+            <input name="sms[{$i}][adapter]" type="hidden" value="{$a.id}">
+            <h3>{if $a.icon}<span class="icon middle size-16"><img src="{$a.icon}" alt=""></span> {/if}{$a.name}</h3>
+            <div class="field">
+                <div class="name">{if isset($a.controls.from.title)}{$a.controls.from.title}{else}[`Sender IDs`]{/if}</div>
+                <div class="value">
+                    {strip}
+                        <textarea name="sms[{$i}][from]">
+                            {if !empty($a.config.from)}{implode("\n", $a.config.from)}{/if}
+                        </textarea>
+                    {/strip}
+                    <p class="hint">{if isset($a.controls.from.description)}{$a.controls.from.description}{else}[`Enter sender IDs, each on a separate line, to use with this SMS gateway. A sender ID is either your phone number or an up to 11 characters long text label. Enter * (asterisk) to use a default sender ID issued by the gateway for your account.`]{/if}</p>
                 </div>
-            {/if}
-        </div>
-
-        {if count($sms_adapters)}
-        <div class="s-form-buttons">
-            <div class="s-footer-actions js-footer-actions">
-                <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
-                <span class="c-hidden">
-                        <span style="margin: 0 4px;">[s`or`]</span>
-                        <a href="{$wa_backend_url}webasyst/settings/sms/" class="js-cancel">[s`cancel`]</a>
-                    </span>
-                <i class="icon16 loading s-loading" style="display: none;"></i>
             </div>
+            {foreach $a.controls as $k => $v}
+                {if $k != 'from'}
+                    <div class="field">
+                        <div class="name">{_ws($v.title)}</div>
+                        <div class="value">
+                            {if ifset($v.control_type) == 'checkbox'}
+                            <input type="hidden" name="sms[{$i}][{$k}]" value="">
+                            <label>
+                            <span class="wa-checkbox">
+                                <input type="checkbox" name="sms[{$i}][{$k}]" value="1"{if !empty($a.config[$k])} checked{/if}>
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                            </label>
+                            {else}
+                                <input type="{if mb_strtolower(_ws($v.title)) == _ws('password')}password{else}text{/if}" name="sms[{$i}][{$k}]" value="{if !empty($a.config[$k])}{$a.config[$k]|escape}{/if}">
+                            {/if}
+                            {if !empty($v.description)}
+                                <p class="hint">{$v.description}</p>
+                            {/if}
+                        </div>
+                    </div>
+                {/if}
+            {/foreach}
         </div>
-        {/if}
+        {/foreach}
+    {else}
+        <p>
+            {sprintf('[`To enable SMS message sending, install and configure an integration plugin for your preferred SMS gateway.<br> <a href="%s">Browse for SMS gateway plugins</a> in Installer app.`]', $wa_backend_url|cat:'installer/#/plugins/wa-plugins/sms/')}
+        </p>
+    {/if}
 
+    {if count($sms_adapters)}
+        {include file="./SettingsSaveBtn.inc.html" settings_page="sms" inline}
+    {/if}
     </form>
+  </div>
 </div>
 <script>
     (function ($) {
         new WASettingsSMS({
             $wrapper: $('#s-sms-settings-page')
         });
-        $.wa.setTitle({$_title|json_encode});
+        $.wa.title.set({$_title|json_encode});
     })(jQuery);
 </script>

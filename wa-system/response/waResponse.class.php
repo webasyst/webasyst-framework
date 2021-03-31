@@ -349,7 +349,7 @@ class waResponse
     public function setCanonical($canonical_url = null, $with_header_link = true)
     {
         if (!isset($canonical_url)) {
-            $canonical_url = wa()->getConfig()->getRequestUrl(false, true);
+            $canonical_url = wa()->getConfig()->getRootUrl(true) . wa()->getConfig()->getRequestUrl(true, true);
         }
         $actual_url = wa()->getConfig()->getRootUrl(true) . wa()->getConfig()->getRequestUrl();
         if (empty($canonical_url)) {

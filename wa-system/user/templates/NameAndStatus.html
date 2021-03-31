@@ -13,7 +13,11 @@
 <span class="wa-user-info">
     {if !empty($user._online_status) && $user._online_status == 'online'}
         {$title = sprintf(_ws('%s is now online'), $_user_name)}
-        <i class="icon16 status-green-tiny" title="{$title}"></i>
+        {if $wa->whichUI() === '1.3'}
+            <i class="icon16 status-green-tiny" title="{$title}"></i>
+        {else}
+            <i class="fas fa-user-circle" title="{$title}"></i>
+        {/if}
     {/if}
     {*if !empty($user.photo_url_16)}
         <i class="icon16 userpic20" style="background-image: url('{$user.photo_url_16}');"></i>

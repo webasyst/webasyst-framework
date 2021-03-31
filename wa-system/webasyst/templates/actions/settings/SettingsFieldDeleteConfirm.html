@@ -6,15 +6,15 @@
     .s-delete-field-confirm-dialog-wrapper .s-dialog-block { min-width: 600px; }
 </style>
 
-<div class="s-dialog-wrapper {$_class}" id="{$_id}">
-    <div class="s-dialog-background"></div>
-    <div class="s-dialog-block">
-        <header class="s-dialog-header">
-            <h1>[s`Delete field`] {$name|escape}</h1>
+<div class="dialog {$_class}" id="{$_id}">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header">
+            <h2>[s`Delete field`] {$name|escape}</h2>
         </header>
 
         <form method="post" action="?module=settingsFieldDelete">
-            <div class="s-dialog-content">
+            <div class="dialog-content">
                 {if !$count}
                     <p>[s`No data in the field`]</p>
                     <p>[s`Deleting this field will not cause a loss of any contact information.`]</p>
@@ -32,11 +32,11 @@
                 <em class="errormsg"></em>
             </div>
 
-            <footer class="s-dialog-footer">
+            <footer class="dialog-footer">
                 <div class="s-actions">
                     <input class="button red s-button" type="submit" value="[s`Delete field`]">
-                    <span style="margin: 0 4px;">[s`or`]</span>
-                    <a class="s-cancel" href="javascript:void(0);">[s`cancel`]</a>
+                    <span>[s`or`]</span>
+                    <a class="js-close-dialog" href="javascript:void(0);">[s`cancel`]</a>
                     <input type="hidden" name="id" value="{$id}">
                     {$wa->csrf()}
                 </div>

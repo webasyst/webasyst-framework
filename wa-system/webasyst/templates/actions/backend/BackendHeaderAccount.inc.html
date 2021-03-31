@@ -1,0 +1,5 @@
+{strip}
+    {$pos = $position|default:header}
+    {$company_name= $company_name|default:''}
+    {include file="./BackendLogo.inc.html" backend_url=$backend_url company_name=$company_name position=$pos logo=$logo inline}
+{/strip}

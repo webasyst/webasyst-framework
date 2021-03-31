@@ -1,0 +1,31 @@
+{$dialog_id = uniqid('t-waid-unbind-confirm')}
+<div class="wa-dialog t-waid-unbind-confirm" id="{$dialog_id}">
+{*    <div class="wa-dialog-background"></div>*}
+    <div class="wa-dialog-body">
+        <header class="wa-dialog-header">
+            <h1>[s`Disconnect Webasyst ID account`]</h1>
+        </header>
+        <div class="wa-dialog-content">
+            {if !$is_waid_forced}
+                <p>[s`Association with Webasyst ID account will be deleted. The user will not be able to sign into the backend with Webasyst ID.`]</p>
+                <p>[s`The user will be able to connect a Webasyst ID account again at any time.`]</p>
+            {else}
+                <p>[s`Sign-in with Webasyst ID is enabled by default, a disconnection is not allowed.`]</p>
+            {/if}
+        </div>
+        <footer class="wa-dialog-footer">
+            <div class="t-actions">
+                {if !$is_waid_forced}
+                    <input class="button red t-button js-unbind" type="button" value="[s`Disconnect`]">
+                    <span style="margin: 0 4px;">[`or`]</span>
+                    <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                {else}
+                    <input class="button grey t-button js-close-dialog" type="button" value="[s`Cancel`]">
+                {/if}
+            </div>
+        </footer>
+        <span class="wa-close-icon js-close-dialog">
+            <i class="icon10 close"></i>
+        </span>
+    </div>
+</div>

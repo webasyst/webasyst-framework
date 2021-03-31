@@ -1,0 +1,43 @@
+{if !empty($tables)}
+    <table class="zebra">
+        <thead>
+            <tr class="white" style="font-size: 11px; color: #777; text-transform: uppercase; font-weight: bold;">
+                <td></td>
+                <td width="50%;">[`Table`]</td>
+                <td>[`Fields`]</td>
+                <td>[`Collation`]</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody class="js-list">
+            {foreach $tables as $_table}
+
+                <tr class="js-list-item js-table" data-table="{$_table.Name}"{if $_table.Collation} data-is-mb4="{if $_table.is_mb4}1{else}0{/if}"{/if}>
+                    <td></td>
+                    <td colspan="2"><b>{$_table.Name|escape}</b></td>
+                    <td class="js-collation {if $_table.is_mb4}good{else}bad{/if}">{$_table.Collation|escape}</td>
+                    <td class="js-status"></td>
+                    <td></td>
+                </tr>
+
+                {if !empty($_table.columns)}
+                    {foreach $_table.columns as $_column}
+                        <tr class="js-list-item js-column" data-table="{$_table.Name}" data-column="{$_column.Field}"{if $_column.Collation} data-is-mb4="{if $_column.is_mb4}1{else}0{/if}"{/if}>
+                            <td></td>
+                            <td></td>
+                            <td>{$_column.Field|escape}</td>
+                            <td class="js-collation {if $_column.is_mb4}good{else}bad{/if}">{$_column.Collation|escape}</td>
+                            <td class="js-status"></td>
+                            <td></td>
+                        </tr>
+                    {/foreach}
+                {/if}
+
+            {/foreach}
+        </tbody>
+
+    </table>
+{else}
+    <span class="gray">[s`Tables not found.`]</span>
+{/if}

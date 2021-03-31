@@ -1,0 +1,52 @@
+{$_title = "[s`Contact fields`] — {$wa->accountName(false)}"}
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js"></script>
+<div class="s-field-settings-page blank block double-padded" id="s-field-settings-page">
+    <h1 class="s-page-header">[s`Contact fields`]</h1>
+    <div class="s-field-settings-fields-block">
+        <div class="s-field-constructor">
+            <div class="fieldset wa-main-fields">
+                {* Main fields *}
+                <div class="fields">
+                    {foreach $fields.main as $field}
+                        <div class="field">
+                            <div class="name">{$field.name|escape}</div>
+                            <div class="value">
+                                <span class="{if $field.pStatus === 'disabled'}hint{else}small bold{/if}">[s`person`]</span>
+                                <span class="{if $field.cStatus === 'disabled'}hint{else}small bold{/if}">[s`company`]</span>
+                            </div>
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
+
+            <div class="s-main-fields-label gray">
+                <p>[s`Main contact fields cannot be modified or disabled.`]</p>
+            </div>
+
+            <div class="block not-padded fieldset wa-other-fields">
+                {* New field *}
+                <div class="s-new-field">
+                    <a href="javascript:void(0);" class="js-edit-field-link bold no-underline inline-link">
+                        <i class="icon16 add"></i>[s`New field`]
+                    </a>
+                </div>
+
+                {* Other fields *}
+                <div class="fields js-other-fields">
+                    {foreach $fields.other as $field}
+                        {include file="./SettingsFieldRow.inc.html" field=$field inline}
+                    {/foreach}
+                </div>
+            </div>
+            <div class="clear-left"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    (function($) {
+        new WASettingsField({
+            '$wrapper': $('#s-field-settings-page')
+        });
+        $.wa.setTitle({$_title|json_encode});
+    })(jQuery);
+</script>

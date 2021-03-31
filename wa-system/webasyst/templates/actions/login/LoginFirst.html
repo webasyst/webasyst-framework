@@ -3,7 +3,10 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>{$wa->accountName()}</title>
-	{$wa->css()}
+
+	{* for first login layout we intentionally include legacy UI css styles *}
+	{$wa->legacyCss()}
+
 	<script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
 </head>
 
@@ -102,7 +105,7 @@
 
 				<div class="dialog-buttons">
 					<div class="dialog-buttons-gradient">		
-						<input type="submit" value="[`Enter`]" class="button green" />
+						<input type="submit" value="[`Enter`]" class="button" />
 
 					</div>
 				</div>

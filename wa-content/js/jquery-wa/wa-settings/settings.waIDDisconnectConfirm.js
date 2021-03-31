@@ -1,7 +1,7 @@
-var WASettingsWaIDDisconnectConfirm = ( function($) {
+class WASettingsWaIDDisconnectConfirm {
 
-    WASettingsWaIDDisconnectConfirm = function(options) {
-        var that = this;
+    constructor(options) {
+        const that = this;
 
         // DOM
         that.$dialog = options.$dialog;
@@ -16,15 +16,14 @@ var WASettingsWaIDDisconnectConfirm = ( function($) {
 
         // INIT
         that.init();
-    };
+    }
 
-    WASettingsWaIDDisconnectConfirm.prototype.init = function() {
-        var that = this;
-        that.initDialog();
-    };
+    init() {
+        this.initDialog();
+    }
 
-    WASettingsWaIDDisconnectConfirm.prototype.initDialog = function () {
-        var that = this;
+    initDialog() {
+        const that = this;
         $.waDialog({
             html: that.$dialog,
             animate: false,
@@ -40,54 +39,47 @@ var WASettingsWaIDDisconnectConfirm = ( function($) {
                 }
             }
         });
-    };
+    }
 
-    WASettingsWaIDDisconnectConfirm.prototype.disconnect = function() {
-        var that = this,
+    disconnect() {
+        const that = this,
             $loading = that.$dialog.find('.js-loading'),
             $button = that.$button,
             disconnect_url = '?module=settings&action=waIDDisconnect';
 
         that.$fail_block.find('.errormsg').remove();
 
-        var request = $.post(disconnect_url);
+        const request = $.post(disconnect_url),
+            onDone = function (r) {
 
-        var onDone = function(r) {
+                if (r && r.status === 'ok') {
+                    that.$success_block.show();
+                    that.$dialog.find('.js-disconnect-dialog-footer').hide();
+                    that.$dialog.find('.js-success-dialog-footer').show();
+                    return;
+                }
 
-            if (r && r.status === 'ok') {
-                that.$success_block.show();
-                that.$dialog.find('.wa-dialog-footer').hide();
-                that.$dialog.find('.js-success-dialog-footer').show();
-                return;
-            }
+                that.$fail_block.show();
 
-            that.$fail_block.show();
-
-            if (r && r.errors) {
-                $.each(r.errors, function (key, error_msg) {
-                    var $error = $('<p class="errormsg">').text(error_msg);
-                    that.$fail_block.append($error);
-                });
+                if (r && r.errors) {
+                    $.each(r.errors, function (key, error_msg) {
+                        let $error = $('<p class="errormsg">').text(error_msg);
+                        that.$fail_block.append($error);
+                    });
+                    $button.removeAttr('disabled');
+                }
+            },
+            onFail = function () {
+                that.$fail_block.show();
                 $button.removeAttr('disabled');
-            }
-        };
-
-        var onFail = function() {
-            that.$fail_block.show();
-            $button.removeAttr('disabled');
-        };
-
-        var onAlways = function() {
-            $loading.hide();
-        };
+            },
+            onAlways = function () {
+                $loading.hide();
+            };
 
         $loading.show();
         $button.attr('disabled', true);
 
         request.done(onDone).fail(onFail).always(onAlways);
-
-    };
-
-    return WASettingsWaIDDisconnectConfirm;
-
-})(jQuery);
+    }
+}

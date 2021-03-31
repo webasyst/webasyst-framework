@@ -1,0 +1,245 @@
+{$_cheat_sheet_name = "wa-settings-sms-templates"}
+<div class="s-sms-templates-page" id="s-sms-templates-page">
+    <div class="s-layout">
+        {* SIDEBAR *}
+        <div class="s-column sidebar left250px">
+            {$sidebar_html}
+        </div>
+        {* CONTENT *}
+        <div class="s-column content bordered-left" id="s-sms-template-wrapper">
+            {if $channel->getId()}
+            <form class="s-template-form" action="?module=settingsTemplateSMSSave&id={$channel->getId()|escape}">
+                <div class="s-sms-templates">
+                    <div class="blank block double-padded">
+                        <h1 class="s-template-name">{$channel->getName()|escape}</h1>
+                        <div class="field-group">
+                            <div class="field">
+                                <div class="name">[s`Template group name`]</div>
+                                <div class="value">
+                                    <input type="text" name="data[name]" value="{$channel->getName()|escape}" />
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name">[s`Sender`]</div>
+                                <div class="value">
+                                    <select name="data[address]">
+                                        {foreach $numbers as $_number => $_adapter_name}
+                                            <option value="{$_number|escape}"{if $channel->getAddress() == $_number} selected{/if}>{$_number|escape} ({$_adapter_name|escape})</option>
+                                        {/foreach}
+                                    </select>
+                                    <div class="hint">{sprintf('[`Senders are edited in “<a class="js-disable-router" href="%s">SMS&nbsp;providers</a>” section.`]', "`$wa_backend_url`webasyst/settings/sms/")}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            {foreach $channel->getTemplatesList() as $_template_id => $_template_name}
+                                <div class="field" data-template="{$_template_id|escape}">
+                                    <div class="name">{$_template_name|escape}</div>
+                                    <div class="value">
+                                        <textarea name="data[params][template][{$_template_id|escape}]" data-template="{$_template_id|escape}">{$channel->getTemplate($_template_id)|escape}</textarea>
+                                        <div class="s-preview">
+                                            <a class="s-preview-link js-preview-link hint inline-link" href="javascript:void(0);">
+                                                <i class="icon16 search"></i><b><i>[s`Preview template`]</i></b>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/foreach}
+                        </div>
+                    </div>
+
+                    {* FIXED Buttons *}
+                    <div class="s-form-buttons js-buttons-wrapper blank">
+                        <div class="s-footer-actions block double-padded js-footer-actions">
+                            <div class="fixed">
+                                {* Save *}
+                                <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">
+                                {* Cancel *}
+                                <span class="c-hidden">
+                                    <span style="margin: 0 4px;">[s`or`]</span>
+                                    <a href="{$wa_backend_url}webasyst/settings/sms/template/{$channel->getId()|escape}" class="js-cancel">[s`cancel`]</a>
+                                </span>
+                                <i class="icon16 loading s-loading" style="display: none;"></i>
+                                {* Check sending *}
+                                <input class="button js-check-button" type="button" style="margin-left: 10px;" value="[s`Check sending`]">
+                                {* Cheat sheet *}
+                                <div class="s-cheat-sheet-wrapper js-cheat-sheet-wrapper"></div>
+                                {* Actions *}
+                                <div class="s-channel-actions">
+                                    {* Reset *}
+                                    <a href="javascript:void(0);" class="inline-link js-reset" title="[s`Restore default text`]">
+                                        <i class="icon16 broom"></i>
+                                        <b class="hide-on-small-screens"><i>[s`Reset`]</i></b>
+                                    </a>
+                                    {* Duplicate *}
+                                    <a href="javascript:void(0);" class="js-duplicate" title="[s`Duplicate templates`]">
+                                        <i class="icon16 split"></i><span class="hide-on-small-screens"> [s`Duplicate`]</span>
+                                    </a>
+                                    {* Delete *}
+                                    {if !$channel->isSystem()}
+                                        <a href="javascript:void(0);" class="js-delete" title="[s`Delete templates`]">
+                                            <i class="icon16 delete"></i><span class="hide-on-small-screens"> [s`Delete`]</span>
+                                        </a>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {else}
+                <div class="s-no-templates">
+                    {if !empty($channels)}
+                        [s`Templates not found`]
+                    {else}
+                        [s`No templates`]
+                    {/if}
+                </div>
+            {/if}
+        </div>
+    </div>
+</div>
+
+{* Delete channel confirm dialog *}
+<div class="dialog" id="s-sms-delete-channel-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Delete template group?`]</h1>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button red js-submit-button" value="[s`Delete`]">
+                    &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+                    <i class="icon16 loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{* Preview SMS template dialog *}
+<div class="dialog s-sms-preview-template-dialog" id="s-sms-preview-template-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h2>[s`Preview SMS-message "<span class="js-template-name"></span>"`]</h2>
+            </div>
+            <div class="s-message-wrapper">
+                <div class="message js-message-place"></div>
+            </div>
+            <div class="s-sender-wrapper">
+                <img class="s-company-userpic" src="{waContact::getPhotoUrl(0, 0, 16)}" alt="">
+                <span class="s-company-name">{$wa->accountName(true)}</span>
+                <span class="hint s-time js-time"></span>
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <a href="javascript:void(0);" class="button cancel">[s`Close`]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{* Check SMS templates dialog *}
+<div class="dialog s-sms-check-template-dialog" id="s-sms-check-template-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form action="?module=settingsTemplateCheckSending">
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h2>[s`Checking the sending of SMS messages`]</h2>
+                    <div class="field-group">
+                        {* Recipient *}
+                        <div class="field s-recipient-field">
+                            <div class="name">[s`Recipient's phone number`]</div>
+                            <div class="value">
+                                <input type="text" name="data[recipient]" value="{$user->get('phone', 'default')|escape}" />
+                            </div>
+                            <div class="value">
+                                <span class="hint">[s`+1XXXXXXXXXX, 1XXXXXXXXXX`]</span>
+                            </div>
+                        </div>
+                        {* Templates *}
+                        <div class="field">
+                            <div class="name">[s`Templates`]</div>
+                            <div class="value s-templates-list js-templates-list">
+                                {foreach $channel->getTemplatesList() as $_template_id => $_template_name}
+                                    {$_id = uniqid("template_`$channel->getId()|escape`_`$_template_id|escape`")}
+                                    <div class="s-template-item js-template-item">
+                                        <input id="{$_id}" class="js-template-item-checkbox" type="checkbox" name="data[template][{$_template_id|escape}]" checked />
+                                        <label for="{$_id}">{$_template_name|escape}</label>
+                                    </div>
+                                {foreachelse}
+                                    <span style="color: #999;">[s`Templates not found`]</span>
+                                {/foreach}
+                            </div>
+                        </div>
+                        <input type="hidden" name="data[channel_id]" value="{$channel->getId()|escape}" />
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button blue js-submit-button" value="{sprintf('[s`Send %s SMS`]', count($channel->getTemplatesList()))}"{if count($channel->getTemplatesList()) == 0} disabled{/if}>
+                    &nbsp;[s`or`]&nbsp;<a href="javascript:void(0);" class="cancel">[s`cancel`]</a>
+                    <i class="icon16 loading s-loading" style="margin-left: 10px; margin-top: 10px; display: none;"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{* Message about the requirement to save changes *}
+<div class="dialog" id="s-sms-requirement-to-save-changes-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h2>[s`Save your templates`]</h2>
+                <p>[s`To check the sending of SMS-messages, you must save the changes you made.`]</p>
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <a href="javascript:void(0);" class="button cancel">[s`Close`]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{* New template dialog *}
+{* NOTICE: this template inc use $numbers var from this scope (template) *}
+{include file="./SettingsNewTemplateSMSDialog.inc.html" inline}
+
+<script>
+    (function ($) {
+        new WASettingsSMSTemplate({
+            $wrapper: $("#s-sms-template-wrapper"),
+            $delete_confirm_dialog: $("#s-sms-delete-channel-dialog"),
+            $sms_preview_dialog: $("#s-sms-preview-template-dialog"),
+            $sms_check_dialog: $("#s-sms-check-template-dialog"),
+            $requirement_to_save: $("#s-sms-requirement-to-save-changes-dialog"),
+            channel_id: {$channel->getId()|json_encode},
+            path_to_templates: "{"`$wa_backend_url`webasyst/settings/sms/template/"}",
+            cheat_sheet_name: {$_cheat_sheet_name|json_encode},
+            default_templates: {$default_templates|json_encode},
+            locales: {
+                send_nan_sms: {_ws('Send %s SMS')|json_encode}
+            }
+        });
+    })(jQuery);
+</script>

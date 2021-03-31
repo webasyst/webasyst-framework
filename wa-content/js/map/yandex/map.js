@@ -1,6 +1,6 @@
-var waYandexMap = ( function($) {
+window.waYandexMap = ( function($) {
 
-    waYandexMap = function(params) {
+    function waYandexMap(params) {
         var that = this;
 
         // DOM
@@ -21,8 +21,7 @@ var waYandexMap = ( function($) {
 
         // INIT
         that.init();
-
-    };
+    }
 
     waYandexMap.prototype.init = function() {
         var that = this;
@@ -192,24 +191,137 @@ var waYandexMap = ( function($) {
         // dynamically create error handler - if for this url we has not yet handler
         if (!waYandexMap[error_handler_name]) {
             (function (api_key) {
-                waYandexMap[error_handler_name] = function (error) {
+                waYandexMap[error_handler_name] = function(error) {
                     waYandexMap.loadingErrors[api_key] = error;
                     onError(error);
                 };
             })(api_key);    // here url must be in closure
         }
 
-        // build ok handler name
-        var ok_handler_name = "onOk" + api_key.replace(/\-/g, '_');
+        // load ymaps
+        loadSources([{
+            "id": "yandex-maps-api",
+            "type": "js",
+            "uri": url + "&onerror=waYandexMap." + error_handler_name
+        }]).done( function() {
+            if (ymaps) {
+                ymaps.ready( function() {
+                    onOk();
+                });
+            }
+        });
 
-        if (!waYandexMap[ok_handler_name]) {
-            waYandexMap[ok_handler_name] = function () {
-                onOk();
-            };
+        function loadSources(sources, async) {
+            async = (typeof async === "boolean" ? async : true);
+
+            var deferred = $.Deferred();
+
+            loader(sources).then( function() {
+                deferred.resolve();
+            }, function(bad_sources) {
+                if (console && console.error) {
+                    console.error("Error loading resource", bad_sources);
+                }
+                deferred.reject(bad_sources);
+            });
+
+            return deferred.promise();
+
+            function loader(sources) {
+                var deferred = $.Deferred(),
+                    counter = sources.length;
+
+                var bad_sources = [];
+
+                if (async) {
+                    $.each(sources, function(i, source) {
+                        loadSource(source);
+                    });
+
+                } else {
+                    runner();
+                    function runner(i) {
+                        i = (typeof i === "number" ? i : 1);
+                        loadSource(sources[i - 1]).always( function() {
+                            if (i < sources.length) {
+                                runner(i + 1);
+                            }
+                        });
+                    }
+                }
+
+                return deferred.promise();
+
+                function loadSource(source) {
+                    var result;
+
+                    switch (source.type) {
+                        case "js":
+                            result = loadJS(source).then(onLoad, onError);
+                            break;
+
+                        default:
+                            var deferred = $.Deferred();
+                            deferred.reject();
+                            result = deferred.promise();
+                            counter -= 1;
+                            break;
+                    }
+
+                    return result;
+                }
+
+                function loadJS(source) {
+                    var deferred = $.Deferred(),
+                        promise = deferred.promise();
+
+                    var $script = $("#" + source.id);
+                    if ($script.length) {
+                        promise = $script.data("promise");
+
+                    } else {
+                        var script = document.createElement("script");
+                        document.getElementsByTagName("head")[0].appendChild(script);
+
+                        $script = $(script)
+                            .attr("id", source.id)
+                            .data("promise", promise);
+
+                        $script
+                            .on("load", function() {
+                                deferred.resolve(source);
+                            }).on("error", function() {
+                            deferred.reject(source);
+                        });
+
+                        $script.attr("src", source.uri);
+                    }
+
+                    return promise;
+                }
+
+                function onLoad(source) {
+                    counter -= 1;
+                    watcher();
+                }
+
+                function onError(source) {
+                    bad_sources.push(source);
+                    counter -= 1;
+                    watcher();
+                }
+
+                function watcher() {
+                    if (counter === 0) {
+                        if (!bad_sources.length) {
+                            deferred.resolve();
+                        } else {
+                            deferred.reject(bad_sources);
+                        }
+                    }
+                }
+            }
         }
-
-        // load script (ymaps)
-        $.getScript(url + "&onload=waYandexMap." + ok_handler_name + "&onerror=waYandexMap." + error_handler_name);
     };
 
     return waYandexMap;

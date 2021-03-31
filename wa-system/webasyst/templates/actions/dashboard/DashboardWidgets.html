@@ -1,53 +1,96 @@
 {$_capture_array = []}
 {strip}
-<section class="d-widgets-wrapper" id="d-widgets-wrapper">
-    <div class="d-widgets-block">
-        <div id="d-widgets-block">
-            {foreach $widgets as $block => $block_widgets}
-                <div class="widget-group-wrapper">
-                    {foreach $block_widgets as $w}
-
-                        {include file="./DashboardWidget.html" inline}
-
-                        {* INIT WIDGET *}
-                        {capture append="_capture_array"}
-                            <script>
-                                DashboardWidgets["{$w.id}"] = new DashboardWidget({
-                                    widget_id: "{$w.id}",
-                                    widget_href: {$w.href|json_encode},
-                                    widget_sort: "{$w.sort}",
-                                    widget_group_index: "{$block_widgets@index}",
-                                    widget_size: {
-                                        width: "{$w.size.0}",
-                                        height: "{$w.size.1}"
-                                    }
-                                });
-                            </script>
-                        {/capture}
-                    {/foreach}
-                </div>
+<div class="d-widgets-block">
+    {* LOAD RESOURCES *}
+    <script src="{$wa_url}wa-content/js/d3/d3.min.js"></script>
+    <div id="d-widgets-block">
+        {foreach $widgets as $block => $block_widgets}
+            {foreach $block_widgets as $w}
+                {$size_sum = array_sum($w.size)}
+                {$is_small = $size_sum == 2}
+                {$is_medium = $size_sum == 3}
+                {$is_big = $size_sum == 4}
+                {$has_small_size = ifset($w.has_sizes.small)}
+                {$has_medium_size = ifset($w.has_sizes.medium)}
+                {$has_big_size = ifset($w.has_sizes.big)}
             {/foreach}
 
-            {* EMPTY GROUP*}
-            <div class="widget-group-wrapper"></div>
-        </div>
+            <div class="widget-group-wrapper{if $is_small || $is_medium} js-nested-sortable{/if}">
+                {foreach $block_widgets as $w}
 
-        <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
-            [`Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top.`]
-        </div>
+                    {include file="./DashboardWidget.html" inline}
 
-        {* HIDDEN LOADING SCREEN *}
-        <div class="loading-ornament-wrapper">
-            <div class="image-wrapper"></div>
-        </div>
+                    {* INIT WIDGET*}
+                    {capture append="_capture_array"}
+                        <script>
+                            DashboardWidgets[{$w.id}] = new DashboardWidget({
+                                widget_id: {$w.id},
+                                widget_href: {$w.href|json_encode},
+                                widget_sort: {$w.sort},
+                                widget_group_index: {$block_widgets@index},
+                                widget_size: {
+                                    width: {$w.size.0},
+                                    height: {$w.size.1}
+                                }
+                            });
+                        </script>
+                    {/capture}
+                {/foreach}
+            </div>
+        {/foreach}
+
+        {* EMPTY GROUP*}
+        <div class="widget-group-wrapper js-nested-sortable js-empty-group"></div>
     </div>
 
-    {* LOAD RESOURCES *}
-    <script src="{$wa_url}wa-content/js/jquery-wa/dashboard.js?v={$wa->version()}"></script>
-    <script src="{$wa_url}wa-content/js/d3/d3.min.js"></script>
+    <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
+        [`Your dashboard is empty. Add widgets by clicking \"Edit Widgets\" button on the top.`]
+    </div>
 
-    {* SCRIPTS *}
-    {$_capture_array|join:''|strip}
+    <div id="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}"></div>
 
-</section>
+    {* HIDDEN LOADING SCREEN *}
+{*    <div class="loading-ornament-wrapper">
+        <div class="image-wrapper"></div>
+    </div>*}
+</div>
+
+{* SCRIPTS *}
+{$_capture_array|join:''|strip}
 {/strip}
+
+<style>
+    .widget-group-wrapper.widget-chosen {
+        transition: auto !important;
+    }
+    .widget-ghost:not(.widget-drag) {
+        opacity: 0;
+    }
+    .widget-drag {
+       opacity: 1 !important;
+        background: rgba(0,0,0,0.06);
+    }
+    .widget-chosen:not(.widget-drag) {
+        cursor: move;
+    }
+    .widget-drag .widget-controls-wrapper {
+        display: none !important;
+    }
+
+    @keyframes zoomIn {
+        from {
+            opacity: 0;
+            transform: scale3d(0.3, 0.3, 0.3);
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    .zoomIn {
+        animation-name: zoomIn;
+        animation-duration: 500ms;
+        animation-fill-mode: both;
+    }
+</style>

@@ -1,11 +1,11 @@
-<div class="s-dialog-wrapper s-field-values-dialog js-field-values-dialog" id="s-field-values">
-    <div class="s-dialog-background"></div>
-    <div class="s-dialog-block">
-        <header class="s-dialog-header">
-            <h1>{$title}</h1>
+<div class="dialog s-field-values-dialog js-field-values-dialog" id="s-field-values">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header">
+            <h3>{$title}</h3>
         </header>
         <form method="post" action="?module=settingsFieldConditionalValuesSave&field={$field}">
-            <div class="s-dialog-content">
+            <div class="dialog-content">
                 <p>
                     {sprintf('[s`Enter available options for %s depending on it’s parent field value.`]', $title)}
                     <a href="[`http://www.shop-script.com/help/conditional-contact-fields/`]" target="_blank">
@@ -82,10 +82,10 @@
                 </div>
             </div>
 
-            <footer class="s-dialog-footer">
+            <footer class="dialog-footer">
                 <div class="s-actions">
-                    <input class="button green js-save-values" type="submit" value="[s`Save`]">
-                    <span style="margin: 0 4px;">[s`or`]</span>
+                    <input class="button js-save-values" type="submit" value="[s`Save`]">
+                    <span>[s`or`]</span>
                     <a class="js-close-dialog" href="javascript:void(0);">[s`cancel`]</a>
             </footer>
             {$wa->csrf()}

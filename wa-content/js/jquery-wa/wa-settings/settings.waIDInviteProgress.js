@@ -1,7 +1,7 @@
-var WASettingsWaIDInviteProgress = ( function($) {
+class WASettingsWaIDInviteProgress {
 
-    WASettingsWaIDInviteProgress = function(options) {
-        var that = this;
+    constructor(options) {
+        const that = this;
 
         // DOM
         that.$wrapper = options.$wrapper;
@@ -22,57 +22,20 @@ var WASettingsWaIDInviteProgress = ( function($) {
 
         // INIT
         that.init();
-    };
+    }
 
-    WASettingsWaIDInviteProgress.prototype.init = function() {
-        var that = this;
+    init() {
+        this.$progress_bar.hide();
+        this.$progress_bar.find('.js-invite-progressbar-progress').css({ width: 0 })
+    }
 
-        that.$progress_bar.hide();
-        that.$progress_bar.find('.js-invite-progressbar-progress').css({ width: 0 })
-    };
+    run() {
+        const that = this;
 
-    WASettingsWaIDInviteProgress.prototype.run = function () {
-        var that = this;
+        const onRequestDone = function (response) {
+            const duration = 250,
+                $progress_bar_val = that.$progress_bar.find('.js-invite-progressbar-progress');
 
-        // already in running progress
-        if (that.processId) {
-            return that.progress_deferred;
-        }
-
-        that.$progress_bar.show();
-        that.$progress_bar.find('.js-invite-progressbar-progress').css({ width: 0 })
-        that.$in_progress_icon.removeClass('hidden');
-        that.$warning.removeClass('hidden');
-        that.$fail_icon.addClass('hidden');
-        that.$report.addClass('hidden');
-        that.$error_msg.addClass('hidden');
-
-        var step = function () {
-            return sendRequest().done(onRequestDone);
-        };
-
-        var sendRequest = function () {
-            return $.post(that.url, { processId: that.processId, t: Math.random() }, 'json');
-        };
-
-        var onComplete = function (response) {
-            $.post(that.url, { processId: that.processId, cleanup: 1 }, 'json');
-
-            that.$in_progress_icon.addClass('hidden');
-            that.$warning.addClass('hidden');
-            that.$done_icon.removeClass('hidden');
-
-            if (response && response.report) {
-                that.$report.removeClass('hidden').text(response.report);
-            }
-
-            that.progress_deferred.resolve();
-        };
-
-        var onRequestDone = function (response) {
-            var duration = 250;
-
-            var $progress_bar_val = that.$progress_bar.find('.js-invite-progressbar-progress');
             $progress_bar_val.stop();
             $progress_bar_val.clearQueue();
 
@@ -99,15 +62,50 @@ var WASettingsWaIDInviteProgress = ( function($) {
 
         };
 
-        var start = function() {
-            $.post(that.url, { t: Math.random() }, function (data) {
+        const sendRequest = function () {
+            return $.post(that.url, { processId: that.processId, t: Math.random() }, 'json');
+        };
+
+        // already in running progress
+        if (that.processId) {
+            return that.progress_deferred;
+        }
+
+        that.$progress_bar.show();
+        that.$progress_bar.find('.js-invite-progressbar-progress').css({ width: 0 })
+        that.$in_progress_icon.removeClass('hidden');
+        that.$warning.removeClass('hidden');
+        that.$fail_icon.addClass('hidden');
+        that.$report.addClass('hidden');
+        that.$error_msg.addClass('hidden');
+
+        const step = function () {
+            return sendRequest().done(onRequestDone);
+        }
+
+        const onComplete = function (response) {
+            $.post(that.url, {processId: that.processId, cleanup: 1}, 'json');
+
+            that.$wrapper[0].querySelector('.js-in-progress').classList.toggle('hidden')
+            that.$wrapper[0].querySelector('.js-done').classList.toggle('hidden')
+            that.$wrapper[0].querySelector('.js-warning').classList.toggle('hidden')
+
+            if (response && response.report) {
+                that.$report.removeClass('hidden').text(response.report);
+            }
+
+            that.progress_deferred.resolve();
+        }
+
+        const start = function () {
+            $.post(that.url, {t: Math.random()}, function (data) {
                 that.processId = data && data.processId;
                 if (that.processId) {
-                    that.$progress_bar.find('.js-invite-progressbar-progress').css({ width: 0 });
+                    that.$progress_bar.find('.js-invite-progressbar-progress').css({width: 0});
                     step();
                 } else {
-                    var error = data && data.error;
-                    that.$progress_bar.find('.js-invite-progressbar-progress').css({ width: '100%' });
+                    const error = data && data.error;
+                    that.$progress_bar.find('.js-invite-progressbar-progress').css({width: '100%'});
                     that.$in_progress_icon.addClass('hidden');
                     that.$warning.addClass('hidden');
                     that.$fail_icon.removeClass('hidden');
@@ -117,14 +115,10 @@ var WASettingsWaIDInviteProgress = ( function($) {
                     that.progress_deferred.reject();
                 }
             }, 'json');
-        };
+        }
 
         start();
 
-
         return that.progress_deferred;
-    };
-
-    return WASettingsWaIDInviteProgress;
-
-})(jQuery);
+    }
+}

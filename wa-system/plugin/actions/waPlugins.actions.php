@@ -24,7 +24,11 @@ class waPluginsActions extends waActions
 
     protected function getTemplatePath($action = null)
     {
-        $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+        if (wa()->whichUI($this->getAppId()) == '2.0') {
+            $path = $this->getConfig()->getRootPath().'/wa-system/plugin/templates/';
+        } else {
+            $path = $this->getConfig()->getRootPath() . '/wa-system/plugin/templates-legacy/';
+        }
         if ($action == 'settings') {
             return $path.'Settings.html';
         } else {

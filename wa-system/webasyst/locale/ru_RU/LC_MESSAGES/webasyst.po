@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-02-09 15:13+0300\n"
+"PO-Revision-Date: 2021-03-30 16:52+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1436,7 +1436,7 @@ msgid "Hi %s!"
 msgstr "Привет, %s!"
 
 msgid "This is your Dashboard."
-msgstr "Это ваша Панель управления."
+msgstr "Это ваш дашборд."
 
 msgid "So far it is empty, but soon it will have useful content."
 msgstr "Сейчас она пустая, но скоро на ней появится полезный контент."
@@ -3893,7 +3893,7 @@ msgid "365 Days"
 msgstr "365 дней"
 
 msgid "Dashboard"
-msgstr "Панель управления"
+msgstr "Дашборд"
 
 msgid "Live Stream"
 msgstr "Лента событий"
@@ -3905,10 +3905,10 @@ msgid "Load more"
 msgstr "Показать еще"
 
 msgid "Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
-msgstr "Перетащите виджеты на вашу панель управления и расположите их так, как вам удобно. Расположение виджетов у каждого пользователя Webasyst индивидуально."
+msgstr "Перетащите виджеты на дашборд и расположите их так, как удобно лично вам. Расположение виджетов у каждого пользователя Webasyst индивидуально."
 
 msgid "Click or drag this widget to install it on your dashboard"
-msgstr "Щелкните по виджету или перетащите его на панель управления"
+msgstr "Щелкните по виджету или перетащите его на дашборд"
 
 msgid "Delete Widget"
 msgstr "Удалить виджет"
@@ -3926,7 +3926,7 @@ msgid "Show settings"
 msgstr "Настройки"
 
 msgid "Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top."
-msgstr "Ваша панель управления пуста. Добавьте виджеты на панель, щелкнув по ссылке «Настроить виджеты» в левом верхнем углу."
+msgstr "Дашборд пока пустой. Добавьте виджеты на дашборд, щелкнув по ссылке «Настроить виджеты» в левом верхнем углу."
 
 msgid "Social sharing"
 msgstr "Соцсети"
@@ -3971,10 +3971,10 @@ msgid "Selected apps"
 msgstr "Приложения"
 
 msgid "Welcome to your personal dashboard!"
-msgstr "Добро пожаловать на вашу панель управления Webasyst!"
+msgstr "Добро пожаловать на ваш дашборд Webasyst!"
 
 msgid "Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
-msgstr "Настройте вашу панель управления с помощью ссылки выше. Располагайте виджеты так, как удобно именно вам. Набор виджетов на панели управления у каждого пользователя Webasyst индивидуален."
+msgstr "Настройте свой дашборд с помощью ссылки выше. Располагайте виджеты так, как удобно именно вам. Набор виджетов на дашборде у каждого пользователя Webasyst индивидуален."
 
 msgid "OK, thanks"
 msgstr "Понятно, спасибо"
@@ -4058,31 +4058,31 @@ msgid "Woohoo, Webasyst app is ready!"
 msgstr "Ура, приложение для Webasyst готово!"
 
 msgid "My dashboard"
-msgstr "Моя панель управления"
+msgstr "Мой дашборд"
 
 msgid "Webasyst TV"
 msgstr ""
 
 msgid "New Webasyst TV dashboard..."
-msgstr "Новая панель Webasyst TV..."
+msgstr "Новый дашборд Webasyst TV..."
 
 msgid "New dashboard"
-msgstr "Новая панель управления"
+msgstr "Новый дашборд"
 
 msgid "Dashboard title"
 msgstr "Название"
 
 msgid "Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs."
-msgstr "Панель управления Webasyst TV открывается по уникальной приватной ссылке в любом современном браузере и предназначена для трансляции на телевизоры 4K или Full HD."
+msgstr "Дашборд Webasyst TV открывается по уникальной приватной ссылке в любом современном браузере и предназначена для трансляции на телевизоры 4K или Full HD."
 
 msgid "Dashboard public link"
 msgstr "Ссылка"
 
 msgid "You are about to permanently delete this dashboard. Are you sure?"
-msgstr "Панель управления будет удалена без возможности восстановления. Вы уверены?"
+msgstr "Дашборд будет удален без возможности восстановления. Вы уверены?"
 
 msgid "Delete dashboard"
-msgstr "Удалить панель управления"
+msgstr "Удалить дашборд"
 
 msgid "Add widgets"
 msgstr "Добавить виджеты"
@@ -4094,7 +4094,7 @@ msgid "Install new widgets"
 msgstr "Добавить виджеты"
 
 msgid "Only you can see this dashboard."
-msgstr "Эту панель управления видите только вы."
+msgstr "Этот дашборд видите только вы."
 
 msgid "Themes to clone"
 msgstr "Клонировать темы"
@@ -4634,10 +4634,10 @@ msgid "Save your template"
 msgstr "Сохраните ваш шаблон"
 
 msgid "To check the sending of SMS messages, you must save the changes you made."
-msgstr "Чтобы проверить отправку SMS-сообщений — необходимо сохранить внесённые вами изменения."
+msgstr "Чтобы проверить отправку SMS-сообщений — необходимо сохранить внесенные вами изменения."
 
 msgid "To check whether you send email message, you must save the changes you made."
-msgstr "Чтобы проверить отправку Email сообщение — необходимо сохранить внесённые вами изменения."
+msgstr "Чтобы проверить отправку Email сообщение — необходимо сохранить внесенные вами изменения."
 
 msgid "Found the password?"
 msgstr "Вспомнили пароль?"
@@ -4662,6 +4662,9 @@ msgstr "Удалить шаблоны"
 
 msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"icon10 settings\"></i> for entire template group"
 msgstr "<a class=\"%s\" href=\"javascript:void(0);\">Измените адрес отправителя </a> <i class=\"icon10 settings\"></i> для всей группы шаблонов"
+
+msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"fas fa-cog\"></i> for entire template group"
+msgstr "<a class=\"%s\" href=\"javascript:void(0);\">Измените адрес отправителя </a> <i class=\"fas fa-cog\"></i> для всей группы шаблонов"
 
 msgid "Sender IDs"
 msgstr "Идентификаторы отправителя"
@@ -5669,7 +5672,7 @@ msgid "Each domain used by your backend users has to be configured separately in
 msgstr "Для каждого домена, на котором работают ваши пользователи, нужна отдельная настройка в аккаунте OneSignal."
 
 msgid "To add a different domain, open Webasyst backend on that domain and save settings again."
-msgstr "Чтобы добавить другой домен, войдите в бекенд Webasyst на этом домене и сохраните настройки ещё раз."
+msgstr "Чтобы добавить другой домен, войдите в бекенд Webasyst на этом домене и сохраните настройки еще раз."
 
 msgid "Connected"
 msgstr "Подключен"
@@ -6107,7 +6110,7 @@ msgid "How to use it?"
 msgstr "Как этим пользоваться?"
 
 msgid "Simply click the Webasyst login button, which will appear on your website’s backend authorization page. You won’t even need to enter a password if you recently signed into your Customer Center account."
-msgstr "Используйте кнопку для входа с Webasyst, которая появится на странице входа на ваш сайт. А если вы недавно уже входили в Центр заказчика Webasyst, то вам даже не придётся вводить пароль."
+msgstr "Используйте кнопку для входа с Webasyst, которая появится на странице входа на ваш сайт. А если вы недавно уже входили в Центр заказчика Webasyst, то вам даже не придется вводить пароль."
 
 msgid "Will I be able to use again the ordinary login option, without Webasyst ID?"
 msgstr "Можно ли будет вернуться к обычному способу входа &mdash; без Webasyst ID?"
@@ -6315,3 +6318,123 @@ msgstr "Вызываемый плагин «%s» выключен."
 
 msgid "The called plugin “%s” is not installed."
 msgstr "Вызываемый плагин «%s» не установлен."
+
+msgid "All-new Webasyst 2 UI"
+msgstr "Новый интерфейс Webasyst 2"
+
+msgid "beta"
+msgstr "бета"
+
+msgid "This app supports the brand new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can go back to the classic UI any time."
+msgstr "Это приложение поддерживает новый интерфейс Webasyst 2 (бета)! Включите режим нового интерфейса и посмотрите, как классно приложение выглядит в новых стилях. И не волнуйтесь — вы всегда сможете вернуться обратно в старый режим."
+
+msgid "Turn on the new UI"
+msgstr "Включить новый интерфейс"
+
+msgid "http://2.webasyst.com"
+msgstr "http://2.webasyst.ru"
+
+msgid "learn more about Webasyst 2"
+msgstr "подробнее о Webasyst 2"
+
+msgid "Thank you for checking out the newest Webasyst 2 user interface (beta)!"
+msgstr "Новый интерфейс Webasyst 2 (бета)"
+
+msgid "This is a fully functional version of this app in the new style. We encourage you to use the new UI in full and <a href=\"%s\" target=\"_blank\">share your feedback %s</a> with us in case of any issues."
+msgstr "Вы используете новую версию интерфейса этого приложения. Если вдруг что-то пошло не так, пожалуйста, <a href=\"%s\" target=\"_blank\">сообщите нам %s</a>. Будем рады вашим отзывам!"
+
+msgid "https://support.webasyst.com"
+msgstr "https://support.webasyst.ru"
+
+msgid "Back to the classic UI"
+msgstr "Вернуться в старый интерфейс"
+
+msgid "Try it in both light and dark modes:"
+msgstr "Светлый и темный режимы:"
+
+msgid "You’ve enabled the new Webasyst 2 UI, but this app does not currently support it. Please contact the app developer to encourage upgrading the UI to the new style."
+msgstr "Вы включили режим нового интерфейса Webasyst 2, но это приложение его пока не поддерживает. Пожалуйста, свяжитесь с разработчиком приложения и узнайте, когда новый интерфейс станет доступен."
+
+msgid "New UI is not yet supported"
+msgstr "Новый интерфейс пока не поддерживается"
+
+msgid "Edit Widgets"
+msgstr "Виджеты"
+
+msgid "Teams"
+msgstr "Команда"
+
+msgid "Use the Team app to set up your team and customize access rights."
+msgstr "Используйте приложение «Команда» для настройки прав доступа и состава команд."
+
+msgid "No new notifications"
+msgstr "Новых уведомлений нет"
+
+msgid "Company logo"
+msgstr "Логотип"
+
+msgid "Text"
+msgstr "Текст"
+
+msgid "Image"
+msgstr "Картинка"
+
+msgid "Larger font, two lines"
+msgstr "Больше шрифт, две строки"
+
+msgid "Custom colors"
+msgstr "Свои цвета"
+
+msgid "Color A"
+msgstr "Цвет А"
+
+msgid "Color B"
+msgstr "Цвет Б"
+
+msgid "Gradient angle (&deg;)"
+msgstr "Угол градиента (&deg;)"
+
+msgid "Text color"
+msgstr "Цвет текста"
+
+msgid "%s symbols"
+msgstr "%s символов"
+
+msgid "Upload new image"
+msgstr "Загрузить картинку"
+
+msgid "My Apps"
+msgstr "Мои приложения"
+
+msgid "Everyone"
+msgstr "Вся команда"
+
+msgid "Activity"
+msgstr "Сегодня"
+
+msgid "Dashboards"
+msgstr "Дашборды"
+
+msgid "No activity today yet."
+msgstr "Сегодня еще не было событий."
+
+msgid "Filter by app"
+msgstr "Фильтр по приложениям"
+
+msgid "TV Link"
+msgstr "Ссылка для ТВ"
+
+msgid "Open in new window"
+msgstr "Открыть в новом окне"
+
+msgid "Copied"
+msgstr "Скопировано"
+
+msgid "This dashboard can be opened in both browser and TV with the support for basic access to browsing websites. Get the private TV link and open it using an internal browser on your TV."
+msgstr "Этот дашборд можно открыть на любом телевизоре с поддержкой доступа в интернет. Просто перейдите по приватной ссылке этого дашборда в браузере телевизора."
+
+msgid "Show navigation"
+msgstr "Показать меню"
+
+msgid "Your dashboard is empty. Add widgets by clicking \"Edit Widgets\" button on the top."
+msgstr "Дашборд пока пустой. Добавьте виджеты, щелкнув по ссылке «Виджеты» выше."

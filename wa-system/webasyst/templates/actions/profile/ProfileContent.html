@@ -18,12 +18,12 @@
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version(true)}"></script>
     {$wa->js()}
 </head>
-<body>
+<body class="blank">
 
 <div class="t-dynamic-content">
     <!-- %content_start% -->
-    <div class="block double-padded">
-        <i class="icon16 loading"></i>
+    <div class="box">
+        <i class="fas fa-spinner fa-spin"></i>
     </div>
     <!-- %content_end% -->
 </div>
@@ -74,7 +74,7 @@
             rootWindow.setTimeout(function() {
                 var $tab = rootWindow.$(".t-profile-tabs .t-tab.is-selected", rootWindow.document.body);
                 that.$frame.remove();
-                $tab.removeClass("is-selected").find("a").click();
+                $tab.removeClass("selected").find("a").click();
             }, 0);
         };
 

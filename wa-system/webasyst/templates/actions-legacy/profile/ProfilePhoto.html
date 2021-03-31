@@ -1,0 +1,255 @@
+{*
+ * Dialog to crop image to use as contact photo.
+ *}
+
+<style>
+.image-loaded .hide-when-image-loaded { display: none !important }
+.image-not-loaded .hide-when-image-not-loaded { display: none !important }
+#c-pe-photo-big { max-width: 100%; }
+.preview-wrapper { float:right; width:120px }
+#new-photo-wrapper { margin:0 140px 0 0; position: relative; }
+#new-photo-area { position: relative; width: 200px; height: 200px; display: block; text-align: center; border: 1px dashed #777; }
+#new-photo-area h2 { padding-top: 92px; }
+</style>
+
+<div class="preview-wrapper">
+    <div class="wa-contact-photo" style="margin: 0px;">
+        <div id="new-photo-preview" style="width: 96px; height: 96px; background-repeat: no-repeat; overflow: hidden; border-radius: 50%;">
+            <img src="{if !empty($oldImage)}{$oldPreview}{else}{$wa_url}wa-content/img/userpic96.jpg{/if}" alt="Preview" width="96" height="96" />
+        </div>
+    </div>
+</div>
+<div id="new-photo-wrapper">
+    <img id="c-pe-photo-big" class="hide-when-image-not-loaded"> {* updated via js *}
+    <div id="new-photo-area" class="hide-when-image-loaded">
+        <h2 class="hint">[`Drop photo here`]</h2>
+    </div>
+</div>
+
+<p style="margin:1.5em 0 0.75em 0" class="hide-when-image-loaded">
+    [`To change drop another photo or upload file (JPG, GIF, or PNG):`]
+</p>
+<p style="margin:1.2em 0 0.4em 0" class="hide-when-image-not-loaded">
+    [`Or upload file (JPG, GIF or PNG):`]
+</p>
+<div>
+    <input type="file"/>
+</div>
+
+<div class="buttons" id="photo-editor-buttons">
+    <div class="hide-when-image-not-loaded">
+        <div class="float-right">
+            <input type="submit" value="[`Delete photo`]" class="button red delete-button">
+        </div>
+
+        <input type="submit" value="[`Save`]" class="button green save-button">
+        [`or`]
+        <a href="javascript:void(0)" class="cancel">[`cancel`]</a>
+    </div>
+    <div class="hide-when-image-loaded">
+        <a class="button cancel">[`Cancel`]</a>
+    </div>
+</div>
+
+<script>jQuery(function($) { "use strict";
+
+    // Localization
+    var are_you_sure_delete_msg = "[`Are you sure you want to delete this photo?`]";
+    var must_be_image_msg = "[`Not an image or invalid image:`]";
+
+    // Data from PHP
+    var contact_id = {$contact.id|json_encode};
+    var old_image_url = {ifset($oldImage)|json_encode};
+
+    // DOM
+    var $buttons = $('#photo-editor-buttons');
+    var $dialog = $buttons.closest('.dialog').addClass('image-not-loaded');
+    var $preview_img = $('#new-photo-preview img');
+    var $image_img = $('#c-pe-photo-big');
+
+    // Data from imgAreaSelect
+    var last_selection;
+    var attached_file;
+
+    // Initialize selector for pre-loaded image, if any
+    if (old_image_url) {
+        prepareSelector(old_image_url);
+    }
+
+    // "Delete photo" button
+    $buttons.on('click', '.delete-button', function() {
+        if (!confirm(are_you_sure_delete_msg)) {
+            return false;
+        }
+
+        $.post($dialog.data('photo-delete-url') || "?module=profile&action=savePhoto", { id: contact_id, del: 1 }, function(data) {
+            if (contact_id == $('#wa-usercorner').data('user-id')) {
+                // If user removed their own photo, then update it in top right corner too
+                $('#wa-usercorner .profile.image32px img').attr('src', data.data.url);
+            }
+            $dialog.trigger('photo_deleted', data.data);
+            closeDialog();
+        });
+        return false;
+    });
+
+    // Save crop area
+    $buttons.on('click', '.save-button', function() {
+
+        // Prepare data to send to server
+        var formData = new FormData();
+        formData.append('id', contact_id);
+        formData.append('ww', $image_img.width());
+
+        last_selection.w = last_selection.width;
+        last_selection.h = last_selection.height;
+        'x1 y1 x2 y2 w h'.split(' ').forEach(function(name){
+            formData.append(name, last_selection[name]);
+        });
+        if (attached_file) {
+            formData.append('photo', attached_file);
+        } else {
+            formData.append('orig', '1');
+        }
+
+        // Ajax request
+        $.ajax({
+            url: $dialog.data('photo-upload-url') || "?module=profile&action=savePhoto",
+            data: formData,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function(data){
+                if (contact_id == $('#wa-usercorner').data('user-id')) {
+                    // If user removed their own photo, then update it in top right corner too
+                    $('#wa-usercorner .profile.image32px img').attr('src', data.data.url);
+                }
+                $dialog.trigger('photo_updated', data.data);
+                closeDialog();
+            }
+        });
+
+        return false;
+    });
+
+    // Replace image when user selects new local file
+    $dialog.on("change", "input:file", function() {
+        if (!this.files.length || !this.files[0]) {
+            return;
+        }
+        if (!fileSelected(this.files[0])) {
+            $(this).replaceWith($(this).clone()); // clear the input
+        }
+    });
+
+    // Drag-and-drop files into the dialog
+    $dialog.find('.dialog-window,.js-dialog-drag-and-drop-area').on("dragenter dragleave dragover", function() {
+        return false;
+    }).on("drop dragdrop", function(event) {
+        try {
+            var file = event.originalEvent.dataTransfer.files[0];
+            if (file) fileSelected(file);
+        } catch (e) {
+        }
+        return false;
+    });
+
+    //
+    // Functions
+    //
+
+    function closeDialog() {
+        $dialog.trigger('close');
+    }
+
+    /* Replace image src to crop when file is selected in <input>
+     * or dropped into a dialog from desktop */
+    function fileSelected(file) {
+        if (!file.type.match(/^image\/(png|jpe?g|gif)$/)) {
+            alert(must_be_image_msg + ' ' + file.name);
+            return false;
+        }
+
+        // Read file contents as data url, then show in $image_img
+        attached_file = file;
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            prepareSelector(event.target.result);
+        };
+        reader.readAsDataURL(file);
+        return true;
+    }
+
+    /** this function prepares image area selector for new image - either old image or just uploaded new one. */
+    function prepareSelector(img_src) {
+
+        if (!$.fn.imgAreaSelect) {
+            $.wa.loadFiles(
+                "{$wa_url}wa-content/js/jquery-plugins/jquery-imageareaselect/imgareaselect-default.css?{$wa->version(true)}",
+                "{$wa_url}wa-content/js/jquery-plugins/jquery-imageareaselect/jquery.imgareaselect.min.js?{$wa->version(true)}"
+            ).then(function() {
+                prepareSelector(img_src);
+            });
+            return;
+        }
+
+        // Remove old imgs, if any
+        $image_img.imgAreaSelect({ remove: true });
+
+        // Set up preview and image
+        $preview_img[0].src = $image_img[0].src = img_src;
+
+        // initialize image area selection plugin when image is ready
+        (function(initArea) {
+            window.setTimeout(function() {
+                if ($image_img[0].complete) {
+                    window.setTimeout(initArea, 0);
+                } else {
+                    $image_img.load(initArea);
+                }
+            }, 0);
+        }(function() {
+            $dialog.removeClass('image-not-loaded').addClass('image-loaded');
+            var w = $image_img.width(),
+                h = $image_img.height(),
+                r = Math.min(w, h);
+
+            // Workaround for imgAreaSelect failing inside a position:fixed dialog
+            $image_img.closest('.dialog-window').css('position', 'absolute');
+
+            // Init crop selector
+            $image_img.imgAreaSelect({
+                aspectRatio: '1:1',
+                handles: true,
+                fadeSpeed: 200,
+                x1: Math.floor(w - r)/2,
+                y1: Math.floor(h - r)/2,
+                x2: Math.floor(w + r)/2,
+                y2: Math.floor(h + r)/2,
+                parent: '#new-photo-wrapper',
+                onSelectChange: selectionCallback,
+                onInit: selectionCallback
+            });
+
+            // Revert dialog css back
+            $image_img.closest('.dialog-window').css('position', 'fixed');
+        }));
+
+        function selectionCallback(img, selection) {
+            if (!selection.width || !selection.height)
+                return;
+
+            last_selection = selection;
+            var scaleX = $preview_img.parent().width() / selection.width;
+            var scaleY = $preview_img.parent().height() / selection.height;
+
+            $preview_img.css({
+                width: Math.round(scaleX * $image_img.width()),
+                height: Math.round(scaleY * $image_img.height()),
+                marginLeft: -Math.round(scaleX * selection.x1),
+                marginTop: -Math.round(scaleY * selection.y1)
+            });
+        }
+    } // end of prepareSelector()
+
+});</script>

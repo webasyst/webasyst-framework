@@ -1,0 +1,252 @@
+{* Header item *}
+{strip}
+{function name="_renderHeaderItem" _id="" _info=[]}
+    {* Build item url *}
+
+    {* pseudo-app *}
+    {if !empty($_info.app_id) && !empty($_info.link)}
+        {$_item_url = "`$backend_url``$_info.app_id`/`$_info.link`/"}
+    {* real app *}
+    {else}
+        {$_item_url = "`$backend_url``$_id`/"}
+    {/if}
+
+    {* Version *}
+    {if !empty($_info.version)}
+        {$_version = "?v=`$_info.version|escape`"}
+    {else}
+        {$_version = null}
+    {/if}
+
+    <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($request_uri, $_item_url) !== false} class="selected"{/if}>
+        {* Build app icon count *}
+        {$_count = null}
+        {if $counts && isset($counts[$_id])}
+            {if is_array($counts[$_id])}
+                {$_item_url = $counts[$_id]['url']}
+                {$_count = $counts[$_id]['count']}
+            {else}
+                {$_count = $counts[$_id]}
+            {/if}
+        {/if}
+        <a href="{$_item_url}"{if !$wa->isMobile() && $_info.name} data-wa-tooltip-content="{$_info.name|ifempty}"{/if}>
+            {if isset($_info.img)}
+                <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{if !empty($_info.icon.96)}{$_info.icon.96}{else}{$_info.img}{/if}{$_version}" alt="">
+            {/if}
+            <span class="wa-app-name">{$_info.name|ifempty}</span>
+            {if $_count}
+                <span class="badge{* wa-1.3-legacy-class *} indicator{* /wa-1.3-legacy-class *}">{$_count}</span>
+            {/if}
+        </a>
+    </li>
+{/function}
+
+{if !empty($include_wa_push)}
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+{/if}
+
+<div id="wa-header">
+    <div id="wa-header-logo-area">
+        {* Account name *}
+        {include file="./BackendLogo.inc.html" backend_url=$backend_url company_name=$company_name position="header" inline}
+        <p class="wa-header-sitename flexbox middle space-16">
+            <span class="h2 wa-sitename{if $request_uri == $backend_url || $request_uri == "`$backend_url`/"} is-main-dashboard{/if}">{$wa->accountName()|truncate:42}</span>
+        </p>
+    </div>
+    <div id="wa-header-content-area">
+        {* App list *}
+
+        {* custom params injection: inject custom content *}
+
+        <div class="wa-header-custom-main-content">
+            {$custom_params.main}
+        </div>
+
+        <div id="wa-applist" class="js-applist js-applist-header
+            {if is_array($counts)} counts-cached{/if}
+            {if $custom_params.main} wa-applist-with-custom-main-content{/if}
+            {if $wa->isMobile()} is-mobile{/if}">
+            {strip}
+                <ul>
+                    {foreach $header_items as $_id => $_info}
+                        {_renderHeaderItem _id=$_id _info=$_info}
+                    {/foreach}
+                </ul>
+            {/strip}
+        </div>
+
+
+    </div>
+    <div id="wa-header-user-area" class="flexbox space-16">
+        {* Current user *}
+        {$dashboards = strpos($request_uri, "/webasyst/dashboard/")}
+        {$dashboard_url = strpos($request_uri, "/webasyst/dashboard/dashboard/")}
+        {$is_dashboards = false}
+        {$is_dashboard = false}
+        {if $dashboards !== false}
+            {$is_dashboards = true}
+        {/if}
+        {if $dashboard_url !== false}
+            {$is_dashboard = true}
+        {/if}
+
+        {strip}
+
+            {* user quick action tools *}
+
+            {* custom params injection: inject custom user content *}
+            {if $custom_params.aux}
+                <div class="wa-header-custom-aux-content">
+                    {$custom_params.aux}
+                </div>
+            {/if}
+
+
+            {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboards}
+                {*
+                    EXPERIMENTAL wa_header lock/unlock on the main dashboard
+                    <a class="wa-toggle-panel-lock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-down"></i></a>
+                    <a class="wa-toggle-panel-unlock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-up"></i></a>
+                *}
+            {else}
+                <a class="wa-toggle-apps js-toggle-apps large" href="#" title="[s`All apps`]"><i class="fas fa-th"></i></a>
+            {/if}
+
+            {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard}
+                <!-- <a href="#" class="button nobutton gray"><i class="fas fa-sliders-h"></i> [`Customize`]</a> -->
+                <div class="dashboard-customize">
+                    <a href="javascript:void(0);"
+                       class="button nobutton gray js-dashboard-edit"
+                       data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
+                       id="show-dashboard-editable-mode_">
+                        <i class="fas fa-sliders-h"></i> <span>[s`Edit Widgets`]</span>
+                    </a>
+                    <a href="javascript:void(0);"
+                       class="button js-dashboard-edit-close"
+                       style="display: none;">
+                        <i class="fas fa-check"></i> <span>[s`Done`]</span>
+                    </a>
+                </div>
+            {/if}
+
+            <div class="dropdown" id="wa-notifications-dropdown">
+                <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
+                {include file="../dashboard/DashboardAnnouncement.html" notifications=$notifications inline}
+            </div>
+
+            {** wa2ui showcase box **}
+            {if !$wa->debug()}
+                <div class="dropdown" id="wa2ui-dropdown">
+                    <button class="icon large dropdown-toggle without-arrow js-wa2ui" title="[s`New Webasyst 2 UI`]" style="color: var(--text-color-link);"><i class="fas fa-adjust"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
+                    <div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
+                        <div class="wa-notification">
+                            <div class="wa-notification-header wa2ui-teaser">
+                                <div class="flexbox middle space-8">
+                                    {if $app_info.id != 'webasyst'}<img src="{$root_url}{$app_info.icon.48}" style="width: 24px; height: 24px;">{/if}
+                                    [s`All-new Webasyst 2 UI`]&nbsp;<span style="opacity: 0.42;">([`beta`])</span>
+                                </div>
+                            </div>
+                            <div class="wa-notification-body">
+                                <p>
+                                    {sprintf('[s`This is a fully functional version of this app in the new style. We encourage you to use the new UI in full and <a href="%s" target="_blank">share your feedback %s</a> with us in case of any issues.`]', '[s`https://support.webasyst.com`]', '<i class="fas fa-external-link-alt"></i>')}
+                                </p>
+                                <p>
+                                    [s`Try it in both light and dark modes:`]
+                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 5px 0 8px; cursor: pointer" title="[s`Light mode ON`]" data-wa-theme-mode="light"></span>
+                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode ON`]" data-wa-theme-mode="dark"></span>
+                                    {* <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span> *}
+                                </p>
+
+                                <button class="button gray outlined small" onClick="_setCookie('force_set_wa_backend_ui_version', '1.3', 365); _setCookie('force_hide_wa2ui_teaser', 0, -1); window.location.reload();"><span>[s`Back to the classic UI`]</span></button>
+                                [s`or`] <a href="[s`http://2.webasyst.com`]" target="_blank">[s`learn more about Webasyst 2`]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {/if}
+            {** / wa2ui showcase box **}
+
+            {*
+                TEASING WEBASYST GLOBAL SEARCH
+                <form class="wa-header-search-form input-with-inner-icon right collapsed">
+                    <input type="search" inputmode="search" placeholder="[`Search`]" class="short">
+                    <button class="icon"><i class="fas fa-search"></i></button>
+                </form>
+            *}
+
+            {* Current user *}
+            <div class="dropdown" id="wa-userprofile" data-user-id="{$user['id']}">
+                <a href="{$backend_url}?module=profile" title="[s`My profile`]" class="dropdown-toggle without-arrow">
+                    <img src="{$user->getPhoto(96)}" alt="" class="wa-userpic" />
+                </a>
+                <div class="dropdown-body right">
+                    <ul class="menu">
+                        <li>
+                            <a href="{$backend_url}?module=profile">
+                                <i class="fas fa-user"></i>
+                                <span>[s`My profile`]</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{$backend_url}?action=logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>[s`Logout`]</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {/strip}
+    </div>
+</div>
+<script id="wa-header-js"
+        type="text/javascript"
+        src="{$root_url}wa-content/js/jquery-wa/wa.header.js?{$wa_version}"
+        {if !$user['timezone']} data-determine-timezone="1"{/if}>
+</script>
+    <script>
+        $(function () {
+            new WaHeader();
+
+            /* Notification Actions */
+            const $notifications_bell = $('.js-notifications-bell');
+            $notifications_bell.on('click', function (e){
+                e.preventDefault();
+                $(this).toggleClass('wa-animation-swing');
+                setTimeout(() => $(this).toggleClass('wa-animation-swing'), 1000);
+                $(this).next('.js-notification-wrapper').toggle();
+            });
+            /* Active All Notifications On Main Dashboard */
+            {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)}
+                $notifications_bell.trigger('click');
+            {/if}
+
+            {if !$wa->debug()}
+                {** wa2ui showcase box **}
+                const $wa2ui = $('.js-wa2ui');
+                $wa2ui.on('click', function (e){
+                    e.preventDefault();
+                    $(this).next('.alert-fixed-box').toggle();
+                });
+            {/if}
+
+            /* User Profile Dropdown*/
+            const userprofile_options = { };
+            {if $wa->isMobile()}
+                userprofile_options.hover = false;
+            {/if}
+            $("#wa-userprofile").waDropdown(userprofile_options);
+
+        });
+    </script>
+
+    {$_request_uri = $request_uri|rtrim:'/'}
+    {$_bashend_url = $backend_url|rtrim:'/'}
+
+    {if $_request_uri == $_bashend_url || $dashboards}
+        <script src="{$wa_url}wa-content/js/sortable/sortable.min.js"></script>
+        <script src="{$wa_url}wa-content/js/sortable/jquery-sortable.min.js"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/dashboard.js?v={$wa->version()}"></script>
+    {/if}
+
+{/strip}

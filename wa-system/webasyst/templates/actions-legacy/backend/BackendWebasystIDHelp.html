@@ -1,0 +1,93 @@
+{$_connect_url = 'javascript:void(0)'}
+{$_connect_type = ''}
+
+{if $webasyst_id_auth_url}
+    {$_connect_url = $webasyst_id_auth_url}
+    {$_connect_type = 'auth'}
+{elseif $is_super_admin && !$connected_to_webasyst_id && $wa->get('caller') != 'webasystSettings'}
+    {$_connect_url = $webasyst_id_settings_url}
+{else}
+    {* not show connect button cases *}
+    {$_connect_url = ''}
+{/if}
+
+<link type="text/css" href="{$wa_url}wa-content/js/dialog/dialog.css?{$wa->version()}" rel="stylesheet" />
+<link type="text/css" href="{$wa_url}wa-content/css/wa/waid/waid.css?{$wa->version()}" rel="stylesheet" />
+<script src="{$wa_url}wa-content/js/dialog/dialog.js?{$wa->version()}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/webasystIDHelp.js?{$wa->version()}"></script>
+
+{$_dialog_class = 'w-webasyst-id-help-dialog'}
+{$_dialog_id = uniqid($_dialog_class)}
+<div class="wa-dialog w-webasyst-id-help-dialog" id="{$_dialog_id}">
+    <div class="wa-dialog-background"></div>
+    <div class="wa-dialog-body">
+        <header class="wa-dialog-header">
+            <h1 class="js-title">[s`What is Webasyst ID`]</h1>
+        </header>
+        <div class="wa-dialog-content">
+            <div class="help-step js-step" data-id="1">
+                <img src="{$wa_url}wa-content/img/wa-id/waid-help-1.svg" alt="">
+                <h3>[s`1. Customer Center &rarr; Webasyst ID`]</h3>
+                <p>[s`Based on a Webasyst Customer Center account, Webasyst ID is a unified secure authorization option, <strong>a single password</strong> for all Webasyst apps, sites, and backends — including those that work on your own domains.`]</p>
+            </div>
+            <div class="help-step js-step" data-id="2" style="display: none">
+                <img src="{$wa_url}wa-content/img/wa-id/waid-help-2.svg" alt="">
+                <h3>[s`2. Start using Webasyst ID`]</h3>
+                <p>[s`To enable Webasyst ID, simply sign in with your Webasyst Customer Center account <strong>just once</strong>. The system will connect everything automatically and will then allow you to quickly sign into your backend using your single Webasyst ID password. If you do not remember your Customer Center account details, simply <a href="https://www.webasyst.com/my/forgotpassword/">recover the password</a> or <a href="https://www.webasyst.com/my/signup/">create an account for free</a>.`]</p>
+            </div>
+            <div class="help-step js-step" data-id="3" style="display: none">
+                <img src="{$wa_url}wa-content/img/wa-id/waid-help-3.svg" alt="">
+                <h3>[s`3. Personal Webasyst ID for each user`]</h3>
+                <p>[s`If you are working together with your team then each of your teammates will be able to use their own Webasyst ID. All access rights remain unchanged while users get an option to log in with a new single password.`]</p>
+            </div>
+            <div class="help-step js-step" data-id="4" style="display: none">
+                <img src="{$wa_url}wa-content/img/wa-id/waid-help-4.svg" alt="">
+                <h3>[s`4. Why this is useful`]</h3>
+                <p>[s`With Webasyst ID, it is much more convenient to use the entire Webasyst <strong>ecosystem of apps and plugins</strong>, communicate with developers and get support, manage your Webasyst customer assets such as software licenses, cloud accounts, domain names, and purchases. A single account for everything.`]</p>
+            </div>
+            <div class="help-step js-step" data-id="5" style="display: none">
+                <img src="{$wa_url}wa-content/img/wa-id/waid-help-5.svg" alt="">
+                <h3>[s`5. Will I retain the usual login option?`]</h3>
+                <p>[s`Yes, you will be able to use it as before. Simply enter your user name and password as usual, without selecting the Webasyst ID login option.`]</p>
+            </div>
+            <div class="action-buttons">
+                <ul class="dots js-dots">
+                    <li data-id="1" class="active"></li>
+                    <li data-id="2"></li>
+                    <li data-id="3"></li>
+                    <li data-id="4"></li>
+                    <li data-id="5"></li>
+                </ul>
+                <div>
+                    <button class="btn gray js-back" style="display: none" >[`Back`]</button>
+                    <button class="btn blue js-next">[`Next`]</button>
+                {if $_connect_url}
+                    <a href="{$_connect_url}" class="btn green js-finish {if $_connect_type === 'auth'}js-auth{else}js-connect{/if}" style="display: none">[`Connect`]</a>
+                {else}
+                    <button class="btn blue js-finish js-close-dialog" style="display: none">[`Finish`]</button>
+                {/if}
+                </div>
+            </div>
+        </div>
+
+        {if $_connect_url}
+            <footer class="wa-dialog-footer bordered-top">
+                <a href="{$_connect_url}" class="bold {if $_connect_type === 'auth'}js-auth{else}js-connect{/if}">[`Connect`]</a>
+            </footer>
+        {/if}
+
+        <span class="wa-close-icon js-close-dialog">
+            <svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512">
+                <path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"></path>
+            </svg>
+        </span>
+    </div>
+    <script>
+        (function ($) {
+            new webasystIDHelp({
+                $dialog: $('#{$_dialog_id}'),
+                steps: 5
+            });
+        })(jQuery);
+    </script>
+</div>

@@ -6,10 +6,10 @@
     {$wa->css()}
 </head>
 <body>
-<div class="sidebar left200px" style="position: fixed; top: 0;">
+<div class="sidebar hide-scrollbar left200px" style="position: fixed; top: 0;">
     <div class="block">
 
-        <ul class="menu-v with-icons">
+        <ul class="menu">
 
             {foreach $apps as $app_id=>$app}
                 <li><span class="count">{$app.errors|default:''}</span><a href="./#{$app_id}"><i class="icon16 apps"></i>{$app.name}</a></li>
@@ -20,7 +20,7 @@
 
 </div>
 
-<div class="content left200px">
+<div class="content hide-scrollbar left200px">
     <div class="block">
         <form method="post">
         <table class="zebra">

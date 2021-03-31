@@ -1,0 +1,147 @@
+{* Header item *}
+{strip}
+{function name="_renderHeaderItem" _id="" _info=[]}
+    {* Build item url *}
+        {* pseudo-app *}
+        {if !empty($_info.app_id) && !empty($_info.link)}
+            {$_item_url = "`$backend_url``$_info.app_id`/`$_info.link`/"}
+        {* real app *}
+        {else}
+            {$_item_url = "`$backend_url``$_id`/"}
+        {/if}
+    {* Version *}
+    {if !empty($_info.version)}
+        {$_version = "?v=`$_info.version|escape`"}
+    {else}
+        {$_version = null}
+    {/if}
+
+    <li id="wa-app-{str_replace('.', '-', $_id)}" data-app="{$_id}" {if $_id == $current_app || stristr($request_uri, $_item_url) !== false} class="selected"{/if}>
+        {* Build app icon count *}
+        {$_count = null}
+        {if $counts && isset($counts[$_id])}
+            {if is_array($counts[$_id])}
+                {$_item_url = $counts[$_id]['url']}
+                {$_count = $counts[$_id]['count']}
+            {else}
+                {$_count = $counts[$_id]}
+            {/if}
+        {/if}
+        <a href="{$_item_url}">
+            {if isset($_info.img)}
+                <img{if !empty($_info.icon.96)} data-src2="{$root_url}{$_info.icon.96}{$_version}"{/if} src="{$root_url}{$_info.img}{$_version}" alt="">
+            {/if}
+            {$_info.name|ifempty}
+            {if $_count}
+                <span class="indicator">{$_count}</span>
+            {/if}
+        </a>
+    </li>
+{/function}
+{/strip}
+{strip}
+{* @event backend_header *}
+{* $return[%app_id%]['header_top'] *}
+{if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
+<script type="text/javascript">
+    var backend_url = "{$backend_url}";
+    var webasyst_id_settings_url = {$webasyst_id_settings_url|json_encode};
+</script>
+{if !empty($include_wa_push)}
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
+{/if}
+
+{* Announcements section *}
+<div id="wa-announcement">
+    {if !empty($show_connection_banner)}
+        <div class="js-webasyst-id-announcement js-webasyst-id-auth-announcement js-webasyst-id-connect-announcement w-webasyst-id-banner">
+            <a href="javascript:void(0);" class="wa-announcement-close js-close-webasyst-id-announcement" title="close"  data-name="webasyst_id_announcement_close" rel="webasyst">&times;</a>
+            <p>
+                <i class="icon16 waid-green"></i>[s`<strong>Enable sign-in with Webasyst ID</strong>, a universal authorization option that unites Webasyst Customer Center and backend sign-in on your custom domains. Webasyst ID allows you to use all Webasyst apps, sites, and services, and to avoid the use of different passwords on various domains.`]&nbsp;
+                <a href="javascript:void(0)"
+                   class="bold js-webasyst-id-connect">{sprintf('[s`Enable&nbsp;Webasyst&nbsp;ID on %s — it’s free and secure!`]', $current_domain|escape|mb_strtoupper)}</a>&nbsp;
+                <a href="javascript:void(0);" class="gray js-webasyst-id-helplink">[s`How does it work?`]</a>
+            </p>
+        </div>
+    {elseif !empty($webasyst_id_auth_banner)}
+        <div class="js-webasyst-id-announcement js-webasyst-id-auth-announcement js-webasyst-id-auth-announcement w-webasyst-id-banner">
+            <a href="javascript:void(0);" class="wa-announcement-close js-close-webasyst-id-announcement" title="close"  data-name="webasyst_id_announcement_close" rel="webasyst">&times;</a>
+            <p>
+                <i class="icon16 userpic20" style="background-image: url('{$user->getPhoto(32)}');"></i>+ <i class="icon16 waid-green"></i> {sprintf('[s`<strong>Upgrade your user account (%s) to Webasyst ID</strong>, a unified authorization across all Webasyst apps, sites, and services. It’s free, secure, and takes just a minute.`]', $user.login|escape|strtoupper)}&nbsp;
+                <a href="{$webasyst_id_auth_banner.url}"
+                    class="bold js-webasyst-id-auth">{sprintf('[s`Enable&nbsp;Webasyst&nbsp;ID for %s now!`]', $user.login|escape|strtoupper)}</a>&nbsp;
+                <a href="javascript:void(0);" class="gray js-webasyst-id-helplink">[s`How does it work?`]</a>
+            </p>
+        </div>
+    {/if}
+</div>
+
+<div id="wa-header">
+    {* Account name *}
+    <div id="wa-account">
+        {if $request_uri == $backend_url || $request_uri == "`$backend_url`/"}
+            <h3 title="{$company_name}">
+                {$company_name|truncate:18:'...'}
+                <a href="{$company_url}" class="wa-frontend-link" target="_blank">
+                    <i class="icon16 new-window"></i>
+                </a>
+            </h3>
+            <a class="inline-link" id="show-dashboard-editable-mode" href="{$backend_url}"><b><i>[s`Customize dashboard`]</i></b></a>
+            <input id="close-dashboard-editable-mode" type="button" value="[s`Done editing`]" style="display: none;">
+        {else}
+            <a href="{$backend_url}" class="wa-dashboard-link">
+                <h3 title="{$company_name}">{$company_name|truncate:18:'...'}</h3>
+                <span class="gray">{$date}</span>
+            </a>
+        {/if}
+    </div>
+
+    {* Current user *}
+    <div id="wa-usercorner" data-user-id="{$user['id']}">
+        <div class="profile image32px">
+            <div class="image">
+                <a href="{$backend_url}?module=profile">
+                    <img width="32" height="32" src="{$user->getPhoto(32)}" alt="">
+                </a>
+            </div>
+            <div class="details">
+                <a href="{$backend_url}?module=profile" id="wa-my-username">
+                    {$user->getName()|escape}
+                </a>
+                <p class="status"></p>
+                <a class="hint" href="{$backend_url}?action=logout">[s`logout`]</a>
+            </div>
+        </div>
+    </div>
+
+    {* App list *}
+    <div id="wa-applist"{if is_array($counts)} class="counts-cached"{/if}>
+        {strip}
+        <ul>
+            {foreach $header_items as $_id => $_info}
+                {_renderHeaderItem _id=$_id _info=$_info}
+            {/foreach}
+            <li>
+                <a href="#" id="wa-moreapps"></a>
+            </li>
+        </ul>
+        {/strip}
+
+        {if $request_uri == $backend_url || $request_uri == "`$backend_url`/"}
+            <div class="d-dashboard-header-content">
+                <div class="d-dashboards-list-wrapper" id="d-dashboards-list-wrapper"></div>
+                <div class="d-dashboard-link-wrapper" id="d-dashboard-link-wrapper">
+                    <i class="icon10 lock-bw"></i> [s`Only you can see this dashboard.`]
+                </div>
+            </div>
+        {/if}
+    </div>
+</div>
+<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header-legacy.js?{$wa_version}"{if !$user['timezone']} data-determine-timezone="1"{/if}></script>
+{* @event backend_header *}
+{* $return[%app_id%] *}
+{if !empty($header_middle)}{foreach $header_middle as $_}{$_}{/foreach}{/if}
+{* @event backend_header *}
+{* $return[%app_id%]['header_bottom'] *}
+{if !empty($header_bottom)}{foreach $header_bottom as $_}{$_}{/foreach}{/if}
+{/strip}

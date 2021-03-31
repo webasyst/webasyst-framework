@@ -1,136 +1,123 @@
 {$_locale_string = substr($wa->locale(), 0, 2)}
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>[s`Settings`] &mdash; {$wa->accountName()}</title>
-    {$wa->css()}
+    <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>[s`Settings`] &mdash; {$wa->accountName()}</title>
 
-    <link href="{$wa_url}wa-content/css/wa-settings/settings.css?v={$wa->version()}" rel="stylesheet">
-    <link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" rel="stylesheet">
+        {* CSS *}
+        {$wa->css()}
 
-    {* VENDOR *}
-    {wa_js}
-        {$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js
-        {$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
-        {$wa_url}wa-content/js/jquery-ui/jquery.ui.progressbar.min.js
-        {$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js
-        {$wa_url}wa-content/js/ace/ace.js
-        {$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js
-    {/wa_js}
+        <link href="{$wa_url}wa-content/css/wa-settings/settings.css?v={$wa->version()}" type="text/css" rel="stylesheet">
 
-    {* SETTINGS *}
-    {wa_js}
-        {$wa_url}wa-content/js/jquery-wa/wa.core.js
-        {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
-        {$wa_url}wa-content/js/jquery-wa/wa.contentrouter.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.general.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.email.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.maps.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.captcha.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.push.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.sms.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.auth.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.edit.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.delete.confirm.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.regions.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.list.dialog.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waID.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDInviteProgress.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDConnectDialog.js
-        {$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDDisconnectConfirm.js
-        {$wa_url}wa-content/js/dialog/dialog.js
-    {/wa_js}
+        {* JS *}
+        <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+        <script src="{$wa_url}wa-content/js/ace/ace.js?v={$wa->version(true)}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v={$wa->version(true)}"></script>
 
-    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/css/wa-settings/settingsDialog.css?v{$wa->version()}">
-    <link type="text/css" href="{$wa_url}wa-content/js/dialog/dialog.css?{$wa->version()}" rel="stylesheet" />
+        {* APP JS *}
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.contentrouter.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.general.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.email.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.maps.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.captcha.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.push.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.sms.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.auth.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.edit.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.field.delete.confirm.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.regions.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.db.list.dialog.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waID.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDInviteProgress.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDConnectDialog.js?v={$wa->version()}"></script>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.waIDDisconnectConfirm.js?v={$wa->version()}"></script>
 
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa-settings/settings.dialog.js?v{$wa->version()}"></script>
+        {$wa->js(false)}
 
-    {* @event backend_assets.%plugin_id% *}
-    {foreach $backend_assets as $item}
-        {$item}
-    {/foreach}
-
-    {$wa->js()}
-
-</head>
-<body><div id="wa">
-
-    {$wa->header()}
-
-    <div id="wa-app">
-        <div class="s-main-wrapper" id="s-main-wrapper">
-
-            {* SIDEBAR *}
-            <section class="s-sidebar-wrapper sidebar left200px" id="s-sidebar-wrapper">
-                {$sidebar}
-            </section>
-
-            {* CONTENT *}
-            <section class="s-content-wrapper content shadowed left200px">
-                <div class="s-content-block" id="s-content-block">
-                    {$content}
+        {* @event backend_assets.%plugin_id% *}
+        {foreach $backend_assets as $item}
+            {$item}
+        {/foreach}
+        {$wa->js()}
+     </head>
+    <body>
+        <div id="wa">
+            {$wa->header()}
+            <div id="wa-app">
+                <div class="flexbox wrap-mobile">
+                    {* SIDEBAR *}
+                    <nav class="sidebar hide-scrollbar mobile-friendly" id="wa-app-navigation">
+                        <nav class="sidebar-mobile-toggle">
+                            <div class="box align-center">
+                                <a href="javascript:void(0);"><i class="fas fa-bars"></i> [`Show navigation`]</a>
+                            </div>
+                        </nav>
+                        {$sidebar}
+                    </nav>
+                    {* CONTENT *}
+                    <div class="content hide-scrollbar blank">
+                        <div id="s-content-block">
+                            {$content}
+                        </div>
+                    </div>
                 </div>
-            </section>
+            </div>
         </div>
 
-    </div>
-    <script>
-        (function($) { "use strict";
+        {*
+        <script>
+            (function ($) {
+                $.settings.content = new $.ui.init.ContentRouter({
+                    $content: $("#wa-app-content"),
+                    onLoad: function () {
+                        $("html, body").scrollTop(0);
+                    }
+                });
+            })(jQuery);
+        </script>
+        *}
 
-            {* need for editor2.js *}
-            window.wa_app = {$wa->app()|json_encode};
-            {* need for waEditorAceInit *}
-            window.wa_url = {$wa_url|json_encode};
+        <script>
+            (function($) { "use strict";
+                const waSettingsLoading = $.waLoading();
+                $(document)
+                    .on("wa_before_load", function() {
+                        waSettingsLoading.show();
+                    })
+                    .on("wa_loading", function(event, xhr_event) {
+                        if (xhr_event.lengthComputable) {
+                            let percent = (xhr_event.loaded / xhr_event.total) * 100;
+                            waSettingsLoading.set(percent);
+                        }
+                    })
+                    .on("wa_abort", function() {
+                        waSettingsLoading.abort();
+                    })
+                    .on("wa_loaded", function() {
+                        waSettingsLoading.done();
+                    });
+                {* need for editor2.js *}
+                window.wa_app = {$wa->app()|json_encode};
+                {* need for waEditorAceInit *}
+                window.wa_url = {$wa_url|json_encode};
 
-            var $doc = $(document),
-                $wrapper = $('#s-main-wrapper'),
-                $content = $("#s-content-block"),
-                before_load_content_event = 'wa_before_load.webasyst-settings';
+                $.wa.content = new ContentRouter({
+                    $content: $("#s-content-block"),
+                    app_url: {"`$wa_backend_url`webasyst/settings/"|json_encode}
+                });
 
-            var changeUrlHandler = function(params) {
-                // auto off
-                if (!$wrapper.length) {
-                    $doc.off(before_load_content_event);
-                    return;
-                }
+                const $sidebar = $('#wa-app-navigation');
 
-                params = params || {};
-
-                {* Hide connect announcement banner of waid settings page, and show in other pages (of cource if banner in DOM) *}
-                var content_uri = params.content_uri || location.href || '';
-                if (content_uri.indexOf('waid') > -1) {
-                    $('.js-webasyst-id-connect-announcement').hide();
-                    $('.js-webasyst-id-auth-announcement').hide();
-                } else {
-                    $('.js-webasyst-id-connect-announcement').show();
-                    $('.js-webasyst-id-auth-announcement').show();
-                }
-            };
-
-            // Change url handling
-            $doc.off(before_load_content_event).on(before_load_content_event, function (e, params) {
-                changeUrlHandler(params);
-            });
-
-            // Change url handler on initial state
-            changeUrlHandler();
-
-            // content router
-            $.wa.content = new ContentRouter({
-                $content: $content,
-                app_url: {"`$wa_backend_url`webasyst/settings/"|json_encode}
-            });
-
-        })(jQuery);
-    </script>
-</body>
+                $sidebar.waShowSidebar({
+                    direction: "down",
+                    is_open: true
+                });
+            })(jQuery);
+        </script>
+    </body>
 </html>

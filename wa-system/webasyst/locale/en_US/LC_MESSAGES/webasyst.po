@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-01-26 16:26+0300\n"
+"PO-Revision-Date: 2021-03-30 16:52+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: en\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1991,6 +1991,9 @@ msgstr ""
 msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"icon10 settings\"></i> for entire template group"
 msgstr ""
 
+msgid "<a class=\"%s\" href=\"javascript:void(0);\">Change sender address</a> <i class=\"fas fa-cog\"></i> for entire template group"
+msgstr ""
+
 msgid "Letter subject"
 msgstr ""
 
@@ -3612,4 +3615,124 @@ msgid "Webasyst ID account <i class=\"icon16 userpic20\" style=\"background-imag
 msgstr ""
 
 msgid "If you need to change the connection of your Webasyst ID account to user <strong>%s</strong>, press “Confirm”."
+msgstr ""
+
+msgid "All-new Webasyst 2 UI"
+msgstr ""
+
+msgid "beta"
+msgstr ""
+
+msgid "This app supports the brand new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can go back to the classic UI any time."
+msgstr ""
+
+msgid "Turn on the new UI"
+msgstr ""
+
+msgid "http://2.webasyst.com"
+msgstr ""
+
+msgid "learn more about Webasyst 2"
+msgstr ""
+
+msgid "Thank you for checking out the newest Webasyst 2 user interface (beta)!"
+msgstr ""
+
+msgid "This is a fully functional version of this app in the new style. We encourage you to use the new UI in full and <a href=\"%s\" target=\"_blank\">share your feedback %s</a> with us in case of any issues."
+msgstr ""
+
+msgid "https://support.webasyst.com"
+msgstr ""
+
+msgid "Back to the classic UI"
+msgstr ""
+
+msgid "Try it in both light and dark modes:"
+msgstr "Светлый и темный режимы:"
+
+msgid "You’ve enabled the new Webasyst 2 UI, but this app does not currently support it. Please contact the app developer to encourage upgrading the UI to the new style."
+msgstr ""
+
+msgid "New UI is not yet supported"
+msgstr ""
+
+msgid "Edit Widgets"
+msgstr ""
+
+msgid "Teams"
+msgstr ""
+
+msgid "Use the Team app to set up your team and customize access rights."
+msgstr ""
+
+msgid "No new notifications"
+msgstr ""
+
+msgid "Company logo"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "Larger font, two lines"
+msgstr ""
+
+msgid "Custom colors"
+msgstr ""
+
+msgid "Color A"
+msgstr ""
+
+msgid "Color B"
+msgstr ""
+
+msgid "Gradient angle (&deg;)"
+msgstr ""
+
+msgid "Text color"
+msgstr ""
+
+msgid "%s symbols"
+msgstr ""
+
+msgid "Upload new image"
+msgstr ""
+
+msgid "My Apps"
+msgstr ""
+
+msgid "Everyone"
+msgstr ""
+
+msgid "Activity"
+msgstr ""
+
+msgid "Dashboards"
+msgstr ""
+
+msgid "No activity today yet."
+msgstr ""
+
+msgid "Filter by app"
+msgstr ""
+
+msgid "TV Link"
+msgstr ""
+
+msgid "Open in new window"
+msgstr ""
+
+msgid "Copied"
+msgstr ""
+
+msgid "This dashboard can be opened in both browser and TV with the support for basic access to browsing websites. Get the private TV link and open it using an internal browser on your TV."
+msgstr ""
+
+msgid "Show navigation"
+msgstr ""
+
+msgid "Your dashboard is empty. Add widgets by clicking \"Edit Widgets\" button on the top."
 msgstr ""

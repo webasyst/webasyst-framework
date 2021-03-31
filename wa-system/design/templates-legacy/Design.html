@@ -1,0 +1,465 @@
+{if $options.js.ace}<script src="{$wa_url}wa-content/js/ace/ace.js"></script>{/if}
+{if $options.js.editor}<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>{/if}
+
+<link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version()}">
+
+{if $options.container}
+<div class="shadowed wa-design">
+{/if}
+    <div>
+        <!-- theme navigation -->
+        <ul class="menu-h dropdown wa-theme-globalnav" id="wa-design-menu">
+            <li class="wa-theme-globalnav-switch">
+                <!-- active app settlement / theme selector -->
+                <a href="#" class="inline-link" id="wa-theme-active">
+                    <img src="{$wa_url}{$app.icon.48}">
+                    <b><i><span class="url">{if $route}{$_route_label = $route._domain|cat:'/':$route.url}{else}{$_route_label = $theme.name}{/if}{str_replace('www.','',$_route_label)|truncate:23:'...':false:true}</span></i></b>
+                    <i class="icon10 darr"></i>
+                    <br>
+                    <span class="hint">{if $route}{$theme.name}{/if}</span>
+                </a>
+                <ul id="wa-theme-list" class="menu-v">
+                    {foreach $themes_routes as $r}
+                        {if is_array($r)}
+                            {* Themes with settlements *}
+                            {$_theme = $themes[$r.theme]}
+                            {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                            {$_url = "{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}"}
+                            {$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}
+                            {$_title = str_replace('www.','',$_r_label)}
+
+                            <li class="no-icon 2{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}"{if !empty($r._routing_url)} data-routing="{$r._routing_url}"{/if} data-id="{$_theme.id|escape}">
+                                <a class="bold" href="{$_url}" title="{$_title}" data-preview-label="[s`Site`]" data-url="{$r._preview_url|escape}">
+                                    <span class="url">{$_title|truncate:45:'...':false:true}</span>
+                                    <span class="hint">{$_theme.name|escape}</span>
+                                </a>
+                            </li>
+
+                            {* Mobile theme *}
+                            {if !empty($r.theme_mobile) && ($r.theme_mobile != $r.theme) && !empty($themes[$r.theme_mobile])}
+                                {$_theme = $themes[$r.theme_mobile]}
+                                {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                                {$_url = "{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}"}
+                                {$_r_label = waIdna::dec($r._domain)|cat:'/':$r.url}
+                                {$_title = str_replace('www.','',$_r_label)}
+
+                                <li class="no-icon 3{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}" {if !empty($r._routing_url)}data-routing="{$r._routing_url}"{/if} data-id="{$_theme.id|escape}">
+                                    <a class="bold" href="{$_url}" title="{$_title}" data-preview-label="[s`Preview`]"{if !empty($_theme.preview_url)} data-url="{$_theme.preview_url|escape}"{/if}>
+                                        <i class="icon16 mobile float-right"></i>
+                                        <span class="url">{$_title|truncate:45:'...':false:true}</span>
+                                        <span class="hint">{$_theme.name|escape}</span>
+                                    </a>
+                                </li>
+                            {/if}
+                        {else}
+                            {* Themes without settlements *}
+                            {$_theme = $themes[$r]}
+                            {$_theme_is_trial = ($_theme.type == waTheme::TRIAL)}
+                            {$_url = "{$design_url}theme={$_theme.id}"}
+                            <li class="no-icon 1{if $_theme_is_trial} is-trial{/if}{if $current_url == $_url} selected{/if}" data-id="{$_theme.id|escape}">
+                                <a href="{$design_url}theme={$_theme.id}" data-preview-label="[s`Preview`]"{if !empty($_theme.preview_url)} data-url="{$_theme.preview_url|escape}"{/if}>
+                                    <span class="url">{$_theme.name|escape}</span>
+                                </a>
+                            </li>
+                        {/if}
+                    {/foreach}
+                </ul>
+            </li>
+
+            <li data-action="theme" class="info selected"><a class="wa-themes-link" href="{$design_url}theme={$theme.id}&action=theme"><i class="icon48 appearance"></i>[s`Appearance`]</a></li>
+            <li data-action="edit" class="templates" style="display: none;"><a href="{$design_url}theme={$theme.id}&action=edit"><i class="icon48 templates"></i>[s`Templates`]</a></li>
+            <li data-action="settings" class="settings"><a href="{$design_url}action=settings"><i class="icon48 settings"></i>[s`Settings`]</a></li>
+            {if !empty($options.pages) && $wa->userRights('pages')}<li class="pages"><a data-action="pages" href="{$design_url}pages/"><i class="icon48 pages"></i>[s`Pages`]</a></li>{/if}
+            {if $wa->user()->getRights('installer')}<li class="themes"><a class="wa-themes-link" href="{$themes_url}"><i class="icon48 store"></i>[s`Themes`]</a></li>{/if}
+
+            {if $theme.preview_url}
+                <li class="float-right">
+                    <a data-url="{$theme.preview_url|escape}" data-id="{$theme.id|escape}" href="{$theme.preview_url|escape}" target="_blank" class="wa-theme-preview" style="color: #000;">
+                        <i class="icon48 preview"></i><span>{if $theme.is_used}[s`Site`]{else}[s`Preview`]{/if}</span>
+                    </a>
+                </li>
+            {/if}
+        </ul>
+    </div>
+
+    <div id="wa-design-container" class="blank">
+        <div class="block double-padded">
+            [s`Loading`]... <i class="icon16 loading"></i>
+            <div class="clear"></div>
+        </div>
+    </div>
+
+    <div class="dialog" id="wa-design-preview">
+        <div class="dialog-background"> </div>
+        <div class="dialog-window" style="bottom: auto; min-height: 150px; width: 400px; min-width: 400px">
+            <form>
+                <input type="hidden" id="wa-preview-key" value="" />
+                <div class="dialog-content">
+                    <div class="dialog-content-indent">
+                        <h1>[s`Theme preview`]</h1>
+                        <p>[s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
+                    </div>
+                </div>
+                <div class="dialog-buttons">
+                    <div class="dialog-buttons-gradient">
+                        <input type="submit" class="button" value="[s`Finish preview session`]">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        var wa_url = "{$wa_url}";
+
+        var $theme_preview_link = $('#wa-design-menu .wa-theme-preview'),
+            $theme_edit_link = $('#wa-design-menu li[data-action="edit"]');
+
+        function waDesignConfirm() {
+            if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
+                if (!confirm("[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]")) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        $(window).on('beforeunload', function () {
+            if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
+                return "[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]";
+            }
+        });
+
+        $('.wa-theme-globalnav').on('mouseover', function () {
+            $('#wa-theme-list').css('display', '');
+        });
+
+        var waDesignHash = function (url) {
+            if (!url || !url.length) {
+                return '';
+            }
+            url = url.replace(/\/$/, '').replace(/^#/, '')
+            var urls = url.split('/');
+            var n = urls.length;
+            url = urls[n - 1];
+            var i = n - 2;
+            while (i >= 0 && urls[i].indexOf('=') != -1) {
+                url = urls[i] + '/' + url;
+                i--;
+            }
+            return url;
+        };
+
+        var waDesignParams = function (url) {
+            url = waDesignHash(url);
+            var params_ar = url.split('&');
+            var params = { };
+            for (var i = 0; i < params_ar.length; i++) {
+                var tmp = params_ar[i].split('=');
+                params[tmp[0]] = tmp[1];
+            }
+            return params;
+        };
+
+        $("#wa-theme-list li a").click(function (e, set_active_only) {
+            var $self = $(this),
+                href = $self.attr('href');
+
+            $('#wa-theme-list').hide();
+            $('#wa-theme-list li').removeClass('selected');
+            $self.parent().addClass('selected');
+            var params = waDesignParams(href);
+            if (params['theme']) {
+                $("#wa-theme-active span.url").html($self.find('span.url').html());
+                if ($self.find('span.hint').length) {
+                    $("#wa-theme-active span.hint").html($self.find('span.hint').html());
+                } else {
+                    $("#wa-theme-active span.hint").empty();
+                }
+
+                $('#wa-design-menu > li > a').each(function () {
+                    var $menu_link = $(this);
+                    if ($menu_link.parent().data('action')) {
+                        $menu_link.attr('href', href + '&action=' + $menu_link.parent().data('action'));
+                    } else {
+                        var menu_link_href = $menu_link.attr('href');
+                        if (menu_link_href.indexOf('theme=') !== -1) {
+                            $menu_link.attr('href', menu_link_href.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                        }
+                    }
+                });
+
+                // Setup preview link
+                var preview_href = ($self.data('url')) ? $self.data('url') : $theme_preview_link.data('url');
+                $theme_preview_link.attr('href', preview_href).data('theme-id', params['theme']);
+                $theme_preview_link.find('span').text($self.data('preview-label'));
+
+                if (set_active_only) {
+                    return false;
+                }
+
+                var hash = location.hash;
+                if (hash.indexOf('theme=') !== -1) {
+                    if (!params['route']) {
+                        hash = hash.replace(/&route=[^&]+/, '');
+                    } else if (hash.indexOf('route=') !== -1) {
+                        hash = hash.replace(/route=[^&]+/, 'route=' + params['route']);
+                    } else {
+                        hash = hash + '&route=' + params['route'];
+                    }
+                    if (!params['domain']) {
+                        hash = hash.replace(/&domain=[^&]+/, '');
+                    } else if (hash.indexOf('domain=') !== -1) {
+                        hash = hash.replace(/domain=[^&]+/, 'domain=' + params['domain']);
+                    } else {
+                        hash = hash + '&domain=' + params['domain'];
+                    }
+                    $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                } else {
+                    location.href = href;
+                }
+
+                {if !$options.is_ajax}waDesignLoad();{/if}
+                return false;
+            }
+        });
+
+        $('#wa-design-menu,#wa-design-container').on('click', ".wa-theme-preview", function (e) {
+            var $self = $(this),
+                theme_id = $self.data('theme-id'),
+                url = $self.attr('href'),
+                tmp_params = waDesignParams($('#wa-theme-list li.selected a').attr('href'));
+
+            if (!tmp_params['route']) {
+                e.preventDefault();
+                var href = "?module=design&action=setPreview",
+                    data = {
+                        theme_id: theme_id
+                    };
+
+                $.post(href, data, function () {
+                    window.open(url, "_blank");
+                });
+
+                $('#wa-current-theme').html($('#wa-theme-active .url').html());
+                $("#wa-design-preview").waDialog({
+                    esc: false,
+                    onSubmit: function () {
+                        if (url.indexOf('?theme_hash') === -1) {
+                            url += '?theme_hash=&set_force_theme=';
+                        }
+                        $("#wa-design-preview").hide();
+                        $("body").append($('<iframe style="display:none" src="' + url.replace(/(set_force_theme=).*$/, '$1') + '" />').load(function () {
+                            $(this).remove();
+                        }));
+                        return false;
+                    }
+                });
+            }
+        });
+
+        $("#wa-design-sidebar h2 a").click(function () {
+            if (!waDesignConfirm()) return false;
+        });
+
+        {if !$options.is_ajax}
+            $('#wa-design-menu > li > a').not('.wa-theme-preview').click(function () {
+                waDesignLoad($(this).attr('href').replace(/.*?#\//, '').replace(/\/$/, ''));
+            });
+        {/if}
+
+        var site_routing_full = function () { };
+        var wa_design_not_load = false;
+        function waDesignLoad(hash) {
+            {if $design_url && is_string($design_url) && $design_url != '#/'}
+                var design_url = {$design_url|json_encode}.replace(/.*?#\//, '');
+                if (design_url && design_url.length && hash && hash.length) {
+                    if (hash.substr(0, design_url.length) == design_url) {
+                        hash = hash.substr(design_url.length);
+                    }
+                }
+            {/if}
+            var theme_is_trial = false,
+                hash_params = waDesignParams(hash || location.hash);
+
+            if (hash_params['theme']) {
+                var $selected_theme_item = $('#wa-theme-list > li[data-id="'+ hash_params['theme'] +'"]');
+                if ($selected_theme_item.hasClass('is-trial')) {
+                    theme_is_trial = true;
+                    hash_params['action'] = 'theme';
+                    $theme_edit_link.hide();
+                    $theme_preview_link.addClass('is-trial').parents('li').removeClass('float-right');
+                } else {
+                    $theme_edit_link.show();
+                    $theme_preview_link.removeClass('is-trial').parents('li').addClass('float-right');
+                }
+            }
+
+            if (hash_params['theme']) {
+                var current_theme_url = 'theme=' + hash_params['theme'];
+                if (hash_params['domain']) {
+                    current_theme_url += '&domain=' + hash_params['domain'];
+                }
+                if (hash_params['route']) {
+                    current_theme_url += '&route=' + hash_params['route'];
+                }
+                if ($('#wa-theme-list a[href="{$design_url}' + current_theme_url + '"]').length) {
+                    $('#wa-theme-list a[href="{$design_url}' + current_theme_url + '"]').trigger('click', [true]);
+                } else {
+                    $('#wa-theme-list a[href^="{$design_url}theme=' + hash_params['theme'] + '"]:first').trigger('click', [true]);
+                }
+            }
+
+            var a = $('#wa-design-menu li.selected a');
+            if (a.length) {
+                var a_params = waDesignParams(a.attr('href')),
+                    data_routing = $('#wa-theme-list .selected').data('routing');
+
+                if (a_params['route'] && data_routing) {
+                    $('#wa-design-menu li.settings a').attr('href', a.attr('href') + '&action=settings');
+                    $('#wa-design-menu li.settings').show();
+                } else {
+                    $('#wa-design-menu li.settings').hide();
+                }
+            }
+
+            if (wa_design_not_load) {
+                wa_design_not_load = false;
+                return;
+            }
+            if (hash  === undefined) {
+                hash = waDesignHash(location.hash);
+            }
+            if (hash.length) {
+                if (hash == 'themes') {
+                    $('#wa-design-menu > .selected').removeClass('selected');
+                    $('#wa-design-menu .themes').addClass('selected');
+                    $("#wa-design-container").load("?module=design&action=themes", function () {
+                        if ($(".s-scrollable-part").length) {
+                            $(".s-scrollable-part").scrollTop(0);
+                        } else {
+                            $(document).scrollTop(0);
+                        }
+                    });
+                } else if (hash.substr(0, 5) == 'pages') {
+                    $('#wa-design-menu > .selected').removeClass('selected');
+                    $('#wa-design-menu .pages ').addClass('selected');
+                    $("#wa-design-container").load("?module=pages", function (responseText, textStatus, XMLHttpRequest) {
+                        if ($(".s-scrollable-part").length) {
+                            $(".s-scrollable-part").scrollTop(0);
+                        } else {
+                            $(document).scrollTop(0);
+                        }
+                        try{
+                            if (response = $.parseJSON(responseText)) {
+                                if(response.data && response.data.redirect) {
+                                    var href = location.href.replace(/#.*$/,'') + response.data.redirect;
+                                    location.replace(href);
+                                }
+                            }
+                        }catch(e) { }
+                    });
+                } else if (hash.indexOf('action=settings') != -1) {
+                    $('#wa-design-menu > .selected').removeClass('selected');
+                    $('#wa-design-menu .settings ').addClass('selected');
+                    if ($('#wa-theme-list li.selected').length) {
+                        var li = $('#wa-theme-list li.selected');
+                    } else {
+                        var li = $('#wa-theme-list li:first');
+                    }
+                    var hash_params = waDesignParams(hash);
+                    if (li.data('routing')) {
+                        var li_route = li.data('routing').replace(/.*route=([^&]+).*?/i, '$1');
+                        if (hash_params['route'] && (hash_params['route'] != li_route)) {
+                            var tmp_li = $('#wa-theme-list li[data-routing$="route=' + hash_params['route'] + '"]:first');
+                            if (tmp_li.length) {
+                                tmp_li.find('a').click();
+                            }
+                        } else {
+                            $("#wa-design-container").load(li.data('routing') + '&reload_on_change=1', function () {
+                                $("#wa-design-container .back").remove();
+                                $(".s-route-core").hide();
+                                $('.s-route-details .fields').
+                                        prepend($('<div class="field-group"></div>').
+                                                append($('<div class="field"><div class="name">URL</div></div>').
+                                                        append($('<div class="value"></div>').html($('#s-route-where').html()))
+                                        )
+                                );
+                                $("#wa-design-container .s-route-delete").closest('div').remove();
+                            });
+                        }
+                    } else {
+                        if (hash_params['route']) {
+                            var tmp_li = $('#wa-theme-list li[data-routing$="route=' + hash_params['route'] + '"]:first');
+                            if (tmp_li.length) {
+                                tmp_li.find('a').click();
+                            }
+                        } else {
+                            $.wa.setHash(location.hash.replace(/&?action=settings/, ''));
+                        }
+                    }
+                } else {
+                    if (hash.indexOf('action=') == -1) {
+                        if (hash.indexOf('file=') == -1) {
+                            hash = 'action=theme&' + hash;
+                        } else {
+                            hash = 'action=edit&' + hash;
+                        }
+                    }
+                    if (hash.indexOf('theme=') != -1) {
+                        var params = hash.split('&');
+                        for (var j = 0; j < params.length; j++) {
+                            var tmp = params[j].split('=');
+
+                            if (tmp[0] == 'theme') {
+                                $('#wa-design-sidebar a[href="' + location.hash + '"]').parent().addClass('selected');
+                            }
+                        }
+                    }
+                    if (hash.indexOf('action=edit') !== -1) {
+                        $('#wa-design-menu > .selected').removeClass('selected');
+                        if (theme_is_trial) {
+                            hash = hash.replace('action=edit', 'action=theme');
+                            $('#wa-design-menu .info').addClass('selected');
+                        } else {
+                            $('#wa-design-menu .templates').addClass('selected');
+                        }
+                    } else if (hash.indexOf('action=theme') !== -1) {
+                        $('#wa-design-menu > .selected').removeClass('selected');
+                        $('#wa-design-menu .info').addClass('selected');
+                    }
+                    // Save theme settings
+                    $("#wa-design-container").load("?module=design&" + hash, function (responseText, textStatus, XMLHttpRequest) {
+                        if ($(".s-scrollable-part").length) {
+                            //$(".s-scrollable-part").scrollTop(0);
+                        } else {
+                            //$(document).scrollTop(0);
+                        }
+                        try{
+                            if (response = $.parseJSON(responseText)) {
+                                if(response.data && response.data.redirect) {
+                                    var href = location.href.replace(/#.*$/,'') + response.data.redirect;
+                                    location.replace(href);
+                                }
+                            }
+                        }catch(e) { }
+                    });
+                }
+            } else {
+                $("#wa-theme-list li a:first").click();
+            }
+        }
+        $(document).ready(function () {
+            $('#wa-app').css('overflow', 'visible');
+            var a = $('#wa-design-sidebar .wa-theme-block a[href="' + location.hash + '"]:first');
+            if (a.length) {
+                a.parent().addClass('selected');
+                var t = a.closest('.wa-theme-block').show().attr('id').replace(/wa-theme-block-/, '');
+                $("#wa-theme-active").text($('#wa-theme-list-' + t).find('a span.wa-theme-name').text());
+            }
+            {if !$options.is_ajax}
+                waDesignLoad();
+            {/if}
+        });
+    </script>
+{if $options.container}
+</div>
+{/if}

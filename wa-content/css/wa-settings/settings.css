@@ -1,532 +1,755 @@
-#wa-app {
-  overflow: initial;
+.s-general-settings-page .gradient1 {
+  background: linear-gradient(90deg, #ff0078 0%, #ff5900 100%);
 }
-#wa {
-  background-color: #f0f0f0;
+.s-general-settings-page .gradient2 {
+  background: linear-gradient(90deg, #ff682d 0%, #ff9500 100%);
 }
-.s-content-wrapper .s-page-header {
-  margin: 0 0 16px;
+.s-general-settings-page .gradient3 {
+  background: linear-gradient(90deg, #f7a500 0%, #e5cf00 100%);
 }
-.s-content-wrapper .s-page-header:first-child {
-  margin-top: 0;
+.s-general-settings-page .gradient4 {
+  background: linear-gradient(90deg, #a3d900 0%, #d9d900 100%);
 }
-.s-content-wrapper .s-page-header:last-child {
-  margin-bottom: 0;
+.s-general-settings-page .gradient5 {
+  background: linear-gradient(90deg, #26e500 0%, #99e500 100%);
 }
-.s-content-wrapper .s-error {
-  color: #f00;
-  min-height: 12px;
-  min-width: 1px;
-  display: block;
+.s-general-settings-page .gradient6 {
+  background: linear-gradient(90deg, #0be50b 0%, #00ed77 100%);
 }
-.s-content-wrapper .s-description {
-  color: #555;
-  font-size: 15px;
-  line-height: 19px;
-  margin: 0 0 16px;
+.s-general-settings-page .gradient7 {
+  background: linear-gradient(90deg, #00ec76 0%, #00e5bf 100%);
 }
-.s-content-wrapper .s-form-buttons .s-footer-actions {
-  padding: 10px 0;
+.s-general-settings-page .gradient8 {
+  background: linear-gradient(90deg, #00bfff 0%, #00d9d9 100%);
 }
-.s-content-wrapper .s-form-buttons .s-footer-actions.is-bottom-fixed {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
-  z-index: 10;
-  background: #fff;
-  border-top: 1px solid rgba(0,0,0,0.1);
+.s-general-settings-page .gradient9 {
+  background: linear-gradient(90deg, #7396ff 0%, #26b7ff 100%);
 }
-.s-content-wrapper .s-form-buttons .s-footer-actions.is-top-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: auto;
-  z-index: 10;
-  background: #fff;
+.s-general-settings-page .gradient10 {
+  background: linear-gradient(90deg, #5975ff 0%, #a173ff 100%);
 }
-.s-content-wrapper .s-form-buttons .s-loading {
-  margin: 9px 0 0 6px;
+.s-general-settings-page .gradient11 {
+  background: linear-gradient(90deg, #a565ff 0%, #df3eff 100%);
 }
-.s-content-wrapper .s-form-buttons .s-footer-actions.is-changed .s-hidden {
-  display: inline-block;
+.s-general-settings-page .gradient12 {
+  background: linear-gradient(90deg, #f23da7 0%, #ef3eff 100%);
 }
-.s-content-wrapper .s-form-buttons .s-footer-actions .s-hidden {
-  display: none;
+.s-general-settings-page .gradient13 {
+  background: linear-gradient(90deg, #c4c4c4 0%, #808080 100%);
 }
-.s-content-wrapper .s-form-buttons .fixed {
-  padding: 10px 18px;
+.s-general-settings-page .gradient14 {
+  background: linear-gradient(90deg, #ff0f80 0%, #cc4700 100%);
 }
-.fields {
-  float: none;
-  margin: 0;
-  overflow: visible;
+.s-general-settings-page .gradient15 {
+  background: linear-gradient(90deg, #f58f00 0%, #fa4700 100%);
 }
-ul.menu-h.dropdown ul,
-ul.menu-h.dropdown ul.menu-v {
-  margin-top: 0;
-  max-height: 500px;
-  overflow: auto;
+.s-general-settings-page .gradient16 {
+  background: linear-gradient(90deg, #dbc500 0%, #c78500 100%);
 }
-ul.menu-h.dropdown li > a.s-visible-link.with-icon {
-  padding-left: 20px;
+.s-general-settings-page .gradient17 {
+  background: linear-gradient(90deg, #cc0 0%, #7ea800 100%);
 }
-ul.menu-h.dropdown li > a.s-visible-link.with-icon b > i i.icon16 {
-  position: absolute;
-  top: 1px;
-  left: -20px;
+.s-general-settings-page .gradient18 {
+  background: linear-gradient(90deg, #24db00 0%, #690 100%);
 }
-ul.pager li {
-  display: inline-block;
-  font-weight: normal;
-  line-height: 1em;
-  list-style-type: none;
-  margin: 0 10px 0 0;
-  padding: 5px;
-  text-align: left;
+.s-general-settings-page .gradient19 {
+  background: linear-gradient(90deg, #0bdf0b 0%, #00994c 100%);
 }
-.redactor-box .redactor-layer,
-.redactor-box .redactor-editor {
-  background: transparent;
-  border-width: 1px 0 0 0;
-  height: 200px;
+.s-general-settings-page .gradient20 {
+  background: linear-gradient(90deg, #00eb75 0%, #00a88c 100%);
 }
-.redactor-box .redactor-toolbar {
-  z-index: auto;
+.s-general-settings-page .gradient21 {
+  background: linear-gradient(90deg, #00d6d6 0%, #0091c2 100%);
 }
-.redactor-box .redactor-toolbar li a {
-  padding: 8px;
-  width: auto;
-  height: auto;
+.s-general-settings-page .gradient22 {
+  background: linear-gradient(90deg, #05acff 0%, #1f57ff 100%);
 }
-.redactor-box .redactor-toolbar li a.re-button-icon {
-  padding: 8px;
+.s-general-settings-page .gradient23 {
+  background: linear-gradient(90deg, #8b52ff 0%, #1e42f5 100%);
 }
-.redactor-box .redactor-toolbar:after {
-  display: none;
+.s-general-settings-page .gradient24 {
+  background: linear-gradient(90deg, #d91aff 0%, #6a00ff 100%);
 }
-input.wide {
-  width: 100%;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+.s-general-settings-page .gradient25 {
+  background: linear-gradient(90deg, #ee2eff 0%, #bf0d75 100%);
 }
-.ui-datepicker {
-  display: none;
+.s-general-settings-page .gradient26 {
+  background: linear-gradient(90deg, #999 0%, #545454 100%);
 }
-p:first-child {
-  margin-top: 0;
+.s-general-settings-page .gradient27 {
+  background: linear-gradient(90deg, #db0067 0%, #993500 100%);
 }
-p:last-child {
-  margin-bottom: 0;
+.s-general-settings-page .gradient28 {
+  background: linear-gradient(90deg, #db8000 0%, #c73800 100%);
 }
-ul.menu-h.dropdown ul.menu-v.right,
-ul.menu-v.right {
-  left: auto;
-  right: 0;
+.s-general-settings-page .gradient29 {
+  background: linear-gradient(90deg, #a89700 0%, #8a5c00 100%);
 }
-ul.menu-h.dropdown ul.menu-v.without-icons li,
-ul.menu-v.without-icons li {
-  margin: 0;
-  padding: 0;
+.s-general-settings-page .gradient30 {
+  background: linear-gradient(90deg, #a3a300 0%, #547000 100%);
 }
-ul.menu-h.dropdown ul.menu-v.without-icons li i.icon16,
-ul.menu-v.without-icons li i.icon16 {
-  margin-top: 0;
+.s-general-settings-page .gradient31 {
+  background: linear-gradient(90deg, #1fbd00 0%, #4e7500 100%);
+}
+.s-general-settings-page .gradient32 {
+  background: linear-gradient(90deg, #09b909 0%, #00753b 100%);
+}
+.s-general-settings-page .gradient33 {
+  background: linear-gradient(90deg, #00b359 0%, #006b59 100%);
+}
+.s-general-settings-page .gradient34 {
+  background: linear-gradient(90deg, #00adad 0%, #006b8f 100%);
+}
+.s-general-settings-page .gradient35 {
+  background: linear-gradient(90deg, #008bd1 0%, #0029a3 100%);
+}
+.s-general-settings-page .gradient36 {
+  background: linear-gradient(90deg, #793eef 0%, #0724b0 100%);
+}
+.s-general-settings-page .gradient37 {
+  background: linear-gradient(90deg, #a600c7 0%, #4a00b3 100%);
+}
+.s-general-settings-page .gradient38 {
+  background: linear-gradient(90deg, #b600c7 0%, #690740 100%);
+}
+.s-general-settings-page .gradient39 {
+  background: linear-gradient(90deg, #757575 0%, #333 100%);
+}
+.s-general-settings-page .gradient40 {
+  background: linear-gradient(90deg, #a3004d 0%, #5c2000 100%);
+}
+.s-general-settings-page .gradient41 {
+  background: linear-gradient(90deg, #995900 0%, #8a2700 100%);
+}
+.s-general-settings-page .gradient42 {
+  background: linear-gradient(90deg, #706500 0%, #473000 100%);
+}
+.s-general-settings-page .gradient43 {
+  background: linear-gradient(90deg, #707000 0%, #2e3d00 100%);
+}
+.s-general-settings-page .gradient44 {
+  background: linear-gradient(90deg, #147a00 0%, #334d00 100%);
+}
+.s-general-settings-page .gradient45 {
+  background: linear-gradient(90deg, #067e06 0%, #004d26 100%);
+}
+.s-general-settings-page .gradient46 {
+  background: linear-gradient(90deg, #007a3d 0%, #003d33 100%);
+}
+.s-general-settings-page .gradient47 {
+  background: linear-gradient(90deg, #006080 0%, #003838 100%);
+}
+.s-general-settings-page .gradient48 {
+  background: linear-gradient(90deg, #00527a 0%, #001452 100%);
+}
+.s-general-settings-page .gradient49 {
+  background: linear-gradient(90deg, #4000c2 0%, #000e52 100%);
+}
+.s-general-settings-page .gradient50 {
+  background: linear-gradient(90deg, #73008a 0%, #280061 100%);
+}
+.s-general-settings-page .gradient51 {
+  background: linear-gradient(90deg, #670070 0%, #30031d 100%);
+}
+.s-general-settings-page .gradient52 {
+  background: linear-gradient(90deg, #5e5e5e 0%, #171717 100%);
+}
+.s-general-settings-page .gradient53 {
+  background: linear-gradient(90deg, #520026 0%, #1a0900 100%);
+}
+.s-general-settings-page .gradient54 {
+  background: linear-gradient(90deg, #523000 0%, #1f0900 100%);
+}
+.s-general-settings-page .gradient55 {
+  background: linear-gradient(90deg, #474000 0%, #140e00 100%);
+}
+.s-general-settings-page .gradient56 {
+  background: linear-gradient(90deg, #474700 0%, #0f1400 100%);
+}
+.s-general-settings-page .gradient57 {
+  background: linear-gradient(90deg, #0c4700 0%, #0e1400 100%);
+}
+.s-general-settings-page .gradient58 {
+  background: linear-gradient(90deg, #044904 0%, #00140a 100%);
+}
+.s-general-settings-page .gradient59 {
+  background: linear-gradient(90deg, #004221 0%, #001411 100%);
+}
+.s-general-settings-page .gradient60 {
+  background: linear-gradient(90deg, #00394d 0%, #000f0f 100%);
+}
+.s-general-settings-page .gradient61 {
+  background: linear-gradient(90deg, #003652 0%, #00061a 100%);
+}
+.s-general-settings-page .gradient62 {
+  background: linear-gradient(90deg, #23006b 0%, #000624 100%);
+}
+.s-general-settings-page .gradient63 {
+  background: linear-gradient(90deg, #440052 0%, #110029 100%);
+}
+.s-general-settings-page .gradient64 {
+  background: linear-gradient(90deg, #410047 0%, #18020f 100%);
+}
+.s-general-settings-page .gradient65 {
+  background: linear-gradient(90deg, #383838 0%, #0f0f0f 100%);
+}
+.s-general-settings-page .settings-logo {
+  flex: 1 1 100%;
   margin-left: 0;
-  margin-right: 4px;
 }
-ul.menu-h.dropdown ul.menu-v.without-icons li a,
-ul.menu-v.without-icons li a {
-  display: block;
-  margin: 0;
-  padding: 5px;
+.s-general-settings-page .settings-logo .custom-colors .pickr {
+  display: inline-block;
 }
-ul.menu-h.dropdown ul.menu-v.without-icons li.selected a,
-ul.menu-v.without-icons li.selected a {
-  cursor: default;
-}
-.s-layout {
-  display: table;
-  width: 100%;
-}
-.s-layout.inline {
-  width: auto;
-}
-.s-layout.fixed {
-  table-layout: fixed;
-}
-.s-layout > .s-column {
-  display: table-cell;
-  vertical-align: top;
-}
-.s-layout > .s-column.middle {
+.s-general-settings-page .settings-logo .custom-colors .pickr .pcr-button {
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.15);
+  height: 1.3em;
+  width: 1.3em;
   vertical-align: middle;
+  margin-left: 3px;
 }
-.s-layout > .s-column.center {
+.s-general-settings-page .settings-logo .custom-colors .pickr .pcr-button:before {
+  background: none;
+  border-radius: 50%;
+}
+.s-general-settings-page .settings-logo .custom-colors .pickr .pcr-button:after {
+  border-radius: 50%;
+}
+.s-general-settings-page .settings-logo .custom-colors .pcr-save,
+.s-general-settings-page .settings-logo .custom-colors .pcr-cancel {
+  background: none;
+  color: var(--text-color-link);
+  padding: 0;
+  letter-spacing: unset;
+  font-size: 0.85em;
+  box-shadow: none;
+}
+.s-general-settings-page .settings-logo .custom-colors .pcr-save:focus,
+.s-general-settings-page .settings-logo .custom-colors .pcr-cancel:focus {
+  box-shadow: none;
+}
+.s-general-settings-page .settings-logo .custom-colors .pcr-save {
+  color: var(--text-color-link);
+}
+.s-general-settings-page .settings-logo .custom-colors .pcr-cancel {
+  color: #808080;
+}
+.s-general-settings-page .settings-logo .custom-colors .pcr-app[data-theme=classic] {
+  width: 10em;
+}
+.s-general-settings-page .settings-logo .custom-colors ul {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+}
+.s-general-settings-page .settings-logo .custom-colors ul li {
+  margin: 0 !important;
+}
+.s-general-settings-page .settings-logo .custom-colors ul li .field {
+  display: flex;
+  flex-direction: column;
+}
+.s-general-settings-page .config-text-logo {
+  display: flex;
+  flex-wrap: wrap;
+}
+.s-general-settings-page .config-text-logo .logo-area {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 0.9em;
+  font-weight: bold;
+  transition: all 300ms;
+  text-transform: uppercase;
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient1'] {
+  background: linear-gradient(90deg, #ff0078 0%, #ff5900 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient2'] {
+  background: linear-gradient(90deg, #ff682d 0%, #ff9500 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient3'] {
+  background: linear-gradient(90deg, #f7a500 0%, #e5cf00 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient4'] {
+  background: linear-gradient(90deg, #a3d900 0%, #d9d900 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient5'] {
+  background: linear-gradient(90deg, #26e500 0%, #99e500 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient6'] {
+  background: linear-gradient(90deg, #0be50b 0%, #00ed77 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient7'] {
+  background: linear-gradient(90deg, #00ec76 0%, #00e5bf 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient8'] {
+  background: linear-gradient(90deg, #00bfff 0%, #00d9d9 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient9'] {
+  background: linear-gradient(90deg, #7396ff 0%, #26b7ff 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient10'] {
+  background: linear-gradient(90deg, #5975ff 0%, #a173ff 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient11'] {
+  background: linear-gradient(90deg, #a565ff 0%, #df3eff 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient12'] {
+  background: linear-gradient(90deg, #f23da7 0%, #ef3eff 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient13'] {
+  background: linear-gradient(90deg, #c4c4c4 0%, #808080 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient14'] {
+  background: linear-gradient(90deg, #ff0f80 0%, #cc4700 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient15'] {
+  background: linear-gradient(90deg, #f58f00 0%, #fa4700 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient16'] {
+  background: linear-gradient(90deg, #dbc500 0%, #c78500 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient17'] {
+  background: linear-gradient(90deg, #cc0 0%, #7ea800 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient18'] {
+  background: linear-gradient(90deg, #24db00 0%, #690 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient19'] {
+  background: linear-gradient(90deg, #0bdf0b 0%, #00994c 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient20'] {
+  background: linear-gradient(90deg, #00eb75 0%, #00a88c 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient21'] {
+  background: linear-gradient(90deg, #00d6d6 0%, #0091c2 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient22'] {
+  background: linear-gradient(90deg, #05acff 0%, #1f57ff 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient23'] {
+  background: linear-gradient(90deg, #8b52ff 0%, #1e42f5 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient24'] {
+  background: linear-gradient(90deg, #d91aff 0%, #6a00ff 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient25'] {
+  background: linear-gradient(90deg, #ee2eff 0%, #bf0d75 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient26'] {
+  background: linear-gradient(90deg, #999 0%, #545454 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient27'] {
+  background: linear-gradient(90deg, #db0067 0%, #993500 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient28'] {
+  background: linear-gradient(90deg, #db8000 0%, #c73800 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient29'] {
+  background: linear-gradient(90deg, #a89700 0%, #8a5c00 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient30'] {
+  background: linear-gradient(90deg, #a3a300 0%, #547000 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient31'] {
+  background: linear-gradient(90deg, #1fbd00 0%, #4e7500 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient32'] {
+  background: linear-gradient(90deg, #09b909 0%, #00753b 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient33'] {
+  background: linear-gradient(90deg, #00b359 0%, #006b59 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient34'] {
+  background: linear-gradient(90deg, #00adad 0%, #006b8f 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient35'] {
+  background: linear-gradient(90deg, #008bd1 0%, #0029a3 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient36'] {
+  background: linear-gradient(90deg, #793eef 0%, #0724b0 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient37'] {
+  background: linear-gradient(90deg, #a600c7 0%, #4a00b3 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient38'] {
+  background: linear-gradient(90deg, #b600c7 0%, #690740 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient39'] {
+  background: linear-gradient(90deg, #757575 0%, #333 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient40'] {
+  background: linear-gradient(90deg, #a3004d 0%, #5c2000 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient41'] {
+  background: linear-gradient(90deg, #995900 0%, #8a2700 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient42'] {
+  background: linear-gradient(90deg, #706500 0%, #473000 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient43'] {
+  background: linear-gradient(90deg, #707000 0%, #2e3d00 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient44'] {
+  background: linear-gradient(90deg, #147a00 0%, #334d00 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient45'] {
+  background: linear-gradient(90deg, #067e06 0%, #004d26 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient46'] {
+  background: linear-gradient(90deg, #007a3d 0%, #003d33 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient47'] {
+  background: linear-gradient(90deg, #006080 0%, #003838 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient48'] {
+  background: linear-gradient(90deg, #00527a 0%, #001452 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient49'] {
+  background: linear-gradient(90deg, #4000c2 0%, #000e52 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient50'] {
+  background: linear-gradient(90deg, #73008a 0%, #280061 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient51'] {
+  background: linear-gradient(90deg, #670070 0%, #30031d 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient52'] {
+  background: linear-gradient(90deg, #5e5e5e 0%, #171717 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient53'] {
+  background: linear-gradient(90deg, #520026 0%, #1a0900 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient54'] {
+  background: linear-gradient(90deg, #523000 0%, #1f0900 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient55'] {
+  background: linear-gradient(90deg, #474000 0%, #140e00 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient56'] {
+  background: linear-gradient(90deg, #474700 0%, #0f1400 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient57'] {
+  background: linear-gradient(90deg, #0c4700 0%, #0e1400 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient58'] {
+  background: linear-gradient(90deg, #044904 0%, #00140a 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient59'] {
+  background: linear-gradient(90deg, #004221 0%, #001411 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient60'] {
+  background: linear-gradient(90deg, #00394d 0%, #000f0f 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient61'] {
+  background: linear-gradient(90deg, #003652 0%, #00061a 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient62'] {
+  background: linear-gradient(90deg, #23006b 0%, #000624 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient63'] {
+  background: linear-gradient(90deg, #440052 0%, #110029 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient64'] {
+  background: linear-gradient(90deg, #410047 0%, #18020f 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area[data-background='gradient65'] {
+  background: linear-gradient(90deg, #383838 0%, #0f0f0f 100%);
+}
+.s-general-settings-page .config-text-logo .logo-area.two-lines {
+  font-size: 1.6em;
+  line-height: 1.8rem;
   text-align: center;
 }
-.s-layout > .s-column.right {
-  text-align: right;
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button {
+  box-shadow: none;
+  font-size: 0.75rem;
+  font-weight: normal;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.indicator.orange {
-  background: #ffa500;
-  color: #fff !important;
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient1'] {
+  background: linear-gradient(90deg, #ff0078 0%, #ff5900 100%);
 }
-.line {
-  margin-top: 1em;
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient2'] {
+  background: linear-gradient(90deg, #ff682d 0%, #ff9500 100%);
 }
-.line:first-child {
-  margin-top: 0;
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient3'] {
+  background: linear-gradient(90deg, #f7a500 0%, #e5cf00 100%);
 }
-.s-editable:hover {
-  background: #ffc;
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient4'] {
+  background: linear-gradient(90deg, #a3d900 0%, #d9d900 100%);
 }
-.ui-menu .ui-menu-item-html {
-  display: block;
-  margin: 0;
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient5'] {
+  background: linear-gradient(90deg, #26e500 0%, #99e500 100%);
 }
-.ui-menu .ui-menu-item-html.is-locked {
-  cursor: default;
-  cursor: not-allowed;
-  color: #aaa;
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient6'] {
+  background: linear-gradient(90deg, #0be50b 0%, #00ed77 100%);
 }
-.ui-menu .ui-menu-item-html .ui-menu-item-wrapper i {
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient7'] {
+  background: linear-gradient(90deg, #00ec76 0%, #00e5bf 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient8'] {
+  background: linear-gradient(90deg, #00bfff 0%, #00d9d9 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient9'] {
+  background: linear-gradient(90deg, #7396ff 0%, #26b7ff 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient10'] {
+  background: linear-gradient(90deg, #5975ff 0%, #a173ff 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient11'] {
+  background: linear-gradient(90deg, #a565ff 0%, #df3eff 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient12'] {
+  background: linear-gradient(90deg, #f23da7 0%, #ef3eff 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient13'] {
+  background: linear-gradient(90deg, #c4c4c4 0%, #808080 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient14'] {
+  background: linear-gradient(90deg, #ff0f80 0%, #cc4700 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient15'] {
+  background: linear-gradient(90deg, #f58f00 0%, #fa4700 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient16'] {
+  background: linear-gradient(90deg, #dbc500 0%, #c78500 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient17'] {
+  background: linear-gradient(90deg, #cc0 0%, #7ea800 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient18'] {
+  background: linear-gradient(90deg, #24db00 0%, #690 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient19'] {
+  background: linear-gradient(90deg, #0bdf0b 0%, #00994c 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient20'] {
+  background: linear-gradient(90deg, #00eb75 0%, #00a88c 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient21'] {
+  background: linear-gradient(90deg, #00d6d6 0%, #0091c2 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient22'] {
+  background: linear-gradient(90deg, #05acff 0%, #1f57ff 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient23'] {
+  background: linear-gradient(90deg, #8b52ff 0%, #1e42f5 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient24'] {
+  background: linear-gradient(90deg, #d91aff 0%, #6a00ff 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient25'] {
+  background: linear-gradient(90deg, #ee2eff 0%, #bf0d75 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient26'] {
+  background: linear-gradient(90deg, #999 0%, #545454 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient27'] {
+  background: linear-gradient(90deg, #db0067 0%, #993500 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient28'] {
+  background: linear-gradient(90deg, #db8000 0%, #c73800 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient29'] {
+  background: linear-gradient(90deg, #a89700 0%, #8a5c00 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient30'] {
+  background: linear-gradient(90deg, #a3a300 0%, #547000 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient31'] {
+  background: linear-gradient(90deg, #1fbd00 0%, #4e7500 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient32'] {
+  background: linear-gradient(90deg, #09b909 0%, #00753b 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient33'] {
+  background: linear-gradient(90deg, #00b359 0%, #006b59 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient34'] {
+  background: linear-gradient(90deg, #00adad 0%, #006b8f 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient35'] {
+  background: linear-gradient(90deg, #008bd1 0%, #0029a3 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient36'] {
+  background: linear-gradient(90deg, #793eef 0%, #0724b0 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient37'] {
+  background: linear-gradient(90deg, #a600c7 0%, #4a00b3 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient38'] {
+  background: linear-gradient(90deg, #b600c7 0%, #690740 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient39'] {
+  background: linear-gradient(90deg, #757575 0%, #333 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient40'] {
+  background: linear-gradient(90deg, #a3004d 0%, #5c2000 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient41'] {
+  background: linear-gradient(90deg, #995900 0%, #8a2700 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient42'] {
+  background: linear-gradient(90deg, #706500 0%, #473000 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient43'] {
+  background: linear-gradient(90deg, #707000 0%, #2e3d00 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient44'] {
+  background: linear-gradient(90deg, #147a00 0%, #334d00 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient45'] {
+  background: linear-gradient(90deg, #067e06 0%, #004d26 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient46'] {
+  background: linear-gradient(90deg, #007a3d 0%, #003d33 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient47'] {
+  background: linear-gradient(90deg, #006080 0%, #003838 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient48'] {
+  background: linear-gradient(90deg, #00527a 0%, #001452 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient49'] {
+  background: linear-gradient(90deg, #4000c2 0%, #000e52 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient50'] {
+  background: linear-gradient(90deg, #73008a 0%, #280061 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient51'] {
+  background: linear-gradient(90deg, #670070 0%, #30031d 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient52'] {
+  background: linear-gradient(90deg, #5e5e5e 0%, #171717 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient53'] {
+  background: linear-gradient(90deg, #520026 0%, #1a0900 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient54'] {
+  background: linear-gradient(90deg, #523000 0%, #1f0900 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient55'] {
+  background: linear-gradient(90deg, #474000 0%, #140e00 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient56'] {
+  background: linear-gradient(90deg, #474700 0%, #0f1400 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient57'] {
+  background: linear-gradient(90deg, #0c4700 0%, #0e1400 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient58'] {
+  background: linear-gradient(90deg, #044904 0%, #00140a 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient59'] {
+  background: linear-gradient(90deg, #004221 0%, #001411 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient60'] {
+  background: linear-gradient(90deg, #00394d 0%, #000f0f 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient61'] {
+  background: linear-gradient(90deg, #003652 0%, #00061a 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient62'] {
+  background: linear-gradient(90deg, #23006b 0%, #000624 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient63'] {
+  background: linear-gradient(90deg, #440052 0%, #110029 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient64'] {
+  background: linear-gradient(90deg, #410047 0%, #18020f 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button[data-background='gradient65'] {
+  background: linear-gradient(90deg, #383838 0%, #0f0f0f 100%);
+}
+.s-general-settings-page .config-text-logo .color-picker .color-picker-button > svg {
+  border-radius: 50%;
+  background: rgba(0,0,0,0.25);
+  padding: 0.5em;
+}
+.s-general-settings-page .config-image-logo {
+  display: flex;
+  flex-wrap: wrap;
+}
+.s-general-settings-page .config-image-logo .logo-area {
+  border: 1px solid var(--light-gray);
+  width: 64px;
+  height: 64px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.s-general-settings-page .config-image-logo .logo-input .file-upload {
   position: relative;
-  top: 2px;
-  vertical-align: baseline;
-  margin: 0 4px 0 0;
+  width: 100%;
+  margin-bottom: 1rem;
 }
-.ui-menu .ui-menu-item-html .ui-menu-item-wrapper.ui-state-active {
-  background: #eed;
+.s-general-settings-page .config-image-logo .logo-input .file-upload .file-upload-label {
+  z-index: 0;
+}
+.s-general-settings-page .config-image-logo .logo-input .file-upload .file-upload-label .file-upload-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
   margin: 0;
-  border: 0;
-  color: inherit;
+  opacity: 0;
 }
-html .ui-datepicker.ui-widget-content {
-  -webkit-box-shadow: 0 0 15px rgba(0,0,0,0.33);
-  box-shadow: 0 0 15px rgba(0,0,0,0.33);
+.s-general-settings-page .config-image-logo .logo-input .image-logo-delete {
+  color: var(--red);
 }
-html .ui-datepicker.ui-widget-content .ui-state-default {
-  border: 1px solid rgba(0,0,0,0.05);
-  background: #f8f8f8;
+.s-general-settings-page .color-items {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
 }
-html .ui-datepicker.ui-widget-content .ui-state-active {
-  border: 1px solid rgba(0,0,0,0.05);
-  background: #d6d6d6;
-  color: inherit;
+.s-general-settings-page .color-items .color-picker-button {
+  box-shadow: none;
+  font-size: 0.75rem;
+  font-weight: normal;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-table.zebra tr:nth-child(2n+1) .s-single-line:after {
-  -webkit-box-shadow: -10px 0 10px #f2f7ff inset;
-  box-shadow: -10px 0 10px #f2f7ff inset;
+.s-general-settings-page .color-items .color-picker-button > svg {
+  border-radius: 50%;
+  background: rgba(0,0,0,0.25);
+  padding: 0.5em;
 }
-table.zebra tr:hover .s-single-line:after {
-  -webkit-box-shadow: -10px 0 10px #ffffe5 inset;
-  box-shadow: -10px 0 10px #ffffe5 inset;
-}
-table.zebra tr.selected .s-single-line:after {
-  -webkit-box-shadow: -10px 0 10px #eed inset;
-  box-shadow: -10px 0 10px #eed inset;
-}
-.animated {
-  -webkit-animation-duration: 1s;
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  -o-animation-duration: 1s;
-  -ms-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  -webkit-animation-fill-mode: both;
-  -moz-animation-fill-mode: both;
-  -o-animation-fill-mode: both;
-  -ms-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-@-webkit-keyframes shake {
-  0%, 100% {
-    -webkit-transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -moz-transform: translate3d(-10px, 0, 0);
-    -o-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    transform: translate3d(-10px, 0, 0);
-  }
-  20%, 40%, 60%, 80% {
-    -webkit-transform: translate3d(10px, 0, 0);
-    -webkit-transform: translate3d(10px, 0, 0);
-    -moz-transform: translate3d(10px, 0, 0);
-    -o-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    transform: translate3d(10px, 0, 0);
-  }
-}
-.shake {
-  -webkit-animation-name: shake;
-  -webkit-animation-name: shake;
-  -moz-animation-name: shake;
-  -o-animation-name: shake;
-  -ms-animation-name: shake;
-  animation-name: shake;
-}
-@-moz-keyframes shake {
-  0%, 100% {
-    -webkit-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -moz-transform: translate3d(-10px, 0, 0);
-    -o-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    transform: translate3d(-10px, 0, 0);
-  }
-  20%, 40%, 60%, 80% {
-    -webkit-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    -webkit-transform: translate3d(10px, 0, 0);
-    -moz-transform: translate3d(10px, 0, 0);
-    -o-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    transform: translate3d(10px, 0, 0);
-  }
-}
-@-webkit-keyframes shake {
-  0%, 100% {
-    -webkit-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -moz-transform: translate3d(-10px, 0, 0);
-    -o-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    transform: translate3d(-10px, 0, 0);
-  }
-  20%, 40%, 60%, 80% {
-    -webkit-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    -webkit-transform: translate3d(10px, 0, 0);
-    -moz-transform: translate3d(10px, 0, 0);
-    -o-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    transform: translate3d(10px, 0, 0);
-  }
-}
-@-o-keyframes shake {
-  0%, 100% {
-    -webkit-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -moz-transform: translate3d(-10px, 0, 0);
-    -o-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    transform: translate3d(-10px, 0, 0);
-  }
-  20%, 40%, 60%, 80% {
-    -webkit-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    -webkit-transform: translate3d(10px, 0, 0);
-    -moz-transform: translate3d(10px, 0, 0);
-    -o-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    transform: translate3d(10px, 0, 0);
-  }
-}
-@keyframes shake {
-  0%, 100% {
-    -webkit-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-  10%, 30%, 50%, 70%, 90% {
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    -webkit-transform: translate3d(-10px, 0, 0);
-    -moz-transform: translate3d(-10px, 0, 0);
-    -o-transform: translate3d(-10px, 0, 0);
-    -ms-transform: translate3d(-10px, 0, 0);
-    transform: translate3d(-10px, 0, 0);
-  }
-  20%, 40%, 60%, 80% {
-    -webkit-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    -webkit-transform: translate3d(10px, 0, 0);
-    -moz-transform: translate3d(10px, 0, 0);
-    -o-transform: translate3d(10px, 0, 0);
-    -ms-transform: translate3d(10px, 0, 0);
-    transform: translate3d(10px, 0, 0);
-  }
-}
-.s-sidebar-block {
-  padding: 0 20px 20px;
-}
-.s-sidebar-block .menu-v a {
-  color: #777;
-  -webkit-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  -ms-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-}
-.s-sidebar-block .menu-v a i.icon16 {
-  opacity: 0.4;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
-  filter: alpha(opacity=40);
-}
-.s-sidebar-block .menu-v a:hover {
-  color: #333 !important;
-}
-.s-sidebar-block .menu-v a:hover i.icon16 {
-  opacity: 0.8;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  filter: alpha(opacity=80);
-}
-.s-sidebar-block .menu-v li {
-  margin-bottom: 6px;
-}
-.s-sidebar-block .menu-v li.selected a {
-  background: #e1e1e1;
-  font-weight: bold;
-  color: #000;
-}
-.s-sidebar-block .menu-v li.selected a i.icon16 {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
-}
-.icon16.ws {
-  -webkit-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  -ms-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
-}
-.icon16.ws.general {
-  background-image: url("../../img/wa-settings/ws-general.svg");
-}
-.icon16.ws.email {
-  background-image: url("../../img/wa-settings/ws-email.svg");
-}
-.icon16.ws.maps {
-  background-image: url("../../img/wa-settings/ws-map.svg");
-}
-.icon16.ws.captcha {
-  background-image: url("../../img/wa-settings/ws-lock.svg");
-}
-.icon16.ws.sms {
-  background-image: url("../../img/wa-settings/ws-sms.svg");
-}
-.icon16.ws.auth {
-  background-image: url("../../img/wa-settings/ws-key.svg");
-}
-.icon16.ws.email-template,
-.icon16.ws.sms-template {
-  background-image: url("../../img/wa-settings/ws-template.svg");
-}
-.icon16.ws.db {
-  background-image: url("../../img/wa-settings/ws-db.svg");
-}
-.s-error-message-wrapper {
-  color: #f00;
-  margin-top: 6px;
-}
-.icon16.ws.field {
-  background-image: url("../../img/wa-settings/ws-fields.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
-}
-.icon16.ws.regions {
-  background-image: url("../../img/wa-settings/ws-regions.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
-}
-.icon16.ws.push {
-  background-image: url("../../img/wa-settings/ws-push.svg");
-  -webkit-background-size: contain;
-  -moz-background-size: contain;
-  background-size: contain;
-  background-position: center;
-}
-.icon16.ws.waid {
-  background-image: url("../../img/wa-settings/ws-waid.svg");
-}
-.icon16.ws.waid-green {
-  background-image: url("../../img/wa-settings/ws-waid-green.svg");
-}
-.s-email-settings-page .s-settings-items .s-item:hover > .s-remove {
-  opacity: 0.6;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
-  filter: alpha(opacity=60);
+.s-general-settings-page .color-items .color-picker-button > i {
+  padding: 0.5em;
+  width: 1em;
+  height: 1em;
+  display: inline-block;
 }
 .s-email-settings-page .s-settings-items .s-item:not(:last-child) {
   border-bottom: 1px solid #ccc;
   margin-bottom: 20px;
+  padding-bottom: 20px;
 }
 .s-email-settings-page .s-settings-items .s-item .field:first-child {
   display: inline-block;
 }
 .s-email-settings-page .s-settings-items .s-item .s-remove {
-  position: absolute;
-  top: 0;
-  right: 0;
-  opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: alpha(opacity=0);
-  -webkit-transition: opacity 200ms linear;
-  -moz-transition: opacity 200ms linear;
-  -o-transition: opacity 200ms linear;
-  -ms-transition: opacity 200ms linear;
-  transition: opacity 200ms linear;
-}
-.s-email-settings-page .s-settings-items .s-item .s-remove:hover {
-  opacity: 1;
-  -ms-filter: none;
-  filter: none;
+  text-align: right;
 }
 .s-email-settings-page .s-settings-items .s-item .s-dkim-field {
   margin-top: 10px;
@@ -540,6 +763,18 @@ table.zebra tr.selected .s-single-line:after {
 .s-email-settings-page .s-add-item {
   display: inline-block;
   margin: 20px 0;
+}
+.s-email-templates-page .s-email-template-sidebar-wrapper section header {
+  cursor: pointer;
+}
+.s-email-templates-page .s-email-template-sidebar-wrapper section header .caret {
+  display: inline-block;
+}
+.s-email-templates-page .s-email-template-sidebar-wrapper section header .caret.darr {
+  transform: rotate(0);
+}
+.s-email-templates-page .s-email-template-sidebar-wrapper section header .caret.rarr {
+  transform: rotate(-90deg);
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-new-templates {
   display: block;
@@ -563,20 +798,12 @@ table.zebra tr.selected .s-single-line:after {
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-sidebar-items .s-channel-edit {
   margin-top: 1px;
   opacity: 0.6;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
-  filter: alpha(opacity=60);
-  -webkit-transition: opacity 200ms linear;
-  -moz-transition: opacity 200ms linear;
-  -o-transition: opacity 200ms linear;
-  -ms-transition: opacity 200ms linear;
   transition: opacity 200ms linear;
   cursor: pointer;
   float: right;
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-sidebar-items .s-channel-edit:hover {
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-email-templates-page .s-email-template-sidebar-wrapper .s-sidebar-items .s-template-item {
   padding-left: 44px !important;
@@ -603,10 +830,30 @@ table.zebra tr.selected .s-single-line:after {
   margin-top: 0;
 }
 .s-email-templates-page .content .s-template-form .ace {
-  border: 1px solid #ccc;
+  display: block;
+  padding: 0.625em 0.875em;
+  margin: 0;
+  border: 0;
+  width: 100%;
+  height: auto;
+  min-height: 2.5em;
+  background: var(--background-color-input);
+  border-radius: 0.25em;
+  font-size: inherit;
+  line-height: 1.5em;
+  color: var(--text-color-input);
+  appearance: none;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.s-email-templates-page .content .s-template-form .ace .ace-eclipse {
+  background: transparent;
+}
+.s-email-templates-page .content .s-template-form .ace .ace-eclipse .ace_active-line {
+  background: var(--background-color-input);
 }
 .s-email-templates-page .content .s-template-form .ace .ace_scroller.ace_scroll-left {
-  -webkit-box-shadow: initial !important;
   box-shadow: initial !important;
 }
 .s-email-templates-page .content .s-template-form .ace .ace_print-margin {
@@ -642,20 +889,12 @@ table.zebra tr.selected .s-single-line:after {
 .s-email-edit-channel-dialog .s-channel-actions a:not(:first-child) {
   margin-left: 12px;
 }
-.s-sms-settings-page .s-sms-hint {
-  margin-bottom: 20px;
-}
-.s-sms-settings-page .s-sms-adapter:not(:first-child) {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #888;
-}
 .s-sms-templates-page .s-sms-template-sidebar-wrapper .s-new-templates {
   display: block;
   padding: 18px 12px;
   margin: 0 0 10px 0;
 }
-.s-sms-templates-page .s-sms-template-sidebar-wrapper ul.menu-v.stack.with-icons li .icon16 {
+.s-sms-templates-page .s-sms-template-sidebar-wrapper ul.menu.stack li .icon16 {
   margin-left: -14px;
   cursor: pointer;
 }
@@ -682,22 +921,34 @@ table.zebra tr.selected .s-single-line:after {
   margin-left: 16px;
 }
 .s-sms-templates-page .content .ace {
-  border: 1px solid #ccc;
+  display: block;
+  padding: 0.625em 0.875em;
+  margin: 0;
+  border: 0;
+  width: 100%;
+  height: 10em;
+  min-height: 2.5em;
+  background: var(--background-color-input);
+  border-radius: 0.25em;
+  font-size: inherit;
+  line-height: 1.5em;
+  color: var(--text-color-input);
+  appearance: none;
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+}
+.s-sms-templates-page .content .ace .ace-eclipse {
+  background: transparent;
+}
+.s-sms-templates-page .content .ace .ace-eclipse .ace_active-line {
+  background: var(--background-color-input);
 }
 .s-sms-templates-page .content .ace .ace_scroller.ace_scroll-left {
-  -webkit-box-shadow: initial !important;
   box-shadow: initial !important;
 }
 .s-sms-templates-page .content .ace .ace_print-margin {
   display: none !important;
-}
-.s-sms-templates-page .content .field .value {
-  max-width: 500px;
-}
-.s-sms-templates-page .content textarea {
-  outline: 0;
-  resize: vertical;
-  border: 1px solid #ccc;
 }
 .s-sms-templates-page .content .s-preview {
   text-align: right;
@@ -755,10 +1006,6 @@ table.zebra tr.selected .s-single-line:after {
   width: 30px;
   z-index: -1;
   left: -50px;
-  -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-  -o-transform: rotateY(180deg);
-  -ms-transform: rotateY(180deg);
   transform: rotateY(180deg);
 }
 .s-sms-preview-template-dialog .s-sender-wrapper {
@@ -822,18 +1069,10 @@ table.zebra tr.selected .s-single-line:after {
   max-width: 95px;
   overflow: hidden;
   opacity: 0.7;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
-  filter: alpha(opacity=70);
-  -webkit-transition: opacity 100ms linear;
-  -moz-transition: opacity 100ms linear;
-  -o-transition: opacity 100ms linear;
-  -ms-transition: opacity 100ms linear;
   transition: opacity 100ms linear;
 }
 .s-auth-settings-page .s-auth-settings-fields-block .s-auth-background .s-background-images li a:hover {
   opacity: 0.9;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
-  filter: alpha(opacity=90);
 }
 .s-auth-settings-page .s-auth-settings-fields-block .s-auth-background .s-background-images li a img {
   width: 95px;
@@ -844,8 +1083,6 @@ table.zebra tr.selected .s-single-line:after {
   border-color: #fdda3b;
   border-radius: 4px;
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-auth-settings-page .s-auth-settings-fields-block .s-custom-background-preview .s-custom-image-preview {
   display: block;
@@ -943,31 +1180,21 @@ table.zebra tr.selected .s-single-line:after {
   position: relative;
   top: -17px;
 }
-.s-auth-settings-page .s-waid-force-auth-toggle {
-  display: inline-block;
-  margin-right: 10px;
+.s-auth-settings-page .file-upload {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1rem;
 }
-.s-auth-settings-page .s-force-description {
-  display: inline-block;
+.s-auth-settings-page .file-upload .file-upload-label {
+  z-index: 0;
 }
-.s-auth-settings-page .s-force-description .icon16 {
-  margin-top: 0;
-}
-.s-auth-settings-page .s-force-description .s-green {
-  color: #008000;
-}
-.s-auth-settings-page .s-force-description .s-force-save-status {
-  display: none;
-}
-.s-auth-settings-page .s-auth-settings-fields-block-cover {
-  background: #fff;
-  opacity: 0.8;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
-  filter: alpha(opacity=80);
-  z-index: 100;
-  right: 0;
+.s-auth-settings-page .file-upload .file-upload-label .file-upload-input {
   position: absolute;
-  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  margin: 0;
+  opacity: 0;
 }
 .s-field-settings-page .s-field-constructor .hint {
   padding: 0 2px;
@@ -979,11 +1206,8 @@ table.zebra tr.selected .s-single-line:after {
   min-width: 370px;
 }
 .s-field-settings-page .s-field-constructor .fieldset .field .name {
-  color: #000;
+  color: var(--text-color-stronger);
   width: 360px;
-}
-.s-field-settings-page .s-field-constructor .fieldset .field .value {
-  margin: -1px 0 0 400px;
 }
 .s-field-settings-page .s-field-constructor .fieldset .field .sort {
   cursor: move;
@@ -995,7 +1219,7 @@ table.zebra tr.selected .s-single-line:after {
 .s-field-settings-page .s-field-constructor a.star:hover i.icon16 {
   background-position: -352px -64px;
 }
-.s-field-settings-page .s-field-constructor .wa-edit-field-link:not(:hover) > i.edit {
+.s-field-settings-page .s-field-constructor .wa-edit-field-link:not(:hover) > .edit {
   visibility: hidden;
 }
 .s-field-settings-page .s-new-field {
@@ -1012,8 +1236,6 @@ table.zebra tr.selected .s-single-line:after {
 }
 .s-field-edit-dialog .subfields-list tr:hover .c-link-wrapper a {
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-field-edit-dialog .editor-on .edit {
   visibility: hidden;
@@ -1055,18 +1277,10 @@ table.zebra tr.selected .s-single-line:after {
 }
 .s-field-edit-dialog .s-link-wrapper a {
   opacity: 0.5;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-  filter: alpha(opacity=50);
-  -webkit-transition: opacity 200ms linear;
-  -moz-transition: opacity 200ms linear;
-  -o-transition: opacity 200ms linear;
-  -ms-transition: opacity 200ms linear;
   transition: opacity 200ms linear;
 }
 .s-field-edit-dialog .s-link-wrapper a:hover {
   opacity: 1;
-  -ms-filter: none;
-  filter: none;
 }
 .s-field-edit-dialog .s-link-wrapper .icon16 {
   margin: 0 4px 0 0;
@@ -1076,7 +1290,6 @@ table.zebra tr.selected .s-single-line:after {
 }
 .s-field-edit-dialog .ellipsis {
   white-space: nowrap;
-  -o-text-overflow: ellipsis;
   text-overflow: ellipsis;
   width: 210px;
   display: inline-block;
@@ -1101,11 +1314,6 @@ table.zebra tr.selected .s-single-line:after {
 .s-field-edit-dialog .s-subfield-editor .no {
   margin-top: 4px;
 }
-.s-field-edit-dialog .s-field-delete,
-.s-field-edit-dialog .s-field-enable,
-.s-field-edit-dialog .s-field-disable {
-  margin-top: 12px;
-}
 .s-field-values-dialog .sort {
   cursor: move;
 }
@@ -1123,23 +1331,8 @@ table.zebra tr.selected .s-single-line:after {
   color: #808080;
 }
 .s-db-list-dialog .s-dialog-header {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -o-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  -moz-box-pack: justify;
-  -o-box-pack: justify;
-  -ms-flex-pack: justify;
-  -webkit-justify-content: space-between;
   justify-content: space-between;
 }
 .s-db-list-dialog .s-dialog-header a.is-selected b {
@@ -1155,23 +1348,8 @@ table.zebra tr.selected .s-single-line:after {
   color: #000;
 }
 .s-db-list-dialog .s-dialog-footer {
-  display: -webkit-box;
-  display: -moz-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: box;
   display: flex;
-  -webkit-box-align: center;
-  -moz-box-align: center;
-  -o-box-align: center;
-  -ms-flex-align: center;
-  -webkit-align-items: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  -moz-box-pack: justify;
-  -o-box-pack: justify;
-  -ms-flex-pack: justify;
-  -webkit-justify-content: space-between;
   justify-content: space-between;
 }
 @-webkit-keyframes pending {
@@ -1187,10 +1365,6 @@ table.zebra tr.selected .s-single-line:after {
 }
 .s-db-list-dialog .s-dialog-footer .s-dialog-notice {
   -webkit-animation: pending 2s linear infinite;
-  -webkit-animation: pending 2s linear infinite;
-  -moz-animation: pending 2s linear infinite;
-  -o-animation: pending 2s linear infinite;
-  -ms-animation: pending 2s linear infinite;
   animation: pending 2s linear infinite;
 }
 @-moz-keyframes pending {
@@ -1237,6 +1411,9 @@ table.zebra tr.selected .s-single-line:after {
     color: #222;
   }
 }
+.s-regions-settings-page .s-regions-settings-fields-block form table tr td:last-of-type {
+  text-align: center;
+}
 .s-waid-settings-page .s-page-header .s-waid-disconnect {
   color: #555;
   font-size: 15px;
@@ -1251,32 +1428,8 @@ table.zebra tr.selected .s-single-line:after {
 .s-waid-settings-page h2 {
   margin-bottom: 1.5rem;
 }
-.s-waid-settings-page .s-connected-users tr {
-  padding: 5px;
-}
-.s-waid-settings-page .s-connected-users tr th {
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: bold;
-  background: transparent;
-  border: 0 none;
-}
-.s-waid-settings-page .s-connected-users tr th:nth-child(1) {
-  width: 32px;
-}
-.s-waid-settings-page .s-connected-users tr th:nth-child(2) {
-  width: 15%;
-}
-.s-waid-settings-page .s-connected-users tr th:nth-child(3) {
-  width: 15%;
-}
-.s-waid-settings-page .s-connected-users tr td img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50px;
-}
-.s-waid-settings-page a.bold {
-  font-weight: bold;
+.s-waid-settings-page .s-connected-users tr td {
+  font-size: 87.5%;
 }
 .s-waid-settings-page .s-waid-not-connected-users-block {
   margin-bottom: 70px;
@@ -1284,35 +1437,8 @@ table.zebra tr.selected .s-single-line:after {
 .s-waid-settings-page .s-waid-not-connected-users-block .s-waid-description-block .s-description {
   margin-top: 10px;
 }
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users {
-  width: 70%;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr {
-  padding: 5px;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th {
-  text-transform: uppercase;
-  font-size: 11px;
-  font-weight: bold;
-  background: transparent;
-  border: 0 none;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(1) {
-  width: 32px;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(2) {
-  width: 50%;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(3) {
-  width: 50%;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr th:nth-child(4) {
-  min-width: 150px;
-}
-.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr td img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50px;
+.s-waid-settings-page .s-waid-not-connected-users-block .s-not-connected-users tr td {
+  font-size: 100%;
 }
 .s-waid-settings-page .s-waid-not-connected-block .w-waid-connect-panel {
   margin-top: 10px;

@@ -1,7 +1,7 @@
-var WASettingsWaID = ( function($) {
+class WASettingsWaID {
 
-    WASettingsWaID = function(options) {
-        var that = this;
+    constructor(options) {
+        const that = this;
 
         // DOM
         that.$wrapper = options.$wrapper;
@@ -9,8 +9,7 @@ var WASettingsWaID = ( function($) {
         that.$upgrade_all_checkbox = that.$wrapper.find('.js-upgrade-all');
         that.$connect_youself = that.$wrapper.find('.js-connect-yourself');
         that.$disconnect_button = that.$wrapper.find('.js-disconnect-to-waid');
-        that.$force_auth_toggle = that.$wrapper.find('.js-force-auth-toggle');
-        that.$sidebar_wrapper = $('#s-sidebar-wrapper');
+        that.$sidebar_wrapper = $('#js-sidebar-wrapper');
 
         // VARS
         that.wa_backend_url = options.wa_backend_url || '';
@@ -20,20 +19,18 @@ var WASettingsWaID = ( function($) {
         that.oauth_modal = options.oauth_modal || false;
         that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
 
-        that.locale = options.locale || {};
-
         // INIT
         that.init();
-    };
+    }
 
-    WASettingsWaID.prototype.init = function() {
-        var that = this;
+    init() {
+        const that = this;
 
         that.$connect_button.on('click', function (e) {
             e.preventDefault();
             that.connect(that.$upgrade_all_checkbox.is(':checked'));
         });
-        
+
         that.$disconnect_button.on('click', function (e) {
             e.preventDefault();
             that.disconnect();
@@ -41,12 +38,10 @@ var WASettingsWaID = ( function($) {
 
         that.$sidebar_wrapper.find('ul li').removeClass('selected');
 
-        var $current_sidebar_item = that.$sidebar_wrapper.find('[data-id="waid"]');
+        const $current_sidebar_item = that.$sidebar_wrapper.find('[data-id="waid"]');
         $current_sidebar_item.addClass('selected');
 
         that.current_page_url = $current_sidebar_item.find('a').attr('href');
-
-        that.initForceAuthToggle();
 
         that.initWebasystIDHelpLink();
 
@@ -57,79 +52,47 @@ var WASettingsWaID = ( function($) {
         if (that.upgrade_all) {
             that.runBulkInviting();
         }
-    };
+    }
 
-    WASettingsWaID.prototype.initForceAuthToggle = function() {
-        var that = this,
-            $toggle = that.$force_auth_toggle,
-            $status = that.$wrapper.find('.js-force-save-status');
-
-        $toggle.iButton({
-            labelOn: "",
-            labelOff: "",
-            className: "s-waid-force-auth-toggle",
-            classContainer: 'ibutton-container mini'
-        });
-
-        var timer_id = null;
-
-        $toggle.on('change', function () {
-            var url = that.wa_backend_url + "?module=settingsWaID&action=save";
-            $.post(url, $toggle.serialize())
-                .done(function () {
-                    timer_id && clearTimeout(timer_id);
-                    $status.show();
-                    timer_id = setTimeout(function () {
-                        $status.fadeOut(500);
-                        timer_id = null;
-                    }, 2000);
-                });
-        });
-
-        if ($toggle.attr('disabled')) {
-            that.$wrapper.find('.s-waid-force-auth-toggle').attr('title', that.locale.disabled_toggle_reason || '');
-        }
-    };
-
-    WASettingsWaID.prototype.initWebasystIDHelpLink = function() {
-        var that = this,
+    initWebasystIDHelpLink() {
+        const that = this,
             $wrapper = that.$wrapper,
             $link = $wrapper.find('.js-webasyst-id-help-link');
 
         $link.on('click', function (e) {
             e.preventDefault();
-            var url = that.wa_backend_url + "?module=backend&action=webasystIDHelp&caller=webasystSettings";
+            const url = that.wa_backend_url + "?module=backend&action=webasystIDHelp&caller=webasystSettings";
             $.get(url, function (html) {
                 $('body').append(html);
             });
         });
-    };
+    }
 
-    WASettingsWaID.prototype.initConnectYourselfLink = function() {
-        var that = this,
+    initConnectYourselfLink() {
+        const that = this,
             $link = that.$connect_youself;
         $link.on('click', function (e) {
             e.preventDefault();
             that.auth(that.webasyst_id_auth_url);
         });
-    };
+    }
 
-    WASettingsWaID.prototype.initReInviteLinks = function() {
-        var that = this,
+    initReInviteLinks() {
+        const that = this,
             $wrapper = that.$wrapper,
             is_loading = {};
 
         $wrapper.on('click', '.js-send-email-invitation', function (e) {
             e.preventDefault();
 
-            var $link = $(this),
+            const $link = $(this),
                 id = $link.data('id');
 
             if (is_loading[id]) {
                 return;
             }
 
-            var url = that.wa_backend_url + "?module=settings&action=waIDInviteUser",
+            const url = that.wa_backend_url + "?module=settings&action=waIDInviteUser",
                 $loading = $link.find('.js-loading');
 
             $link.parent().find('.js-error').hide();
@@ -137,7 +100,7 @@ var WASettingsWaID = ( function($) {
             $loading.show();
             is_loading[id] = true;
 
-            $.post(url, { id : id })
+            $.post(url, {id: id})
                 .done(function (r) {
                     if (r && r.errors) {
                         $link.parent().find('.js-error').show().html(r.errors);
@@ -159,39 +122,40 @@ var WASettingsWaID = ( function($) {
                     $loading.hide();
                 });
         });
-    };
+    }
 
-    WASettingsWaID.prototype.runBulkInviting = function() {
-        var that = this,
-            $wrapper = that.$wrapper;
+    runBulkInviting() {
+        const that = this,
+            $wrapper = that.$wrapper,
+            $progressbar_wrapper = $wrapper.find('.js-waid-invite-progressbar-wrapper');
 
-        $wrapper.find('.js-waid-invite-progressbar-wrapper').show();
+        $progressbar_wrapper.removeClass('hidden');
 
-        var progress = new WASettingsWaIDInviteProgress({
-            $wrapper: $wrapper.find('.s-waid-description-block'),
+        const progress = new WASettingsWaIDInviteProgress({
+            $wrapper: $progressbar_wrapper,
             url: that.wa_backend_url + "?module=settings&action=waIDInviteUsers",
             onStepDone: function (response) {
                 if (response && !$.isEmptyObject(response.sent)) {
                     $.each(response.sent, function (id, datetime_formatted) {
-                        var $link = $wrapper.find('.js-send-email-invitation[data-id="' + id + '"]');
+                        const $link = $wrapper.find('.js-send-email-invitation[data-id="' + id + '"]');
                         $link.addClass('hidden');
                         $link.parent().find('.js-sent-email-ok').removeClass('hidden');
 
                         $link.closest('tr')
                             .find('.js-await-user-confirmation')
-                                .removeClass('hidden').end()
+                            .removeClass('hidden').end()
                             .find('.js-last-send-datetime')
-                                .text(datetime_formatted);
+                            .text(datetime_formatted);
                     });
                 }
             }
         });
 
         progress.run();
-    };
+    }
 
-    WASettingsWaID.prototype.connect = function(upgrade_all) {
-        var that = this,
+    connect(upgrade_all) {
+        const that = this,
             $wrapper = that.$wrapper;
 
         $.get('?module=settings&action=waIDConnectDialog', function (html) {
@@ -207,34 +171,31 @@ var WASettingsWaID = ( function($) {
                 }
             });
         });
-    };
+    }
 
-    WASettingsWaID.prototype.disconnect = function () {
-        var that = this,
+    disconnect() {
+        const that = this,
             $wrapper = that.$wrapper;
         $.get('?module=settings&action=waIDDisconnectConfirm', function (html) {
             $wrapper.append(html);
         });
-    };
+    }
 
-    WASettingsWaID.prototype.auth = function (href) {
-        var that = this,
+    auth(href) {
+        const that = this,
             oauth_modal = that.oauth_modal;
 
         if (!oauth_modal) {
-            var referrer_url = window.location.href;
+            const referrer_url = window.location.href;
             window.location = href + '&referrer_url=' + referrer_url;
             return;
         }
 
-        var width = 600;
-        var height = 500;
-        var left = (screen.width - width) / 2;
-        var top = (screen.height - height) / 2;
+        const width = 600,
+            height = 500,
+            left = (screen.width - width) / 2,
+            top = (screen.height - height) / 2;
 
-        window.open(href,'oauth', "width=" + 600 + ",height=" + height + ",left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
-    };
-
-    return WASettingsWaID;
-
-})(jQuery);
+        window.open(href, 'oauth', "width=" + 600 + ",height=" + height + ",left=" + left + ",top=" + top + ",status=no,toolbar=no,menubar=no");
+    }
+}

@@ -41,6 +41,7 @@ return array(
     'waBackendAuthConfig'               => 'config/waBackendAuthConfig.class.php',
     'waAuthConfig'                      => 'config/waAuthConfig.class.php',
 
+    'waActionTemplatePathBuilder'       => 'controller/waActionTemplatePathBuilder.trait.php',
     'waAction'                          => 'controller/waAction.class.php',
     'waActions'                         => 'controller/waActions.class.php',
     'waController'                      => 'controller/waController.class.php',

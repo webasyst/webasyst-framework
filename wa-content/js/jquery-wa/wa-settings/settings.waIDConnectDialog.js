@@ -1,7 +1,7 @@
-var WASettingsWaIDConnectDialog = ( function($) {
+class WASettingsWaIDConnectDialog {
 
-    WASettingsWaIDConnectDialog = function(options) {
-        var that = this;
+    constructor(options) {
+        const that = this;
 
         // DOM
         that.$dialog = options.$dialog;
@@ -19,15 +19,15 @@ var WASettingsWaIDConnectDialog = ( function($) {
 
         // INIT
         that.init();
-    };
+    }
 
-    WASettingsWaIDConnectDialog.prototype.init = function() {
-        var that = this;
+    init() {
+        const that = this;
         that.initDialog();
-    };
+    }
 
-    WASettingsWaIDConnectDialog.prototype.initDialog = function () {
-        var that = this;
+    initDialog() {
+        const that = this;
 
         that.dialog = $.waDialog({
             html: that.$dialog,
@@ -35,55 +35,47 @@ var WASettingsWaIDConnectDialog = ( function($) {
                 that.connect();
             }
         });
-    };
+    }
 
-    WASettingsWaIDConnectDialog.prototype.close = function() {
-        var that = this;
+    close() {
+        const that = this;
         if (that.dialog) {
             that.dialog.close();
         }
-    };
+    }
 
-    WASettingsWaIDConnectDialog.prototype.connect = function() {
-        var that = this,
-            connect_url = that.connect_url;
-        
-        var request = $.post(connect_url);
+    connect() {
+        const that = this,
+            connect_url = that.connect_url,
+            request = $.post(connect_url),
+            onDone = function (r) {
 
-        var onDone = function(r) {
+                if (r && r.status === 'ok') {
+                    that.$success_block.show();
+                    that.$process_block.hide();
+                    that.$dialog.trigger('connected', [r.data, that]);
 
-            if (r && r.status === 'ok') {
-                that.$success_block.show();
+                    return;
+                }
+
+                that.$fail_block.show();
                 that.$process_block.hide();
-                that.$dialog.trigger('connected', [r.data, that]);
 
-                return;
-            }
-
-            that.$fail_block.show();
-            that.$process_block.hide();
-
-            if (r && r.errors) {
-                $.each(r.errors, function (key, error_msg) {
-                    var $error = $('<p class="errormsg">').text(error_msg);
-                    that.$fail_block.append($error);
-                });
-            }
-        };
-
-        var onFail = function() {
-            that.$fail_block.show();
-            that.$process_block.hide();
-        };
-
-        var onAlways = function() {
-            that.$dialog.find('.js-close-dialog').removeAttr('disabled');
-        };
+                if (r && r.errors) {
+                    $.each(r.errors, function (key, error_msg) {
+                        let $error = $('<p class="errormsg">').text(error_msg);
+                        that.$fail_block.append($error);
+                    });
+                }
+            },
+            onFail = function () {
+                that.$fail_block.show();
+                that.$process_block.hide();
+            },
+            onAlways = function () {
+                that.$dialog.find('.js-close-dialog').removeAttr('disabled');
+            };
 
         request.done(onDone).fail(onFail).always(onAlways);
-    };
-
-
-    return WASettingsWaIDConnectDialog;
-
-})(jQuery);
+    }
+}

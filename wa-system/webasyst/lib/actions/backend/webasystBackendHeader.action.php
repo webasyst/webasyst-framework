@@ -2,6 +2,26 @@
 
 class webasystBackendHeaderAction extends waViewAction
 {
+    use webasystHeaderTrait;
+
+    protected $params = [];
+
+    /**
+     * webasystBackendHeaderAction constructor.
+     * @param array $params
+     *      array  $params['custom']            some custom data for injecting into the webasyst main header
+     *      string $params['custom']['main']    html content that will be shown in the main section instead of an app list
+     *      string $params['custom']['aux']     html content that will be shown inside user area
+     */
+    public function __construct($params = null)
+    {
+        $params = is_array($params) ? $params : [];
+        $params['custom'] = isset($params['custom']) && is_array($params['custom']) ? $params['custom'] : [];
+        $params['custom'] = waUtils::extractValuesByKeys($params['custom'], ['main', 'aux'], false, '');
+        $params['custom'] = waUtils::toStrArray($params['custom']);
+        parent::__construct($params);
+    }
+
     public function execute()
     {
         if (wa()->getEnv() == 'frontend') {
@@ -31,28 +51,42 @@ class webasystBackendHeaderAction extends waViewAction
         /**
          * @event backend_header
          * @return array[string]array $return[%plugin_id%] array of html output
-         * @return array[string][string]string $return[%plugin_id%]['header_top'] html output
-         * @return array[string][string]string $return[%plugin_id%]['header_bottom'] html output
+         * @return array[string][string]string $return[%plugin_id%]['header_top'] html output (will be rendered only in UI v1.3)
+         * @return array[string][string]string $return[%plugin_id%]['header_middle'] html output (will be rendered only in UI v1.3)
+         * @return array[string][string]string $return[%plugin_id%]['header_bottom'] html output (will be rendered only in UI v1.3)
+         * @return array[string][string]string $return[%plugin_id%]['notification'] html output (will be rendered only in UI v2.0, "under the bell")
          */
         $params = array();
         $backend_header = wa()->event(array('webasyst', 'backend_header'), $params);
 
-        $header_top = $header_middle = $header_bottom = array();
+        $header_top = [];
+        $header_middle = [];
+        $header_bottom = [];
+        $header_notification = [];
+
         foreach ($backend_header as $app_id => $header) {
             if (is_array($header)) {
                 if (!empty($header['header_top'])) {
                     $header_top[] = $header['header_top'];
                 }
+                if (!empty($header['header_middle'])) {
+                    $header_bottom[] = $header['header_middle'];
+                }
                 if (!empty($header['header_bottom'])) {
                     $header_bottom[] = $header['header_bottom'];
+                }
+                if (!empty($header['notification'])) {
+                    $header_notification[] = $header['notification'];
                 }
             } elseif (is_string($header)) {
                 $header_middle[] = $header;
             }
         }
 
+        $app_info = wa()->getAppInfo();
+
         $push_params = array(
-            'current_app_info' => wa()->getAppInfo(),
+            'current_app_info' => $app_info,
         );
         $backend_push = wa()->event(array('webasyst', 'backend_push'), $push_params);
         $include_wa_push = false;
@@ -68,28 +102,35 @@ class webasystBackendHeaderAction extends waViewAction
 
         $app_settings_model = new waAppSettingsModel();
 
-        $this->view->assign(array(
+        $request_uri = waRequest::server('REQUEST_URI');
+        $backend_url = wa()->getConfig()->getBackendUrl(true);
+
+        $this->view->assign([
             'root_url'        => wa()->getRootUrl(),
-            'backend_url'     => wa()->getConfig()->getBackendUrl(true),
+            'backend_url'     => $backend_url,
+            'request_uri'     => $request_uri,
             'webasyst_id_settings_url' => $this->getWebasystIDSettingsUrl(),
             'company_name'    => htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8'),
+            'logo'            => (new webasystLogoSettings())->get(),
             'company_url'     => $app_settings_model->get('webasyst', 'url', wa()->getRootUrl(true)),
             'date'            => $date,
             'user'            => $user,
             'header_items'    => $this->getHeaderItems(),
-            'reuqest_uri'     => waRequest::server('REQUEST_URI'),
             'current_app'     => $current_app,
             'counts'          => $counts,
             'wa_version'      => wa()->getVersion('webasyst'),
             'announcements'   => $announcements,
+            'notifications'   => $this->getAnnouncements(['backend_header_notification' => $header_notification]),
             'header_top'      => $header_top,
             'header_middle'   => $header_middle,
             'header_bottom'   => $header_bottom,
             'include_wa_push' => $include_wa_push,
             'webasyst_id_auth_banner' => $this->getWebasystIDAuthBanner(),
-            'show_connection_banner' => $this->showConnectionBanner(),
-            'current_domain' => $this->getCurrentDomain()
-        ));
+            'show_connection_banner'  => $this->showConnectionBanner(),
+            'current_domain'  => $this->getCurrentDomain(),
+            'app_info'        => $app_info,
+            'custom_params'   => $this->params['custom']
+        ]);
 
         $this->setTemplate(wa()->getAppPath('templates/actions/backend/BackendHeader.html', 'webasyst'));
     }
@@ -100,89 +141,6 @@ class webasystBackendHeaderAction extends waViewAction
         return waIdna::dec($domain);
     }
 
-    /**
-     * @return array
-     * @throws waDbException
-     * @throws waException
-     */
-    protected function getHeaderItems()
-    {
-        $user = wa()->getUser();
-        $apps = wa()->getApps(true);
-        $right_model = new waContactRightsModel();
-
-        $is_admin = $user->isAdmin();
-        if (!$is_admin) {
-            $rights = $right_model->getApps(-$user->getId(), 'backend', true, false);
-            foreach ($apps as $app_id => $app_info) {
-                if (!isset($rights[$app_id])) {
-                    unset($apps[$app_id]);
-                }
-            }
-        }
-
-        $header_items = array();
-        foreach ($apps as $app_id => $app_info) {
-            if ($app_id !== 'webasyst' && !isset($app_info['header_items'])) {
-                $header_items[$app_id] = $app_info;
-            }
-            if (isset($app_info['header_items']) && is_array($app_info['header_items'])) {
-                foreach ($app_info['header_items'] as $item_id => $item_info) {
-                    // Add version
-                    if (empty($item_info['version']) && !empty($app_info['version'])) {
-                        $item_info['version'] = $app_info['version'];
-                    }
-
-                    // Check rights
-                    if (!$is_admin && !empty($item_info['rights'])) {
-                        $access_is_allowed = true;
-                        $app_rights = $right_model->get($user->getId(),$app_id);
-                        $needed_rights = $item_info['rights'];
-                        if (is_array($needed_rights)) {
-                            foreach ($needed_rights as $_r) {
-                                if ((ifempty($app_rights[$_r], 0) < 1)) {
-                                    $access_is_allowed = false;
-                                    break;
-                                }
-                            }
-                        } else {
-                            $access_is_allowed = (ifempty($app_rights[$needed_rights], 0) >= 1);
-                        }
-
-                        if (!$access_is_allowed) {
-                            continue;
-                        }
-                    }
-
-                    $item_info['app_id'] = $app_id;
-                    $item_id = ($app_id === $item_id) ? $item_id : $app_id.'.'.$item_id;
-                    $header_items[$item_id] = $item_info;
-                }
-            }
-        }
-
-        $sort = explode(',', $user->getSettings('', 'apps'));
-
-        // By default, the Settings app, if available
-        // for current user, is in fifth place in apps list
-        if (!in_array('webasyst.settings', $sort) && array_key_exists('webasyst.settings', $header_items)) {
-            array_splice($sort, 4, 0, array('webasyst.settings'));
-        }
-
-        $sorted_header_items = array();
-        foreach ($sort as $item_id) {
-            if (isset($header_items[$item_id])) {
-                $sorted_header_items[$item_id] = $header_items[$item_id];
-                unset($header_items[$item_id]);
-            }
-        }
-
-        foreach ($header_items as $item_id => $item) {
-            $sorted_header_items[$item_id] = $item;
-        }
-
-        return $sorted_header_items;
-    }
 
     protected function getWebasystIDSettingsUrl()
     {

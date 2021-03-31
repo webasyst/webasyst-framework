@@ -68,7 +68,6 @@ HTML;
 <!--[if IE 9]><link type="text/css" href="{$wa_url}wa-content/css/wa/wa-1.0.ie9.css?v{$version}" rel="stylesheet"><![endif]-->
 <!--[if IE 8]><link type="text/css" href="{$wa_url}wa-content/css/wa/wa-1.0.ie8.css?v{$version}" rel="stylesheet"><![endif]-->
 <!--[if IE 7]><link type="text/css" href="{$wa_url}wa-content/css/wa/wa-1.0.ie7.css?v{$version}" rel="stylesheet"><![endif]-->
-<!--<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/font/ruble/arial/fontface.css">-->
 {$viewport}
 <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js"></script>
 </head>

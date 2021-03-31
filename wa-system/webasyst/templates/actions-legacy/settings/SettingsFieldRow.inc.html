@@ -1,0 +1,14 @@
+<div data-id="{$field.id}" class="field">
+    <div class="name">
+        <i class="icon16 sort"></i>
+        <a href="javascript:void(0);" class="wa-edit-field-link js-edit-field-link" data-id="{$field.id}">{$field.name|escape} <i class="icon16 edit"></i></a>
+    </div>
+    <div class="value">
+        {if $field.disabled}
+            <span class="red small">[s`disabled`]</span>
+        {else}
+            <span class="{if $field.pStatus === 'disabled'}hint{else}small bold{/if}">[s`person`]</span>
+            <span class="{if $field.cStatus === 'disabled'}hint{else}small bold{/if}">[s`company`]</span>
+        {/if}
+    </div>
+</div>
