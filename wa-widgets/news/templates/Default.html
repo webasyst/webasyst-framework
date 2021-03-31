@@ -1,60 +1,129 @@
-<style>
-.wa-news-widget .snw-entry { margin-bottom: 10px; line-height: 1em; font-family: 'Helvetica Neue', Arial, sans-serif; }
-.wa-news-widget .snw-entry a { text-decoration: none; }
+{* WA2 Widget*}
+{if $wa->whichUI() == '2.0'}
+    <style>
+    .wa-news-widget { padding: 16px; height: 100%; overflow-y: scroll; }
+    .wa-news-widget .snw-entry { margin-bottom: 10px; line-height: 120%; font-size: 14px; font-weight: 600; font-family: 'SF Pro Text', Arial, sans-serif; }
+    .wa-news-widget .snw-entry a { text-decoration: none; }
+    .wa-news-widget .entry-datetime { font-size: 12px; font-weight: 500; }
 
-.wa-empty-feed { margin: 30px 20px; font-weight: normal; }
+    .wa-news-widget::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to bottom, var(--dashboard-widget-fade-background-start) 0%, var(--dashboard-widget-fade-background-end) 100%); }
+    .wa-news-widget::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 20px; background: linear-gradient(to top, var(--dashboard-widget-fade-background-start) 0%, var(--dashboard-widget-fade-background-end) 50%); }
 
-.widget-2x1 .wa-empty-feed { margin: 45px 55px; }
-.widget-2x2 .wa-empty-feed { margin: 105px 35px; }
+    .wa-empty-feed { margin: 30px 20px; font-weight: normal; }
 
-.widget-block .wa-news-widget .wa-link-to-all-news {
-    position: absolute; bottom: 0; left: 0; right: 0; text-align: center; opacity: 0; padding: 18px 0 0; transition: opacity 0.5s ease-in-out;
-    background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 47%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(47%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* IE10+ */
-    background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
-}
-.widget-block:hover .wa-news-widget .wa-link-to-all-news { opacity: 1; }
+    .widget-2x1 .wa-empty-feed { margin: 45px 55px; }
+    .widget-2x2 .wa-empty-feed { margin: 105px 35px; }
 
-/* TV */
-.tv .widget-block .wa-news-widget .wa-link-to-all-news {
-    background: -moz-linear-gradient(top,  rgba(51,51,51,0) 0%, rgba(51,51,51,1) 47%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,51,51,0)), color-stop(47%,rgba(51,51,51,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* IE10+ */
-    background: linear-gradient(to bottom,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00515151', endColorstr='#515151',GradientType=0 ); /* IE6-9 */
-}
-</style>
-{if empty($rss_url)}
-    <div class="block">
-        <h5 class="align-center hint wa-empty-feed">[`Please set up news source in widget settings.`]</h5>
-    </div>
-{elseif empty($channel.name)}
-    <div class="block">
-        <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed`].</h5>
-    </div>
-{else}
-    <div class="block wa-news-widget" id="{$uniqid}">
-        {foreach $items as $_item}
-        <p class="snw-entry">
-            <a href="{$_item.link}" class="entry-title entry-link" target="_blank">{$_item.title|escape}</a>
-            <span class="entry-datetime hint">{$_item.date|wa_datetime}</span>
-        </p>
-        {/foreach}
+    .widget-block .wa-news-widget .wa-link-to-all-news { position: absolute; bottom: 0; left: 0; right: 0; opacity: 1; height: 42px; background: var(--dashboard-widget-background-color); box-shadow: inset 0px 1px 0px rgba(0, 0, 0, 0.1); display: flex; justify-content: center; align-items: center; transition: transform 0.3s ease-in-out; transform: translateY(43px)}
 
-        {if !empty($channel.link)}
-        <div class="wa-link-to-all-news">
-            <div class="block">
-                <a href="{$channel.link}" target="_blank">[`Show all news`] <i class="icon16 new-window"></i></a>
-            </div>
+    .widget-block:hover .wa-news-widget .wa-link-to-all-news { opacity: 1; transform: translateY(0)}
+
+    .widget-2x1 .wa-news-widget .snw-entry { line-height: 120%; font-size: 13px; font-weight: 700; }
+    .widget-2x1 .wa-news-widget .entry-datetime { font-size: 12px; font-weight: 500; }
+    .widget-2x1 .wa-news-widget .wa-link-to-all-news { font-size: 12px; font-weight: 500; }
+
+    .widget-1x1 .wa-news-widget .snw-entry { line-height: 120%; font-size: 12px; font-weight: 500; }
+    .widget-1x1 .wa-news-widget .entry-datetime { font-size: 12px; font-weight: 500; }
+    .widget-1x1 .wa-news-widget .wa-link-to-all-news { font-size: 9px; font-weight: 600; }
+    </style>
+    {if empty($rss_url)}
+        <div class="block">
+            <h5 class="align-center hint wa-empty-feed">[`Please set up news source in widget settings.`]</h5>
         </div>
-        {/if}
-    </div>
+    {elseif empty($channel.name)}
+        <div class="block">
+            <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed`].</h5>
+        </div>
+    {else}
+        <div class="block wa-news-widget hide-scrollbar" id="{$uniqid}">
+            {foreach $items as $_item}
+            <p class="snw-entry">
+                <a href="{$_item.link}" class="entry-title entry-link" target="_blank">{$_item.title|escape}</a>
+                <span class="entry-datetime hint">{$_item.date|wa_datetime}</span>
+            </p>
+            {/foreach}
+
+            {if !empty($channel.link)}
+            <div class="wa-link-to-all-news">
+                    <a class="button nobutton" href="{$channel.link}" target="_blank" rel="noopener">[`Show all news`] <i class="custom-ml-8 fas fa-external-link-alt"></i></a>
+            </div>
+            {/if}
+        </div>
+            <script>
+                (function ($) {
+                    let is_loaded = (typeof newsWidget !== "undefined"),
+                        js_href = "{$widget_url}js/news.widget.js?{$wa->version()}",
+                        widget = DashboardWidgets["{$widget_id}"],
+                        options = {
+                            widget_id: {$widget_id}
+                        };
+
+                    (is_loaded) ? initWidget() : $.getScript(js_href, initWidget);
+
+                    function initWidget() {
+                        widget.news = new newsWidget(options);
+                    }
+                })(jQuery);
+        </script>
+    {/if}
+{else}
+    <style>
+        .wa-news-widget .snw-entry { margin-bottom: 10px; line-height: 1em; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        .wa-news-widget .snw-entry a { text-decoration: none; }
+
+        .wa-empty-feed { margin: 30px 20px; font-weight: normal; }
+
+        .widget-2x1 .wa-empty-feed { margin: 45px 55px; }
+        .widget-2x2 .wa-empty-feed { margin: 105px 35px; }
+
+        .widget-block .wa-news-widget .wa-link-to-all-news {
+            position: absolute; bottom: 0; left: 0; right: 0; text-align: center; opacity: 0; padding: 18px 0 0; transition: opacity 0.5s ease-in-out;
+            background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 47%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(47%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+        }
+        .widget-block:hover .wa-news-widget .wa-link-to-all-news { opacity: 1; }
+
+        /* TV */
+        .tv .widget-block .wa-news-widget .wa-link-to-all-news {
+            background: -moz-linear-gradient(top,  rgba(51,51,51,0) 0%, rgba(51,51,51,1) 47%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(51,51,51,0)), color-stop(47%,rgba(51,51,51,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(51,51,51,0) 0%,rgba(51,51,51,1) 47%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00515151', endColorstr='#515151',GradientType=0 ); /* IE6-9 */
+        }
+    </style>
+    {if empty($rss_url)}
+        <div class="block">
+            <h5 class="align-center hint wa-empty-feed">[`Please set up news source in widget settings.`]</h5>
+        </div>
+    {elseif empty($channel.name)}
+        <div class="block">
+            <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed`].</h5>
+        </div>
+    {else}
+        <div class="block wa-news-widget" id="{$uniqid}">
+            {foreach $items as $_item}
+                <p class="snw-entry">
+                    <a href="{$_item.link}" class="entry-title entry-link" target="_blank">{$_item.title|escape}</a>
+                    <span class="entry-datetime hint">{$_item.date|wa_datetime}</span>
+                </p>
+            {/foreach}
+
+            {if !empty($channel.link)}
+                <div class="wa-link-to-all-news">
+                    <div class="block">
+                        <a href="{$channel.link}" target="_blank">[`Show all news`] <i class="icon16 new-window"></i></a>
+                    </div>
+                </div>
+            {/if}
+        </div>
         <script>
             (function ($) {
                 var is_loaded = (typeof newsWidget !== "undefined"),
@@ -70,5 +139,6 @@
                     widget.news = new newsWidget(options);
                 }
             })(jQuery);
-    </script>
+        </script>
+    {/if}
 {/if}
