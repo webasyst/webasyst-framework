@@ -1197,6 +1197,12 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 } else {
                     $refunded = null;
                 }
+
+                $canceled_by_user = isset($transaction_raw_data['cancellation_details']['party'])
+                    && $transaction_raw_data['cancellation_details']['party'] == 'merchant';
+                $payment_irretrievably_canceled = isset($transaction_raw_data['cancellation_details']['reason'])
+                    && ($transaction_raw_data['cancellation_details']['reason'] == 'expired_on_confirmation'
+                        || $transaction_raw_data['cancellation_details']['reason'] == 'permission_revoked');
                 if (!empty($refunded)) {
                     if (($transaction_raw_data['refunded_amount']['value'] == $transaction_raw_data['amount']['value'])
                         && empty($transaction_raw_data['refundable'])
@@ -1218,9 +1224,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                     );
                     $view[] = sprintf('Из общей суммы %s', $value);
 
-                } elseif (isset($transaction_raw_data['cancellation_details']['party'])
-                    && $transaction_raw_data['cancellation_details']['party'] == 'merchant'
-                ) {
+                } elseif ($canceled_by_user || $payment_irretrievably_canceled) {
                     $data['state'] = self::STATE_CANCELED;
                     $data['type'] = self::OPERATION_CANCEL;
                 } else {
