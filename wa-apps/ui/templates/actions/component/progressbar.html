@@ -1,0 +1,122 @@
+{$_title = ".waProgressbar()"}
+{$wa->title($_title)}
+
+{function name="_render"}
+<div class="progressbar" id="progressbar-1">
+    <script>
+        ( function($) {
+            $("#progressbar-1").waProgressbar({ percentage: 15 });
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+{function name="_render_2"}
+<div class="progressbar" id="progressbar-2">
+    <script>
+        ( function($) {
+            var $bar = $("#progressbar-2").waProgressbar({
+                    "color": "#fa0",
+                    "text-inside": true
+                }),
+                instance = $bar.data("progressbar");
+
+            instance.set({ percentage: 50 });
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+{function name="_render_3"}
+<div class="progressbar" id="progressbar-3" style="display inline-block;">
+    <script>
+        ( function($) {
+            var $bar = $("#progressbar-3").waProgressbar({
+                    type: "circle",
+                    "stroke-width": 4.8
+                }),
+                instance = $bar.data("progressbar");
+
+            run();
+
+            function run() {
+                if ($.contains(document, $bar[0])) {
+                    var percentage = ( instance.percentage >= 100 ? 0 : instance.percentage) + 5;
+                    instance.set({
+                        percentage: percentage,
+                        text: percentage + "%"
+                    });
+                    setTimeout(run, 500);
+                }
+            }
+        })(jQuery);
+    </script>
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <h2><code>.progressbar</code></h2>
+
+    <p>Индикатор выполнения некоторого процесса. Предусмотрено два базовых режима отображения: линейный и круговой.</p>
+
+    <div class="line">
+        {_render}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <div class="line">
+        <p>Статическая версия без использования jQuery:</p>
+        {function name="_static_example1"}
+<div class="progressbar">
+    <div class="progressbar-line-wrapper text-outside">
+        <div class="progressbar-outer"><div class="progressbar-inner" style="width: 15%;"></div></div>
+        <div class="progressbar-text">15%</div>
+    </div>
+</div>{/function}
+        <pre class="prettyprint">{_static_example1|escape}</pre>
+    </div>
+
+    <div class="line">
+        {_render_2}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_2|escape}</pre>
+    </div>
+
+    <div class="line">
+        <p>Статическая версия без использования jQuery:</p>
+        {function name="_static_example2"}
+<div class="progressbar">
+    <div class="progressbar-line-wrapper text-inside">
+        <div class="progressbar-outer">
+            <div class="progressbar-inner" style="width: 15%;">
+                <div class="progressbar-text">15%</div>
+            </div>
+        </div>
+    </div>
+</div>
+        {/function}
+        <pre class="prettyprint">{_static_example2|escape|trim}</pre>
+    </div>
+
+    <div class="line">
+        {_render_3}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render_3|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

@@ -1,0 +1,186 @@
+{$_title = "Элементы форм ввода данных"}
+{$wa->title($_title)}
+
+{function name="_render0"}
+<input type="text" placeholder="input">
+    <br><br>
+<textarea placeholder="textarea"></textarea>
+{/function}
+
+{function name="_render01"}
+<input type="text" class="bold" placeholder=".bold"> <button>OK</button>
+    <br><br>
+<input type="text" class="long" placeholder=".long">
+    <br><br>
+<input type="text" class="longer" placeholder=".longer">
+    <br><br>
+<input type="text" class="full-width" placeholder=".full-width">
+    <br><br>
+<input type="text" class="short" placeholder=".short">
+    <br><br>
+<input type="text" class="shorter" placeholder=".shorter">
+    <br><br>
+<input type="text" class="shortest" placeholder=".shortest">
+    <br><br>
+<input type="email" placeholder="input[type='email']"> <button class="button solid orange"><span>Check Availability</span></button>
+    <br><br>
+<input type="number" placeholder="[type='number'] or .number">
+    <br><br>
+<input type="text" class="small" placeholder=".small"> <button class="small light-gray">Submit</button>
+    <br><br>
+<input type="text" class="smaller" placeholder=".smaller"> <button class="smaller gray">Submit</button>
+    <br><br>
+<input type="text" class="smallest" placeholder=".smallest"> <button class="smallest dark-gray">Submit</button>
+    <br><br>
+<input type="text" class="large" placeholder=".large"> <button class="large red">Almost here</button>
+    <br><br>
+<input type="text" class="larger" placeholder=".larger"> <button class="larger solid button green"><span>Hey Jerry</span></button>
+    <br><br>
+<input type="text" class="largest" placeholder=".largest"> <button class="largest purple">Send it!</button>
+    <br><br>
+<input type="text" style="font-size: 3rem" placeholder="Oh, this one's huge (3rem)!">
+    <br><br>
+<textarea placeholder="textarea.small" class="small"></textarea>
+    <br>
+<textarea placeholder="textarea.smaller" class="smaller"></textarea>
+    <br>
+<textarea placeholder="textarea.smallest" class="smallest"></textarea>
+    <br>
+<textarea placeholder="textarea.large" class="large"></textarea>
+    <br>
+<textarea placeholder="textarea.larger" class="larger"></textarea>
+    <br>
+<textarea placeholder="textarea.largest" class="largest"></textarea>
+{/function}
+
+{function name="_render_i1"}
+<input type="search" placeholder="Due date">
+<span class="icon"><i class="fas fa-calendar"></i></span>
+{/function}
+
+{function name="_render_i2"}
+    <div class="state-with-inner-icon left">
+        <input type="email" placeholder="Email">
+        <span class="icon"><i class="fas fa-envelope"></i></span>
+    </div>
+    &nbsp;
+    <form class="state-with-inner-icon right">
+        <input type="search" placeholder="Search">
+        <button class="icon"><i class="fas fa-search"></i></button>
+    </form>
+{/function}
+
+{function name="_render_i2s"}
+<div class="state-with-inner-icon left" style="font-size: 2rem;">
+    <span class="icon"><i class="fas fa-envelope"></i></span>
+    <input type="email" placeholder="Email">
+</div>
+<br><br>
+<form class="state-with-inner-icon right" style="font-size: 2rem;">
+    <input type="search" placeholder="Search">
+    <button class="icon"><i class="fas fa-search"></i></button>
+</form>
+{/function}
+
+{function name="_render_solid"}
+<input type="text" class="bold solid" placeholder=".bold"> <button>OK</button>
+    <br><br>
+<input type="text" class="long solid" placeholder=".long">
+    <br><br>
+<input type="email" placeholder="input[type='email']" class="solid"> <button class="button solid orange"><span>Check Availability</span></button>
+    <br><br>
+<textarea placeholder="textarea" class="solid"></textarea>
+    <br>
+<input type="text" class="largest solid" placeholder=".largest"> <button class="largest purple">I’m sold!</button>
+    <br><br>
+<div class="state-with-inner-icon left" style="font-size: 2rem;">
+    <span class="icon"><i class="fas fa-envelope"></i></span>
+    <input type="email" placeholder="Email" class="solid">
+</div>
+{/function}
+
+{function name="_render_state"}
+<input type="text" placeholder=".state-error" class="state-error">
+<div class="state-error-hint">You shall not pass!</div>
+
+    <br>
+
+<input type="text" placeholder=".state-success" class="state-success">
+<span class="state-success-hint">Username is available</span>
+    <br><br>
+
+<textarea placeholder=".state-caution" class="state-caution"></textarea>
+<div class="state-caution-hint">Please make this sound more clear</div>
+{/function}
+
+<div class="u-component-page" id="js-fields-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>В отличие от wa-1.3.css, в wa-2.0.css элементы ввода данных стилизуются не операционной системой пользователя, а единым образом, независимым от типа устройства и ОС. Назначение каких-либо специфических классов на <code>input</code> и <code>textarea</code> не требуется. Стандартные <code>input</code> и <code>textarea</code> всегда будут выглядеть примерно так:</p>
+
+    <div class="line">
+        {_render0}
+    </div>
+
+    <p>Для визуального выделения отдельных элементов и обозначения их роли в интерфейсе следует использовать классы-модификаторы <code>.bold</code>, <code>.long</code>, <code>.short</code>, <code>.full-width</code>, <code>.number</code>, <code>.smallest</code> — <code>.largest</code>:</p>
+
+    <div class="line">
+        {_render01}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render01|escape}</pre>
+    </div>
+
+    <h3>Иконка рядом с текстовым полем</h3>
+    <h5 class="gray">После поля</h5>
+    <p><code>span.icon</code> сразу после текстового <code>input</code> (type="text|email|search|number") — правильный способ размещения иконки. Это полезно, например, когда нужно разместить иконку календаря для подсказки того, что при взаимодействии с текстовым появится элемент datePicker (вызов нужного календаря или выбора времени нужно выполнять самостоятельно отдельно):</p>
+    <div class="line">
+        {_render_i1}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_i1|escape}</pre>
+    </div>
+
+    <h5 class="gray">Внутри поля</h5>
+    <p>Когда нужно разместить иконку внутри поля (например, для обозначения его назначения), то поле с иконкой следует обернуть в контейнер <code>.state-with-inner-icon</code>. Для управления позицией иконки применяйте к контейнеру модификаторы <code>.left</code> и <code>.right</code>.</p>
+    <div class="line">
+        {_render_i2}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_i2|escape}</pre>
+    </div>
+    <p>Весь этот элемент можно масштабировать (используйте этот прием, только если это действительно приносит пользу).</p>
+    <div class="line">
+        {_render_i2s}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_i2s|escape}</pre>
+    </div>
+
+    <h3><code>.solid</code></h3>
+    <p>Для <code>input</code> и <code>textarea</code> поддерживается дополнительный визуальный режим отображения <code>.solid</code> — без обводки и со сплошной внутренней заливкой. Используйте этот режим исходя из эстетических соображений и для соответствия внешнего элемента интерфейсу вашего приложения.</p>
+    <p>В рамках одной формы ввода данных рекомендуется использовать только один из вариантов отображений: либо обычный, либо <code>.solid</code>. Не смешивайте их друг с другом.</p>
+    <div class="line">
+        {_render_solid}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_solid|escape}</pre>
+    </div>
+
+    <h3><code>.state-error</code>, <code>.state-success</code>, <code>.state-caution</code></h3>
+    <p>С помощью классов <code>.state-error</code>, <code>.state-success</code> и <code>.state-caution</code> можно выделить отдельные поля ввода цветной границей для обозначения валидности введенных данных.</p>
+    <div class="line">
+        {_render_state}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_state|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

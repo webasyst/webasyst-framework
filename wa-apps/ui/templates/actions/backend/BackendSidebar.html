@@ -1,0 +1,310 @@
+{strip}
+
+{$_component_base = "`$wa_app_url`component/"}
+
+{$component_groups = [
+    [
+        "components" => [
+            "root" => [
+                "icon" => "fas fa-star",
+                "name" => "Webasyst 2",
+                "url" => $wa_app_url,
+                "bottompadded" => true
+            ],
+            "migrate" => [
+                "icon" => "fas fa-route",
+                "name" => "Общий план",
+                "url" => "{$_component_base}migrate/"
+            ],
+            "legacy" => [
+                "icon" => "fas fa-tasks",
+                "name" => "Варианты перевода своего приложения на wa-2.0.css",
+                "url" => "{$_component_base}legacy/"
+            ],
+            "cheatsheet" => [
+                "icon" => "fas fa-code",
+                "name" => "TLDR (шпаргалка)",
+                "url" => "{$_component_base}cheatsheet/",
+                "bottompadded" => true
+            ],
+
+            "basics" => [
+                "name" => "Основы стиля",
+                "url" => "{$_component_base}basics/"
+            ],
+            "typography" => [
+                "name" => "Типографика",
+                "url" => "{$_component_base}typography/"
+            ],
+            "layout" => [
+                "name" => "Лейаут и адаптивность",
+                "url" => "{$_component_base}layout/"
+            ],
+            "appicons" => [
+                "name" => "Иконки приложений",
+                "url" => "{$_component_base}appicons/"
+            ],
+            "theming" => [
+                "name" => "Темный режим",
+                "url" => "{$_component_base}theming/"
+            ],
+            "waheader" => [
+                "name" => "&dollar;wa->header()",
+                "url" => "{$_component_base}waheader/"
+            ],
+            "whichui" => [
+                "name" => "&dollar;wa->whichUI()",
+                "url" => "{$_component_base}whichui/"
+            ],
+            "animations" => [
+                "name" => "Анимации",
+                "url" => "{$_component_base}animations/"
+            ],
+            "gradients" => [
+                "name" => "Цвета и градиенты",
+                "url" => "{$_component_base}gradients/"
+            ],
+            "requirements" => [
+                "name" => "Требования",
+                "url" => "{$_component_base}requirements/"
+            ],
+            "misc" => [
+                "name" => "Хелперы CSS",
+                "url" => "{$_component_base}misc/"
+            ],
+            "custom" => [
+                "name" => "Отступы",
+                "url" => "{$_component_base}custom/"
+            ]
+        ]
+    ],
+    [
+        "title" => "CSS-компоненты",
+        "components" => [
+            "alert" => [
+                "name" => ".alert",
+                "url" => "{$_component_base}alert/"
+            ],
+            "article" => [
+                "name" => ".article",
+                "url" => "{$_component_base}article/"
+            ],
+            "badge" => [
+                "name" => ".badge",
+                "url" => "{$_component_base}badge/"
+            ],
+            "banner" => [
+                "name" => ".banner",
+                "url" => "{$_component_base}banner/"
+            ],
+            "breadcrumbs" => [
+                "name" => ".breadcrumbs",
+                "url" => "{$_component_base}breadcrumbs/"
+            ],
+            "bricks" => [
+                "name" => ".bricks",
+                "url" => "{$_component_base}bricks/"
+            ],
+            "bottombar" => [
+                "name" => ".bottombar",
+                "url" => "{$_component_base}bottombar/"
+            ],
+            "box" => [
+                "name" => ".box",
+                "url" => "{$_component_base}box/"
+            ],
+            "button" => [
+                "name" => ".button",
+                "url" => "{$_component_base}button/"
+            ],
+            "card" => [
+                "name" => ".card",
+                "url" => "{$_component_base}card/"
+            ],
+            "chips" => [
+                "name" => ".chips",
+                "url" => "{$_component_base}chips/"
+            ],
+            "flexbox" => [
+                "name" => ".flexbox",
+                "url" => "{$_component_base}flexbox/"
+            ],
+            "heading" => [
+                "name" => ".heading",
+                "url" => "{$_component_base}heading/"
+            ],
+            "icon" => [
+                "name" => ".icon",
+                "url" => "{$_component_base}icon/"
+            ],
+            "inlinebox" => [
+                "name" => ".inlinebox",
+                "url" => "{$_component_base}inlinebox/"
+            ],
+            "list" => [
+                "name" => ".list",
+                "url" => "{$_component_base}list/"
+            ],
+            "menu" => [
+                "name" => ".menu",
+                "url" => "{$_component_base}menu/"
+            ],
+            "paging" => [
+                "name" => ".paging",
+                "url" => "{$_component_base}paging/"
+            ],
+            "pulsar" => [
+                "name" => ".pulsar",
+                "url" => "{$_component_base}pulsar/"
+            ],
+            "sidebar" => [
+                "name" => ".sidebar / .content",
+                "url" => "{$_component_base}sidebar/"
+            ],
+            "skeleton" => [
+                "name" => ".skeleton",
+                "url" => "{$_component_base}skeleton/"
+            ],
+            "table" => [
+                "name" => "table",
+                "url" => "{$_component_base}table/"
+            ],
+            "tablebox" => [
+                "name" => ".tablebox",
+                "url" => "{$_component_base}tablebox/"
+            ],
+            "tabs" => [
+                "name" => ".tabs",
+                "url" => "{$_component_base}tabs/"
+            ],
+            "thumbs" => [
+                "name" => ".thumbs",
+                "url" => "{$_component_base}thumbs/"
+            ],
+            "lists" => [
+                "name" => "ul",
+                "url" => "{$_component_base}lists/"
+            ],
+            "userpic" => [
+                "name" => ".userpic",
+                "url" => "{$_component_base}userpic/"
+            ]
+        ]
+    ],
+    [
+        "title" => "Формы ввода данных",
+        "components" => [
+            "inputs" => [
+                "name" => "input, textarea",
+                "url" => "{$_component_base}inputs/"
+            ],
+            "fields" => [
+                "name" => ".fields",
+                "url" => "{$_component_base}fields/"
+            ],
+            "wa-checkbox" => [
+                "name" => ".wa-checkbox, +",
+                "url" => "{$_component_base}wa-checkbox/"
+            ]
+        ]
+    ],
+    [
+        "title" => "JS/CSS-компоненты",
+        "components" => [
+            "autocomplete" => [
+                "name" => ".waAutocomplete",
+                "url" => "{$_component_base}autocomplete/"
+            ],
+            "dialog" => [
+                "name" => ".waDialog",
+                "url" => "{$_component_base}dialog/"
+            ],
+            "drawer" => [
+                "name" => ".waDrawer",
+                "url" => "{$_component_base}drawer/"
+            ],
+            "dropdown" => [
+                "name" => ".waDropdown",
+                "url" => "{$_component_base}dropdown/"
+            ],
+            "loading" => [
+                "name" => ".waLoading",
+                "url" => "{$_component_base}loading/"
+            ],
+            "progressbar" => [
+                "name" => ".waProgressbar",
+                "url" => "{$_component_base}progressbar/"
+            ],
+            "slider" => [
+                "name" => ".waSlider",
+                "url" => "{$_component_base}slider/"
+            ],
+            "switch" => [
+                "name" => ".waSwitch",
+                "url" => "{$_component_base}switch/"
+            ],
+            "toggle" => [
+                "name" => ".waToggle",
+                "url" => "{$_component_base}toggle/"
+            ],
+            "tooltip" => [
+                "name" => ".waTooltip",
+                "url" => "{$_component_base}wa-tooltip/"
+            ],
+            "upload" => [
+                "name" => ".waUpload",
+                "url" => "{$_component_base}upload/"
+            ]
+        ]
+    ]
+]}
+
+{$_current_url = $wa->currentUrl()}
+
+<div class="u-sidebar-wrapper" id="js-sidebar-wrapper">
+    {foreach $component_groups as $_group}
+
+        {if !empty($_group.title)}
+            <h5 class="heading">
+                {$_group.title|escape}
+            </h5>
+        {/if}
+        {if !empty($_group.components)}
+            <ul class="menu mobile-friendly">
+                {foreach $_group.components as $_component}
+                    {$_classes = []}
+                    {$_is_selected = false}
+                    {if $_current_url === $_component.url}
+                        {$_classes[] = "selected"}
+                    {/if}
+                    {if !empty($_component.todo)}
+                        {$_classes[] = "not-ready"}
+                    {/if}
+                    {if !empty($_component.bottompadded)}
+                        {$_classes[] = "bottom-padded"}
+                    {/if}
+
+                    <li class="{$_classes|join:" "}">
+                        <a href="{$_component.url}">
+                            {if !empty($_component.icon)}<i class="{$_component.icon}"></i>{/if}
+                            <span>{$_component.name}</span>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        {/if}
+
+    {/foreach}
+
+    <script>
+        ( function($) {
+
+            $.wa_ui.sidebar = $.wa_ui.init.initSidebar({
+                $wrapper: $("#js-sidebar-wrapper")
+            });
+
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

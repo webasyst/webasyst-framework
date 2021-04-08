@@ -1,0 +1,141 @@
+{$_title = ".tablebox"}
+{$wa->title($_title)}
+
+{function name="_render" class=""}
+<div class="tablebox {$class|default:""}" style="border: 1px dashed gold;">
+    <div>Я обычная колонка</div>
+    <div>Я колонка в центре и чуть побольше</div>
+    <div>А я колонка справа</div>
+</div>
+{/function}
+
+{function name="_render_middle"}
+<div class="tablebox fixed middle" style="border: 1px dashed gold;">
+    <div>Я отцентрированный контент</div>
+    <div>
+        <div style="background: rgba(0,0,0,.1);">
+            Я колонка в центре и чуть побольше. Я колонка в центре и чуть побольше. Я колонка в центре и чуть побольше
+        </div>
+    </div>
+    <div>А я колонка справа</div>
+</div>
+{/function}
+
+{function name="_render_middle_2"}
+<div class="tablebox fixed" style="border: 1px dashed gold;">
+    <div class="middle">Я отцентрированный контент</div>
+    <div>
+        <div style="background: rgba(0,0,0,.1);">
+            Я колонка в центре и чуть побольше. Я колонка в центре и чуть побольше. Я колонка в центре и чуть побольше
+        </div>
+    </div>
+    <div>А я колонка справа</div>
+</div>
+{/function}
+
+{function name="_render_layout"}
+<div class="tablebox fixed space-16">
+    <div class="aside-column" style="width: 33%;">
+        <aside class="some-block">Колонка с сайдбаром</aside>
+    </div>
+    <div class="content-column">
+        <main class="some-block">Колонка контентной области</main>
+    </div>
+</div>
+
+<style>
+    .some-block { border: 1px solid #ccc; border-radius: 5px; padding: 1rem; }
+</style>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Компонент общего назначения <code>.tablebox</code> является реализацией табличной верстки через CSS, который актуален до сих пор. Его неоспоримым преимуществом является возможность <em>жестко</em> привязать ширину колонки вне зависимости от контента внутри.</p>
+    <p>В отличие от <a href="{$wa_app_url}component/flexbox/">.flexbox</a>, контент никогда не сможет повлиять на ширину общего блока и никогда его не растянет, если контент не помещается. Данное качество позволяет делать «неломающуюся» разметку общих глобальных частей сайта, не опасаясь, что часть контента может не поместиться внутри.</p>
+    <p>Есть и минус — у колонок <code>display: table-cell;</code> не работает свойство <code>position:relative|absolute;</code>. Имейте это ввиду при проектировании скелета. Одно из решений в этой ситуации — использование дополнительной внешней/внутренней обертки.</p>
+
+    <hr>
+
+    <p>Никакого специфического для бекенда Webasyst оформления этот класс не навязывает, но будет полезен в качестве структурного контейнера, содержащего внутри разные интерфейсные компоненты: заголовки, меню, кнопки, текстовые поля, блок с произвольным контентом <code>.box</code>.</p>
+
+    <div class="u-example-section">
+        <h3><code>.tablebox</code></h3>
+        <p>Пример из 3 колонок, когда ширина распределяется в зависимости от ширины содержимого. Типичное поведение таблицы.</p>
+        <div class="u-example">{_render}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render|escape}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.tablebox<code>.fixed</code></h3>
+        <p>Пример фиксации ширины колонок. В отсутствие дополнительного CSS-уточнения все колонки приобретают равную ширину.</p>
+        <div class="u-example">{_render class="fixed"}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render|escape class="fixed"}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.tablebox<code>.space-16</code></h3>
+        <p>С помощью дополнительных классов <code>.tablebox<strong>.space-XX</strong></code> добавляются внутренние отступы для дочерних элементов, где XX — значение в пикселях с шагом 4: <code>0</code>, <code>4</code>, <code>8</code>, <code>12</code>, <code>16</code>, <code>20</code>, <code>24</code>, <strike>28</strike>, <code>32</code>, <strike>36</strike>, <code>40</code>, <strike>44</strike>, <code>48</code>. Шаг в 4 пикселя выбран исходя из соображений сохранения визуальной сетки интерфейса и практической полезности. Пиксели будут <a href="{$wa_app_url}component/typography/">пересчитаны в rem</a>.</p>
+
+        <div class="u-example">{_render class="space-16"}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render|escape class="space-16"}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.tablebox<code>.fixed.space-16</code></h3>
+        <p>Пример жесткого скелета сайдбара и контента.</p>
+        <div class="u-example">{_render_layout}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render_layout|escape}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.tablebox<code>.middle</code></h3>
+        <p>Дополнительный класс <code>.tablebox<strong>.middle</strong></code> центрирует каждый дочерний элемент по вертикали.</p>
+        <div class="u-example">{_render_middle}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render_middle|escape}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="u-example-section">
+        <h3>.tablebox > <code>.middle</code></h3>
+        <p>Класс <code>.middle</code> можно использовать и на отдельных дочерних элементах (отдельных колонках).</p>
+        <div class="u-example">{_render_middle_2}</div>
+        <div class="u-code-wrapper">
+            <span class="u-link js-toggle-code">Показать код</span>
+            <div class="line">
+                <pre class="prettyprint">{_render_middle_2|escape}</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

@@ -1,0 +1,32 @@
+{$_title = ".breadcrumbs"}
+{$wa->title($_title)}
+
+{function name="_render"}
+<ul class="breadcrumbs">
+    <li><a href="javascript:void(0);">Корневой раздел</a></li>
+    <li><a href="javascript:void(0);">Каталог</a></li>
+    <li><a href="javascript:void(0);">Директория</a></li>
+    <li class="active"><a href="javascript:void(0);">Активный раздел</a></li>
+</ul>
+
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <div class="line">
+        {_render}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

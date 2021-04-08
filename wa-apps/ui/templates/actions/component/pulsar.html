@@ -1,0 +1,29 @@
+{$_title = ".pulsar"}
+{$wa->title($_title)}
+
+{function name="_render"}
+<button class="circle pulsar">
+    <i class="fas fa-plus"></i>
+</button>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Наглядное выделение любого элемента пульсирующей фоновой анимацией — назначением всего лишь одного дополнительного класса <code>.pulsar</code>.</p>
+    <p>Оптимально подходит для маленьких кнопок, которые должны забирать на себя все внимание пользователя. Не рекомендуется использовать на одной странице более одного пульсара.</p>
+
+    <div class="line">
+        {_render}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

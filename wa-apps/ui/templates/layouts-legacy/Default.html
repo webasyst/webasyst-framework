@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$wa->appName()} &mdash; {$wa->title()}</title>
+    {$wa->css()}
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/ui.css?v={$wa->version()}">
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v={$wa->version(true)}"></script>
+    <script src="{$wa_app_static_url}js/ui.js?v={$wa->version()}"></script>
+
+    {* TODO: cooperate with @leonyx and replace it to core *}
+    <script src="{$wa_app_static_url}js/toggle.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/tooltip.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/dropdown.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/progressbar.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/dialog.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/drawer.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/slider.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/autocomplete.js?v={$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/upload.js?v={$wa->version()}"></script>
+
+</head>
+<body>
+
+<div id="wa">
+
+    {$wa->header()}
+
+    <div id="wa-app">
+
+        <div class="block align-center" style="margin-top: 15vh;">
+            <h1>Пора переходить на Webasyst 2!</h1>
+            <p><strong class="red">Переключите режим интерфейса на <code class="highlighted">2.0</code> в нижнем правом углу экрана.</strong></p>
+            <p style="max-width: 760px; margin: 0 auto 1rem;">Это приложение предоставляет полную документацию и примеры кода Webasyst 2, и поэтому работает только в режиме нового интерфейса — <code>2.0</code>.</p>
+
+            <p>&#123;$wa->whichUI()&#125; = <code>'<strong>{$wa->whichUI()}</strong>'</code></p>
+
+            <p class="gray">This app is available in Russian only.</p>
+
+        </div>
+
+        <img src="{$wa_app_static_url}img/red-arrow.png" style="position: fixed; bottom: {if $wa->debug()}80px{else}240px{/if}; right: {if $wa->debug()}10px{else}420px{/if}; width: 100px;" />
+
+    </div>
+
+</body>
+</html>

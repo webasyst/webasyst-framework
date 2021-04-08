@@ -1,0 +1,22 @@
+<h1>Шпаргалка <code>1.3</code> &rarr; <code>2.0</code></h1>
+
+<p>Краткий список того, с чем почти наверняка столкнется разработчик приложения Webasyst при проверке своего приложения в новом окружении <code>wa-2.0.css</code>:</p>
+
+<ol class="separated">
+    <li>Скорее всего, «поползет» общий лейаут. Это из-за перехода <code>#wa-app</code>, <code>.sidebar</code> и <code>.content</code> на <code>display: flex;</code>. Попробуйте для начала поставить на проблемный блок (контейнер) <code>display: block;</code>. А затем переводите <code><a href="{$wa_app_url}component/sidebar/">.sidebar / .content</a></code> в своем приложении на режим flexbox.</li>
+    <li><code>.menu-v</code> надо заменить на <code><a href="{$wa_app_url}component/menu/">.menu</a></code>.</li>
+    <li><code>.menu-h</code> надо заменить на <code><a href="{$wa_app_url}component/chips/">.chips</a></code>.</li>
+    <li>Иконки <code>.icon16</code> нужно заменить на <a href="{$wa_app_url}component/icon/">векторные иконки-глифы</a> Font Awesome либо на свои — с классом <code>.icon</code>. Старые спрайты более не поддерживаются.</li>
+    <li><code>.userpic20</code> нужно заменить на <code><a href="{$wa_app_url}component/userpic/">.userpic</a></code>.</li>
+    <li>Класса <code>.block</code> больше нет, так как все отступы заложены в основных элементах оформления и контента (внутри разных меню и т. д.), чтобы не возникало недопонимание, какие отступы где нужно делать. Теперь их и не надо делать — они уже есть в каждом компоненте! Если все же нужно создать блок с произвольным контентом, используйте <code>.box</code>. Для общего блока <code>.content</code> — либо <code><a href="{$wa_app_url}component/article/">.article</a></code>, либо <code><a href="{$wa_app_url}component/box/">.box.contentbox</a></code>.</li>
+    <li><code>.left200px</code> и <code>.left300px</code> у сайдбара нужно заменить на <code>.width-XX</code> согласно <a href="{$wa_app_url}component/sidebar/">документации</a>.</li>
+    <li><code>.inline-link</code> больше нет! Можно просто убирать весь код <code>a.inline-link &gt; b &gt; i</code> и оставлять только <code>a</code>.</li>
+    <li>Ссылки синего цвета остались только в контентной области (в текстах). В навигационных элементах они теперь не отличаются по цвету от основного контента (черные, белые). Если нужно выделить ссылку синим цветом, то можно воспользоваться классом <code>.link</code>.</li>
+    <li>Вообще теперь все цвета нужно декларировать в виде CSS custom variables внутри <code>var()</code>, и не прописывать их хардкодом. Иначе темный режим, который нельзя отключить в wa-2.0.css, будет отображать интерфейс неправильно. Да-да, не забывайте, что теперь поддерживается <a href="{$wa_app_url}component/theming/">темный режим</a>!</li>
+    <li>Шрифтовая пара Helvetica Neue / Lucida Grande более не используется. Теперь везде в интерфейсах используется полностью нативный для ОС пользователя набор шрифтов.</li>
+    <li>Модификаторы <code>.small, .large, .smaller, .larger, .smallest, .largest</code> работают для большинства интерфейсных элементов. Однако на некоторых компонентах (например, на <code>.menu</code>) отключены сознательно для уменьшения возможности «сбить ритм» и целостное восприятие интерфейса.</li>
+    <li><code>.indicator</code> переименован в <code>.badge</code>.</li>
+    <li><code>.profile</code> больше нет. Используйте <code><a href="{$wa_app_url}component/flexbox/">.flexbox</a></code> или <code><a href="{$wa_app_url}component/list/">.list</a></code>.</li>
+    <li>Спиннер загрузки <code>.icon16.loading</code> больше не поддерживается ни в каком виде. Для индикатора процесса загрузки контента используйте <code><a href="{$wa_app_url}component/skeleton/">.skeleton</a></code> или <code><a href="{$wa_app_url}component/loading/">.waLoading()</a></code>.</li>
+    <li><em>Список будет пополняться.</em></li>
+</ol>

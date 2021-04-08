@@ -1,0 +1,78 @@
+{$_title = "Типографика"}
+{$wa->title($_title)}
+
+<h1>{$_title}</h1>
+<p>Базовое семейство шрифтов определяется операционной системой пользователя и позволяет приблизить визуальное восприятие приложений Webasyst к большинству приложений, установленных на устройстве пользователя.</p>
+
+<blockquote><code>font-family: <b>-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif</b>;</code></blockquote>
+
+<p>Базовый размер элемента явно не задается и, следовательно, определяется браузером. Это значит, что в подавляющем большинстве случаев будет использоваться <code>1rem = 16px</code>, хотя пользователь может переопределить это значение в настройках браузера.</p>
+
+<p>Для отдельных элементов и целых навигационных блоков размеры шрифтов могут меняться, и везде масштаб задается относительно — в <code>rem</code> (не в <code>px</code>!). Масштаб зависит от типа устройства пользователя и функционального назначения элемента. Например, для загловка <code>h1</code> размера шрифта = 2.5rem (40px). Для меню <code>.menu</code> — 0.875rem (14px). Масштаб в единицах rem изначально рассчитан исходя из кратности стандартного значения 1rem = 16px:</p>
+
+<pre class="prettyprint">
+     1px = 0.0625rem
+     2px = 0.125rem
+     3px = 0.1875rem
+     4px = 0.25rem
+     5px = 0.3125rem
+     6px = 0.375rem
+     7px = 0.4375rem
+     8px = 0.5rem
+     9px = 0.5625rem
+    10px = 0.625rem
+    11px = 0.6875rem
+    12px = 0.75rem
+    13px = 0.8125rem
+    14px = 0.875rem
+    15px = 0.9375rem
+    16px = 1rem
+</pre>
+
+<p>В реальности размер 1rem будет зависеть от предпочтений пользователя (настроек браузера), но в подавляющием большинстве случаев будут использоваться именно эти размеры, поэтому рекомендуется придерживаться указанных выше значений rem.</p>
+
+<p>Предположение о стандартном размере 1rem = 16px позволяет использовать <a href="{$wa_app_url}component/glyphs/">иконки Font Awesome</a> именно в том размере (в той сетке), для которого они изначально были созданы. Для элементов интерфейса с измененным шрифтом размеры иконок Font Awesome (<code>&lt;svg&gt;</code>) нормируются к 16px (например, в <code>.menu</code>), чтобы иконки не масштабировались без особой необходимости.</p>
+
+<hr>
+
+{function name="_render_1"}
+<h1>h1. Заголовок</h1>
+<h2>h2. Заголовок</h2>
+<h3>h3. Заголовок</h3>
+<h4>h4. Заголовок</h4>
+<h5>h5. Заголовок</h5>
+<h6>h6. Заголовок</h6>
+{/function}
+
+{function name="_render_2"}
+<p class="h1">h1. Параграф</p>
+<p class="h2">h2. Параграф</p>
+<p class="h3">h3. Параграф</p>
+<p class="h4">h4. Параграф</p>
+<p class="h5">h5. Параграф</p>
+<p class="h6">h6. Параграф</p>
+{/function}
+
+<div class="u-component-page">
+    <div class="line">
+        {_render_1}
+        <pre class="prettyprint">{_render_1|escape}</pre>
+    </div>
+
+    <div class="line">
+        {_render_2}
+        <pre class="prettyprint">{_render_2|escape}</pre>
+    </div>
+
+    <hr class="custom-mt-32">
+
+    <p>Регулирование разметки производится с помощью стандартных HTML-тегов <b>выделения жирным — <code>strong</code>, <code>b</code></b> <i>курсивом — <code>em</code>, <code>i</code></i>, <u>подчеркиванием — <code>u</code></u>, <strike>зачеркиванием — <code>strike</code></strike>, кодом — <code>code</code>, маркером — <mark>mark</mark> и различных <a href="{$wa_app_url}component/misc/">полезных базовых классов</a>.</p>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

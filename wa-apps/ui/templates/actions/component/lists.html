@@ -1,0 +1,85 @@
+{$_title = "Списки"}
+{$wa->title($_title|json_encode)}
+
+{$_items_short = [
+[
+    "name" => "Главная"
+],
+[
+    "name" => "Новости"
+],
+[
+    "name" => "Блог"
+]
+]}
+{$_items_long = [
+[
+    "name" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+],
+[
+    "name" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+],
+[
+    "name" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+]
+]}
+
+{function name="_render" class="" items=[]}
+<ul{if !empty($class)} class="{$class}"{/if}>
+{foreach $items as $_item}
+    <li>{$_item.name}</li>
+{/foreach}
+</ul>
+<ol{if !empty($class)} class="{$class}"{/if}>
+{foreach $items as $_item}
+    <li>{$_item.name}</li>
+{/foreach}
+</ol>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Обычные списки <code>&lt;ul&gt;</code> и <code>&lt;ol&gt;</code> намеренно никак не стилизованы для того, чтобы быть правильно показанными в произвольном текстовом контенте (статьях, блог-постах и т. д.), в которых автор не оперирует никакими стилями или не обладает такими навыками:</p>
+
+    <div class="line">
+        {_render items=$_items_short}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape items=$_items_short}</pre>
+    </div>
+
+    <h3><code>.separated</code></h3>
+
+    <p>Если в каждом пункте списка есть несколько строк, то можно немного увеличить отступ под каждым пунктом, добавив к общему <code>ul</code> или <code>ol</code> класс <code><strong>.separated</strong></code>.</p>
+
+    <div class="line">
+        {_render class="separated" items=$_items_long}
+    </div>
+
+    <h3>ul<code>.zebra</code></h3>
+    <p>Полосатый список <code>ul<strong>.zebra</strong></code> (не действует на списки <code>&lt;ol&gt;</code>):</p>
+    <div class="line">
+        {_render class="zebra" items=$_items_short}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="zebra" items=$_items_short}</pre>
+    </div>
+
+    <h3>ul<code>.bordered</code></h3>
+    <p>Список с явной границей под каждым пунктом <code>ul<strong>.bordered</strong></code> (не действует на списки <code>&lt;ol&gt;</code>):</p>
+    <div class="line">
+        {_render class="bordered" items=$_items_short}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render|escape class="bordered" items=$_items_short}</pre>
+    </div>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>

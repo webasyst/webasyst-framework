@@ -1,0 +1,14 @@
+{$_title = "Текущий режим интерфейса"}
+{$wa->title($_title)}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+
+    <p>Хелпер вернет значение текущего общего режима работы.</p>
+
+    <p>Текущее значение <code>&#123;$wa->whichUI()&#125; = '<strong>{$wa->whichUI()}</strong>'</code></p>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+    </script>
+</div>

@@ -1,0 +1,76 @@
+{$_title = ".bottombar"}
+{$wa->title($_title)}
+
+{function name="_render"}
+<div class="bottombar">
+    <ul>
+        <li>
+            <a href="#">
+                <i class="fas fa-list"></i>
+                <span>Lists</span>
+            </a>
+        </li>
+        <li class="selected">
+            <a href="#">
+                <i class="fas fa-check"></i>
+                <span>To-Dos</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-heart"></i>
+                <span>Family</span>
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+                <span class="badge">1</span>
+            </a>
+        </li>
+    </ul>
+</div>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Постоянно видимая фиксированная навигация в нижней части экрана. Работает на основе свойства <code>position: fixed;</code>.</p>
+    <p>Рекомендуется использовать на всех мобильных устройствах и планшетах. Не рекомендуется использовать, если в меню больше 5 пунктов.</p>
+
+    <p>Пример кода:</p>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <p>
+        <button class="button" id="bottombar-display-toggle">Показать .bottombar</button>
+    </p>
+    <p>Нажмите на кнопку и затем попробуйте изменять размеры браузера, чтобы увидеть, как элемент адаптируется к размерам экрана устройства.</p>
+
+    {_render}
+
+    <h4>На мобильных устройствах <span class="hint"><i class="fas fa-thumbs-up"></i></span></h4>
+    <p>Компонент <code>.bottombar</code> является важнейшим для организации навигации внутри приложения на мобильных устройствах и во многих случаях заменит сайдбар.</p>
+
+    <h4>На десктопах <span class="hint"><i class="fas fa-hand-point-up"></i></span></h4>
+    <p>На больших экранах компонент тоже можно использовать. Но лучше не для создания средств навигации, а для какого-то всегда актуального элемента управления. Например, кнопок аудиопроигрывателя или всегда доступной кнопки сохранения.</p>
+    <p>Если <code>.bottombar</code> используется в интерфейсе <a href="{$wa_app_url}component/sidebar/">одновременно с .sidebar / .content</a>, дополнительным классом на основной <code>#wa-app<strong>.with-bottombar</strong></code> можно скорректировать высоту <code>.sidebar</code> и <code>.content</code> до <code>100vh - <strong>8rem</strong></code>, чтобы их содержимое не попадало под <code>.bottombar</code>.</p>
+
+    <style>
+        .bottombar { display: none; } /* for demo purposes only */
+    </style>
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+
+        $('#bottombar-display-toggle').click(function(){
+            $('.bottombar').show();
+        });
+
+    </script>
+</div>

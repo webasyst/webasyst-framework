@@ -1,0 +1,186 @@
+{$_title = ".tabs"}
+{$wa->title($_title|json_encode)}
+
+{$_menu = [
+[
+    "name" => "Главная",
+    "url" => "javascript:void(0);",
+    "count" => 1
+],
+[
+    "name" => "Новости",
+    "url" => "javascript:void(0);",
+    "selected" => 1,
+    "count" => 24
+],
+[
+    "name" => "Блог",
+    "url" => "javascript:void(0);"
+],
+[
+    "name" => "Магазин",
+    "url" => "javascript:void(0);",
+    "icon" => "fas fa-globe",
+    "count" => "<span class='badge'>5</span>"
+],
+[
+    "name" => "Поддержка",
+    "url" => "javascript:void(0);",
+    "count" => 6
+],
+[
+    "name" => "Открыть витрину",
+    "url" => "javascript:void(0);",
+    "button" => true
+]
+]}
+
+{function name="_render" class=""}
+<ul class="tabs{if !empty($class)} {$class}{/if}">
+{foreach $_menu as $_item}
+    <li{if !empty($_item.selected)} class="selected"{/if}>
+{if empty($_item.button)}
+        <a href="{$_item.url|escape}">
+{if !empty($_item.icon)}            <i class="{$_item.icon}"></i>
+{/if}
+            {$_item.name|escape}
+{if !empty($_item.count)}            <span class="count">{$_item.count}</span>
+{/if}
+        </a>
+{else}      <button class="purple">Открыть витрину</button>
+{/if}    </li>
+{/foreach}
+</ul>
+{/function}
+
+<div class="u-component-page">
+    <h1 class="u-page-title">{$_title|escape}</h1>
+    <p>Горизонтальное меню (табы) для выбора подраздела текущего экрана или фильтра контента. Как и в других вариантах меню (<a href="{$wa_app_url}component/menu/">.menu</a>, <a href="{$wa_app_url}component/chips/">.chips</a>), основные элементы табов оформляются в виде ссылок <code>li &gt; <strong>a</strong></code>. Но дополнительно внутри табов допускается использовать и другие кликабельные элементы, например, кнопки <a href="{$wa_app_url}component/button/">.button</a>.</p>
+    <p>Меню выводится всегда в один горизонтальный ряд и на новую строку не переносится. Если меню не помещается по ширине, то появится горизонтальная прокрутка (работает <code>overflow-x: auto</code>), что оправданно и удобно на всех устройствах с сенсорным экраном.</p>
+
+    <div class="line">
+        {_render}
+    </div>
+
+    <div class="line">
+        <pre class="prettyprint">{_render|escape}</pre>
+    </div>
+
+    <h3>Размер меню</h3>
+    <p>В отличие от вертикального меню <code>.menu</code>, <code>.tabs</code> позволяет регулировать свой размер с помощью классов <code>.small</code>, <code>.smaller</code>, <code>.smallest</code> и <code>.large</code>, <code>.larger</code>, <code>.largest</code>.</p>
+    <p>Корректировка размера может быть полезна как в зависимости от контекста меню в размере общей структуры страницы, так и при динамическом изменении размеров меню в процессе навигации по странице. Например, когда при глобальной прокрутке меню прилипает к <code>$wa->header()</code> и при этом меняет свой размер. Все анимации, связанные с размером <code>.tabs</code>, будут выполняться с CSS transition 200ms.</p>
+
+    <div class="line">
+        {_render class="smallest"}
+    </div>
+    <div class="line">
+        {_render class="smaller"}
+    </div>
+    <div class="line">
+        {_render class="small"}
+    </div>
+    <div class="line">
+        {_render class="large"}
+    </div>
+    <div class="line">
+        {_render class="larger"}
+    </div>
+    <div class="line">
+        {_render class="largest"}
+    </div>
+
+    <br><br>
+    <hr>
+
+    <h3>.tabs<code>.bordered-bottom</code></h3>
+    <p>Визуальной границы под табами по умолчанию нет. Ее можно добавить с помощью дополнительного класса <code>ul.tabs<strong>.bordered-bottom</strong></code>.</p>
+    <div class="line">
+        {_render class="bordered-bottom"}
+    </div>
+
+    <h3>.tabs<code>.overflow-dropdown</code></h3>
+    <p>Для включения табов в режиме выпадающего списка достаточно указать класс <code>.overflow-dropdown</code> и вставить на страницу JavaScript-код, указанный ниже:</p>
+
+    <div class="line">
+        {function name="_render_example_dropdown"}
+<script>
+    ( function($) {
+        $(".tabs").waTabs();
+    })(jQuery);
+</script>{/function}
+        <pre class="prettyprint">{_render_example_dropdown|escape}</pre>
+    </div>
+
+    <div class="line">
+        {_render class="overflow-dropdown larger"}
+    </div>
+    <div class="line">
+        {_render class="overflow-dropdown largest"}
+    </div>
+
+    <script>
+        ( function($) {
+            $(".overflow-dropdown.larger").waTabs();
+            $(".overflow-dropdown.largest").waTabs();
+        })(jQuery);
+    </script>
+
+    <h3>.tabs<code>.overflow-arrows</code></h3>
+    <p>Для включения табов в режиме прокрутки с кнопками достаточно указать класс <code>.overflow-arrows</code> и вставить на страницу JavaScript-код, указанный ниже.</p>
+    <p>Есть 3 режима работы: стрелки навигации справа и слева от табов (both), две стрелки справа от табов (right), стрелок нет вообще — навигация производится с помощью кнопки shift и прокручивания мышкой (none).</p>
+    <p>Скрипт создает «обертку» над табами. При неоходимости можно задать собственный класс этой обертке. Для этого надо элементу с табами  установить параметр <code>data-wrapper-class</code> с нужным именем класса.</p>
+    {function name="_render_example_overflow_html"}
+<ul class="tabs overflow-arrows large" data-wrapper-class="custom-class"> ... </ul>{/function}
+    <pre class="prettyprint">{_render_example_overflow_html|escape}</pre>
+    <div class="line">
+        {function name="_render_example_overflow_js"}
+<script>
+    ( function($) {
+
+        $(".tabs1").waTabs({
+            arrows_side: 'none'
+        });
+
+        $(".tabs2").waTabs({
+            arrows_side: 'both'
+        });
+
+        $(".tabs3").waTabs({
+            arrows_side: 'right'
+        });
+
+    })(jQuery);
+</script>{/function}
+        <pre class="prettyprint">{_render_example_overflow_js|escape}</pre>
+    </div>
+    <div class="line">
+        {_render class="overflow-arrows large"}
+    </div
+    <div class="line">
+        {_render class="overflow-arrows larger"}
+    </div>
+    <div class="line">
+        {_render class="overflow-arrows largest"}
+    </div>
+    <script>
+        ( function($) {
+            $(".overflow-arrows.large").waTabs({
+                arrows_side: 'none'
+            });
+            $(".overflow-arrows.larger").waTabs({
+                arrows_side: 'both'
+            });
+            $(".overflow-arrows.largest").waTabs({
+                arrows_side: 'right'
+            });
+        })(jQuery);
+    </script>
+
+    <script>
+        $.wa_ui.title.set({$_title|json_encode});
+
+        if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {
+            prettyPrint();
+        }
+    </script>
+</div>
