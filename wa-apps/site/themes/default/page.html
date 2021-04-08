@@ -6,9 +6,9 @@
     </div>
 {/if}
 
-<h1 itemprop="name">{$page.name}</h1>
+<h1 itemprop="name">{$page.name|default:'[`(no name)`]'}</h1>
 
-{$subpages = $wa->site->pages($page.id)}
+{$subpages = $wa->site->pages($page.id|default:null)}
 {if $subpages}
     <ul class="sub-links">
         {foreach $subpages as $p}

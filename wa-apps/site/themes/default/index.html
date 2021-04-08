@@ -47,7 +47,6 @@
 
     <!-- css -->
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-{*    {if $wa->shop && $wa->shop->currency() == 'RUB'}<link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}*}
     {$wa->css()} {* links active plugins CSS *}
     {if $theme_settings.font_family|strstr:'_google_'}
         {if $theme_settings.font_family|strstr:'fira'}{$_real_font_name = 'Fira+Sans:400,500,700,400italic,500italic,700italic'}{/if}

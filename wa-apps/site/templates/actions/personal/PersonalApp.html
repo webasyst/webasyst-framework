@@ -25,7 +25,7 @@
     
     <div id="s-app-enabled" {if !$enabled}style="display:none"{/if}>
         <p><i class="icon10 status-green top-padded"></i> {sprintf('[`%s personal account URL: <a id="s-app-frontend-link" href="%s" target="_blank">%s</a> <i class="icon10 new-window top-padded"></i>`]', $app.name, '', '')}</p>
-        {ifset($personal_settings)}
+        {$personal_settings|default:''}
     </div>
     
     <div id="s-app-disabled" {if $enabled}style="display:none"{/if}>
