@@ -12,7 +12,6 @@
                         <img class="" src="{$user.photo_url_144}" alt="">
                         {if $user._online_status === 'online'}<span class="userstatus"></span>{/if}
                         <span class="user-name">{$user.name|escape}</span>
-                        {*<span class="badge-user blue"><i class="fas fa-plane"></i><span>Полный улёт</span></span>*}
                         {if $user.jobtitle}<span class="user-jobtitle">{$user.jobtitle|escape}</span>{/if}
                         <span class="user-login small">{$user.login|escape}</span>
                     </a>

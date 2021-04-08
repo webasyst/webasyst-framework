@@ -70,9 +70,9 @@
                             <div class="value small wa-page-app-url no-shift">
                                 <span style="color: red;">
                                     {if isset($warnings.no_site_storefront)}
-                                        [s`Страница не будет опубликована, потому что в настройках структуры сайта нет ни одного поселения приложения (правил маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура».`]
+                                        [s`The page will not be published because there is no settlement, or routing rule, of the app in the website structure settings. Add a new entry to Site apps’s “Structure” section in order to publish this page.`]
                                     {elseif isset($warnings.deleted_site_storefront)}
-                                        [s`Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура».`]
+                                        [s`The page is not published because it is not connected to any of your website’s structure entries, or routing rules. Add a new entry to Site apps’s “Structure” section in order to publish this page.`]
                                     {elseif isset($warnings.several_site_storefront)}
                                         [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
                                     {/if}

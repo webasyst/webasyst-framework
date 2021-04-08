@@ -16,14 +16,23 @@
             {foreach $theme.files as $f_id => $f}
             {if empty($f.modified)}
                 {if !$_non_m_group_shown_flag}
-                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf('[s`%s and %d more unmodified files`]', $f_id|escape, $_non_m_files_count-1)}{else}{$f_id|escape}{/if} </label></li>
+                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked">
+                        {if $_non_m_files_count > 1}
+                            {sprintf(
+                                _ws('%s and %d more unmodified file', '%s and %d more unmodified files', $_non_m_files_count-1, false),
+                                $f_id|escape,
+                                $_non_m_files_count-1
+                            )}
+                        {else}
+                            {$f_id|escape}
+                        {/if} </label></li>
                     {$_non_m_group_shown_flag = true}
                 {/if}
             {else}
                 <li><label class="bold" title="[s`You modified this file`]"><input name="reset[]" type="checkbox" value="{$f_id|escape}"> {$f_id|escape}</label></li>
             {/if}
             {/foreach}
-            
+
         </ul>
         {else}
         <input type="hidden" name="parent_only" value="1">
@@ -42,7 +51,17 @@
             {foreach $theme.parent_theme.files as $f_id => $f}
             {if empty($f.modified)}
                 {if !$_non_m_group_shown_flag}
-                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf('[s`%s and %d more unmodified files`]', $f_id|escape, $_non_m_files_count-1)}{else}{$f_id|escape}{/if} </label></li>
+                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked">
+                    {if $_non_m_files_count > 1}
+                        {sprintf(
+                            _ws('%s and %d more unmodified file', '%s and %d more unmodified files', $_non_m_files_count-1, false),
+                            $f_id|escape,
+                            $_non_m_files_count-1)
+                        }
+                    {else}
+                        {$f_id|escape}
+                    {/if}
+                    </label></li>
                     {$_non_m_group_shown_flag = true}
                 {/if}
             {else}
@@ -52,7 +71,7 @@
         </ul>
         {/if}
         <div class="clear-both"></div>
-        
+
     </div>
     <div class="dialog-buttons">
         <input type="hidden" name="theme" value="{$theme.id}">

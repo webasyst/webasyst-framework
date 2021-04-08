@@ -8,7 +8,7 @@ return array(
         96 => 'img/installer-96.png',
     ),
     'mobile'      => false,
-    'version'     => '2.0.0', // developer preview
+    'version'     => '2.0.0', 
     'critical'    => '2.0.0',
     'system'      => true,
     'vendor'      => 'webasyst',

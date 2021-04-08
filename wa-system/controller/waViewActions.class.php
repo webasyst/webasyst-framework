@@ -20,6 +20,14 @@ abstract class waViewActions extends waController
     protected $template;
 
     /**
+     * @depecated
+     * Use getTemplateDir to set directory of your templates
+     * @see getTemplateDir
+     * @var string
+     */
+    protected $template_folder = 'templates/actions/';
+
+    /**
      * Is relative template path ($this->template), so we can use auto mechanism of choosing template folder (waActionTemplatePathBuilder)
      * Relative means relative from template dir of current application (plugin)
      * @var bool
@@ -196,7 +204,7 @@ abstract class waViewActions extends waController
      */
     protected function getTemplateDir()
     {
-        return 'templates/actions/';
+        return $this->template_folder;
     }
 
     /**

@@ -25,14 +25,14 @@
 
             {* force global UI mode switch @ debug mode only *}
             <div style="position: fixed; z-index: 9999; bottom: 20px; right: 20px; border-radius: 4px; background: #fea; padding: 15px; box-shadow: 0 5px 20px -10px rgba(0,0,0,0.2), 0 3px 10px -5px rgba(0,0,0,0.1); font-size: 16px; border: 2px solid #eda;">
-                UI Debug Mode:
+                [`Select UI mode`]:
                 <select onChange="_setCookie('force_set_wa_backend_ui_version', this.options[this.selectedIndex].value, 7); window.location.reload();" style="font-size: 16px;">
                     <option value="1.3"{if !$wa->cookie('force_set_wa_backend_ui_version') || $wa->cookie('force_set_wa_backend_ui_version') == '1.3'} selected{/if}>1.3</option>
                     <option value="2.0"{if $wa->cookie('force_set_wa_backend_ui_version') == '2.0'} selected{/if}>2.0</option>
                 </select>
                 {if $wa->cookie('force_set_wa_backend_ui_version') == '2.0'}
-                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 1px 0 8px; cursor: pointer" title="[s`Light mode ON`]" data-wa-theme-mode="light"></span>
-                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode ON`]" data-wa-theme-mode="dark"></span>
+                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 1px 0 8px; cursor: pointer" title="[s`Light mode`]" data-wa-theme-mode="light"></span>
+                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode`]" data-wa-theme-mode="dark"></span>
                     <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span>
                 {/if}
             </div>
@@ -65,7 +65,7 @@
                         {if $app_info.id != 'webasyst'}<img src="{$root_url}{$app_info.icon.48}" style="width: 24px; height: 24px; position: relative; top: 3px;">{/if}
                         [s`All-new Webasyst 2 UI`] <span style="opacity: 0.42;">([`beta`])</span>
                     </h3>
-                    <p style="font-size: 13px;">[s`This app supports the brand new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can go back to the classic UI any time.`]</p>
+                    <p style="font-size: 13px;">[s`This app supports the brand-new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can return to the classic UI any time.`]</p>
                     <button style="display: inline-block; line-height: 1; border-radius: 4px; color: #fff; outline: 0 none; border: none; white-space: nowrap; padding: 10px 12px; margin: 0 2px 0 0; background: #09f; transition: 0.1s; position: relative; top: 0; font-weight: 500; cursor: pointer; box-shadow: 0 0.25em 0.75em -0.25em rgba(0, 0, 0, 0.2); font-size: 16px;" onClick="_setCookie('force_set_wa_backend_ui_version', '2.0', 365); window.location.reload();">[s`Turn on the new UI`]</button>
                     [s`or`]
                     <a href="[s`http://2.webasyst.com`]" target="_blank">[s`learn more about Webasyst 2`] <i class="icon10 new-window" style="position: relative; top: 11px; left: 2px;"></i></a>
