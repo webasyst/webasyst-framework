@@ -206,5 +206,8 @@
             }
         });
     </script>
-
+{elseif $info.type == 'help'}
+    {if isset($info.description)}
+        {$info.description}
+    {/if}
 {/if}

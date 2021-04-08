@@ -46,6 +46,16 @@ class worldwideShipping extends waShipping
             $country_names[$c['iso3letter']] = $c['name'];
         }
 
+        if (empty($values['currency'])) {
+            $user_locale = wa()->getUser()->getLocale();
+            $default_currencies = array('ru_RU' => 'RUB', 'en_US' => 'USD');
+            foreach ($default_currencies as $locale => $currency) {
+                if ($user_locale == $locale) {
+                    $values['currency'] = $currency;
+                }
+            }
+        }
+
         $view->assign(
             array(
                 'services_by_type'   => $this->getAdapter()->getAppProperties('desired_date'),

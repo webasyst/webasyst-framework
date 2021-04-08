@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-03-30 16:52+0300\n"
+"PO-Revision-Date: 2021-04-02 19:03+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4073,7 +4073,7 @@ msgid "Dashboard title"
 msgstr "Название"
 
 msgid "Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs."
-msgstr "Дашборд Webasyst TV открывается по уникальной приватной ссылке в любом современном браузере и предназначена для трансляции на телевизоры 4K или Full HD."
+msgstr "Дашборд Webasyst TV пожно просматривать в любом современном браузере и транслировать на телевизоры 4K или Full HD."
 
 msgid "Dashboard public link"
 msgstr "Ссылка"
@@ -4597,7 +4597,7 @@ msgstr "Удалить группу шаблонов?"
 msgid "Preview template"
 msgstr "Предварительный просмотр"
 
-msgid "Preview SMS message \"<span class=\"js-template-name\"></span>\""
+msgid "Preview SMS message “<span class=\"js-template-name\"></span>”"
 msgstr "Предварительный просмотр SMS-сообщения «<span class=\"js-template-name\"></span>»"
 
 msgid "Checking the sending of SMS messages"
@@ -6325,7 +6325,7 @@ msgstr "Новый интерфейс Webasyst 2"
 msgid "beta"
 msgstr "бета"
 
-msgid "This app supports the brand new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can go back to the classic UI any time."
+msgid "This app supports the brand-new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can return to the classic UI any time."
 msgstr "Это приложение поддерживает новый интерфейс Webasyst 2 (бета)! Включите режим нового интерфейса и посмотрите, как классно приложение выглядит в новых стилях. И не волнуйтесь — вы всегда сможете вернуться обратно в старый режим."
 
 msgid "Turn on the new UI"
@@ -6338,7 +6338,7 @@ msgid "learn more about Webasyst 2"
 msgstr "подробнее о Webasyst 2"
 
 msgid "Thank you for checking out the newest Webasyst 2 user interface (beta)!"
-msgstr "Новый интерфейс Webasyst 2 (бета)"
+msgstr "Спасибо за то, что решили попробовать новый интерфейс Webasyst 2 (бета)!"
 
 msgid "This is a fully functional version of this app in the new style. We encourage you to use the new UI in full and <a href=\"%s\" target=\"_blank\">share your feedback %s</a> with us in case of any issues."
 msgstr "Вы используете новую версию интерфейса этого приложения. Если вдруг что-то пошло не так, пожалуйста, <a href=\"%s\" target=\"_blank\">сообщите нам %s</a>. Будем рады вашим отзывам!"
@@ -6350,15 +6350,15 @@ msgid "Back to the classic UI"
 msgstr "Вернуться в старый интерфейс"
 
 msgid "Try it in both light and dark modes:"
-msgstr "Светлый и темный режимы:"
+msgstr "Попробуйте его в светлом и темном режимах:"
 
 msgid "You’ve enabled the new Webasyst 2 UI, but this app does not currently support it. Please contact the app developer to encourage upgrading the UI to the new style."
 msgstr "Вы включили режим нового интерфейса Webasyst 2, но это приложение его пока не поддерживает. Пожалуйста, свяжитесь с разработчиком приложения и узнайте, когда новый интерфейс станет доступен."
 
 msgid "New UI is not yet supported"
-msgstr "Новый интерфейс пока не поддерживается"
+msgstr "Новый интерфейс пока не поддерживается."
 
-msgid "Edit Widgets"
+msgid "Edit widgets"
 msgstr "Виджеты"
 
 msgid "Teams"
@@ -6367,8 +6367,8 @@ msgstr "Команда"
 msgid "Use the Team app to set up your team and customize access rights."
 msgstr "Используйте приложение «Команда» для настройки прав доступа и состава команд."
 
-msgid "No new notifications"
-msgstr "Новых уведомлений нет"
+msgid "No new notifications."
+msgstr "Новых уведомлений нет."
 
 msgid "Company logo"
 msgstr "Логотип"
@@ -6397,13 +6397,13 @@ msgstr "Угол градиента (&deg;)"
 msgid "Text color"
 msgstr "Цвет текста"
 
-msgid "%s symbols"
+msgid "%s characters"
 msgstr "%s символов"
 
 msgid "Upload new image"
 msgstr "Загрузить картинку"
 
-msgid "My Apps"
+msgid "My apps"
 msgstr "Мои приложения"
 
 msgid "Everyone"
@@ -6421,20 +6421,65 @@ msgstr "Сегодня еще не было событий."
 msgid "Filter by app"
 msgstr "Фильтр по приложениям"
 
-msgid "TV Link"
+msgid "TV link"
 msgstr "Ссылка для ТВ"
 
-msgid "Open in new window"
+msgid "Open in a new window"
 msgstr "Открыть в новом окне"
 
 msgid "Copied"
 msgstr "Скопировано"
 
-msgid "This dashboard can be opened in both browser and TV with the support for basic access to browsing websites. Get the private TV link and open it using an internal browser on your TV."
-msgstr "Этот дашборд можно открыть на любом телевизоре с поддержкой доступа в интернет. Просто перейдите по приватной ссылке этого дашборда в браузере телевизора."
+msgid "This dashboard can be viewed both in a browser and on a TV with the support for basic website browsing. Get a private TV link and open it using an internal browser on your TV."
+msgstr "Этот дашборд можно открыть и в браузере, и на любом телевизоре с функцией просмотра интернет-сайтов. Просто перейдите по приватной ссылке этого дашборда в браузере своего телевизора."
 
 msgid "Show navigation"
 msgstr "Показать меню"
 
-msgid "Your dashboard is empty. Add widgets by clicking \"Edit Widgets\" button on the top."
-msgstr "Дашборд пока пустой. Добавьте виджеты, щелкнув по ссылке «Виджеты» выше."
+msgid "Your dashboard is empty. Add widgets by clicking “Edit widgets” button at the top."
+msgstr "Ваш дашборд пуст. Добавьте на него виджеты с помощью кнопки «Виджеты» вверху."
+
+msgid "Please refer to <a href=\"http://ogp.me\" rel=\"noopener\" target=\"_blank\">Open Graph</a> protocol site for more information on social sharing meta tags and available values."
+msgstr "На сайте протокола <a href=\"http://ogp.me\" rel=\"noopener\" target=\"_blank\">Open Graph</a> доступно больше информации о метатегах для социальных сетей и допустимых значениях для них."
+
+msgid "The page is not published because it is not connected to any of your website’s structure entries, or routing rules. Add a new entry to Site apps’s “Structure” section in order to publish this page."
+msgstr "Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Добавьте новое правило в разделе «Структура» приложения «Сайт» для публикации этой страницы."
+
+msgid "The page will not be published because there is no settlement, or routing rule, of the app in the website structure settings. Add a new entry to Site apps’s “Structure” section in order to publish this page."
+msgstr "Страница не будет опубликована, потому что в настройках структуры сайта нет ни одного поселения приложения (правил маршрутизации). Настройте поселение для публикации этой страницы в разделе «Структура» приложения «Сайт»."
+
+msgid "Notifications"
+msgstr "Уведомления"
+
+msgid "New Webasyst 2 UI"
+msgstr "Новый интерфейс Webasyst 2"
+
+msgid "Light mode"
+msgstr "Светлый режим"
+
+msgid "Dark mode"
+msgstr "Темный режим"
+
+msgid "Auto (based on device settings)"
+msgstr "Авто (зависит от настроек устройства)"
+
+msgid "Installed widgets"
+msgstr "Установленные виджеты"
+
+msgid "All widgets"
+msgstr "Все виджеты"
+
+msgid "Add widget"
+msgstr "Добавить виджет"
+
+msgid "Also check in “<a href=\"%s\">%s</a>” section that SMS notifications based on “%s“ template are correctly sent, too. Be aware that SMS sending mignt not work occasionally; e.g., due to low SMS balance."
+msgstr "Также проверьте в разделе «<a href=\"%s\">%s</a>», чтобы правильно отправлялись SMS-сообщения, сформированные по шаблону «%s». Учитывайте, что отправка SMS может иногда не срабатывать, например, из-за исчерпания баланса у провайдера."
+
+msgid "PHP extension “openssl” must be installed on your server to make the DKIM option available."
+msgstr "На вашем сервере должно быть установлено PHP-расширение openssl, для того чтобы настройка DKIM была доступна."
+
+msgid "To check the sending of SMS messages, please first save the changes you have made."
+msgstr "Для проверки отправки SMS-сообщений сначала сохраните сделанные вами изменения."
+
+msgid "Select UI mode"
+msgstr "Выберите режим интерфейса"

@@ -312,14 +312,36 @@ class yadShipping extends waShipping
             $country_id = $this->getAddress('country');
             $region_id = $this->getAddress('region');
             if (!empty($country_id) && !empty($region_id)) {
-                $region_model = new waRegionModel();
-                $region_data = $region_model->getByField(array(
-                    'country_iso3' => $country_id,
-                    'code' => $region_id,
-                ));
-                $name_region = $region_data['name'];
+                if (is_numeric($region_id)) {
+                    $region_model = new waRegionModel();
+                    $region_data = $region_model->getByField(array(
+                        'country_iso3' => $country_id,
+                        'code' => $region_id,
+                    ));
+                    $name_region = $region_data['name'];
+                } else {
+                    $name_region = $region_id;
+                }
+                $to_location = $params['to']['location'];
                 if (!empty($name_region)) {
                     $params['to']['location'] .= ', ' . $name_region;
+                }
+
+                $options = $this->getExactAddressesForMainSelector($params['to']['location']);
+                $addresses_do_not_match = true;
+                foreach ($options as $option) {
+                    if ($to_location == mb_strtolower($option['value'])) {
+                        $addresses_do_not_match = false;
+                    }
+                }
+                if (count($options) > 1 && $addresses_do_not_match) {
+                    return array(
+                        array(
+                            'rate' => null,
+                            'comment' => $this->_w('Уточните адрес'),
+                            'possible_addresses' => $options,
+                        ),
+                    );
                 }
             }
 
@@ -843,7 +865,13 @@ HTML;
             'zip'    => array(),
         );
     }
-    // used in frontend
+
+    /**
+     * used only on the frontend
+     * @param waOrder $order
+     * @param $service
+     * @return array|array[]|array[][]
+     */
     public function customFieldsForService(waOrder $order, $service)
     {
         $fields = parent::customFields($order);
@@ -903,7 +931,20 @@ HTML;
     private function getGeoIdField(waOrder $order, $service = null)
     {
         if ($service) {
-            $options = $this->getGeocodeOptions($order->shipping_address['city']);
+            $address = '';
+            if (isset($order->shipping_address['address']) && !empty($order->shipping_address['address'])) {
+                $address = $order->shipping_address['address'];
+            } else {
+                foreach (array('city', 'region_name') as $key => $address_field) {
+                    if (isset($order->shipping_address[$address_field]) && !empty($order->shipping_address[$address_field])) {
+                        $address .= $order->shipping_address[$address_field];
+                        if ($key < 1) {
+                            $address .= ', ';
+                        }
+                    }
+                }
+            }
+            $options = $this->getExactAddressesForAdditionalSelector($address);
             if (count($options) > 1) {
                 $options = array(
                     'options' => $options,
@@ -913,7 +954,7 @@ HTML;
             }
         } else {
             $options = array(
-                'options_callback' => array($this, 'getGeocodeOptions'),
+                'options_callback' => array($this, 'getExactAddressesForAdditionalSelector'),
             );
         }
 
@@ -924,7 +965,7 @@ HTML;
                 'value'        => ifset($shipping_params, 'geo_id_to', null),
                 'title'        => 'Населённый пункт доставки',
                 'control_type' => waHtmlControl::SELECT,
-                'description'  => 'Уточните адрес',
+                'description'  => $this->_w('Уточните адрес'),
 
                 'data' => array(
                     'affects-rate' => true,
@@ -933,49 +974,99 @@ HTML;
         );
     }
 
-    public function getGeocodeOptions($city = null)
+    /**
+     * @param string $customer_address
+     * @return array
+     */
+    protected function getExactAddressesForMainSelector($customer_address = '')
     {
         $options = array();
-        if (empty($city)) {
-            if (!empty($this->raw_address['city_to'])) {
-                $city = $this->raw_address['city_to'];
-            } else {
-                $city = trim(waRequest::post('city'));
+        $result = $this->getAutocompleteAddresses($customer_address);
+        foreach ($result as $item) {
+            $exact_address = array(
+                'value' => array()
+            );
+            foreach ($item['addressComponents'] as $address) {
+                $address_name = $address['name'];
+                if ($address['kind'] == 'PROVINCE') {
+                    $exact_address['region'] = $address_name;
+                } elseif ($address['kind'] == 'AREA' || $address['kind'] == 'LOCALITY' || $address['kind'] == 'DISTRICT') {
+                    $exact_address['value'][] = $address_name;
+                }
+            }
+            if ($exact_address['value']) {
+                $id = $item['geoId'];
+                $exact_address['value'] = implode(', ', $exact_address['value']);
+                $exact_address['city'] = $exact_address['value'];
+                $options[$id] = $exact_address;
             }
         }
 
-        if (!empty($city)) {
+        return $options;
+    }
+
+    /**
+     * used if, after selecting an address in the main selector, it was not possible to find the exact address
+     * @param string $customer_address
+     * @return array
+     */
+    protected function getExactAddressesForAdditionalSelector($customer_address = '')
+    {
+        $options = array();
+        $result = $this->getAutocompleteAddresses($customer_address);
+        foreach ($result as $item) {
+            $locality = null;
+            foreach ($item['addressComponents'] as $address) {
+                if ($address['kind'] == 'LOCALITY') {
+                    $locality = $address['name'];
+                }
+            }
+            if ($locality) {
+                $id = $item['geoId'];
+                $full_address = $item['address'];
+                $options[$id] = array(
+                    'title' => $full_address,
+                    'description' => $full_address,
+                    'value' => sprintf('%d/%s', $id, $locality),
+                    'data' => array(
+                        'city' => $locality,
+                        'address' => sprintf('%d/%s (%s)', $id, $locality, $full_address),
+                    ),
+                );
+            }
+        }
+
+        return $options;
+    }
+
+    protected function getAutocompleteAddresses($customer_address)
+    {
+        $result = array();
+
+        if (empty($customer_address)) {
+            if (!empty($this->raw_address['to']['location'])) {
+                $customer_address = $this->raw_address['to']['location'];
+            } else {
+                $customer_address = waRequest::post('city', '', waRequest::TYPE_STRING);
+            }
+        }
+
+        if (is_string($customer_address)) {
+            $customer_address = trim($customer_address);
+        }
+
+        if (!empty($customer_address)) {
             $params = array(
-                'term' => urlencode($city),
+                'term' => urlencode($customer_address),
             );
 
             try {
                 $result = $this->apiQuery('autocomplete', $params);
-                if (!empty($result)) {
-                    foreach ($result as $item) {
-                        $locality = $city;
-                        foreach ($item['addressComponents'] as $address) {
-                            if ($address['kind'] == 'LOCALITY') {
-                                $locality = $address['name'];
-                            }
-                        }
-                        $id = $item['geoId'];
-                        $description = $item['address'];
-                        $options[$id] = array(
-                            'title'  => $description,
-                            'description' => $description,
-                            'value' => sprintf('%d/%s', $id, ucfirst($city)),
-                            'data' => array(
-                                'city' => $locality,
-                                'address' => sprintf('%d/%s (%s)', $id, ucfirst($city), $description),
-                            ),
-                        );
-                    }
-                }
+                return $result;
             } catch (waException $ex) {}
         }
 
-        return $options;
+        return $result;
     }
 
     private function getDeliveryIntervalField(waOrder $order, $service = array())
@@ -1034,6 +1125,9 @@ HTML;
         );
     }
 
+    /**
+     * used only in the old checkout
+     */
     public function inputDataAction()
     {
         $key = waRequest::request('key', $this->getCacheKey(), waRequest::TYPE_STRING_TRIM);
@@ -1049,7 +1143,7 @@ HTML;
         if (is_array($data)) {
             $response = array(
                 'services' => $data,
-                'options'  => $this->getGeocodeOptions(),
+                'options'  => $this->getExactAddressesForAdditionalSelector(),
             );
             self::sendJsonData($response);
         } else {
@@ -1325,25 +1419,21 @@ HTML;
         }
 
         $shipping_address = $order->shipping_address;
+        $data['recipient']['address'] = array(
+            'country'    => ifset($shipping_address['country_name']),
+            'region'     => ifset($shipping_address['region_name']),
+            'locality'   => ifset($shipping_address['city']),
+            'street'     => ifset($shipping_address['street']),
+            'postalCode' => ifset($shipping_address['zip']),
+        );
 
-        if ($order_shipping_type != 'pickup') {
-            $data['recipient']['address'] = array(
-                'country'    => ifset($shipping_address['country_name']),
-                'region'     => ifset($shipping_address['region_name']),
-                'locality'   => ifset($shipping_address['city']),
-                'street'     => ifset($shipping_address['street']),
-                'postalCode' => ifset($shipping_address['zip']),
-            );
-
-            if (!empty($order['shipping_params']['geo_id_to'])) {
-                $data['recipient']['address']['geoId'] = (int)$order['shipping_params']['geo_id_to'];
-            } elseif (!empty($order['shipping_params_geo_id_to'])) {
-                $data['recipient']['address']['geoId'] = (int)$order['shipping_params']['geo_id_to'];
-            }
+        if (!empty($order['shipping_params']['geo_id_to'])) {
+            $data['recipient']['address']['geoId'] = (int)$order['shipping_params']['geo_id_to'];
+        } elseif (!empty($order['shipping_params_geo_id_to'])) {
+            $data['recipient']['address']['geoId'] = (int)$order['shipping_params']['geo_id_to'];
         }
 
-        $data['recipient'] += $this->getRecipientData($shipping_address, $order);
-
+        $data['recipient'] += $this->getContactFields($shipping_address, $order, 'recipient');
         foreach ($this->getItems() as $item) {
             $item_params = array(
                 'externalId' => $item['id'],
@@ -1363,6 +1453,12 @@ HTML;
             }
 
             $data['places'][0]['items'][] = $item_params;
+        }
+
+        $contacts_fields = $this->getContactFields($shipping_address, $order, 'contacts');
+        if ($contacts_fields) {
+            $data['contacts'][0]['type'] = 'RECIPIENT';
+            $data['contacts'][0] += $contacts_fields;
         }
 
         try {
@@ -1411,15 +1507,18 @@ HTML;
         }
     }
 
-    protected function getRecipientData($shipping, $order)
+    protected function getContactFields($shipping, $order, $request_key)
     {
         $fields = array(
             'firstName'  => 'firstname',
             'lastName'   => 'lastname',
             'middleName' => 'middlename',
-            'email'      => 'email',
-            'phone'      => 'phone'
         );
+        if ($request_key == 'recipient') {
+            $fields['email'] = 'email';
+        } elseif ($request_key == 'contacts') {
+            $fields['phone'] = 'phone';
+        }
         $result = array();
 
         foreach ($fields as $yandex_key => $shop_script_key) {

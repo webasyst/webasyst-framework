@@ -21,7 +21,7 @@ class siteFrontendAction extends waPageAction
             $this->view->assign('page', $page);
 
             // set response
-            if (!$this->getResponse()->getTitle()) {
+            if (!$this->getResponse()->getTitle() && isset($page['title'])) {
                 $this->getResponse()->setTitle($page['title']);
             }
             $this->getResponse()->setMeta(array(
@@ -72,14 +72,16 @@ class siteFrontendAction extends waPageAction
         $page_model = new sitePageModel();
         $breadcrumbs = array();
         $root_url = wa()->getAppUrl(null, true);
-        $root_page_id = $page['id'];
-        while ($page['parent_id']) {
-            $page = $page_model->getById($page['parent_id']);
-            $breadcrumbs[] = array(
-                'url' => $root_url.$page['full_url'],
-                'name' => $page['name'] ? $page['name'] : $page['title']
-            );
-            $root_page_id = $page['id'];
+        $root_page_id = ifset($page, 'id', null);
+        if (isset($page['parent_id'])) {
+            while ($page['parent_id']) {
+                $page = $page_model->getById($page['parent_id']);
+                $breadcrumbs[] = array(
+                    'url' => $root_url . $page['full_url'],
+                    'name' => $page['name'] ? $page['name'] : $page['title']
+                );
+                $root_page_id = $page['id'];
+            }
         }
         $this->view->assign('root_page_id', $root_page_id);
         return array_reverse($breadcrumbs);

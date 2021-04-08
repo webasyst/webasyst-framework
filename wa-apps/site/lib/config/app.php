@@ -2,15 +2,10 @@
 
 return array(
     'name'       => 'Site', // _w('Site')
-    'icon'       => array(
-        96 => 'img/site96.png',
-        48 => 'img/site.png',
-        24 => 'img/site24.png',
-        16 => 'img/site16.png'
-    ),
+    'icon'       => 'img/site512.png',
     'sash_color' => '#49a2e0',
     'frontend'   => true,
-    'version'    => '2.5.22',
+    'version'    => '2.5.24',
     'critical'   => '2.5.0',
     'vendor'     => 'webasyst',
     'system'     => true,

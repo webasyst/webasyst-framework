@@ -113,13 +113,13 @@
             {/if}
 
             {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard}
-                <!-- <a href="#" class="button nobutton gray"><i class="fas fa-sliders-h"></i> [`Customize`]</a> -->
+                <!-- <a href="#" class="button nobutton gray"><i class="fas fa-sliders-h"></i> Customize</a> -->
                 <div class="dashboard-customize">
                     <a href="javascript:void(0);"
                        class="button nobutton gray js-dashboard-edit"
                        data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
                        id="show-dashboard-editable-mode_">
-                        <i class="fas fa-sliders-h"></i> <span>[s`Edit Widgets`]</span>
+                        <i class="fas fa-sliders-h"></i> <span>[s`Edit widgets`]</span>
                     </a>
                     <a href="javascript:void(0);"
                        class="button js-dashboard-edit-close"
@@ -152,8 +152,8 @@
                                 </p>
                                 <p>
                                     [s`Try it in both light and dark modes:`]
-                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 5px 0 8px; cursor: pointer" title="[s`Light mode ON`]" data-wa-theme-mode="light"></span>
-                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode ON`]" data-wa-theme-mode="dark"></span>
+                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 5px 0 8px; cursor: pointer" title="[s`Light mode`]" data-wa-theme-mode="light"></span>
+                                    <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode`]" data-wa-theme-mode="dark"></span>
                                     {* <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span> *}
                                 </p>
 

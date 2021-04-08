@@ -141,7 +141,7 @@
                                 <input type="hidden" data-name="dkim_pub_key" class="js-dkim-pub-key" value="{ifset($config.dkim_pub_key)|escape}" />
                                 <input type="hidden" data-name="dkim_selector" class="js-dkim-selector" value="{ifset($config.dkim_selector)|escape}" />
                                 {if !$ssl_is_set}
-                                    <div>[s`You need to install openssl php extention to use DKIM`]</div>
+                                    <div>[s`PHP extension “openssl” must be installed on your server to make the DKIM option available.`]</div>
                                 {/if}
                                 {if !$php_version_ok}
                                     <div>[s`You need PHP version 5.3 or higher to use DKIM. Your current version is:`] <b>{$php_version}</b></div>

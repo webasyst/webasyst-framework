@@ -68,7 +68,7 @@
                                            maxlength="4"
                                            name="logo[text][value]" value="{$logo.text.value|escape}"
                                            id="config-logo-text" autocomplete="off">
-                                    <span class="hint">{sprintf('[`%s symbols`]', '1-4')}</span>
+                                    <span class="hint">{sprintf('[`%s characters`]', '1-4')}</span>
                                     <label>
                                     <span class="switch middle smaller js-switch-two-line" id="two_line_text">
                                         <input type="hidden" name="logo[two_lines]" value="0">
@@ -85,17 +85,6 @@
                                 </div>
                                 <div class="settings-logo js-settings-logo" style="display: none">
                                     <div class="fields vertical">
-                                        <div class="fields-group">
-                                            {*<h5 class="heading">[`Logo background`]</h5>
-                                            <div class="field">
-                                                <div class="value">
-                                                    <div class="toggle js-color-type-toggle" id="color-type-toggle">
-                                                        <span class="selected">[s`Gradient`]</span>
-                                                        <span>[s`Solid`]</span>
-                                                    </div>
-                                                </div>
-                                            </div>*}
-                                        </div>
                                         <div class="fields-group">
                                             <div class="field">
                                                 <div class="value">

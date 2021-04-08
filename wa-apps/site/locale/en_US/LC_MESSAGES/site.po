@@ -12,1269 +12,948 @@ msgstr ""
 "Language: ru\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : (n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2));\n"
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:51
 msgid "Files"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:66
 msgid "New folder"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:84
 msgid "Upload files"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:32
 msgid "Selected files"
 msgstr ""
 
-#: /wa-apps/site/js/site.js:289
 msgid "Move to folder"
 msgstr ""
 
-#: /wa-apps/site/js/site.js:311
 msgid "Delete"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:40
 msgid "Folder"
 msgstr ""
 
-#: /wa-apps/site/js/site.js:266
 msgid "Rename"
 msgstr ""
 
-#: /wa-apps/site/js/site.js:313
 msgid "File"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:53
 msgid "Modified"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:54
 msgid "Size"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:72
 msgid "Create"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:26
 msgid "or"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:26
 msgid "cancel"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:88
 msgid "Uploading..."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:94
 msgid "Upload"
 msgstr ""
 
-#: /wa-apps/site/js/site.js:344
 msgid "Save"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:134
 msgid "Move"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:324
 msgid "Delete folder"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:324
 msgid "Folder will be deleted without the ability to recover."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:364
 msgid "Delete files"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:364
 msgid "Files will be deleted without the ability to recover."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:2
 msgid "Site setup"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:9
 msgid "Delete entire website"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:43
 msgid "Settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:22
 msgid "Site URL"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:26
 msgid "A valid URL pointing to this Webasyst installation."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:27
 msgid "E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL."
 msgstr "E.g., <em>domain.com</em> if Webasyst is installed in the root folder of domain.com, or <em>domain.com/wa</em> if Webasyst is installed in the /wa/ subfolder of domain.com. Do not add slash / at the end of the URL."
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:31
 msgid "Site name"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:33
 msgid "Matches Site URL"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:36
 msgid "Site alias used within site selection menu (at the top left corner), and as the anchor name in frontend's <em>$wa->apps()</em> navigation menu array."
 msgstr "Site alias displayed in the site selection menu (in the top left corner) and used as the anchor name in the <em>$wa->apps()</em> navigation menu array in the frontend."
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:42
 msgid "menu"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:44
 msgid "The array defining core website navigation menu"
 msgstr "Array defining the core website navigation menu"
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:47
 msgid "All settled apps"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:47
 msgid "Automatically define navigation menu according to the routing rules"
 msgstr "Automatically define the navigation menu according to the routing rules"
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:50
 msgid "Setup manually"
 msgstr "Set up manually"
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:277
 msgid "Edit"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:70
 msgid "When done editing, click “Save” to apply changes."
 msgstr "When you have finished editing, click “Save” to apply changes."
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:72
 msgid "Add link"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:82
 msgid "Background"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:93
 msgid "Custom"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:122
 msgid "Background is for customizing your Site app backend, which is useful when you have multiple websites powered by the single Webasyst installation. Selected background will not be shown in the frontend."
 msgstr "Background can be changed to customize your Site app backend, which is useful when you have several websites powered by one Webasyst installation. The selected background will not be displayed in the frontend."
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:126
 msgid "Custom head JS"
 msgstr "Custom JavaScript code"
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:128
 msgid "Google Analytics Property ID"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:131
-msgid ""
-"E.g. <strong>UA-123456-1</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme "
-"before the closing &lt;/head&gt; tag."
-msgstr ""
-"E.g., <strong>UA-123456-1</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design "
-"themes just before the closing &lt;/head&gt; tag."
+msgid "E.g. <strong>UA-123456-1</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag."
+msgstr "E.g., <strong>UA-123456-1</strong><br />If you are using <a href=\"https://www.google.com/analytics/\">Google Analytics</a> to track website visits and conversions, then, instead of embedding Google Analytics JS code manually, you can simply enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded in all apps and design themes just before the closing &lt;/head&gt; tag."
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:135
 msgid "Additional JS code to be added before the closing &lt;/head&gt; tag:"
 msgstr "Additional JavaScript code to be added before the closing &lt;/head&gt; tag:"
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:148
 msgid "Favicon"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:152
 msgid "Upload another favicon"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:161
 msgid "Contents of this site's robots.txt file."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:168
 msgid "Authorization"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:171
 msgid "Enable sign up and login forms for this site"
 msgstr "Enable signup and login forms for this site"
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:175
 msgid "Select a site section where visitors will sign up and log into their personal accounts."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:187
 msgid "Enable captcha for signup form"
 msgstr "Enable CAPTCHA for the signup form"
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:193
 msgid "Third-party authorization"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:194
 msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"https://support.webasyst.com/5556/third-party-auth-setup/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:224
 msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:23
 msgid "Saved"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:293
 msgid "This will delete the link from the menu. Are you sure?"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:344
 msgid "This will delete entire website including all its pages without the ability to recover. Are you sure?"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:33
 msgid "New page"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:19
 msgid "Page settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:25
 msgid "This will delete entire page. Are you sure?"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:164
 msgid "draft"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:37
 msgid "Preview"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:190
 msgid "The page is not available on the website because “Site” app is not connected in the website structure."
 msgstr "The page is not available on the website because the “Site” app is not connected in the website structure."
 
-#: /wa-apps/site/lib/config/site.php:7
 msgid "Page name"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:58
 msgid "Draft"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:60
 msgid "Published"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:67
 msgid "Page URL"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:14
 msgid "Title"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:108
 msgid "Page custom parameters"
 msgstr "Custom page parameters"
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:112
 msgid "Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line."
 msgstr "Optional set of custom <em>key=value</em> parameters, which can be used in page.html template or in this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair must be specified on a separate line."
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:112
 msgid "http://www.webasyst.com/framework/docs/site/pages/"
 msgstr "http://www.webasyst.com/developers/docs/features/page-parameters/"
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "Help"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:121
 msgid "WYSIWYG"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:145
 msgid "Disable this URL"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:146
 msgid "disable"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:152
 msgid "Enable this URL"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/pages/Pages.html:153
 msgid "enable"
 msgstr ""
 
-#: /wa-apps/site/themes/default/error.html:7
 msgid "Error"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/design/Design.html:2
 msgid "New file"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/design/Design.html:14
 msgid "Template settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/design/Design.html:26
 msgid "File name"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/design/Design.html:30
 msgid "File should have one of the allowed extensions: .html, .css, .js"
 msgstr "Filename should have one of the allowed extensions: .html, .css, .js."
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:62
 msgid "Description"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/design/Design.html:39
 msgid "Optional template description"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/design/Design.html:61
 msgid "File will be deleted without the ability to recover. Are you sure?"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:2
 msgid "Block"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:22
 msgid "New block"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:37
 msgid "View original"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:39
 msgid "Block settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:41
 msgid "Revert to original"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:46
 msgid "Embed block into a page or a template"
 msgstr "Embed block in a page or template"
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:54
 msgid "ID"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:194
 msgid "This will reset all customizations you applied to this block. Are you sure?"
 msgstr "This will reset all changes you have applied to this block. Are you sure?"
 
-#: /wa-apps/site/templates/actions/blocks/Blocks.html:196
 msgid "This will permanently delete this snipper. Are you sure?"
 msgstr "This will permanently delete this snippet. Are you sure?"
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:22
 msgid "Saving..."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:24
 msgid "An error occurred while saving"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:42
 msgid "Routing"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:7
 msgid "New rule"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:117
 msgid "Edit URL"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:129
 msgid "App settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:36
 msgid "Rules are processed one by one in the given order. The first rule matching current HTTP request will be processed. Use * symbol in the URL fields for wildcard."
 msgstr "Rules are processed one by one in the given order. Applied is the first rule matching the current HTTP request. Use the * character in “URL” fields as a wildcard."
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "http://www.webasyst.com/framework/docs/site/structure/"
 msgstr "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:87
 msgid "Select route to manage its settings"
 msgstr "Select a route to manage its settings"
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:57
 msgid "Redirect"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:2
 msgid "settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:9
 msgid "Delete rule"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:13
 msgid "{$app.name|escape} app settled at"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:21
 msgid "Settlement name"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:24
 msgid "Name is used in the <em>$wa->apps</em> navigation menu of this website"
 msgstr "The name is used in the <em>$wa->apps</em> navigation menu of this website."
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:28
 msgid "Design theme"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:34
 msgid "Mobile design theme"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:38
 msgid "Design theme for mobile multi-touch devices such as iPhone and Android"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:42
 msgid "Locale"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:58
 msgid "Custom parameters"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:64
 msgid "Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals(\"key\")&#125;</em>. Each key=value pair should be on a separate line."
 msgstr "Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->globals(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:64
 msgid "http://www.webasyst.com/framework/docs/site/design/"
 msgstr "http://www.webasyst.com/developers/docs/design/"
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:82
 msgid "This will delete the rule from website structure. Are you sure?"
 msgstr "This will delete the rule from the website structure. Are you sure?"
 
-#: /wa-apps/site/templates/layouts/Default.html:49
 msgid "Loading"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Default.html:62
 msgid "Cheat sheet"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:53
 msgid "New site"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:19
 msgid "E.g. mydomain.com, www.mydomain.com, subdomain.mydomain.com"
 msgstr "E.g., mydomain.com, www.mydomain.com, subdomain.mydomain.com"
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name."
 msgstr "Enter the URL of your new website. You should own the domain name and be able to configure it to point to your Webasyst installation. Contact your hosting provider on how to map your domain name to this server."
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:25
 msgid "Create site"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:36
 msgid "Open website in a new window"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:50
 msgid "Blocks"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:25
 msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
 msgstr "Non-saved changes will be lost if you leave this page now. Are you sure?"
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:14
 msgid "File URL"
 msgstr ""
 
-#: /wa-apps/site/js/site.js:263
 msgid "Download"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:19
 msgid "Delete file"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:21
 msgid "will be deleted without the ability to recover."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/files/siteFilesUploadimage.controller.php:25
 msgid "Files with extensions %s are allowed only."
 msgstr "Only files with name extensions %s are allowed."
 
-#: /wa-apps/site/lib/actions/files/siteFilesAddFolder.controller.php:14
 msgid "Folder could not bet created due to the insufficient file write permissions for the %s folder."
 msgstr "Folder could not be created due to insufficient file write permissions for folder %s."
 
-#: /wa-apps/site/lib/actions/files/siteFilesAddFolder.controller.php:18
 msgid "An unkown error occured when attempting to create a folder."
 msgstr "Unkown error occured when trying to create a folder"
 
-#: /wa-apps/site/lib/actions/files/siteFilesDelete.controller.php:22
 msgid "Folder could not bet deleted due to the insufficient permissions."
 msgstr "Folder could not be deleted due to insufficient permissions."
 
-#: /wa-apps/site/lib/actions/files/siteFilesMove.controller.php:13
 msgid "Files could not bet moved due to the insufficient file write permissions for the %s folder."
 msgstr "Files could not be moved due to insufficient file write permissions for folder %s."
 
-#: /wa-apps/site/lib/actions/files/siteFilesMove.controller.php:23
 msgid "Can not move file “%s” to a new location"
 msgstr "Cannot move file “%s” to a new location"
 
-#: /wa-apps/site/lib/actions/files/siteFilesMove.controller.php:35
 msgid "Can not move to a new location"
 msgstr "Cannot move to a new location"
 
-#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:23
 msgid "Files with extension .%s are not allowed to security considerations."
 msgstr "Files with name extension .%s are not allowed for security reasons."
 
-#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:30
 msgid "Folder or file could not bet renamed due to the insufficient file write permissions for the %s folder."
 msgstr "Folder or file could not be renamed due to insufficient file write permissions for folder %s."
 
-#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:41
 msgid "File (folder) can not be renamed"
 msgstr "File (folder) cannot be renamed"
 
-#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:45
 msgid "Enter the new name"
 msgstr "Enter a new name"
 
-#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:47
 msgid "Selected folder (file) does not exist anymore"
 msgstr "Selected folder (file) does not exist any more."
 
-#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:142
 msgid "Favicon image you upload here will not take effect for you website %s because your website is set for a subfolder on a domain. Favicon uploaded using the form above will be set only for websites set from the domain root folder."
 msgstr "Favicon image you upload here will not take effect for your website %s, because the website is accessible in a subfolder. A favicon uploaded using the form above will be applied only to websites accessible at the domain root."
 
-#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:143
 msgid "Rules you set above for robots.txt will not take effect for you website %s because your website is set for a subfolder on a domain. Rules for robots.txt from the form above will be effective only for websites set to the domain root folder."
 msgstr "Rules you specify above for robots.txt will not take effect for you website %s, because the website is accessible in a subfolder. Rules for robots.txt entered in the form above will be effective only for websites accessible at the domain root."
 
-#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:147
 msgid "File favicon.ico exists in the Webasyst framework installation folder. The favicon you upload here will be overridden by the icon uploaded as file unless you delete this file."
 msgstr "File favicon.ico exists in the Webasyst framework installation folder. The favicon you upload here will be overridden by the existing icon file unless you delete it."
 
-#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:150
 msgid "File robots.txt exists in the Webasyst framework installation folder. Rules for robots.txt you specify above will not take effect unless you delete this file."
 msgstr "File robots.txt exists in the Webasyst framework installation folder. Rules for robots.txt you specify above will not take effect unless you delete the existing file."
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:87
 msgid "Settings could not be saved due to the insufficient file write permissions for the \"%s\" folder."
 msgstr "Settings could not be saved due to insufficient file write permissions for folder “%s”."
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:194
 msgid "File could not be saved due to the insufficient file write permissions for the \"%s\" folder."
 msgstr "File could not be saved due to insufficient file write permissions for folder “%s”."
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:181
 msgid "Failed to upload file."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:175
 msgid "Files with extension *.ico are allowed only."
 msgstr "Only files with name extension .ico are allowed."
 
-#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:26
 msgid "Image will be uploaded into"
 msgstr "Image will be uploaded to"
 
-#: /wa-apps/site/lib/actions/pages/sitePages.actions.php:71
 msgid "Database error"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:9
 msgid "URL of this Webasyst installation (relative)."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:10
 msgid "URL of the current app settlement (relative)."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:11
 msgid "URL to access Webasyst backend (relative)."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:12
 msgid "URL of the current app’s design theme folder (relative)."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:15
 msgid "Assigns a new title."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:16
 msgid "Returns name of this Webasyst installation specified in Installer app settings.<br><em>escape = false</em> requires to embed special characters in account name instead of displaying them."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:17
 msgid "Returns this site’s core navigation menu which is either defined automatically or manually in the Site‘s “Settings” screen."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:18
 msgid "Returns current page URL.<br><em>$absolute = true</em> requires to return an absolute URL instead of a relative one.<br><em>$without_params = true</em> requires to return current URL without GET parameters."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:19
 msgid "Returns this domain’s root URL (absolute)."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:20
 msgid "Returns value of the global var by <em>key</em>. Global var array is initially empty, and can be used arbitrarily."
 msgstr "Returns the value of a global variable by its <em>key</em>. Global variable array is initially empty and can be used arbitrarily."
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:21
 msgid "Assigns a new value to a global variable."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:22
 msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"]).<br>\"<em>default</em>\" is an optional default value which is returned if specified GET parameter is not found."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:23
 msgid "Based on current session data, returns <em>true</em> or <em>false</em> depending on whether a multi-touch mobile device is used. If no session variable indicates the requested website version (mobile or desktop), User Agent information is used."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:24
 msgid "Returns user locale; e.g., “en_US”, “ru_RU”. If the user is authorized, the locale is retrieved from the user’s record in the Contacts app or is detected automatically otherwise."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:25
 msgid "Returns POST parameter value (same as $_POST[\"<em>key</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified POST parameter is not found."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:26
 msgid "Returns SERVER parameter value (same as $_SERVER[\"<em>KEY</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified server parameter is not found."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:27
 msgid "Returns SESSION var value (same as $_SESSION[\"<em>key</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified session parameter is not found."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:28
 msgid "Embeds HTML block by ID.<br><em>$params</em> is array of Smarty variables to be passed to block contents."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:29
-msgid ""
-"Returns authorized user‘s data. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. Returns <em>false</em> if user is not authorized.<br><em>$format</em> parameter (defaults to \"html\") defines the <a href=\"https://developers.webasyst.com/cookbook/basics/classes/waContact/#method-get\" target=\"_blank\">format</a> of the returned value."
+msgid "Returns authorized user‘s data. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. Returns <em>false</em> if user is not authorized.<br><em>$format</em> parameter (defaults to \"html\") defines the <a href=\"https://developers.webasyst.com/cookbook/basics/classes/waContact/#method-get\" target=\"_blank\">format</a> of the returned value."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:30
 msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
 msgstr "Returns User Agent info by the specified “<em>key</em>” parameter:"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:31
 msgid "— <em>\"platform\"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;"
 msgstr "— <em>\"platform\"</em>: current visitor’s device platform name; e.g., <em>windows, mac, linux, ios, android, blackberry</em>;"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:32
 msgid "— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;"
 msgstr "— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> depending on whether a multi-touch mobile device is used (iOS, Android, or similar), based solely on the User Agent info;"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:33
 msgid "— not specified: returns entire User Agent string;"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:71
 msgid "Displays a simple variable (non array/object)"
 msgstr "Displays a simple variable (not an array or object)"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:72
 msgid "Displays the 5th element of a zero-indexed array"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:73
 msgid "Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo[\"bar\"]"
 msgstr "Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo[\"bar\"]."
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:74
 msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:75
 msgid "Displays the object property named <em>bar</em>"
 msgstr "Displays the value of object property <em>bar</em>"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:76
 msgid "Displays the return value of object method named <em>bar()</em>"
 msgstr "Displays the return value of object method <em>bar()</em>"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:77
 msgid "Escapes a variable for safe display in HTML"
 msgstr "Escapes a value for safe display in HTML"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:78
 msgid "Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>"
 msgstr "Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>."
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:79
 msgid "Outputs the sum of <em>$x</em> and <em>$y</em>"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:80
 msgid "Assigns variable a value"
 msgstr "Assigns a value to a variable"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:81
 msgid "Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp"
 msgstr "Direct access to a PHP function. E.g., <em>{time()}</em> displays the current timestamp."
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:82
 msgid "Content between {literal} tags will not be parsed by Smarty"
 msgstr "Content between {literal} tags is not parsed by Smarty"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:83
 msgid "Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder"
 msgstr "Embeds a Smarty template in the current content. The <em>file</em> attribute specifies the template filename in the current design theme’s folder."
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:84
 msgid "Similar to PHP if statements"
 msgstr "Similar to <em>if</em> statements in PHP"
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:85
 msgid "{foreach} is for looping over arrays of data"
 msgstr "{foreach} is for looping through arrays of data"
 
-#: /wa-apps/site/lib/actions/blocks/siteBlocksSave.controller.php:12
 msgid "Only latin characters, numbers and underscore symbol are allowed."
 msgstr "Only Latin letters, numbers, and the underscore character are allowed."
 
-#: /wa-apps/site/lib/actions/blocks/siteBlocksSave.controller.php:45
 msgid "Block with id \"%s\" already exists"
 msgstr "Block with id “%s” already exists."
 
-#: /wa-apps/site/lib/actions/routing/siteRoutingEdit.action.php:66
 msgid "Auto"
 msgstr ""
 
-#: /wa-apps/site/lib/config/app.php:4
 msgid "Site"
 msgstr ""
 
-#: /wa-apps/site/lib/config/data/welcome.html:2
 msgid "This website is powered by the Site app."
 msgstr ""
 
-#: /wa-apps/site/lib/config/data/welcome.html:3
 msgid "Refer to this tutorial to build your new site"
 msgstr ""
 
-#: /wa-apps/site/lib/config/data/welcome.html:4
 msgid "http://www.webasyst.com/framework/docs/site/tutorial/"
 msgstr "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
 
-#: /wa-apps/site/lib/config/site.php:8
 msgid "Page title (&lt;title&gt;)"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:9
 msgid "Page content"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:10
 msgid "Page last update datetime"
 msgstr "Last page update date & time"
 
-#: /wa-apps/site/lib/config/site.php:13
 msgid "Returns the array of pages associated with the current “Site” app settlement. Each page is an array of ( <em>\"id\", \"name\", \"title\", \"url\", \"create_datetime\", \"update_datetime\", \"content\"[, \"custom_1\", \"custom_2\", …]</em> )"
 msgstr "Returns the array of pages associated with the current Site app settlement. Each page is an array of ( <em>\"id\", \"name\", \"title\", \"url\", \"create_datetime\", \"update_datetime\", \"content\"[, \"custom_1\", \"custom_2\", …]</em> )."
 
-#: /wa-apps/site/lib/config/site.php:14
 msgid "Page list (only id, name, title, url, create_datetime, update_datetime)"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:15
 msgid "Returns page info (array) by <em>id</em> (int)"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:18
 msgid "Content"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:19
 msgid "META Keywords"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:20
 msgid "META Description"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:23
 msgid "Error code (e.g. 404)"
 msgstr "Error code (e.g., 404)"
 
-#: /wa-apps/site/lib/config/site.php:24
 msgid "Error message"
 msgstr ""
 
-#: /wa-apps/site/lib/config/site.php:29
 msgid "Email feedback form"
 msgstr ""
 
-#: /wa-apps/site/lib/config/siteRightConfig.class.php:9
 msgid "Available sites"
 msgstr ""
 
-#: /wa-apps/site/lib/config/install.php:14
 msgid "Welcome"
 msgstr ""
 
-#: /wa-apps/site/themes/default/index.html:25
 msgid "Logout"
 msgstr ""
 
-#: /wa-apps/site/themes/default/signup.html:7
 msgid "Sign up"
 msgstr ""
 
-#: /wa-apps/site/themes/default/login.html:3
 msgid "Login"
 msgstr ""
 
-#: /wa-apps/site/themes/default/index.html:46
 msgid "Powered by Webasyst"
 msgstr ""
 
-#: /wa-apps/site/themes/default/signup.html:4
 msgid "Thank you!"
 msgstr ""
 
-#: /wa-apps/site/themes/default/signup.html:5
 msgid "You have successfully signed up."
 msgstr ""
 
-#: /wa-apps/site/themes/default/sidebar.html:4
 msgid "Edit this layout in your <a href=\"{$wa_backend_url}\">Webasyst backend</a> using “Site” app."
 msgstr "Edit this layout in your <a href=\"{$wa_backend_url}\">Webasyst backend</a> using the Site app."
 
-#: /wa-apps/site/themes/default/error.html:8
 msgid "The requested resource is not available."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:48
 msgid "Privacy"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:51
 msgid "Private settlement"
 msgstr ""
 
-#: /wa-apps/wa-apps/site/locale/ru_RU/LC_MESSAGES/site.posite/templates/actions/routing/RoutingEdit.html:52
-msgid ""
-"When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation "
-"menu or indexed by search engines."
+msgid "When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:77
 msgid "Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:77
 msgid "Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)"
 msgstr ""
 
-#: /wa-apps/site/themes/default/index.html:46
 msgid "We are using <a href=\"http://www.webasyst.com/\">Webasyst</a>"
 msgstr ""
 
-#: /wa-apps/site/themes/custom/index.html:73
 msgid "Facebook"
 msgstr ""
 
-#: /wa-apps/site/themes/custom/index.html:74
 msgid "Twitter"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:11
 msgid "Close"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:11
 msgid "Cancel"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/routing/siteRoutingSave.controller.php:12
 msgid "Settings could not be saved due to the insufficient file write permissions for the file \"%s\"."
 msgstr ""
 
-#: /wa-apps/site/themes/vk/footer.html:4
 msgid "We are using <a href=\"http://www.webasyst.com/\" target=\"_blank\">Webasyst</a>"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "http://www.webasyst.com/developers/docs/routing/site-app-routing/"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:4
 msgid "Site structure"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:33
 msgid "Site structure is defined by routing rules. Each rule sets which app should run by which URL (web address). Similar to how folders are used to organize files on a computer, routing rules are used to create a website powered by multiple apps."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:34
 msgid "Rules are processed one by one in the given order. The first rule matching current HTTP request (web address) will be processed. Use * symbol in the URL fields for wildcard."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:10
 msgid "Back"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:22
 msgid "Domain name"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:28
 msgid "IMPORTANT"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:28
 msgid "The URL entered must point to the root of this Webasyst framework installation."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:35
 msgid "Matches domain name"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:42
 msgid "Structure"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:33
 msgid "Returns path to design theme folder by <em>theme_id</em> and <em>app_id</em>."
 msgstr ""
 
-#: /wa-apps/site/themes/clear/content.html:9 /wa-apps/site/themes/custom/content.html:4 /wa-apps/site/themes/default/index.html:67 /wa-apps/site/themes/facebook/content.html:25 /wa-apps/site/themes/nifty/content.html:6 /wa-apps/site/themes/sidebar/content.html:6 /wa-apps/site/themes/vk/content.html:25
 msgid "Welcome to your new site!"
 msgstr ""
 
-#: /wa-apps/site/themes/clear/content.html:10 /wa-apps/site/themes/custom/content.html:5 /wa-apps/site/themes/default/index.html:68 /wa-apps/site/themes/facebook/content.html:26 /wa-apps/site/themes/nifty/content.html:7 /wa-apps/site/themes/sidebar/content.html:7 /wa-apps/site/themes/vk/content.html:26
 msgid "Start by creating a page in your <a href=\"%s\">site backend</a>."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
 msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > Settings > %s) to be able to use it's domain name for another website."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:18 /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:28
 msgid "My account"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:18 /wa-apps/site/themes/default/my.nav.html:3 /wa-apps/site/themes/default/my.profile.html:5
 msgid "My profile"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
 msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."
 msgstr ""
 
-#: /wa-apps/site/themes/default/my.profile.html:8
 msgid "Contact information successfully updated!"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/Personal.html:37
 msgid "Personal account structure is defined by the list of installed Webasyst apps linked in the current website frontend."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/Personal.html:41
 msgid "Auth & Sign Up settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:8
 msgid "This app cannot be enabled for personal accounts on this domain, because the app is not settled in this domain's routing settings. Add this app to the routing table first so it becomes published on this site, and then you’ll be able to link it in personal accounts navigation."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:9
 msgid "Setup routing"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:15 /wa-apps/site/templates/actions/personal/PersonalSettings.html:7
 msgid "Disabled"
 msgstr ""
 
 msgid "Redirect disabled"
 msgstr "Disabled"
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:19 /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
 msgid "Enabled"
 msgstr ""
 
 msgid "Redirect enabled"
 msgstr "Enabled"
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
 msgid "%s personal account URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:31
 msgid "%s personal account is disabled on this site."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:3
 msgid "Personal account profile URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:5
 msgid "My profile form fields"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:1
 msgid "Authorization on %s"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:16
 msgid "User sign up, authorization and personal accounts are not enabled on %s."
 msgstr "User signup, authorization and personal accounts are not enabled on %s."
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:20
 msgid "User sign up, authorization and personal accounts are enabled on %s. <a id=\"configure-app\" href=\"#\" class=\"inline-link\"><b><i>Configure URLs</i></b></a>"
 msgstr "User signup, authorization and personal accounts are enabled on %s. <a id=\"configure-app\" href=\"#\" class=\"inline-link\"><b><i>Configure URLs</i></b></a>"
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:22
 msgid "Select the app that will host authorization forms. The URLs of my profile, signup and authorization pages will be defined by the selected app routing:"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:46
 msgid "Auth"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:176
 msgid "Confirm email on sign up"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:177
 msgid "A confirmation link will be sent to user after sign up"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:184
 msgid "Text"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:189
 msgid "Variables"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:214
 msgid "Sign up form fields"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:231
 msgid "Edit field label"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:236
 msgid "Edit hint for this field"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:244
 msgid "Edit button label"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:152
 msgid "Upload favicon"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:160
 msgid "from 152x152 and up to 1024x1024 px"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:178
 msgid "Personal &rarr; <a href=\"%s\">Auth &amp; Sign Up settings</a>"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:44
 msgid "Personal"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:59
 msgid "File manager"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:150
 msgid "Touch icon you upload here will not take effect for you website %s because your website is set for a subfolder on a domain. Touch icon uploaded using the form above will be set only for websites set from the domain root folder."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:159
 msgid "File apple-touch-icon.png exists in the Webasyst framework installation folder. The touch icon you upload here will be overridden by the icon uploaded as file unless you delete this file."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:213
 msgid "Files with extension *.png are allowed only."
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:5
 msgid "added a new site"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:8
 msgid "edited site settings"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:11
 msgid "deleted site"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:15
 msgid "uploaded file"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:18
 msgid "deleted file"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:22
 msgid "added a new block for site"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:25
 msgid "edited block for site"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:28
 msgid "deleted block for site"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:32
 msgid "added a new routing rule"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:35
 msgid "edited routing rule"
 msgstr ""
 
-#: /wa-apps/site/lib/config/logs.php:38
 msgid "deleted routing rule"
 msgstr ""
 
-#: /wa-apps/site/themes/ascetic/index.html:71 /wa-apps/site/themes/clear/content.html:10 /wa-apps/site/themes/custom/content.html:5 /wa-apps/site/themes/default/main.html:7 /wa-apps/site/themes/facebook/content.html:26 /wa-apps/site/themes/nifty/content.html:7 /wa-apps/site/themes/pinboard/content.html:5 /wa-apps/site/themes/sidebar/content.html:7
-#: /wa-apps/site/themes/vk/content.html:26
 msgid "Start by <a href=\"%s\">creating a page</a> in your site backend."
 msgstr ""
 
-#: /wa-apps/site/themes/default/my.profile.html:56
 msgid "Change password"
 msgstr ""
 
-#: /wa-apps/site/themes/default/my.profile.html:69
 msgid "Delete photo"
 msgstr ""
 
-#: /wa-apps/site/themes/default/signup.html:3
 msgid "You successfully confirmed email."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:157
 msgid "Touch icon for iOS"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:160
 msgid "Upload iOS touch icon"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/Personal.html:41
 msgid "Auth &amp; Sign Up settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:178
 msgid "Personal &rarr; <a href=\"%s\">Auth &amp; Sign Up</a>"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:5
 msgid "My profile page is not available on this site, because user authorization on this site is hosted by <strong>%s</strong> app, while it’s personal account functionality is disabled. Either enable <a href=\"#/personal/app/%s/\">%s app’s personal account</a> on this site, or change the app that hosts user authorization in <a href=\"%s\">Auth &amp; Sign Up</a> settings."
 msgstr ""
 
-#: /wa-apps/site/lib/actions/routing/siteRoutingSave.controller.php:114
 msgid "The URL %s is already used by %s app. If you proceed, this will replace %s app with %s app on this URL."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
 msgid "%s personal account URL: <a id=\"s-app-frontend-link\" href=\"%s\" target=\"_blank\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:177
 msgid "A unique email confirmation link will be sent to user after the signup. User will be able to sign in only after this confirmation link has been clicked."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:134
 msgid "Universal Analytics"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:177
 msgid "CDN"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:180
 msgid "Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:73
 msgid "Allow “Remember me” option in authorization form on the website"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:34
 msgid "Alias (mirror site) for"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:85
 msgid "This is a mirror site (alias) for <strong>%s</strong>."
 msgstr ""
 
-#: /wa-apps/site/lib/siteCustomSignup.action.php:61
 msgid "Specified email is already in use."
 msgstr ""
 
@@ -1284,398 +963,287 @@ msgstr ", "
 msgid "”</b>, <b>“"
 msgstr "</b>, <b>"
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:2
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:22
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:60
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:205
-#: /wa-apps/site/lib/classes/siteHelper.class.php:45
 msgid "Custom text"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:79
 msgid "Comment"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:142
 msgid "Language"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:146
 msgid "Select a language to translate text strings in website frontend."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:147
 msgid "If “Auto” option is selected, website language will be determined by user browser settings."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:161
-#: /wa-apps/site/templates/actions/settings/Settings.html:63
 msgid "Security"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:164
-#: /wa-apps/site/templates/actions/settings/Settings.html:66
 msgid "Redirect to HTTPS"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:165
-#: /wa-apps/site/templates/actions/settings/Settings.html:67
 msgid "You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:166
-#: /wa-apps/site/templates/actions/settings/Settings.html:68
 msgid "To activate this option, <a>log in via HTTPS</a>."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:167
 msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection within this settlement."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:169
-#: /wa-apps/site/templates/actions/settings/Settings.html:71
 msgid "This option will work only if an SSL certificate is installed for your domain name."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:206
 msgid "Text to be returned at specified URL"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:209
 msgid "Content type"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:212
 msgid "file"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:233
 msgid "App [%s] deleted or disabled."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:268
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:371
 msgid "Delete route"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:269
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:367
 msgid "You are about to delete the only routing rule set up for <b>%s</b> app."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:269
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:367
 msgid "This will limit its functionality. Delete the rule?"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:171
 msgid "To enable redirect to HTTPS for <em>all</em> website settlements, change this option in <a href=\"%s#/settings/\">common site settings</a>."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/routing/Routing.html:20
 msgid "This rule is disabled because it is placed below a more general rule. Move this rule higher in the list to enable it."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:3
 msgid "CDN address"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:4
 msgid "Remove"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:24
-#: /wa-apps/site/templates/layouts/Sidebar.html:50
 msgid "Site settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:69
 msgid "Redirect website visitors from ordinary HTTP to secure HTTPS connection."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:228
 msgid "Add"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:237
 msgid "Site structure error notifications"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:240
 msgid "Show error notifications in site structure settings."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:394
 msgid "Deleting this site will also delete routing rules set up for installed apps. This will limit their functionality. Delete the site?"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:401
 msgid "Delete this site alias? It will <strong>not</strong> delete any data of the main site."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/settings/Settings.html:397
 msgid "Deleting this site will also delete routing rules set up for <b>%s</b> app. This will limit its functionality.</p><p>Upon site deletion, set up routing rules for this app in the structure settings of remaining sites to continue using all functions."
 msgid_plural "Deleting this site will also delete routing rules set up for <b>%s</b> apps. This will limit their functionality.</p><p>Upon site deletion, set up routing rules for these apps in the structure settings of remaining sites to continue using all functions."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:48
 msgid "Files uploaded here are accessible to all website visitors without authorization. Do not upload private files."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/files/Files.html:170
 msgid "Your file is too large. Either raise the size limit for uploaded files in PHP configuration above %s bytes or upload a smaller file."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:7
 msgid "Login and signup settings for %s"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
 msgid "User personal area"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:24
 msgid "authorization enabled"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:40
 msgid "Ways of login and registration"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:41
 msgid "Set up how website visitors will log in and sign up on your website."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:71
 msgid "Login & signup forms"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:72
 msgid "Set up fields website visitors will need to complete in login and signup forms."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:105
 msgid "Cannot disable both authorization options “Email” &amp; “Phone”"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:106
 msgid "Keep at least one of these two basic authorization option enabled for website visitors to be able to log into their accounts."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:107
 msgid "Authorization with an email address is used by default."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:124
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:161
 msgid "Email"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:125
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:255
 msgid "Phone"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:126
 msgid "Email or phone"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/Personal.html:10
 msgid "Login and signup settings"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/Personal.html:16
 msgid "Personal account sections"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/Personal.html:49
 msgid "Sections are determined by connected applications."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/Personal.html:52
 msgid "Read <a href=\"https://support.webasyst.com/29298/site-auth-settings/\" target=\"_blank\">user manual</a>."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:16
 msgid "Site section for login and signup"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:28
 msgid "Select app"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:70
 msgid "Passwords type"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:93
 msgid "Confirm signup"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:95
 msgid "A signup confirmation link or code will be sent in a notification."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:104
 msgid "Successful signup notification"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:110
 msgid "Send successful signup notifications to users"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:121
 msgid "Verification code re-sending"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:125
 msgid "Waiting period in seconds before sending next verification code:"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:138
 msgid "Authorization by login name"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:145
 msgid "Enable to allow backend users to log in on the website with their login names. Only login names different from phone numbers, i.e. containing characters other than digits, are supported."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:166
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:260
 msgid "User notifications"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:168
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:262
 msgid "Select a group of notification templates to be used for sending login, signup, and password recovery notifications."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:169
 msgid "Edit email notification templates in <a href=\"%s\">Settings</a> app"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:171
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:267
 msgid "Notification templates"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:174
 msgid "No sender email address specified in “<a href=\"%s\">Email settings</a>” section of Settings app."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:182
 msgid "Edit the list in “<a href=\"%s\">Email&nbsp;templates</a>” section."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:206
 msgid "Social networks (additional authorization option)"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:210
 msgid "Services"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:264
 msgid "Edit SMS notification templates in <a href=\"%s\">Settings</a> app"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:279
 msgid "Priority over email notifications"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:285
 msgid "Prefer SMS over email for sending notifications. In case of SMS sending failure, email will be sent as a replacement."
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:306
 msgid "Signup form"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:312
 msgid "Personal data processing"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:317
 msgid "Do not require consent to personal data protection policy"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:325
 msgid "Show only notice and link to policy"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:332
 msgid "Show mandatory checkbox, notice, and link"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:339
 msgid "Restore original text"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:348
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:446
 msgid "Captcha"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:348
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:446
 msgid "A user must enter characters shown in an image"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:359
 msgid "Fields"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:381
 msgid "Required field"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:410
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:514
 msgid "Invisible captcha will be used"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:439
 msgid "Login form"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:467
 msgid "Auto-login"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalSettingsHelpers.inc.html:322
 msgid "---INSERT A LINK HERE!---"
 msgstr ""
 
-#: /wa-apps/site/templates/actions/personal/PersonalApp.html:16
 msgid "authorization disabled"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:43
 msgid "Login, signup, and personal account"
 msgstr ""
 
-#: /wa-apps/site/templates/layouts/Sidebar.html:84
 msgid "System settings"
 msgstr ""
 
-#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:20
-#: /wa-apps/site/lib/actions/domains/siteDomainsSave.controller.php:9
 msgid "Incorrect domain URL: %s"
 msgstr ""
 
-#: /wa-apps/site/lib/classes/siteHelper.class.php:33
 msgid "You have no rules set up for %s app."
 msgid_plural "You have no rules set up for %s apps."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
-#: /wa-apps/site/lib/classes/siteHelper.class.php:52
 msgid "Some rules of %s app are incorrect."
 msgid_plural "Some rules of %s apps are incorrect."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
-#: /wa-apps/site/themes/default/admin-sidebar.html:427
 msgid "Settings have been saved"
 msgstr ""
