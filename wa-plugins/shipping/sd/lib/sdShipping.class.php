@@ -689,6 +689,16 @@ class sdShipping extends waShipping
             $saved_country = ifset($countries, 0, 'iso3letter', false);
         }
 
+        if (empty($settings['currency'])) {
+            $user_locale = wa()->getUser()->getLocale();
+            $default_currencies = array('ru_RU' => 'RUB', 'en_US' => 'USD');
+            foreach ($default_currencies as $locale => $currency) {
+                if ($user_locale == $locale) {
+                    $settings['currency'] = $currency;
+                }
+            }
+        }
+
         $view->assign(array(
             'obj'          => $this,
             'payment_type' => $this->getPaymentTypeSettings(),

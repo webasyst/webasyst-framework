@@ -149,6 +149,16 @@ class courierShipping extends waShipping
             );
         }
 
+        if (empty($values['currency'])) {
+            $user_locale = wa()->getUser()->getLocale();
+            $default_currencies = array('ru_RU' => 'RUB', 'en_US' => 'USD');
+            foreach ($default_currencies as $locale => $currency) {
+                if ($user_locale == $locale) {
+                    $values['currency'] = $currency;
+                }
+            }
+        }
+
         $app_config = wa()->getConfig();
         if (method_exists($app_config, 'getCurrencies')) {
             $view->assign('currencies', $app_config->getCurrencies());

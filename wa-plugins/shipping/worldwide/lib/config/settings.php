@@ -4,7 +4,7 @@ return array(
         'value' => 'kg',
     ),
     'currency'         => array(
-        'value' => 'USD',
+        'value' => '',
     ),
     'delivery_table'   => array(
         'value' => array(),

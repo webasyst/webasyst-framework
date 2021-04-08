@@ -4,7 +4,7 @@ return array(
     'description'      => /*_wp*/('Reliable international delivery tailored to local conditions.'),
     'icon'             => 'img/worldwide16.png',
     'logo'             => 'img/worldwide.png',
-    'version'          => '1.1.2',
+    'version'          => '1.1.3',
     'vendor'           => 'webasyst',
     'services_by_type' => true,
 );
