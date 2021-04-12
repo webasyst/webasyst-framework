@@ -85,7 +85,7 @@ function waEditorAceInit(options)
     session.setUseWrapMode(true);
     wa_editor.setOption("maxLines", 10000);
     wa_editor.setAutoScrollEditorIntoView(true);
-    wa_editor.renderer.setShowGutter(false);
+    wa_editor.renderer.setShowGutter(true);
     wa_editor.setShowPrintMargin(false);
     if (navigator.appVersion.indexOf('Mac') != -1) {
         wa_editor.setFontSize(13);
@@ -95,6 +95,7 @@ function waEditorAceInit(options)
         wa_editor.setFontSize(14);
     }
     $('.ace_editor').css('fontFamily', '');
+    $('.ace_gutter').css('z-index',0).css('background-color', '#fff');
     session.setValue($('#' + options.id).hide().val());
     wa_editor.focus();
     wa_editor.navigateTo(0, 0);
