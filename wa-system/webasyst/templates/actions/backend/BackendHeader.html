@@ -1,6 +1,11 @@
 <div id="wa-nav">
     {if $wa->whichUI() == '2.0'}
-        <script>const backend_url = "{$backend_url}";</script>
+        <script>
+            if (typeof wa_url === "undefined") {
+                wa_url = '{$wa_url}';
+            }
+            const backend_url = "{$backend_url}";
+        </script>
         {include file="./BackendHeader20.html" inline}
     {else}
         {include file="./BackendHeader13.html" inline}
@@ -19,7 +24,7 @@
         }
     </script>
 
-    {if ifset($app_info, 'ui', '1.3,2.0') === '1.3,2.0'}
+    {if ifset($app_info, 'ui', '1.3') === '1.3,2.0'}
 
         {if $wa->debug()}
 
@@ -76,7 +81,7 @@
         {/if}
 
 
-    {elseif ifset($app_info, 'ui', '1.3,2.0') === '1.3' && !$wa->debug()}
+    {elseif ifset($app_info, 'ui', '1.3') === '1.3' && !$wa->debug()}
 
         {if $wa->cookie('force_set_wa_backend_ui_version') == '2.0'}
 

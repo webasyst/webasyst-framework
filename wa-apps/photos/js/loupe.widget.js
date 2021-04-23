@@ -59,7 +59,7 @@ $.photos.widget.loupe = {
     prepare : function(img, photo, proper_thumb) {
 
         var self = this;
-        $('.p-one-photo a.next').die('click.loupe').live('click.loupe', function(e) {
+        $('.p-one-photo a.next').off('click.loupe').on('click.loupe', function(e) {
             return self.clickNextHandler.apply(self, [this, e]);
         });
         this.trace('prepare, status='+this.status);

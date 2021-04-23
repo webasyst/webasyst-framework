@@ -1,10 +1,5 @@
-<div class="wa-cheatsheet-dropdown">
-    <div class="wa-drop-link">
-        <a class="inline-link" id="wa-editor-help-link-{$cheat_sheet_name|escape}" href="#">
-            <i class="fas fa-code"></i> [s`Cheat sheet`]
-            <i class="fas fa-caret-up"></i>
-        </a>
-        <div id="wa-editor-help-{$cheat_sheet_name|escape}" class="wa-cheatsheet-dropdown-block blank"></div>
+<button class="button nobutton js-show-cheatsheet custom-ml-auto" id="wa-editor-help-link-{$cheat_sheet_name|escape}"><i class="fas fa-code"></i> [s`Cheat sheet`]</button>
+
         <script type="text/javascript">
             (function () {
                 "use strict";
@@ -13,19 +8,31 @@
                 $.cheatsheet[cheat_sheet_name] = {
                     data: {$data|json_encode},
                     init: function () {
+                        this.createDrawer();
                         this.getHelpEvent();
                         this.insertVarEvent();
+                    },
+                    createDrawer() {
+                        const $cheatsheet_drawer_template = `
+                            <div class="drawer js-cheatsheet-drawer" id="wa-editor-help-{$cheat_sheet_name|escape}">
+                                <div class="drawer-background"></div>
+                                <div class="drawer-body">
+                                    <div class="drawer-block"></div>
+                                </div>
+                            </div>`;
+                        document.querySelector("body").insertAdjacentHTML('beforeend', $cheatsheet_drawer_template);
                     },
                     getHelpEvent: function () {
                         $("#wa-editor-help-link-" + cheat_sheet_name).on('click', function() {
 
-                            let $help = $("#wa-editor-help-" + cheat_sheet_name),
+
+                            let $help = $("#wa-editor-help-" + cheat_sheet_name).find('.drawer-block'),
                                 data = $.cheatsheet[cheat_sheet_name].data;
 
-                            if ($help.is(":visible")) {
+/*                            if ($help.is(":visible")) {
                                 $help.hide();
                                 return false;
-                            }
+                            }*/
 
                             let loadHelp = function (afterLoad) {
                                 $help.load('{$wa_backend_url}?module=backendCheatSheet&action=cheatSheet', data, afterLoad);
@@ -56,7 +63,7 @@
                         });
                     },
                     insertVarEvent: function () {
-                        $("#wa-editor-help-" + cheat_sheet_name).on('click', ".fields a", function(e) {
+                        $("#wa-editor-help-" + cheat_sheet_name).on('click', ".js-var", function(e) {
                             e.preventDefault();
                             let el = $(this),
                                 $design_content = $("#wa-design-content"),
@@ -104,7 +111,18 @@
                 };
                 $(document).trigger('wa_cheatsheet_init.' + cheat_sheet_name);
                 $.cheatsheet[cheat_sheet_name].init()
+
+
+                    let $cheatsheet_drawer = $('#wa-editor-help-{$cheat_sheet_name|escape}')
+                    $(".js-show-cheatsheet").on("click", function(e) {
+                            e.preventDefault();
+                            var drawer = $.waDrawer({
+                                    wrapper: $cheatsheet_drawer,
+                                    onOpen($drawer) {
+                                            console.log($drawer)
+                                    }
+                            });
+                    });
+
             }());
         </script>
-    </div>
-</div>

@@ -13,50 +13,48 @@
 
             // drop between albums
 
-            let nestedSortables = $('#album-list .nested')
+            let nestedSortables = $('#album-list .nested');
+
             nestedSortables.each(function () {
                 $(this).sortable({
-                    group: 'nested',
+                    group: {
+                        name: 'nested',
+                        put(to) {
+                            nestedSortables.removeClass('highlighted');
+                            if (!to.el.classList.contains('js-root-menu')) {
+                                to.el.classList.toggle('highlighted');
+                            }
+                        }
+                    },
+                    delay: 100,
+                    delayOnTouchOnly: true,
+                    handle: 'li',
+                    draggable: 'li',
                     animation: 150,
                     fallbackOnBody: true,
                     swapThreshold: 0.65,
+                    forceFallback: false,
+                    direction: 'vertical',
                     onEnd: function (event) {
-                        let $list = $(this),
-                            $item = $(event.item);
-/*
-                        var id = $item.attr('rel');
-                        var prev = $(this).prev('li');
+                        nestedSortables.removeClass('highlighted');
 
-                        if (prev.length && prev.attr('rel') == id && !prev.hasClass('ui-draggable')) {
-                            return false;
-                        }
-                        if (this == $item.next().get(0)) {
-                            return false;
-                        }
-                        var parent_id = $list.parent('li').length ? $list.parent('li').attr('rel') : 0;
-                        var before = $(this).next(),
-                            before_id = null;
-                        if (before.length) {
-                            before_id = before.attr('rel');
-                        }
-*/
-/*                        $.post('?module=album&action=move', {
-                            id: id,
-                            before_id: before_id,
-                            parent_id: parent_id
-                        }, function(r) {
-                            var current_album = $.photos.getAlbum(),
-                                album = r.data.album,
-                                counters = r.data.counters;
+                        let $item = $(event.item),
+                            $list_parent = $item.parent('ul').parent('li'),
+                            id = $item.data('id'),
+                            before_id = $item.next().data('id') || null,
+                            parent_id = $list_parent.length ? $list_parent.data('id') : 0;
 
-                            if (album.status <= 0 &&
-                                $.photos_dragndrop.privateDescendants(album.id))
-                            {
+                        $.post('?module=album&action=move', { id, before_id, parent_id }, function(response) {
+/*                            var current_album = $.photos.getAlbum(),
+                                album = response.data.album,
+                                counters = response.data.counters;
+
+                            if (album.status <= 0 && $.photos_dragndrop.privateDescendants(album.id))                            {
                                 $.photos.dispatch('album/'+album.id+'/');
                             }
 
                             if (current_album && current_album.id == album.id) {
-                                var frontend_link = r.data.frontend_link;
+                                var frontend_link = response.data.frontend_link;
                                 if (frontend_link) {
                                     $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
                                 }
@@ -70,20 +68,8 @@
                                         album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
                                     }
                                 }
-                            }
-                        }, 'json');*/
-/*
-                        var $parent_list = $item.parent('ul');
-                        var li_count = $parent_list.children('li.dr[rel!='+id+']').length;
-
-                        $item.next().insertAfter($(this));
-                        $item.insertAfter($(this));
-
-                        if (!li_count) {
-                            $parent_list.parent('li').children('i').remove();
-                            $parent_list.remove();
-                        }
-                        */
+                            }*/
+                        }, 'json');
                     }
                 });
             });
@@ -939,11 +925,11 @@
                 this.each(function(i,el) {
                     var self = $(this);
                     if (self.data('init_draggable')) {
-                        self.die("mouseover", self.data('init_draggable'));
+                        self.off("mouseover", self.data('init_draggable'));
                     }
                 });
                 var h;
-                this.live("mouseover", h = function() {
+                this.on("mouseover", h = function() {
                     var self = $(this);
                     if (!self.data("init_draggable")) {
                         self.data("init_draggable", h).draggable(opts);
@@ -955,7 +941,7 @@
                 this.each(function(i,el) {
                     var self = $(this);
                     if (self.data('init_droppable')) {
-                        self.die("mouseover", self.data('init_droppable'));
+                        self.off("mouseover", self.data('init_droppable'));
                     }
                 });
 
@@ -967,8 +953,8 @@
                     }
                 };
                 init.call(this);
-                this.die("mouseover", init).live("mouseover", init);
-                this.live('mouseover', init);
+                this.off("mouseover", init).on("mouseover", init);
+                this.on('mouseover', init);
             };
 
             // Custom tolerance-mode realization because of jquery.ui doesn't have necessary functionality

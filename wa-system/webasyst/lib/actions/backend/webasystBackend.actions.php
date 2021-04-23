@@ -17,6 +17,18 @@ class webasystBackendActions extends waViewActions
 
     public function defaultAction()
     {
+        // url of kind <backend_url>/webasyst/ without any extra url parameters is not supported, just redirect it to <backend_url>/
+        // if not redirect it could cause some other problems with url building
+        $config = wa('webasyst')->getConfig();
+        $request_url = $config->getRequestUrl();
+        $parts = explode('/', trim($request_url, '/'));
+
+        if (count($parts) == 2 && $parts[1] === 'webasyst') {
+            $this->redirect($config->getBackendUrl(true));
+        }
+
+        // other part of default action
+
         $this->action = 'dashboard';
         $this->setLayout(new webasystBackendLayout());
         $this->view->assign("username", wa()->getUser()->getName());
@@ -206,6 +218,5 @@ class webasystBackendActions extends waViewActions
     {
         return (new webasystTodayUsers())->getGroups();
     }
-
 }
 

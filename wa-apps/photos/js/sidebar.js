@@ -224,7 +224,7 @@
             $("#p-sidebar .collapse-handler").each(function() {
                 $.photos_sidebar._collapseSidebarSection(this, 'restore');
             });
-            $('#album-list-container').die('uncollapse_section').live('uncollapse_section', function(e, album_item) {
+            $('#album-list-container').off('uncollapse_section').on('uncollapse_section', function(e, album_item) {
                 album_item = $(album_item);
                 var container = $(this),
                     container_handler = container.find('>.collapse-handler'),

@@ -25,7 +25,7 @@
                         <script>
                             DashboardWidgets[{$w.id}] = new DashboardWidget({
                                 widget_id: {$w.id},
-                                widget_href: {$w.href|json_encode},
+                                widget_href: {"`$w.href`&ui=2.0"|json_encode},
                                 widget_sort: {$w.sort},
                                 widget_group_index: {$block_widgets@index},
                                 widget_size: {

@@ -338,7 +338,7 @@
                     waDesignLoad();
                     $.photos.setTitle($_('Themes'));
                     $.photos.scrollTop();
-                }, '<div class="content left'+$.photos_sidebar.width+'px"></div>');
+                }, '');
             }
         },
 
@@ -506,7 +506,7 @@
                 if (album.edit_rights) {
                     $('#photo-list, .js-photo-list').on('click', '.make-key-photo-link', function() {
                         $('#photo-list .key-photo').removeClass('key-photo');
-                        $li = $(this).closest('li').addClass('key-photo');
+                        let $li = $(this).closest('li').addClass('key-photo');
                         album.key_photo_id = $li.data('photo-id');
                         $.post('?module=album&action=keyPhoto', { album_id: album.id, photo_id: album.key_photo_id });
                     });
@@ -3166,7 +3166,7 @@
             if ($(window).lazyLoad) {
                 $(window).lazyLoad('stop');
             }
-            $('.lazyloading-wrapper a.lazyloading-link').die('click.lazyloading')
+            $('.lazyloading-wrapper a.lazyloading-link').off('click.lazyloading')
         },
 
         getAlbum: function() {
@@ -3554,6 +3554,12 @@
                 dragClass:'album-list-drag',
                 onEnd: function(event) {
                     let $item = $(event.item);
+                    /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
+                    let $link = $item.find('[onclick]'),
+                        href = $link.attr('onclick');
+                    $link.attr('onclick', 'javascript:void(0);');
+                    setTimeout(() => $link.attr('onclick', href),500)
+
                     $.post("?module=album&action=move", {
                         id: $item.data('album-id'),
                         before_id: $item.next().data('album-id') || 0,
@@ -3573,13 +3579,16 @@
                 ghostClass:'photo-list-ghost',
                 chosenClass:'photo-list-chosen',
                 dragClass:'photo-list-drag',
-                onStart() {
-                    console.log($('.photo-list-drag'))
-                },
                 onEnd(event) {
                     let $item = $(event.item),
                         photo_id = [],
                         before_id = $item.next().data('photo-id') || 0;
+
+                    /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
+                    let $link = $item.find('[onclick]'),
+                        href = $link.attr('onclick');
+                    $link.attr('onclick', 'javascript:void(0);');
+                    setTimeout(() => $link.attr('onclick', href),500)
 
                     photo_id.push($item.data('photo-id'));
 
@@ -3759,13 +3768,11 @@ $(function () {
             // Active Dropdown toolbar
             const $toolbar_dropdown = $('.js-toolbar-dropdown'),
                 $toolbar_dropdown_btn = $toolbar_dropdown.find('.dropdown-toggle'),
+                $album_control = $toolbar_dropdown.parent(),
                 selected_images_count = $('#photo-list :checkbox[name="photo_id[]"]:checked').length;
 
-            if(selected_images_count){
-                $toolbar_dropdown_btn.removeClass('nobutton');
-            }else{
-                $toolbar_dropdown_btn.addClass('nobutton');
-            }
+            $album_control.toggleClass('is-fixed', !!selected_images_count);
+            $toolbar_dropdown_btn.toggleClass('nobutton', !selected_images_count);
         });
         function setCheckedBetween($from, $to, status) {
             if (!$from || !$to || !$from[0] || !$to[0] || $from.is($to[0])) {

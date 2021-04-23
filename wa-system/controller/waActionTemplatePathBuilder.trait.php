@@ -27,7 +27,7 @@ trait waActionTemplatePathBuilder
      */
     protected function getTemplateDirVariants($app_id)
     {
-        $ui = wa()->whichUI($app_id);
+        $ui = $this->whichUI($app_id);
         if ($ui === '2.0') {
             return [$this->getTemplateDir()];
         }
@@ -35,6 +35,18 @@ trait waActionTemplatePathBuilder
             return [$this->getLegacyTemplateDir(), $this->getTemplateDir()];
         }
         return [$this->getTemplateDir()];
+    }
+
+    /**
+     * Inverse control
+     * If you want some page be shown in concrete UI version, you can control it by overload this method
+     * @param $app_id
+     * @return string
+     * @throws waException
+     */
+    protected function whichUI($app_id = null)
+    {
+        return wa()->whichUI($app_id);
     }
 
     /**

@@ -116,7 +116,7 @@
                 <!-- <a href="#" class="button nobutton gray"><i class="fas fa-sliders-h"></i> Customize</a> -->
                 <div class="dashboard-customize">
                     <a href="javascript:void(0);"
-                       class="button nobutton gray js-dashboard-edit"
+                       class="button nobutton nowrap gray js-dashboard-edit"
                        data-current_dashboard-id="{$selected_sidebar_item|default:0|regex_replace:'/[^0-9]/':''}"
                        id="show-dashboard-editable-mode_">
                         <i class="fas fa-sliders-h"></i> <span>[s`Edit widgets`]</span>
@@ -137,7 +137,7 @@
             {** wa2ui showcase box **}
             {if !$wa->debug()}
                 <div class="dropdown" id="wa2ui-dropdown">
-                    <button class="icon large dropdown-toggle without-arrow js-wa2ui" title="[s`New Webasyst 2 UI`]" style="color: var(--text-color-link);"><i class="fas fa-adjust"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
+                    <span class="dropdown-toggle without-arrow js-wa2ui" title="[s`New Webasyst 2 UI`]" style="color: var(--text-color-link); cursor: pointer;"><span class="badge blue">2.0</span></span>
                     <div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
                         <div class="wa-notification">
                             <div class="wa-notification-header wa2ui-teaser">
@@ -157,7 +157,7 @@
                                     {* <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span> *}
                                 </p>
 
-                                <button class="button gray outlined small" onClick="_setCookie('force_set_wa_backend_ui_version', '1.3', 365); _setCookie('force_hide_wa2ui_teaser', 0, -1); window.location.reload();"><span>[s`Back to the classic UI`]</span></button>
+                                <button class="button gray outlined small custom-mr-4" onClick="_setCookie('force_set_wa_backend_ui_version', '1.3', 365); _setCookie('force_hide_wa2ui_teaser', 0, -1); window.location.reload();"><span>[s`Back to the classic UI`]</span></button>
                                 [s`or`] <a href="[s`http://2.webasyst.com`]" target="_blank">[s`learn more about Webasyst 2`]</a>
                             </div>
                         </div>
@@ -243,7 +243,7 @@
     {$_request_uri = $request_uri|rtrim:'/'}
     {$_bashend_url = $backend_url|rtrim:'/'}
 
-    {if $_request_uri == $_bashend_url || $dashboards}
+    {if $_request_uri == $_bashend_url || $_request_uri == "`$_bashend_url`/webasyst" || $dashboards}
         <script src="{$wa_url}wa-content/js/sortable/sortable.min.js"></script>
         <script src="{$wa_url}wa-content/js/sortable/jquery-sortable.min.js"></script>
         <script src="{$wa_url}wa-content/js/jquery-wa/dashboard.js?v={$wa->version()}"></script>

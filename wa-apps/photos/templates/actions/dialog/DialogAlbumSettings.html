@@ -348,7 +348,7 @@
         $('#album-rate', d).click(function() {
             $('#condition-rate').attr('checked', true);
         });
-        $('input[name^=tag]', d).die().live('change', function() {
+        $('input[name^=tag]', d).off().on('change', function() {
             $('#condition-tag').attr('checked', true);
         });
         $('select[name=access]', d).click(function() {

@@ -21,6 +21,10 @@ return array(
 		'version' => '>=2.0.0',
 		'strict' => true
 	),
+    'php' => array(
+        'version' => '>=7.2',
+        'strict'  => true,
+    ),
 );
 
 //EOF

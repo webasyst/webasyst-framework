@@ -1,4 +1,4 @@
-<div class="box wa-design-gray-toolbar">
+<div class="box contentbox wa-design-gray-toolbar">
     {*
     <div class="block half-padded float-right">
         <ul class="chips wa-theme-filter-price">
@@ -64,7 +64,7 @@
     $('#themes-close a').on('click', function (e) {
         e.preventDefault();
         $('#wa-design-container').addClass('left200px').css('margin-left', '');
-        $('#wa-design-sidebar').show();
+        $('.js-tab-content').show();
         $("#wa-theme-list li a:first").click();
     });
     </script>

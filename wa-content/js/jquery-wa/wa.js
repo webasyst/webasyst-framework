@@ -296,7 +296,7 @@
                     }
 
                     if (that.lock_body_scroll) {
-                        that.$body.removeClass(locked_class);
+                        Dialog.lockBodyScroll(false);
                     }
 
                     that.is_removed = true;
@@ -330,7 +330,7 @@
             that.is_visible = false;
 
             if (that.lock_body_scroll) {
-                that.$body.removeClass(locked_class);
+                Dialog.lockBodyScroll(false);
             }
         };
 
@@ -354,7 +354,7 @@
             }
 
             if (that.lock_body_scroll) {
-                that.$body.addClass(locked_class);
+                Dialog.lockBodyScroll(true);
             }
         };
 
@@ -390,6 +390,18 @@
 
             return deferred.promise();
         };
+
+        Dialog.lockBodyScroll = function(state) {
+            const $body = document.querySelector('body');
+            if (state) {
+                const scroll_width = Math.abs(window.innerWidth - document.documentElement.clientWidth);
+                $body.classList.add(locked_class);
+                $body.style.paddingRight = scroll_width + 'px';
+            }else{
+                $body.classList.remove(locked_class);
+                $body.style.paddingRight = '';
+            }
+        }
 
         return Dialog;
 
@@ -491,6 +503,7 @@
                 that.direction = getDirection(options["direction"]);
                 that.animation_time = 333;
                 that.hide_class = "is-hide";
+                that.width = options["width"] || false;
 
                 // DYNAMIC VARS
                 that.is_visible = false;
@@ -526,7 +539,7 @@
             //
             that.render();
 
-            // Delay binding close events so that drawer does not close immidiately
+            // Delay binding close events so that drawer does not close immediately
             // from the same click that opened it.
             setTimeout( function() {
                 that.bindEvents();
@@ -576,6 +589,11 @@
 
             var direction_class = (that.direction === "left" ? "left" : "right");
             that.$wrapper.addClass(direction_class).addClass(that.hide_class).show();
+            that.$wrapper[0].style.display = 'block';
+
+            if (that.width) {
+                that.$block.css('width', that.width);
+            }
 
             try {
                 that.show();
@@ -608,7 +626,7 @@
                             that.is_locked = false;
 
                             if (that.lock_body_scroll) {
-                                that.$body.removeClass(locked_class);
+                                Drawer.lockBodyScroll(false);
                             }
                         }, that.animation_time);
                     }
@@ -631,7 +649,7 @@
                     that.is_locked = false;
 
                     if (that.lock_body_scroll) {
-                        that.$body.removeClass(locked_class);
+                        Drawer.lockBodyScroll(false);
                     }
                 }, that.animation_time);
             }
@@ -647,7 +665,7 @@
 
             if (!that.is_locked) {
                 if (that.lock_body_scroll) {
-                    that.$body.addClass(locked_class);
+                    Drawer.lockBodyScroll(true);
                 }
 
                 that.is_locked = true;
@@ -659,6 +677,18 @@
 
             that.is_visible = true;
         };
+
+        Drawer.lockBodyScroll = function(state) {
+            const $body = document.querySelector('body');
+            if (state) {
+                const scroll_width = Math.abs(window.innerWidth - document.documentElement.clientWidth);
+                $body.classList.add(locked_class);
+                $body.style.paddingRight = scroll_width + 'px';
+            }else{
+                $body.classList.remove(locked_class);
+                $body.style.paddingRight = '';
+            }
+        }
 
         return Drawer;
 
@@ -2197,6 +2227,8 @@
             that.icon = that.options.icon || that.$wrapper.getAttribute('data-wa-tooltip-icon') || false;
             that.template = that.options.template || that.$wrapper.getAttribute('data-wa-tooltip-template') || false
 
+            that.wa_url =  window.wa_url || '/';
+
             //
             that.options.arrow = false;
             if (that.icon) {
@@ -2209,8 +2241,8 @@
             } else {
                 // DYNAMIC LOAD SOURCE
                 (async () => {
-                    await import('/wa-content/js/tippy/popper.min.js').then((async () => {
-                        await import('/wa-content/js/tippy/wa.tooltip.js').then(() => that.init())
+                    await import(`${that.wa_url}wa-content/js/tippy/popper.min.js`).then((async () => {
+                        await import(`${that.wa_url}wa-content/js/tippy/wa.tooltip.js`).then(() => that.init())
                     }))
                 })()
             }
@@ -3012,14 +3044,14 @@
             // Generic error page
             else if (xhr.status !== 200 && xhr.responseText) {
                 if (!$.wa.errorHandler || $.wa.errorHandler(xhr)) {
-                    // if (xhr.responseText.indexOf('Exception') !== -1) {
+                     if (xhr.responseText.indexOf('Exception') !== -1) {
                         $.wa.notice({
                             title: "AJAX Error",
                             text: "<div>" + xhr.responseText + "</div>",
                             button_name: "Close"
                         });
                         return true;
-                    // }
+                     }
 
                     document.open("text/html");
                     document.write(xhr.responseText); // !!! throws an "Access denied" exception in IE9
@@ -3478,7 +3510,6 @@
         }
     });
 
-
     document.addEventListener('DOMContentLoaded', function() {
         /* hide/show scrollbar */
         $('.sidebar, .sidebar-body, .content').on('hover', function () {
@@ -3492,5 +3523,111 @@
             }
         })
     });
+
+    const waBrowserDetect = function() {
+
+        const navUa = navigator.userAgent;
+
+        if(!$.browser){
+
+            $.browser = {};
+            $.browser.mozilla = false;
+            $.browser.webkit = false;
+            $.browser.opera = false;
+            $.browser.safari = false;
+            $.browser.chrome = false;
+            $.browser.msie = false;
+
+            $.browser.ua = navUa;
+
+            $.browser.name  = navigator.appName;
+            $.browser.fullVersion  = ''+parseFloat(navigator.appVersion);
+            $.browser.majorVersion = parseInt(navigator.appVersion,10);
+
+            let nameOffset,verOffset,ix;
+
+            if ((verOffset=navUa.indexOf("Opera"))!=-1) {
+                $.browser.opera = true;
+                $.browser.name = "Opera";
+                $.browser.fullVersion = navUa.substring(verOffset+6);
+                if ((verOffset=navUa.indexOf("Version"))!=-1) {
+                    $.browser.fullVersion = navUa.substring(verOffset + 8);
+                }
+            }else if ((verOffset=navUa.indexOf("OPR"))!=-1) {
+                $.browser.opera = true;
+                $.browser.name = "Opera";
+                $.browser.fullVersion = navUa.substring(verOffset+4);
+            }else if ( (verOffset=navUa.indexOf("MSIE"))!=-1) {
+                $.browser.msie = true;
+                $.browser.name = "Microsoft Internet Explorer";
+                $.browser.fullVersion = navUa.substring(verOffset+5);
+            }else if (navUa.indexOf("Trident")!=-1 ) {
+                $.browser.msie = true;
+                $.browser.name = "Microsoft Internet Explorer";
+                let start = navUa.indexOf("rv:")+3;
+                let end = start+4;
+                $.browser.fullVersion = navUa.substring(start,end);
+            }else if ((verOffset=navUa.indexOf("Chrome"))!=-1) {
+                $.browser.webkit = true;
+                $.browser.chrome = true;
+                $.browser.name = "Chrome";
+                $.browser.fullVersion = navUa.substring(verOffset+7);
+            }else if ((verOffset=navUa.indexOf("Safari"))!=-1) {
+                $.browser.webkit = true;
+                $.browser.safari = true;
+                $.browser.name = "Safari";
+                $.browser.fullVersion = navUa.substring(verOffset+7);
+                if ((verOffset=navUa.indexOf("Version"))!=-1) {
+                    $.browser.fullVersion = navUa.substring(verOffset + 8);
+                }
+            }else if ((verOffset=navUa.indexOf("AppleWebkit"))!=-1) {
+                $.browser.webkit = true;
+                $.browser.name = "Safari";
+                $.browser.fullVersion = navUa.substring(verOffset+7);
+                if ((verOffset=navUa.indexOf("Version"))!=-1) {
+                    $.browser.fullVersion = navUa.substring(verOffset + 8);
+                }
+            }else if ((verOffset=navUa.indexOf("Firefox"))!=-1) {
+                $.browser.mozilla = true;
+                $.browser.name = "Firefox";
+                $.browser.fullVersion = navUa.substring(verOffset+8);
+            }else if ( (nameOffset=navUa.lastIndexOf(' ')+1) < (verOffset=navUa.lastIndexOf('/')) ){
+                $.browser.name = navUa.substring(nameOffset,verOffset);
+                $.browser.fullVersion = navUa.substring(verOffset+1);
+                if ($.browser.name.toLowerCase()==$.browser.name.toUpperCase()) {
+                    $.browser.name = navigator.appName;
+                }
+            }
+
+            if ((ix=$.browser.fullVersion.indexOf(";"))!=-1) {
+                $.browser.fullVersion = $.browser.fullVersion.substring(0, ix);
+            }
+            if ((ix=$.browser.fullVersion.indexOf(" "))!=-1) {
+                $.browser.fullVersion = $.browser.fullVersion.substring(0, ix);
+            }
+
+            $.browser.majorVersion = parseInt(''+$.browser.fullVersion,10);
+            if (isNaN($.browser.majorVersion)) {
+                $.browser.fullVersion  = ''+parseFloat(navigator.appVersion);
+                $.browser.majorVersion = parseInt(navigator.appVersion,10);
+            }
+            $.browser.version = $.browser.majorVersion;
+        }
+        
+        $.browser.android = (/Android/i).test(navUa);
+        $.browser.blackberry = /BlackBerry|BB|PlayBook/i.test(navUa);
+        $.browser.ios = /iPhone|iPad|iPod|webOS/i.test(navUa);
+        $.browser.operaMobile = (/Opera Mini/i).test(navUa);
+        $.browser.windowsMobile = /IEMobile|Windows Phone/i.test(navUa);
+        $.browser.kindle = /Kindle|Silk/i.test(navUa);
+
+        $.browser.mobile = $.browser.android
+            || $.browser.blackberry
+            || $.browser.ios
+            || $.browser.windowsMobile || $.browser.operaMobile || $.browser.kindle;
+    }
+
+    waBrowserDetect();
+
 })(jQuery);
 

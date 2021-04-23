@@ -48,27 +48,38 @@
                 </div>
                 {if isset($album)}
                     {if $frontend_link}
-
+                        <span class="desktop-only">
                             {if $album.status <= 0}
                                 <i class="fas fa-lock fa-xs"></i>
-                                [`Private album`]{if $album.edit_rights}:&nbsp;<a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt"></i>{/if}
+                                [`Private album`]{if $album.edit_rights}:&nbsp;<a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs"></i>{/if}
                             {else}
-                                [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"> {$frontend_link}</a>
+                                [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"> {$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs"></i>
                             {/if}
-
+                        </span>
+                        <span class="tablet-only mobile-only">
+                            {if $album.status <= 0}
+                                <i class="fas fa-lock fa-xs"></i>
+                                {if $album.edit_rights}<a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link"><i class="fas fa-link"></i></a>{/if}
+                            {else}
+                                <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"><i class="fas fa-link"></i></a>
+                            {/if}
+                        </span>
                     {/if}
                     {if $album.edit_rights}
 
-                            <a href="#" class="button nobutton" id="p-album-settings"><i class="fas fa-cog"></i> [`Album settings`]</a>
+                            <a href="#" class="button nobutton" id="p-album-settings"><i class="fas fa-cog"></i> <span class="desktop-only">[`Album settings`]</span></a>
 
-                            <a href="#" class="button nobutton gray js-album-delete" id="p-album-delete"><i class="fas fa-times-circle"></i> [`Delete album`]</a>
+                            <a href="#" class="button nobutton gray js-album-delete" id="p-album-delete"><i class="fas fa-times-circle"></i> <span class="desktop-only">[`Delete album`]</span></a>
 
                     {/if}
 
                 {elseif (!empty($frontend_link))}
-
-                        [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a>
-
+                    <span class="desktop-only">
+                        [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs"></i>
+                    </span>
+                    <span class="tablet-only mobile-only">
+                        <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"><i class="fas fa-link"></a>
+                    </span>
                 {/if}
 
                 <div class="dropdown custom-ml-auto js-toolbar-dropdown" id="p-toolbar-dropdown">

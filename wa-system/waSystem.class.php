@@ -1344,11 +1344,12 @@ class waSystem
     }
 
     /**
-     * @param $widget_id
+     * @param int $widget_id
+     * @param array $options
      * @return waWidget
      * @throws waException
      */
-    public function getWidget($widget_id)
+    public function getWidget($widget_id, array $options = [])
     {
         $widget_model = new waWidgetModel();
         $widget = $widget_model->getById($widget_id);
@@ -1375,10 +1376,11 @@ class waSystem
                     throw new waException('Widget class '.$class.' '.$widget['widget'].' not found', 404);
                 }
                 $widget_config = include($widget_path);
-                $widget = $widget + $widget_config;
+                $widget += $widget_config;
                 if (isset($widget['img'])) {
                     $widget['img'] = 'wa-apps/'.$widget['app_id'].'/widgets/'.$widget['widget'].'/'.$widget['img'];
                 }
+                $widget += $options;
                 return new $class($widget);
             } else {
                 throw new waException('Widget '.$widget['widget'].' not found', 404);

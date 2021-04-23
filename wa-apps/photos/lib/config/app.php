@@ -14,4 +14,5 @@ return array(
     'vendor' => 'webasyst',
     'my_account' => true,
     'sash_color' => '#af71b3',
+    'ui' => '1.3,2.0'
 );

@@ -197,6 +197,8 @@
                 }
 
                 var hash = location.hash;
+                console.log(hash)
+                console.log(params)
                 if (hash.indexOf('theme=') !== -1) {
                     if (!params['route']) {
                         hash = hash.replace(/&route=[^&]+/, '');
@@ -328,6 +330,7 @@
             if (hash  === undefined) {
                 hash = waDesignHash(location.hash);
             }
+            console.log('hash',hash)
             if (hash.length) {
                 if (hash == 'themes') {
                     $('#wa-design-menu > .selected').removeClass('selected');

@@ -3,8 +3,8 @@
 .wa-design { margin-bottom: 80px; }
 
 .wa-editor-core-wrapper { background: white; }
-.wa-design-gray-toolbar { background: #eee; padding-left: 15px; padding-top: 13px; padding-bottom: 13px; }
-.wa-design-gray-toolbar h4 { font-size: 1.3em; margin-bottom: 0; }
+.fontawesome-i2svg-active .wa-editor-core-wrapper { background: var(--background-color-blank); }
+
 .wa-design-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 420px; z-index: 1}
 
 .wa-app-block { margin: 0; padding: 15px 15px 5px 42px;}
@@ -196,11 +196,18 @@ and (orientation : portrait) {
     flex-wrap: wrap;
 }
 #content.flexbox #wa-design-container {
-    flex: 1 0 100%;
+
 }
+
+#content.flexbox #wa-theme-list .themes a {
+    color: var(--accent-color) !important;
+}
+#content.flexbox #wa-theme-list .themes svg {
+    color: var(--accent-color);
+}
+
 #content.flexbox #wa-design-container .wa-theme {
-    display: flex;
-    flex-wrap: wrap;
+
 }
 #content.flexbox #wa-design-container .wa-theme-sidebar .wa-theme-usage .field {
     margin-bottom: unset;
@@ -214,43 +221,27 @@ and (orientation : portrait) {
     flex-wrap: wrap;
 }
 
-#content.flexbox #wa-design-container h1.wa-theme-name {
-    flex: 1 0 100%;
+#content.flexbox #wa-design-container .wa-theme-name-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+#content.flexbox #wa-design-container .wa-theme-name-section h1 {
+    margin-right: 2rem;
+    flex: 0 1 auto;
+}
+#content.flexbox #wa-design-container .wa-theme-name-section .dropdown {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
 }
 
-#content.flexbox #wa-design-menu {
-    overflow: visible;
-    display: flex;
-    margin-bottom: 0;
-    border-radius: 0;
-    max-height: calc(52px + 1.5rem);
+#content.flexbox #wa-design-container .wa-theme-info-section {
+
 }
-#content.flexbox #wa-design-menu > li {
-    min-height: 52px;
-}
-#content.flexbox #wa-design-menu > li:last-child {
-    margin-left: auto;
-}
-#content.flexbox #wa-design-menu li.dropdown {
-    display: inline-flex;
-    align-items: center;
-}
-#content.flexbox #wa-design-menu li.dropdown > img {
-    margin-right: .6rem;
-}
-#content.flexbox #wa-design-menu li.dropdown > .dropdown-body {
-    width: auto;
-    max-height: unset;
-    z-index: 9;
-}
-#content.flexbox #wa-design-menu li a {
-    display: flex;
-    flex-direction: column;
-}
-#content.flexbox #wa-design-menu li a svg {
-    align-self: center;
-    margin-bottom: .6rem;
-}
+
+
 #content.flexbox #wa-design-container .value input.color {
     min-width: 95px;
     width: 95px;
@@ -352,6 +343,47 @@ and (orientation : portrait) {
 
 #content.flexbox .skeleton .list + .line {
     margin-top: 2rem;
+}
+
+
+#content.flexbox .wa-theme-templates .fa-file-code {
+    color: #E26136;
+}
+#content.flexbox .wa-theme-templates .fa-js-square {
+    color: #D6A100;
+}
+#content.flexbox .wa-theme-templates .fa-css3 {
+    color: #259EF4;
+}
+#content.flexbox .wa-theme-templates .fa-link{
+    color: #888888;
+}
+
+#content.flexbox .tab-content {
+    display: none;
+}
+#content.flexbox .tab-content.selected {
+    display: flex;
+    flex-direction: column;
+}
+
+
+#content.flexbox .wa-theme-settings-list > div {
+    display: none;
+}
+#content.flexbox .wa-theme-settings-list > div.selected {
+    display: block;
+}
+
+
+#content.flexbox .wa-theme-select-menu {
+    display: flex;
+}
+#content.flexbox .wa-theme-select-menu > img {
+    margin-right: 1rem;
+}
+#content.flexbox .wa-theme-select-menu.dropdown > .dropdown-toggle::after {
+    top: 0.7rem;
 }
 
 @-moz-keyframes loader-keyframes-pulse {
