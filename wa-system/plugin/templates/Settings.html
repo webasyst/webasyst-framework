@@ -21,13 +21,9 @@
             <iframe style="display:none" name="plugins-settings-iframe" id="plugins-settings-iframe"></iframe>
         </div>
     {else}
-        <div class="block double-padded align-center gray">
-            <p>
-                <strong>{$plugin_info.name|default:$plugin_id|string_format:'[s`Plugin %s is installed and working.`]'}</strong>
-                <br>
-                <br>
-                [s`No configuration options are available for this plugin.`]
-            </p>
+        <div class="align-center gray">
+            <p class="bold">{$plugin_info.name|default:$plugin_id|string_format:'[s`Plugin %s is installed and working.`]'}</p>
+            <p>[s`No configuration options are available for this plugin.`]</p>
         </div>
     {/if}
 
@@ -40,5 +36,3 @@
 {elseif ($plugins_count > 0)}
     [s`Unknown plugin`]
 {/if}
-
-<div class="clear-left"></div>

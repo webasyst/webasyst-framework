@@ -183,194 +183,220 @@
 {/strip}
 {/function}
 {$id = uniqid("wa-theme-id`$theme.id`")}
-<div class="wa-theme article box contentbox" id="{$id}">
-    <div class="wa-theme-name-section">
-        {* Theme name *}
-        <h1 class="wa-theme-name">
-            {sprintf('[s`%s design theme`]', $theme.name|escape)}
-            <span class="hint">
-                {$theme.version}
-                <span style="font-size: smaller;" title="[s`Theme ID`]">({$theme.id|escape})</span>
-            </span>
-        </h1>
-        <div class="dropdown js-theme-actions-dropdown">
-            <button class="dropdown-toggle button dark-gray" type="button">Действия с темой</button>
-            <div class="dropdown-body">
-                <ul class="menu">
-                    {if !empty($settings.items)}
-                        {* Export theme settings *}
-                        <li>
-                            <a class="js-export-theme-settings" href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}">
-                                <i class="fas fa-file-export"></i>
-                                <span>[s`Export theme settings`]</span>
-                            </a>
-                            <div class="hidden js-export-error"><span class="js-export-error-caption small red"></span></div>
-                        </li>
-                        {* Import theme settings *}
-                        <li>
-                            <a class="js-import-theme-settings" href="#">
-                                <i class="fas fa-file-import"></i>
-                                <span>[s`Import theme settings`]</span>
-                            </a>
-                        </li>
-                    {/if}
-                    {if !$_is_trial}
-                        {if count($theme->related_themes) > 1}
+<div class="wa-theme article" id="{$id}">
+    <div class="article-body">
+        <div class="wa-theme-name-section">
+            {* Theme name *}
+            <h1 class="wa-theme-name">
+                {sprintf('[s`%s design theme`]', $theme.name|escape)}
+                <span class="hint">
+                    {$theme.version}
+                    <span style="font-size: smaller;" title="[s`Theme ID`]">({$theme.id|escape})</span>
+                </span>
+            </h1>
+            <div class="dropdown js-theme-actions-dropdown">
+                <button class="dropdown-toggle button dark-gray{if $wa->isMobile()} full-width{/if}" type="button">Действия с темой</button>
+                <div class="dropdown-body">
+                    <ul class="menu">
+                        {if !empty($settings.items)}
+                            {* Export theme settings *}
                             <li>
-                                <a class="theme-download js-theme-download" href="#">
-                                    <i class="fas fa-file-download"></i>
-                                    <span>[s`Download theme backup`]</span>
+                                <a class="js-export-theme-settings" href="?module=design&amp;action=themeExportSettings&amp;theme={$theme.id}">
+                                    <i class="fas fa-file-export"></i>
+                                    <span>[s`Export theme settings`]</span>
+                                </a>
+                                <div class="hidden js-export-error"><span class="js-export-error-caption small red"></span></div>
+                            </li>
+                            {* Import theme settings *}
+                            <li>
+                                <a class="js-import-theme-settings" href="#">
+                                    <i class="fas fa-file-import"></i>
+                                    <span>[s`Import theme settings`]</span>
+                                </a>
+                            </li>
+                        {/if}
+                        {if !$_is_trial}
+                            {if count($theme->related_themes) > 1}
+                                <li>
+                                    <a class="theme-download js-theme-download" href="#">
+                                        <i class="fas fa-file-download"></i>
+                                        <span>[s`Download theme backup`]</span>
+                                    </a>
+                                </li>
+
+                            {else}
+                                <li>
+                                    <a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}">
+                                        <i class="fas fa-file-download"></i>
+                                        <span>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></span>
+                                    </a></li>
+                            {/if}
+                            <li>
+                                <a class="theme-copy js-theme-copy" href="#" data-related="{if count($theme->related_themes)>1}1{else}0{/if}">
+                                    <i class="fas fa-copy"></i>
+                                    <span>[s`Clone theme`]</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="theme-rename js-theme-rename" href="#">
+                                    <i class="fas fa-pen"></i>
+                                    <span>[s`Rename theme`]</span>
+                                </a>
+                            </li>
+                            <li class="gray">
+                                <a class="js-theme-parent" href="javascript:void(0);">
+                                    <i class="fas fa-link"></i>
+                                    <span>[s`Parent theme`]:<br>
+                                        <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong>.<br>
+                                        <span class="theme-parent js-theme-parent"><b><i>{if $theme.parent_theme_id}[s`Change theme`]{else}[s`Select`]{/if}</i></b></span>
+                                        <span class="hint">[s`You can change the theme in settlement settings.`]</span>
+                                    </span>
                                 </a>
                             </li>
 
-                        {else}
-                            <li>
-                                <a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}">
-                                    <i class="fas fa-file-download"></i>
-                                    <span>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></span>
-                                </a></li>
+                            {if empty($theme_warning_requirements) && empty($theme_original_warning_requirements)}
+                                        {$_reset_is_disabled = false}
+                                        {$_reset_disabled_alert = null}
+
+                                        {if $theme.type neq waTheme::OVERRIDDEN}
+                                            {$_reset_is_disabled = true}
+                                            {$_reset_disabled_alert = _ws('You did not apply customizations to this theme yet, and thus there is nothing to revert.')}
+                                        {/if}
+
+                                        {if !$theme.path_original && $theme.type == waTheme::CUSTOM}
+                                            {$_reset_is_disabled = true}
+                                            {$_reset_disabled_alert = _ws('Design theme was not installed from Webasyst Store.')}
+                                        {/if}
+
+                                        <li class="top-padded">
+                                            <a class="theme-reset js-theme-reset{if $_reset_is_disabled} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $_reset_disabled_alert} onClick="window.alert('{$_reset_disabled_alert}');"{/if}>
+                                                <i class="fas fa-broom"></i>
+                                                <span>[s`Revert theme to original`]
+                                    {if $theme.path_original && $theme.type neq waTheme::OVERRIDDEN}
+                                        <span class="hint">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now.`]</span>
+                                    {elseif $theme.path_original}
+                                        <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
+                                    {/if}
+                                    </span>
+                                            </a>
+                                        </li>
+                                    {/if}
+
                         {/if}
-                        <li>
-                            <a class="theme-copy js-theme-copy" href="#" data-related="{if count($theme->related_themes)>1}1{else}0{/if}">
-                                <i class="fas fa-copy"></i>
-                                <span>[s`Clone theme`]</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="theme-rename js-theme-rename" href="#">
-                                <i class="fas fa-pen"></i>
-                                <span>[s`Rename theme`]</span>
-                            </a>
-                        </li>
-                        <li class="gray">
-                            <a class="js-theme-parent" href="javascript:void(0);">
-                                <i class="fas fa-link"></i>
-                                <span>[s`Parent theme`]:<br>
-                                    <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not selected`]{/if}</strong>.<br>
-                                    <span class="theme-parent js-theme-parent"><b><i>{if $theme.parent_theme_id}[s`Change theme`]{else}[s`Select`]{/if}</i></b></span>
-                                    <span class="hint">[s`You can change the theme in settlement settings.`]</span>
+                        <li class="top-padded">
+                            <a class="js-theme-delete{if $theme.system} disabled{/if}" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover. Are you sure?`]" data-success="[s`Design theme deleted.`]">
+                                <i class="fas fa-times-circle"></i>
+                                <span>
+                                    [s`Delete theme`]
+                                    {if $theme.system}<span class="hint">[s`Default theme cannot be deleted`]</span>{/if}
                                 </span>
                             </a>
                         </li>
-
-                        {if empty($theme_warning_requirements) && empty($theme_original_warning_requirements)}
-                                    {$_reset_is_disabled = false}
-                                    {$_reset_disabled_alert = null}
-
-                                    {if $theme.type neq waTheme::OVERRIDDEN}
-                                        {$_reset_is_disabled = true}
-                                        {$_reset_disabled_alert = _ws('You did not apply customizations to this theme yet, and thus there is nothing to revert.')}
-                                    {/if}
-
-                                    {if !$theme.path_original && $theme.type == waTheme::CUSTOM}
-                                        {$_reset_is_disabled = true}
-                                        {$_reset_disabled_alert = _ws('Design theme was not installed from Webasyst Store.')}
-                                    {/if}
-
-                                    <li class="top-padded">
-                                        <a class="theme-reset js-theme-reset{if $_reset_is_disabled} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $_reset_disabled_alert} onClick="window.alert('{$_reset_disabled_alert}');"{/if}>
-                                            <i class="fas fa-broom"></i>
-                                            <span>[s`Revert theme to original`]
-                                {if $theme.path_original && $theme.type neq waTheme::OVERRIDDEN}
-                                    <span class="hint">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now.`]</span>
-                                {elseif $theme.path_original}
-                                    <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
-                                {/if}
-                                </span>
-                                        </a>
-                                    </li>
-                                {/if}
-
-                    {/if}
-                    <li class="top-padded">
-                        <a class="js-theme-delete{if $theme.system} disabled{/if}" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover. Are you sure?`]" data-success="[s`Design theme deleted.`]">
-                            <i class="fas fa-times-circle"></i>
-                            <span>
-                                [s`Delete theme`]
-                                {if $theme.system}<span class="hint">[s`Default theme cannot be deleted`]</span>{/if}
-                            </span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    {* Theme help *}
-    {if !empty($support) || !empty($instruction)}
-        <div class="wa-theme-help custom-mb-24">
-            {if !empty($instruction)}
-                <a class="button nobutton small" href="{$instruction|escape}" rel="noopener" target="_blank">[s`Design theme user manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
-            {/if}
-            {if !empty($support)}
-                <a class="button nobutton small" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
-            {/if}
-        </div>
-    {/if}
-
-    {* Theme update *}
-    <div class="wa-theme-actions js-theme-actions custom-mb-32">
-        {if $theme.type == waTheme::TRIAL}
-
-            {* Trial theme *}
-            <div class="wa-theme-trial align-center">
-                <strong><i class="fas fa-exclamation-circle"></i> {_ws('Trial theme')}</strong>
-
-                {if !empty($preview_url)}
-                    <div style="margin: 16px 0 22px 0;">
-                        <a class="wa-theme-preview button smaller blue" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">[s`Preview on my website`]</a>
-                        <p>
-                            <strong>[s`Your website will display this trial theme for you only.`]</strong>
-                            [s`Other visitors will keep seeing existing theme with no change.`]
-                        </p>
-                    </div>
-                {/if}
-
-                {if $wa->user()->isAdmin('installer')}
-                    <div style="margin:16px 0 12px 0;">
-                        <a href="{$wa_backend_url}installer/store/theme/{$theme.id|escape}/" class="button green">[s`Buy theme`]</a>
-                    </div>
-                {/if}
-            </div>
-
-        {elseif $theme.type == waTheme::ORIGINAL}
-
-            {if $theme_routes && !empty($theme_warning_requirements)}
-                <div class="highlighted box">
-                    <ul class="menu">
-                        {foreach $theme_warning_requirements as $requirement}
-                            <li>{$requirement.warning|escape}</li>
-                        {/foreach}
                     </ul>
                 </div>
-            {/if}
-
-            {* Original theme version from /wa-apps/ *}
-            <div class="highlighted green box">
-                <strong><i class="fas fa-check"></i> {sprintf('[s`Original version <strong>%s</strong>`]', $theme.version)}</strong>
-                <p class="opacity-40 small custom-mt-8">[s`No customizations have been made to theme settings and template files.`]</p>
             </div>
+        </div>
 
-        {elseif $theme.type == waTheme::OVERRIDDEN}
+        {* Theme help *}
+        {if !empty($support) || !empty($instruction)}
+            <div class="wa-theme-help custom-mb-24">
+                {if !empty($instruction)}
+                    <a class="button nobutton small" href="{$instruction|escape}" rel="noopener" target="_blank">[s`Design theme user manual`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                {/if}
+                {if !empty($support)}
+                    <a class="button nobutton small" href="{$support|escape}" rel="noopener" target="_blank">[s`User support`] <i class="fas fa-external-link-alt fa-xs"></i></a>
+                {/if}
+            </div>
+        {/if}
 
-            {if $theme.version == $theme_original_version}
-                {if !$theme.parent_theme || $theme.parent_theme.type == waTheme::ORIGINAL || $theme.parent_theme.version == $theme_parent_original_version}
-                    {* Modified, but still the latest version *}
-                    <div class="highlighted green box">
+        {* Theme update *}
+        <div class="wa-theme-actions js-theme-actions custom-mb-32">
+            {if $theme.type == waTheme::TRIAL}
+
+                {* Trial theme *}
+                <div class="wa-theme-trial align-center">
+                    <strong><i class="fas fa-exclamation-circle"></i> {_ws('Trial theme')}</strong>
+
+                    {if !empty($preview_url)}
+                        <div style="margin: 16px 0 22px 0;">
+                            <a class="wa-theme-preview button smaller blue" data-theme-id="{$theme.id|escape}" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">[s`Preview on my website`]</a>
+                            <p>
+                                <strong>[s`Your website will display this trial theme for you only.`]</strong>
+                                [s`Other visitors will keep seeing existing theme with no change.`]
+                            </p>
+                        </div>
+                    {/if}
+
+                    {if $wa->user()->isAdmin('installer')}
+                        <div style="margin:16px 0 12px 0;">
+                            <a href="{$wa_backend_url}installer/store/theme/{$theme.id|escape}/" class="button green">[s`Buy theme`]</a>
+                        </div>
+                    {/if}
+                </div>
+
+            {elseif $theme.type == waTheme::ORIGINAL}
+
+                {if $theme_routes && !empty($theme_warning_requirements)}
+                    <div class="highlighted box">
                         <ul class="menu">
-                            <li>
-                                <i class="fas fa-check bold"></i> {sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}
-                                <p class="opacity-40 small custom-mt-8">{sprintf('[s`Your customized version of %s theme is up to date.`]', $theme.name|escape)}</p>
-                            </li>
+                            {foreach $theme_warning_requirements as $requirement}
+                                <li>{$requirement.warning|escape}</li>
+                            {/foreach}
                         </ul>
                     </div>
+                {/if}
+
+                {* Original theme version from /wa-apps/ *}
+                <div class="highlighted green box">
+                    <strong><i class="fas fa-check"></i> {sprintf('[s`Original version <strong>%s</strong>`]', $theme.version)}</strong>
+                    <p class="opacity-40 small custom-mt-8">[s`No customizations have been made to theme settings and template files.`]</p>
+                </div>
+
+            {elseif $theme.type == waTheme::OVERRIDDEN}
+
+                {if $theme.version == $theme_original_version}
+                    {if !$theme.parent_theme || $theme.parent_theme.type == waTheme::ORIGINAL || $theme.parent_theme.version == $theme_parent_original_version}
+                        {* Modified, but still the latest version *}
+                        <div class="highlighted green box">
+                            <ul class="menu">
+                                <li>
+                                    <i class="fas fa-check bold"></i> {sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}
+                                    <p class="opacity-40 small custom-mt-8">{sprintf('[s`Your customized version of %s theme is up to date.`]', $theme.name|escape)}</p>
+                                </li>
+                            </ul>
+                        </div>
+                    {else}
+                        {* Update is not available *}
+                        {if !empty($theme_parent_warning_requirements)}
+                            <div class="highlighted box">
+                                <strong>[s`Update not available`]</strong>
+                                <ul class="menu">
+                                    {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
+                                        <li>
+                                            {$requirement.warning}
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+
+                            {* Update is available *}
+                        {elseif $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN && $theme.parent_theme.version != $theme_parent_original_version}
+                            <div class="wa-theme-update-available highlighted blue box">
+                                <a class="theme-update js-theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]">
+                                    <i class="fas fa-redo-alt"></i>
+                                    <span>[s`Update is available`]</span>
+                                </a>
+                                <p class="opacity-40 small custom-mt-8">[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</p>
+                            </div>
+                        {/if}
+                    {/if}
                 {else}
-                    {* Update is not available *}
-                    {if !empty($theme_parent_warning_requirements)}
+                    {*Update is not available *}
+                    {if $theme.version != $theme_original_version && !empty($theme_warning_requirements)}
                         <div class="highlighted box">
                             <strong>[s`Update not available`]</strong>
                             <ul class="menu">
-                                {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
+                                {foreach $theme_warning_requirements as $requirement}
                                     <li>
                                         {$requirement.warning}
                                     </li>
@@ -378,266 +404,246 @@
                             </ul>
                         </div>
 
-                        {* Update is available *}
-                    {elseif $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN && $theme.parent_theme.version != $theme_parent_original_version}
+                        {*Update is not available *}
+                    {elseif $theme.version != $theme_original_version && !empty($theme_original_warning_requirements)}
+                        <div class="highlighted box">
+                            <strong>[s`Update not available`]</strong>
+                            <ul class="menu">
+                                {foreach $theme_original_warning_requirements as $requirement}
+                                    <li>
+                                        {$requirement.warning}
+                                    </li>
+                                {/foreach}
+                            </ul>
+                        </div>
+
+                        {*Update is available *}
+                    {elseif $theme.version != $theme_original_version}
                         <div class="wa-theme-update-available highlighted blue box">
-                            <a class="theme-update js-theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]">
-                                <i class="fas fa-redo-alt"></i>
-                                <span>[s`Update is available`]</span>
-                            </a>
+                            <a class="theme-update js-theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="fas fa-redo-alt"></i> <span>{sprintf('[s`Update to version %s is available`]', $theme_original_version)}</span></a>
                             <p class="opacity-40 small custom-mt-8">[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</p>
                         </div>
                     {/if}
                 {/if}
+
             {else}
-                {*Update is not available *}
-                {if $theme.version != $theme_original_version && !empty($theme_warning_requirements)}
-                    <div class="highlighted box">
-                        <strong>[s`Update not available`]</strong>
-                        <ul class="menu">
-                            {foreach $theme_warning_requirements as $requirement}
-                                <li>
-                                    {$requirement.warning}
-                                </li>
-                            {/foreach}
-                        </ul>
-                    </div>
 
-                    {*Update is not available *}
-                {elseif $theme.version != $theme_original_version && !empty($theme_original_warning_requirements)}
-                    <div class="highlighted box">
-                        <strong>[s`Update not available`]</strong>
-                        <ul class="menu">
-                            {foreach $theme_original_warning_requirements as $requirement}
-                                <li>
-                                    {$requirement.warning}
-                                </li>
-                            {/foreach}
-                        </ul>
-                    </div>
+                {* No original (eg. cloned) theme with same ID *}
+                <div class="wa-theme-orphan">
+                    <ul class="menu">
+                        <li>
+                            <b><i class="fas fa-copy"></i> {$theme.id}</b>
+                            <span class="hint"><br>{sprintf('[s`This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>).`]', $theme.id)}</span>
+                        </li>
+                    </ul>
+                </div>
 
-                    {*Update is available *}
-                {elseif $theme.version != $theme_original_version}
-                    <div class="wa-theme-update-available highlighted blue box">
-                        <a class="theme-update js-theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="fas fa-redo-alt"></i> <span>{sprintf('[s`Update to version %s is available`]', $theme_original_version)}</span></a>
-                        <p class="opacity-40 small custom-mt-8">[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</p>
-                    </div>
-                {/if}
-            {/if}
-
-        {else}
-
-            {* No original (eg. cloned) theme with same ID *}
-            <div class="wa-theme-orphan">
-                <ul class="menu">
-                    <li>
-                        <b><i class="fas fa-copy"></i> {$theme.id}</b>
-                        <span class="hint"><br>{sprintf('[s`This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>).`]', $theme.id)}</span>
-                    </li>
-                </ul>
-            </div>
-
-        {/if}
-    </div>
-
-    <div class="wa-theme-info-section js-theme-info-section">
-
-        {if !$theme_routes && !$_is_trial}
-        <div class="wa-theme-use custom-mb-32">
-
-            {* THEME IS NOT IN USE *}
-            {if $wa->get('just_installed')}
-                <p class="bold successmsg"><i class="fas fa-check-circle"></i>{sprintf(_ws('%s design theme has been successfully installed. Start using this theme by clicking the button below.'), $theme.name|escape)}</p>
-            {else}
-                <p>
-                    {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
-                </p>
-            {/if}
-
-            {if $cover}
-                <p>
-                    <img src="{$cover}" class="wa-theme-cover" />
-                </p>
-            {/if}
-
-            {if !empty($theme_warning_requirements)}
-                <ul>
-                    {foreach $theme_warning_requirements as $requirement}
-                        <li><b>{$requirement.warning}</b></li>
-                    {/foreach}
-                </ul>
-            {elseif !empty($theme_original_warning_requirements)}
-                <ul>
-                    {foreach $theme_original_warning_requirements as $requirement}
-                        <li><b>{$requirement.warning}</b></li>
-                    {/foreach}
-                </ul>
-            {elseif !empty($theme_parent_warning_requirements)}
-                <ul>
-                    {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
-                        <li><b>{$requirement.warning}</b></li>
-                    {/foreach}
-                </ul>
-            {else}
-                <p class="flexbox middle space-16">
-                    <a id="theme-start-using" href="#" class="button green js-theme-start-using">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
-                    {if !empty($preview_url)}
-                        <span>[s`or`]</span>
-                        <span class="nowrap">
-                            <a class="wa-theme-preview" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
-                                [s`preview this theme`]
-                            </a>
-                            <i class="fas fa-external-link-alt fa-xs"></i>
-                        </span>
-                    {/if}
-                </p>
             {/if}
         </div>
-        {/if}
 
-        {* Theme usage *}
-        <div class="wa-theme-usage fields">
-            <h4>[s`Информация о теме`]</h4>
-
-            <h6>[s`Theme usage`]</h6>
-
-            <div class="field">
-                <div class="name">
-                    [s`Theme ID`]
-                </div>
-                <div class="value">
-                    {$theme.id|escape}
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="name">
-                    [s`Theme version`]
-                </div>
-                <div class="value">
-                    {$theme.version}
-                </div>
-            </div>
-
-            {if !$_is_trial}
-                <div class="field">
-                    <div class="name">
-                        [s`Theme path`]
-                    </div>
-                    <div class="value">
-                        {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
-                    </div>
-                    {if $theme.type ne waTheme::ORIGINAL}
-                        <div class="value hint">
-                            [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
-                        </div>
-                    {/if}
-                </div>
-
-                {if count($theme_routes)}
-                    <div class="field">
-                        <div class="name">
-                            [s`Theme usage`]
-                        </div>
-                        {$_theme_usages = []}
-                        {foreach $theme_routes as $_r}
-                            <div class="value">
-                                {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
-                                    {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
-                                {/if}
-                                <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
-                                    {$_r._domain_decoded}/{$_r.url}
-                                    <i class="fas fa-external-link-alt fa-xs"></i>
-                                </a>
-                            </div>
-                        {/foreach}
-                    </div>
-                {/if}
-
-                {if count($theme_routes) > 1}
-                    <p class="gray small">
-                        <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
-                    </p>
-                {/if}
-            {/if}
-
-            {* Theme thumbs *}
-            {if !empty($theme.thumbs)}
-                <h6>[s`Images thumbnails`]</h6>
-                <p>[s`This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-fly thumbnail generation is allowed, thumbnails will be generated automatically.`]</p>
-                <ul>
-                    {foreach $theme.thumbs as $t}
-                        <li>{$t}</li>
-                    {/foreach}
-                </ul>
-            {/if}
-
-            {* Theme about *}
-            {if trim($theme.about)}
-                <h6>[s`About this theme`]</h6>
-                {$theme.about}
-            {/if}
-        </div>
-    </div>
-
-    {if $theme_routes || $_is_trial}
-        {* THEME SETTINGS FORM *}
-        {if !empty($settings.items)}
-
-            <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
-            <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
-
-            <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
-            <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
-                {$wa->csrf()}
-                <div class="wa-theme-search-min-symbol bold js-search-min-symbol" style="display: none;">[s`Minimum 3 characters`]</div>
-                <div class="wa-theme-search-result js-search-result" style="display: none;">[s`Search results:`]</div>
-                <div class="wa-theme-search-no-result js-search-no-result" style="display: none;">[s`No settings found`]</div>
-
-                <div class="wa-theme-settings-list fields js-settings-list">
-                    {foreach $settings.items as $s_var => $setting}
-                        {_renderThemeSetting _setting_var=$s_var _setting=$setting}
-                    {/foreach}
-                </div>
-            </form>
-        {else}
-            <p>
-                <br>
-                <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
-            </p>
-        {/if}
-
-    {/if}
-
-    {* Include dialogs *}
-    {include file='./ThemeDialogs.inc.html' inline}
-    {* Theme navigation *}
-    <div class="js-theme-settings-hidden-list" style="display: none">
         {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
-
-            <h5 class="heading">[s`Настройки темы дизайна`]</h5>
             {* Search settings *}
-            <div class="search-setting-wrapper box custom-mt-24">
+            <div class="search-setting-wrapper custom-mb-24">
                 <div class="state-with-inner-icon left small width-100">
                     <span class="icon"><i class="fas fa-search"></i></span>
                     <input type="search" class="js-search-setting width-100" autocomplete="off" placeholder="[s`Find setting`]" />
                 </div>
             </div>
-            <ul class="menu js-theme-settings-list">
-                {foreach $global_group_divideres as $_divider_id => $_divider_name}
-                    <li>
-                        <a href="javascript:void(0);" data-divider-id="{$_divider_id|escape}">
-                            <span>{strip_tags($_divider_name)}</span>
+        {/if}
+
+        <div class="wa-theme-info-section js-theme-info-section">
+
+            {if !$theme_routes && !$_is_trial}
+            <div class="wa-theme-use custom-mb-32">
+
+                {* THEME IS NOT IN USE *}
+                {if $wa->get('just_installed')}
+                    <p class="bold successmsg"><i class="fas fa-check-circle"></i>{sprintf(_ws('%s design theme has been successfully installed. Start using this theme by clicking the button below.'), $theme.name|escape)}</p>
+                {else}
+                    <p>
+                        {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
+                    </p>
+                {/if}
+
+                {if $cover}
+                    <p>
+                        <img src="{$cover}" class="wa-theme-cover" />
+                    </p>
+                {/if}
+
+                {if !empty($theme_warning_requirements)}
+                    <ul>
+                        {foreach $theme_warning_requirements as $requirement}
+                            <li><b>{$requirement.warning}</b></li>
+                        {/foreach}
+                    </ul>
+                {elseif !empty($theme_original_warning_requirements)}
+                    <ul>
+                        {foreach $theme_original_warning_requirements as $requirement}
+                            <li><b>{$requirement.warning}</b></li>
+                        {/foreach}
+                    </ul>
+                {elseif !empty($theme_parent_warning_requirements)}
+                    <ul>
+                        {foreach $theme.parent_theme->getWarningRequirements() as $requirement}
+                            <li><b>{$requirement.warning}</b></li>
+                        {/foreach}
+                    </ul>
+                {else}
+                    <p class="flexbox middle space-16">
+                        <a id="theme-start-using" href="#" class="button green js-theme-start-using">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
+                        {if !empty($preview_url)}
+                            <span>[s`or`]</span>
+                            <span class="nowrap">
+                                <a class="wa-theme-preview" rel="noopener" target="_blank" data-href="{$preview_url|regex_replace:'/http:|https:/':''}" href="{$preview_url}">
+                                    [s`preview this theme`]
+                                </a>
+                                <i class="fas fa-external-link-alt fa-xs"></i>
+                            </span>
+                        {/if}
+                    </p>
+                {/if}
+            </div>
+            {/if}
+
+            {* Theme usage *}
+            <div class="wa-theme-usage fields">
+                <h4>[s`Информация о теме`]</h4>
+
+                <h6>[s`Theme usage`]</h6>
+
+                <div class="field">
+                    <div class="name">
+                        [s`Theme ID`]
+                    </div>
+                    <div class="value">
+                        {$theme.id|escape}
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="name">
+                        [s`Theme version`]
+                    </div>
+                    <div class="value">
+                        {$theme.version}
+                    </div>
+                </div>
+
+                {if !$_is_trial}
+                    <div class="field">
+                        <div class="name">
+                            [s`Theme path`]
+                        </div>
+                        <div class="value">
+                            {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
+                        </div>
+                        {if $theme.type ne waTheme::ORIGINAL}
+                            <div class="value hint">
+                                [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
+                            </div>
+                        {/if}
+                    </div>
+
+                    {if count($theme_routes)}
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme usage`]
+                            </div>
+                            {$_theme_usages = []}
+                            {foreach $theme_routes as $_r}
+                                <div class="value">
+                                    {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
+                                        {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
+                                    {/if}
+                                    <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
+                                        {$_r._domain_decoded}/{$_r.url}
+                                        <i class="fas fa-external-link-alt fa-xs"></i>
+                                    </a>
+                                </div>
+                            {/foreach}
+                        </div>
+                    {/if}
+
+                    {if count($theme_routes) > 1}
+                        <p class="gray small">
+                            <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
+                        </p>
+                    {/if}
+                {/if}
+
+                {* Theme thumbs *}
+                {if !empty($theme.thumbs)}
+                    <h6>[s`Images thumbnails`]</h6>
+                    <p>[s`This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-fly thumbnail generation is allowed, thumbnails will be generated automatically.`]</p>
+                    <ul>
+                        {foreach $theme.thumbs as $t}
+                            <li>{$t}</li>
+                        {/foreach}
+                    </ul>
+                {/if}
+
+                {* Theme about *}
+                {if trim($theme.about)}
+                    <h6>[s`About this theme`]</h6>
+                    {$theme.about}
+                {/if}
+            </div>
+        </div>
+
+        {if $theme_routes || $_is_trial}
+            {* THEME SETTINGS FORM *}
+            {if !empty($settings.items)}
+
+                <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
+                <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
+
+                <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
+                <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
+                    {$wa->csrf()}
+                    <div class="wa-theme-search-min-symbol bold js-search-min-symbol" style="display: none;">[s`Minimum 3 characters`]</div>
+                    <div class="wa-theme-search-result js-search-result" style="display: none;">[s`Search results:`]</div>
+                    <div class="wa-theme-search-no-result js-search-no-result" style="display: none;">[s`No settings found`]</div>
+
+                    <div class="wa-theme-settings-list fields js-settings-list">
+                        {foreach $settings.items as $s_var => $setting}
+                            {_renderThemeSetting _setting_var=$s_var _setting=$setting}
+                        {/foreach}
+                    </div>
+                </form>
+            {else}
+                <p>
+                    <br>
+                    <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
+                </p>
+            {/if}
+
+        {/if}
+
+        {* Include dialogs *}
+        {include file='./ThemeDialogs.inc.html' inline}
+        {* Theme navigation *}
+        <div class="js-theme-settings-hidden-list" style="display: none">
+            {if ($theme_routes || $_is_trial) && !empty($settings.items) && !empty($global_group_divideres)}
+
+                <h5 class="heading">[s`Настройки темы дизайна`]</h5>
+
+                <ul class="menu js-theme-settings-list">
+                    {foreach $global_group_divideres as $_divider_id => $_divider_name}
+                        <li>
+                            <a href="javascript:void(0);" data-divider-id="{$_divider_id|escape}">
+                                <span>{strip_tags($_divider_name)}</span>
+                            </a>
+                        </li>
+                    {/foreach}
+                    <li class="selected">
+                        <a href="javascript:void(0);" data-divider-id="-1">
+                            <span>[s`Информация о теме`]</span>
                         </a>
                     </li>
-                {/foreach}
-                <li class="selected">
-                    <a href="javascript:void(0);" data-divider-id="-1">
-                        <span>[s`Информация о теме`]</span>
-                    </a>
-                </li>
-            </ul>
-        {/if}
+                </ul>
+            {/if}
+        </div>
     </div>
 </div>
 
@@ -657,11 +663,27 @@
             $theme_settings_list = $('.js-design-container').find('.js-theme-settings-hidden-list');
         // invoke only once / bug(?) with several times invoke waDesignLoad
 
+        let menu_id = $theme_settings_section.data('menu-id');
+        if(menu_id !== undefined) {
+            let $settings_menu_selected = $theme_settings_list.find(`[data-divider-id="${ menu_id }"]`),
+                $theme_info_section = $('.js-theme-info-section'),
+                $settings_section = $('.js-settings-list'),
+                $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`);
+
+            $settings_menu_selected.closest('li').addClass('selected').siblings().removeClass('selected')
+            $theme_info_section.hide();
+            $settings_section.show();
+            $settings_section_selected.addClass('selected').siblings().removeClass('selected')
+        }
+
         if(!$theme_settings_section.data('loaded')) {
             $theme_settings_section.data('loaded', true).html($theme_settings_list.html());
         }else{
            $theme_settings_list.remove();
         }
+        $theme_settings_section.data('loaded', true).html($theme_settings_list.html());
+
+
 
         // display uploaded filename
         $(".upload-control").waUpload();
@@ -686,13 +708,7 @@
     </div>
     [s`Scroll up`]
 </div>
+
 {if ($theme_routes || $_is_trial) && !empty($settings.items)}
     {include file='./Bottombar.inc.html' _params=['form_id' => 'theme-settings'] inline}
 {/if}
-{*<div class="bottombar sticky flexbox middle space-16 box">
-    <input type="submit" class="button green js-submit" value="[s`Save`]">
-    <span id="theme-settings-message" style="display: none">
-        <i class="fas fa-check-circle" style="margin-top: 0.5em;"></i> [s`Saved`]
-    </span>
-    <span id="theme-settings-error" class="state-error"></span>
-</div>*}

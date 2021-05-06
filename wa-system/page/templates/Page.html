@@ -203,14 +203,16 @@
                     <h3 class="dialog-header">[s`Unpublished pages`]</h3>
                     <div class="dialog-content">
                         <p>[`These pages are not connected to any of the site’s structure rules and are therefore not displayed on your site. To publish these pages now, select a site structure rule for them:`]</p>
-                        <select>
-                            <option value=""></option>
-                            {foreach $routes as $r => $route}
-                                {if $r}
-                                    <option data-domain="{$route.domain}" data-route="{$route.route}" value="{$r}">{$r}</option>
-                                {/if}
-                            {/foreach}
-                        </select>
+                        <div class="wa-select">
+                            <select>
+                                <option value=""></option>
+                                {foreach $routes as $r => $route}
+                                    {if $r}
+                                        <option data-domain="{$route.domain}" data-route="{$route.route}" value="{$r}">{$r}</option>
+                                    {/if}
+                                {/foreach}
+                            </select>
+                        </div>
                     </div>
                     <footer class="dialog-footer">
                         <input class="button" type="submit" value="[s`Save`]"> [s`or`] <a class="js-close-dialog" href="#">[s`cancel`]</a>
@@ -221,9 +223,10 @@
             <script type="text/javascript">
             $(".js-page-settle").on('click', function (e) {
                 e.preventDefault();
+                $wrapper = $("#wa-page-settle-dialog").clone();
                 $.waDialog({
-                    $wrapper: $("#wa-page-settle-dialog"),
-                    onOpen: function ($dialog) {
+                    $wrapper,
+                    onOpen($dialog) {
                         const $form = $dialog.find('form');
                         $form.on('submit', function () {
                             let o = $form.find('select option:selected');

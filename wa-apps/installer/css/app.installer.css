@@ -930,6 +930,7 @@ i.icon16.pause {
   left: auto;
   bottom: 15px !important;
   right: 15px !important;
+  margin: 0 auto;
 }
 .i-product-widget-block .wa-dialog-body {
   top: auto !important;

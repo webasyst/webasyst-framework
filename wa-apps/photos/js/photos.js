@@ -608,7 +608,7 @@
                             href = self.parents('li:first').find('.p-image').attr('href'),
                             match = /(\d+)[\/]*$/.exec(href),
                             id = null;
-                        console.log(input)
+
                         button.hide();
                         $('#'+this.id+'-hint').hide();
                         if (value) {
@@ -3389,9 +3389,6 @@
         },
 
         onUploadDialog: function ($dialog, dialog_instance) {
-            //const $dialog = this.$wrapper;
-
-            console.log(dialog_instance)
             $dialog.find('.files').empty();
 
             let hash = $.storage.get('photos/hash'),

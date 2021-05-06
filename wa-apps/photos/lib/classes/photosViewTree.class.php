@@ -217,7 +217,7 @@ class photosViewTreeElement
             $key_photo = '<i class="fas fa-'.$this->getIcon().'"></i>';
             $key_photo_id = ifempty($this->data['key_photo_id'], '');
             if($key_photo_id){
-                $key_photo_40 = $this->getPhotoThumb($this->data['key_photo_id'], '40x40@2x') ?? [];
+                $key_photo_40 = $this->getPhotoThumb($this->data['key_photo_id'], '40x40@2x');
                 if ($key_photo_40) {
                     $key_photo_thumb = $key_photo_40[$key_photo_id]['thumb_40x40@2x']['url'];
                     $key_photo = '<span class="icon key-photo"><img class="size-20" src="'.$key_photo_thumb.'" alt=""></span>';

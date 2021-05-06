@@ -474,6 +474,15 @@
         }
     }
 
+    $.waDialog = $.extend($.waDialog || {}, {
+        alert(options) {
+            return $.wa.notice(options);
+        },
+        confirm(options) {
+            return $.wa.confirm(options);
+        },
+    })
+
 })(jQuery);
 
 /**
@@ -1012,7 +1021,7 @@
             that.stroke_w = (options["stroke-width"] || 4.8);
             that.display_text = isDisplayText(options["display_text"]);
             that.text_inside = (typeof options["text-inside"] === "boolean" ? options["text-inside"] : false);
-
+            that.is_native = that.$wrapper[0].tagName === 'PROGRESS' || false;
             // DYNAMIC VARS
 
             // INIT
@@ -2797,7 +2806,7 @@
             // DOM
             that.$wrapper = options["$wrapper"];
             that.$toggler = that.$wrapper.find('.sidebar-mobile-toggle');
-            that.$sidebar_content = that.$toggler.nextAll();
+            that.$sidebar_content = that.$toggler.siblings();
 
             // VARS
             that.is_open = options.is_open || false;
@@ -3383,10 +3392,14 @@
             var deferred = $.Deferred();
 
             var header = ( options.title ? '<h2>' + options.title + '</h2>' : null );
-            var text = ( options.text ? options.text : "Confirm text is required" );
+            var text = ( options.text ? options.text : "&nbsp;" );
+            var success_button_title = ( options.success_button_title ? options.success_button_title : $.wa.translate("Confirm") );
+            var success_button_class = ( options.success_button_class ? options.success_button_class : "blue" );
+            var cancel_button_title = ( options.cancel_button_title ? options.cancel_button_title : $.wa.translate("Cancel") );
+            var cancel_button_class = ( options.cancel_button_class ? options.cancel_button_class : "light-gray" );
 
-            var success_button = "<button class=\"js-success-action button blue\">" + ( options.success_button_name ? options.success_button_name : $.wa.translate("Ok") ) + "</button>",
-                cancel_button = "<button class=\"js-dialog-close button gray\">" + ( options.cancel_button_name ? options.cancel_button_name : $.wa.translate("Cancel") ) + "</button>";
+            var success_button = `<button class="js-success-action button ${success_button_class}">${success_button_title}</button>`,
+                cancel_button = `<button class="js-dialog-close button ${cancel_button_class}">${cancel_button_title}</button>`;
 
             var footer = success_button + cancel_button;
 
@@ -3425,8 +3438,10 @@
             var deferred = $.Deferred();
 
             var header = ( options.title ? '<h2>' + options.title + '</h2>' : null );
-            var text = ( options.text ? options.text : "Notice text is required" );
-            var footer = "<button class=\"js-dialog-close button gray\">" + (options.button_name ? options.button_name : $.wa.translate("Done")) + "</button>";
+            var text = ( options.text ? options.text : "&nbsp;" );
+            var button_title = (options.button_title ? options.button_title : $.wa.translate("Dismiss"));
+            var button_class = (options.button_class ? options.button_class : 'light-gray');
+            var footer = `<button class="js-dialog-close button ${button_class}">${button_title}</button>`;
 
             $.waDialog({
                 header: header,
@@ -3613,7 +3628,7 @@
             }
             $.browser.version = $.browser.majorVersion;
         }
-        
+
         $.browser.android = (/Android/i).test(navUa);
         $.browser.blackberry = /BlackBerry|BB|PlayBook/i.test(navUa);
         $.browser.ios = /iPhone|iPad|iPod|webOS/i.test(navUa);
@@ -3630,4 +3645,3 @@
     waBrowserDetect();
 
 })(jQuery);
-

@@ -940,7 +940,7 @@ ul.inlinebox > * { padding: 0; margin: 0; }
 /* Buttons
 ---------- */
 button,
-.button  { display: inline-block; font-weight: 500; color: var(--white); text-align: center; user-select: none; background-color: var(--accent-color); border: .125em solid transparent; padding: .4375em .75em; line-height: 1; border-radius: .25em; outline: 0 none; box-shadow: 0 0.25em 0.75em -0.25em rgba(0, 0, 0, 0.2); transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out; cursor: pointer; box-sizing: border-box; }
+.button  { display: inline-block; font-weight: 500; color: var(--white); text-align: center; user-select: none; background-color: var(--accent-color); border: .125em solid transparent; margin-right: 0.375em; padding: .4375em .75em; line-height: 1; border-radius: .25em; outline: 0 none; box-shadow: 0 0.25em 0.75em -0.25em rgba(0, 0, 0, 0.2); transition: color .1s ease-in-out, background-color .1s ease-in-out, border-color .1s ease-in-out, box-shadow .1s ease-in-out; cursor: pointer; box-sizing: border-box; }
 
 button:first-child,
 .button:first-child { margin-left: 0; }
@@ -1011,10 +1011,14 @@ button.nobutton:hover, .button.nobutton:hover { color: var(--text-color-link-hov
 
 button.full-width, .button.full-width { width: 100%; }
 
-button[disabled],
-.button[disabled] { background: var(--gray) !important; color: var(--white) !important; cursor: default; }
-button.outlined[disabled],
-.button.outlined[disabled] { background: transparent !important; color: var(--gray) !important; border-color: var(--light-gray) !important; cursor: default; }
+button:disabled,
+.button.disabled,
+.button:disabled { background: var(--gray) !important; color: var(--white) !important; cursor: default; pointer-events: none; }
+.nobutton.disabled, .nobutton:disabled { background: transparent !important; color: var(--gray) !important; }
+
+button:disabled.outlined,
+.button.outlined.disabled,
+.button:disabled.outlined { background: transparent !important; color: var(--gray) !important; border-color: var(--light-gray) !important; cursor: default; pointer-events: none; }
 
 button.small,
 .button.small { font-size: 93.75%; }
@@ -1769,6 +1773,35 @@ ul.thumbs > li.highlighted > a img { box-shadow: 0 0.25rem 1.5rem -0.25rem var(-
 .progressbar .progressbar-circle-wrapper svg path { stroke: var(--accent-color); }
 .progressbar .progressbar-circle-wrapper .progressbar-text { position: absolute; top: 50%; left: 0; width: 100%; text-align: center; font-size: 2rem; line-height: 1.5em; margin: -0.75em 0 0; }
 
+progress { -webkit-appearance: none; -moz-appearance: none; appearance: none; display: block; width: 100%; height: auto; background-color: var(--background-color-input); border-radius: 100px; border: none; font-size: 0; min-height: 6px; }
+progress::-webkit-progress-bar { background-color: var(--background-color-input); border-radius: 100px; }
+progress::-webkit-progress-value { background-color: var(--accent-color); min-height: 6px; border-radius: 100px; width: 0; -webkit-transition: width 600ms ease; -moz-transition: width 600ms ease; -o-transition: width 600ms ease; -ms-transition: width 600ms ease; transition: width 600ms ease; }
+progress::-moz-progress-bar { background-color: var(--accent-color); min-height: 6px; border-radius: 100px; width: 0; -webkit-transition: width 600ms ease; -moz-transition: width 600ms ease; -o-transition: width 600ms ease; -ms-transition: width 600ms ease; transition: width 600ms ease; }
+progress.color-red::-webkit-progress-value { background-color: var(--red); }
+progress.color-red::-moz-progress-bar { background-color: var(--red); }
+progress.color-green::-webkit-progress-value { background-color: var(--green); }
+progress.color-green::-moz-progress-bar { background-color: var(--green); }
+progress.color-yellow::-webkit-progress-value { background-color: var(--yellow); }
+progress.color-yellow::-moz-progress-bar { background-color: var(--yellow); }
+progress.color-orange::-webkit-progress-value { background-color: var(--orange); }
+progress.color-orange::-moz-progress-bar { background-color: var(--orange); }
+progress.color-purple::-webkit-progress-value { background-color: var(--purple); }
+progress.color-purple::-moz-progress-bar { background-color: var(--purple); }
+progress.color-brown::-webkit-progress-value { background-color: var(--brown); }
+progress.color-brown::-moz-progress-bar { background-color: var(--brown); }
+progress.color-pink::-webkit-progress-value { background-color: var(--pink); }
+progress.color-pink::-moz-progress-bar { background-color: var(--pink); }
+progress.color-white::-webkit-progress-value { background-color: var(--white); }
+progress.color-white::-moz-progress-bar { background-color: var(--white); }
+progress.color-black ::-webkit-progress-value { background-color: var(--black); }
+progress.color-black ::-moz-progress-bar { background-color: var(--black); }
+progress.color-gray::-webkit-progress-value { background-color: var(--gray); }
+progress.color-gray::-moz-progress-bar { background-color: var(--gray); }
+progress.color-light-gray::-webkit-progress-value { background-color: var(--light-gray); }
+progress.color-light-gray::-moz-progress-bar { background-color: var(--light-gray); }
+progress.color-dark-gray::-webkit-progress-value { background-color: var(--dark-gray); }
+progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray); }
+
 /* Dialog
 --------- */
 
@@ -1780,8 +1813,8 @@ ul.thumbs > li.highlighted > a img { box-shadow: 0 0.25rem 1.5rem -0.25rem var(-
 .dialog .dialog-body .dialog-header > *:first-child { margin-top: 0; }
 .dialog .dialog-body .dialog-header > *:last-child { margin-bottom: 0; }
 .dialog .dialog-body .dialog-header + .dialog-content { padding-top: 0; }
-.dialog .dialog-body .dialog-content { padding: 1.5rem; min-height: 4rem; }
-.dialog .dialog-body .dialog-content.is-long-content { overflow: auto; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
+.dialog .dialog-body .dialog-content { padding: 1.5rem; min-height: 4rem; overflow-y: auto; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
+.dialog .dialog-body .dialog-content.overflow-hidden { overflow: hidden; }
 .dialog .dialog-body .dialog-footer { margin: 1rem 0 0; padding: 0 1.5rem 1.5rem 1.5rem; }
 .dialog .dialog-close { position: absolute; top: 0.75rem; right: 1rem; color: inherit; font-size: 1.5rem; opacity: 0.5; padding: 1rem; }
 .dialog .dialog-close:hover { opacity: 1; }

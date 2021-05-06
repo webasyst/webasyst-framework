@@ -3,7 +3,8 @@
 {$file = $_params.file.id|default:''}
 <div class="bottombar sticky bordered-top box flexbox middle space-16">
     {if $action === 'theme'}
-    <div class="article width-100 flexbox middle space-16">
+    <div class="article width-100">
+        <div class="article-body flexbox middle space-16 custom-py-0">
     {/if}
         <input form="{$form_id}" type="submit" class="button green js-bb-submit"{if !$form_id} disabled{/if} value="[s`Save`]" />
         {if !$form_id}<span class="state-error">Необходимо передать ID формы в шаблоне</span>{/if}
@@ -13,6 +14,7 @@
             {$wa->getCheatSheetButton(['data' => ["app" =>{$wa->app()}, "index" =>{$file|escape:'url'|default:""}]])}
         {/if}
     {if $action === 'theme'}
+        </div>
     </div>
     {/if}
 </div>

@@ -21,7 +21,7 @@ var WAThemeSettings = ( function($) {
 
         if (that.is_wa2) {
             that.$button = that.$wrapper.find('.js-bb-submit');
-            that.$search_input = $('.js-theme-settings-section').find('.js-search-setting');
+            that.$search_input = that.$wrapper.find('.js-search-setting');
         }
 
         // VARS

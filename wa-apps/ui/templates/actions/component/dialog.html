@@ -248,6 +248,8 @@
     <h1 class="u-page-title">{$_title|escape}</h1>
     <h2><code>.dialog</code></h2>
 
+    <blockquote class="small">Для работы <code>.waDialog()</code> требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2. Подключать <code>wa-content/js/dialog/wa.dialog.js</code> для диалога более не нужно — это устаревший код, который будет удален.</blockquote>
+
     <p>Классический вариант модального диалога, забирающего на себя все внимание пользователя. Временно блокирует весь интерфейс и занимает центральное место на экране.</p>
     <p>Рекомендуется использовать для выполнения какого-то достаточно важного и относительно короткого действия, не допускающего отвлечения пользователя. Например, для подтверждения какой-то ответственной операции.</p>
 
@@ -368,7 +370,7 @@
             <li><span class="bold">resize</span> (function) — обновление позиции контент-блока диалога.
                 <br>
             </li>
-            <li><span class="bold">hide</span> (function) — скрытие диалога, (переносит диалог из DOM в Virtual DOM) с возможностью возврата через метод <code>.show</code>>.
+            <li><span class="bold">hide</span> (function) — скрытие диалога, (переносит диалог из DOM в Virtual DOM) с возможностью возврата через метод <code>.show</code>.
                 <br>
             </li>
             <li><span class="bold">show</span> (function) — показывает диалог, если он ранее был скрыт.
@@ -400,7 +402,110 @@
         <pre class="prettyprint">{_render_example_1|escape}</pre>
     </div>
 
+    <div class="u-example-section">
+        <h2><code>.alert()</code> &amp; <code>.confirm()</code></h2>
+        <p>Вместо нативных <code>alert()</code> и <code>confirm()</code> можно использовать <code>$.waDialog.<strong>alert()</strong></code> и <code>$.waDialog.<strong>confirm()</strong></code> — стилизованные упрощенные версии диалога, выполняющие роль одноименных стандартных функций JavaScript.</p>
+
+        <div class="line">
+            <button class="js-show-alert button">.alert()</button>
+            <button class="js-show-confirm button">.confirm()</button>
+            <script>
+                ( function($) {
+                    $(".js-show-alert").on("click", function() {
+                        $.waDialog.alert({
+                            title: "Alert title",
+                            text: "Custom alert text (HTML is allowed)",
+                            button_title: 'Ok, thanks',
+                            button_class: 'warning',
+                        });
+                    });
+
+                    $(".js-show-confirm").on("click", function() {
+                        $.waDialog.confirm({
+                            title: "<i class=\"fas fa-exclamation-triangle smaller state-error\"></i> Confirm title",
+                            text: "Custom confirm text (HTML is allowed)",
+                            success_button_title: 'Ok, delete',
+                            success_button_class: 'danger',
+                            cancel_button_title: 'No thanks',
+                            cancel_button_class: 'light-gray',
+                        });
+                    });
+                })(jQuery);
+            </script>
+
+        </div>
+
+        <p>Параметры <code>$.waDialog.<strong>alert()</strong></code>:</p>
+        <ul>
+            <li><span class="bold">title</span> (string/html) — заголовок диалога,
+                <br>
+            </li>
+            <li><span class="bold">text</span> (string/html) — текст в диалоге,
+                <br>
+            </li>
+            <li><span class="bold">button_title</span> (string) — текст на кнопке,
+                <br>
+            </li>
+            <li>
+                <span class="bold">button_class</span> (string) — класс цвета кнопки,
+                <br>
+            </li>
+            <li><span class="bold">onClose</span> (function) — событие при закрытии.
+            </li>
+        </ul>
+        <p>Параметры <code>$.waDialog.<strong>confirm()</strong></code>:</p>
+        <ul>
+            <li><span class="bold">title</span> (string/html) — заголовок диалога,
+                <br>
+            </li>
+            <li><span class="bold">text</span> (string/html) — текст в диалоге,
+                <br>
+            </li>
+            <li><span class="bold">success_button_title</span> (string) — текст в кнопке подтверждения,
+                <br>
+            </li>
+            <li>
+                <span class="bold">success_button_class</span> (string) — класс цвета кнопки подтверждения,
+                <br>
+            </li>
+            <li><span class="bold">cancel_button_title</span> (string) — текст в кнопке отказа,
+                <br>
+            </li>
+            <li>
+                <span class="bold">cancel_button_class</span> (string) — класс цвета кнопки отказа,
+                <br>
+            </li>
+            <li><span class="bold">onSuccess</span> (function) — событие при подтверждении,
+            </li>
+            <li><span class="bold">onCancel</span> (function) — событие при отказе.
+            </li>
+        </ul>
+    </div>
+    {function extra}
+<script>
+    ( function($) {
+        $.waDialog.alert({
+            title: "Alert title",
+            text: "Custom alert text (HTML is allowed)",
+            button_title: 'Ok, thanks',
+            button_class: 'warning',
+        });
+
+        $.waDialog.confirm({
+            title: "<i class=\"fas fa-exclamation-triangle smaller state-error\"></i> Confirm title",
+            text: "Custom confirm text (HTML is allowed)",
+            success_button_title: 'Ok, delete',
+            success_button_class: 'danger',
+            cancel_button_title: 'No thanks',
+            cancel_button_class: 'light-gray',
+        });
+    })(jQuery);
+</script>
+    {/function}
+    <pre class="prettyprint">{extra|escape}</pre>
+
     <script>
+
         $.wa_ui.title.set({$_title|json_encode});
 
         if (typeof prettyPrint != 'undefined' && $.isFunction(prettyPrint)) {

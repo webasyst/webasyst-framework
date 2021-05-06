@@ -1,4 +1,9 @@
 <div class="p-app-sidebar sidebar hide-scrollbar flexbox overflow-visible width-adaptive-wider mobile-friendly" id="js-app-sidebar">
+    <nav class="sidebar-mobile-toggle">
+        <div class="box align-center">
+            <a href="javascript:void(0);"><i class="fas fa-bars"></i> [`Show navigation`]</a>
+        </div>
+    </nav>
     {if $rights.upload}
     <div class="sidebar-header">
         <div class="p-new-section box">
@@ -9,11 +14,6 @@
         </div>
     </div>
     {/if}
-    <nav class="sidebar-mobile-toggle">
-        <div class="box align-center">
-            <a href="javascript:void(0);"><i class="fas fa-bars"></i> [`Show navigation`]</a>
-        </div>
-    </nav>
     <div class="sidebar-body hide-scrollbar p-sidebar-block">
         <ul class="menu">
             <li id="sidebar-all-albums">
@@ -97,7 +97,7 @@
                     [`Tags`]
                 </span>
             </header>
-            <ul class="tags p-plugin-tag-cloud collapsible-content chips rounded small transparent outline" id="tag-cloud"></ul>
+            <ul class="tags p-plugin-tag-cloud collapsible-content chips rounded small transparent outline custom-px-16" id="tag-cloud"></ul>
         </section>
 
     {*@event backend_sidebar.%plugin_id%.section *}
