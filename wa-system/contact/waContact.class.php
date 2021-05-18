@@ -1331,17 +1331,30 @@ class waContact implements ArrayAccess
      */
     public static function generatePassword($len = 11, $extended = true)
     {
-        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789';
-        if ($extended) {
-            $alphabet .= '!@#$%^&*-?';
-        }
-        $alphabet = str_split($alphabet, 1);
+        $alphabet_str = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz0123456789';
+
+        $alphabet = str_split($alphabet_str, 1);
         shuffle($alphabet);
+
+        if ($extended) {
+            $extended_alphabet = str_split($alphabet_str . '!@#$%^&*-?', 1);
+            shuffle($extended_alphabet);
+        } else {
+            $extended_alphabet = $alphabet;
+        }
+
         $password = array();
         for ($i = 0; $i < $len; $i++) {
-            $key = array_rand($alphabet);
-            $password[] = $alphabet[$key];
+            // first and last letter always get from base alphabet
+            if ($i == 0 || $i == $len - 1) {
+                $key = array_rand($alphabet);
+                $password[] = $alphabet[$key];
+            } else {
+                $key = array_rand($extended_alphabet);
+                $password[] = $extended_alphabet[$key];
+            }
         }
+
         return join('', $password);
     }
 

@@ -171,7 +171,7 @@ class waContactModel extends waModel
             }
         }
         $sql .= ' LIMIT 1';
-        return $this->query($sql, $email)->fetch();
+        return $this->query($sql, $email)->fetchAssoc();
     }
 
     /**

@@ -335,7 +335,19 @@ class waOAuthController extends waViewController
          */
         wa()->event('signup', $contact);
 
-        $this->logAction('signup', wa()->getEnv(), null, $contact->getId());
+        $env = wa()->getEnv();
+        $log_record_id = $this->logAction('signup', $env, null, $contact->getId());
+
+        if ($env === 'frontend') {
+            $config = wa()->getAuthConfig();
+            if (isset($config['app']) && wa()->getApp() !== $config['app']) {
+                // event should be fixated on behalf of app that responsible of signup, so admin of this application (but not super-admin) could see this event
+                // #51.6485
+                (new waLogModel())->updateById($log_record_id, [
+                    'app_id' => $config['app']
+                ]);
+            }
+        }
 
         return $contact;
     }

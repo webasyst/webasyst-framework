@@ -43,6 +43,7 @@ class waSystem
         try {
             $this->loadFactories();
         } catch (Exception $e) {
+            /** @var waAppConfig $config */
             $app_name = method_exists($config, 'getApplication') ? $config->getApplication() : '';
             waLog::log('Error initializing waSystem('.$app_name.'): '.$e->getMessage()."\n".wa_dump_helper($config));
             echo $e;
@@ -52,7 +53,7 @@ class waSystem
     /**
      * Returns instance of configuration management class (waSystemConfig or waAppConfig).
      *
-     * @return  SystemConfig|waAppConfig
+     * @return mixed|SystemConfig|waAppConfig
      */
     public function getConfig()
     {

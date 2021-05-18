@@ -255,7 +255,19 @@ CLI;
         $m = new waModel();
         $columns_str = join(',', $columns);
 
-        $sql = "CREATE UNIQUE INDEX `{$index_name}` ON `{$table}` ({$columns_str})";
-        $m->query($sql);
+        $disable_exception_log = waConfig::get('disable_exception_log');
+        waConfig::set('disable_exception_log', true);
+
+        try {
+            $sql = "CREATE UNIQUE INDEX `{$index_name}` ON `{$table}` ({$columns_str})";
+            $m->query($sql);
+        } catch (waDbException $exception) {
+            if ($exception->getCode() != 1061) {
+                waConfig::set('disable_exception_log', $disable_exception_log);
+                throw $exception;
+            }
+        }
+
+        waConfig::set('disable_exception_log', $disable_exception_log);
     }
 }

@@ -406,7 +406,9 @@ class waNet
             case self::FORMAT_XML:
                 $xml_options = LIBXML_NOCDATA | LIBXML_NOENT | LIBXML_NONET;
                 libxml_use_internal_errors(true);
-                libxml_disable_entity_loader(false);
+                if (PHP_VERSION_ID < 80000) {
+                    libxml_disable_entity_loader(false);
+                }
                 libxml_clear_errors();
                 $this->decoded_response = @simplexml_load_string($this->raw_response, null, $xml_options);
 
@@ -646,7 +648,6 @@ class waNet
                     CURLOPT_RETURNTRANSFER    => 1,
                     CURLOPT_TIMEOUT           => $this->options['timeout'],
                     CURLOPT_CONNECTTIMEOUT    => $this->options['timeout'],
-                    CURLE_OPERATION_TIMEOUTED => $this->options['timeout'],
                     CURLOPT_DNS_CACHE_TIMEOUT => 3600,
                     CURLOPT_USERAGENT         => $this->user_agent,
                 );

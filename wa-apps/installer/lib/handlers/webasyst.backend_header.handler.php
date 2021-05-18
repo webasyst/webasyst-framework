@@ -50,16 +50,32 @@ class installerWebasystBackend_headerHandler extends waEventHandler
 
         $result = [];
         foreach ($rendering as $hook_name => $data) {
-            $view = wa('installer')->getView();
-            $view->assign(array(
+            $result[$hook_name] = $this->renderTemplate($data['template'], [
                 'announcements'  => $data['list'],
                 'current_app_id' => $current_app_id,
-            ));
-
-            $result[$hook_name] = $view->fetch($data['template']);
+            ]);
         }
 
         return $result;
+    }
+
+    /**
+     * @param $template
+     * @param array $assign
+     * @return string
+     * @throws SmartyException
+     * @throws waException
+     */
+    private function renderTemplate($template, array $assign = [])
+    {
+        $view = wa('installer')->getView();
+        $old_vars = $view->getVars();
+        $view->clearAllAssign();
+        $view->assign($assign);
+        $html = $view->fetch($template);
+        $view->clearAllAssign();
+        $view->assign($old_vars);
+        return $html;
     }
 
     /**

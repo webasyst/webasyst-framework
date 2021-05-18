@@ -217,18 +217,10 @@ class waSignupAction extends waViewAction
 
         $already_had_password = (bool)$contact['password'];
 
-        // if contact doesn't has password yet then contact for sure is not signed up, therefore we generate password and signup contact
-        if (!$already_had_password) {
-            // generate password if not generated yet
-            $this->getGeneratedPassword();  // we in email confirmation case, so password is on extended alphabet
-            
-            $is_signed_up = $this->trySignupContact($contact);
-
-            // For some reasons can't signup contact
-            if (!$is_signed_up) {
-                $this->redirectToLoginPage();
-                return;
-            }
+        // For some reasons can't signup contact
+        if (!$this->trySignupContact($contact)) {
+            $this->redirectToLoginPage();
+            return;
         }
 
         // And of course confirm email
@@ -1303,6 +1295,8 @@ class waSignupAction extends waViewAction
         $channels = $this->auth_config->getVerificationChannelInstances();
         $contact = null;
 
+        $errors = [];
+
         foreach ($channels as $channel) {
 
             // try email first
@@ -1317,6 +1311,7 @@ class waSignupAction extends waViewAction
                 $contact = $this->trySaveContact($data, $errors, array(
                     'creation_hash' => $creation_hash
                 ));
+
                 if ($errors) {
                     break;
                 }
@@ -1390,7 +1385,7 @@ class waSignupAction extends waViewAction
             array('line' => __LINE__, 'file' => __FILE__)
         );
 
-        return array(self::SIGNED_UP_STATUS_FAILED, array());
+        return array(self::SIGNED_UP_STATUS_FAILED, $errors);
     }
 
     /**

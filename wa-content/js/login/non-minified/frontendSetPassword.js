@@ -30,16 +30,16 @@ var WaFrontendSetPassword = ( function($) {
 
         var url = location.href;
 
-        // first try extract param 'key' from url
-        var captured = /key=([^&]+)/.exec(url)[1];
-        that.hash = captured ? captured : '';
-        if (that.hash) {
-            return;
-        }
-
-        // than try extract param 'hash' from url
-        captured = /hash=([^&]+)/.exec(url)[1]
-        that.hash = captured ? captured : '';
+        $.each([
+            /key=([^&]+)/,
+            /hash=([^&]+)/
+        ], function (_, regexp) {
+            var match = regexp.exec(url);
+            if (match && match[1]) {
+                that.hash = match[1];
+                return false;   // break
+            }
+        });
     };
 
     Self.prototype.beforeJsonPost = function (url, data) {

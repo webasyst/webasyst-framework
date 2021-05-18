@@ -34,28 +34,49 @@ var InstallerStore = (function ($) {
         var that = this;
 
         //
-        that.initIframe(true);
+        that.initIframe(true).done(function () {
+            that.initEventListener();
+        });
+
         //
-        that.initEventListener();
+
     };
 
     InstallerStore.prototype.postMessage = function(msg) {
         var that = this,
             data = JSON.stringify(msg);
 
-        that.$frame[0].contentWindow.postMessage(data, '*');
+        try {
+            that.$frame[0].contentWindow.postMessage(data, '*');
+        } catch (e) {
+            if (that.$frame[0].contentWindow !== null) {
+                console.log("Can't post message to action '" + msg.action + "'");
+                console.trace(e);
+            } else {
+                // ignore this error, because in the same window, after renew content but without reloading whole window, we try send messages
+                // contentWindow in this case doesn't exist already
+            }
+        }
     };
 
     InstallerStore.prototype.initIframe = function (inst_context, error_handling) {
         var that = this,
             iframe_src = that.buildStoreUrl(that.store_path, inst_context, error_handling);
 
+        var def = $.Deferred();
+
         if (!that.store_url) {
             that.$loading_wrapper.remove();
-            return;
+            def.reject();
+            return def;
         }
 
         that.$frame.attr('src', iframe_src);
+        that.$frame.on('load', function () {
+            def.resolve();
+        });
+
+        return def;
     };
 
     InstallerStore.prototype.buildStoreUrl = function (store_path, init_request, error_handling) {
@@ -84,12 +105,26 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.initEventListener = function () {
         var that = this;
 
+        if (!window.addEventListener && !window.attachEvent) {
+            console.log('postMessages not supported: https://developer.mozilla.org/ru/docs/Web/API/Window/postMessage');
+            return;
+        }
+
+        var $window = $(window);
+
+        // if content was reloaded without refresh page, there is stuck previous listener, clear it
+        $window.data("_removePostMessageListener") && $window.data("_removePostMessageListener")();
+
         if (window.addEventListener) {
             window.addEventListener("message", dispatchMessage, false);
+            $window.data('_removePostMessageListener', function () {
+                window.removeEventListener("message", dispatchMessage);
+            });
         } else if (window.attachEvent) {
             window.attachEvent("onmessage", dispatchMessage);
-        } else {
-            console.log('postMessages not supported: https://developer.mozilla.org/ru/docs/Web/API/Window/postMessage');
+            $window.data('_removePostMessageListener', function () {
+                window.detachEvent("onmessage", dispatchMessage);
+            });
         }
 
         function dispatchMessage(event) {

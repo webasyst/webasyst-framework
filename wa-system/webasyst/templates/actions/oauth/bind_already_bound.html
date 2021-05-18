@@ -18,7 +18,7 @@
     <div class="actions-buttons">
         <button onclick='location.href={$try_again_auth_url|json_encode}'>[s`Use another Webasyst ID`]</button>
         {if $_auth_type !== 'invite'}
-            [`or`]
+            <div style="display: inline-block; padding: 8px 18px; margin-right: -18px; margin-bottom: 10px; vertical-align: middle;">[`or`]</div>
             <button onclick='location.href={$_redirect_url|json_encode}' class="link">[`cancel`]</button>
         {/if}
     </div>

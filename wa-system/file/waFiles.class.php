@@ -439,7 +439,6 @@ class waFiles
                 CURLOPT_RETURNTRANSFER    => 1,
                 CURLOPT_TIMEOUT           => 10,
                 CURLOPT_CONNECTTIMEOUT    => 10,
-                CURLE_OPERATION_TIMEOUTED => 10,
                 CURLOPT_DNS_CACHE_TIMEOUT => 3600,
                 CURLOPT_BINARYTRANSFER    => true,
                 CURLOPT_WRITEFUNCTION     => array(__CLASS__, 'curlWriteHandler'),
