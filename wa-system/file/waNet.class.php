@@ -726,14 +726,9 @@ class waNet
                         $curl_options[CURLOPT_POSTFIELDS] = $content;
                     }
                     break;
-                case self::METHOD_PUT:
-                    $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
-                    if ($content) {
-                        $curl_options[CURLOPT_POST] = 0;
-                        $curl_options[CURLOPT_POSTFIELDS] = $content;
-                    }
-                    break;
                 case self::METHOD_DELETE:
+                case self::METHOD_PATCH:
+                case self::METHOD_PUT:
                     $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
                     if ($content) {
                         $curl_options[CURLOPT_POST] = 0;
