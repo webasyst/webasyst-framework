@@ -226,7 +226,7 @@ msgstr "Только выбранные регионы"
 msgid "Search"
 msgstr "Поиск"
 
-msgid "Select all"
+msgid "Choose all"
 msgstr "Выбрать все"
 
 msgid "No region selected in country settings"
