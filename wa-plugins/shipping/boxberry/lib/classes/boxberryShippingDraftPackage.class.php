@@ -287,6 +287,7 @@ class boxberryShippingDraftPackage
 
         $label = ifset($request, 'label', false);
         if ($label) {
+            $label = preg_replace('/^https?:\/\//i', '//', $label);
             $template .= "<a href='{$label}' target='_blank'>Этикетка<i class='icon16 new-window'></i></a> ";
         }
         return $template;

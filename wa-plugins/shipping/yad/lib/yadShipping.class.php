@@ -27,8 +27,6 @@ class yadShipping extends waShipping
 
     private $api_error = array();
 
-    private $api_debug = array();
-
     private $api_callback = null;
 
     /**
@@ -177,10 +175,6 @@ class yadShipping extends waShipping
 
             $net = new waNet($options, $custom_headers);
 
-            $this->api_debug = array(
-                'url'  => $url,
-                'data' => $data,
-            );
             $response = $net->query($url, $data, $request['method'], empty($callback) ? null : array($this, 'handleApiQuery'));
             if ($response instanceof waNet) {
                 return $this;
@@ -214,7 +208,7 @@ class yadShipping extends waShipping
             $response = $result;
             try {
                 if ($this->debug) {
-                    $debug = var_export(compact('url', 'data', 'response'), true);
+                    $debug = var_export($response, true);
                     waLog::log($debug, 'wa-plugins/shipping/yad/api.debug.log');
                 }
 
@@ -324,7 +318,11 @@ class yadShipping extends waShipping
                 }
                 $to_location = $params['to']['location'];
                 if (!empty($name_region)) {
-                    $params['to']['location'] .= ', ' . $name_region;
+                    $params['to']['location'] = $name_region . ', ' . $params['to']['location'];
+                }
+                $zip = $this->getAddress('zip');
+                if (!empty($zip)) {
+                    $params['to']['location'] .= ', ' . $zip;
                 }
 
                 $options = $this->getExactAddressesForMainSelector($params['to']['location']);
@@ -334,7 +332,7 @@ class yadShipping extends waShipping
                         $addresses_do_not_match = false;
                     }
                 }
-                if (count($options) > 1 && $addresses_do_not_match) {
+                if (count($options) > 1 && $addresses_do_not_match && wa()->getEnv() !== 'backend') {
                     return array(
                         array(
                             'rate' => null,
@@ -381,12 +379,11 @@ class yadShipping extends waShipping
         }
 
         $params = $this->getPackageProperty('shipping_params');
-
         if (!empty($params) && !empty($params['geo_id_to'])) {
             $location = explode('/', $params['geo_id_to']);
-            $city = mb_strtolower($location[1]);
-            if (strpos($address['to']['location'], $city) !== false) {
-                $address['to']['geoId'] = (int)$location[0];
+            $geo_id = (int)$location[0];
+            if ($geo_id > 0) {
+                $address['to']['geoId'] = $geo_id;
             }
         }
 
@@ -427,13 +424,14 @@ class yadShipping extends waShipping
                 break;
         }
 
-        $data += array(
-            'height' => null,
-            'width'  => null,
-            'length' => null,
-        );
+        $data = array_map('intval', $data);
+        foreach ($data as $type => $value) {
+            if (empty($value)) {
+                unset($data[$type]);
+            }
+        }
 
-        return array_map('intval', $data);
+        return $data;
     }
 
     private function getAssessedPrice($string)
@@ -671,11 +669,11 @@ class yadShipping extends waShipping
                 foreach ($pickup_points as $pickup_point) {
                     $rate['custom_data']['pickup'] = $this->formatPickupPoint($pickup_point, $min_delivery_date);
                     $pickup_rate = $rate;
-                    $pickup_rate['name'] .= sprintf(' %s', $pickup_point['name']);
-                    $pickup_rate['comment'] = ifset($pickup_point['full_address'], '');
+                    $pickup_rate['name'] .= sprintf(' %s', $pickup_point['address']['shortAddressString']);
+                    $pickup_rate['comment'] = ifset($pickup_point, 'address', 'addressString', '');
                     $id = 'pickup.'.$rate['id'].'.'.$pickup_point['id'];
                     $rates[$id] = $pickup_rate;
-                };
+                }
                 break;
         }
 
@@ -875,7 +873,7 @@ HTML;
     public function customFieldsForService(waOrder $order, $service)
     {
         $fields = parent::customFields($order);
-        $fields += $this->getGeoIdField($order, $service);
+        $fields += $this->getGeoIdField($order);
         if (ifset($service['type']) === self::TYPE_TODOOR) {
             $fields += $this->getDeliveryIntervalField($order, $service);
         }
@@ -928,38 +926,31 @@ HTML;
         return $fields;
     }
 
-    private function getGeoIdField(waOrder $order, $service = null)
+    private function getGeoIdField(waOrder $order)
     {
-        if ($service) {
-            $address = '';
-            if (isset($order->shipping_address['address']) && !empty($order->shipping_address['address'])) {
-                $address = $order->shipping_address['address'];
-            } else {
-                foreach (array('city', 'region_name') as $key => $address_field) {
-                    if (isset($order->shipping_address[$address_field]) && !empty($order->shipping_address[$address_field])) {
-                        $address .= $order->shipping_address[$address_field];
-                        if ($key < 1) {
-                            $address .= ', ';
-                        }
+        $address = '';
+        if (isset($order->shipping_address['address']) && !empty($order->shipping_address['address'])) {
+            $address = $order->shipping_address['address'];
+        } else {
+            foreach (array('region_name', 'city') as $key => $address_field) {
+                if (isset($order->shipping_address[$address_field]) && !empty($order->shipping_address[$address_field])) {
+                    $address .= $order->shipping_address[$address_field];
+                    if ($key < 1) {
+                        $address .= ', ';
                     }
                 }
             }
-            $options = $this->getExactAddressesForAdditionalSelector($address);
-            if (count($options) > 1) {
-                $options = array(
-                    'options' => $options,
-                );
-            } else {
-                return array();
-            }
-        } else {
+        }
+        $options = $this->getExactAddressesForAdditionalSelector($address);
+        if (count($options) > 1) {
             $options = array(
-                'options_callback' => array($this, 'getExactAddressesForAdditionalSelector'),
+                'options' => $options,
             );
+        } else {
+            return array();
         }
 
         $shipping_params = $order->shipping_params;
-
         return array(
             'geo_id_to' => $options + array(
                 'value'        => ifset($shipping_params, 'geo_id_to', null),
@@ -1357,9 +1348,11 @@ HTML;
         if (empty($order->shipping_data['order_id'])) {
             $method = 'createOrder';
         } else {
-            $data['id'] = $order->shipping_data['order_id'];
-            $data['externalId'] = (string)$order->id;
             $method = 'updateOrder';
+            $data['id'] = $order->shipping_data['order_id'];
+        }
+        if ($order->id && strlen((string)$order->id) <= 10) {
+            $data['externalId'] = (string)$order->id;
         }
 
         $shipping_discount = $this->correctItems();
@@ -1393,11 +1386,6 @@ HTML;
             $size = array();
             $size['weight'] = $weight;
             $size += $this->getPackageSize($weight);
-            foreach ($size as $type => $value) {
-                if (empty($value)) {
-                    unset($size[$type]);
-                }
-            }
             $data['places'][0]['dimensions'] = $size;
         }
 
@@ -1430,7 +1418,7 @@ HTML;
         if (!empty($order['shipping_params']['geo_id_to'])) {
             $data['recipient']['address']['geoId'] = (int)$order['shipping_params']['geo_id_to'];
         } elseif (!empty($order['shipping_params_geo_id_to'])) {
-            $data['recipient']['address']['geoId'] = (int)$order['shipping_params']['geo_id_to'];
+            $data['recipient']['address']['geoId'] = (int)$order['shipping_params_geo_id_to'];
         }
 
         $data['recipient'] += $this->getContactFields($shipping_address, $order, 'recipient');

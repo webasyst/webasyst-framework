@@ -31,9 +31,13 @@ class liqpayPayment extends waPayment
             'amount'      => $order->total,
             'currency'    => $order->currency,
             'description' => $order->description,
-            'order_id'    => sprintf('%s.%s_%s', $this->app_id, $this->merchant_id, $order->id),
+            'order_id'    => $this->getOrderId($order->id),
             'server_url'  => $this->getRelayUrl(),
-            'result_url'  => $this->getRelayUrl() . '?' . http_build_query(array('order_id' => $order->id))
+            'result_url'  => $this->getRelayUrl().'?'.http_build_query([
+                'order_id'    => $order->id,
+                'app_id'      => $this->app_id,
+                'merchant_id' => $this->merchant_id,
+            ])
         );
 
         if ($this->sandbox) {
@@ -85,47 +89,52 @@ class liqpayPayment extends waPayment
                 'redirect' => $this->getAdapter()->getBackUrl()
             );
         }
+        $data = ifempty($request['data'], 'W10=');
         $signature = ifempty($request['signature']);
-        if (empty($signature) || ($signature != $this->getSignature($request['data']))) {
-            throw new waException("Invalid signature");
+        $order_id = ifempty($request['order_id']);
+        $merchant_id = ifempty($request['merchant_id'], 0);
+
+        if (!empty($signature)) {
+            if ($signature != $this->getSignature($data)) {
+                throw new waException("Invalid signature");
+            }
+
+            $data = json_decode(base64_decode($data), true);
+            $transaction_data = $this->formalizeData($data);
+            switch (ifset($transaction_data['state'])) {
+                case self::STATE_CAPTURED:
+                    $callback_method = self::CALLBACK_PAYMENT;
+                    break;
+                case self::STATE_DECLINED:
+                    $callback_method = self::CALLBACK_DECLINE;
+                    break;
+                default:
+                    $callback_method = self::CALLBACK_NOTIFY;
+                    break;
+            }
+
+            $transaction_data = $this->saveTransaction($transaction_data, $request);
+            $this->execAppCallback($callback_method, $transaction_data);
         }
 
-        $data = json_decode(base64_decode(ifempty($request['data'], 'W10=')), true);
-
-        $transaction_data = $this->formalizeData($data);
-        $callback_method = null;
-        switch (ifset($transaction_data['state'])) {
-            case self::STATE_CAPTURED:
-                $callback_method = self::CALLBACK_PAYMENT;
-                break;
-            case self::STATE_DECLINED:
-                $callback_method = self::CALLBACK_DECLINE;
-                break;
-            default:
-                $callback_method = self::CALLBACK_NOTIFY;
-                break;
-        }
-
-        // response processing to result_url
-        if (isset($request['order_id'])) {
-            if (ifset($transaction_data['state']) == self::STATE_CAPTURED) {
-                $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, array('order_id' => $request['order_id']));
-            } elseif (ifset($transaction_data['state']) == self::STATE_DECLINED) {
-                $transaction_data['error'] = 'Вы отказались от совершения платежа. Повторите попытку позднее, пожалуйста.'; // max length 255 characters
-                $transaction = $this->saveTransaction($transaction_data);
-                $params = isset($transaction['id'])
-                    ? '?' . http_build_query(array('transaction_id' => $transaction['id'], 'order_id' => $request['order_id'])) : '';
-                $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_DECLINE) . $params;
+        /** response processing to result_url */
+        if (!empty($order_id) && $merchant_id > 0) {
+            /** если в запросе есть параметры order_id и merchant_id
+                то будем считать что покупатель пришел с ПС LiqPay */
+            $payment_status = $this->getPaymentInfo($order_id);
+            if ('success' == ifset($payment_status['status']) || 'sandbox' == ifset($payment_status['status'])) {
+                $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, array('order_id' => $order_id));
+            } elseif (in_array(ifset($payment_status['status']), ['failure', 'error'])) {
+                $transaction_id = ifempty($transaction_data, 'id', 0);
+                $url  = $this->getAdapter()->getBackUrl(waAppPayment::URL_DECLINE, ['order_id' => $order_id]);
+                $url .= (empty($transaction_id) ? '' : '&'.http_build_query(['transaction_id' => $transaction_id]));
             } else {
                 $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_DECLINE);
             }
-            wa()->getResponse()->redirect($url);
-            exit;
-        }
 
-        if ($callback_method) {
-            $transaction_data = $this->saveTransaction($transaction_data, $request);
-            $this->execAppCallback($callback_method, $transaction_data);
+            return ['redirect' => $url];
+        } elseif (empty($signature)) {
+            throw new waException('Invalid request');
         }
     }
 
@@ -173,7 +182,7 @@ class liqpayPayment extends waPayment
             'wait_lc'           => 'Аккредитив. Деньги с клиента списаны, ожидается подтверждение доставки товара',
             'hold_wait'         => 'Сумма успешно заблокирована на счету отправителя',
             'cash_wait'         => 'Ожидается оплата наличными в ТСО.',
-            'wait_qr'           => 'Ожидается сканировани QR-кода клиентом.',
+            'wait_qr'           => 'Ожидается сканирование QR-кода клиентом.',
             'wait_sender'       => 'Ожидается подтверждение оплаты клиентом в приложении Privat24/Sender.',
             'wait_card'         => 'Не установлен способ возмещения у получателя',
             'wait_compensation' => 'Платеж успешный, будет зачислен в ежесуточной проводке',
@@ -181,10 +190,15 @@ class liqpayPayment extends waPayment
             'wait_reserve'      => 'Средства по платежу зарезервированы для проведения возврата по ранее поданной заявке',
         );
         switch ($status = $transaction_raw_data['status']) {
-            case 'success': /*покупка совершена*/
+            case 'success':
+            case 'sandbox':
+                /** покупка совершена */
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
                 $transaction_data['result'] = 1;
+                if ('sandbox' === $status) {
+                    $view_data[] = 'Тестовый платеж';
+                }
                 break;
             case 'failure': /*покупка отклонена*/
             case 'error':
@@ -198,19 +212,15 @@ class liqpayPayment extends waPayment
 
                 $view_data[] = $this->_w('Transaction declined').": ".htmlentities($reason, ENT_NOQUOTES, 'utf-8');
                 break;
-                break;
             case 'wait_secure': /*платеж находится на проверке*/
                 $view_data[] = $this->_w('Transaction requires confirmation');
-                break;
-            case 'sandbox':
-                $view_data[] = 'Тестовый платеж';
                 break;
             default:
                 $d = ifset($status_descriptions[$status]);
                 if ($d) {
                     $view_data[] = $d;
                 } else {
-                    $view_data[] = sprintf($this->_w("Unknown status %s"), htmlentities($status, ENT_NOQUOTES, 'utf-8'));
+                    $view_data[] = sprintf($this->_w("Unknown status “%s”"), htmlentities($status, ENT_NOQUOTES, 'utf-8'));
                 }
                 break;
         }
@@ -229,5 +239,59 @@ class liqpayPayment extends waPayment
     private function getEndpointUrl()
     {
         return 'https://www.liqpay.ua/api/3/checkout';
+    }
+
+    private function getApiUrl()
+    {
+        return 'https://www.liqpay.ua/api/request';
+    }
+
+    private function getOrderId($id)
+    {
+        return sprintf('%s.%s_%s', $this->app_id, $this->merchant_id, $id);
+    }
+
+    /**
+     * Запросы к ПС по API для получения информации
+     * о конкретном платеже
+     *
+     * https://www.liqpay.ua/documentation/api/information/status/doc
+     * @throws waPaymentException
+     */
+    protected function getPaymentInfo($order_id)
+    {
+        $params = [
+            'action'     => 'status',
+            'order_id'   => $this->getOrderId($order_id),
+            'public_key' => $this->public_key,
+            'version'    => 3
+        ];
+        if ($this->sandbox) {
+            $params['sandbox'] = 1;
+        }
+        $data       = base64_encode(json_encode($params));
+        $postfields = http_build_query([
+            'data'      => $data,
+            'signature' => $this->getSignature($data)
+        ]);
+
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->getApiUrl());
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $server_output = curl_exec($ch);
+            //$this->server_response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+        } else {
+            throw new waPaymentException('Для работы плагина требуется модуль PHP curl');
+        }
+
+        return json_decode($server_output, true);
     }
 }
