@@ -1874,7 +1874,12 @@ const Page = ( function($, backend_url) {
                     if ( $.trim(response).length && !response.includes('activity-empty-today')) {
                         // Render
                         $wrapper.find(".empty-activity-text").remove();
-                        $wrapper.prepend(response);
+                        let $today = $wrapper.find(".today");
+                        if($today.length) {
+                            $today.after(response).remove();
+                        }else{
+                            $wrapper.prepend(response);
+                        }
                     }
 
                     that.storage.isTopLazyLoadLocked = false;

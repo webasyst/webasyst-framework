@@ -1,45 +1,50 @@
 <div class="wa-design-editor">
     <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape:'url'}&action=save">
-        <div class="box wa-design-gray-toolbar flexbox full-width middle blank bordered-bottom">
+        <div class="box wa-design-gray-toolbar flexbox wrap full-width middle blank bordered-bottom">
             <h4 class="custom-mb-0">
                 {$file.id|escape}
                 {if isset($file.description)}<span id="wa-design-desc" class="hint">{$file.description|escape}</span>{/if}
             </h4>
             {if $file.id}
-                <ul class="chips">
+                <ul class="chips custom-my-0 small">
                 {if !empty($file.has_original)}
-                    <li id="wa-design-original-link" {if empty($file.modified)} style="display: none"{/if}>
+                    <li id="wa-design-original-link" {if empty($file.modified)} style="display: none"{/if} class="transparent">
                         <a href="?module=design&action=viewOriginal" class="wa-design-view-original">
                             <i class="fas fa-lock"></i>
                             [s`View original`]
                         </a>
                         <script type="text/javascript">
+
                             $(".wa-design-view-original").on('click', function (e) {
                                 e.preventDefault();
-                                var d = $('#wa-design-view-original-dialog').empty().removeClass('dialog');
-                                if (!d.length) {
-                                    d = $('<div id="wa-design-view-original-dialog"></div>').appendTo('body');
-                                }
-                                var url = $(this).attr('href') + '&theme_id={$theme_id}&file={$file.id|escape:'url'}';
-                                d.waDialog({
-                                    url: url,
-                                    buttons: '<input type="button" class="button cancel" value="[s`Close`]"> <input type="submit" class="button yellow float-right" value="[s`Roll back my file to the original version`]">',
-                                    onSubmit: function (dialog) {
-                                        if (confirm('[s`This will reset all your changes. Are you sure?`]')) {
-                                            $.post('?module=design&action=revertFile', {
-                                                theme: '{$theme.id}',
-                                                file: '{$file.id|escape}'
-                                            }, function (response) {
-                                                if (response.status == 'fail') {
-                                                    alert(response.errors);
-                                                } else {
-                                                    dialog.trigger('close');
-                                                    waDesignLoad();
+                                const $dialog_wrapper = $('<div class="dialog" id="wa-design-view-original-dialog"></div>').appendTo('body');
+
+                                $dialog_wrapper.load($(this).attr('href') + '&theme_id={$theme_id}&file={$file.id|escape:'url'}', function () {
+                                    $.waDialog({
+                                        $wrapper: $dialog_wrapper,
+                                        position(dialog_width){
+                                            let window_w = $(window).width()
+                                            return { left: `${ (window_w - dialog_width.width) / 2 }px` }
+                                        },
+                                        onOpen($dialog, dialog) {
+                                            let $submit_btn = $dialog.find('.js-submit');
+                                            $submit_btn.on('click', function () {
+                                                if (confirm('[s`This will reset all your changes. Are you sure?`]')) {
+                                                    $.post('?module=design&action=revertFile', {
+                                                        theme: '{$theme.id}',
+                                                        file: '{$file.id|escape}'
+                                                    }, function (response) {
+                                                        if (response.status == 'fail') {
+                                                            alert(response.errors);
+                                                        } else {
+                                                            dialog.close();
+                                                            waDesignLoad();
+                                                        }
+                                                    }, 'json')
                                                 }
-                                            }, 'json')
+                                            })
                                         }
-                                        return false;
-                                    }
+                                    });
                                 });
                             });
                         </script>
@@ -48,11 +53,11 @@
                 {if !empty($file.custom)}
                     <li>
                         <a href="#" class="bold" id="wa-design-settings-toggle">
-                            <i class="fas fa-pencil"></i>
+                            <i class="fas fa-edit"></i>
                             [s`Template settings`]
                         </a>
                     </li>
-                    <li>
+                    <li class="transparent">
                         <a class="wa-design-delete" href="?module=design&action=delete">
                             <i class="fas fa-times-circle"></i>
                             [s`Delete`]
@@ -86,12 +91,12 @@
             {/if}
 
             {if !empty($file.custom)}
-                <div id="wa-design-settings" style="{if $file.id}display: none; {/if}">
+                <div id="wa-design-settings" class="wide custom-mt-16" style="{if $file.id}display: none; {/if}">
                     <div class="fields form">
                         {if isset($parent_theme) && empty($file.id)}
                             <div class="fields-group">
                                 <div class="field">
-                                    <div class="value submit">
+                                    <div class="value">
                                         <ul>
                                             <li>
                                                 <label>
@@ -118,7 +123,7 @@
                         {/if}
                         <div id="wa-file-create-group" class="fields-group">
                             <div class="field">
-                                <div class="name bold">
+                                <div class="name for-input">
                                     [s`File name`]
                                 </div>
                                 <div class="value">
@@ -127,11 +132,11 @@
                                 </div>
                             </div>
                             <div class="field">
-                                <div class="name">
+                                <div class="name for-input">
                                     [s`Description`]
                                 </div>
                                 <div class="value">
-                                    <textarea id="s-text-desc" name="description">{$file.description|escape}</textarea>
+                                    <textarea id="s-text-desc" name="description" class="small">{$file.description|escape}</textarea>
                                     <p class="hint">[s`Optional template description`]</p>
                                 </div>
                             </div>
@@ -139,7 +144,7 @@
                         {if isset($parent_theme)}
                         <div id="wa-file-link-group" class="fields-group" style="display: none;">
                             <div class="field">
-                                <div class="name">
+                                <div class="name for-input">
                                     [s`Select file`]
                                 </div>
                                 <div class="value">
@@ -272,7 +277,7 @@
                                              ${ type === 'js' ? 'fab fa-js-square' : '' }
                                              ${ type === 'css' ? 'fab fa-css3' : '' }"></i>
                                             <span>${ id }</span>
-                                            <span class="count small"><i class="fas fa-pen"></i>${ inherit ? '<i class="fas fa-link></i>' : '' }</span>
+                                            <span class="count small">${ inherit ? '<i class="fas fa-link></i>' : '' }</span>
                                         </a>
                                     </li>`);
                         $li.insertBefore($(".wa-theme-block li.selected").removeClass('selected'));
@@ -310,4 +315,3 @@
         });
     });
 </script>
-

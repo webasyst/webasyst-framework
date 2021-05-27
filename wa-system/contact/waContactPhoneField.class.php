@@ -110,16 +110,23 @@ class waContactPhoneField extends waContactStringField
     public function validate($data, $contact_id=null)
     {
         $errors = parent::validate($data, $contact_id);
-        if ($errors) {
-            return $errors;
+        if (!$errors) {
+            $errors = $this->validateUniquenessAmongAuthorizedContacts($data, $contact_id);
         }
+        return $errors;
+    }
 
+    protected function validateUniquenessAmongAuthorizedContacts($data, $contact_id)
+    {
+        $errors = null;
         if ($this->isMulti()) {
             if (!empty($data[0])  && $contact_id) {
                 $value = $this->format($data[0], 'value');
                 $phone_exists = $this->phoneExistsAmongAuthorizedContacts($value, $contact_id);
                 if ($phone_exists) {
-                    $errors[0] = sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'));
+                    $errors = [
+                        sprintf(_ws('User with the same “%s” field value is already registered.'), _ws('Phone'))
+                    ];
                 }
             }
         } else {

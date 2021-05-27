@@ -27,4 +27,27 @@ class waFrontendForgotPasswordForm extends waForgotPasswordForm
         }
     }
 
+    /**
+     * @param array $options
+     * @return waFrontendForgotPasswordForm
+     * @throws waException
+     */
+    public static function factory($options = [])
+    {
+        $config = waDomainAuthConfig::factory();
+        $app_id = $config->getApp();
+        if ($app_id && wa()->appExists($app_id)) {
+            $class = $app_id . 'FrontendForgotPasswordForm';
+            if (class_exists($class)) {
+                $form = new $class($options);
+                if ($form instanceof waFrontendForgotPasswordForm) {
+                    return new $form($options);
+                }
+            }
+
+        }
+        return new waFrontendForgotPasswordForm($options);
+    }
+
+
 }

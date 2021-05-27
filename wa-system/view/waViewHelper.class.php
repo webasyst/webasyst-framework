@@ -855,7 +855,9 @@ HTML;
 
         try {
 
-            $renderer = new waFrontendLoginForm($options);
+
+            //$renderer = new waFrontendLoginForm($options);
+            $renderer = waFrontendLoginForm::factory($options);
 
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
@@ -909,7 +911,7 @@ HTML;
 
         try {
 
-            $renderer = new waFrontendForgotPasswordForm($options);
+            $renderer = waFrontendForgotPasswordForm::factory($options);
 
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
@@ -965,7 +967,7 @@ HTML;
 
         try {
 
-            $renderer = new waFrontendSetPasswordForm($options);
+            $renderer = waFrontendSetPasswordForm::factory($options);
 
             $ns = $renderer->getNamespace();
             if (is_array($data) && isset($data[$ns]) && is_array($data[$ns])) {
@@ -1111,23 +1113,90 @@ HTML;
 
     }
 
+    /**
+     * @param false $return_array
+     * @param array $options
+     *      int $options['width'] [optional]  - window's width for all adapters, unless specific defined. Default is 600
+     *      int $options['height'] [optional] - window's height for all adapters, unless specific defined. Default is 500
+     *      int $options[<adapter_id>]['width']  [optional] - specific adapter windows' width, overrides $options['width']
+     *      int $options[<adapter_id>]['height'] [optional] - specific adapter windows' height, overrides $options['height']
+     * @return array|string
+     * @throws SmartyException
+     * @throws waException
+     */
     public function authAdapters($return_array = false, $options = array())
     {
         $adapters = wa()->getAuthAdapters();
+
         if ($return_array) {
             return $adapters;
         }
+
         if (!$adapters) {
             return '';
         }
+
+        $window_sizes = $this->defaultAuthAdapterWindowSizes();
+
+        foreach ($adapters as $id => $_) {
+            foreach (['width', 'height'] as $key) {
+                if (isset($options[$id][$key]) && is_numeric($options[$id][$key]) && $options[$id][$key] > 0) {
+                    $window_sizes[$id][$key] = $options[$id][$key];
+                } elseif (isset($options[$key]) && is_numeric($options[$key]) && $options[$key] > 0) {
+                    $window_sizes[$id][$key] = $window_sizes['default'][$key];
+                }
+            }
+        }
+
+        unset($window_sizes['default']);
+
+
         $view = wa()->getView();
         $template = wa()->getConfig()->getRootPath().'/wa-system/auth/templates/adapters_list.html';
         $view->assign(array(
+            'window_sizes' => $window_sizes,
             'adapters' => $adapters,
             'options'  => $options,
         ));
-        $html = $view->fetch($template);
-        return $html;
+
+        return $view->fetch($template);
+    }
+
+    /**
+     * Get default modal window sizes for all enabled oauth adapters in system
+     * @return int[][] $sizes
+     *      int $sizes[<adapter_id>]['width']
+     *      int $sizes[<adapter_id>]['height']
+     * @throws waException
+     */
+    public function defaultAuthAdapterWindowSizes()
+    {
+        $adapters = wa()->getAuthAdapters();
+
+        $window_sizes = [
+            'default' => [
+                'width' => 600,
+                'height' => 500,
+            ],
+            'webasystID' => [
+                'width' => 800,
+                'height' => 600
+            ]
+        ];
+
+        foreach ($adapters as $id => $_) {
+            foreach (['width', 'height'] as $key) {
+                if (isset($options[$id][$key]) && is_numeric($options[$id][$key]) && $options[$id][$key] > 0) {
+                    $window_sizes[$id][$key] = $options[$id][$key];
+                } else if (!isset($window_sizes[$id][$key])) {
+                    $window_sizes[$id][$key] = $window_sizes['default'][$key];
+                }
+            }
+        }
+
+        unset($window_sizes['default']);
+
+        return $window_sizes;
     }
 
     public function debug()

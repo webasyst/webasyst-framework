@@ -14,11 +14,11 @@
 <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version()}">
 
 <div class="sidebar flexbox hide-scrollbar bordered-right bordered-left width-21rem{if $wa->isMobile()} height-auto{/if}"{if $wa->isMobile()} style="position: relative; width:100%; min-height: auto; top: 0"{/if}>
-    <div class="sidebar-header box custom-pb-0 bordered-bottom ">
-        <div class="blank box rounded dropdown flexbox middle js-theme-select-menu wa-theme-select-menu" >
-            <img src="{$wa_url}{$app.icon.48}" width="46">
+    <div class="sidebar-header box custom-pb-0">
+        <div class="blank box rounded dropdown custom-mt-4 flexbox middle js-theme-select-menu wa-theme-select-menu" >
+            <img src="{$wa_url}{$app.icon.48}" width="48" class="custom-mr-12">
             <a href="#" class="dropdown-toggle wide" id="wa-theme-active">
-                <span class="js-url bold small">
+                <span class="js-url bold">
                     {if $route}
                         {$_route_label = $route._domain|cat:'/':$route.url}
                     {else}
@@ -26,18 +26,10 @@
                     {/if}
                     {str_replace('www.','',$_route_label)|truncate:23:'...':false:true}
                 </span>
-                <span class="hint js-hint">{if $route}{$theme.name}{/if}</span>
+                <div class="hint bold js-hint nowrap">{if $route}{$theme.name}{/if}</div>
             </a>
-            <div class="dropdown-body">
-                <ul id="wa-theme-list" class="menu js-theme-list js-design-actions">
-                    {if $wa->user()->getRights('installer')}
-                        <li class="themes bordered-bottom" data-is-nav>
-                            <a class="wa-themes-link bold" href="{$themes_url}">
-                                <i class="far fa-images"></i>
-                                <span>[s`Themes`]</span>
-                            </a>
-                        </li>
-                    {/if}
+            <div class="dropdown-body js-design-actions">
+                <ul id="wa-theme-list" class="menu js-theme-list">
                     {foreach $themes_routes as $r}
                         {if is_array($r)}
                             {*Themes with settlements*}
@@ -91,27 +83,41 @@
                         {/if}
                     {/foreach}
                 </ul>
+                {if $wa->user()->getRights('installer')}
+                    <div class="box custom-mt-0" data-is-nav>
+                        <a class="wa-themes-link button webasyst-magic-wand full-width" href="{$themes_url}">
+                            <i class="icon"></i>
+                            <span>[s`Browse all themes`]</span>
+                        </a>
+                    </div>
+                    <div class="box custom-mt-0">
+                        <a href="#" class="js-theme-upload-link button nobutton smaller nowrap">
+                            <span>[s`Upload theme archive`]</span>
+                            <span class="hint">(.tar.gz)</span>
+                        </a>
+                    </div>
+                {/if}
             </div>
         </div>
 
-        <ul class="tabs custom-p-0 js-tabs-menu js-design-actions">
+        <ul class="tabs custom-p-0 custom-mt-4 js-tabs-menu js-design-actions">
             <li data-action="theme" class="info selected custom-pb-0" data-is-nav>
-                <a class="wa-themes-link" href="{$design_url}theme={$theme.id}&action=theme">
+                <a class="wa-themes-link semibold" href="{$design_url}theme={$theme.id}&action=theme">
                     <i class="fas fa-tasks"></i>
-                    [s`Appearance`]
+                    [s`Settings`]
                 </a>
             </li>
 
             <li data-action="edit" class="templates custom-pb-0" style="display: none;" data-is-nav>
-                <a href="{$design_url}theme={$theme.id}&action=edit">
+                <a href="{$design_url}theme={$theme.id}&action=edit" class="semibold">
                     <i class="fas fa-code"></i>
                     [s`Templates`]
                 </a>
             </li>
             {if $theme.preview_url}
-                <li class="custom-pb-0 custom-ml-auto">
+                <li class="custom-pb-0 custom-ml-auto notab">
                     <a data-url="{$theme.preview_url|escape}" data-id="{$theme.id|escape}" href="{$theme.preview_url|escape}" rel="noopener" target="_blank" class="wa-theme-preview gray" title="{if $theme.is_used}[s`Site`]{else}[s`Preview`]{/if}">
-                        <i class="fas fa-external-link-square-alt"></i>
+                        <i class="fas fa-external-link-alt"></i>
                     </a>
                 </li>
             {/if}
@@ -119,18 +125,19 @@
     </div>
     <div class="sidebar-body hide-scrollbar blank">
         <div class="js-tab-content tab-content flexbox vertical height-100 selected" data-id="theme">
-            <ul class="menu js-design-actions">
-                <li data-action="settings" class="settings" data-is-nav>
-                    <a href="{$design_url}action=settings">
-                        <i class="fas fa-cog"></i>
-                        <span>[s`Settings`]</span>
-                    </a>
-                </li>
-            </ul>
 
             <section class="wa-theme-settings js-theme-settings-section">
                 {skeleton_sidebar}
             </section>
+
+            <ul class="menu js-design-actions custom-mt-0">
+                <li data-action="settings" class="settings" data-is-nav>
+                    <a href="{$design_url}action=settings">
+                        <i class="fas fa-cog"></i>
+                        <span>{if $_route_label}{sprintf('[s`Configure %s`]', $_route_label)}{else}[s`Route settings`]{/if}</span>
+                    </a>
+                </li>
+            </ul>
 
             {* Installer review widget *}
             {if $need_show_review_widget}
@@ -141,12 +148,6 @@
         </div>
         <div id="wa-design-sidebar" class="js-tab-content tab-content" data-id="edit">
             <div class="wa-theme-block custom-mt-0">
-                <h4 class="heading">
-                    <span>{$theme.name}</span>
-                    <a class="count action" href="{$design_url}theme={$theme.id}&file=" title="[s`New file`]">
-                        <i class="fas fa-plus-circle"></i>
-                    </a>
-                </h4>
                 {if $edit_data.theme_usages && $edit_data.route_url}
                     <div class="alert warning small custom-mx-16 custom-mt-16">
                         <i class="fas fa-exclamation-triangle fa-xs"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $edit_data.theme_usages_decoded), $edit_data.route_url_decoded)}
@@ -158,10 +159,16 @@
                             <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}" title="{if !empty($f.parent_exists)}[s`parent theme file`]: {/if}{$f_id|escape}">
                                 <i class="{if substr($f_id, -4)=='.css'}fab fa-css3{elseif substr($f_id, -3)=='.js'}fab fa-js-square{else}fas fa-file-code{/if}"></i>
                                 <span>{$f_id|escape|truncate:25:'...':false:true}</span>
-                                <span class="count small">{if !empty($f.modified)}<i class="fas fa-pen"></i>{/if}{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
+                                <span class="count small">{if !empty($f.parent_exists)}<i class="fas fa-link" title="{if !empty($f.parent_exists)}[s`parent theme file`]{/if}"></i>{/if}</span>
                             </a>
                         </li>
                     {/foreach}
+                    <li class="top-padded">
+                        <a class="small" href="{$design_url}theme={$theme.id}&file=" title="[s`New file`]">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>[s`New file`]</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -201,12 +208,38 @@
     </form>
 </div>
 
+<div class="dialog" id="wa-theme-upload-dialog">
+        <div class="dialog-background"> </div>
+        <form class="dialog-body" id="wa-theme-upload-form" method="post" action="?module=design&amp;action=themeUpload" enctype="multipart/form-data">
+            <h3 class="dialog-header">[s`Upload theme`]</h3>
+            <div class="dialog-content">
+                <span class="wa-theme-dialog-error bold" style="color: red;"></span>
+                <p>[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
+                <div class="upload-area">
+                    <div class="upload">
+                        <label class="link">
+                            <i class="fas fa-file-upload"></i>
+                            <span>[s`Select file`]</span>
+                            <input id="wa-input-file" type="file" name="theme_files[]" autocomplete="off">
+                        </label>
+                    </div>
+                </div>
+                {$wa->csrf()}
+                <div class="loading" style="display:none; margin-top: 10px">
+                    <i class="fas fa-spinner fa-spin"></i> [s`Uploading...`]
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <input type="submit" class="button green" value="[s`Upload`]">
+                [s`or`] <a href="{$themes_url}" class="js-close-dialog">[s`cancel`]</a>
+            </div>
+        </form>
+    </div>
+
 <script type="text/javascript">
 
-    const skeleton = {
-            template: {skeleton|json_encode},
-            sidebar: {skeleton_sidebar|json_encode},
-        },
+    var skeleton_template = {skeleton|json_encode},
+        skeleton_sidebar = {skeleton_sidebar|json_encode},
         $design_actions = $('.js-design-actions').find('[data-is-nav]'),
         $tab_item = $design_actions.filter('[data-action]'),
         $design_container = $('.js-design-container'),
@@ -214,6 +247,14 @@
         $theme_settings_section = $('.js-theme-settings-section'),
         $theme_preview_link = $('.js-tabs-menu .wa-theme-preview'),
         $theme_edit_link = $('.js-tabs-menu li[data-action="edit"]');
+
+    async function postData(url, data) {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: data,
+        });
+        return await response.text();
+    }
 
     function waDesignConfirm() {
         if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
@@ -231,12 +272,7 @@
 });
 
     /* Make Dropdown for Theme select menu */
-    const $theme_select_menu = $('.js-theme-select-menu').waDropdown();
-
-    /*deprecated*/
-    /*$("#wa-design-sidebar h2 a").on('click', function () {
-        if (!waDesignConfirm()) return false;
-    });*/
+    var $theme_select_menu = $('.js-theme-select-menu').waDropdown();
 
     /* Switch between Appearance, Templates, Settings and Themes displays */
     $design_actions.on('click', function (e) {
@@ -249,14 +285,19 @@
             tab_action = $tab.data('action'),
             $tab_content = $(`.js-tab-content[data-id="${ tab_action }"]`);
 
-        $design_actions.removeClass('selected');
         $tab.addClass('selected');
         $tab_content.addClass('selected').siblings().removeClass('selected');
 
-        reStyleSettingsPage(tab_action);
-
         if(!tab_action){
             $theme_select_menu.removeClass('is-opened');
+        }
+
+        if (tab_action === 'settings') {
+            let $theme_settings_list = $('.js-theme-settings-list');
+
+            if ($theme_settings_list.length) {
+                $theme_settings_list.find('li').removeClass('selected');
+            }
         }
 
         {if !$options.is_ajax}
@@ -272,7 +313,8 @@
             $theme_info_section = $('.js-theme-info-section'),
             menu_id = $self.data('divider-id'),
             $settings_section = $('.js-settings-list'),
-            $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`);
+            $settings_section_selected = $settings_section.find(`[data-divider-id="${ menu_id }"]`),
+            $bottombar = $('.bottombar');
 
         let hash = waDesignHash(location.hash)
         if (hash.length) {
@@ -288,10 +330,12 @@
         if(menu_id >= 0) {
             $theme_info_section.hide();
             $settings_section.show();
-            $settings_section_selected.addClass('selected').siblings().removeClass('selected')
+            $settings_section_selected.addClass('selected').siblings().removeClass('selected');
+            $bottombar.show();
         }else{
             $settings_section.hide();
             $theme_info_section.show();
+            $bottombar.hide();
         }
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -355,9 +399,9 @@
 
         $theme_select_menu.removeClass('is-opened');
 
-        $design_container.html(skeleton.template);
+        $design_container.html(skeleton_template);
         if (!set_active_only) {
-            $theme_settings_section.html(skeleton.sidebar);
+            $theme_settings_section.html(skeleton_sidebar);
         }
         $theme_list.find("li").removeClass('selected');
 
@@ -580,10 +624,6 @@
                 });*/
 
             } else if (!!~hash.indexOf('action=settings')) {
-                $design_actions.filter('.selected').removeClass('selected');
-                $design_actions.filter('.settings').addClass('selected');
-
-                //$theme_settings_section.empty();
 
                 let $selected_theme_list_li = $theme_list.find('.selected:not([data-is-nav])'),
                     $li = $theme_list.find(':not([data-is-nav]):first');
@@ -602,7 +642,7 @@
                             $tmp_li.find('a').click();
                         }
                     } else {
-                        $design_container.load($li.data('routing') + '&reload_on_change=1', function () {
+                        $design_container.load($li.data('routing') + '&reload_on_change=1&ui=2.0', function () {
                             reStyleSettingsPage('settings');
                             $design_container.find(".back").remove(); // deprecated?
                             $(".s-route-core").hide();
@@ -614,6 +654,8 @@
                             );
                             $design_container.find(".s-route-delete").closest('div').remove();
                         });
+
+                        $theme_settings_section.load("?module=design&action=theme&theme="+hash_params['theme']+"&onlySettings=1");
                     }
                 } else {
                     if (hash_params['route']) {
@@ -657,6 +699,8 @@
                         $design_actions.filter('.templates').addClass('selected');
                         $('.js-tab-content').removeClass('selected');
                         $('.js-tab-content[data-id="edit"]').addClass('selected');
+                        let _hash = hash.replace('action=edit', 'action=editFiles');
+                        $("#wa-design-sidebar").load("?module=design&action=editFiles&" + _hash);
                     }
                 } else if (!!~hash.indexOf('action=theme')) {
                     $design_actions.filter('.selected').removeClass('selected');
@@ -686,12 +730,96 @@
         let $a = $('.js-tab-content .wa-theme-block a[href="' + location.hash + '"]:first');
         if ($a.length) {
             $a.parent().addClass('selected');
-            //let t = $a.closest('.wa-theme-block').show().attr('id').replace(/wa-theme-block-/, '');
-            //$("#wa-theme-active").text($('#wa-theme-list-' + t).find('a span.wa-theme-name').text());
         }
         {if !$options.is_ajax}
-        waDesignLoad();
+            waDesignLoad();
         {/if}
+    });
+
+    function handleError(data, $dialog) {
+        let error = '';
+        if (typeof data.errors == 'string') {
+            error += (error ? '\n' : '') + data.errors;
+        } else {
+            for (let error_item in data.errors) {
+                if(data.errors.hasOwnProperty(error_item)) {
+                    error += (error ? '\n' : '') + data.errors[error_item][0];
+                }
+            }
+        }
+        if ($dialog.length) {
+            $dialog.find(".wa-theme-dialog-error").html(error + '<br><br>');
+        } else if ($(".wa-theme-dialog-error:first:visible").length) {
+            $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
+        } else {
+            alert('Error:' + error);
+        }
+        $dialog.find("[type=submit]").removeClass('disabled');
+    }
+
+    $(".js-theme-upload-link").on('click', function (e) {
+        e.preventDefault();
+
+        if (!waDesignConfirm()) return false;
+        const $upload_dialog = $("#wa-theme-upload-dialog");
+
+        $(".wa-theme-dialog-error").text('');
+
+        $upload_dialog.find("div.loading").hide();
+        let $wrapper = $upload_dialog.clone();
+        $.waDialog({
+            $wrapper,
+            onOpen($dialog, dialog) {
+                let $form = $dialog.find('form:first'),
+                    $input_file = $dialog.find("#wa-input-file"),
+                    $submit_btn = $dialog.find('[type="submit"]');
+
+                $dialog.find(".upload-area").waUpload({
+                    is_uploadbox: true
+                });
+
+                $form.on('submit', function (e) {
+                    e.preventDefault();
+                    $submit_btn.addClass('disabled')
+                    $dialog.find("div.loading").show();
+                    const formData = new FormData(this);
+
+                    postData($(this).attr('action'), formData)
+                        .then(
+                            (res) => {
+                                try {
+                                    let response = $.parseJSON(res);
+                                    if (response.status === 'fail') {
+                                        $dialog.find("div.loading").hide();
+                                        $input_file.val('');
+                                        handleError(response, $dialog);
+                                    } else if (response.status === 'ok') {
+                                        dialog.close();
+                                        location.reload();
+                                    }
+                                }catch (e){
+                                    let response = {
+                                        'errors': []
+                                    };
+                                    let message = $(res).find('h1:first, h2:first');
+                                    if (message.length) {
+                                        response.errors.push([message.text()]);
+                                    } else {
+                                        response.errors.push(['JavaScript error: ' + e.message]);
+                                    }
+                                    $dialog.find("div.loading").hide();
+                                    $input_file.val('');
+                                    handleError(response, $dialog);
+                                }
+
+                            },
+                            (error) => {
+                                console.error(error)
+                            }
+                        );
+                })
+            }
+        });
     });
 
 </script>

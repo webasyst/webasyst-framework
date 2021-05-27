@@ -11,153 +11,68 @@
             this._initDragAlbums();
             this._initDropAlbums();*/
 
-            // drop between albums
-
-            let nestedSortables = $('#album-list .nested');
-
-            nestedSortables.each(function () {
-                $(this).sortable({
-                    group: {
-                        name: 'nested',
-                        put(to) {
-                            nestedSortables.removeClass('highlighted');
-                            if (!to.el.classList.contains('js-root-menu')) {
-                                to.el.classList.toggle('highlighted');
-                            }
-                        }
-                    },
-                    delay: 100,
-                    delayOnTouchOnly: true,
-                    handle: 'li',
-                    draggable: 'li',
-                    animation: 150,
-                    fallbackOnBody: true,
-                    swapThreshold: 0.65,
-                    forceFallback: false,
-                    direction: 'vertical',
-                    onEnd: function (event) {
-                        nestedSortables.removeClass('highlighted');
-
-                        let $item = $(event.item),
-                            $list_parent = $item.parent('ul').parent('li'),
-                            id = $item.data('id'),
-                            before_id = $item.next().data('id') || null,
-                            parent_id = $list_parent.length ? $list_parent.data('id') : 0;
-
-                        $.post('?module=album&action=move', { id, before_id, parent_id }, function(response) {
-/*                            var current_album = $.photos.getAlbum(),
-                                album = response.data.album,
-                                counters = response.data.counters;
-
-                            if (album.status <= 0 && $.photos_dragndrop.privateDescendants(album.id))                            {
-                                $.photos.dispatch('album/'+album.id+'/');
-                            }
-
-                            if (current_album && current_album.id == album.id) {
-                                var frontend_link = response.data.frontend_link;
-                                if (frontend_link) {
-                                    $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
-                                }
-                                if (album.type == Album.TYPE_DYNAMIC) {
-                                    $.photos.load("?module=album&action=photos&id=" + album.id, $.photos.onLoadPhotoList);
-                                }
-                            }
-                            if (!$.isEmptyObject(counters)) {
-                                for (var album_id in counters) {
-                                    if (counters.hasOwnProperty(album_id)) {
-                                        album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
-                                    }
-                                }
-                            }*/
-                        }, 'json');
-                    }
-                });
-            });
-
-/*
-            $('#album-list > ul.menu').sortable({
-                handle: 'li',
-                delay: 100,
-                delayOnTouchOnly: true,
-                animation: 150,
+            const options = {
                 forceFallback: true,
-                onStart(event) {
-                    Sortable.ghost.style.opacity = 1;
+                ghostClass: "p-sortable-ghost",
+                chosenClass: "p-sortable-chosen",
+                dragClass: "p-sortable-drag",
+                fallbackClass: "p-sortable-fallback",
+                waHighlightClass: 'bg-light-gray',
+                group: "nested",
+                draggable: ">*:not(a)",
+                animation: 150,
+                fallbackOnBody: false,
+                swapThreshold: 0.45,
+                dragoverBubble: true,
+                onAdd(event) {
+                    // добавление элемента в группу
+                    const $closest_li = event.to.closest('li')
+                    if ($closest_li && !$closest_li.querySelector('.caret')) {
+                        $closest_li.querySelector('a').insertAdjacentHTML('afterbegin','<span class="caret"><i class="fas fa-caret-down"></i></span>');
+                    }
+                    //$.photos_sidebar.initCollapsibleWa2();
                 },
-                onEnd: function (event) {
+                onRemove(event) {
+                    const $from = event.from;
+                    if(!$from.classList.contains('js-root-menu') && $from.childElementCount === 0) {
+                        const $caret = $from.closest('li').querySelector('.caret');
+                        if ($caret) {
+                            $caret.remove();
+                        }
+                    }
+                },
+                onMove(event) {
+                    const highlight_class = this.options?.waHighlightClass ?? 'bg-light-gray';
+                    nestedSortables.forEach(item => item.closest('li')?.classList.remove(highlight_class));
+
+                    // выделяем цветом элемент, над которым находится перетаскиваемый элемент
+                    const $related_parent = event.related.parentElement;
+                    $related_parent.classList.toggle(highlight_class, $related_parent.tagName === 'LI');
+                },
+                onUpdate(event) {
+                    // сортировка внутри одной группы
+                },
+                onEnd(event) {
+                    const highlight_class = this.options?.waHighlightClass ?? 'bg-light-gray';
+                    nestedSortables.forEach(item => item.closest('li')?.classList.remove(highlight_class));
+
                     let $item = $(event.item),
+                        $list_parent = $item.parent('ul').parent('li'),
                         id = $item.data('id'),
-                        parent_id = $item.parent('li').length ? $item.parent('li').data('id') : 0,
-                        before_id = $item.next().data('id') || 0;
+                        before_id = $item.next().data('id') || null,
+                        parent_id = $list_parent.length ? $list_parent.data('id') : 0;
 
-                    $.post("?module=album&action=move", {
-                        id,
-                        before_id,
-                        parent_id
-                    });
-                }
-            });*/
-
-            $('#album-list > ul._menu').sortable({
-                draggable: 'li',
-                greedy: true,
-                tolerance: 'pointer',
-                setData: function (dataTransfer, dragEl) {
-                    console.log(dataTransfer)
-                    console.log(dragEl)
-                },
-                over: function(event, ui) {
-                    // legal only for album (li)
-                    if (ui.draggable.get(0).tagName == 'IMG') {
-                        return false;
-                    }
-                    $(this).addClass('active').parent().parent().addClass('drag-active');
-                },
-                out: function(event, ui) {
-                    $(this).removeClass('active').parent().parent().removeClass('drag-active');
-                },
-                deactivate: function(event, ui) {
-                    var self = $(this);
-                    if (self.is(':animated') || self.hasClass('dragging')) {
-                        self.stop().animate({height: '0px'}, 300, null, function(){self.removeClass('dragging');});
-                    }
-                    $(this).removeClass('active').parent().parent().removeClass('drag-active');
-                },
-                onEnd: function (event) {
-                    let $list = $(this);
-                    var dr = $(ui.draggable);
-                    var id = dr.attr('rel');
-                    var prev = $(this).prev('li');
-
-                    if (prev.length && prev.attr('rel') == id && !prev.hasClass('ui-draggable')) {
-                        return false;
-                    }
-                    if (this == dr.next().get(0)) {
-                        return false;
-                    }
-                    var parent_id = $list.parent('li').length ? $list.parent('li').attr('rel') : 0;
-                    var before = $(this).next(),
-                        before_id = null;
-                    if (before.length) {
-                        before_id = before.attr('rel');
-                    }
-                    $.post('?module=album&action=move', {
-                        id: id,
-                        before_id: before_id,
-                        parent_id: parent_id
-                    }, function(r) {
+                    $.post('?module=album&action=move', { id, before_id, parent_id }, function(response) {
                         var current_album = $.photos.getAlbum(),
-                            album = r.data.album,
-                            counters = r.data.counters;
+                            album = response.data.album,
+                            counters = response.data.counters;
 
-                        if (album.status <= 0 &&
-                            $.photos_dragndrop.privateDescendants(album.id))
-                        {
+                        if (album.status <= 0 && $.photos_dragndrop.privateDescendants(album.id))                            {
                             $.photos.dispatch('album/'+album.id+'/');
                         }
 
                         if (current_album && current_album.id == album.id) {
-                            var frontend_link = r.data.frontend_link;
+                            var frontend_link = response.data.frontend_link;
                             if (frontend_link) {
                                 $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
                             }
@@ -166,26 +81,17 @@
                             }
                         }
                         if (!$.isEmptyObject(counters)) {
-                            for (var album_id in counters) {
+                            for (let album_id in counters) {
                                 if (counters.hasOwnProperty(album_id)) {
                                     album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
                                 }
                             }
                         }
                     }, 'json');
-
-                    var $parent_list = dr.parent('ul');
-                    var li_count = $parent_list.children('li.dr[rel!='+id+']').length;
-
-                    dr.next().insertAfter($(this));
-                    dr.insertAfter($(this));
-
-                    if (!li_count) {
-                        $parent_list.parent('li').children('i').remove();
-                        $parent_list.remove();
-                    }
                 }
-            });
+            }
+            const nestedSortables = Array.from(document.querySelector('#album-list').querySelectorAll('ul'));
+            nestedSortables.forEach(item => new Sortable(item, options))
 
         },
 

@@ -68,9 +68,8 @@ class waSessionStorage extends waStorage
     public function open()
     {
         if (!self::$started  && session_status() != PHP_SESSION_ACTIVE) {
-            session_start();
+            self::$started = session_start();
         }
-        self::$started = true;
     }
 
     public function getAll()

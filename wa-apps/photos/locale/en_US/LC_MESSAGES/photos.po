@@ -1683,3 +1683,9 @@ msgstr ""
 #: /wa-apps/photos/templates/layouts/Default.html:87
 msgid "Photo is not in album"
 msgstr ""
+
+msgid "Selected photos"
+msgstr ""
+
+msgid "Selected"
+msgstr ""

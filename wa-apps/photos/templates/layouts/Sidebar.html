@@ -6,10 +6,10 @@
     </nav>
     {if $rights.upload}
     <div class="sidebar-header">
-        <div class="p-new-section box">
-            <a class="button p-new-link align-center" href="?module=upload" id="p-upload-link">
-                <i class="fas fa-arrow-up"></i>
-                <span class="s-title small">[`Upload photos`]</span>
+        <div class="p-new-section box custom-mt-12">
+            <a class="button p-new-link purple align-center" href="?module=upload" id="p-upload-link">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span class="s-title small">[`Upload`]</span>
             </a>
         </div>
     </div>
@@ -74,9 +74,9 @@
                     [`Albums`]
                 </span>
                 {if $rights.upload}
-                <a id="p-new-album" class="count action p-new-album" href="#" title="[`New album`]">
-                    <i class="fas fa-plus-circle"></i>
-                </a>
+                    <a id="p-new-album" class="count action p-new-album" href="#" title="[`New album`]">
+                        <i class="fas fa-plus-circle"></i>
+                    </a>
                 {/if}
             </header>
 
@@ -171,7 +171,7 @@
     {literal}
     {% for (var i = 0, n = o.cloud.length, tag = o.cloud[i]; i < n; tag = o.cloud[++i]) { %}
     <li>
-        <a href="#/tag/{%=tag.uri_name%}/" style="font-size: {%#tag.size%}%; opacity: {%#tag.opacity%}" data-id="{%#tag.id%}"><span>{%=tag.name%}</span></a>
+        <a href="#/tag/{%=tag.uri_name%}/" data-id="{%#tag.id%}" class="small"><span><i class="fas fa-hashtag"></i> {%=tag.name%}</span></a>
     </li>
     {% } %}
     {/literal}
@@ -188,18 +188,20 @@
 {/foreach}
 
 <script>
-( function($) {
-    $('#tag-cloud').html(tmpl('template-tag-cloud', {
-        cloud: {json_encode($cloud)}
-    }));
-    $.photos_sidebar.init({
-        $wrapper: $("#js-app-sidebar"),
-        wa2: true
-    });
+    ( function($) {
+        $('#tag-cloud').html(tmpl('template-tag-cloud', {
+            cloud: {json_encode($cloud)}
+        }));
 
-    const $sidebar = $('#js-app-sidebar');
-    $sidebar.waShowSidebar({
-        direction: "down"
-    });
-})(jQuery);
+        const $sidebar = $('#js-app-sidebar');
+
+        $.photos_sidebar.init({
+            $wrapper: $sidebar,
+            wa2: true
+        });
+
+        $sidebar.waShowSidebar({
+            direction: "down"
+        });
+    })(jQuery);
 </script>

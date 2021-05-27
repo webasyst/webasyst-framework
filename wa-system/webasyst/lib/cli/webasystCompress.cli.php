@@ -18,7 +18,7 @@ class webasystCompressCli extends waCliController
     private $default_params = array();
 
     private static $default = array(
-        'style' => 'no-vendors',
+        'style' => 'false',
         'skip'  => 'none',
     );
 

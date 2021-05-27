@@ -6,11 +6,11 @@
     </h3>
     <div class="dialog-content">
         <p>{sprintf('[s`Confirm the list of files which will be replaced with their newest versions from theme version %s.`]', $theme_original_version)}</p>
-        <p class="small"><i class="fas fa-exclamation-triangle fa-sm"></i> <em>[s`Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)`]</em></p>
+        <p class="state-caution-hint"><i class="fas fa-exclamation-triangle fa-sm"></i> <em>[s`Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)`]</em></p>
         {if empty($parent_only)}
         <ul class="menu">
             <li>
-                <label title="[s`Theme appearance settings will be updated automatically`]" class="gray">
+                <label title="[s`Theme appearance settings will be updated automatically`]" class="gray item">
                     <input type="checkbox" disabled checked="checked">
                     [s`Theme appearance settings (theme.xml)`]
                 </label>
@@ -24,7 +24,7 @@
             {if empty($f.modified)}
                 {if !$_non_m_group_shown_flag}
                     <li>
-                        <label title="[s`You did not modify this file`]" class="gray">
+                        <label title="[s`You did not modify this file`]" class="gray item">
                             <input type="checkbox" disabled checked="checked">
                             {if $_non_m_files_count > 1}
                                 {sprintf('%s and %s',
@@ -41,14 +41,14 @@
             {else}
                 {if empty($f.custom)}
                     <li>
-                        <label class="bold" title="[s`You modified this file`]">
+                        <label class="bold item" title="[s`You modified this file`]">
                             <input name="reset[]" type="checkbox" value="{$f_id|escape}">
                             {$f_id|escape}
                         </label>
                     </li>
                 {else}
                     <li>
-                        <label title="[s`This is a custom file and it will not be affected by the update.`]" class="gray">
+                        <label title="[s`This is a custom file and it will not be affected by the update.`]" class="gray item">
                             <input name="reset[]" type="checkbox" disabled value="{$f_id|escape}"> {$f_id|escape}
                         </label>
                     </li>
@@ -66,7 +66,7 @@
         <h3 class="heading">[s`Parent theme`]: {$theme.parent_theme.name} ({$theme.parent_theme.app})</h3>
         <ul class="menu">
             <li>
-                <label title="[s`Theme appearance settings will be updated automatically`]" class="gray">
+                <label title="[s`Theme appearance settings will be updated automatically`]" class="gray item">
                     <input type="checkbox" disabled checked="checked">
                     [s`Theme appearance settings (theme.xml)`]
                 </label>
@@ -80,7 +80,7 @@
             {if empty($f.modified)}
                 {if !$_non_m_group_shown_flag}
                     <li>
-                        <label title="[s`You did not modify this file`]" class="gray">
+                        <label title="[s`You did not modify this file`]" class="gray item">
                             <input type="checkbox" disabled checked="checked">
                             {if $_non_m_files_count > 1}
                                 {sprintf(
@@ -97,7 +97,7 @@
                 {/if}
             {else}
                 <li>
-                    <label class="bold" title="[s`You modified this file`]">
+                    <label class="bold item" title="[s`You modified this file`]">
                         <input name="parent_reset[]" type="checkbox" value="{$f_id|escape}">
                         {$f_id|escape}
                     </label>
@@ -109,7 +109,7 @@
     </div>
     <div class="dialog-footer">
         <input type="hidden" name="theme" value="{$theme.id}">
-        <input type="submit" class="button red" value="{sprintf('[s`Update all to %s`]', $theme_original_version)}">
-        [s`or`] <a href="#/design/themes/" class="js-close-dialog">[s`cancel`]</a>
+        <input type="submit" class="button blue" value="{sprintf('[s`Update all to %s`]', $theme_original_version)}">
+        <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
     </div>
 </div>

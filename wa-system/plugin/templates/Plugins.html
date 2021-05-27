@@ -32,7 +32,7 @@
                                     <i class="fas fa-plug"></i>
                                 {else}
                                     <span class="icon">
-                                        <img src="{wa_url()}{$plugin.img}" alt="{$plugin.name|escape}" class="size-20">
+                                        <img src="{wa_url()}{$plugin.img}" alt="{$plugin.name|escape}" class="size-20" />
                                     </span>
                                 {/if}
                                 <span>{$plugin.name|escape}
@@ -49,6 +49,13 @@
                         [s`No plugins are installed.`]
                     </div>
                 {/if}
+
+                {if $wa->user()->getRights('installer')}
+                    <div class="box custom-mt-0">
+                        <a href="{$wa_backend_url}installer/store/store/app/{$wa->app()}/plugins/" class="button webasyst-magic-wand full-width"><i class="icon"></i>[s`Browse plugins`]</a>
+                    </div>
+                {/if}
+
             </div>
         </div>
     <div class="article content">

@@ -12,7 +12,7 @@
                                     <li>
                                         {if !empty($settings.sizes)}
                                             <div class="thumbnail-size-set" id="saved-thumbnail-size">
-                                                <ul class="zebra">
+                                                <ul class="zebra small">
                                                     {foreach $settings.sizes as $set_type => $sizes_set}
                                                         {foreach $sizes_set as $key => $size_item}
                                                             <li>
@@ -30,7 +30,7 @@
                                                                     {/if}
                                                                 {/foreach}
                                                                 {if $set_type == 'custom'}
-                                                                    <a href="javascript:void(0)" title="[`delete`]" class="icon js-delete-action" data-key="{$key}">
+                                                                    <a href="javascript:void(0)" title="[`delete`]" class="icon js-delete-action gray" data-key="{$key}">
                                                                         <i class="fas fa-times-circle"></i>
                                                                     </a>
                                                                 {/if}
@@ -40,7 +40,7 @@
                                                 </ul>
                                             </div>
                                         {/if}
-                                            <ul class="thumbnail-size-set bordered js-thumbnail-size-set" style="display:none">
+                                            <ul class="thumbnail-size-set bordered small js-thumbnail-size-set" style="display:none">
                                                 <li>
                                                     <label>
                                                         <span class="wa-radio">
@@ -96,9 +96,9 @@
                                             </ul>
                                     </li>
                                     <li>
-                                        <a id="add-action" href="javascript:void(0);" class="button rounded gray" style="font-size: .75rem;">
-                                            <i class="fas fa-plus-circle"></i>
-                                                    [`Add`]
+                                        <a id="add-action" href="javascript:void(0);" class="button rounded outlined light-gray smallest custom-mt-8">
+                                            <i class="fas fa-plus"></i>
+                                            [`Add`]
                                         </a>
                                     </li>
                                 </ul>
@@ -115,14 +115,18 @@
                                 <ul>
                                     <li>
                                         <label>
-                                        <span class="switch middle" id="allow_gen_thumbs_on_demand">
-                                            <input type="checkbox" name="thumbs_on_demand" value="1" {if !empty($settings.thumbs_on_demand)}checked{/if}>
-                                        </span>
-                                            <p class="hint">[`If enabled, frontend design theme can request Photos app to create custom-sized photo thumbnails on fly (any size in addition to the listed above, including cropped versions)`]</p>
+                                            <span class="switch smaller middle" id="allow_gen_thumbs_on_demand">
+                                                <input type="checkbox" name="thumbs_on_demand" value="1" {if !empty($settings.thumbs_on_demand)}checked{/if}>
+                                            </span>
                                         </label>
+                                        <p class="hint custom-mt-4">[`If enabled, frontend design theme can request Photos app to create custom-sized photo thumbnails on fly (any size in addition to the listed above, including cropped versions)`]</p>
                                     </li>
                                     <li id="max_available_size_control"{if !$settings.thumbs_on_demand} style="display:none;"{/if}>
-                                        [`Max thumbnail size`] <input type="number" name="max_size" value="{$settings.max_size}" size="4" class="short"> [`px`]
+                                        <span class="small">
+                                            [`Max thumbnail size`]
+                                            <input type="number" name="max_size" value="{$settings.max_size}" size="4" class="short">
+                                            [`px`]
+                                        </span>
                                         <p class="hint">[`Limits the maximum thumbnail size that can be created on demand. Must not be less than 970 px.`]</p>
                                     </li>
                                 </ul>
@@ -137,11 +141,11 @@
                             </div>
                             <div class="value">
                                 <label>
-                                    <span class="switch middle" id="sharpen">
+                                    <span class="switch smaller middle" id="sharpen">
                                         <input type="checkbox" name="sharpen" value="1" {if !empty($settings.sharpen)}checked{/if}>
                                     </span>
                                 </label>
-                                <p class="hint">[`Apply sharpening filter when creating thumbnails (recommended)`]</p>
+                                <p class="hint custom-mt-4">[`Apply sharpening filter when creating thumbnails (recommended)`]</p>
                             </div>
                         </div>
                         <div class="field">
@@ -149,12 +153,12 @@
                                 [`Thumbnail quality`]
                             </div>
                             <div class="value">
-                                <input type="number" class="short" name="save_quality" value="{if !empty($settings.save_quality)}{str_replace(',', '.', $settings.save_quality)}{/if}">
+                                <input type="number" class="short" name="save_quality" value="{if !empty($settings.save_quality)}{str_replace(',', '.', $settings.save_quality)}{/if}">%
                                 <p class="hint">[`JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 90 is recommended.`]</p>
                             </div>
                         </div>
                     </div>
-                            
+
                     <h3>[`Originals`]</h3>
                     <div class="fields-group">
                         <div class="field">
@@ -163,7 +167,7 @@
                             </div>
                             <div class="value">
                                 <label>
-                                    <span class="switch middle" id="save_original">
+                                    <span class="switch smaller middle" id="save_original">
                                         <input type="checkbox" name="save_original" value="1" {if !empty($settings.save_original)}checked{/if}>
                                     </span>
                                 </label>
@@ -180,7 +184,7 @@
                             </div>
                             <div class="value">
                                 <label>
-                                    <span class="switch middle" id="enable_2x">
+                                    <span class="switch smaller middle" id="enable_2x">
                                         <input type="checkbox" name="enable_2x" value="1" {if !empty($settings.enable_2x)}checked{/if}>
                                     </span>
                                 </label>
@@ -192,7 +196,7 @@
                                 [`Thumbnail quality @2x`]
                             </div>
                             <div class="value">
-                                <input class="short" type="number" name="save_quality_2x" value="{if !empty($settings.save_quality_2x)}{str_replace(',', '.', $settings.save_quality_2x)}{/if}">
+                                <input class="short small" type="number" name="save_quality_2x" value="{if !empty($settings.save_quality_2x)}{str_replace(',', '.', $settings.save_quality_2x)}{/if}">%
                                 <p class="hint">[`JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 70 is recommended.`]</p>
                             </div>
                         </div>
@@ -202,7 +206,7 @@
                             <div class="value submit inlinebox middle">
                                 <input type="submit" name="save" class="button" value="[`Save`]">
                                 {if isset($saved) && $saved}
-                                <span class="successmsg">
+                                <span class="state-success-hint">
                                     <i class="fas fa-check-circle"></i> [`Settings updated`]
                                 </span>
                                 {/if}
@@ -273,7 +277,7 @@
             $('#settings-form').append('<input type="hidden" name="delete[]" value="' + self.attr('data-key') + '">');
 
             var inner_html = li.html();
-            li.html('<span class="strike">'+inner_html+'</span>').append('<p class="hint">'+$_('Click “Save” button below to apply this change.')+'</p>');
+            li.html('<span class="strike">'+inner_html+'</span>').append('<p class="state-caution-hint">'+$_('Click “Save” button below to apply this change.')+'</p>');
         });
 
         $('#settings-form').submit(function() {

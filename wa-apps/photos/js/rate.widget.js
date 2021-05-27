@@ -1,14 +1,14 @@
-(function ($) {
-    $.fn.rateWidget = function (options, ext, value) {
-        if (typeof options === 'string') {
-            if (options === 'getOption') {
-                if (ext === 'rate') {
-                    return parseInt(this.attr('data-rate'), 10);
+(function($) {
+    $.fn.rateWidget = function(options, ext, value) {
+        if (typeof options == 'string') {
+            if (options == 'getOption') {
+                if (ext == 'rate') {
+                    return parseInt(this.attr('data-rate'));
                 }
             }
-            if (options === 'setOption') {
-                if (ext === 'rate') {
-                    let val = parseFloat(value) || 0;
+            if (options == 'setOption') {
+                if (ext == 'rate') {
+                    var val = parseFloat(value) || 0;
                     update.call(this, Math.round(val * 2) / 2);
                     ext = {
                         rate: value
@@ -26,15 +26,14 @@
         }
 
         this.data('rateWidgetSettings', $.extend({
-            onUpdate: function () {
-            },
+            onUpdate() { },
             rate: null,
             hold: false,
             withClearAction: true,
             alwaysUpdate: false
         }, options || {}));
 
-        let settings = this.data('rateWidgetSettings'),
+        var settings = this.data('rateWidgetSettings'),
             self = this;
 
         if (typeof settings.hold !== 'function') {
@@ -44,7 +43,7 @@
         init.call(this);
 
         function init() {
-            if (this.data('inited')) {  // has inited already. Don't init again
+            if (self.data('inited')) {  // has inited already. Don't init again
                 return;
             }
 
@@ -52,9 +51,7 @@
                 self.attr('data-rate', settings.rate);
             }
 
-            self
-                .find('svg:lt(' + self.attr('data-rate') + ')')
-                .attr('data-prefix', 'fas');
+            self.find('svg:lt(' + self.attr('data-rate') + ')').attr('data-prefix', 'fas');
 
             self
                 .mouseover(function (e) {
@@ -86,7 +83,7 @@
                     update.call(self, self.attr('data-rate'));
                 });
 
-            self.on('click', 'svg', function (e) {
+            self.on('click', 'svg, path', function (e) {
 
                 if (settings.hold.call(self)) {
                     return;
@@ -94,6 +91,10 @@
 
                 let prev_rate = self.attr('data-rate'),
                     rate = $(this).attr('data-rate-value');
+
+                if (prev_rate == rate) {
+                    return;
+                }
 
                 self
                     .find('svg')

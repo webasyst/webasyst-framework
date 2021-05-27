@@ -353,9 +353,11 @@ abstract class waLongActionController extends waController
     /** Close $this->_fd and remove all files we created */
     protected function _cleanup()
     {
-        @fflush($this->_fd);
-        @flock($this->_fd, LOCK_UN);
-        @fclose($this->_fd);
+        if (is_resource($this->_fd)) {
+            fflush($this->_fd);
+            flock($this->_fd, LOCK_UN);
+            fclose($this->_fd);
+        }
         @unlink($this->_files['new']['data']);
         @unlink($this->_files['new']['file']);
         @unlink($this->_files['old']['data']);

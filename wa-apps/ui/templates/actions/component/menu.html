@@ -36,7 +36,7 @@
         "tag" => true
     ],
     [
-        "name" => "Разработка занимает все свободное время, когда я уже смогу нормально отдохнуть?",
+        "name" => "Василий",
         "url" => "javascript:void(0);",
         "icon_url" => "/wa-content/img/userpic.svg",
         "icon_userpic" => true,
@@ -45,7 +45,8 @@
     [
         "name" => "Компания",
         "url" => "javascript:void(0);",
-        "icon_class" => "fas fa-star",
+        "icon_url" => "/wa-content/img/company.svg",
+        "icon_userpic" => true,
         "hint" => "Текстовая подсказка или даже подсказка с иконкой Font Awesome оставляется, как всегда, внутри .hint",
         "count" => 5,
         "badge" => true
@@ -133,7 +134,9 @@
     <h5>Иконки</h5>
     <p>Основная иконка слева от названия также оформляется внутри основной ссылки пункта меню (<code>li &gt; a &gt; <strong>i или span</strong></code>) <em>рядом</em> с основным <code>span</code> — в виде отдельного <code>&lt;i class="fas ..."&gt;</code> библиотеки Font Awesome или же в обертке <code>&lt;span class="icon"&gt;...&lt;/span&gt;</code> в случае создания индивидуальной иконки. Font Awesome в <code>span.icon</code> оборачивать не надо в связи с разными свойствами геометрии иконок (Font Awesome имеет максимальную ширину 1.25rem, а индиивдуальная иконка всегда считается квадратной с размерами 1x1rem).</p>
 
-    <p>Юзерпики следует оформлять как индивидуальную иконку <code>li &gt; a &gt; <strong>span.icon &gt; img.userpic</strong></code>. Картинка в <code>.menu</code> в этом случае будет автоматически увеличена до 20х20px (1.25x1.25rem) для более явного и легко читаемого представления.</p>
+    <p>Юзерпики следует оформлять как индивидуальную иконку <code>li &gt; a &gt; <strong>span.icon &gt; .userpic</strong></code> в виде картинки или элемента с фоном background. Картинка в <code>.menu</code> в этом случае будет автоматически увеличена до 20х20px (1.25x1.25rem) для более явного и легко читаемого представления.</p>
+
+    <p>Произвольные кастомные картинки в виде иконок в меню также рекомендуется увеличивать до 20х20px (1.25x1.25rem) для лучшей различимости. Реализовать это можно с помощью верстки аналогично юзерпикам — <code>li &gt; a &gt; <strong>span.icon &gt; i.size-20</strong></code> или <code>li &gt; a &gt; <strong>span.icon &gt; img.size-20</strong></code>. Обратите внимание, что элемент <code>.size-20</code> должен нахоиться внутри <code>.icon</code>.</p>
 
     <h3>Мобильные устройства</h3>
 

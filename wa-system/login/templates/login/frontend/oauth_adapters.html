@@ -2,6 +2,7 @@
 
     {* SOCIAL ACCOUNTS *}
     {$auth_adapters = $wa->authAdapters(true)}
+    {$oauth_adapter_sizes = $wa->defaultAuthAdapterWindowSizes()}
     {if $auth_adapters}
         <section class="wa-adapters-section">
             {$linked_adapters = []}
@@ -22,7 +23,9 @@
                         {$_name = $a->getName()}
 
                         <li>
-                            <a href="{$a->getUrl()}" title="{$_name|escape}" data-id="{$_id|escape}">
+                            <a href="{$a->getUrl()}" title="{$_name|escape}" data-id="{$_id|escape}"
+                                data-width="{$oauth_adapter_sizes[$_id].width}"
+                                data-height="{$oauth_adapter_sizes[$_id].height}">
                                 <img alt="{$_name|escape}" src="{$a->getIcon()}"/>
                             </a>
                         </li>

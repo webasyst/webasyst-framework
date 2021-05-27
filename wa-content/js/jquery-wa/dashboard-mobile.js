@@ -381,3 +381,298 @@ const DashboardWidget = (function($) {
         }
     }
 })(jQuery);
+
+const Page = ( function($, backend_url) {
+    return class Page {
+
+        constructor() {
+            this.storage = {
+                isLoadingClass: "is-loading",
+                hiddenClass: "hidden",
+                showClass: "is-shown",
+                animateClass: "is-animated",
+                lazyLoadCounter: 0,
+                isBottomLazyLoadLocked: false,
+                isTopLazyLoadLocked: false,
+                isActivityFilterLocked: false,
+                topLazyLoadingTimer: 0,
+                activityFilterTimer: 0,
+                lazyTime: 15 * 1000,
+                getPageWrapper: function() {
+                    return $("#wa_widgets");
+                },
+                getWidgetActivity: function() {
+                    return $("#wa_activity");
+                },
+                getSettingsWrapper: function() {
+                    return $("#d-settings-wrapper");
+                },
+            };
+
+
+            this.bindEvents();
+        }
+
+        bindEvents() {
+            let that = this,
+                $widgetActivity = that.storage.getWidgetActivity()
+
+            $widgetActivity.on("click", "#d-load-more-activity", function () {
+                that.loadOldActivityContent( $(this), $widgetActivity );
+                return false;
+            });
+
+            $("#activity-filter input:checkbox").on("change", function() {
+                if (that.storage.activityFilterTimer) {
+                    clearTimeout(that.storage.activityFilterTimer);
+                }
+                if (that.storage.topLazyLoadingTimer) {
+                    clearTimeout(that.storage.topLazyLoadingTimer);
+                }
+
+                that.showLoadingAnimation($widgetActivity);
+
+                that.storage.activityFilterTimer = setTimeout( function() {
+                    that.showFilteredData( $widgetActivity );
+                }, 2000);
+
+                that.storage.topLazyLoadingTimer = setTimeout( function() {
+                    that.loadNewActivityContent($widgetActivity);
+                }, that.storage.lazyTime );
+
+                // Change Text
+                that.changeFilterText();
+
+                return false;
+            });
+
+            that.storage.topLazyLoadingTimer = setTimeout(function () {
+                that.loadNewActivityContent($widgetActivity);
+            }, that.storage.lazyTime);
+        }
+
+
+        showFirstNotice() {
+            let that = this,
+                $wrapper = that.storage.getFirstNoticeWrapper(),
+                $activity = that.storage.getWidgetActivity(),
+                showNotice = $wrapper.data("show-notice"),
+                $notifications = that.storage.getNotifications();
+
+            if (showNotice) {
+                $activity.addClass(that.storage.hiddenClass);
+                $notifications.addClass(that.storage.hiddenClass);
+                $wrapper.show();
+            }
+        }
+
+        hideFirstNotice() {
+            let that = this,
+                $wrapper = that.storage.getFirstNoticeWrapper(),
+                $activity = that.storage.getWidgetActivity(),
+                $notifications = that.storage.getNotifications();
+
+            // hide DOM
+            $wrapper.hide();
+
+            $activity
+                .removeClass(that.storage.hiddenClass)
+                .addClass(that.storage.animateClass);
+
+            $notifications
+                .removeClass(that.storage.hiddenClass)
+                .addClass(that.storage.animateClass);
+
+            setTimeout( function() {
+                $activity.addClass(that.storage.showClass);
+                $notifications.addClass(that.storage.showClass);
+            }, 4);
+
+            // set data
+            $.post(that.storage.getCloseTutorialHref(), {});
+        }
+
+        changeFilterText() {
+            let $filterText = $("#activity-select-text"),
+                text = $filterText.data("text"),
+                $form = $("#activity-filter"),
+                check_count = 0,
+                full_checked = true;
+
+            $form.find("input:checkbox").each( function() {
+                let $input = $(this),
+                    is_checked = ( $input.attr("checked") == "checked" );
+
+                if (!is_checked) {
+                    full_checked = false;
+                } else {
+                    check_count++;
+                }
+            });
+
+            if (full_checked) {
+                $filterText.text(text);
+            } else {
+                text += " (" + check_count + ")";
+                $filterText.text(text);
+            }
+        }
+
+        showFilteredData( $widgetActivity) {
+            let that = this;
+            if (!that.storage.isActivityFilterLocked) {
+                that.storage.isActivityFilterLocked = true;
+
+                let $wrapper = $widgetActivity.find(".activity-list-block"),
+                    $form = $("#activity-filter"),
+                    $deferred = $.Deferred(),
+                    ajaxHref = "?module=dashboard&action=activity",
+                    dataArray = $form.serializeArray();
+
+                dataArray.push({
+                    name: "save_filters",
+                    value: 1
+                });
+
+                $.post(ajaxHref, dataArray, function (response) {
+                    $deferred.resolve(response);
+                });
+
+                $deferred.done( function(response) {
+                    let html = "<div class=\"empty-activity-text\">" + $wrapper.data("empty-text") + "</div>";
+                    if ( $.trim(response).length ) {
+                        html = response;
+                    }
+                    $wrapper.html(html);
+
+                    that.hideLoadingAnimation($widgetActivity);
+
+                    that.storage.isActivityFilterLocked = false;
+                });
+            }
+        }
+
+        loadOldActivityContent($link, $widgetActivity) {
+            let that = this;
+            // Save data
+            if (!that.storage.isBottomLazyLoadLocked) {
+                that.storage.isBottomLazyLoadLocked = true;
+
+                that.showLoadingAnimation($widgetActivity);
+
+                let $linkWrapper = $link.closest(".show-more-activity-wrapper"),
+                    $wrapper = $widgetActivity.find(".activity-list-block"),
+                    max_id = $wrapper.find(".activity-item:last").data('id'),
+                    $deferred = $.Deferred(),
+                    ajaxHref = "?module=dashboard&action=activity",
+                    dataArray = {
+                        max_id: max_id
+                    };
+
+                $.post(ajaxHref, dataArray, function (response) {
+                    $deferred.resolve(response);
+                });
+
+                $deferred.done( function(response) {
+                    // Remove Link
+                    $linkWrapper.remove();
+
+                    if ( $.trim(response).length && !response.includes('activity-empty-today')) {
+                        // Render
+                        $wrapper.append(response);
+                    }
+
+                    that.storage.isBottomLazyLoadLocked = false;
+                    that.storage.lazyLoadCounter++;
+
+                    that.hideLoadingAnimation($widgetActivity);
+                });
+            }
+        }
+
+        loadNewActivityContent($widgetActivity) {
+            let that = this;
+            // Save data
+            if (!that.storage.isTopLazyLoadLocked) {
+                that.storage.isTopLazyLoadLocked = true;
+
+                that.showLoadingAnimation($widgetActivity);
+
+                let $wrapper = $widgetActivity.find(".activity-list-block"),
+                    min_id = $wrapper.find(".activity-item:not(.activity-empty-today):first").data('id'),
+                    $deferred = $.Deferred(),
+                    ajaxHref = "?module=dashboard&action=activity",
+                    dataArray = {
+                        min_id: min_id
+                    };
+
+                $.post(ajaxHref, dataArray, function (response) {
+                    $deferred.resolve(response);
+                });
+
+                $deferred.done( function(response) {
+                    if ( $.trim(response).length && !response.includes('activity-empty-today')) {
+                        // Render
+                        $wrapper.find(".empty-activity-text").remove();
+                        let $today = $wrapper.find(".today");
+                        if($today.length) {
+                            $today.after(response).remove();
+                        }else{
+                            $wrapper.prepend(response);
+                        }
+                    }
+
+                    that.storage.isTopLazyLoadLocked = false;
+
+                    if (!that.storage.is_custom_dashboard) {
+                        that.storage.topLazyLoadingTimer = setTimeout( function() {
+                            that.loadNewActivityContent($widgetActivity);
+                        }, that.storage.lazyTime );
+                    }
+
+                    that.hideLoadingAnimation($widgetActivity);
+                });
+            }
+        };
+
+        initActivityLazyLoading(options) {
+            let that = this,
+                scrollTop = options.scrollTop,
+                displayArea = options.displayArea,
+                is_edit_mode = options.is_edit_mode,
+                $activityBlock = options.$activityBlock,
+                activity_height = options.activity_height,
+                $link = $("#d-load-more-activity"),
+                lazyLoadCounter = that.storage.lazyLoadCounter,
+                correction = 47;
+
+            if ($link.length && !is_edit_mode) {
+                let isScrollAtEnd = ( scrollTop >= ( $activityBlock.offset().top + activity_height - displayArea.height - correction ) );
+                if (isScrollAtEnd) {
+                    if (lazyLoadCounter >=2) {
+
+                        let $wrapper = $link.closest(".show-more-activity-wrapper"),
+                            loadingClass = "is-loading";
+
+                        $wrapper.removeClass(loadingClass);
+
+                    } else {
+
+                        // Trigger event
+                        $link.trigger("click");
+                    }
+                }
+            }
+        };
+
+        showLoadingAnimation($widgetActivity) {
+            $widgetActivity.find(".activity-filter-wrapper .loading").show();
+        }
+
+        hideLoadingAnimation($widgetActivity) {
+            $widgetActivity.find(".activity-filter-wrapper .loading").hide();
+        }
+
+
+    }
+})(jQuery, backend_url);

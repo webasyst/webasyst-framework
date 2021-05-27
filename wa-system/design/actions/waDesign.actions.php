@@ -101,6 +101,15 @@ class waDesignActions extends waActions
         $this->display($data);
     }
 
+    public function editFilesAction()
+    {
+        $get = waRequest::get();
+
+        $data = $this->getThemesEditData($get);
+        $this->setTemplate('DesignEditFiles.html', true);
+        $this->display($data);
+    }
+
     protected function getThemesEditData(array $get = []) {
         $app_id = $this->getAppId();
         $app = wa()->getAppInfo($app_id);
@@ -804,6 +813,8 @@ HTACCESS;
                 $theme_parent_warning_requirements = $current_theme->parent_theme->getWarningRequirements();
             }
 
+            $only_settings = waRequest::get('onlySettings');
+
             $this->setTemplate('Theme.html', true);
 
             $this->display(array(
@@ -831,6 +842,7 @@ HTACCESS;
                 'route_url'                           => $route_url,
                 'apps'                                => wa()->getApps(),
                 'need_show_review_widget'             => $this->needShowReviewWidget($theme_id),
+                'only_settings'                       => $only_settings,
             ));
         }
     }

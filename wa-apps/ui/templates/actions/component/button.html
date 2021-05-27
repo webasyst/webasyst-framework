@@ -165,12 +165,22 @@
 <p>
     <button class="circle"><i class="fas fa-plus"></i></button>
     <button class="circle green"><i class="fas fa-arrow-right"></i></button>
-    <button class="circle yellow"><i class="fas fa-exclamation"></i></button>
+    <button class="circle yellow"><i class="fas fa-church"></i></button>
     <button class="circle red"><i class="fas fa-times"></i></button>
     <button class="circle light-gray"><i class="fas fa-ellipsis-h"></i></button>
 </p>
 <p>
+    <a class="button circle"><i class="fas fa-plus"></i></a>
+    <a class="button circle green"><i class="fas fa-arrow-right"></i></a>
+    <a class="button circle yellow"><i class="fas fa-church"></i></a>
+    <a class="button circle red"><i class="fas fa-times"></i></a>
+    <a class="button circle light-gray"><i class="fas fa-ellipsis-h"></i></a>
+</p>
+<p>
     <button class="circle pink" style="font-size: 3rem;"><i class="fas fa-magic"></i></button>
+    <a href="#" class="button circle purple" style="font-size: 3rem;"><i class="fas fa-magic"></i></a>
+    <button class="circle outlined brown" style="font-size: 3rem;"><i class="fas fa-magic"></i></button>
+    <a href="#" class="button circle outlined light-gray" style="font-size: 3rem;"><i class="fas fa-magic"></i></a>
 </p>
 {/function}
 
@@ -192,7 +202,7 @@
 
     <p>Кнопки разных цветов на все случаи жизни.</p>
 
-    <p>В подавляющем большинстве случаев, включающих любое сохранение данных, рекомендуется использовать стандартные кнопки <code>.button</code> с небольшими скругленными краями:</p>
+    <p>В подавляющем большинстве случаев, включающих любое мгновенное действие, рекомендуется использовать стандартные кнопки <code>.button</code>:</p>
 
     <div class="line">
         {_render}
@@ -203,7 +213,7 @@
 
     <h3>.button<code>.outlined</code></h3>
 
-    <p>«Пустые» кнопки без заливки с границей рекомендуется использовать, когда обычные кнопки выглядят слишком «тяжелыми» в интерфейсе. Или же в паре с обычными кнопками в качестве альтернативных вариантов.</p>
+    <p>«Пустые» кнопки без заливки с границей рекомендуется использовать, когда обычные кнопки выглядят слишком «тяжелыми» в интерфейсе или же в паре с обычными кнопками в качестве альтернативных вариантов. А также в случаях, когда взаимодействие с кнопкой не выполняет мгновенного действия, а лишь приводит к некоторому подтверждению/уточнению перед непосредственным действием. Например, выпадающему меню, выезжающей шторки, дополнительному диалогу.</p>
 
     <div class="line">
         {_render_outlined}
@@ -277,7 +287,7 @@
     </div>
 
     <h3>button<code>.circle</code></h3>
-    <p>Для кнопок действий с иконкой и без текста рекомендуется использовать строгую круглую форму и вместо .rounded использовать класс <code>.circle</code>. Работает только для элемента button без .outlined.</p>
+    <p>Для кнопок действий с иконкой и без текста рекомендуется использовать строгую круглую форму и вместо .rounded использовать класс <code>.circle</code>.</p>
     <div class="line">
         {_render_circle}
     </div>

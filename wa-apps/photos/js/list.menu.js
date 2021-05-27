@@ -312,7 +312,7 @@
             return false;
         },
         onFire: function() {
-            $('#share-menu').trigger('recount');
+            $('.js-toolbar-dropdown-button').trigger('recount');
         }
     });
 
@@ -521,12 +521,13 @@
             if (photo_id.length) {
                 $.photos.confirmDialog({
                     url: '?module=dialog&action=confirmDeletePhotos&cnt=' + photo_id.length,
-                    onSubmit: function(d) {
+                    onSubmit: function(d, d_instance) {
                         d.trigger('change_loading_status', true);
                         $.photos.deletePhotos(photo_id, function() {
                             $.photos.unsetCover();
-                            d.trigger('change_loading_status', false).trigger('close');
+                            d.trigger('change_loading_status', false);
                             $('#photo-list li.selected').trigger('select', false);
+                            d_instance.close()
                         });
                         return false;
                     }
@@ -707,7 +708,7 @@
             }
         },
         onFire: function() {
-            $('#organize-menu').trigger('recount');
+            $('.js-toolbar-dropdown-button').trigger('recount');
         }
 
     });
@@ -736,13 +737,13 @@
             $('#photo-list.p-descriptions :text.highlighted,#photo-list.p-descriptions textarea.highlighted').each(function(){
                 $(this).removeClass('highlighted');
             });
-            var counter = $('#save-menu-block .count.indicator');
-            if(counter.length) {
+            var $counter = $('.js-toolbar-dropdown-button > .js-count');
+            if($counter.length) {
                 var count = 0;
-                counter.text(count);
+                $counter.text(count);
                 if(!count) {
                     $('#save-menu-block input.button').removeClass('yellow');
-                    counter.hide();
+                    $counter.hide();
                 }
             }
             return false;
@@ -764,11 +765,11 @@
             $.storage.set('photos/list/hide_name',checked);
         },
         onFire: function() {
-            var counter = $('#save-menu-block .count.indicator');
-            if(counter.length) {
-                counter.text('0');
+            var $counter = $('.js-toolbar-dropdown-button > .js-count');
+            if($counter.length) {
+                $counter.text('0');
                 $('#save-menu-block input.button').removeClass('yellow');
-                counter.hide();
+                $counter.hide();
             }
         },
         onInit: function(container) {
@@ -792,17 +793,17 @@
                         $(this).removeClass('highlighted');
                     }
                 });
-                var counter = $('#save-menu-block .count.indicator');
+                var $counter = $('.js-toolbar-dropdown-button > .js-count');
                 var count = changed.length;
-                if(counter.length) {
-                    counter.text(count);
+                if($counter.length) {
+                    $counter.text(count);
                 }
                 if(!count) {
                     $('#save-menu-block input.button').removeClass('yellow');
-                    counter.hide();
+                    $counter.hide();
                 } else {
                     $('#save-menu-block input.button').addClass('yellow');
-                    counter.show();
+                    $counter.show();
                 }
             };
             $('#p-content').on('change.photos-save-menu', '#photo-list.p-descriptions :text, #photo-list.p-descriptions textarea', handler);
@@ -814,17 +815,18 @@
     $.photos.menu.register('list','#selector-menu', {
 
         selectPhotosAction: function(item) {
-            var counter = $('#share-menu-block, #organize-menu-block').find('.count');
+            var $counter = $('.js-toolbar-dropdown-button > .js-count');
+
             if (!item.data('checked')) {
                 item.data('checked', true);
                 item.find('.checked').show().end().
                         find('.unchecked').hide();
-                counter.text($.photos.total_count).show();
+                $counter.text($.photos.total_count).show();
             } else {
                 item.data('checked', false);
                 item.find('.unchecked').show().end().
                         find('.checked').hide();
-                counter.text('').hide();
+                $counter.text('').hide();
             }
             $('#photo-list li').trigger('select', [!!item.data('checked'), false]);
         }

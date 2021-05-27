@@ -1692,3 +1692,9 @@ msgstr "Фотография не в альбоме"
 
 msgid "Photos author"
 msgstr "Автор фотографий"
+
+msgid "Selected photos"
+msgstr "Выбранные фотографии"
+
+msgid "Selected"
+msgstr "Выбранные"

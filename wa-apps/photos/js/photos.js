@@ -133,6 +133,13 @@
                         $.storage.del('photos/hash');
                         console && console.log('Invalid action name:', actionName+'Action');
                     }
+                    // если текущая страница - не страница фото
+                    if(!hash.includes('photo')) {
+                        let $toolbar = $('#p-toolbar.rendered');
+                        if ($toolbar.length) {
+                            $toolbar.remove();
+                        }
+                    }
                 } else {
                     this.beforeAnyAction();
                     this.defaultAction();
@@ -487,6 +494,8 @@
             //control
             $('#js-photos-view-toggle .selected').removeClass('selected');
             $('#js-photos-view-toggle [data-action="'+view+'-view"]').addClass('selected');
+            $('.js-toolbar-dropdown').toggleClass('is-descriptions', view === 'descriptions')
+
         },
 
         onLoadPhotoList: function() {
@@ -523,7 +532,6 @@
             $.photos.list_template = 'template-photo-'+view;
 
             $.photos.renderPhotoList();
-            $.photos.fixRightToolbar();
 
             $.photos.setTitle($('#photo-list-name').text());
             $.photos.menu.init('list');
@@ -687,10 +695,10 @@
                     placeholder: '(' + $_('subtitle') + ')',
                     placeholderClass: 'gray',
                     minSize: {
-                        width: 350
+                        width: 150
                     },
                     maxSize: {
-                        width: 600
+                        width: 250
                     },
                     size: {
                         height: 22
@@ -715,13 +723,15 @@
                     }
                 });
             }
-            $('#share-menu-block, #organize-menu-block').bind('recount', function() {
-                var cnt = $('#photo-list li.selected').length;
+            $('.js-toolbar-dropdown-button').on('recount', function() {
+                let cnt = $('#photo-list li.selected').length,
+                    $count = $(this).find('.js-count');
+
                 if (cnt > 0) {
-                    $('.count:first', $(this)).text(cnt).show();
+                    $count.text(cnt).show();
                     //$.photos.menu.enable('list',false,'select-photos');
                 } else {
-                    $('.count:first', $(this)).hide();
+                    $count.hide();
                     //$.photos.menu.disable('list',false,'select-photos');
                 }
             });
@@ -802,35 +812,6 @@
                     }
                     d.load('?module=dialog&action=albumSettings&id=' + album_id, showDialog);
                     return false;
-            });
-
-            $('#p-album-delete, .js-album-delete').click(function() {
-                var album = $.photos.getAlbum(),
-                    album_id = album ? album.id : 0;
-
-                $.photos.confirmDialog({
-                    url: '?module=dialog&action=confirmDeleteAlbum&id=' + album_id,
-                    onSubmit: function(d) {
-                        var del_photos = parseInt($('input[name=delete-photos]:checked', d).val());
-                        var album_ids;
-                        var del_sub_album_ids = $('input[name=delete-offspring]:checked', d).val();
-                        if (del_sub_album_ids) {
-                            album_ids = del_sub_album_ids.split(',').reverse();
-                            album_ids.push(album_id);
-                        } else {
-                            album_ids = [album_id];
-                        }
-                        d.trigger('close');
-                        $.photos.setCover();
-                        $.photos.deleteAllAlbums(album_ids, del_photos, function() {
-                            $.photos.unsetCover();
-                        });
-                        $.photos.goToHash('');
-                        return false;
-                    }
-                });
-
-                return false;
             });
 
             // fix prevent browser-action
@@ -1005,7 +986,8 @@
                 photo: photo,
                 author: author,
                 exif: exif,
-                stack: stack
+                stack: stack,
+                hash: $.photos.hash
             });
             $.photos.renderPhotoBlock({
                 photo: photo,
@@ -1348,6 +1330,7 @@
                     } else {
                         $(this).removeClass('fa-star-half-alt').attr('data-prefix', 'fas');
                     }
+                    $(this).attr('data-rate-value', i)
                 });
 
                 rate_item.show();
@@ -2029,9 +2012,18 @@
 
         initPhotoToolbar: function(data) {
             setTimeout(() => {
-                $('#p-toolbar').html(
-                    tmpl('template-photo-toolbar', data)
-                ).addClass('rendered');
+                let $toolbar = $('#p-toolbar');
+                if ($toolbar.length) {
+                    $toolbar.html(tmpl('template-photo-toolbar', data)).addClass('rendered');
+                    $(document).on('keyup', event => {
+                        if($('#wa-header').find('#p-toolbar').length) {
+                            let key = event.which || event.keyCode || 0;
+                            if (key === 27) {
+                                $.photos.goToHash($.photos.hash)
+                            }
+                        }
+                    })
+                }
                 $.photos.menu.init('photo');
                 // init only once
                 var pop_tags = $('#photos-photo-popular-tags');
@@ -2052,6 +2044,7 @@
                     update_title: false,
                     items: ".menu > li > a",
                 });
+
             }, 0)
         },
 
@@ -2070,7 +2063,9 @@
             }
 
             $("#p-block").html(tmpl('template-photo', data)).addClass('rendered');
+            $("#p-info-area").html(tmpl('template-info-area', data)).addClass('rendered');
 
+            $('#p-toolbar').prependTo($('#wa-header-content-area'));
             let $photo = $('#photo');
             $photo.css({
                 opacity: 0,
@@ -3313,7 +3308,10 @@
             upload_form_select.find('option[value='+album_id+']').remove();
         },
 
-        // make right toolbar fixed for available even in scrolling
+        /**
+         * @deprecated
+         * @desc make right toolbar fixed for available even in scrolling
+         */
         fixRightToolbar: function() {
             $.photos.fixRightToolbar._handler = function handler() {
                 var toolbar = $('#p-toolbar');
@@ -3353,7 +3351,7 @@
             }
             var html = '';
             for (var i = 1; i <= 5; i += 1) {
-                html += '<i class="fa-star';
+                html += `<i class="fa-star`;
                 if (i > rating) {
                     if (i - rating == 0.5) {
                         html += '-half fas';
@@ -3363,18 +3361,19 @@
                 }else{
                     html += ' fas';
                 }
-                html += '"></i>';
+                html += `" data-rate-value="${i}"></i>`;
             }
             return html;
         },
 
         uploadDialog: function() {
-            const $wrapper = $("#p-uploader");
-            $.waDialog({
-                $wrapper,
-                onOpen($_dialog, dialog_instance) {
-                    $.photos.onUploadDialog($_dialog, dialog_instance)
-                }
+            $.get('?module=upload').done(function (response) {
+                $.waDialog({
+                    html: response,
+                    onOpen($_dialog, dialog_instance) {
+                        $.photos.onUploadDialog($_dialog, dialog_instance)
+                    }
+                });
             });
         },
 
@@ -3515,8 +3514,9 @@
                         }
                         if (typeof onSubmit === 'function') {
                             let $form = $dialog.find('form');
-                            $form.on('submit', function () {
-                                onSubmit($dialog);
+                            $form.on('submit', function (e) {
+                                e.preventDefault();
+                                onSubmit($dialog, dialog);
                             });
                         }
                     };
@@ -3729,7 +3729,7 @@ $(function () {
             $(this).removeClass('selected').find('input:first').attr('checked', false);
         }
         if (need_count) {
-            $('#share-menu-block, #organize-menu-block').trigger('recount');
+            $('.js-toolbar-dropdown-button').trigger('recount');
         }
     });
 
@@ -3764,12 +3764,17 @@ $(function () {
             }
             // Active Dropdown toolbar
             const $toolbar_dropdown = $('.js-toolbar-dropdown'),
-                $toolbar_dropdown_btn = $toolbar_dropdown.find('.dropdown-toggle'),
+                $counter = $('.js-toolbar-dropdown-button').find('.js-count'),
                 $album_control = $toolbar_dropdown.parent(),
                 selected_images_count = $('#photo-list :checkbox[name="photo_id[]"]:checked').length;
 
             $album_control.toggleClass('is-fixed', !!selected_images_count);
-            $toolbar_dropdown_btn.toggleClass('nobutton', !selected_images_count);
+            if(selected_images_count) {
+                $counter.text(selected_images_count).show()
+            }else{
+                $counter.empty().hide()
+            }
+
         });
         function setCheckedBetween($from, $to, status) {
             if (!$from || !$to || !$from[0] || !$to[0] || $from.is($to[0])) {
@@ -3806,7 +3811,7 @@ $(function () {
                 } else {
                     $(this).closest('li').removeClass('selected');
                 }
-                $('#share-menu-block, #organize-menu-block').trigger('recount');
+                $('.js-toolbar-dropdown-button').trigger('recount');
             }
         );
 

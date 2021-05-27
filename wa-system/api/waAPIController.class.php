@@ -116,7 +116,7 @@ class waAPIController
                 'app' => $app
             ]);
         }
-        if (wa()->getUser()->getRights($app, 'backend') <= 0) {
+        if (!$this->hasAppAccess($app)) {
             throw new waAPIException('access_denied', 403);
         }
 
@@ -141,6 +141,15 @@ class waAPIController
          */
         $method = new $class_name();
         $this->response($method->getResponse());
+    }
+
+    protected function hasAppAccess($app)
+    {
+        $user = wa()->getUser();
+        if ($app === 'webasyst') {
+            return $user->get('is_user') > 0;
+        }
+        return $user->getRights($app, 'backend') <= 0;
     }
 
     protected function checkToken()

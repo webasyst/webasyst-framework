@@ -164,8 +164,8 @@ var InstallerProductReviewWidget = ( function($) {
         that.setUIView(is_modal);
 
         if (is_modal) {
-            var dialog = $.waDialog({
-                html: $product_widget_block,
+            $.waDialog({
+                $wrapper: $product_widget_block,
                 lock_body_scroll: false,
                 onOpen: dataInsert,
                 onClose: function () {

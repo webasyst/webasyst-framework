@@ -251,7 +251,7 @@ var WAThemeSettings = ( function($) {
                     }
                     $export_error_caption.html(res.errors.message + app_link);
                     $export_error.slideDown();
-                    $export_button.replaceWith("<span class='js-export-theme-settings gray'>" + $export_button.html() + "</span>");
+                    $export_button.closest('li').addClass('disabled');
                     e.preventDefault();
                 } else {
                     $export_error_caption.empty();
@@ -376,13 +376,12 @@ var WAThemeSettings = ( function($) {
             href = '?module=design&action=themeUpdate&theme='+that.theme_id;
 
         $dialog_wrapper.load(href);
-        let $wrapper = $dialog_wrapper.clone()
 
         $link.on('click', function (e) {
             e.preventDefault();
             if (!$(this).hasClass('disabled'))  {
                 $.waDialog({
-                    $wrapper,
+                    $wrapper: $dialog_wrapper.clone(),
                     onOpen($dialog, dialog){
                         $dialog.on('change', 'label.bold input:checkbox', function () {
                             let l = $(this).parent();

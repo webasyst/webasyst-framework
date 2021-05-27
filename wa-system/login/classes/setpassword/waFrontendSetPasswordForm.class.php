@@ -39,6 +39,28 @@ class waFrontendSetPasswordForm extends waSetPasswordForm
     }
 
     /**
+     * @param array $options
+     * @return waFrontendSetPasswordForm
+     * @throws waException
+     */
+    public static function factory($options = [])
+    {
+        $config = waDomainAuthConfig::factory();
+        $app_id = $config->getApp();
+        if ($app_id && wa()->appExists($app_id)) {
+            $class = $app_id . 'FrontendSetPasswordForm';
+            if (class_exists($class)) {
+                $form = new $class($options);
+                if ($form instanceof waFrontendSetPasswordForm) {
+                    return new $form($options);
+                }
+            }
+
+        }
+        return new waFrontendSetPasswordForm($options);
+    }
+
+    /**
      * Get info from last response of forgot-password action
      *
      * NOTICE: delete response from storage right away, cause we need process this response only 1 time!

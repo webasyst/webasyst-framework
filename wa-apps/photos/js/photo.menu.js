@@ -143,7 +143,7 @@
 
     $.photos.menu.register('photo', '#share-menu', {
         embedAction: function() {
-            var d = $('#embed-photo-dialog'),
+            var d = $('#embed-photo-dialog-wrapper'),
                 photo_id = $.photos.getPhotoId(),
                 hash = $.photos.hash,
                 size = $.storage.get('photos/embed_size'),
@@ -153,28 +153,29 @@
                 dialog_url += '&size='+size;
             }
             if (!d.length) {
-                d = $('<div id="embed-photo-dialog"></div>');
+                d = $('<div id="embed-photo-dialog-wrapper"></div>');
                 $("body").append(d);
             }
-            d.load(dialog_url, function() {
-                d.find('div:first').waDialog({
-                    onLoad: function() {
-                        var select = d.find('select[name=size]');
+            d.load(dialog_url, function () {
+                $.waDialog({
+                    $wrapper: $('#embed-photo-dialog'),
+                    onOpen($dialog) {
+                        let $select = $dialog.find('select[name=size]');
 
-                        select.val(size);
-                        select.change(function() {
-                            var size = $(this).val(),
-                                contexts = d.data('contexts'),
+                        $select.val(size);
+                        $select.change(function() {
+                            let size = $(this).val(),
+                                contexts = $dialog.data('contexts'),
                                 context = contexts[size];
 
-                            d.find('textarea[name=html]').val(context.html);
-                            d.find('input[name=url]').val(context.url);
+                            $dialog.find('textarea[name=html]').val(context.html);
+                            $dialog.find('input[name=url]').val(context.url);
                             $.storage.set('photos/embed_size', size);
                             saveContextData();
                             updateDomainInFields();
                         });
 
-                        var $domain_selector = d.find('select[name=domain]');
+                        let $domain_selector = $dialog.find('select[name=domain]');
                         if ($domain_selector.length) {
                             saveContextData();
                             updateDomainInFields();
@@ -183,7 +184,7 @@
                         function saveContextData() {
                             if ($domain_selector.length) {
                                 $.each(['textarea[name=html]', 'input[name=url]'], function(i, selector) {
-                                    var $el = $(selector);
+                                    let $el = $(selector);
                                     $el.data('context_data', $el.val());
                                 });
                             }
@@ -194,32 +195,31 @@
                             }
 
                             $.each(['textarea[name=html]', 'input[name=url]'], function(i, selector) {
-                                var $el = $(selector);
+                                let $el = $(selector);
                                 $el.val($el.data('context_data').split($domain_selector.data('original-domain')).join($domain_selector.val()));
                             });
 
-                            var $selectted_option = $domain_selector.children(':selected');
-                            if ($selectted_option.data('frontend-url')) {
-                                d.find('input[name=link]').val($selectted_option.data('frontend-url')).closest('.field').slideDown();
-                                d.find('a.link').attr('href', $selectted_option.data('frontend-url'));
-                           } else {
-                                d.find('input[name=link]').closest('.field').slideUp();
-                           }
+                            let $selected_option = $domain_selector.children(':selected');
+                            if ($selected_option.data('frontend-url')) {
+                                $dialog.find('input[name=link]').val($selected_option.data('frontend-url')).closest('.field').slideDown();
+                                $dialog.find('a.link').attr('href', $selected_option.data('frontend-url'));
+                            } else {
+                                $dialog.find('input[name=link]').closest('.field').slideUp();
+                            }
                         }
 
-                        d.find('input[name=url], textarea[name=html], input[name=link]').click(function() {
+                        $dialog.find('input[name=url], textarea[name=html], input[name=link]').on('click', function() {
                             var selection = $(this).getSelection();
                             if (!selection.length) {
                                 $(this).select();
                             }
                         });
-                        d.find('input[name=link]').focus().select();
-                    },
-                    onSubmit: function() {
-                        return false;
+                        $dialog.find('input[name=link]').focus().select();
                     }
                 });
             });
+
+
             return false;
         },
         blogPostAction: function() {

@@ -76,26 +76,45 @@ class waContactDataModel extends waModel
      * Get first contact with password by this phone
      * @param string $phone
      * @param int|int[]|null $exclude_ids contact ids that excluded from searching
-     * @return null|int
+     * @return int|null
      */
     public function getContactWithPasswordByPhone($phone, $exclude_ids = array())
     {
+        return $this->getContactsWithPasswordByPhone($phone, [
+            'exclude_ids' => $exclude_ids,
+            'all' => false  // get first contact
+        ]);
+    }
+
+    /**
+     * Get ids of contacts with password and this primary phone
+     * @param string $phone
+     * @param array $options
+     *      bool     $options['all'] [optional] - default is TRUE
+     *      array    $options['exclude_ids'] [optional] - contact ids that excluded from searching. Default without excluding
+     *
+     * @return int[]|int|null
+     */
+    public function getContactsWithPasswordByPhone($phone, array $options = [])
+    {
+        $all = array_key_exists('all', $options) ? $options['all'] : true;
+
         $phone = is_scalar($phone) ? $phone : '';
         if (strlen($phone) <= 0) {
-            return null;
+            return $all ? [] : null;
         }
 
         $phone = waContactPhoneField::cleanPhoneNumber($phone);
         if (strlen($phone) <= 0) {
-            return null;
+            return $all ? [] : null;
         }
 
         $validator = new waPhoneNumberValidator();
         if (!$validator->isValid($phone)) {
-            return null;
+            return $all ? [] : null;
         }
 
-        $exclude_ids = waUtils::toIntArray($exclude_ids);
+        $exclude_ids = waUtils::toIntArray(ifset($options['exclude_ids']));
         $exclude_ids = waUtils::dropNotPositive($exclude_ids);
 
         $where = array(
@@ -109,15 +128,27 @@ class waContactDataModel extends waModel
             $where[] = "c.id NOT IN (:ids)";
         }
 
-        $where = join(" AND ", $where);
+        $where = "WHERE " . join(" AND ", $where);
+
+        $limit = null;
+        if (!$all) {
+            $limit = 1;
+        }
+        $limit = $limit ? "LIMIT {$limit}" : '';
 
         $sql = "SELECT c.id 
                   FROM `{$this->table}` d 
                   JOIN wa_contact c ON d.contact_id = c.id
-                WHERE {$where}
-                LIMIT 1";
+                {$where}
+                {$limit}";
 
-        return $this->query($sql, array('phone' => $phone, 'ids' => $exclude_ids))->fetchField();
+        $query = $this->query($sql, array('phone' => $phone, 'ids' => $exclude_ids));
+
+        if ($all) {
+            return waUtils::toIntArray($query->fetchAll(null, true));
+        } else {
+            return intval($query->fetchField());
+        }
     }
 
     public function getByContact($id)
@@ -245,7 +276,7 @@ class waContactDataModel extends waModel
     public function updateContactPhoneStatus($contact_id, $phone, $status)
     {
         $phone = waContactPhoneField::cleanPhoneNumber($phone);
-        
+
         $row = $this->getByField(array(
             'contact_id' => $contact_id,
             'field'      => 'phone',

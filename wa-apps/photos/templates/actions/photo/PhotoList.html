@@ -4,39 +4,56 @@
 
     {if empty($photos) && empty($album) && empty($hash)}
         <div class="article" id="welcome-block">
-            <style>
-                #p-toolbar { display: none; }
-            </style>
             <div class="article-body">
-                <h1>[`Welcome to your new photo gallery!`]</h1>
-                <p>[`Start uploading photos by clicking the link above or by dragging selected photos anywhere on this page.`]</p>
-                <img src="{$wa_url}wa-apps/photos/img/drag-photos-here.png" class="p-drag-photos-here" title="[`Drag some photos anywhere on this page to start upload`]" alt="[`Drag some photos anywhere on this page to start upload`]">
+                <div class="box align-center">
+                    <i class="fas fa-images p-drag-photos-here"></i>
+                    <h4>[`Welcome to your new photo gallery!`]</h4>
+                    <p class="small gray">[`Start uploading photos by clicking the link above or by dragging selected photos anywhere on this page.`]</p>
+
+                </div>
             </div>
         </div>
     {else}
         <div id="p-block">
-            <h1 class="flexbox middle space-16">
+            <h1 class="flexbox middle wrap space-8">
                 {if !empty($album)}
                     <a href="{if $album.parent_id}#/album/{$album.parent_id}/{else}#/albums/{/if}" title="[`Back`]" class="gray"><i class="fas fa-arrow-circle-left"></i></a>
                 {/if}
                 <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{if isset($album) && empty($title)}[`(no name)`]{else}{$title|escape}{/if}</span>
                 <input type="text" id="photo-list-name-input" style="display: none;" class="p-photo-h1-edit bold">
+
                 {if isset($album)}
+
                     <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note}{/if}</span>
-                    <input type="text" id="photo-album-note-input" style="display: none;" class="p-photo-h1-edit hint">
-                {/if}
-                {if isset($album) && $album.type == photosAlbumModel::TYPE_DYNAMIC}
-                    <span class="p-smart-album-criteria">
-                        {if isset($album.conditions.status) && $album.conditions.status[0] == '<=' && $album.conditions.status[1] == '0'}<i class="icon10 lock-bw"></i>{/if}
-                        {if isset($album.conditions.rate)}
-                            {'★'|str_repeat:$album.conditions.rate[1]}{*'*}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
-                        {/if}
-                        {if isset($album.conditions.tag)}
-                            <span class="tags small">{$album.conditions.tag[1]|implode:', '}</span>
-                        {/if}
-                    </span>
+                    <input type="text" id="photo-album-note-input" style="display: none;" class="p-photo-note-edit hint short">
+
+                    {if $album.edit_rights}
+                        <span class="hint">
+                            <span class="smaller">
+                                <button class="circle light-gray" id="p-album-settings"><i class="fas fa-edit text-blue"></i></button>
+                            </span>
+                        </span>
+                    {/if}
+
                 {/if}
             </h1>
+
+            {if isset($album) && $album.type == photosAlbumModel::TYPE_DYNAMIC}
+                <span class="p-smart-album-criteria">
+                    {if isset($album.conditions.status) && $album.conditions.status[0] == '<=' && $album.conditions.status[1] == '0'}<i class="fas fa-lock"></i>{/if}
+                    {if isset($album.conditions.rate)}
+                        {'★'|str_repeat:$album.conditions.rate[1]}{*'*}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
+                    {/if}
+                    {if isset($album.conditions.tag)}
+                        <ul class="chips tags small">
+                            {foreach $album.conditions.tag[1] as $tkey => $tval}
+                                <li><a href="#/tag/{$tval}/"><i class="fas fa-hashtag"></i>{$tval}</a></li>
+                            {/foreach}
+                        </ul>
+                    {/if}
+                </span>
+            {/if}
+
             <div class="flexbox middle nowrap space-16 p-album-control small blank">
                 <div class="toggle animate p-content-control" id="js-photos-view-toggle">
                     <span class="selected" data-action="thumbs-view">
@@ -47,80 +64,24 @@
                     </span>
                 </div>
                 {if isset($album)}
-                    {if !$wa->isMobile()}
-                        {if $frontend_link}
-                            <span class="desktop-only">
-                                {if $album.status <= 0}
-                                    <i class="fas fa-lock fa-xs"></i>
-                                    [`Private album`]{if $album.edit_rights}:&nbsp;<a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs"></i>{/if}
-                                {else}
-                                    [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"> {$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs"></i>
-                                {/if}
-                            </span>
-                            <span class="tablet-only mobile-only">
-                                {if $album.status <= 0}
-                                    <i class="fas fa-lock fa-xs"></i>
-                                    {if $album.edit_rights}<a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link"><i class="fas fa-link"></i></a>{/if}
-                                {else}
-                                    <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"><i class="fas fa-link"></i></a>
-                                {/if}
-                            </span>
-                        {/if}
-                        {if $album.edit_rights}
 
-                                <a href="#" class="button nobutton" id="p-album-settings"><i class="fas fa-cog"></i> <span class="desktop-only">[`Album settings`]</span></a>
+                    {if $frontend_link}
 
-                                <a href="#" class="button nobutton gray js-album-delete" id="p-album-delete"><i class="fas fa-times-circle"></i> <span class="desktop-only">[`Delete album`]</span></a>
+                        {if $album.status <= 0}
+                            <span>
+                                <i class="fas fa-lock text-gray small"></i>
+                                <span class="desktop-only">[`Private album`]:</span>
+                                {if $album.edit_rights}<a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="break-all">{$frontend_link}</a>{/if}
+                            </span>
+                        {else}
+                            <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a>
                         {/if}
-                    {else}
-                        {if $album.edit_rights || $frontend_link}
-                        <div class="dropdown custom-ml-auto js-album-dropdown z-10">
-                            <button class="dropdown-toggle nobutton button" type="button">[`Album`]</button>
-                            <div class="dropdown-body custom-py-16">
-                                <ul class="menu ellipsis">
-                                {if $frontend_link}
-                                    <li>
-                                {if $album.status <= 0}
-                                        <a target="_blank" href="{if $album.edit_rights}{$frontend_link}{else}javascript:void(0){/if}">
-                                                {if $album.edit_rights}
-                                                    <i class="fas fa-external-link-alt fa-xs"></i>
-                                                {else}
-                                                    <i class="fas fa-unlink fa-xs"></i>
-                                                {/if}
-                                                <span>[`Private album`]</span>
-                                                <span class="count hint">
-                                                    <i class="fas fa-lock"></i>
-                                                </span>
-                                            {else}
-                                            <a target="_blank" href="{$frontend_link}">
-                                                <i class="fas fa-external-link-alt fa-xs"></i>
-                                                <span>[`Public link`]</span>
-                                            {/if}
-                                        </a>
-                                    </li>
-                                {/if}
-                                {if $album.edit_rights}
-                                    <li>
-                                        <a href="#" id="p-album-settings">
-                                            <i class="fas fa-cog"></i>
-                                            <span>[`Album settings`]</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="js-album-delete" id="p-album-delete">
-                                            <i class="fas fa-times-circle"></i>
-                                            <span>[`Delete album`]</span>
-                                        </a>
-                                    </li>
-                                {/if}
-                                </ul>
-                            </div>
-                        </div>
-                        {/if}
+
                     {/if}
+
                 {elseif (!empty($frontend_link))}
                     <span class="desktop-only">
-                        [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs"></i>
+                        [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs text-blue opacity-50"></i>
                     </span>
                     <span class="tablet-only mobile-only">
                         <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"><i class="fas fa-link"></i></a>
@@ -128,7 +89,11 @@
                 {/if}
 
                 <div class="dropdown custom-ml-auto js-toolbar-dropdown z-10" id="p-toolbar-dropdown">
-                    <button class="dropdown-toggle nobutton button" type="button">[`Selected photos`]</button>
+                    <button class="dropdown-toggle button light-gray js-toolbar-dropdown-button" type="button">
+                        <span class="desktop-only">[`Selected photos`]</span>
+                        <span class="mobile-only tablet-only">[`Selected`]</span>
+                        <span class="badge smaller js-count" style="display:none"></span>
+                    </button>
                     <div class="dropdown-body custom-py-16" id="p-toolbar">
 
                             <!-- begin plugin hook: backend_photos_toolbar.top -->
@@ -139,18 +104,16 @@
                             <section id="share-menu-block">
                                 <h5 class="heading">
                                     <span>[`Share`]</span>
-                                    <span class="count indicator"></span>
                                 </h5>
                                 <ul class="menu thumbs-view-menu break-words" id="share-menu">
-                                    <li data-action="embed"><a href="#"><i class="fas fa-link"></i><span>[`Link / Embed`]</span></a></li>
+                                    <li data-action="embed"><a href="#"><i class="fas fa-link text-blue"></i><span>[`Link / Embed`]</span></a></li>
                                     {if $wa->blog && ($wa->blog->rights(false) >= blogRightConfig::RIGHT_READ_WRITE)}
                                         <li data-action='blog-post'>
                                             <script type="text/javascript">
                                                 var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
                                                 var obligatory_size = {json_encode($big_size)};
                                             </script>
-                                            <!--<a href="#"><i class="icon" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png'); background-size: 16px 16px;"></i><span>[`Blog post`]</span></a>-->
-                                            <a href="#"><i class="fas fa-pencil-alt"></i><span>[`Blog post`]</span></a>
+                                            <a href="#"><span class="icon"><i class="size-20" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png');"></i></span><span>[`Blog post`]</span></a>
                                             <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
                                         </li>
                                     {/if}
@@ -172,19 +135,18 @@
                             <section id="organize-menu-block">
                                 <h5 class="heading">
                                     <span>[`Organize`]</span>
-                                    <span class="count indicator"></span>
                                 </h5>
                                 <ul class="menu thumbs-view-menu break-words ellipsis" id="organize-menu">
-                                    <li data-action='make-stack'><a href="#"><i class="fas fa-layer-group"></i><span>[`Stack`]</span></a></li>
-                                    <li data-action='set-rate'><a href="#;"><i class="fas fa-star"></i><span>[`Rate`]</span></a></li>
-                                    <li data-action='add-to-album'><a href="#"><i class="fas fa-images"></i><span>[`Add to album`]</span></a></li>
-                                    <li data-action='assign-tags'><a href="#"><i class="fas fa-tags"></i><span>[`Assign tags`]</span></a></li>
+                                    <li data-action='make-stack'><a href="#"><i class="fas fa-layer-group text-black"></i><span>[`Stack`]</span></a></li>
+                                    <li data-action='set-rate'><a href="#;"><i class="fas fa-star text-yellow"></i><span>[`Rate`]</span></a></li>
+                                    <li data-action='add-to-album'><a href="#"><i class="fas fa-images text-purple"></i><span>[`Add to album`]</span></a></li>
+                                    <li data-action='assign-tags'><a href="#"><i class="fas fa-hashtag text-green"></i><span>[`Assign tags`]</span></a></li>
                                     {if !empty($album) && $album.type == photosAlbumModel::TYPE_STATIC}
-                                        <li data-action='delete-from-album'><a href="#"><i class="fas fa-times"></i><span>[`Remove from album`]</span></a></li>
+                                        <li data-action='delete-from-album'><a href="#"><i class="fas fa-times text-orange"></i><span>[`Remove from album`]</span></a></li>
                                     {/if}
                                     <!-- plugin hook: backend_toolbar_list_organize_selected_link -->
-                                    <li data-action='manage-access' class="top-padded"><a href="#"><i class="fas fa-lock"></i><span>[`Manage access`]</span></a></li>
-                                    <li data-action='delete-photos'><a href="#"><i class="fas fa-times-circle"></i><span>[`Delete photos`]</span></a></li>
+                                    <li data-action='manage-access' class="top-padded"><a href="#"><i class="fas fa-lock text-gray"></i><span>[`Manage access`]</span></a></li>
+                                    <li data-action='delete-photos'><a href="#"><i class="fas fa-trash-alt text-red"></i><span>[`Delete photos`]</span></a></li>
 
                                     {foreach $backend_photos_toolbar as $plugin_id => $item}
                                         {if !empty($item.organize_menu)}
@@ -204,22 +166,21 @@
                             <section id="save-menu-block" style="display: none;">
                                 <h5 class="heading">
                                     <span>[`Descriptions`]</span>
-                                    <span class="count indicator"></span>
                                 </h5>
-                                <ul class="menu descriptions-view-menu break-words" id="save-menu">
+                                <ul class="menu descriptions-view-menu break-words custom-mb-0" id="save-menu">
                                     <li data-action="save-description" class="box">
                                         <input type="button" value="[`Save`]" class="button">
                                     </li>
                                     <li data-action="hide-name" class="box">
                                         <label for="save-menu-hide-name">
-                            <span class="wa-checkbox">
-                                <input id="save-menu-hide-name" type="checkbox" value="1">
-                                <span>
-                                    <span class="icon">
-                                        <i class="fas fa-check"></i>
-                                    </span>
-                                </span>
-                            </span>
+                                            <span class="wa-checkbox">
+                                                <input id="save-menu-hide-name" type="checkbox" value="1">
+                                                <span>
+                                                    <span class="icon">
+                                                        <i class="fas fa-check"></i>
+                                                    </span>
+                                                </span>
+                                            </span>
                                             [`Hide photos name`]
                                         </label>
                                     </li>
@@ -239,8 +200,9 @@
 
                                 </ul>
                             </section>
+                            <hr>
                             <section id="selector-menu-block" style="display: none;">
-                                <ul class="menu thumbs-view-menu ellipsis" id="selector-menu">
+                                <ul class="menu custom-mb-0 custom-mt-0 thumbs-view-menu ellipsis" id="selector-menu">
                                     <li data-action="select-photos">
                                         <a href="#">
                                             <i class="fas fa-check-double"></i>
@@ -326,7 +288,7 @@
 
             {if !empty($album)}
                 {if !empty($album.description)}
-                    <p class="small">{$album.description|strip_tags|truncate:512}</p>
+                    <p class="small custom-mt-0">{$album.description|strip_tags|truncate:512}</p>
                 {/if}
                 {if $child_albums}
                     <ul class="thumbs p-albums p-subalbums" id="album-thumbs-list">
@@ -356,7 +318,7 @@
 
 
             <ul class="thumbs li300px ui-sortable" data-view="flex-thumbs" id="photo-list"></ul>
-            <div class="lazyloading-wrapper"></div>
+            <div class="lazyloading-wrapper small"></div>
         </div>
     {/if}
     <div id="cover" class="dialog-background" style="display:none;">
@@ -377,14 +339,14 @@
     >
         <div class="p-image cursor-pointer" onclick="location.href = this.getAttribute('data-href')" data-href="#{%#o.hash%}/photo/{%#p.id%}/">
                 <span class="p-image-corner top left">
-                    {% if ($.photos.album) { %}<span class="button white key-photo-icon"><i class="fas fa-bookmark" title="[`This is a key photo for this album`]"></i></span>{% } %}
+                    {% if ($.photos.album) { %}<span class="button white key-photo-icon small"><i class="fas fa-bookmark" title="[`This is a key photo for this album`]"></i></span>{% } %}
                     {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
                     {% for (var plugin in p.hooks.top_left) { %}
                        {%# p.hooks.top_left[plugin] %}
                     {% } %}
                 </span>
                 <span class="p-image-corner top right">
-                    {% if (p.stack_count > 0) { %}<span class="badge large bold blue">{%#p.stack_count%}</span>{% } %}
+                    {% if (p.stack_count > 0) { %}<span class="badge black bold">{%#p.stack_count%}</span>{% } %}
                     {% if (p.status <= 0) { %}<i class="fas fa-lock p-private-photo" title="[`Private photo`]"></i>{% } %}
                     {/literal}{* @event prepare_photos_backend[top_right][%plugin_id%]  *}{literal}
                     {% for (var plugin in p.hooks.top_right) { %}
@@ -392,7 +354,7 @@
                     {% } %}
                 </span>
                 <img srcset="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb.url2x%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x" src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" alt="" {% if ($.photos.album && $.photos.album.status == 1 && p.status <= 0) { %} style="opacity: 0.5" title="[`Private photos are not visible in public albums`]"{% } %} />
-                {% if (p.stack_count > 0) { %}<div class="p-stack"></div>{% } %}
+                {% if (p.stack_count > 0) { %}<div class="p-stack-1"></div><div class="p-stack-2"></div><div class="p-stack-3"></div>{% } %}
         </div>
         <div class="p-details">
             <span class="wa-checkbox">
@@ -410,9 +372,8 @@
                 </span>
             </span>
             <label>
-                <strong{% if (p.status <= 0) { %} class="gray" title="[`Private photo`]"{% } %}>{%#p.name%}</strong>
+                <strong class="break-all{% if (p.status <= 0) { %} gray" title="[`Private photo`]{% } %}">{%#p.name%}</strong>
             </label>
-            <br>
             <span class="p-rate" {% if (p.rate == 0) { %}style="display: none;"{% } %}>
                 {%#$.photos.getRatingHtml(p.rate, 10, true)%}
             </span>
@@ -423,14 +384,14 @@
                 <div class="full-description js-full-description" style="display:none;">{%#p.description%}</div>
             {% } else { %}
                 {% if (p.edit_rights) { %}
-                    <div class="hint editable">[`add description`]</div>
+                    <div class="hint editable" style="display: inline;">[`add description`]</div>
                 {% } else { %}
                     <div class="hint"></div>
                 {% } %}
                 <div class="full-description js-full-description" style="display:none;"></div>
             {% } %}
             {% if ($.photos.album && $.photos.album.edit_rights) { %}
-                <a href="javascript:void(0)" class="make-key-photo-link button white" title="[`make key photo`]">
+                <a href="javascript:void(0)" class="make-key-photo-link button small white" title="[`make key photo`]">
                     <i class="fas fa-bookmark"></i>
                 </a>
             {% } %}
@@ -488,7 +449,7 @@
                         {%# p.hooks.top_right[plugin] %}
                     {% } %}
                     {% if (p.stack_count > 0) { %}
-                        <span class="badge blue">{%#p.stack_count%}</span>
+                        <span class="badge black bold">{%#p.stack_count%}</span>
                     {% } %}
                     {% if (p.status <= 0) { %}
                         <i class="fas fa-lock p-private-photo" title="[`Private photo`]"></i>
@@ -508,7 +469,7 @@
                    }
                 %}
                 <input type="text" name="photo[{%#p.id%}][name]" value="{%#p.name%}" class="full-width bold"{% if (o.options.hide_name) { %} style="display:none;"{% } %}>
-                <textarea name="photo[{%#p.id%}][description]" class="js-{%=o.options.hide_name?'big':'small'%}" style="height: {%=height-(o.options.hide_name?6:33)%}px;" >{%#p.description%}</textarea>
+                <textarea name="photo[{%#p.id%}][description]" class="js-{%=o.options.hide_name?'big':'small'%} small solid" style="height: {%=height-(o.options.hide_name?6:33)%}px;" >{%#p.description%}</textarea>
             {% } else { %}
                 <span class="title p-name{% if (p.edit_rights) { %} editable{% } %}" id="p-name-{%#p.id%}">{%#p.name%}</span>
                 <div class="small p-description">{%#p.description%}</div>
@@ -527,7 +488,7 @@
 {% var tags = o.tags, i = 0; %}
 {% if (!tags || ($.isArray(tags) && !tags.length)) return ''; %}
     <ul class="tags chips rounded smaller transparent outline smaller custom-mb-0">
-{% for (var tag_id in tags) { %}{% var t = tags[tag_id]; %}<li><a href='#/tag/{%=encodeURIComponent(t)%}/'><span>{%=t%}</span></a></li>{% } %}
+{% for (var tag_id in tags) { %}{% var t = tags[tag_id]; %}<li><a href='#/tag/{%=encodeURIComponent(t)%}/'><span><i class="fas fa-hashtag"></i> {%=t%}</span></a></li>{% } %}
     </ul>
 {/literal}{/capture}
 

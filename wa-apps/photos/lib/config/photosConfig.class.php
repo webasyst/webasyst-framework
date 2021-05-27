@@ -21,7 +21,8 @@ class photosConfig extends waAppConfig
                 'middle' => '750',
                 'thumb' => '300x0',
                 'crop' => '96x96',
-                'mobile' => '512'
+                'mobile' => '512',
+                'icon' => '40x40'
             );
         }
     }

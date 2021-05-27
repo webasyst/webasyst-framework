@@ -1821,7 +1821,6 @@ class waInstaller
             CURLOPT_RETURNTRANSFER    => 1,
             CURLOPT_TIMEOUT           => self::TIMEOUT_SOCKET * 60,
             CURLOPT_CONNECTTIMEOUT    => self::TIMEOUT_SOCKET,
-            CURLE_OPERATION_TIMEOUTED => self::TIMEOUT_SOCKET * 60,
             CURLOPT_DNS_CACHE_TIMEOUT => 3600,
             CURLOPT_BINARYTRANSFER    => true,
             CURLOPT_WRITEFUNCTION     => array(&$this, 'curlWriteHandler'),

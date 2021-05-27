@@ -857,7 +857,10 @@ class waAppConfig extends SystemConfig
                     $this->plugins = array();
                     return $this->plugins;
                 }
+                
                 $all_plugins = include($path);
+                $all_plugins = is_array($all_plugins) ? $all_plugins : [];
+
                 $this->plugins = array();
                 foreach ($all_plugins as $plugin_id => $enabled) {
                     if ($enabled) {

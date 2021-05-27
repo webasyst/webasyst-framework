@@ -5408,7 +5408,7 @@ msgid "Design theme user manual"
 msgstr "Инструкция к теме дизайна"
 
 msgid "User support"
-msgstr "Поддержка пользователей"
+msgstr "Поддержка"
 
 msgid "Minimum 3 characters"
 msgstr "Минимум 3 символа"
@@ -6483,3 +6483,21 @@ msgstr "Для проверки отправки SMS-сообщений снач
 
 msgid "Select UI mode"
 msgstr "Режим интерфейса (debug)"
+
+msgid "Route settings"
+msgstr "Настройки маршрутизации"
+
+msgid "Browse all themes"
+msgstr "Все темы дизайна"
+
+msgid "Theme"
+msgstr "Тема"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Configure %s"
+msgstr "Настройки %s"
+
+msgid "Browse plugins"
+msgstr "Все плагины"

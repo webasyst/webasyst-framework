@@ -32,26 +32,35 @@
                         <div class="name">
                             [`Visibility`]
                         </div>
-                        <div class="value width-50">
-                            <label for="access-public">
-                                <span class="wa-radio">
-                                    <input id="ac-access-public" type="radio" name="status" value="1" {if $parent && $parent.status <= 0}disabled{else}checked="checked"{/if}>
-                                    <span></span>
-                                </span>
-                                [`Public`]
-                                <p class="hint custom-mt-8 custom-mb-8">[`Album is visible in the public gallery`]</p>
-                            </label>
+                        <div class="value width-40">
+                            <div class="width-80">
+                                <label for="access-public">
+                                    <span class="nowrap">
+                                        <span class="wa-radio">
+                                            <input id="ac-access-public" type="radio" name="status" value="1" {if $parent && $parent.status <= 0}disabled{else}checked="checked"{/if}>
+                                            <span></span>
+                                        </span>
+                                        <strong class="semibold">[`Public`]</strong>
+                                        <span class="icon shift-2 gray">
+                                            <i class="fas fa-globe fa-xs"></i>
+                                        </span>
+                                    </span>
+                                    <p class="hint custom-mt-8 custom-mb-8">[`Album is visible in the public gallery`]</p>
+                                </label>
+                            </div>
                         </div>
-                        <div class="value width-50">
+                        <div class="value width-60">
                             <label for="ac-access-private">
-                                <span class="wa-radio">
-                                    <input id="ac-access-all-groups" type="hidden" name="groups[]" value="0">
-                                    <input id="ac-access-private" type="radio" name="status" value="0" {if $parent && $parent.status <= 0}checked="checked"{/if}>
-                                    <span></span>
-                                </span>
-                                [`Private`]
-                                <span class="icon shift-2">
-                                    <i class="fas fa-lock fa-xs"></i>
+                                <span class="nowrap">
+                                    <span class="wa-radio">
+                                        <input id="ac-access-all-groups" type="hidden" name="groups[]" value="0">
+                                        <input id="ac-access-private" type="radio" name="status" value="0" {if $parent && $parent.status <= 0}checked="checked"{/if}>
+                                        <span></span>
+                                    </span>
+                                    <strong class="semibold">[`Private`]</strong>
+                                    <span class="icon shift-2 gray">
+                                        <i class="fas fa-lock fa-xs"></i>
+                                    </span>
                                 </span>
                                 <p class="hint custom-mt-8 custom-mb-8">
                                     [`Album is visible only to authorized users of the Photos app, or by a private link`].
@@ -66,7 +75,7 @@
                         <div class="value small">
                             {if !empty($groups)}
                                 <p>[`Select user groups you want to have access to this album`]:</p>
-                                <ul class="small zebra">
+                                <ul>
                                     {foreach from=$groups item=group_name key=group_id}
                                         <li>
                                             <label for="ac-album-group-{$group_id}">
@@ -101,26 +110,30 @@
                         </div>
                         <div class="value width-50">
                             <label for="type-static">
-                                <span class="wa-radio">
-                                <input id="type-static" type="radio" name="type" value="0" {if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC}disabled{else}checked="checked"{/if}>
-                                    <span></span>
-                                </span>
-                                [`Album`]
-                                <span class="icon shift-2">
-                                    <i class="fas fa-images fa-xs"></i>
+                                <span class="nowrap">
+                                    <span class="wa-radio">
+                                    <input id="type-static" type="radio" name="type" value="0" {if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC}disabled{else}checked="checked"{/if}>
+                                        <span></span>
+                                    </span>
+                                    <strong class="semibold">[`Album`]</strong>
+                                    <span class="icon shift-2">
+                                        <i class="fas fa-images fa-xs"></i>
+                                    </span>
                                 </span>
                                 <span class="hint flexbox vertical">[`A static album for adding and arranging photos manually.`]</span>
                             </label>
                         </div>
                         <div class="value width-50">
                             <label for="type-dynamic">
-                                <span class="wa-radio">
-                                <input id="type-dynamic" type="radio" name="type" value="1"{if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC} checked="checked"{/if}>
-                                    <span></span>
-                                </span>
-                                [`Filter`]
-                                <span class="icon shift-2">
-                                    <i class="fas fa-filter fa-xs"></i>
+                                <span class="nowrap">
+                                    <span class="wa-radio">
+                                    <input id="type-dynamic" type="radio" name="type" value="1"{if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC} checked="checked"{/if}>
+                                        <span></span>
+                                    </span>
+                                    <strong class="semibold">[`Filter`]</strong>
+                                    <span class="icon shift-2 gray">
+                                        <i class="fas fa-filter fa-xs"></i>
+                                    </span>
                                 </span>
                                 <span class="hint flexbox vertical">[`A dynamic album based on search criteria, e.g. rating or tags.`]</span>
                             </label>
@@ -156,7 +169,7 @@
                                         <label for="ac-condition-rate">[`Rating`]</label>
                                     </td>
                                     <td>
-                                        <div class="wa-select">
+                                        <div class="wa-select small">
                                             <select name="rate[]">
                                                 <option value=">=">[`is greater or equal`]</option>
                                                 <option value="<=">[`is lesser or equal`]</option>
@@ -165,9 +178,9 @@
                                     </td>
                                     <td>
                                         <input type="hidden" id="ac-album-rate-value" name="rate[]" value="0">
-                                        <a href="javascript:void(0);" class="p-rate-photo" title="Rate photo" id="ac-album-rate" data-rate="0">
+                                        <a href="javascript:void(0);" class="p-rate p-rate-photo p-rate-normal-size" title="[`Rating`]" id="ac-album-rate" data-rate="0">
                                             {section name=r loop=5 start=0 step=1}
-                                                <i class="far fa-star"></i>
+                                                <i class="far fa-star" data-rate-value="{$smarty.section.r.iteration}"></i>
                                             {/section}
                                         </a>
                                     </td>
@@ -180,11 +193,19 @@
                                         <label for="ac-condition-tag">[`Tags`]</label>
                                     </td>
                                     <td colspan="2">
-                                        <div class="block double-padded align-center">
+                                        <ul class="collapsible-content chips tags rounded small">
                                         {foreach $cloud as $tag}
-                                            <label><span class="p-tag" style="font-size: {$tag.size}%;" data-id="{$tag.id}"><input type="checkbox" name="tag[]" value="{$tag.name|escape}" {if isset($tag.checked)}checked{/if}> {$tag.name|escape}</span></label>
+                                            <li>
+                                                <label class="chip">
+                                                    <input type="checkbox" name="tag[]" value="{$tag.name}" {if isset($tag.checked)}checked{/if}>
+                                                    <span class="p-tag" data-id="{$tag.id}">
+                                                        <i class="fas fa-hashtag"></i>
+                                                        {$tag.name|escape|default:""}
+                                                    </span>
+                                                </label>
+                                            </li>
                                         {/foreach}
-                                        </div>
+                                        </ul>
                                     </td>
                                 </tr>
                                 <tr>
@@ -195,7 +216,7 @@
                                         <label for="ac-condition-access">[`Access`]</label>
                                     </td>
                                     <td>
-                                        <div class="wa-select">
+                                        <div class="wa-select small">
                                             <select name="access">
                                                 <option value="public">[`public`]</option>
                                                 <option value="private">[`private`]</option>
@@ -208,10 +229,10 @@
                             </tbody></table>
                         </div>
                     </div>
-                    <div class="field small">
-                        <div class="name"></div>
-                        <div class="value">
-                            <div class="wa-select">
+                    <div class="field">
+                        <div class="name">[`Order`]</div>
+                        <div class="value small">
+                            <div class="wa-select small">
                                 <select name="order">
                                     <option value="">[`uploaded`]</option>
                                     <option value="rate">[`top rated`]</option>
@@ -230,7 +251,7 @@
         <div class="dialog-buttons dialog-footer">
             <div class="dialog-buttons-gradient">
                 <input type="submit" class="button" value="[`Create album`]">
-                [`or`] <a class="js-close-dialog" href="#" id="ac-close">[`cancel`]</a>
+                <a class="js-close-dialog button light-gray" href="#" id="ac-close">[`Cancel`]</a>
             </div>
         </div>
     </form>

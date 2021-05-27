@@ -92,6 +92,12 @@ class webasystBackendActions extends waViewActions
         ), $count);
         $activity_load_more = $count == 50;
 
+        $this->view->assign('datetime_group', '');
+        if ($activity && waRequest::isXMLHttpRequest()) {
+            $row = reset($activity);
+            $this->view->assign('datetime_group', $activity_action->getDatetimeGroup($row['datetime']));
+        }
+
         $is_admin = wa()->getUser()->isAdmin('webasyst');
 
         $this->view->assign([

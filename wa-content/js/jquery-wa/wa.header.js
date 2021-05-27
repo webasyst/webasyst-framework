@@ -43,8 +43,9 @@ class WaHeader {
             this.header_apps_tooltips.waTooltip({
                 arrow: false,
                 placement: "bottom",
-                theme: "bordered",
-                offset:[0, 3]
+                theme: "transparent",
+                offset:[0, 3],
+                class: 'wa-header-tooltip'
             });
         }
     }

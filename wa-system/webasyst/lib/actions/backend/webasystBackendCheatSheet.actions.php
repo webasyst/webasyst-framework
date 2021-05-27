@@ -442,4 +442,18 @@ class webasystBackendCheatSheetActions extends waActions
     {
         return $this->getConfig()->getRootPath().'/wa-system/page/templates/';
     }
+
+    protected function whichUI($app_id = null)
+    {
+        $ui = $this->getRequest()->get('ui');
+
+        // control UI version of cheat sheet UI block
+        // it is all temporary
+        if (!$ui) {
+            return parent::whichUI($app_id);
+        }
+
+        $ui = $ui === '2.0' ? '2.0' : '1.3';
+        return $ui;
+    }
 }

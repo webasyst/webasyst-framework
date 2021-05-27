@@ -1,37 +1,54 @@
 {if !empty($file)}
-<h1><span class="grey">{$file.theme_path}</span>{$file.id}</h1>
-<div id="wa-design-original" style="width: 100%; height: 200px;">{$file.content|escape}</div>
-<script>
-    $(function () {
-        var editor = ace.edit('wa-design-original');
-        ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
-        editor.setTheme("ace/theme/eclipse");
-        var session = editor.getSession();
-        {if substr($file.id, -3) == 'css'}
-        session.setMode("ace/mode/css");
-        {elseif substr($file.id, -2) == 'js'}
-        session.setMode("ace/mode/javascript");
-        {else}
-        session.setMode("ace/mode/css");
-        session.setMode("ace/mode/javascript");
-        session.setMode("ace/mode/smarty");
-        {/if}
-        session.setUseWrapMode(true);
-        editor.renderer.setShowGutter(false);
-        editor.setShowPrintMargin(false);
-        editor.setFontSize(13);
-        editor.setHighlightActiveLine(false);
-        editor.setReadOnly(true);
+<div class="dialog-background"></div>
+<div class="dialog-body" style="width:1000px;">
+    <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+    <h3 class="dialog-header">{$file.theme_path}</span>{$file.id}</h3>
+    <div class="dialog-content">
+        <div id="wa-design-original" style="width: 100%; height: 200px;">{$file.content|escape}</div>
+        <script>
+            $(function () {
+                var editor = ace.edit('wa-design-original');
+                ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 
-        setTimeout(function () {
-            var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
-            newHeight *= 1.02;
-            if (newHeight < 220) {
-                newHeight = 220;
-            }
-            $('#wa-design-original').height(newHeight.toString() + "px");
-            editor.resize();
-        }, 50);
-    });
-</script>
+                let $them_mode = document.querySelector('#wa-dark-mode').getAttribute('media');
+                if ($them_mode === '(prefers-color-scheme: dark)') {
+                    editor.setTheme("ace/theme/eclipse");
+                }else{
+                    editor.setTheme("ace/theme/monokai");
+                }
+
+                var session = editor.getSession();
+                {if substr($file.id, -3) == 'css'}
+                session.setMode("ace/mode/css");
+                {elseif substr($file.id, -2) == 'js'}
+                session.setMode("ace/mode/javascript");
+                {else}
+                session.setMode("ace/mode/css");
+                session.setMode("ace/mode/javascript");
+                session.setMode("ace/mode/smarty");
+                {/if}
+                session.setUseWrapMode(true);
+                editor.renderer.setShowGutter(false);
+                editor.setShowPrintMargin(false);
+                editor.setFontSize(13);
+                editor.setHighlightActiveLine(false);
+                editor.setReadOnly(true);
+
+                setTimeout(function () {
+                    var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+                    newHeight *= 1.02;
+                    if (newHeight < 220) {
+                        newHeight = 220;
+                    }
+                    $('#wa-design-original').height(newHeight.toString() + "px");
+                    editor.resize();
+                }, 50);
+            });
+        </script>
+    </div>
+    <footer class="dialog-footer">
+        <button type="button" class="button js-submit">[s`Roll back my file to the original version`]</button>
+        <button type="button" class="js-close-dialog button light-gray">[s`Close`]</button>
+    </footer>
+</div>
 {/if}

@@ -15,7 +15,7 @@
             <li data-album-id="{$a.id}" class="flexbox vertical full-width">
                 <div class="p-image">
                     <div class="p-image-corner top left" title="[`Private album`]">
-                        {if $a.status <= 0}<i class="fas fa-lock p-private-photo"></i>{/if}
+                        {if $a.status <= 0}<div class="custom-m-8"><i class="fas fa-lock p-private-photo text-white"></i></div>{/if}
                     </div>
                     <div class="p-image-corner top right"></div>
                     {if $a.count > 1}

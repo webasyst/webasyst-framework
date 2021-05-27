@@ -225,7 +225,7 @@ class photosViewTreeElement
             }
 
             $result = $view_type == 'backend' ?
-                '<li class="dr '.$this->getClass().'" data-id="'.$this->data['id'].'" rel="'.$this->data['id'].'">' :
+                '<li class="'.$this->getClass().'" data-id="'.$this->data['id'].'" rel="'.$this->data['id'].'">' :
                 '<li>';
 
             $result .= $view_type == 'backend' ?

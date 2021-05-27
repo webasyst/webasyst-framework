@@ -97,7 +97,7 @@
                     data.submit();
                 }
                 var cnt = that._files.children('li').length;
-                $('#p-upload-step2 h1').html($_('Upload photos (%d)').replace('%d', cnt) + ' <span class="hint">' + '</span>');
+                $('#p-upload-step2 h3').html($_('Upload photos (%d)').replace('%d', cnt) + ' <span class="hint">' + '</span>');
                 $('#p-upload-step1').hide();
                 $('#p-upload-step1-buttons').hide();
                 $('#upload-album-name-field').hide();
@@ -331,7 +331,7 @@
                             }
                         }
                     }
-                    $('#p-uploader').trigger('close');
+                    $('#p-uploader').find('.js-close-dialog').trigger('click');
                 }
                 self.data('is_error', false);
                 self.data('is_aborted', false);

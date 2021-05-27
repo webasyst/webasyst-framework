@@ -567,7 +567,9 @@ class waTheme implements ArrayAccess
     {
         $xml_options = LIBXML_NOCDATA | LIBXML_NOENT | LIBXML_NONET;
         libxml_use_internal_errors(true);
-        libxml_disable_entity_loader(false);
+        if (PHP_VERSION_ID < 80000) {
+            libxml_disable_entity_loader(false);
+        }
         libxml_clear_errors();
 
         if ($as_dom && !class_exists('DOMDocument')) {

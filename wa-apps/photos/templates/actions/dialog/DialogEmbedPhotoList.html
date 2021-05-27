@@ -1,24 +1,50 @@
 <div class="dialog">
     <div class="dialog-background"></div>
     <form method="post" action="" class="dialog-body">
-        <h3 class="dialog-header">[`Share photos`] <span class="gray">({$context['count']})</span><span style="display:none;"><i class="fas fa-spinner fa-spin loading"></i></span></h3>
+        <div class="dialog-header">
+            <div class="flexbox full-width">
+                <div class="wide">
+                    <h3>[`Share photos`] <span class="gray">({$context['count']})</span><span style="display:none;"><i class="fas fa-spinner fa-spin loading"></i></span></h3>
+                </div>
+                <div>
+                    <div class="wa-select small">
+                        <select name="size">
+                            {foreach $sizes as $sz}
+                                <option value="{$sz}" {if $sz == $size}selected{/if}>{$sz}px</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    {if !empty($domains)}
+                        <div class="wa-select small">
+                            <select name="domain" data-original-domain="{$original_domain|escape}">
+                                {foreach $domains as $d}
+                                    <option value="{$d.url|escape}" data-frontend-url="{$d.frontend_url|escape}">{$d.url|escape|truncate:42:'...':false:true}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
         <div class="dialog-content">
-            <ul class="chips small switcher">
-                <li{if !$is_entire} class="selected" data-action="selected-photos"{else} style="display:none"{/if}>
-                    <a href="#" class="inline-link"><b><i>[`selected photos`] ({$context['count']})</i></b></a>
-                </li>
-                <li {if $is_entire}class="selected"{/if} data-action="all-list-photos">
-                {if isset($entire_context['album'])}
-                    <a href="#" class="inline-link"><b><i>[`entire album`] ({$entire_context['album']['count']})</i></b></a>
-                {elseif isset($entire_context['tag'])}
-                    <a href="#" class="inline-link"><b><i>[`all tagged`] ({$entire_context['tag']['tag']})</i></b></a>
-                {elseif isset($entire_context['rate'])}
-                    <a href="#" class="inline-link"><b><i>[`all rated`] ({$entire_context['rate']['count']})</i></b></a>
-                {elseif isset($entire_context['all'])}
-                    <a href="#" class="inline-link"><b><i>[`all listed`] ({$entire_context['all']['count']})</i></b></a>
-                {/if}
-                </li>
-            </ul>
+
+
+                <ul class="tabs switcher" STYLE="DISPLAY: NONE; {* TO BE DEPRECATED *}">
+                    <li{if !$is_entire} class="selected" data-action="selected-photos"{else} style="display:none"{/if}>
+                        <a href="#">[`selected photos`] ({$context['count']})</a>
+                    </li>
+                    <li {if $is_entire}class="selected"{/if} data-action="all-list-photos">
+                    {if isset($entire_context['album'])}
+                        <a href="#">[`entire album`] ({$entire_context['album']['count']})</a>
+                    {elseif isset($entire_context['tag'])}
+                        <a href="#">[`all tagged`] ({$entire_context['tag']['tag']})</a>
+                    {elseif isset($entire_context['rate'])}
+                        <a href="#">[`all rated`] ({$entire_context['rate']['count']})</a>
+                    {elseif isset($entire_context['all'])}
+                        <a href="#">[`all listed`] ({$entire_context['all']['count']})</a>
+                    {/if}
+                    </li>
+                </ul>
 
             <div class="fields p-dialog-form">
                 <div class="fields-group">
@@ -41,7 +67,7 @@
                         </div>
                         <div class="value">
                             <p>
-                            <label>
+                            <label class="small">
                                 <span class="wa-checkbox">
                                     <input type="checkbox" name="description" value="1" checked id="embed-photo-list-description">
                                     <span>
@@ -53,8 +79,8 @@
                                 [`Descriptions`]
                             </label>
                             </p>
-                            <textarea name="html" class="full-width" id="embed-photo-list-html-with-descriptions">{$context['html_with_descriptions']}</textarea>
-                            <textarea class="full-width" name="html" id="embed-photo-list-html" disabled style="display:none;">{$context['html']}</textarea>
+                            <textarea name="html" class="full-width smaller" id="embed-photo-list-html-with-descriptions">{$context['html_with_descriptions']}</textarea>
+                            <textarea class="full-width smaller" name="html" id="embed-photo-list-html" disabled style="display:none;">{$context['html']}</textarea>
 
 
 
@@ -66,13 +92,13 @@
                             <p class="hint">[`For embedding into other Webasyst apps content.`]</p>
                         </div>
                         <div class="value">
-                            <textarea class="full-width" name="smarty_code">{$context['smarty_code']}</textarea>
+                            <textarea class="full-width smaller" name="smarty_code">{$context['smarty_code']}</textarea>
                         </div>
                     </div>
                     <div class="field">
                         <div class="name">[`Image URLs`]</div>
                         <div class="value">
-                            <textarea class="full-width" name="urls">{$context['urls']}</textarea>
+                            <textarea class="full-width smaller" name="urls">{$context['urls']}</textarea>
                         </div>
                     </div>
                     <div class="field exclamation-message" {if $context.all_public}style="display:none;"{/if}>
@@ -81,32 +107,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="fields-group">
-                    <div class="field">
-                        <div class="flexbox full-width">
-                            <div class="wa-select">
-                                <select name="size">
-                                    {foreach $sizes as $sz}
-                                        <option value="{$sz}" {if $sz == $size}selected{/if}>{$sz}px</option>
-                                    {/foreach}
-                                </select>
-                            </div>
-                            {if !empty($domains)}
-                                <div class="wa-select">
-                                    <select name="domain" data-original-domain="{$original_domain|escape}">
-                                        {foreach $domains as $d}
-                                            <option value="{$d.url|escape}" data-frontend-url="{$d.frontend_url|escape}">{$d.url|escape|truncate:42:'...':false:true}</option>
-                                        {/foreach}
-                                    </select>
-                                </div>
-                            {/if}
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="dialog-buttons dialog-footer">
-            <input class="button js-close-dialog" type="button" value="[`Close`]">
+            <input class="button light-gray js-close-dialog" type="button" value="[`Close`]">
         </div>
     </form>
 </div>

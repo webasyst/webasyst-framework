@@ -4,6 +4,7 @@
 {$_is_modal = $is_modal|default:false}
 
 {$inline_class_prefix = '-inline'}
+{$dialog_prefix = ''}
 
 {$inline_class = ''}
 {if !$_is_modal}
@@ -32,10 +33,12 @@
 {/capture}
 
 
-
-<link href="{$wa_url}wa-content/js/dialog/dialog.css" rel="stylesheet">
 <link href="{$wa_url}wa-apps/installer/css/app.installer.css?v={$wa->version()}" rel="stylesheet">
-<script src="{$wa_url}wa-content/js/dialog/dialog.js"></script>
+{if $wa->whichUi() === '1.3' && $_is_modal}
+    {$dialog_prefix = 'wa-'}
+    <link href="{$wa_url}wa-content/js/dialog/dialog.css" rel="stylesheet">
+    <script src="{$wa_url}wa-content/js/dialog/dialog.js"></script>
+{/if}
 <script defer src="{$wa_url}wa-apps/installer/fonts/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
 
 {if !$_is_modal}
@@ -67,13 +70,13 @@
 </div>
 
 {capture assign="_product_review_dialog_template"}
-<div class="wa-dialog i-product-review-dialog">
-    <div class="wa-dialog-background"></div>
-    <div class="wa-dialog-body">
-        <div class="wa-dialog-header">
+<div class="{$dialog_prefix}dialog i-product-review-dialog">
+    <div class="{$dialog_prefix}dialog-background"></div>
+    <div class="{$dialog_prefix}dialog-body">
+        <div class="{$dialog_prefix}dialog-header">
             <h1 class="js-content-title">{_wd('installer', 'Your review')}</h1>
         </div>
-        <div class="wa-dialog-content">
+        <div class="{$dialog_prefix}dialog-content">
             <div class="i-comment-section js-comment-section">
                 {strip}
                 <div class="i-rates-list js-rates-list">
@@ -100,7 +103,7 @@
 
         </div>
 
-        <div class="wa-dialog-footer">
+        <div class="{$dialog_prefix}dialog-footer">
 
             <div class="hint js-dialog-signup-user-info" style="display: none;">
                 <p>
@@ -140,10 +143,10 @@
 
     {* Need so JS can switch current mode - modal/inline *}
     {$_view_classes = [
-        ['wa-dialog', "wa-dialog{$inline_class_prefix}"],
-        ['wa-dialog-body', "wa-dialog-body{$inline_class_prefix}"],
-        ['wa-dialog-content', "wa-dialog-content{$inline_class_prefix}"],
-        ['wa-dialog-footer', "wa-dialog-footer{$inline_class_prefix}"]
+        ["{$dialog_prefix}dialog", "wa-dialog{$inline_class_prefix}"],
+        ["{$dialog_prefix}dialog-body", "wa-dialog-body{$inline_class_prefix}"],
+        ["{$dialog_prefix}dialog-content", "wa-dialog-content{$inline_class_prefix}"],
+        ["{$dialog_prefix}dialog-footer", "wa-dialog-footer{$inline_class_prefix}"]
     ]}
 
     <script>
@@ -169,7 +172,8 @@
                     templates: {
                         review_dialog: {$_product_review_dialog_template|json_encode},
                         confirm: {$_confirm_text_template|json_encode}
-                    }
+                    },
+                    ui: {$wa->whichUi()|json_encode}
                 });
             };
 

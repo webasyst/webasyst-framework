@@ -62,11 +62,14 @@ var WaFrontendLogin = ( function($) {
         function onProviderClick( $link ) {
             var adapter_id = $link.data("id");
             if (adapter_id) {
-                var left = (screen.width-600)/ 2,
-                    top = (screen.height-400)/ 2,
+                var width = $link.data('width') || 600,
+                    height = $link.data('height') || 500,
+                    left = (screen.width - width)/ 2,
+                    top = (screen.height - height)/ 2,
                     href = $link.attr("href");
 
-                var new_window = window.open(href, "oauth", "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
+                window.open(href, "oauth", "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top +
+                    ",status=no,toolbar=no,menubar=no");
             }
         }
     };
@@ -74,7 +77,7 @@ var WaFrontendLogin = ( function($) {
     Self.prototype.isNeedConfirm = function () {
         return this.is_need_confirm;
     };
-
+    
     Self.prototype.initConfirmView = function () {
         var that = this,
             $wrapper = that.$wrapper,
@@ -104,12 +107,14 @@ var WaFrontendLogin = ( function($) {
                 var $confirmation_code_input = that.getFormInput('confirmation_code');
                 $confirmation_code_input.removeAttr('readonly').val('');
             }
+
+            // when once click on edit link, edit link should be hidden (cause already in edit mode)
+            that.turnOffBlock($edit_link);
         });
 
         $sent_link.click(function () {
             // re-request code - disable confirmation code input
             that.turnOffBlock($confirm_block);
-
 
             var $form = that.getFormItem(),
                 $button = $form.find(':submit:first:not(:disabled)');
@@ -310,18 +315,39 @@ var WaFrontendLogin = ( function($) {
     Self.prototype.beforeErrorTimerStart = function(message, timeout, options) {
         var that = this;
         Parent.prototype.beforeErrorTimerStart(message, timeout, options);
+        /*
         if (options.error_namespace === 'confirmation_code') {
             var $confirmation_code_input = that.getFormInput('confirmation_code');
             $confirmation_code_input.attr('readonly', 1);
-        }
+        }*/
     };
 
     Self.prototype.afterErrorTimerFinish = function(message, timeout, options) {
         var that = this;
         Parent.prototype.afterErrorTimerFinish(message, timeout, options);
+        /*
         if (options.error_namespace === 'confirmation_code') {
             var $confirmation_code_input = that.getFormInput('confirmation_code');
             $confirmation_code_input.removeAttr('readonly');
+        }*/
+
+        var $wrapper = that.$wrapper,
+            $sent_link = $wrapper.find('.wa-send-again-confirmation-code-link-wrapper');
+
+        $sent_link.show();
+    };
+
+    Self.prototype.clearTimeoutMessage = function () {
+        var that = this,
+            $wrapper = that.$wrapper,
+            $message_block = $wrapper.find('.wa-confirmation-code-input-message');
+
+        var $timeout_message = $message_block.find('.' + that.classes.message_msg + '[data-name="timeout"]');
+        if ($timeout_message.length) {
+            var timer = $timeout_message.data('timer');
+            if (timer) {
+                timer.finish();
+            }
         }
     };
 
@@ -333,28 +359,46 @@ var WaFrontendLogin = ( function($) {
             $confirm_block = $wrapper.find('.wa-signup-form-confirmation-block'),
             $login = that.getFormInput('login');
 
-        //that.turnOnBlock($edit_link);
+        that.turnOnBlock($edit_link);
         that.turnOnBlock($confirm_block);
 
         // "Disable" LOGIN input
         $login.attr('readonly', 1);
 
-        var data = response.data;
+        var data = response.data,
+            errors = response.errors;
+
+        var $message_block = $wrapper.find('.wa-confirmation-code-input-message');
+
+//        $message_block.html('');
 
         // Code not sent
         if (!data.code_sent) {
+            if (errors.confirmation_code && errors.confirmation_code.timeout) {
+                that.clearTimeoutMessage(); // stop previous timer on "message" DOM element, and remove DOM element
+            }
             return;
         }
 
-        // Format message about timeout
-        var $timeout_message = that.formatInfoMessage(data.code_sent_timeout_message, false, 'timeout');
+        var $code_sent_message = $(),
+            $timeout_message = $();
 
-        // Place messages
-        $wrapper.find('.wa-confirmation-code-input-message').html($timeout_message);
+        // Special message about what happens
+        if (data.code_sent_message) {
+            $code_sent_message = that.formatInfoMessage(data.code_sent_message, false, 'code_sent_message');
+            $message_block.append($code_sent_message);
+        }
+
+        // Format message about timeout
+        if (data.code_sent_timeout_message) {
+            that.clearTimeoutMessage(); // stop previous timer on "message" DOM element, and remove DOM element
+            $timeout_message = that.formatInfoMessage(data.code_sent_timeout_message, false, 'timeout');
+            $message_block.append($timeout_message);
+        }
 
         // Ensure links are hidden
         $sent_link.hide();
-        $edit_link.hide();
+        //$edit_link.hide();
 
         // Run timer inside message
         that.runTimeoutMessage($timeout_message, {
@@ -362,7 +406,9 @@ var WaFrontendLogin = ( function($) {
             onFinish: function () {
                 // Show link(s)
                 $sent_link.show();
-                $edit_link.show();
+                //$edit_link.show();
+                // hide message
+                $code_sent_message.hide();
             }
         });
     };
@@ -381,10 +427,18 @@ var WaFrontendLogin = ( function($) {
 
             return true;
         };
-        handlers.rest = function (r) {
+
+        handlers.rest = function (response) {
+
+            // case when contact must confirm phone (or just confirm authorizing) by SMS code
+            if (response.data.code_sent) {
+                that.onConfirmPhoneError(response);
+                return;
+            }
+
             // Trigger event for further processing successfully authorized contact
-            if (r.data.auth_status === 'ok') {
-                that.triggerEvent('wa_auth_contact_logged', r.data.contact || {});
+            if (response.data.auth_status === 'ok') {
+                that.triggerEvent('wa_auth_contact_logged', response.data.contact || {});
             }
 
         };

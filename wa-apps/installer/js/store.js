@@ -43,7 +43,14 @@ var InstallerStore = (function ($) {
         var that = this,
             data = JSON.stringify(msg);
 
-        that.$frame[0].contentWindow.postMessage(data, '*');
+        if (that.$frame[0].contentWindow !== null) {
+            try {
+                that.$frame[0].contentWindow.postMessage(data, '*');
+            } catch (e) {
+                console.log("Can't post message to action '" + msg.action + "'");
+                console.trace(e);
+            }
+        }
     };
 
     InstallerStore.prototype.initIframe = function (inst_context, error_handling) {

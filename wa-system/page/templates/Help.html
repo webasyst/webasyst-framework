@@ -110,7 +110,7 @@
                 </li>
                 {foreach $blocks as $block_id => $b}
                     <li>
-                        <a href="#" class="semibold inline-link js-var"><{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</a>
+                        <a href="#" class="semibold inline-link js-var">{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</a>
                         <p class="small gray">{$b.description}</p>
                     </li>
                 {/foreach}

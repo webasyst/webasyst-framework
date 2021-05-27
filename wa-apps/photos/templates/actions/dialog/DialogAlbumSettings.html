@@ -1,7 +1,6 @@
 <div class="dialog" id="album-settings-dialog">
     <div class="dialog-background"></div>
     <form method="post" action="?module=album&action=save" class="dialog-body">
-        <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
         <div class="dialog-header">
             <h2>[`Album settings`]</h2>
         </div>
@@ -47,26 +46,35 @@
                             <div class="name">
                                 [`Visibility`]
                             </div>
-                            <div class="value width-30">
-                                <label for="access-public">
-                                    <span class="wa-radio">
-                                        <input id="access-public" type="radio" {if !empty($parent) && $parent.status <= 0}disabled{elseif $album.status == 1}checked{/if} name="status" value="1">
-                                        <span></span>
-                                    </span>
-                                    [`Public`]
-                                    <p class="hint custom-mt-8 custom-mb-8">[`Album is visible in the public gallery`]</p>
-                                </label>
+                            <div class="value width-40">
+                                <div class="width-80">
+                                    <label for="access-public">
+                                        <span class="nowrap">
+                                            <span class="wa-radio">
+                                                <input id="access-public" type="radio" {if !empty($parent) && $parent.status <= 0}disabled{elseif $album.status == 1}checked{/if} name="status" value="1">
+                                                <span></span>
+                                            </span>
+                                            <strong class="semibold">[`Public`]</strong>
+                                            <span class="icon shift-2 gray">
+                                                <i class="fas fa-globe fa-xs"></i>
+                                            </span>
+                                        </span>
+                                        <p class="hint custom-mt-8 custom-mb-8">[`Album is visible in the public gallery`]</p>
+                                    </label>
+                                </div>
                             </div>
-                            <div class="value width-70">
+                            <div class="value width-60">
                                 <label for="access-private">
-                                    <span class="wa-radio">
-                                        <input id="access-all-groups" type="hidden" name="groups[]" value="0" {if !isset($rights[0])}disabled{/if} >
-                                        <input id="access-private" type="radio" {if $album.status <= 0}checked{/if} name="status" value="0">
-                                        <span></span>
-                                    </span>
-                                    [`Private`]
-                                    <span class="icon shift-2">
-                                        <i class="fas fa-lock fa-xs"></i>
+                                    <span class="nowrap">
+                                        <span class="wa-radio">
+                                            <input id="access-all-groups" type="hidden" name="groups[]" value="0" {if !isset($rights[0])}disabled{/if} >
+                                            <input id="access-private" type="radio" {if $album.status <= 0}checked{/if} name="status" value="0">
+                                            <span></span>
+                                        </span>
+                                        <strong class="semibold">[`Private`]</strong>
+                                        <span class="icon shift-2 gray">
+                                            <i class="fas fa-lock fa-xs"></i>
+                                        </span>
                                     </span>
                                     <p class="hint custom-mt-8 custom-mb-8">
                                         [`Album is visible only to authorized users of the Photos app, or by a private link`].
@@ -82,7 +90,7 @@
                             <div class="value small">
                                 {if !empty($groups)}
                                     <p>[`Select user groups you want to have access to this album`]:</p>
-                                    <ul class="small zebra">
+                                    <ul>
                                         {foreach from=$groups item=group key=group_id}
                                             <li>
                                                 <label for="album-group-{$group_id}">
@@ -108,7 +116,7 @@
                                 {/if}
                             </div>
                         </div>
-                        <div class="field">
+                        <div class="field"{if !$photos_count} style="display: none;"{/if}>
                             <div class="name">
                             </div>
                             <div class="value">
@@ -135,7 +143,7 @@
                                 </label>
                             </div>
                             <div class="value">
-                                <textarea id="description" class="full-width" name="description" rows="10" cols="5">{$album.description|escape}</textarea>
+                                <textarea id="description" class="full-width small" name="description" rows="10" cols="5">{$album.description|escape}</textarea>
                             </div>
                         </div>
                     </div>
@@ -185,9 +193,9 @@
                                         </td>
                                         <td>
                                             <input type="hidden" id="album-rate-value" name="rate[]" value="{if isset($album.conditions.rate[1])}{$album.conditions.rate[1]}{else}0{/if}">
-                                            <a href="javascript:void(0);" class="p-rate-photo" title="Rate photo" id="album-rate" class="p-rate-photo" data-rate="{if isset($album.conditions.rate[1])}{$album.conditions.rate[1]}{else}0{/if}">
+                                            <a href="javascript:void(0);" class="p-rate p-rate-photo p-rate-normal-size" title="[`Rating`]" id="album-rate" class="p-rate-photo" data-rate="{if isset($album.conditions.rate[1])}{$album.conditions.rate[1]}{else}0{/if}">
                                                 {section name=r loop=5 start=0 step=1}
-                                                    <i class="icon16 star-empty"></i>
+                                                    <i class="far fa-star" data-rate-value="{$smarty.section.r.index}"></i>
                                                 {/section}
                                             </a>
                                         </td>
@@ -209,13 +217,14 @@
                                             <label for="condition-tag">[`Tags`]</label>
                                         </td>
                                         <td colspan="2">
-                                            <ul class="box collapsible-content chips rounded small transparent outline">
+                                            <ul class="collapsible-content chips tags rounded small">
                                             {foreach $cloud as $tag}
                                                 <li>
-                                                    <label>
+                                                    <label class="chip">
                                                         <input type="checkbox" name="tag[]" value="{$tag.name}" {if isset($tag.checked)}checked{/if}>
-                                                        <span class="p-tag" style="font-size: {$tag.size}%;" data-id="{$tag.id}">
-                                                            {$tag.name|escape}
+                                                        <span class="p-tag" data-id="{$tag.id}">
+                                                            <i class="fas fa-hashtag"></i>
+                                                            {$tag.name|escape|default:""}
                                                         </span>
                                                     </label>
                                                 </li>
@@ -240,7 +249,7 @@
                                             <label for="condition-access">[`Access`]</label>
                                         </td>
                                         <td>
-                                            <div class="wa-select">
+                                            <div class="wa-select small">
                                                 <select name="access">
                                                     <option value="public" {if isset($album.conditions.status[1]) && $album.conditions.status[1] == 1}selected{/if}>[`public`]</option>
                                                     <option value="private" {if isset($album.conditions.status[1]) && $album.conditions.status[1] == 0}selected{/if}>[`private`]</option>
@@ -256,7 +265,7 @@
                         <div class="field">
                             <div class="name for-input">[`Order`]</div>
                             <div class="value small">
-                                <div class="wa-select">
+                                <div class="wa-select small">
                                     <select name="order">
                                         <option value="">[`uploaded`]</option>
                                         <option value="rate"{if isset($params.order) && $params.order == 'rate'}selected{/if}>[`top rated`]</option>
@@ -287,11 +296,10 @@
 
                 </div>
         </div>
-        <div class="dialog-buttons dialog-footer">
-            <div class="dialog-buttons-gradient">
-                <input type="submit" value="[`Save album`]" class="button">
-                [`or`] <a href="#" class="js-close-dialog">[`cancel`]</a>
-            </div>
+        <div class="dialog-buttons dialog-footer flexbox">
+            <input type="submit" value="[`Save`]" class="button">
+            <a href="#" class="button light-gray js-close-dialog">[`Cancel`]</a>
+            <button type="button" class="button outlined red js-album-delete custom-ml-auto">[`Delete album`]</button>
         </div>
         <input type="hidden" name="type" value="{$album.type}">
         <input type="hidden" name="id" value="{$album.id}">
@@ -301,6 +309,7 @@
     $(function () {
         var d = $("#album-settings-dialog"),
             apply_all_photos_span = $('#apply-all-photos-message');
+
         $("a.p-privacy-settings-link", d).click(function () {
              apply_all_photos_span.removeClass('gray');
              if ($(".p-privacy-settings", d).is(":hidden")) {
@@ -353,6 +362,38 @@
         });
         $('select[name=access]', d).click(function() {
             $('#condition-access').attr('checked', true);
+        });
+
+        $('.js-album-delete').on('click', function() {
+            let album = $.photos.getAlbum(),
+                album_id = album ? album.id : 0;
+
+            $('#album-settings-dialog').data('dialog').close()
+
+            $.photos.confirmDialog({
+                url: '?module=dialog&action=confirmDeleteAlbum&id=' + album_id,
+                onSubmit: function(d, d_instance) {
+                    let del_photos = parseInt($('input[name=delete-photos]:checked', d).val()),
+                        del_sub_album_ids = $('input[name=delete-offspring]:checked', d).val(),
+                        album_ids;
+
+                    if (del_sub_album_ids) {
+                        album_ids = del_sub_album_ids.split(',').reverse();
+                        album_ids.push(album_id);
+                    } else {
+                        album_ids = [album_id];
+                    }
+                    d_instance.close()
+                    $.photos.setCover();
+                    $.photos.deleteAllAlbums(album_ids, del_photos, function() {
+                        $.photos.unsetCover();
+                    });
+                    $.photos.goToHash('');
+                    return false;
+                }
+            });
+
+            return false;
         });
     });
 </script>

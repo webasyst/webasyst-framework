@@ -1,4 +1,11 @@
+/*
+ * Webasyst system-wide design themes & templates manager
+ */
+
 @import "./themes/themes.css";
+
+/* WEBASYST 1 (LEGACY)
+====================== */
 
 .wa-design { margin-bottom: 80px; }
 
@@ -191,7 +198,11 @@ and (orientation : portrait) {
 
 }
 
-/* Styles for WA2 */
+
+
+/* WEBASYST 2
+============= */
+
 #content.flexbox {
     flex-wrap: wrap;
 }
@@ -235,6 +246,9 @@ and (orientation : portrait) {
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
+}
+#content.flexbox #wa-design-container .wa-theme-name-section .search-setting-wrapper [type="search"] {
+    max-width: 16.25rem;
 }
 
 #content.flexbox #wa-design-container .wa-theme-info-section {
@@ -378,6 +392,7 @@ and (orientation : portrait) {
 
 #content.flexbox .wa-theme-select-menu {
     display: flex;
+    box-shadow: 0 0.125em 0.75em -0.25em rgba(0, 0, 0, 0.2);
 }
 #content.flexbox .wa-theme-select-menu > img {
     margin-right: 1rem;
@@ -385,6 +400,12 @@ and (orientation : portrait) {
 #content.flexbox .wa-theme-select-menu.dropdown > .dropdown-toggle::after {
     top: 0.7rem;
 }
+#content.flexbox .wa-theme-select-menu.dropdown > .dropdown-body {
+    height: auto;
+    max-height: calc(100vh - 10rem);
+}
+
+#content.flexbox .wa-theme-block .heading { margin-top: 1rem; margin-bottom: 1rem; word-break: break-all; }
 
 @-moz-keyframes loader-keyframes-pulse {
     0% {
