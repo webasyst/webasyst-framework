@@ -365,10 +365,12 @@ abstract class waMyProfileAction extends waViewAction
                     'value' => '<img src="'.$this->contact->getPhoto().'">',
                 );
             } else {
-                return array(
-                    'name' => $this->form->fields[$id]->getName(null, true),
-                    'value' => $this->contact->get($id, 'html'),
-                );
+                if (method_exists($this->form->fields[$id], 'getName')) {
+                    return array(
+                        'name' => $this->form->fields[$id]->getName(null, true),
+                        'value' => $this->contact->get($id, 'html'),
+                    );
+                }
             }
         }
         return [];
