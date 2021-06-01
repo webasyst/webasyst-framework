@@ -55,9 +55,6 @@
                                                 <span></span>
                                             </span>
                                             <strong class="semibold">[`Public`]</strong>
-                                            <span class="icon shift-2 gray">
-                                                <i class="fas fa-globe fa-xs"></i>
-                                            </span>
                                         </span>
                                         <p class="hint custom-mt-8 custom-mb-8">[`Album is visible in the public gallery`]</p>
                                     </label>
@@ -384,10 +381,7 @@
                         album_ids = [album_id];
                     }
                     d_instance.close()
-                    $.photos.setCover();
-                    $.photos.deleteAllAlbums(album_ids, del_photos, function() {
-                        $.photos.unsetCover();
-                    });
+                    $.photos.deleteAllAlbums(album_ids, del_photos);
                     $.photos.goToHash('');
                     return false;
                 }

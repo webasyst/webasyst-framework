@@ -3925,3 +3925,6 @@ msgstr ""
 
 msgid "Browse plugins"
 msgstr ""
+
+msgid "Publish"
+msgstr ""

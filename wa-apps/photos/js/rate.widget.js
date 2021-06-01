@@ -61,12 +61,12 @@
 
                     let target = e.target;
 
-                    if (target.tagName === 'svg' || target.tagName === 'path') {
+                    if (target.tagName === 'svg') {
+
                         target = $(target);
                         target
                             .prevAll()
-                            .removeClass('fa-star-half-alt')
-                            .attr('data-prefix', 'fas').end()
+                            .addBack()
                             .removeClass('fa-star-half-alt')
                             .attr('data-prefix', 'fas');
 
@@ -83,14 +83,20 @@
                     update.call(self, self.attr('data-rate'));
                 });
 
-            self.on('click', 'svg, path', function (e) {
+
+            self.on('click', function (e) {
 
                 if (settings.hold.call(self)) {
                     return;
                 }
 
+                let target = e.target;
+                if (target.tagName === 'path') {
+                    target = target.ownerSVGElement;
+                }
+
                 let prev_rate = self.attr('data-rate'),
-                    rate = $(this).attr('data-rate-value');
+                    rate = $(target).attr('data-rate-value');
 
                 if (prev_rate == rate) {
                     return;

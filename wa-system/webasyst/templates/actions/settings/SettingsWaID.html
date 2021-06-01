@@ -86,7 +86,7 @@
                                     <div>
                                         {if $user.is_current_contact}
                                             <a href="javascript:void(0)" class="js-connect-yourself bold" data-id="{$user.id}">
-                                                <img class="icon baseline" src="/wa-content/img/wa-settings/ws-waid-green.svg" alt=""> [s`Connect Webasyst ID for my account`]
+                                                <img class="icon baseline" src="/wa-content/img/webasyst-wand-bold.svg" alt=""> [s`Connect Webasyst ID for my account`]
                                             </a>
                                         {else}
                                             {if !$user.waid_invite_datetime}
@@ -154,7 +154,7 @@
                             </td>
                             <td>
                                 <div><a href="{$user.link}" class="bold nowrap">
-                                    <img class="icon baseline" src="/wa-content/img/wa-settings/ws-waid-green.svg" alt="">
+                                    <img class="icon baseline" src="/wa-content/img/webasyst-wand-bold.svg" alt="">
                                     {$user.webasyst_id|escape}</a><i class="shortener"></i>
 </div>
                             </td>

@@ -16,8 +16,8 @@
                         <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}" title="[s`Preview`]" rel="noopener" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
                         <a href="http://{$page.domain}/{$page_route}{$page.full_url}{if !$page.status}?preview={$preview_hash}{/if}"><i class="fas fa-external-link-alt fa-sm"></i></a>
                     {/if}
+                    <br />
                 {/if}
-                <br />
             </div>
         </div>
         {if $page}
@@ -29,26 +29,27 @@
 
                 {if !empty($page.update_datetime)}
                     <li>
-                        <span class="gray h6">{$page.update_datetime|wa_datetime:"humandatetime"}</span>
+                        <span class="hint bold">{$page.update_datetime|wa_datetime:"humandatetime"}</span>
                     </li>
                 {/if}
                 <li>
                     <a href="#" class="small js-page-settings-toggle" id="wa-page-settings-toggle">
-                        <i class="fas fa-pen"></i> [s`Page settings`]
+                        <i class="fas fa-edit"></i> [s`Page settings`]
                     </a>
                 </li>
                 <li>
                     <a class="small wa-page-delete js-page-delete" href="?module=pages&action=delete">
-                        <i class="fas fa-times-circle"></i> [s`Delete`]</a>
+                        <i class="fas fa-trash-alt"></i> [s`Delete`]
+                    </a>
                 </li>
             </ul>
         {/if}
         <div id="wa-page-settings" class="fields" style="{if $page}display: none;{/if}">
             <div class="fields-group">
                 <div class="field">
-                    <div class="name bold">[s`Page name`]</div>
+                    <div class="name for-input">[s`Page name`]</div>
                     <div class="value">
-                        <input type="text" class="bold long" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
+                        <input type="text" class="bold long large" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
                     </div>
                 </div>
                 <div class="field">
@@ -70,12 +71,12 @@
                 {/if}
 
                 <div class="field wa-page-url">
-                    <div class="name bold">[s`Page URL`]</div>
-                    <div class="value wa-page-app-url">
-                        {if !empty($url)}{$url_decoded|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
+                    <div class="name">[s`Page URL`]</div>
+                    <div class="value wa-page-app-url small">
+                        {if !empty($url)}{$url_decoded|escape}{/if}<input type="text" class="short" name="info[url]" value="{if $page}{$page.url|escape}{/if}" />
 
                         {if !empty($warnings)}
-                            <div class="state-error small">
+                            <p class="state-caution-hint">
                                 {if isset($warnings.no_site_storefront)}
                                     [s`This page will not be published because there is no settlement, or routing rule, for this app in the site structure settings. Set up a settlement in Site app’s “Structure” section to publish this page.`]
                                 {elseif isset($warnings.deleted_site_storefront)}
@@ -83,16 +84,16 @@
                                 {elseif isset($warnings.several_site_storefront)}
                                     [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
                                 {/if}
-                            </div>
+                            </p>
                         {/if}
                     </div>
                 </div>
-                {if empty($url)}
+                {if empty($url) && empty($warnings)}
                 <div class="field">
                     <div class="value submit">
-                        <div class="state-error small">
+                        <p class="state-caution-hint">
                             [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
-                        </div>
+                        </p>
                     </div>
                 </div>
                 {/if}
@@ -101,19 +102,20 @@
 
 
             {if !$page || !$page.id}
-                <a id="wa-page-advanced-params-link" href="#" class="hint">
-                    [s`more`] <i class="fas fa-caret-down"></i>
+                <a id="wa-page-advanced-params-link" href="#" class="small gray">
+                    [s`more`]
+                    <i class="fas fa-caret-down"></i>
                 </a>
             {/if}
             <div id="wa-page-advanced-params" {if !$page || !$page.id} style="display:none"{/if}>
                 <div class="fields-group">
                     <div class="field">
-                        <div class="name">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
+                        <div class="name for-input">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
                         <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold long" /></div>
                     </div>
                     {foreach $params as $n => $p}
                     <div class="field">
-                        <div class="name">{$vars[$n]}</div>
+                        <div class="name for-input">{$vars[$n]}</div>
                         {if $n == 'description'}
                         <div class="value"><textarea name="params[{$n}]">{$p|escape}</textarea></div>
                         {else}
@@ -140,27 +142,26 @@
                 </div>
                 <div class="fields-group og-group" {if empty($og_params)}style="display: none;"{/if}>
                     <div class="field">
-                        <div class="name">[s`Social sharing title`] <span class="hint">og:title</span></div>
+                        <div class="name for-input">[s`Social sharing title`] <span class="hint">og:title</span></div>
                         <div class="value">
                             <input type="text" name="og[title]" class="long bold" value="{ifset($og_params.title, '')|escape}" {if empty($og_params)}disabled{/if}>
                         </div>
                     </div>
                     <div class="field">
-                        <div class="name">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
+                        <div class="name for-input">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
                         <div class="value">
                             <input type="text" name="og[image]" class="long" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
-                            <br>
-                            <span class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</span>
+                            <p class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</p>
                         </div>
                     </div>
                     <div class="field">
-                        <div class="name">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
+                        <div class="name for-input">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
                         <div class="value">
                             <input type="text" name="og[video]" class="long" value="{ifset($og_params.video, '')|escape}" {if empty($og_params)}disabled{/if}>
                         </div>
                     </div>
                     <div class="field">
-                        <div class="name">[s`Social sharing description`] <span class="hint">og:description</span></div>
+                        <div class="name for-input">[s`Social sharing description`] <span class="hint">og:description</span></div>
                         <div class="value">
                             <textarea name="og[description]"{if empty($og_params)} disabled{/if}>{ifset($og_params.description, '')|escape}</textarea>
                         </div>
@@ -169,12 +170,7 @@
                         <div class="name">[s`Social sharing type`] <span class="hint">og:type</span></div>
                         <div class="value">
                             <input type="text" name="og[type]" placeholder="" value="{ifset($og_params.type, '')}" {if empty($og_params)}disabled{/if}>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <div class="value">
-                            <span class="hint">[s`Please refer to <a href="http://ogp.me" rel="noopener" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</span>
+                            <p class="hint">[s`Please refer to <a href="http://ogp.me" rel="noopener" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</p>
                         </div>
                     </div>
                 </div>
@@ -187,11 +183,11 @@
 
                 <div class="fields-group">
                     <div class="field">
-                        <div class="name">[s`Page custom parameters`]</div>
+                        <div class="name for-input">[s`Page custom parameters`]</div>
                         <div class="value">
-                            <textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
-{/foreach}{/if}</textarea><br />
-                            <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a> <i class="fas fa-external-link-alt"></i></span>
+                            <textarea name="other_params" class="small">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
+{/foreach}{/if}</textarea>
+                            <p class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[s`https://developers.webasyst.com/templates/pages/`]" rel="noopener" target="_blank">[s`Help`]</a> <i class="fas fa-external-link-alt"></i></p>
                         </div>
                     </div>
                 </div>
@@ -199,7 +195,7 @@
         </div>
     </div>
     <div class="wa-editor-core-wrapper">
-        <ul class="tabs overflow-dropdown wa-editor-wysiwyg-html-toggle bordered-bottom">
+        <ul class="tabs overflow-dropdown wa-editor-wysiwyg-html-toggle bordered-bottom custom-ml-8 small">
             <li class="selected">
                 <a class="wysiwyg js-is-wa2" href="#">[s`WYSIWYG`]</a>
             </li>
@@ -245,7 +241,7 @@
         </div>
         <div class="dialog-footer">
             <input type="submit" class="button" value="[s`Upload`]">
-            [`or`] <a href="#" class="js-close-dialog">[s`cancel`]</a>
+            <a href="#" class="js-close-dialog button light-gray">[s`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -257,8 +253,8 @@
             [s`<b>WYSIWYG editor may change your HTML code.</b><br><br>It is necessary for correct text formatting. Smarty code may be broken and outdated HTML tags may be replaced with modern ones.<br><br>Are you sure to switch to WYSIWYG editor?`]
         </div>
         <div class="dialog-footer">
-            <input type="submit" class="button" value="[`Switch`]" />
-            [`or`] <a href="#" class="js-close-dialog">[`cancel`]</a>
+            <input type="submit" class="button orange" value="[`Switch`]" />
+            <a href="#" class="js-close-dialog button light-gray">[`Cancel`]</a>
         </div>
     </form>
 </div>

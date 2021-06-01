@@ -32,9 +32,6 @@
                                         <span></span>
                                     </span>
                                     <strong class="semibold">[`Public`]</strong>
-                                    <span class="icon shift-2 gray">
-                                        <i class="fas fa-globe fa-xs"></i>
-                                    </span>
                                     <p class="hint custom-mt-4">[`Photos automatically appear in the public gallery`]</p>
                                 </label>
                             </div>
@@ -119,7 +116,7 @@
             <!-- #3 -->
             <div id="p-upload-step3" style="display: none;">
                 <div id="p-upload-photolist">
-                    <ul class="zebra files"></ul>
+                    <div class="files"></div>
                 </div>
             </div>
 
@@ -127,12 +124,12 @@
         <div class="dialog-footer">
 
             <div id="p-upload-step1-buttons">
-                <a href="#" class="js-hide-dialog cancel button light-gray" id="p-upload-step1-cancel">[`Cancel`]</a>
+                <a href="#" class="js-close-dialog cancel button light-gray" id="p-upload-step1-cancel">[`Cancel`]</a>
             </div>
 
             <div id="p-upload-step2-buttons" style="display: none;">
                 <input type="button" class="button purple start" value="[`Start upload`]" id="p-start-upload-button">
-                <a href="#" class="js-hide-dialog button light-gray cancel">[`Cancel`]</a>
+                <a href="#" class="js-close-dialog button light-gray cancel">[`Cancel`]</a>
             </div>
 
             <div id="p-upload-step3-buttons" style="display: none;">
@@ -141,9 +138,10 @@
                         <div class="progressbar">
                             <div class="progressbar-line-wrapper text-outside">
                                 <div class="progressbar-outer">
-                                    <div class="progressbar-inner bg-purple fileupload-progressbar"></div>
+                                    <div class="progressbar-inner bg-purple fileupload-progressbar">
+                                        <div class="progressbar-text width-50" id="p-upload-filescount"></div>
+                                    </div>
                                 </div>
-                                <div class="progressbar-text" id="p-upload-filescount"></div>
                             </div>
                         </div>
                         <div id="upload-error" style="display:none" class="state-error">
@@ -151,7 +149,7 @@
                         </div>
                     </div>
                     <div>
-                        <a href="#" class="button light-gray js-hide-dialog cancel">[`Stop upload`]</a>
+                        <a href="#" class="button light-gray js-close-dialog cancel">[`Stop upload`]</a>
                     </div>
                 </div>
             </div>
@@ -173,45 +171,61 @@
 {capture name="template-upload"}{literal}
 
     {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
-    <li class="template-upload">
-        <div class="p-upload-onephoto-progress">
-            <div class="p-photo-filename">
-                {%=file.name%}
-                <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+    <div class="template-upload">
+        <span class="bold">{%=file.name%}</span>
+        <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+        <div class="progressbar custom-my-8">
+            <div class="progressbar-line-wrapper text-inside">
+                <div class="progressbar-outer">
+                    <div class="progressbar-inner bg-purple">
+                    </div>
+                </div>
             </div>
-            <span class="start"></span><span class="cancel"></span>
         </div>
-        &nbsp;
-    </li>
+        <span class="start"></span>
+        <span class="cancel"></span>
+    </div>
     {% } %}
 {/literal}{/capture}
 {capture name="template-download"}{literal}
     {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
-    <li class="template-upload {% if (file.error) { %}error{% } %}">
+    <div class="template-upload {% if (file.error) { %}error{% } %}">
         {% if (file.error) { %}
-            <div class="p-upload-onephoto-progress" style="width:100%">
-                <div class="p-photo-filename">
-                    <b>{%=file.name%}</b>
-                    {% if (typeof file.error === 'object' && file.error instanceof SyntaxError) { %}
-                        {% if (file.responseText) { %}
-                            {%#file.responseText%}
-                        {% } else { %}
-                            {%=$_('Failed to upload. Most probably, there were not enough memory to create thumbnails.')%}.
-                        {% } %}
-                    {% } else { %}
-                        {%=file.error%}
-                    {% } %}
+            <span class="bold">{%=file.name%}</span>
+            <div class="progressbar custom-my-8">
+                <div class="progressbar-line-wrapper text-inside">
+                    <div class="progressbar-outer">
+                        <div class="progressbar-inner bg-red" style="width: 100%">
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="state-error-hint">
+                {% if (typeof file.error === 'object' && file.error instanceof SyntaxError) { %}
+                    {% if (file.responseText) { %}
+                        {%#file.responseText%}
+                    {% } else { %}
+                        {%=$_('Failed to upload. Most probably, there were not enough memory to create thumbnails.')%}.
+                    {% } %}
+                {% } else { %}
+                    {%=file.error%}
+                {% } %}
+            </div>
         {% } else { %}
-            <div class="p-upload-onephoto-progress" style="width:100%">
-                <div class="p-photo-filename">
-                    {%=file.name%} <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+            <span class="bold">{%=file.name%}</span>
+            <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+            <div class="progressbar custom-mt-8">
+                <div class="progressbar-line-wrapper text-inside">
+                    <div class="progressbar-outer">
+                        <div class="progressbar-inner bg-green" style="width: 100%">
+                        </div>
+                    </div>
                 </div>
             </div>
         {% } %}
         &nbsp;
-    </li>
+    </div>
     {% } %}
 {/literal}{/capture}
 
@@ -253,12 +267,6 @@
             } else {
                 $('#upload-album-name-field').show();
             }
-        });
-
-        $dialog.find('.js-hide-dialog').on('click', function(e) {
-            e.preventDefault();
-            $dialog.hide();
-            $.photos.dialogClearSteps.call($dialog);
         });
 
         $(document).on('close', function () {

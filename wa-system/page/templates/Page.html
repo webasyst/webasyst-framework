@@ -91,9 +91,10 @@
 
     .wa-page-urls a i { margin: 0}
 
-    .block-pages .heading { margin-bottom: 10px; margin-top: 20px; }
+    .block-pages { margin-bottom: 2rem; }
+    .block-pages .heading { margin-top: 1rem; }
     .block-pages .heading span { word-break: break-all; }
-    .block-pages ul.menu a, .block-pages ul.menu a svg, .block-pages ul.menu a .hint { color: #0BAFE6 !important; }
+    .block-pages ul.menu a svg { color: var(--accent-color) !important; }
     .block-pages ul.menu li a { word-break: break-all; }
     .block-pages.unsettled ul.menu a, .block-pages.unsettled ul.menu a svg, .block-pages.unsettled ul.menu a .hint { color: var(--text-color-hint) !important; }
     .block-pages.unsettled svg { color: var(--text-color-hint); }
@@ -136,7 +137,7 @@
     .wa-dropdown ul.tabs li.no-tab img { float: left; vertical-align: top; margin:2px 0 0 -32px; width: 24px; height: 24px; }
     .wa-dropdown .field .name { word-wrap: break-word; }
 
-    #wa-page-advanced-params-link { margin-left: 180px; }
+    #wa-page-advanced-params-link { margin-left: 166px; }
 
     .expander { cursor:pointer; float:left;}
 </style>
@@ -201,7 +202,7 @@
                 <form class="dialog-body" method="post" action="?module=pages&action=settle">
                     <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
                     <h3 class="dialog-header">[s`Unpublished pages`]</h3>
-                    <div class="dialog-content">
+                    <div class="dialog-content small">
                         <p>[`These pages are not connected to any of the site’s structure rules and are therefore not displayed on your site. To publish these pages now, select a site structure rule for them:`]</p>
                         <div class="wa-select">
                             <select>
@@ -215,7 +216,8 @@
                         </div>
                     </div>
                     <footer class="dialog-footer">
-                        <input class="button" type="submit" value="[s`Save`]"> [s`or`] <a class="js-close-dialog" href="#">[s`cancel`]</a>
+                        <input class="button" type="submit" value="[s`Publish`]">
+                        <a class="js-close-dialog button light-gray" href="#">[s`Cancel`]</a>
                     </footer>
                 </form>
             </div>

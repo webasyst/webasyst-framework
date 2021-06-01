@@ -6,14 +6,13 @@
         </header>
         <div class="dialog-content">
             {if !empty($albums)}
-                <div class="fields">
-                    <div class="field">
+
                 {function choose_albums_menu parent=0 padding=0}
                         <ul class="menu">
                     {foreach $albums as $album}
                         {if $album.parent_id == $parent}
                             <li>
-                                <div class="value" style="padding-left:{$padding}rem">
+                                <div class="item" style="padding-left:{$padding}rem">
                                     <i class="fas fa-{if $album.type eq photosAlbumModel::TYPE_STATIC}images{else}filter{/if}"></i>
                                     <label>
                                         <span class="wa-checkbox">
@@ -33,9 +32,9 @@
                     {/foreach}
                         </ul>
                 {/function}
-                    {call choose_albums_menu}
-                    </div>
-                </div>
+
+                {call choose_albums_menu}
+
             {else}
                 [`No one album exists`]
             {/if}

@@ -96,7 +96,7 @@
                         data.isValidated) {
                     data.submit();
                 }
-                var cnt = that._files.children('li').length;
+                var cnt = that._files.children().length;
                 $('#p-upload-step2 h3').html($_('Upload photos (%d)').replace('%d', cnt) + ' <span class="hint">' + '</span>');
                 $('#p-upload-step1').hide();
                 $('#p-upload-step1-buttons').hide();
@@ -121,7 +121,7 @@
                     // Iframe Transport does not support progress events.
                     // In lack of an indeterminate progress bar, we set
                     // the progress to 100%, showing the full animated bar:
-                    data.context.find('.p-upload-onephoto-progress').css(
+                    data.context.find('.progressbar-inner').css(
                         'width',
                         parseInt(100, 10) + '%'
                     );
@@ -228,7 +228,7 @@
             progress: function (e, data) {
                 if (data.context) {
 
-                    data.context.find('.p-upload-onephoto-progress').css(
+                    data.context.find('.progressbar-inner').css(
                         'width',
                         parseInt(data.loaded / data.total * 90, 10) + '%'
                     );

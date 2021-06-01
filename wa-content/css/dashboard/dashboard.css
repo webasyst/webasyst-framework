@@ -163,8 +163,8 @@
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li {
   width: 96px;
-  margin-bottom: 1rem;
-  margin-right: 0.86rem;
+  margin-bottom: 1.25rem;
+  margin-right: 0.875rem;
 }
 @media screen and (max-width: 760px) {
   #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li,
@@ -180,7 +180,7 @@
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li a img {
   width: 72px;
   height: 72px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li a .badge,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li a .badge {

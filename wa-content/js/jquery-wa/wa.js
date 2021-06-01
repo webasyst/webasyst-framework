@@ -44,7 +44,7 @@
             if (is_loaded) {
                 deferred.resolve();
             } else {
-                $.getScript("https://code.jquery.com/ui/1.12.1/jquery-ui.js", function () {
+                $.getScript("//code.jquery.com/ui/1.12.1/jquery-ui.js", function () {
                     $('<link/>', { href: "//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css", rel: 'stylesheet' }).appendTo('head');
                     is_loaded = true;
                     deferred.resolve();

@@ -55,13 +55,9 @@
                         </div>
                     </div>
                     {if $photo.status != 1 && $photo.hash}
-                        <div class="field">
-                            <div class="value">
-                            <span class="alert warning">
-                                <i class="fas fa-exclamation-triangle"></i> [`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]
-                            </span>
-                            </div>
-                        </div>
+                        <p class="state-caution-hint">
+                            <i class="fas fa-exclamation-triangle"></i> [`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]
+                        </p>
                     {/if}
                 </div>
             </div>

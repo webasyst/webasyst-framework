@@ -65,6 +65,7 @@
             </div>
         </div>
     </div>
+    <div id="full-cover" style="display:none;"></div>
 </div>
 
 <script type="text/javascript">
@@ -80,9 +81,8 @@
         %}
         <section class="p-photo-header">
             <h3 class="flexbox middle space-16">
-                <a href="#{%#o.hash%}/" title="[`Back`]" class="gray"><i class="fas fa-arrow-circle-left"></i></a>
-                <span class="editable title" id="photo-name">{%#p.name%}</span>
-                <input type="text" id="photo-name-input" class="p-photo-h1-edit" style="display:none;">
+                <span class="editable title custom-ml-0" id="photo-name">{%#p.name%}</span>
+                <input type="text" id="photo-name-input" class="p-photo-h1-edit bold" style="display:none;">
                 <span class="p-rate nowrap flexbox middle space-10">
                 <a href="javascript: void(0);" title="[`Rate photo`]" id="photo-rate" class="p-rate-photo" data-rate="{%#p.rate%}">
                     {%#$.photos.getRatingHtml(p.rate, 16, true)%}
@@ -131,22 +131,22 @@
             <div class="p-image-corner top right">
                 {% if(p.edit_rights) { %}
                     <a href="#" id="photo-loupe-link" class="p-loupe-button" style="display:none;">{/literal}
-                        <i class="maximize fas fa-search-plus fa-3x" title="[`Full size`]"></i>
-                        <i class="minimize fas fa-search-minus fa-3x" title="[`Normal size`]" style="display:none;"></i>
+                        <i class="maximize fas fa-search-plus" title="[`Full size`]"></i>
+                        <i class="minimize fas fa-search-minus" title="[`Normal size`]" style="display:none;"></i>
                     </a>{literal}
                 {% } %}
                 <!-- plugin hook: backend-photo-image-corner-top-right -->
             </div>
-            <i class="fas fa-angle-left fa-2x p-image-nav p-rewind" title="[`← Previous`]"></i>
-            <i class="fas fa-angle-right fa-2x p-image-nav p-ff " title="[`Next →`]"></i>
+            <i class="fas fa-angle-left p-image-nav p-rewind" title="[`← Previous`]"></i>
+            <i class="fas fa-angle-right p-image-nav p-ff " title="[`Next →`]"></i>
             <a href="#" class="next" title="[`Next →`]">
                 <img {% if (p.thumb_big.url2x) { %} srcset="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb_big.url2x %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x"{% } %} src="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo"/>
             </a>
+            <!-- stacks only -->
+            <ul class="thumbs p-mini-stream" id="stack-stream"></ul>
             <section id="photo-stream"></section>
         </div>
     </div>
-    <!-- stacks only -->
-    <ul class="thumbs p-mini-stream" id="stack-stream"></ul>
     <div class="article">
         <div class="article-header" id="p-info-area"></div>
         <div class="article-body">
@@ -177,10 +177,10 @@
         {% if (o.frontend_link_template) { %}
             {% if (photo.status <= 0 && photo.hash) { %}
                 <i class="fas fa-lock fa-xs"></i>
-                [`Private link`]:&nbsp;<a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a>
+                &nbsp;[`Private link`]:&nbsp;<a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray break-all">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a>
             {% } else if (photo.status > 0) { %}
-                [`Public link`]:&nbsp;
-                <a id="photo-frontend-link" class="bold" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">
+                <span class="desktop-only">[`Public link`]:&nbsp;</span>
+                <a id="photo-frontend-link" class="bold break-all" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">
                     {%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}
                 </a>
                 <input type="text" id="photo-frontend-url-input" class="bold short" style="display:none;">
@@ -232,7 +232,7 @@
     <!-- end plugin hook: "backend_photo_toolbar.top" -->
 
     <div class="dropdown js-p-toolbar-dropdown">
-        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-share"></i> [`Share`]</button>
+        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-share text-blue"></i> <span class="desktop-and-tablet-only">[`Share`]</span></button>
         <div class="dropdown-body">
             <ul class="menu compact" id="share-menu">
                 <li data-action='embed'>
@@ -272,18 +272,18 @@
     </div>
 
     <div class="dropdown js-p-toolbar-dropdown">
-        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-edit"></i> [`Edit`]</button>
+        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-edit text-orange"></i> <span class="desktop-and-tablet-only">[`Edit`]</span></button>
         <div class="dropdown-body">
             <ul class="menu compact" id="edit-menu">
                 <li data-action='rotate-left'>
                     <a href="javascript:void(0);">
-                        <i class="fas fa-undo text-blue"></i>
+                        <i class="fas fa-undo text-orange"></i>
                         <span>[`Left`]</span>
                     </a>
                 </li>
                 <li data-action='rotate-right'>
                     <a href="javascript:void(0);">
-                        <i class="fas fa-redo text-blue"></i>
+                        <i class="fas fa-redo text-orange"></i>
                         <span>[`Right`]</span>
                     </a>
                 </li>
@@ -313,7 +313,7 @@
 
 {literal}
     <div class="dropdown js-p-toolbar-dropdown">
-        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-hashtag"></i> [`Organize`]</button>
+        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-hashtag text-green"></i> <span class="desktop-and-tablet-only">[`Organize`]</span></button>
         <div class="dropdown-body">
             <div class="box">
                 <h5 class="heading custom-mt-0 custom-mb-4 custom-ml-0">[`Tags`]</h5>
@@ -365,7 +365,7 @@
     </div>
 
 <div class="dropdown js-p-toolbar-dropdown">
-    <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-info-circle"></i> [`Info`]</button>
+    <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-info-circle text-gray"></i> <span class="desktop-and-tablet-only">[`Info`]</span></button>
     <div class="dropdown-body small" style="min-width: 300px;">
         <section class="box" id="photo-author">
             {% if (author && photo) { %}
@@ -467,15 +467,11 @@
 [`Size`]: <strong>{%# $.wa.util.formatFileSize(photo.size) %}</strong><br>
 {% if (photo.original_exists && photo.edit_rights ) { %}
 <br>
-<h5 class="heading">[`Original image`]</h5>
-<ul class="menu original-info">
-    <li>
-        <a href="?module=photo&action=download&photo_id={%# photo.id %}&original=1"><i class="fas fa-lock"></i><span>{%# photo.name + '.' + photo.ext %}</span></a>
-    </li>
-    <li>
-        <a href="javascript:void(0);" id="restore-original">[`Revert to original`]</a>
-    </li>
-</ul>
+<div class="original-info">
+    [`Original image`]: <a href="?module=photo&action=download&photo_id={%# photo.id %}&original=1"><i class="fas fa-download"></i> <span>{%# photo.name + '.' + photo.ext %}</span></a>
+    <br><br>
+    <a class="button outlined light-gray small" onclick="$.photos.restoreOriginal(this)" href="javascript:void(0);" id="restore-original">[`Revert to original`]</a>
+</div>
 {% } %}
 {/literal}{/capture}
 
@@ -533,18 +529,20 @@
         <h3 class="dialog-header">[`Assign tags`] <span class="gray js-selected-counter">(N)</span></h3>
         <div class="dialog-content">
             <textarea id="photos-list-tags" class="full-width" cols="30" rows="5"></textarea>
-            <p id="photos-popular-tags" class="tags small hint">
+            <div id="photos-popular-tags" class="tags">
                 {if $popular_tags}
-                    [`Popular tags`]:
+                    <span class="smaller">[`Popular tags`]:</span>
+                    <ul class="chips tags smaller custom-my-0">
                     {foreach $popular_tags as $tag}
-                        <span>
+                        <li>
                             <a data-tag-id="{$tag.id}" href="javascript:void(0);">
                                 {$tag.name|escape}
                             </a>
-                        </span>
+                        </li>
                     {/foreach}
+                    </ul>
                 {/if}
-            </p>
+            </div>
             <div id="photo-tags-remove" style="display: none">
                 <h3>[`Remove tags`]</h3>
                 <div id="photos-tags-remove-list">
@@ -552,7 +550,8 @@
             </div>
         </div>
         <div class="dialog-footer">
-            <input class="button" type="submit" value="[`Save`]"> [`or`] <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+            <input class="button" type="submit" value="[`Save`]">
+            <a class="js-close-dialog button light-gray" href="javascript:void(0);">[`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -561,13 +560,14 @@
 <div id="photo-blog-dialog" class="dialog">
     <div class="dialog-background"></div>
     <form action="" class="dialog-body">
-        <h3 class="dialog-header">[`Private photos selected`] <i class="icon16 exclamation"></i></h3>
+        <h3 class="dialog-header">[`Private photos selected`] <i class="fas fa-exclamation-triangle"></i></h3>
         <div class="dialog-content">
             <p>[`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]</p>
         </div>
         <div class="dialog-footer">
             <div class="dialog-buttons-gradient">
-                <input class="button yellow" type="submit" value="[`Embed anyway`]"> [`or`] <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                <input class="button yellow" type="submit" value="[`Embed anyway`]">
+                <a class="js-close-dialog button light-gray" href="javascript:void(0);">[`Cancel`]</a>
             </div>
         </div>
     </form>

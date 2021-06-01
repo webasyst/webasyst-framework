@@ -223,7 +223,7 @@
 
             {* Theme actions *}
             <div class="dropdown js-theme-actions-dropdown custom-mb-24">
-                <button class="dropdown-toggle button light-gray outlined{if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
+                <button class="dropdown-toggle button light-1 outlined{if $wa->isMobile()} full-width{/if}" type="button">[s`Actions`]</button>
                 <div class="dropdown-body right dd-long dd-wide">
                     <ul class="menu">
                         {if !$_is_trial}
@@ -315,7 +315,7 @@
                         {/if}
                         <li>
                             <a class="js-theme-delete{if $theme.system} disabled{/if}" href="#" data-confirm="[s`This will permanently delete theme without the ability to recover. Are you sure?`]" data-success="[s`Design theme deleted.`]">
-                                <i class="fas fa-times-circle text-red"></i>
+                                <i class="fas fa-trash-alt text-red"></i>
                                 <span>
                                     [s`Delete theme`]
                                     {if $theme.system}<span class="hint flexbox">[s`Default theme cannot be deleted`]</span>{/if}

@@ -123,22 +123,20 @@
 
     $.photos.menu.register('photo', '#edit-menu', {
         beforeAnyAction: function() {
-            $.photos.setCover();
+            $.photos.setCover(true);
         },
         rotateLeftAction: function() {
             $.photos.rotate($.photos.getPhotoId(), 'left', function() {
-                $.photos.unsetCover();
+                $.photos.unsetCover(true);
             });
         },
         rotateRightAction: function() {
             $.photos.rotate($.photos.getPhotoId(), 'right', function() {
-                $.photos.unsetCover();
+                $.photos.unsetCover(true);
             });
         },
 
-        onInit: function() {
-            $(window).resize($.photos.centralizeLoadingIcon);
-        }
+        onInit: function() { }
     });
 
     $.photos.menu.register('photo', '#share-menu', {
@@ -288,15 +286,6 @@
           return false;
         }
 
-    });
-
-    $('#restore-original').on('click', function() {
-        if (confirm($_('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?'))) {
-            $.photos.setCover();
-            $.photos.restoreOriginal($.photos.getPhotoId(), function() {
-                $.photos.unsetCover();
-            });
-        }
     });
 
 })(jQuery);

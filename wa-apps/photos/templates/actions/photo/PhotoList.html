@@ -92,7 +92,7 @@
                     <button class="dropdown-toggle button light-gray js-toolbar-dropdown-button" type="button">
                         <span class="desktop-only">[`Selected photos`]</span>
                         <span class="mobile-only tablet-only">[`Selected`]</span>
-                        <span class="badge smaller js-count" style="display:none"></span>
+                        <span class="badge smaller blue js-count" style="display:none"></span>
                     </button>
                     <div class="dropdown-body custom-py-16" id="p-toolbar">
 
@@ -299,7 +299,7 @@
                                     <div class="p-image-corner top right"></div>
                                     <div class="cursor-pointer" onclick="location.href = this.getAttribute('data-href')" data-href="#/album/{$a.id}/">
                                         {if $a.key_photo}
-                                            <img src="{$a.key_photo.thumb_96x96.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if}" alt="{$a.name|escape}">
+                                            <img srcset="{$a.key_photo.thumb_96x96.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if} 1x, {$a.key_photo.thumb_96x96.url2x}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if} 2x" src="{$a.key_photo.thumb_96x96.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if}" alt="{$a.name|escape}">
                                         {else}
                                             <img src="{$wa_app_static_url}img/album-dummy.png" alt="{$a.name|escape}" style="max-width:100px">
                                         {/if}
@@ -455,7 +455,7 @@
                         <i class="fas fa-lock p-private-photo" title="[`Private photo`]"></i>
                     {% } %}
                 </div>
-                <img src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" />
+                <img srcset="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb.url2x%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x" src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" />
             </a>
         </div>
 

@@ -144,7 +144,7 @@ html {
 
     --card-background:                        #fff;
 
-    --thumbs-selected-color:                  #ffdf07;
+    --thumbs-selected-color:                  var(--accent-color);
     --thumbs-highlighted-color:               #fe2;
 
     --tooltip-background-color:               #fff;
@@ -480,7 +480,7 @@ textarea.largest { font-size: 150%; height: 11em; }
 .wa-checkbox input { display: none; }
 .wa-checkbox input + span { position: relative; display: inline-block; vertical-align: top; width: 1em; line-height: 1.5em; height: 1em; border-radius: 0.25em; border: 1px solid var(--background-color-checkbox-border); background: var(--background-color-input); cursor: pointer; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 .wa-checkbox input + span.default:before { content: ""; position: absolute; top: 20%; left: 20%; width: 60%; height: 60%; border-radius: 50%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
-.wa-checkbox input + span .icon { display: inline-block; vertical-align: top; width: 100%; visibility: hidden; font-size: 0.75em; margin-top: 0.125em; line-height: 1em; text-align: center; color: var(--white); }
+.wa-checkbox input + span .icon { display: inline-block; vertical-align: top; width: 100%; visibility: hidden; font-size: 0.75em !important; margin-top: 0.125em; line-height: 1em; text-align: center; color: var(--white); }
 .wa-checkbox input + span .icon svg { color: var(--white) !important; margin: 0 !important; }
 .wa-checkbox input:checked + span { background: var(--accent-color); }
 .wa-checkbox input:checked + span.default:before { background: var(--text-color-input); }
@@ -1192,11 +1192,11 @@ ul.menu > li > ul.menu { margin: 0; }
 ul.menu > li > a,
 ul.menu > li > .item { outline: none; -moz-outline: none; font-style: normal; text-decoration: none; color: var(--menu-link-color); display: flex; padding: 0.5rem 1rem; cursor: pointer; }
 ul.menu > li > a svg, ul.menu > li > a .icon > svg,
-ul.menu > li > .item svg, ul.menu > li > .item .icon > svg { flex: 0 0 1.25rem /* 1.25 as declared in .fa-fw */; font-size: 1rem /* fa's 16px best display size */; max-width: 1.25rem /* as declared in .fa-fw */; position: relative; color: var(--menu-glyph-color); }
+ul.menu > li > .item svg, ul.menu > li > .item .icon > svg { flex: 0 0 1.25em /* 1.25 as declared in .fa-fw */; font-size: 1em /* fa's 16px best display size */; max-width: 1.25em /* as declared in .fa-fw */; position: relative; color: var(--menu-glyph-color); }
 ul.menu > li > a svg:not(:last-child),
 ul.menu > li > .item svg:not(:last-child) { margin-right: 0.5rem; /* affects main icon glyphs only */ }
 ul.menu > li > a .icon,
-ul.menu > li > .item .icon { flex: 0 0 1rem; max-width: 1rem; max-height: 1rem; font-size: 1rem; margin: 0 0.625rem 0 0.125rem; /* 1.25 -> 1.0 + margins for custom icons */ }
+ul.menu > li > .item .icon { flex: 0 0 1em; max-width: 1em; max-height: 1em; font-size: 1em; margin: 0 0.625em 0 0.125em; /* 1.25 -> 1.0 + margins for custom icons */ }
 ul.menu > li > a .userpic,
 ul.menu > li > a .size-20,
 ul.menu > li > .item .userpic,
@@ -1399,6 +1399,10 @@ ul.chips.smallest > li > .chip { padding-top: 0.25em; padding-bottom: 0.25em; }
 .bricks > .brick.accented { background: var(--accent-color); color: var(--white); box-shadow: 0 0.25em 1em -0.25em rgba(0, 0, 0, 0.25); }
 .bricks > a.accented > .icon,
 .bricks > .brick.accented > .icon { color: var(--white) !important; }
+.bricks > a.shadowed,
+.bricks > .brick.shadowed { box-shadow: 0 0.125em 0.75em -0.25em rgba(0, 0, 0, 0.2); }
+.bricks > a.shadowed:hover,
+.bricks > .brick.shadowed:hover { box-shadow: 0 0.25em 1em -0.25em rgba(0, 0, 0, 0.2); }
 .bricks > a > .icon,
 .bricks > .brick > .icon { display: block; font-size: 1.5rem; margin-bottom: 0.5rem; }
 .bricks > a > .count,
@@ -1764,7 +1768,7 @@ ul.thumbs.li300px > li { width: 300px; }
 ul.thumbs.li350px > li { width: 350px; }
 ul.thumbs > li.selected { /* nothing! */ }
 ul.thumbs > li.selected img { border: 0.25rem solid var(--thumbs-selected-color); margin: -0.25rem; }
-ul.thumbs > li.shadowed img { box-shadow: 0 1rem 2rem -0.25rem rgba(0, 0, 0, 0.1); }
+ul.thumbs > li.shadowed img { box-shadow: 0 1rem 2.5rem -0.5rem rgba(0,0,0,0.3), 0 0.5rem 1rem -0.75rem rgba(0,0,0,0.7); }
 ul.thumbs > li.highlighted { background: inherit; }
 ul.thumbs > li.highlighted img { box-shadow: 0 0.25rem 1.5rem -0.25rem var(--thumbs-highlighted-color); }
 
@@ -1875,6 +1879,7 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
     .dialog .dialog-body .dialog-footer { margin-top: auto; }
 
 }
+.dialog ~ .ui-autocomplete { z-index: 1051 }
 
 /* Paging
 --------- */
@@ -2061,6 +2066,12 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
 .ui-autocomplete.ui-menu .ui-menu-item-wrapper { padding: 0.5rem 1rem !important; }
 .ui-autocomplete.ui-menu .ui-menu-item-wrapper.ui-state-active { background: var(--accent-color) !important; border: none !important; margin: 0 !important; }
 
+/* Tags Input (overrided jQuery UI styling)
+------------------------------------------- */
+
+.tagsinput { border: 0.125em solid var(--border-color-input) !important; background-color: var(--background-color-input) !important; }
+.tagsinput input { color: var(--text-color-input) !important; }
+
 /* Date Picker (overrided jQuery UI styling)
 -------------------------------------------- */
 
@@ -2082,6 +2093,11 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
 .ui-datepicker td.ui-datepicker-today .ui-state-default { background-color: var(--highlighted-blue); }
 .ui-datepicker td .ui-state-active,
 .ui-datepicker td .ui-state-hover { background: var(--accent-color) !important; color: var(--white) !important; }
+
+/* Editors custom styling (Ace, Redactor)
+----------------------------------------- */
+
+.redactor-styles, .redactor-styles > * { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important; }
 
 /* Upload
 --------- */

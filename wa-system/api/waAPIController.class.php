@@ -149,7 +149,7 @@ class waAPIController
         if ($app === 'webasyst') {
             return $user->get('is_user') > 0;
         }
-        return $user->getRights($app, 'backend') <= 0;
+        return $user->getRights($app, 'backend') > 0;
     }
 
     protected function checkToken()
