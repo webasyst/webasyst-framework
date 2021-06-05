@@ -157,6 +157,7 @@
                     $map: $('#{$map_id}'),
                     url: {$url|json_encode},
                     address: {$address|default:''|json_encode},
+                    {if $center}center:{$center|json_encode},{/if}
                     options: options,
                     type: {$type|json_encode},     // query type of point: 'address', 'coords'
                     locales: {$locales|json_encode}
