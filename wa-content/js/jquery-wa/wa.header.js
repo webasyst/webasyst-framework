@@ -285,13 +285,18 @@ class WaHeader {
             let $script = $("#wa-header-js"),
                 path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
 
-            $.when.apply($, $.map(urls, function(file) {
-                return $.ajax({
-                    cache: true,
-                    dataType: "script",
-                    url: path + file
+            const sortableDefer = $.Deferred();
+            for (let i = 0; i < urls.length; i++) {
+                sortableDefer.then(function () {
+                    return $.ajax({
+                        cache: true,
+                        dataType: "script",
+                        url: path + urls[i]
+                    });
                 });
-            })).done(app_list_sortable);
+            }
+
+            $.when.apply($, sortableDefer).done(app_list_sortable);
 
             // Determine user timezone when "Timezone: Auto" is saved in profile
             if ($script.data('determine-timezone') && !document.cookie.match(/\btz=/)) {
