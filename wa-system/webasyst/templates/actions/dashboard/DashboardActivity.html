@@ -2,9 +2,9 @@
 {$_activity_datetime = $activity[0]['datetime']|default:0}
 
 {$today = "[`Today`]"}
-
-<div class="activity-divider today h3">[`Today`]</div>
-
+{if (!$_group || $_group == $today) && strtotime($_activity_datetime) >= strtotime(date('Y-m-d'))}
+    <div class="activity-divider today h3 1">{$today}</div>
+{/if}
 {*$users_birthdays = $today_users.birthdays}
 {$users_statuses = $today_users.statuses*}
 
@@ -51,6 +51,7 @@
 {/if*}
 
 {if strtotime($_activity_datetime) < strtotime(date('Y-m-d'))}
+    <div class="activity-divider today h3 2">{$today}</div>
     <div class="activity-item activity-empty-today">
         <div class="item-content-wrapper">
             <div class="inline-content">
@@ -60,7 +61,7 @@
     </div>
 {/if}
 
-{if $_group}
+{if $_group && $_group != $today}
     <div class="activity-divider h3">{$_group}</div>
 {/if}
 

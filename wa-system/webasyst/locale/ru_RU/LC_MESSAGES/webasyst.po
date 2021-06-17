@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-04-02 19:03+0300\n"
+"PO-Revision-Date: 2021-05-30 17:07+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1871,7 +1871,7 @@ msgid "Reset password"
 msgstr "Сбросить пароль"
 
 msgid "I remember it now!"
-msgstr "Я вспомнил пароль!"
+msgstr "Я помню пароль!"
 
 msgid "Sign up"
 msgstr "Регистрация"
@@ -4073,7 +4073,7 @@ msgid "Dashboard title"
 msgstr "Название"
 
 msgid "Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs."
-msgstr "Дашборд Webasyst TV пожно просматривать в любом современном браузере и транслировать на телевизоры 4K или Full HD."
+msgstr "Дашборд Webasyst TV можно просматривать в любом современном браузере и транслировать на телевизоры 4K или Full HD."
 
 msgid "Dashboard public link"
 msgstr "Ссылка"
@@ -5408,7 +5408,7 @@ msgid "Design theme user manual"
 msgstr "Инструкция к теме дизайна"
 
 msgid "User support"
-msgstr "Поддержка пользователей"
+msgstr "Поддержка"
 
 msgid "Minimum 3 characters"
 msgstr "Минимум 3 символа"
@@ -6482,4 +6482,25 @@ msgid "To check the sending of SMS messages, please first save the changes you h
 msgstr "Для проверки отправки SMS-сообщений сначала сохраните сделанные вами изменения."
 
 msgid "Select UI mode"
-msgstr "Выберите режим интерфейса"
+msgstr "Режим интерфейса (debug)"
+
+msgid "Route settings"
+msgstr "Настройки маршрутизации"
+
+msgid "Browse all themes"
+msgstr "Все темы дизайна"
+
+msgid "Theme"
+msgstr "Тема"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Configure %s"
+msgstr "Настройки %s"
+
+msgid "Browse plugins"
+msgstr "Все плагины"
+
+msgid "Publish"
+msgstr "Опубликовать"

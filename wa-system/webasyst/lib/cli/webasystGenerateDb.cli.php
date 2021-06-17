@@ -553,11 +553,13 @@ HELP;
                     $r[$type] = implode('; ', $r[$type]);
                 }
             }
+            return compact('changes', 's', 'c', 'r');
         } else {
-            $s = '=';
-            $c = 'SAME';
+            return array(
+                's' => '=',
+                'c' => 'SAME',
+            );
         }
-        return compact('changes', 's', 'c', 'r');
     }
 
     private function cleanupSchema($schema, $exclude_patterns)

@@ -70,6 +70,8 @@ const WidgetSort = ( function($) {
                     chosenClass: 'widget-chosen',
                     dragClass: 'widget-drag',
                     filter: '.is-removed, .js-empty-group',
+                    delay: 200,
+                    delayOnTouchOnly: true,
                     onAdd(event) {
                         // Если положили виджет в пустую группу, то создаем новую пустую группу
                         if (event.to.classList.contains('js-empty-group') && !event.from.classList.contains('list-wrapper')) {
@@ -148,6 +150,8 @@ const WidgetSort = ( function($) {
                 chosenClass: 'widget-chosen',
                 dragClass: 'widget-drag',
                 forceFallback: true,
+                delay: 200,
+                delayOnTouchOnly: true,
                 onChoose(event) {
                     event.item.classList.remove('zoomIn');
                 },
@@ -1874,7 +1878,13 @@ const Page = ( function($, backend_url) {
                     if ( $.trim(response).length && !response.includes('activity-empty-today')) {
                         // Render
                         $wrapper.find(".empty-activity-text").remove();
-                        $wrapper.prepend(response);
+                        $wrapper.find(".activity-empty-today").remove();
+                        let $today = $wrapper.find(".today");
+                        if($today.length) {
+                            $today.after(response).remove();
+                        }else{
+                            $wrapper.prepend(response);
+                        }
                     }
 
                     that.storage.isTopLazyLoadLocked = false;

@@ -152,7 +152,7 @@ class webasystDashboardActivityAction extends waViewAction
         return $rows;
     }
 
-    protected function getDatetimeGroup($datetime)
+    public function getDatetimeGroup($datetime)
     {
         $ts = strtotime($datetime);
         if (date('Y-m-d') == date('Y-m-d', $ts)) {

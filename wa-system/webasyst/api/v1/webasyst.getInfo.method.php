@@ -32,10 +32,6 @@ class webasystGetInfoMethod extends waAPIMethod
 {
     public function execute()
     {
-        if (wa()->getUser()->get('is_user') <= 0) {
-            throw new waAPIException('access_denied', 403);
-        }
-
         $logo = (new webasystLogoSettings([ 'absolute_urls' => true ]))->get();
         unset($logo['gradients']);
 

@@ -220,16 +220,19 @@ class waPageActions extends waActions
         if (wa()->whichUI() == '2.0') {
             $html = '<ul class="menu" data-parent-id="'.$p['id'].'">';
             foreach ($pages as $page) {
+
+                $icon = '<i class="fas fa-file-alt"></i>';
+                if(!$page['status']){
+                    $icon = '<i class="fas fa-pencil-alt"></i>';
+                }
+
                 $html .= '<li class="drag-newposition"></li>';
                 $html .= '<li class="dr" id="page-'.$page['id'].'" data-page-id="'.$page['id'].'">'.
                     (!empty($page['childs']) ? '<i class="icon16 darr expander overhanging"></i>' : '').
-                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><i class="far fa-file-alt"></i>'.
+                    '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'">'.$icon.
                     '<span>'.htmlspecialchars($page['name']).
                     ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span></span>'.
                     '<span class="count action small"><i class="fas fa-plus-circle wa-page-add"></i></span>';
-                if (!$page['status']) {
-                    $html .= ' <span class="wa-page-draft">'._ws('draft').'</span>';
-                }
                 $html .= '</a>';
                 if (!empty($page['childs'])) {
                     $html .= self::printPagesTree($page, $page['childs'], $prefix_url);

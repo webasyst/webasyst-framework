@@ -57,7 +57,12 @@
         {* UPDATE INFO & CHANGELOG *}
 
         {if !empty($item.version)}
-            <strong>{$item.version}</strong>
+            <strong class="i-new-version-info">
+                <span class="i-version">{$item.version}</span>
+                {if $item.beta_test|default:false}
+                    <span class="i-beta-test small">[`(beta-version)`]</span>
+                {/if}
+            </strong>
         {/if}
 
         {if !empty($item.installed.version)}

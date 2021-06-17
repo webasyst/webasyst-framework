@@ -32,7 +32,7 @@
                         <?php if ($app) {?>
                             <?php if ($env == 'backend') {?><a href="<?php echo $backend_url.$app['id']."/";?>"><?php }?>
                             <?php if (isset($app['img'])) {?>
-                                <img src="<?php echo $url.$app['img'];?>" /><br />
+                                <img src="<?php echo $url.$app['img'];?>" style="width: 96px; height: 96px;" /><br />
                             <?php }?>
                             <span class="small"><?php echo $app['name'];?></span>
                             <?php if ($env == 'backend') {?></a><?php }?>

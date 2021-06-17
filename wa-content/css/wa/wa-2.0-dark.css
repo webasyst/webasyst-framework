@@ -13,6 +13,7 @@
 html {
 
     --light-gray:                             rgba(255, 255, 255, 0.2);
+    --white-overlay:                          rgba(255, 255, 255, 0.35);
 
     --highlighted-blue:                       #011f43;
     --highlighted-yellow:                     #432901;
@@ -30,6 +31,7 @@ html {
     --background-color-checkbox-border:       rgba(255, 255, 255, 0.13);
     --background-color-zebra-row-odd:         #151e29;
     --background-color-zebra-row-odd-hover:   #17232f;
+    --background-color-editable:              rgba(255,230,130,0.25);
 
     --background-color-table-row-hover:       #131520; /* cannot use rgba() due to .single-lined shortener effect */
     --background-color-table-row-selected:    #011f43;
@@ -55,8 +57,8 @@ html {
     --banner-background-color:                 var(--red);
 
     /* content */
-    --text-color:                             #778;
-    --text-color-strong:                      #aab;
+    --text-color:                             #889;
+    --text-color-strong:                      #bbc;
     --text-color-stronger:                    #dde;
     --text-color-strongest:                   #fff;
     --text-color-hint:                        #445;
@@ -94,7 +96,7 @@ html {
     --chips-selected-glyph-color:             #000;
     --chips-outline-border-color:             rgba(255, 255, 255, 0.1);
     --chips-tags-link-color:                  green;
-    --chips-tags-link-color-hover:            red;
+    --chips-tags-link-color-hover:            gold;
     --chips-tags-background-color:            rgba(30, 160, 0, 0.26);
     --chips-tags-background-color-hover:      rgba(30, 160, 0, 0.36);
 
@@ -117,7 +119,6 @@ html {
 
     --card-background:                        #151e29;
 
-    --thumbs-selected-color:                  #e8c55e;
     --thumbs-highlighted-color:               #fe2;
 
     --tooltip-background-color:               #151e29;

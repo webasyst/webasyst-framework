@@ -1,8 +1,3 @@
-{*if $ibutton}
-<link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css?v{$wa->version(true)}" rel="stylesheet" type="text/css" >
-<script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js?v{$wa->version(true)}"></script>
-{/if*}
-
 {if $options.js.storage}
     <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js?v{$wa->version(true)}"></script>
     <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?v{$wa->version(true)}"></script>
@@ -79,7 +74,8 @@
 })();</script>
 
 <style type="text/css">
-    .wa-pages { margin-bottom: 80px; }
+    .wa-pages { }
+    .wa-pages .wa-editor-core-wrapper { margin-left: auto; }
     .wa-pages .ace { padding: 15px 12px; position: relative; }
     .wa-pages .wa-editor-upload-img { position: absolute; top: 15px; right: 12px; z-index: 80; cursor: pointer; background-color: #f9f9f9; border: 1px solid #ccc; transition: all 0.2s ease; width: 1.8rem; height: 1.8rem; text-align: center; line-height: 1.8rem;
     }
@@ -95,29 +91,29 @@
 
     .wa-page-urls a i { margin: 0}
 
-    .block-pages .heading { margin-bottom: 10px; margin-top: 20px; }
+    .block-pages { margin-bottom: 2rem; }
+    .block-pages .heading { margin-top: 1rem; }
     .block-pages .heading span { word-break: break-all; }
+    .block-pages ul.menu a svg { color: var(--accent-color) !important; }
     .block-pages ul.menu li a { word-break: break-all; }
+    .block-pages.unsettled ul.menu a, .block-pages.unsettled ul.menu a svg, .block-pages.unsettled ul.menu a .hint { color: var(--text-color-hint) !important; }
+    .block-pages.unsettled svg { color: var(--text-color-hint); }
+    .block-pages.unsettled .wa-page-settle svg { font-size: .8rem; }
 
     a.wa-page-link .action { visibility: hidden; }
     a.wa-page-link:hover .action { visibility: visible; }
-    .wa-page-gray-toolbar { background: #EEE; flex-wrap: wrap; }
+    .wa-page-gray-toolbar { flex-wrap: wrap; }
     .wa-page-gray-toolbar > ul { margin: 0 }
     #wa-page-settings { flex: 1 0 100%; margin-top: 2rem; }
     #wa-page-advanced-params { margin-top: 2rem; }
-    .wa-page-save-panel { background: #eee; }
-    .wa-page-save-panel.bottombar > .bottombar-wrapper {
-        margin-left: 15rem;
-        width: calc(100% - 16rem);
-    }
-    .wa-page-save-panel.bottombar > .bottombar-wrapper .wa-cheatsheet-dropdown {
-        margin-left: auto;
-    }
 
     .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
-    .wa-editor-core-wrapper { background: white;}
+    .wa-editor-core-wrapper { background: var(--background-color-blank); }
     .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle { padding-left:0 }
     .wa-editor-core-wrapper .wa-editor-wysiwyg-html-toggle > li > a { padding-right: 0.5rem; padding-left: 0.5rem }
+    .wa-editor-core-wrapper .redactor-box { background: var(--background-color-blank); }
+    .wa-editor-core-wrapper .redactor-toolbar { box-shadow: none; border-bottom: 1px solid var(--border-color-soft); }
+    .wa-editor-core-wrapper .redactor-layer { border: 0 none; background: var(--background-color-blank); }
     .wa-ibutton-checkbox ul.chips li { padding: 1px 0 10px; vertical-align: middle;}
 
     #wa-editor-status i.icon16 { margin-top: 6px; }
@@ -141,34 +137,33 @@
     .wa-dropdown ul.tabs li.no-tab img { float: left; vertical-align: top; margin:2px 0 0 -32px; width: 24px; height: 24px; }
     .wa-dropdown .field .name { word-wrap: break-word; }
 
-    #wa-page-advanced-params-link { margin-left: 180px; }
+    #wa-page-advanced-params-link { margin-left: 166px; }
 
     .expander { cursor:pointer; float:left;}
 </style>
 
 {if $sidebar}
-    <div class="sidebar width-20rem bordered-right">
+    <div class="sidebar width-21rem bordered-right bordered-left blank">
         {foreach $routes as $r => $route}
             {if (count($routes) > 1) && !$r && is_array($route.pages) && $route.pages}
                 {$unsettled_pages_count = count($route.pages)}
             {else}
                 {$unsettled_pages_count = 0}
             {/if}
-            <section class="block-pages">
-                <header class="heading black collapse-handler js-collapse-handler">
+            <section class="block-pages{if $unsettled_pages_count} unsettled{/if}">
+                <header class="heading{if !$unsettled_pages_count} black{/if} collapse-handler js-collapse-handler">
                     <span>
                         <span class="caret">
                             <i class="fas fa-caret-down"></i>
                         </span>
                         {if $r}{str_replace('www.','',$route['url_decoded'])|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}
-
-                        {if $unsettled_pages_count}
-                            <a id="wa-page-settle" style="margin-left: 10px;" href="#">
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </a>
-                        {/if}
                     </span>
 {*                    <i class="count action fas fa-plus-circle wa-page-add no-parent"{if !$r} style="display:none"{/if}></i>*}
+                    {if $unsettled_pages_count}
+                        <a id="wa-page-settle" class="count action wa-page-settle js-page-settle custom-ml-8" href="#">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </a>
+                    {/if}
                     <a class="count action wa-page-add no-parent" href="#">
                         <i class="fas fa-plus-circle"></i>
                     </a>
@@ -181,12 +176,11 @@
                             <li class="dr" id="page-{$p.id}" data-page-id="{$p.id}">
                                 {if !empty($p.childs)}<i class="icon16 darr expander overhanging"></i>{/if}
                                 <a class="wa-page-link" href="{$page_url}{$p.id}">
-                                    <i class="far fa-file-alt"></i>
+                                    <i class="fas fa-{if $p.status}file{else}pencil{/if}-alt"></i>
                                     <span>
                                         {$p.name|escape}
                                         <span class="hint">/{$p.full_url|escape}</span>
                                     </span>
-                                    {if !$p.status} <span class="wa-page-draft">[s`draft`]</span>{/if}
                                     <span class="count action small">
                                         <i class="fas fa-plus-circle wa-page-add"></i>
                                     </span>
@@ -203,46 +197,52 @@
         {/foreach}
 
         {if $unsettled_pages_count}
-            <div id="wa-page-settle-dialog" style="display: none;">
-                <form method="post" action="?module=pages&action=settle">
-                    <div class="dialog-content">
+            <div class="dialog" id="wa-page-settle-dialog">
+                <div class="dialog-background"></div>
+                <form class="dialog-body" method="post" action="?module=pages&action=settle">
+                    <a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a>
+                    <h3 class="dialog-header">[s`Unpublished pages`]</h3>
+                    <div class="dialog-content small">
                         <p>[`These pages are not connected to any of the site’s structure rules and are therefore not displayed on your site. To publish these pages now, select a site structure rule for them:`]</p>
-                        <select>
-                            <option value=""></option>
-                            {foreach $routes as $r => $route}
-                                {if $r}
-                                    <option data-domain="{$route.domain}" data-route="{$route.route}" value="{$r}">{$r}</option>
-                                {/if}
-                            {/foreach}
-                        </select>
+                        <div class="wa-select">
+                            <select>
+                                <option value=""></option>
+                                {foreach $routes as $r => $route}
+                                    {if $r}
+                                        <option data-domain="{$route.domain}" data-route="{$route.route}" value="{$r}">{$r}</option>
+                                    {/if}
+                                {/foreach}
+                            </select>
+                        </div>
                     </div>
-                    <div class="dialog-buttons">
-                        <input class="button green" type="submit" value="[s`Save`]"> [s`or`] <a class="cancel" href="#">[s`cancel`]</a>
-                    </div>
+                    <footer class="dialog-footer">
+                        <input class="button" type="submit" value="[s`Publish`]">
+                        <a class="js-close-dialog button light-gray" href="#">[s`Cancel`]</a>
+                    </footer>
                 </form>
             </div>
+
             <script type="text/javascript">
-            $("#wa-page-settle").click(function () {
-                $("#wa-page-settle-dialog").waDialog({
-                    title: '[s`Unpublished pages`]',
-                    className: 'small',
-                    onLoad: function () {
-                        var n = $("#wa-page-settle").closest('div.block-pages').find('ul li.dr').length;
-                        $(this).find('.dialog-content p span').html(n);
-                    },
-                    onSubmit: function (d) {
-                        var o = $(this).find('select option:selected');
-                        if (o.data('domain')) {
-                            $.post($(this).attr('action'), {
-                                domain:o.data('domain'), route:o.data('route')
-                            }, function (response) {
-                                location.reload();
-                            }, "json");
-                        }
-                        return false;
+            $(".js-page-settle").on('click', function (e) {
+                e.preventDefault();
+                $wrapper = $("#wa-page-settle-dialog").clone();
+                $.waDialog({
+                    $wrapper,
+                    onOpen($dialog) {
+                        const $form = $dialog.find('form');
+                        $form.on('submit', function () {
+                            let o = $form.find('select option:selected');
+                            if (o.data('domain')) {
+                                $.post($form.attr('action'), {
+                                    domain:o.data('domain'), route:o.data('route')
+                                }, function () {
+                                    location.reload();
+                                }, "json");
+                            }
+                            return false;
+                        })
                     }
                 });
-                return false;
             });
             </script>
         {/if}
@@ -292,10 +292,10 @@
             this.each(function(i,el) {
                 var self = $(this);
                 if (self.data('init_draggable')) {
-                    self.die("mouseover", self.data('init_draggable'));
+                    self.off("mouseover", self.data('init_draggable'));
                 }
             });
-            this.live("mouseover", function() {
+            this.on("mouseover", function() {
                 var self = $(this);
                 if (!self.data("init_draggable")) {
                     self.data("init_draggable", arguments.callee).draggable(opts);
@@ -309,7 +309,7 @@
             this.each(function(i,el) {
                 var self = $(this);
                 if (self.data('init_droppable')) {
-                    self.die("mouseover", self.data('init_droppable'));
+                    self.off("mouseover", self.data('init_droppable'));
                 }
             });
 
@@ -321,7 +321,7 @@
                 }
             };
             init.call(this);
-            this.die("mouseover", init).live("mouseover", init);
+            this.off("mouseover", init).on("mouseover", init);
         };
     }
 
@@ -366,7 +366,7 @@
             }
             if($(this).hasClass('wa-page-add') || $target.classList.contains('wa-page-add')) {
                 const that = $(this),
-                    $li = $('<li><a class="wa-page-link" href="#"><i class="far fa-file-alt"></i>[s`New page`]</a></li>');
+                    $li = $('<li><a class="wa-page-link" href="#"><i class="fas fa-file-alt"></i><span>[s`New page`]</span></a></li>');
 
                 if (that.hasClass('no-parent')) {
                     that.closest('.heading').next('ul').append($li);

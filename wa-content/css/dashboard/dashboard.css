@@ -163,8 +163,8 @@
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li {
   width: 96px;
-  margin-bottom: 1rem;
-  margin-right: 0.86rem;
+  margin-bottom: 1.25rem;
+  margin-right: 0.875rem;
 }
 @media screen and (max-width: 760px) {
   #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li,
@@ -180,7 +180,7 @@
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li a img {
   width: 72px;
   height: 72px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li a .badge,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li a .badge {
@@ -525,10 +525,10 @@
   width: auto;
   height: auto;
   background: transparent;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 1rem;
   line-height: 1;
-  color: #4a9ce1;
+  color: var(--accent-color);
 }
 #wa-app .content .wa-dashboard-page #wa_widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper.widget-2x1 .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link:hover,
 #wa-app .content #dashboard-wrapper #wa_widgets .d-widgets-block #d-widgets-block .widget-group-wrapper .widget-wrapper.widget-2x1 .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link:hover,
@@ -1508,7 +1508,7 @@
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
   margin: 0;
-  background-color: #bbb;
+  background-color: var(--accent-color);
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -1535,7 +1535,7 @@
   display: inline-flex;
 }
 .is-custom-edit-mode .widgets-list-wrapper .list-group-wrapper .list-wrapper .widget-item-wrapper:hover .add-widget-link:hover {
-  background-color: #777;
+  background-color: var(--accent-color-hover);
 }
 .is-custom-edit-mode .widgets-list-wrapper .list-group-wrapper .list-wrapper .widget-item-wrapper:hover .image-wrapper .image-block:after {
   position: absolute;

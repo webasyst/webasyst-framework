@@ -7,7 +7,7 @@
     <form class="dialog-body">
         <h3 class="dialog-header">[s`Revert to original`]</h3>
         <div class="dialog-content">
-            <p><i class="fas fa-exclamation-triangle"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
+            <p class="state-caution"><i class="fas fa-exclamation-triangle"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
             {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
                 <label>
                     <span class="wa-checkbox">
@@ -24,8 +24,8 @@
         </div>
         <div class="dialog-footer">
             <input type="hidden" name="theme" value="{$theme.id}">
-            <input type="submit" class="button red" value="[s`Revert to original`]">
-            [s`or`] <a href="#/design/themes/" class="js-close-dialog">[s`cancel`]</a>
+            <input type="submit" class="button orange" value="[s`Revert to original`]">
+            <a href="#/design/themes/" class="js-close-dialog light-gray button">[s`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -33,74 +33,79 @@
 <div class="dialog" id="wa-theme-start-using-dialog">
     <div class="dialog-background"></div>
     <form class="dialog-body">
-        <h3 class="dialog-header">{$theme.name}</h3>
+        <h1 class="dialog-header">{$theme.name}</h1>
         <div class="dialog-content">
-            <p>{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
+            <p class="small">{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
             <div class="fields">
-                <div class="field">
-                    <div class="name for-checkbox">[s`Existing route`]</div>
-                    {foreach $routes as $r}
-                        <div class="value">
-                            <label>
-                                <span class="wa-radio">
-                                    <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
-                                    <span></span>
-                                </span>
-                                {waIdna::dec($r._domain)}/{$r.url}
-                                <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
-                            </label>
-                        </div>
-                        {foreachelse}
+                {foreach $routes as $r name=_routeslist}
+                <div class="field custom-mt-0">
+                    <div class="name for-checkbox">{if $smarty.foreach._routeslist.iteration == 1}[s`Existing route`]{/if}</div>
+                    <div class="value">
+                        <label>
+                            <span class="wa-radio">
+                                <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
+                                <span></span>
+                            </span>
+                            {waIdna::dec($r._domain)}/{$r.url}
+                            <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
+                        </label>
+                    </div>
+                </div>
+                {foreachelse}
+                    <div class="field">
+                        <div class="name">[s`Existing route`]</div>
                         <div class="value gray">
                             {sprintf('[s`There are no routes for %s app on this site yet.`]', $app.name)}
                         </div>
-                    {/foreach}
-                </div>
+                    </div>
+                {/foreach}
                 <div class="field">
-                    <div class="name for-checkbox">[s`New route`]</div>
+                    <div class="name for-input">[s`New route`]</div>
                     <div class="value">
-                        <label>
+                        <div class="nowrap">
+                            <label>
                             <span class="wa-radio">
                                 <input name="route" id="create-new-route-choice" value="new" type="radio"{if !count($routes)} checked{/if}>
                                 <span></span>
                             </span>
-                        </label>
-                        {if count($domains) == 1}
-                            <input name="domain" type="hidden" value="{current($domains)}">
-                            {current($domains)}/{else}
-                            <div class="wa-select">
-                                <select name="domain" class="create-new-route-control">
-                                    {foreach $domains as $d}
-                                        <option value="{$d}">{str_replace('www.','',$d)|truncate:23:'...':false:true}</option>
-                                    {/foreach}
-                                </select>/
-                            </div>
-                        {/if}
-                        <input type="text" name="url" value="" placeholder="*" class="short create-new-route-control">
+                            </label>
+                            {if count($domains) == 1}
+                                <input name="domain" type="hidden" value="{current($domains)}" class="small">
+                                {current($domains)}/{else}
+                                <div class="wa-select small">
+                                    <select name="domain" class="create-new-route-control">
+                                        {foreach $domains as $d}
+                                            <option value="{$d}">{str_replace('www.','',$d)|truncate:23:'...':false:true}</option>
+                                        {/foreach}
+                                    </select>/
+                                </div>
+                            {/if}
+                            <input type="text" name="url" value="" placeholder="*" class="shorter create-new-route-control">
+                        </div>
                     </div>
                 </div>
 
-                <div class="field">
-                    <div class="value">
-                        <label>
-                            <span class="wa-checkbox">
-                                <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
-                                <span>
-                                    <span class="icon">
-                                        <i class="fas fa-check"></i>
-                                    </span>
+                <div class="small custom-mt-16 custom-pd-8">
+                    <hr>
+                    <label>
+                        <span class="wa-checkbox">
+                            <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
+                            <span>
+                                <span class="icon">
+                                    <i class="fas fa-check"></i>
                                 </span>
                             </span>
-                            [s`Apply this theme for mobile devices only`]
-                        </label>
-                    </div>
+                        </span>
+                        [s`Apply this theme for mobile devices only`]
+                    </label>
                 </div>
+
             </div>
         </div>
         <div class="dialog-footer">
             <input type="hidden" name="theme" value="{$theme.id}">
             <input type="submit" class="button green" value="{sprintf("[s`Start using %s theme`]", $theme.name)}">
-            [s`or`] <a href="#" class="js-close-dialog">[s`cancel`]</a>
+            <a href="#" class="js-close-dialog button light-gray">[s`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -125,15 +130,15 @@
                             [s`Theme ID`]
                         </div>
                         <div class="value">
-                            {$path}/<input type="text" id="wa-theme-rename-id" name="id" value="{$theme.id}" class="bold">
-                            <p class="small"><i class="fas fa-exclamation-triangle"></i> [s`IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error.`]</p>
+                            {$path}/<input type="text" id="wa-theme-rename-id" name="id" value="{$theme.id}" class="bold shorter">
+                            <p class="state-caution-hint"><i class="fas fa-exclamation-triangle"></i> [s`IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error.`]</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="dialog-footer">
-                <input type="submit" class="button green" value="[s`Save`]">
-                [s`or`] <a href="#/design/themes/" class="js-close-dialog">[s`cancel`]</a>
+                <input type="submit" class="button orange" value="[s`Save`]">
+                <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
             </div>
         </form>
 </div>
@@ -145,7 +150,7 @@
         <div class="dialog-content">
             <div class="fields">
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-input">
                         [s`Theme name`]
                     </div>
                     <div class="value">
@@ -153,7 +158,7 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-input">
                         [s`Theme ID`]
                     </div>
                     <div class="value">
@@ -161,10 +166,10 @@
                     </div>
                 </div>
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-checkbox">
                         [s`Themes to clone`]
                     </div>
-                    <div class="value">
+                    <div class="value small">
                         <ul>
                             <li>
                                 <label class="bold">
@@ -190,8 +195,8 @@
             </div>
         </div>
         <div class="dialog-footer">
-            <input type="submit" class="button green" value="[s`Clone theme`]">
-            [s`or`] <a href="#/design/themes/" class="js-close-dialog">[s`cancel`]</a>
+            <input type="submit" class="button blue" value="[s`Clone theme`]">
+            <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -201,18 +206,20 @@
     <form class="dialog-body">
         <h3 class="dialog-header">{$theme.name|escape}</h3>
         <div class="dialog-content">
-            <ul class="menu">
+
+            <ul class="zebra">
                 {foreach $theme.related_themes as $related_theme_id => $related_theme}
                     <li{if ($theme.app_id==$related_theme.app_id)||($theme.parent_theme_id==$related_theme_id)} class="bold"{/if}>
                         <a href="?module=design&amp;action=themeDownload&amp;theme={$related_theme.id}&amp;app_id={$related_theme.app_id}">
-                            <i class="fas fa-file-download"></i> <span>{sprintf('[s`%s theme (version %s) for %s app`]',$related_theme.name,$related_theme.version,ifempty($apps[$related_theme.app_id]['name'],$related_theme.app))|escape} <span class="hint">.tar.gz</span></span>
+                            <i class="fas fa-save text-blue custom-mr-4"></i>
+                            <span class="small">{sprintf('[s`%s theme (version %s) for %s app`]',$related_theme.name,$related_theme.version,ifempty($apps[$related_theme.app_id]['name'],$related_theme.app))|escape} <span class="hint">.tar.gz</span></span>
                         </a>
                     </li>
                 {/foreach}
             </ul>
         </div>
         <div class="dialog-footer">
-            <a href="#/design/themes/" class="js-close-dialog button">[s`Close`]</a>
+            <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Close`]</a>
         </div>
     </form>
 </div>
@@ -243,14 +250,14 @@
                                 {/foreach}
                             </select>
                         </div>
-                        <p class="small"><i class="fas fa-exclamation-triangle fa-sm"></i> [s`IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme.`]</p>
+                        <p class="state-caution-hint"><i class="fas fa-exclamation-triangle fa-sm"></i> [s`IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme.`]</p>
                     </div>
                 </div>
             </div>
         </div>
         <div class="dialog-footer">
-            <input type="submit" class="button green" value="[s`Save`]">
-            [s`or`] <a href="#/design/themes/" class="js-close-dialog">[s`cancel`]</a>
+            <input type="submit" class="button orange" value="[s`Save`]">
+            <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
         </div>
     </form>
 </div>
@@ -260,15 +267,15 @@
     <form class="dialog-body">
         <h3 class="dialog-header">[s`Import theme settings`]</h3>
         <div class="dialog-content">
-            <h4>[s`Current design settings will be lost during import. Export current settings before import to restore them later, if necessary.`]</h4>
+            <p class="state-caution small"><i class="fas fa-exclamation-triangle"></i>[s`Current design settings will be lost during import. Export current settings before import to restore them later, if necessary.`]</p>
             <div class="fields">
                 <div class="field">
-                    <div class="name">
+                    <div class="name for-button">
                         [s`Select archive`]
                     </div>
                     <div class="value upload-file">
                         <div class="upload js-input-wrapper">
-                            <label class="link">
+                            <label class="link button outlined">
                                 <i class="fas fa-file-upload"></i>
                                 <span>[s`Select a TAR.GZ archive file`]</span>
                                 <input type="file" name="theme_settings" accept=".tar.gz">
@@ -281,8 +288,8 @@
             </div>
         </div>
         <div class="dialog-footer">
-            <input type="submit" class="button green" value="[s`Import`]" disabled="disabled">
-            [s`or`] <a href="#/design/themes/" class="js-close-dialog">[s`cancel`]</a>
+            <input type="submit" class="button blue" value="[s`Import`]" disabled="disabled">
+            <a href="#/design/themes/" class="js-close-dialog button light-gray">[s`Cancel`]</a>
             <i class="fas fa-spinner fa-spin loading" style="vertical-align: middle; margin-left: 6px; display: none;"></i>
         </div>
     </form>
@@ -293,11 +300,11 @@
     <div class="dialog-body">
         <h3 class="dialog-header">[s`Unable to delete design theme`]</h3>
         <div class="dialog-content">
-            <p>
+            <p class="small">
                 [s`This design theme is still in use on your website.`]
                 [s`To delete this theme, first select another theme in the following settlements’ settings:`]
             </p>
-            <ul>
+            <ul class="zebra">
                 {foreach $theme_routes as $_r}
                     <li>
                         <a rel="noopener" target="_blank" href="{$_r._url}">
@@ -309,7 +316,7 @@
             </ul>
         </div>
         <div class="dialog-footer">
-            <input type="submit" class="js-close-dialog button" value="[s`Close`]">
+            <input type="submit" class="js-close-dialog button light-gray" value="[s`Close`]">
         </div>
     </div>
 </div>

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-04-02 19:03+0300\n"
+"PO-Revision-Date: 2021-06-03 10:11+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: en\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -2804,7 +2804,7 @@ msgid "Design theme user manual"
 msgstr ""
 
 msgid "User support"
-msgstr ""
+msgstr "Support"
 
 msgid "Minimum 3 characters"
 msgstr ""
@@ -3648,7 +3648,7 @@ msgid "Back to the classic UI"
 msgstr ""
 
 msgid "Try it in both light and dark modes:"
-msgstr "Светлый и темный режимы:"
+msgstr ""
 
 msgid "You’ve enabled the new Webasyst 2 UI, but this app does not currently support it. Please contact the app developer to encourage upgrading the UI to the new style."
 msgstr ""
@@ -3816,7 +3816,7 @@ msgid "My profile"
 msgstr ""
 
 msgid "Select UI mode"
-msgstr ""
+msgstr "UI mode (debug)"
 
 msgid "This app supports the brand-new Webasyst 2 user interface (beta version). Go ahead and check out its amazing new style. And don’t worry — you can return to the classic UI any time."
 msgstr ""
@@ -3906,4 +3906,25 @@ msgid "To check the sending of SMS messages, please first save the changes you h
 msgstr ""
 
 msgid "When sign-in with Webasyst ID is enabled by default, the usual sign-in method is disabled, with all its configuration saved for later use. Backend users who are not yet connected to Webasyst ID will be able to get connected later on, or you may send them an email invitation. Newly added users will get connected to Webasyst ID right away."
+msgstr ""
+
+msgid "Route settings"
+msgstr "Настройки маршрутизации"
+
+msgid "Browse all themes"
+msgstr ""
+
+msgid "Theme"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "Configure %s"
+msgstr ""
+
+msgid "Browse plugins"
+msgstr ""
+
+msgid "Publish"
 msgstr ""

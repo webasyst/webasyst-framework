@@ -1,0 +1,20 @@
+{$action = $wa->get('action')|default:''}
+{$form_id = $_params.form_id|default:''}
+{$file = $_params.file.id|default:''}
+<div class="bottombar sticky bordered-top box flexbox middle space-16">
+    {if $action === 'theme'}
+    <div class="article width-100">
+        <div class="article-body flexbox middle space-16 custom-py-0">
+    {/if}
+        <input form="{$form_id}" type="submit" class="button green js-bb-submit"{if !$form_id} disabled{/if} value="[s`Save`]" />
+        {if !$form_id}<span class="state-error">Необходимо передать ID формы в шаблоне</span>{/if}
+        <em class="hint">Ctrl + S</em>
+        <span id="wa-editor-status" class="custom-ml-24" style="display: none"></span>
+        {if $file}
+            {$wa->getCheatSheetButton(['data' => ["app" =>{$wa->app()}, "index" =>{$file|escape:'url'|default:""}]])}
+        {/if}
+    {if $action === 'theme'}
+        </div>
+    </div>
+    {/if}
+</div>

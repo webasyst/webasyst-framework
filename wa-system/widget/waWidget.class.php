@@ -203,13 +203,9 @@ class waWidget extends waActions
     protected function getTemplate()
     {
         $template = ucfirst($this->action);
-
         if (strpbrk($template, '/:') === false) {
-            $match = array();
-            preg_match("/[A-Z][^A-Z]+/", get_class($this), $match);
             $template = $this->getPluginRoot().'templates/'.$template.$this->getView()->getPostfix();
         }
-
         return $template;
     }
 
@@ -220,5 +216,13 @@ class waWidget extends waActions
         } else {
             return parent::getPluginRoot();
         }
+    }
+
+    public function display(array $data, $template = null, $return = false)
+    {
+        $data += [
+            'ui' => isset($this->info['ui']) ? $this->info['ui'] : $this->whichUI($this->getAppId())
+        ];
+        return parent::display($data, $template, $return);
     }
 }

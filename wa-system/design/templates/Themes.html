@@ -1,58 +1,14 @@
-<div class="box wa-design-gray-toolbar">
-    {*
-    <div class="block half-padded float-right">
-        <ul class="chips wa-theme-filter-price">
-            <li class="selected"><a href="#" class="inline-link"><b><i>[s`All`]</i></b></a></li>
-            <li><a href="#" class="inline-link"><b><i>[s`Paid`]</i></b></a></li>
-            <li><a href="#" class="inline-link"><b><i>[s`Free`]</i></b></a></li>
-        </ul>
-    </div>
+<div class="box contentbox wa-design-gray-toolbar">
 
-    <div class="block float-left">
-        <select>
-            <option>[s`All categories`]</option>
-            <option>[s`Installed themes only`]</option>
-            <option>--</option>
-            <option>Apparel</option>
-            <option>Automobile</option>
-            <option>Computers & Mobile</option>
-            <option>Hardware</option>
-            <option>Music</option>
-            <option>Photo equipment</option>
-            <option>Software</option>
-        </select>
-    </div>
-
-    <div class="block half-padded float-left">
-        <ul class="chips wa-theme-filter-colors">
-            <li class="wa-themes-all"><input type="radio" checked="checked" name="wa-theme-color">
-            [s`All colors`]</li>
-            <li class="wa-themes-white"><input type="radio" name="wa-theme-color"></li>
-            <li class="wa-themes-black"><input type="radio" name="wa-theme-color"></li>
-            <li class="wa-themes-red"><input type="radio" name="wa-theme-color"></li>
-            <li class="wa-themes-green"><input type="radio" name="wa-theme-color"></li>
-            <li class="wa-themes-blue"><input type="radio" name="wa-theme-color"></li>
-            <li class="wa-themes-yellow"><input type="radio" name="wa-theme-color"></li>
-            <li class="wa-themes-purple"><input type="radio" name="wa-theme-color"></li>
-        </ul>
-    </div>
-    *}
-
-    <div class="flexbox middle full-width">
-        <h4>{$app.name|string_format:'[s`Design themes for %s app`]'|escape} <i class="fas fa-spin fa-spinner"></i></h4>
-        <ul class="chips outlined">
-            <li><a id="wa-theme-upload-link" href="#">
-                    <i class="fas fa-file-upload"></i>
-                    [s`Upload theme archive`] <span class="hint">.tar.gz</span>
-                </a>
-            </li>
-            <li id="themes-close" style="display: none">
-                <a href="#" class="cancel gray bold" title="[s`Close`]">
-                    <i class="fas fa-times-circle"></i> [s`Close`]
-                </a>
-            </li>
-        </ul>
-    </div>
+    <h2>{$app.name|string_format:'[s`Design themes for %s app`]'|escape} <i class="fas fa-spin fa-spinner"></i></h2>
+    
+    <ul class="chips outlined">
+        <li id="themes-close" style="display: none">
+            <a href="#" class="cancel gray bold" title="[s`Close`]">
+                <i class="fas fa-times-circle"></i> [s`Close`]
+            </a>
+        </li>
+    </ul>
 
     {include file="./Themes.installed_themes.html" inline}
 </div>
@@ -64,39 +20,10 @@
     $('#themes-close a').on('click', function (e) {
         e.preventDefault();
         $('#wa-design-container').addClass('left200px').css('margin-left', '');
-        $('#wa-design-sidebar').show();
+        $('.js-tab-content').show();
         $("#wa-theme-list li a:first").click();
     });
     </script>
-</div>
-
-<div class="dialog" id="wa-theme-upload-dialog">
-    <div class="dialog-background"> </div>
-    <form class="dialog-body" target="wa-theme-upload-iframe" id="wa-theme-upload-form" method="post" action="?module=design&amp;action=themeUpload" enctype="multipart/form-data">
-        <h3 class="dialog-header">[s`Upload theme`]</h3>
-        <div class="dialog-content">
-                <span class="wa-theme-dialog-error bold" style="color: red;"></span>
-                <p>[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
-                <div class="upload-area">
-                    <div class="upload">
-                        <label class="link">
-                            <i class="fas fa-file-upload"></i>
-                            <span>[s`Select file`]</span>
-                            <input id="wa-input-file" type="file" name="theme_files[]" autocomplete="off">
-                        </label>
-                    </div>
-                </div>
-                {$wa->csrf()}
-                <div class="loading" style="display:none; margin-top: 10px">
-                    <i class="fas fa-spinner fa-spin"></i> [s`Uploading...`]
-                </div>
-        </div>
-        <div class="dialog-footer">
-                <input type="submit" class="button green" value="[s`Upload`]">
-                [s`or`] <a href="{$themes_url}" class="js-close-dialog">[s`cancel`]</a>
-        </div>
-    </form>
-    <iframe style="display:none" name="wa-theme-upload-iframe" id="wa-theme-upload-iframe"></iframe>
 </div>
 
 <div class="dialog" id="wa-theme-start-using-dialog" data-url="{$design_url}">
@@ -158,102 +85,3 @@
         </div>
     </form>
 </div>
-
-<script type="text/javascript">
-    $(function () {
-
-        function handleError(data, $dialog) {
-            let error = '';
-            if (typeof data.errors == 'string') {
-                error += (error ? '\n' : '') + data.errors;
-            } else {
-                for (let error_item in data.errors) {
-                    if(data.errors.hasOwnProperty(error_item)) {
-                        error += (error ? '\n' : '') + data.errors[error_item][0];
-                    }
-                }
-            }
-            if ($dialog.length) {
-                $dialog.find(".wa-theme-dialog-error").html(error + '<br><br>');
-            } else if ($(".wa-theme-dialog-error:first:visible").length) {
-                $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
-            } else {
-                alert('Error:' + error);
-            }
-            $("#wa-theme-name-dialog input[type=submit]").removeAttr('disabled');
-            $dialog.find("input[type=submit]").removeAttr('disabled');
-        }
-
-        $("#wa-theme-upload-link").on('click', function (e) {
-            e.preventDefault();
-
-            if (!waDesignConfirm()) return false;
-
-            const $upload_dialog = $("#wa-theme-upload-dialog");
-
-            $(".wa-theme-dialog-error").text('');
-
-            $upload_dialog.find("div.loading").hide();
-
-            let $wrapper = $upload_dialog.clone();
-
-            $.waDialog({
-                $wrapper,
-                onOpen($dialog, dialog) {
-                    let $form = $dialog.find('form:first'),
-                        $upload_iframe = $dialog.find("#wa-theme-upload-iframe"),
-                        $input_file = $dialog.find("#wa-input-file")
-
-                    $(".upload-area").waUpload({
-                        is_uploadbox: true
-                    });
-
-                    $form.on('submit', function (e) {
-                        e.preventDefault();
-                        $dialog.find("div.loading").show();
-                        $upload_iframe.one('load', function () {
-                            $input_file.replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
-
-                            $input_file.bind('change', function () {
-                                $form.submit();
-                            });
-
-                            let response;
-
-                            try {
-                                response = $.parseJSON($(this).contents().text());
-
-                                if (response.status === 'fail') {
-                                    $dialog.find("div.loading").hide();
-                                    $input_file.replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
-                                    handleError(response);
-                                } else if (response.status === 'ok') {
-                                    dialog.close();
-                                    location.reload();
-                                }
-                            } catch (e) {
-                                response = {
-                                    'errors': []
-                                };
-
-                                let message = $(this).contents().find('h1:first, h2:first');
-
-                                if (message.length) {
-                                    response.errors.push([message.text()]);
-                                } else {
-                                    response.errors.push(['JavaScript error: ' + e.message]);
-                                }
-
-                                $dialog.find("div.loading").hide();
-
-                                $input_file.replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
-
-                                handleError(response, $dialog);
-                            }
-                        });
-                    })
-                }
-            });
-        });
-    });
-</script>

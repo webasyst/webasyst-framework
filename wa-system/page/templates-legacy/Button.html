@@ -27,7 +27,7 @@
                             }
 
                             var loadHelp = function (afterLoad) {
-                                $help.load('{$wa_backend_url}?module=backendCheatSheet&action=cheatSheet', data, afterLoad);
+                                $help.load('{$wa_backend_url}?module=backendCheatSheet&action=cheatSheet&ui={$wa->whichUi()}', data, afterLoad);
                             };
 
                             var showHelp = function () {

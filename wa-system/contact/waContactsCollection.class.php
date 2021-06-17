@@ -440,7 +440,7 @@ class waContactsCollection
 
                 }
 
-                $data_fields = $fields;
+                $data_fields = array_unique($fields);
 
                 foreach ($data_fields as $k => $field_id) {
                     $f = waContactFields::get($field_id);

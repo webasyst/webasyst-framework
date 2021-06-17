@@ -1846,7 +1846,8 @@ class waInstallerApps
                         }
                     }
                 } else { //route is string
-                    $route_app = array_shift(array_filter(explode('/', $route), 'strlen'));
+                    $parts = array_filter(explode('/', $route), 'strlen');
+                    $route_app = array_shift($parts);
                     if ($route_app == $app_id) {
 
                     }
@@ -1882,7 +1883,8 @@ class waInstallerApps
                                 unset($routes[$route_id]);
                             }
                         } else { //route is string
-                            $route = array_shift(array_filter(explode('/', $route), 'strlen'));
+                            $parts = array_filter(explode('/', $route), 'strlen');
+                            $route = array_shift($parts);
                             if ($route == $app_id) {
                                 unset($routes[$route_id]);
                             }
@@ -1944,7 +1946,8 @@ class waInstallerApps
                         break;
                     }
                 } else { //route is string
-                    $route = array_shift(array_filter(explode('/', $route), 'strlen'));
+                    $parts = array_filter(explode('/', $route), 'strlen');
+                    $route = array_shift($parts);
                     if ($route == $app_id) {
                         $rule_exists = true;
                     }
@@ -2389,6 +2392,24 @@ class waInstallerApps
     {
         try {
             return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/announce/2');
+        } catch (Exception $e) {
+            throw new Exception('Unable to build URL to get announcements');
+        }
+    }
+
+    public function getInstallationStaticIDUrl()
+    {
+        try {
+            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/id');
+        } catch (Exception $e) {
+            throw new Exception('Unable to build URL to get static id');
+        }
+    }
+
+    public function getCheckProductLeaseStatusUrl()
+    {
+        try {
+            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/product_lease_status');
         } catch (Exception $e) {
             throw new Exception('Unable to build URL to get announcements');
         }

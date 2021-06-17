@@ -200,7 +200,6 @@ class waContactRegionField extends waContactField
     // When user changes country, update region selector.
     var change_handler;
     country_select.change(change_handler = function() {
-        var old_val = getVal(); // previous user-selected option in <select> or value of <input>
         var country = country_select.val();
         input.prev('.loading').remove();
 
@@ -225,14 +224,8 @@ class waContactRegionField extends waContactField
                     if (r.data && r.data.options && r.data.oOrder) {
                         select.children().remove();
                         select.append($('<option value=""></option>').text("{$empty_option}"));
-                        var o, selected = false;
                         for (i = 0; i < r.data.oOrder.length; i++) {
-                            o = $('<option></option>').attr('value', r.data.oOrder[i]).text(r.data.options[r.data.oOrder[i]]).attr('disabled', r.data.oOrder[i] === '');
-                            if (!selected && old_val === r.data.oOrder[i] && r.data.oOrder[i] !== '') {
-                                o.attr('selected', true);
-                                selected = true;
-                            }
-                            select.append(o);
+                            select.append($('<option></option>').attr('value', r.data.oOrder[i]).text(r.data.options[r.data.oOrder[i]]).attr('disabled', r.data.oOrder[i] === ''));
                         }
                         select.data('country', country);
                         showSelect();

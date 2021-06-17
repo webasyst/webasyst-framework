@@ -496,7 +496,7 @@ table.zebra tr.selected .s-single-line:after {
   background-image: url("../../../img/wa-settings/ws-waid.svg");
 }
 .icon16.ws.waid-green {
-  background-image: url("../../../img/wa-settings/ws-waid-green.svg");
+  background-image: url("../../../img/webasyst-wand-bold.svg");
 }
 .s-email-settings-page .s-settings-items .s-item:hover > .s-remove {
   opacity: 0.6;
