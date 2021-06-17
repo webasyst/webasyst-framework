@@ -41,6 +41,10 @@
     </li>
 {/function}
 
+{* @event backend_header *}
+{* $return[%app_id%]['header_top'] *}
+{if !empty($header_top)}{foreach $header_top as $_}{$_}{/foreach}{/if}
+
 {if !empty($include_wa_push)}
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.push.js"></script>
 {/if}

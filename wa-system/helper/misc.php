@@ -423,6 +423,11 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
             $value_to_iterate[] = false;
             $dont_show_keys = isset($value_to_iterate[$size]);
             array_pop($value_to_iterate);
+            if ($dont_show_keys) {
+                $dont_show_keys = array_reduce(array_keys($value_to_iterate), function($res, $n) {
+                    return $res && wa_is_int($n) && $n >= 0;
+                }, true);
+            }
         }
     }
 

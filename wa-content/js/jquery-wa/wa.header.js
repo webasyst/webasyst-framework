@@ -234,7 +234,6 @@ class WaHeader {
      */
     sortableApps() {
         let that = this,
-            is_mobile = that.$applists.hasClass('is-mobile'),
             $app_list = that.$applists.find('ul');
 
         const app_list_sortable = () => {
@@ -242,9 +241,8 @@ class WaHeader {
                 animation: 150,
                 dataIdAttr: 'data-app',
                 forceFallback: true,
-                onStart(event) {
-
-                },
+                delay: 200,
+                delayOnTouchOnly: true,
                 onEnd(event) {
                     /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
                     let $link = $(event.item).find('a'),
@@ -267,31 +265,28 @@ class WaHeader {
                 }
             };
 
-            if (is_mobile) {
-                options.delay = 100;
-                options.delayOnTouchOnly = true;
-            }
-
             $app_list.sortable(options);
         }
 
         if(typeof Sortable !== 'undefined') {
             app_list_sortable()
         } else if (!$('#wa').hasClass('disable-sortable-header')) {
-            let urls = [];
-            urls.push('wa-content/js/sortable/sortable.min.js');
-            urls.push('wa-content/js/sortable/jquery-sortable.min.js');
-
-            let $script = $("#wa-header-js"),
+            let urls = ['wa-content/js/sortable/sortable.min.js', 'wa-content/js/sortable/jquery-sortable.min.js'],
+                $script = $("#wa-header-js"),
                 path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
 
-            $.when.apply($, $.map(urls, function(file) {
-                return $.ajax({
-                    cache: true,
-                    dataType: "script",
-                    url: path + file
+            const sortableDefer = $.Deferred();
+            for (let i = 0; i < urls.length; i++) {
+                sortableDefer.then(function () {
+                    return $.ajax({
+                        cache: true,
+                        dataType: "script",
+                        url: path + urls[i]
+                    });
                 });
-            })).done(app_list_sortable);
+            }
+
+            $.when.apply($, sortableDefer).done(app_list_sortable);
 
             // Determine user timezone when "Timezone: Auto" is saved in profile
             if ($script.data('determine-timezone') && !document.cookie.match(/\btz=/)) {

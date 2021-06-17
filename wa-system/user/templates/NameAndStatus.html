@@ -11,12 +11,27 @@
 {$_user_name = $formatted_user_name|default:$user.name|default:''|escape}
 
 <span class="wa-user-info">
-    {if !empty($user._online_status) && $user._online_status == 'online'}
-        {$title = sprintf(_ws('%s is now online'), $_user_name)}
-        {if $wa->whichUI() === '1.3'}
-            <i class="icon16 status-green-tiny" title="{$title}"></i>
-        {else}
-            <i class="fas fa-user-circle" title="{$title}"></i>
+    {if !empty($user._online_status)}
+        {if $user._online_status == 'online'}
+            {$title = sprintf(_ws('%s is now online'), $_user_name)}
+            {if $wa->whichUI() === '1.3'}
+                <i class="icon16 status-green-tiny" title="{$title}"></i>
+            {else}
+                {*
+                    wa2ui version for online status here
+                    <i class="fas fa-user-circle" style="color: var(--green);" title="{$title}"></i>
+                *}
+            {/if}
+        {elseif $user._online_status == 'idle'}
+            {$title = sprintf(_ws('%s is now away'), $_user_name)}
+            {if $wa->whichUI() === '1.3'}
+                <i class="icon16 status-yellow-tiny" title="{$title}"></i>
+            {else}
+                {*
+                    wa2ui version for away status here
+                    <i class="fas fa-user-circle fa-xs" style="color: var(--yellow);" title="{$title}"></i>
+                *}
+            {/if}
         {/if}
     {/if}
     {*if !empty($user.photo_url_16)}

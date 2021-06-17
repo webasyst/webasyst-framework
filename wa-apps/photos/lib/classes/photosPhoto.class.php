@@ -623,15 +623,15 @@ class photosPhoto
         $html = '';
         if (wa()->whichUI() == '2.0') {
             for ($i = 1; $i <= 5; ++$i) {
-                $html .= '<i class="';
+                $html .= '<i class="fas fa-star';
                 if ($i > $rating) {
                     if ($i - $rating == 0.5) {
-                        $html .= 'fas fa-star-half-alt';
+                        $html .= '-half';
                     } else {
-                        $html .= 'far fa-star';
+                        $html .= ' text-light-gray';
                     }
                 } else {
-                    $html .= 'fas fa-star';
+                    $html .= ' text-yellow';
                 }
                 $html .= '" data-rate-value="'.$i.'"></i>';
             }

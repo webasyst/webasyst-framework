@@ -319,6 +319,13 @@ class waContactsCollection
                                         ->where('contact_id IN (?)', array($ids))
                                         ->where('datetime_out IS NULL')
                                         ->fetchAll('contact_id');
+
+                                    $contacts_idle = (new waContactSettingsModel())->getByField([
+                                        'contact_id' => array_keys($contact_ids_map),
+                                        'app_id' => 'webasyst',
+                                        'name' => 'idle_since'
+                                    ], 'contact_id');
+
                                     foreach($data as &$v) {
                                         $v['_online_status'] = 'offline';
                                         // Ever logged in?
@@ -328,6 +335,11 @@ class waContactsCollection
                                                 // Make sure user didn't log out
                                                 if (isset($contact_ids_map[$v['id']])) {
                                                     $v['_online_status'] = 'online';
+
+                                                    if (isset($contacts_idle[$v['id']])) {
+                                                        $v['_online_status'] = 'idle';
+                                                    }
+
                                                 }
                                             }
                                         }
@@ -440,7 +452,7 @@ class waContactsCollection
 
                 }
 
-                $data_fields = $fields;
+                $data_fields = array_unique($fields);
 
                 foreach ($data_fields as $k => $field_id) {
                     $f = waContactFields::get($field_id);

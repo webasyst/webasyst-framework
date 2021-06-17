@@ -10,7 +10,8 @@ class installerWebasystBackend_headerHandler extends waEventHandler
     public function execute(&$params)
     {
         return $this->getAnnouncements([
-            'current_app_id' => !empty($params['current_app']) ? $params['current_app'] : wa()->getConfig()->getApplication()
+            'current_app_id' => !empty($params['current_app']) ? $params['current_app'] : wa()->getConfig()->getApplication(),
+            'ui_version' => !empty($params['ui_version']) ? $params['ui_version'] : wa()->whichUI()
         ]);
     }
 
@@ -36,6 +37,14 @@ class installerWebasystBackend_headerHandler extends waEventHandler
         $top_header_list = $this->getTopHeaderList($current_app_id);
         $notification_list = $this->getNotificationList($current_app_id);
 
+        // top header list by default only for UI 1.3
+        // but if there is a force special flag in announcement then it also applicable for UI 2.0
+        if ($params['ui_version'] === '2.0') {
+            $top_header_list = array_filter($top_header_list, function ($a) {
+                return !empty($a['ui2.0']);
+            });
+        }
+
         // which list to which template send to render
         $rendering = [
             'header_top' => [
@@ -50,15 +59,19 @@ class installerWebasystBackend_headerHandler extends waEventHandler
 
         $result = [];
         foreach ($rendering as $hook_name => $data) {
-            $result[$hook_name] = $this->renderTemplate($data['template'], [
-                'announcements'  => $data['list'],
-                'current_app_id' => $current_app_id,
-            ]);
+            $result[$hook_name] = '';
+            if ($data['list']) {
+                $result[$hook_name] = $this->renderTemplate($data['template'], [
+                    'announcements' => $data['list'],
+                    'current_app_id' => $current_app_id,
+                    'ui_version' => $params['ui_version']
+                ]);
+            }
         }
 
         return $result;
     }
-
+    
     /**
      * @param $template
      * @param array $assign
@@ -79,7 +92,7 @@ class installerWebasystBackend_headerHandler extends waEventHandler
     }
 
     /**
-     * @param $current_app
+     * @param string $current_app
      * @return array $announcements
      *      string      $announcements[<key>]['html']
      *      bool        $announcements[<key>]['always_open']
@@ -115,5 +128,4 @@ class installerWebasystBackend_headerHandler extends waEventHandler
         }
         return $this->cache[$key];
     }
-
 }

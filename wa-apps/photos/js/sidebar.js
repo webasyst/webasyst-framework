@@ -348,7 +348,34 @@
         initHandlers: function() {
             $("#p-upload-link").on('click', function (e) {
                 e.preventDefault();
-                $.photos.uploadDialog();
+                let $dialog = $('#p-uploader')
+
+                if($dialog.length) {
+                    $.waDialog({
+                        $wrapper: $dialog,
+                        onOpen($_dialog, dialog_instance) {
+                            $.photos.onUploadDialog($_dialog, dialog_instance)
+                        },
+                        onClose(dialog_instance) {
+                            let $dialog = dialog_instance.$wrapper;
+                            if (dialog_instance.animate) {
+                                dialog_instance.animateDialog(false).then( function() {
+                                    dialog_instance.$wrapper.hide();
+                                });
+                            } else {
+                                dialog_instance.$wrapper.hide();
+                            }
+
+                            if (dialog_instance.lock_body_scroll) {
+                                document.querySelector('body').classList.remove('is-locked')
+                            }
+                            $.photos.dialogClearSteps.call($dialog);
+                            return false;
+                        }
+                    });
+                }else{
+                    $.photos.uploadDialog();
+                }
             });
 
             $('#album-list-container')

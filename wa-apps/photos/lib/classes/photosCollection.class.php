@@ -395,7 +395,7 @@ class photosCollection
             $this->tagPrepareIntersection($id);
         } else {
             $this->where[] = "pt.tag_id = ".(int)$id;
-            $this->addTitle( sprintf( _w('Tagged “%s”'), $tag['name'] ) );
+            $this->addTitle( sprintf( _w('Tagged “%s”'), $tag ? $tag['name'] : $id ) );
         }
     }
 

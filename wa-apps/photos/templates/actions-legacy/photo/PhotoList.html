@@ -184,7 +184,7 @@
                             {'★'|str_repeat:$album.conditions.rate[1]}{*'*}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
                         {/if}
                         {if isset($album.conditions.tag)}
-                            <span class="tags small">{$album.conditions.tag[1]|implode:', '}</span>
+                            <span class="tags small">{implode(', ', $album.conditions.tag[1])}</span>
                         {/if}
                     </span>
                 {/if}

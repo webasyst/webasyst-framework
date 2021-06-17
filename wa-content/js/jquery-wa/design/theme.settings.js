@@ -21,6 +21,9 @@ var WAThemeSettings = ( function($) {
 
         if (that.is_wa2) {
             that.$button = that.$wrapper.find('.js-bb-submit');
+            if(!that.$button.length) {
+                that.$button = that.$wrapper.parent().find('.js-bb-submit');
+            }
             that.$search_input = that.$wrapper.find('.js-search-setting');
         }
 
@@ -111,7 +114,6 @@ var WAThemeSettings = ( function($) {
             that.initThemeUpdateDialogWA2();
             that.initThemeParentDialogWA2();
             that.initThemeCopyDialogWA2();
-            that.initThemeCopyDialogWA2();
             that.initThemeResetDialogWA2();
             that.initThemeStartUsingDialogWA2();
             that.initThemeDeleteWA2();
@@ -121,7 +123,6 @@ var WAThemeSettings = ( function($) {
             that.initThemeDownloadDialog();
             that.initThemeUpdateDialog();
             that.initThemeParentDialog();
-            that.initThemeCopyDialog();
             that.initThemeCopyDialog();
             that.initThemeResetDialog();
             that.initThemeStartUsingDialog();
@@ -563,13 +564,13 @@ var WAThemeSettings = ( function($) {
                 $.waDialog({
                     $wrapper,
                     onOpen($dialog){
-                        const $form = $dialog.find('form'),
-                            options = {
-                                id: $form.find("#wa-theme-copy-id").val(),
-                                name: $form.find("#wa-theme-copy-name").val()
-                            };
+                        const $form = $dialog.find('form');
                         $form.on('submit', function (e) {
                             e.preventDefault();
+                            const options = {
+                                    id: $form.find("#wa-theme-copy-id").val(),
+                                    name: $form.find("#wa-theme-copy-name").val()
+                                };
                             themeCopy($form.find(':input:checked').val(), options);
                         })
 
@@ -1703,16 +1704,32 @@ var WAThemeSettings = ( function($) {
             that.$button.removeClass('green').addClass('yellow');
         });
 
+        let $status, saving;
+        if (that.is_wa2) {
+            $status = $('#wa-editor-status');
+            saving = that.locale.saving || 'Saving ...';
+        }
         that.$form.on('submit', function () {
+            if (that.is_wa2) {
+                $status.empty().append(`<i class='fas fa-spin fa-spinner'></i> ${saving}`).fadeIn("slow");
+            }
             $iframe.one('load', function () {
                 var response = $.parseJSON($(this).contents().find('body').html());
 
                 if (response.status == 'ok') {
+                    if (that.is_wa2) {
+                        $status.empty().append(`<i class="fas fa-check-circle"></i> ${saving}`).fadeOut('slow');
+                    }
                     that.$button.removeClass('yellow').addClass('green');
                     that.$error.hide().empty();
                     that.$message.fadeIn('slow', function () { $(this).fadeOut('slow');});
-                    waDesignLoad();
+                    if (!that.is_wa2) {
+                        waDesignLoad();
+                    }
                 } else {
+                    if (that.is_wa2) {
+                        $status.show().html(`<span class="state-error">${response.errors ? response.errors : response}</span>`);
+                    }
                     that.$error.html(response.errors ? response.errors : response);
                     that.$error.fadeIn("slow");
                 }

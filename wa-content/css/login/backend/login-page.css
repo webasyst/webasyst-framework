@@ -439,7 +439,7 @@
   user-select: none;
   background-color: #fff;
   border: 0.0625em solid rgba(136,136,136,0.5);
-  padding: 0.5em;
+  padding: 0.5em 2em;
   margin-top: 22px;
   line-height: 1;
   border-radius: 0.25em;
@@ -457,6 +457,7 @@
   width: 1.125em;
   height: 1.125em;
   background-image: url("/wa-content/img/webasyst-wand-bold.svg");
+  background-repeat: no-repeat;
   -webkit-background-size: 100%;
   -moz-background-size: 100%;
   background-size: 100%;
@@ -465,7 +466,7 @@
 #wa-login.wa-backend-login-page .waid-login .hint {
   position: absolute;
   top: 50px;
-  right: 40px;
+  right: 10px;
   text-decoration: underline;
   font-size: 14px;
   color: #aaa;

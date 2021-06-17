@@ -2,7 +2,7 @@
 
 return array(
     'name' => 'Photos',
-    'icon' => 'img/photos512.png',
+    'icon' => 'img/photos.svg',
     'rights' => true,
     'frontend' => true,
     'themes' => true,

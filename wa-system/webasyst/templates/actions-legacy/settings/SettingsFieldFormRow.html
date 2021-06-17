@@ -12,6 +12,10 @@
     {/strip}
 {/function}
 
+{if !isset($default_value)}
+    {$default_value = null}
+{/if}
+
 {if $f->getType() != "Hidden"}
     <tr class="{$tr_classes}" data-field-id="{$fid}"{if !$new_field} data-field-type="{$f->getType()}"{/if}>
         <td class="min-width"><i class="icon16 sort js-subfield-sort"></i></td>
@@ -66,8 +70,8 @@
                 </div>
             {else}
                 <div class="hide-when-field-enabled">
-                    <input type="hidden" name="{$prefix}[{$fid}][_default_value_enabled]" value="{if ifset($default_value) !== null}1{/if}">
-                    {if ifset($default_value) === null}
+                    <input type="hidden" name="{$prefix}[{$fid}][_default_value_enabled]" value="{if $default_value !== null}1{/if}">
+                    {if $default_value === null}
                         <a href="javascript:void(0)" class="setup-default-value-link small hint inline-link"><b><i>[s`Set default fixed value`]</i></b></a>
                     {else}
                         <a href="javascript:void(0)" class="setup-default-value-link hint inline-link"><b><i>[s`Default fixed value:`]
@@ -76,7 +80,7 @@
                     <div class="hidden default-value-editor">
                         <div class="small">[s`Default fixed value:`]</div>
                         {if $f instanceof waContactConditionalField || $f instanceof waContactRegionField || $f instanceof waContactBranchField}
-                            <input type="text" name="{$prefix}[{$fid}][_default_value]" value="{ifset($default_value)|escape}">
+                            <input type="text" name="{$prefix}[{$fid}][_default_value]" value="{$default_value|escape}">
                         {else}
                             <div class="field value" style="padding:0;margin:0">{$form->html('_default_value')}</div>
                         {/if}

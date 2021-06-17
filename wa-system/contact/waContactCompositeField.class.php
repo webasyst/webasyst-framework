@@ -332,6 +332,12 @@ class waContactCompositeField extends waContactField
         $data = ifset($value, 'data', array());
         $params_subfield['composite_value'] = $data;
 
+        // When subfield values do not exist in 'data', take them from 'value'
+        // This trigers e.g. when taking values from POST
+        if (is_array($data) && is_array($value)) {
+            $data += $value;
+        }
+
         if (!isset($params['id'])) {
             $params['id'] = $this->getId();
         }

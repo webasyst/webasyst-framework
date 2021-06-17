@@ -79,7 +79,7 @@
                     return false;
                 }
                 if ($("#p-uploader").is(":hidden")) {
-                    $.photos.uploadDialog();
+                    $("#p-upload-link").trigger('click');
                 }
                 var that = $(this).data('fileupload'),
                     files = data.files;
@@ -114,7 +114,7 @@
                     if (!that._validate(data.files)) {
                         return false;
                     }
-                };
+                }
                 //data.context.find('.p-upload-onephoto-progress').addClass('current');
                 if (data.context && data.dataType &&
                         data.dataType.substr(0, 6) === 'iframe') {
@@ -177,6 +177,9 @@
                             template.hide(200);
                         }, 5000);
                     }
+                }
+                if (n == that.filesCount) {
+                    $('#p-uploader').find('.js-close-dialog').trigger('click');
                 }
             },
             // Callback for failed (abort or error) uploads:
@@ -331,7 +334,6 @@
                             }
                         }
                     }
-                    $('#p-uploader').find('.js-close-dialog').trigger('click');
                 }
                 self.data('is_error', false);
                 self.data('is_aborted', false);

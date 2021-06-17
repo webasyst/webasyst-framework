@@ -32,6 +32,7 @@ class webasystBackendHeaderAction extends waViewAction
         $user = wa()->getUser();
         $apps = $user->getApps();
         $current_app = wa()->getApp();
+        $ui_version = wa()->whichUI($current_app);
         $counts = wa()->getStorage()->read('apps-count');
         $date = _ws(waDateTime::date('l')).', '.trim(str_replace(date('Y'), '', waDateTime::format('humandate')), ' ,/');
 
@@ -50,35 +51,44 @@ class webasystBackendHeaderAction extends waViewAction
 
         /**
          * @event backend_header
+         * @param string $current_app
          * @return array[string]array $return[%plugin_id%] array of html output
          * @return array[string][string]string $return[%plugin_id%]['header_top'] html output (will be rendered only in UI v1.3)
          * @return array[string][string]string $return[%plugin_id%]['header_middle'] html output (will be rendered only in UI v1.3)
          * @return array[string][string]string $return[%plugin_id%]['header_bottom'] html output (will be rendered only in UI v1.3)
          * @return array[string][string]string $return[%plugin_id%]['notification'] html output (will be rendered only in UI v2.0, "under the bell")
          */
-        $params = array();
+        $params = [
+            'current_app' => $current_app,
+            'ui_version' => $ui_version
+        ];
         $backend_header = wa()->event(array('webasyst', 'backend_header'), $params);
 
         $header_top = [];
         $header_middle = [];
         $header_bottom = [];
         $header_notification = [];
-
         foreach ($backend_header as $app_id => $header) {
             if (is_array($header)) {
-                if (!empty($header['header_top'])) {
+
+                // header_top place allowed either for 1.3
+                //  or 2.0 but if event result returned by installer app (special case)
+                if (($ui_version === '1.3' || ($ui_version === '2.0' && $app_id === 'installer')) && !empty($header['header_top'])) {
                     $header_top[] = $header['header_top'];
                 }
-                if (!empty($header['header_middle'])) {
+
+                if ($ui_version === '1.3' && !empty($header['header_middle'])) {
                     $header_bottom[] = $header['header_middle'];
                 }
-                if (!empty($header['header_bottom'])) {
+                if ($ui_version === '1.3' && !empty($header['header_bottom'])) {
                     $header_bottom[] = $header['header_bottom'];
                 }
-                if (!empty($header['notification'])) {
+
+                if ($ui_version === '2.0' && !empty($header['notification'])) {
                     $header_notification[] = $header['notification'];
                 }
-            } elseif (is_string($header)) {
+
+            } elseif (is_string($header) && $ui_version === '1.3') {
                 $header_middle[] = $header;
             }
         }

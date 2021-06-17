@@ -69,9 +69,9 @@
                                 <a href="{$dashboard_module_url}team/{$team.id}/">
                                     <i class="fas fa-map-marker-alt"></i>
                                     <span>{$team.name|escape}</span>
-                                    {if $team.cnt > 0}
-                                        <span class="count"><span class="badge light-gray">{$team.cnt}</span></span>
-                                    {/if}
+                                    {* if $team.cnt > 0}
+                                        <span class="count">{$team.cnt}</span>
+                                    {/if *}
                                 </a>
                             </li>
                         {/foreach}

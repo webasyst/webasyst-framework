@@ -131,6 +131,11 @@ class waDispatch
             throw new waException("Page not found", 404);
         }
 
+        // heuristic: reset idle status, cause not ajax request (we suppose user voluntarily request page)
+        if (!waRequest::isXMLHttpRequest()) {
+            (new waContactSettingsModel())->delete($this->system->getUser()->getId(), 'webasyst', 'idle_since');
+        }
+
         // Make sure user has access to active app
         if ($app != 'webasyst' && !$this->system->getUser()->getRights($app, 'backend')) {
             throw new waRightsException('Access to this app denied', 403);

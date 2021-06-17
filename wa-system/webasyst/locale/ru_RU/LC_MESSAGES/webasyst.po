@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-05-30 17:07+0300\n"
+"PO-Revision-Date: 2021-06-09 11:56+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1871,7 +1871,7 @@ msgid "Reset password"
 msgstr "Сбросить пароль"
 
 msgid "I remember it now!"
-msgstr "Я вспомнил пароль!"
+msgstr "Я помню пароль!"
 
 msgid "Sign up"
 msgstr "Регистрация"
@@ -4110,6 +4110,9 @@ msgstr "%s отмечает день рождения — %s"
 
 msgid "%s is now online"
 msgstr "%s сейчас онлайн"
+
+msgid "%s is now away"
+msgstr "%s онлайн, но не активен"
 
 msgid "Plugin not found"
 msgstr "Плагин не найден"

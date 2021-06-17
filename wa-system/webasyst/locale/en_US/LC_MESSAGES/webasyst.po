@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-04-26 12:35+0300\n"
+"PO-Revision-Date: 2021-06-03 10:11+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1556,6 +1556,9 @@ msgid "Request preferred delivery date"
 msgstr ""
 
 msgid "%s is now online"
+msgstr ""
+
+msgid "%s is now away"
 msgstr ""
 
 msgid "%s's birthday — %s"
@@ -3648,7 +3651,7 @@ msgid "Back to the classic UI"
 msgstr ""
 
 msgid "Try it in both light and dark modes:"
-msgstr "Светлый и темный режимы:"
+msgstr ""
 
 msgid "You’ve enabled the new Webasyst 2 UI, but this app does not currently support it. Please contact the app developer to encourage upgrading the UI to the new style."
 msgstr ""

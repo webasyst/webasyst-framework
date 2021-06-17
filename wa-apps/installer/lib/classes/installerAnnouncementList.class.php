@@ -4,7 +4,6 @@ class installerAnnouncementList
 {
     private $cache = [];
     protected $filters = [];
-    protected $with_grouping = false;
 
     /**
      * For webasyst Framework UI v1.3, will shown in top of header
@@ -39,13 +38,6 @@ class installerAnnouncementList
         });
     }
 
-    /**
-     * Get list of announcements that should be placed in top header location
-     * @return array $announcements
-     *      string      $announcements[<key>]['html']
-     *      bool        $announcements[<key>]['always_open']
-     *      string|null $announcements[<key>]['app_id']
-     */
     public function getTopHeaderList()
     {
         $list = $this->getList();

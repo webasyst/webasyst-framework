@@ -252,14 +252,23 @@ function replaceImg (img, new_src, fn, namespace) {
     replaceImg.loading_map[namespace] = new_src;
     img.unbind('load');
     if (fn === null) {
-        img.attr('src', new_src);
+        img.attr({
+            src: new_src,
+            srcset: `${img.proper_thumb ? img.proper_thumb.url + ' 1x, ' + img.proper_thumb.url2x + '2x' : ""}`
+        });
     } else {
-        $('<img>').attr('src', new_src).load(function() {
+        $('<img>').attr({
+            src: new_src,
+            srcset: `${img.proper_thumb ? img.proper_thumb.url + ' 1x, ' + img.proper_thumb.url2x + '2x' : ""}`
+        }).load(function() {
             // setTimeout need for fix FF "blink" problem with image rendering
             setTimeout(function() {
                 // render img only of last calling of function for this namespace
                 if (replaceImg.loading_map[namespace] == new_src) {
-                    img.attr('src', new_src);
+                    img.attr({
+                        src: new_src,
+                        srcset: `${img.proper_thumb ? img.proper_thumb.url + ' 1x, ' + img.proper_thumb.url2x + '2x' : ""}`
+                    });
                     if (typeof fn == 'function') {
                         fn.call(img);
                     }

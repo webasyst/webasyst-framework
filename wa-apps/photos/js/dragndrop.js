@@ -11,13 +11,15 @@
             this._initDragAlbums();
             this._initDropAlbums();*/
 
-            const options = {
+
+            const $album_list = document.querySelector('#album-list'),
+                options = {
                 forceFallback: true,
                 ghostClass: "p-sortable-ghost",
                 chosenClass: "p-sortable-chosen",
                 dragClass: "p-sortable-drag",
                 fallbackClass: "p-sortable-fallback",
-                waHighlightClass: 'bg-light-gray',
+                waHighlightClass: 'p-sortable-nested',
                 group: "nested",
                 draggable: ">*:not(a)",
                 animation: 150,
@@ -83,14 +85,14 @@
                         if (!$.isEmptyObject(counters)) {
                             for (let album_id in counters) {
                                 if (counters.hasOwnProperty(album_id)) {
-                                    album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
+                                    $($album_list).find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
                                 }
                             }
                         }
                     }, 'json');
                 }
             }
-            const nestedSortables = Array.from(document.querySelector('#album-list').querySelectorAll('ul'));
+            const nestedSortables = Array.from($album_list.querySelectorAll('ul'));
             nestedSortables.forEach(item => new Sortable(item, options))
 
         },
@@ -145,7 +147,7 @@
                     ],
                     helper: function(event) {
                         var self = $(this).parents('li:first'),
-                            selected = $('#photo-list li.selected'),
+                            selected = $('#photo-list > li.selected'),
                             count = selected.length ? selected.length : 1,
                             photo_ids = [self.attr('data-photo-id')],
                             included = false;
@@ -240,7 +242,7 @@
                     }
 
                     // define selected item
-                    var selected = $('#photo-list li.selected');
+                    var selected = $('#photo-list > li.selected');
                     if (!selected.length) {
                         selected = draggable;
                     }
@@ -258,12 +260,12 @@
                         before_id = null;
                         self.after(selected);
                         self.removeClass('last');
-                        $('#photo-list li:last').addClass('last');
+                        $('#photo-list > li:last').addClass('last');
                     } else {
                         self.before(selected);
                         if (draggable.hasClass('last')) {
                             draggable.removeClass('last')
-                            $('#photo-list li:last').addClass('last');
+                            $('#photo-list > li:last').addClass('last');
                         }
                     }
                     // clear visuall hightlights
@@ -433,16 +435,16 @@
                 list = $();
             }
             changed = false;
-            list.add(li.find('li.dr')).each(function() {
+            list.add(li.find('li')).each(function() {
                 var self = $(this).find('>a');
-                if (!self.find('i.lock-bw').length) {
-                    var next = self.find('.pictures').next();
-                    var html = '<i class="fas fa-lock"></i>';
+                if (!self.find('.fa-lock').length) {
+                    var next = $(this).filter('.images').next();
+                    var html = '<span class="hint"><i class="fas fa-lock"></i></span>&nbsp;';
                     if (next.length) {
                         changed = true;
-                        next.before(html);
+                        next.find('count:first').prepend(html);
                     } else {
-                        self.append(html);
+                        self.find('count:first').prepend(html);
                     }
                 }
             });
@@ -568,7 +570,7 @@
                                 photo_id: photo_ids,
                                 album_id: album_id
                             });
-                            $('#photo-list li.selected').trigger('select', false);
+                            $('#photo-list > li.selected').trigger('select', false);
                         }
                         return false;
                     }

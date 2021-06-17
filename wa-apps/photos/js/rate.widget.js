@@ -51,29 +51,33 @@
                 self.attr('data-rate', settings.rate);
             }
 
-            self.find('svg:lt(' + self.attr('data-rate') + ')').attr('data-prefix', 'fas');
+            self.find('svg:lt(' + self.attr('data-rate') + ')').removeClass('text-light-gray').addClass('text-yellow');
 
             self
                 .mouseover(function (e) {
                     if (settings.hold.call(self)) {
                         return;
                     }
-
                     let target = e.target;
 
-                    if (target.tagName === 'svg') {
+                    if (target.tagName === 'svg' || target.tagName === 'path') {
+
+                        if (target.tagName === 'path') {
+                            target = target.ownerSVGElement;
+                        }
 
                         target = $(target);
+
                         target
                             .prevAll()
                             .addBack()
-                            .removeClass('fa-star-half-alt')
-                            .attr('data-prefix', 'fas');
+                            .removeClass('fa-star-half text-light-gray')
+                            .addClass('fa-star text-yellow')
 
                         target
                             .nextAll()
-                            .removeClass('fa-star-half-alt')
-                            .attr('data-prefix', 'far');
+                            .removeClass('fa-star-half text-yellow')
+                            .addClass('fa-star text-light-gray');
                     }
                 })
                 .mouseleave(function () {
@@ -91,31 +95,35 @@
                 }
 
                 let target = e.target;
-                if (target.tagName === 'path') {
-                    target = target.ownerSVGElement;
-                }
 
-                let prev_rate = self.attr('data-rate'),
-                    rate = $(target).attr('data-rate-value');
+                if (target.tagName === 'svg' || target.tagName === 'path') {
 
-                if (prev_rate == rate) {
-                    return;
-                }
+                    if (target.tagName === 'path') {
+                        target = target.ownerSVGElement;
+                    }
 
-                self
-                    .find('svg')
-                    .removeClass('fa-star-half-alt')
-                    .attr('data-prefix', 'far')
-                    .each(function () {
-                        $(this).attr('data-prefix', 'fas');
-                        if ($(this).attr('data-rate-value') == rate) {
-                            if (settings.alwaysUpdate || prev_rate != rate) {
-                                self.attr('data-rate', rate);
-                                settings.onUpdate(rate);
+                    let prev_rate = self.attr('data-rate'),
+                        rate = $(target).attr('data-rate-value');
+
+                    if (prev_rate == rate) {
+                        return;
+                    }
+
+                    self
+                        .find('svg')
+                        .removeClass('fa-star-half')
+                        .addClass('text-yellow')
+                        .each(function () {
+                            $(this).addClass('text-yellow');
+                            if ($(this).attr('data-rate-value') == rate) {
+                                if (settings.alwaysUpdate || prev_rate != rate) {
+                                    self.attr('data-rate', rate);
+                                    settings.onUpdate(rate);
+                                }
+                                return false;
                             }
-                            return false;
-                        }
-                    });
+                        });
+                }
 
             });
 
@@ -174,18 +182,18 @@
         function update(new_rate) {
             let rate = 0;
             this.find('svg')
-                .removeClass('fa-star-half-alt')
-                .attr('data-prefix', 'far').each(function () {
+                .addClass('text-light-gray')
+                .removeClass('fa-star-half text-yellow').each(function () {
                 if (rate == new_rate) {
                     return false;
                 }
                 rate++;
                 if (rate > new_rate) {
                     if (rate - new_rate == 0.5) {
-                        $(this).attr('data-prefix', 'fas').addClass('fa-star-half-alt');
+                        $(this).removeClass('text-light-gray').addClass('fa-star-half text-yellow');
                     }
                 } else {
-                    $(this).attr('data-prefix', 'fas');
+                    $(this).removeClass('text-light-gray').addClass('text-yellow');
                 }
             });
             this.attr('data-rate', new_rate);

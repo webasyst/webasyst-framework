@@ -366,7 +366,7 @@ abstract class waMyProfileAction extends waViewAction
                 );
             } else {
                 return array(
-                    'name' => $this->form->fields[$id]->getName(null, true),
+                    'name' => $field->getName(null, true),
                     'value' => $this->contact->get($id, 'html'),
                 );
             }

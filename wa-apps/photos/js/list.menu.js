@@ -6,7 +6,7 @@
         embedAction: function() {
             let $wrapper = $('#embed-photo-list-dialog'),
                 size = $.storage.get('photos/embed_size'),
-                photo_list = $('#photo-list li.selected'),
+                photo_list = $('#photo-list > li.selected'),
                 // accumulate photo ids to comma-separated string
                 photo_ids = photo_list.map(function() {
                     let photo_id = $(this).attr('data-photo-id'),
@@ -203,7 +203,7 @@
         },
         blogPostAction: function() {
             let form = $('#blog-post-form');
-            let photo_ids = [...document.querySelectorAll('#photo-list li.selected')].map(el => el.getAttribute('data-photo-id'));
+            let photo_ids = [...document.querySelectorAll('#photo-list > li.selected')].map(el => el.getAttribute('data-photo-id'));
 
             let counter =[0,0];
             for(let i=0;i<photo_ids.length;i++) {
@@ -268,7 +268,7 @@
 
                 } else {
                     if(!photo_ids.length) {
-                        photo_ids = $('#photo-list li').map(function() {
+                        photo_ids = $('#photo-list > li').map(function() {
                             return $(this).attr('data-photo-id');
                         }).toArray();
                     }
@@ -323,7 +323,7 @@
                 $.waDialog({
                     $wrapper: $("#choose-albums"),
                     onOpen($dialog, dialog) {
-                        $dialog.find('h3:first span:first').text('(' + $('#photo-list li.selected').length + ')');
+                        $dialog.find('h3:first span:first').text('(' + $('#photo-list > li.selected').length + ')');
                         let $submit = $dialog.find('[type="submit"]'),
                             $form = $dialog.find('form');
 
@@ -349,7 +349,7 @@
                                 album_id: album_id,
                                 copy: 1,
                                 fn: function() {
-                                    $('#photo-list li.selected').trigger('select', false);
+                                    $('#photo-list > li.selected').trigger('select', false);
                                     $dialog.trigger('change_loading_status', false);
                                     dialog.close();
                                 }
@@ -462,8 +462,7 @@
                         let photo_id = $checked_photos.serializeArray(),
                             tags = $tags_control.val(),
                             delete_tags = $tags_remove_list.find('input[name^=delete_tags]:checked').serializeArray();
-                        console.log(tags)
-                        console.log($('#photo-list-tags-dialog #photos-list-tags').val())
+
                         if (!tags.length && !delete_tags.length) {
                             alert($_('Please select at least one tag'));
                             return false;
@@ -482,7 +481,7 @@
                             fn: function(response) {
                                 if (response.status == 'ok') {
                                     let photo_tags = response.data.tags,
-                                        $photo_list = $('#photo-list li.selected'),
+                                        $photo_list = $('#photo-list > li.selected'),
                                         html;
 
                                     for (let id in photo_tags) {
@@ -490,7 +489,7 @@
                                             html = tmpl('template-photo-list-photo-tags', {
                                                 tags: photo_tags[id]
                                             });
-                                            $photo_list.filter('[data-photo-id='+id+']:first').find('.tags>span').html(html);
+                                            $photo_list.filter('[data-photo-id='+id+']:first').find('.tags').replaceWith(html);
                                         }
                                     }
 
@@ -526,7 +525,7 @@
                         $.photos.deletePhotos(photo_id, function() {
                             $.photos.unsetCover();
                             d.trigger('change_loading_status', false);
-                            $('#photo-list li.selected').trigger('select', false);
+                            $('#photo-list > li.selected').trigger('select', false);
                             d_instance.close()
                         });
                         return false;
@@ -568,7 +567,7 @@
                                             response_data.allowed_photo_id :
                                             {};
 
-                                        $('#photo-list li.selected')
+                                        $('#photo-list > li.selected')
                                             .each(function () {
                                                 let self = $(this);
                                                 if (allowed_photo_id[self.attr('data-photo-id')]) {
@@ -625,7 +624,7 @@
             //                             var allowed_photo_id = r.data.allowed_photo_id && !$.isArray(r.data.allowed_photo_id) ?
             //                                     r.data.allowed_photo_id :
             //                                     {};
-            //                             $('#photo-list li.selected').each(function() {
+            //                             $('#photo-list > li.selected').each(function() {
             //                                 var self = $(this);
             //                                 if (allowed_photo_id[self.attr('data-photo-id')]) {
             //                                     $.photos.updateThumbRate(self, rate);
@@ -671,7 +670,7 @@
 
                     $dialog.trigger('change_loading_status', true);
 
-                    let $photo_list = $('#photo-list li.selected');
+                    let $photo_list = $('#photo-list > li.selected');
 
                     $.photos.saveAccess({
                         photo_id: photo_id,
@@ -749,19 +748,25 @@
             return false;
         },
         hideNameAction: function(item, e) {
-            var checkbox = item.find(':checkbox');
-            var checked = checkbox.prop('checked');
+            var checkbox = item.find(':checkbox'),
+                checked = checkbox.prop('checked'),
+                $li = $('#photo-list > li');
+
             if(e.target.tagName != 'INPUT') {
                 checked = !checked;
             }
+
             if (checked) {
-                $('#photo-list li :text[name$="\[name\]"]').hide();
-                $('#photo-list li textarea[name$="\[description\]"].js-small').css('height','+=27').removeClass('js-small').addClass('js-big');
+                $li.find(':text[name$="\[name\]"]').hide();
             } else {
-                $('#photo-list li :text[name$="\[name\]"]').show();
-                $('#photo-list li textarea[name$="\[description\]"].js-big').css('height','-=27').removeClass('js-big').addClass('js-small');
+                $li.find(':text[name$="\[name\]"]').show();
             }
-            setTimeout(function(){checkbox.attr('checked',checked);},50);
+            $li.find('textarea[name$="\[description\]"]')
+                .css('height',`${!!checked ? '+=46' : '-=46'}`)
+                .toggleClass('js-small', !checked)
+                .toggleClass('js-big', !!checked);
+
+            setTimeout(function(){checkbox.prop('checked',checked);},50);
             $.storage.set('photos/list/hide_name',checked);
         },
         onFire: function() {
@@ -828,7 +833,7 @@
                         find('.checked').hide();
                 $counter.text('').hide();
             }
-            $('#photo-list li').trigger('select', [!!item.data('checked'), false]);
+            $('#photo-list > li').trigger('select', [!!item.data('checked'), false]);
         }
     });
 

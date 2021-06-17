@@ -73,7 +73,7 @@
             let photo_id = $.photos.photo_stream_cache.getCurrent().id;
             $.photos.showManageAccessDialog(
                 'photo_id='+photo_id,
-                function($dialog, dialog) {
+                function(d) {
                     let f = $(this),
                         data = f.serializeArray();
 
@@ -108,7 +108,7 @@
                                 });
                                 $.photos.updatePhotoImgs(current);
                             }
-                            dialog.close();
+                            d.trigger('close');
                         },
                         onDeniedExist: function() {
                             alert($_("You don't have sufficient access rights"));

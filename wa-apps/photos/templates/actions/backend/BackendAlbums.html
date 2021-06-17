@@ -30,7 +30,7 @@
                         {/if}
                     </div>
                 </div>
-                <a href="#/album/{$a.id}/" class="p-details">
+                <a href="#/album/{$a.id}/" class="p-details break-all">
                     <strong class="black"{if $a.status <= 0} title="[`Private album`]"{/if}>{$a.name|default:'[`(no name)`]'|escape}</strong>
                     <br>
                     <span class="p-count small gray">{sprintf( _w('%d photo','%d photos',$a.count), $a.count)}</span>

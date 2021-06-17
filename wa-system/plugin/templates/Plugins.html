@@ -10,19 +10,8 @@
 {$plugin_names = array()}
 <div id="wa-plugins-container" class="content flexbox{if !empty($container_class)} {$container_class}{/if}">
     <div class="sidebar hide-scrollbar flexbox width-21rem bordered-right bordered-left">
-            {if !empty($installer)}
-                <div class="sidebar-header">
-                    <ul class="menu js-plugin-list custom-mt-0">
-                        <li class="js-plugins-list selected"
-                            data-url="{$wa_backend_url}installer/?module=plugins&action=view&slug={$wa->app()}">
-                            <a href="{$plugins_hash}/"><i class="fas fa-star"></i><span>[s`Popular plugins`]</span></a>
-                        </li>
-                    </ul>
-                </div>
-            {/if}
             <div class="sidebar-body hide-scrollbar{if empty($installer)} custom-pt-16{/if}">
                 {if !empty($plugins)}
-                <h4 class="heading">[s`Installed`]</h4>
                 <ul class="menu js-plugin-list" id="wa-plugin-list">
                     {foreach $plugins as $plugin}
                         {$plugin_names[$plugin.id] = $plugin.name|escape}
@@ -45,7 +34,7 @@
                     {/foreach}
                 </ul>
                 {else}
-                    <div class="align-center hint box">
+                    <div class="align-center gray box custom-mt-16">
                         [s`No plugins are installed.`]
                     </div>
                 {/if}

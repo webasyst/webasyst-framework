@@ -15,7 +15,7 @@
         </div>
     {else}
         <div id="p-block">
-            <h1 class="flexbox middle wrap space-8">
+            <h1 class="flexbox middle wrap space-8 break-all">
                 {if !empty($album)}
                     <a href="{if $album.parent_id}#/album/{$album.parent_id}/{else}#/albums/{/if}" title="[`Back`]" class="gray"><i class="fas fa-arrow-circle-left"></i></a>
                 {/if}
@@ -54,7 +54,7 @@
                 </span>
             {/if}
 
-            <div class="flexbox middle nowrap space-16 p-album-control small blank">
+            <div class="flexbox middle space-16 p-album-control small blank break-all">
                 <div class="toggle animate p-content-control" id="js-photos-view-toggle">
                     <span class="selected" data-action="thumbs-view">
                         <svg class="svg-inline--fa fa-th fa-w-16" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="th" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M149.333 56v80c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24h101.333c13.255 0 24 10.745 24 24zm181.334 240v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm32-240v80c0 13.255 10.745 24 24 24H488c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24zm-32 80V56c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.256 0 24.001-10.745 24.001-24zm-205.334 56H24c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24zM0 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm386.667-56H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zm0 160H488c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H386.667c-13.255 0-24 10.745-24 24v80c0 13.255 10.745 24 24 24zM181.333 376v80c0 13.255 10.745 24 24 24h101.333c13.255 0 24-10.745 24-24v-80c0-13.255-10.745-24-24-24H205.333c-13.255 0-24 10.745-24 24z"></path></svg>
@@ -71,12 +71,23 @@
                             <span>
                                 <i class="fas fa-lock text-gray small"></i>
                                 <span class="desktop-only">[`Private album`]:</span>
-                                {if $album.edit_rights}<a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="break-all">{$frontend_link}</a>{/if}
                             </span>
+                            {if $album.edit_rights}
+                                <span class="desktop-only">
+                                    <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="break-all">{$frontend_link}</a>
+                                </span>
+                                <span class="tablet-only mobile-only">
+                                    <a target="_blank" href="{$frontend_link}" class="button gray circle" id="photo-list-frontend-link" title="[`Private album`]"><i class="fas fa-external-link-alt"></i></a>
+                                </span>
+                            {/if}
                         {else}
-                            <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a>
+                            <span class="desktop-only">
+                                <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a>
+                            </span>
+                            <span class="tablet-only mobile-only">
+                                <a target="_blank" href="{$frontend_link}" class="button circle" id="photo-list-frontend-link"><i class="fas fa-external-link-alt"></i></a>
+                            </span>
                         {/if}
-
                     {/if}
 
                 {elseif (!empty($frontend_link))}
@@ -84,7 +95,7 @@
                         [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs text-blue opacity-50"></i>
                     </span>
                     <span class="tablet-only mobile-only">
-                        <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link"><i class="fas fa-link"></i></a>
+                        <a target="_blank" href="{$frontend_link}" class="button circle" id="photo-list-frontend-link" title="[`Public link`]"><i class="fas fa-external-link-alt"></i></a>
                     </span>
                 {/if}
 
@@ -94,7 +105,7 @@
                         <span class="mobile-only tablet-only">[`Selected`]</span>
                         <span class="badge smaller blue js-count" style="display:none"></span>
                     </button>
-                    <div class="dropdown-body custom-py-16" id="p-toolbar">
+                    <div class="dropdown-body right custom-py-16" id="p-toolbar">
 
                             <!-- begin plugin hook: backend_photos_toolbar.top -->
                             {foreach $backend_photos_toolbar as $plugin_id => $item}
@@ -356,7 +367,7 @@
                 <img srcset="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb.url2x%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x" src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" alt="" {% if ($.photos.album && $.photos.album.status == 1 && p.status <= 0) { %} style="opacity: 0.5" title="[`Private photos are not visible in public albums`]"{% } %} />
                 {% if (p.stack_count > 0) { %}<div class="p-stack-1"></div><div class="p-stack-2"></div><div class="p-stack-3"></div>{% } %}
         </div>
-        <div class="p-details">
+        <div class="p-details break-all">
             <span class="wa-checkbox">
                 <input
                         type="checkbox"
@@ -486,7 +497,7 @@
 {/literal}{/capture}
 {capture name="template-photo-list-photo-tags"}{literal}
 {% var tags = o.tags, i = 0; %}
-{% if (!tags || ($.isArray(tags) && !tags.length)) return ''; %}
+{% if (!tags || ($.isArray(tags) && !tags.length)) return '<ul class="tags custom-my-0"></ul>'; %}
     <ul class="tags chips rounded smaller transparent outline smaller custom-mb-0">
 {% for (var tag_id in tags) { %}{% var t = tags[tag_id]; %}<li><a href='#/tag/{%=encodeURIComponent(t)%}/'><span><i class="fas fa-hashtag"></i> {%=t%}</span></a></li>{% } %}
     </ul>

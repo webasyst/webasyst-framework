@@ -21,7 +21,7 @@ const WaMobileDashboard = ( function($) {
             setInterval(this.updateCount, 60000);
             this.closeNotification()
             this.switchDashboards()
-            this.sortableApps()
+            //this.sortableApps()
         }
 
         searchPanel() {
@@ -246,9 +246,9 @@ const WaMobileDashboard = ( function($) {
         sortableApps() {
             let that = this;
 
-            const app_list_sortable = () => {
+            var app_list_sortable = () => {
                 that.$dashboard_apps.sortable({
-                    delay: 100,
+                    delay: 0,
                     delayOnTouchOnly: true,
                     animation: 150,
                     dataIdAttr: 'data-app',
@@ -273,17 +273,19 @@ const WaMobileDashboard = ( function($) {
             if(typeof Sortable !== 'undefined') {
                 app_list_sortable()
             } else {
-                let urls = [];
-                urls.push('/wa-content/js/sortable/sortable.min.js');
-                urls.push('/wa-content/js/sortable/jquery-sortable.min.js');
-
-                $.when.apply($, $.map(urls, function(file) {
-                    return $.ajax({
-                        cache: true,
-                        dataType: "script",
-                        url: file
+                let urls = [`${wa_url}wa-content/js/sortable/sortable.min.js`, `${wa_url}wa-content/js/sortable/jquery-sortable.min.js`];
+                const sortableDefer = $.Deferred();
+                for (let i = 0; i < urls.length; i++) {
+                    sortableDefer.then(function () {
+                        return $.ajax({
+                            cache: true,
+                            dataType: "script",
+                            url: urls[i]
+                        });
                     });
-                })).done(app_list_sortable);
+                }
+
+                $.when.apply($, sortableDefer).done(app_list_sortable);
             }
         }
     }

@@ -13,6 +13,9 @@ class webasystBackendCountController extends waJsonController
         $apps = wa()->getApps(true);
 
         $user = wa()->getUser();
+
+        $this->updateIdleStatus($user['id']);
+
         $is_admin = $user->isAdmin();
         if (!$is_admin) {
             $right_model = new waContactRightsModel();
@@ -59,6 +62,24 @@ class webasystBackendCountController extends waJsonController
                 $item_id = ($app_id === $item_id) ? $item_id : $app_id.'.'.$item_id;
                 $this->parseItemCount($item_id, $n);
             }
+        }
+    }
+
+    protected function updateIdleStatus($contact_id)
+    {
+        $is_idle = waRequest::request('idle') === 'true';
+
+        $m = new waContactSettingsModel();
+        $key = 'idle_since';
+        $app_id = 'webasyst';
+
+        $datetime = $m->getOne($contact_id, $app_id, $key);
+        $is_valid_datetime = $datetime && date('Y-m-d H:i:s', strtotime($datetime)) == $datetime;
+
+        if (!$is_idle) {
+            $m->delete($contact_id, $app_id, $key);
+        } elseif (!$is_valid_datetime) {
+            $m->set($contact_id, $app_id, $key, date('Y-m-d H:i:s'));
         }
     }
 }

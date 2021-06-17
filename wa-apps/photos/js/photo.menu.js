@@ -6,11 +6,11 @@
         addToAlbumAction: function() {
             $.photos.confirmDialog({
                 url: '?module=dialog&action=albums&id=' + $.photos.getPhotoId(),
-                onSubmit: function (d) {
+                onSubmit: function (d, d_instance) {
                     var photo_id = $.photos.photo_stream_cache.getCurrent().id;
                     $.photos.addToAlbums({
                         photo_id: photo_id,
-                        album_id: $(this).serializeArray(),
+                        album_id: d.find('form').serializeArray(),
                         copy: 0,
                         fn: function(r) {
                             if (r.status == 'ok') {
@@ -26,15 +26,13 @@
                                             } else {
                                                 $.photos.goToHash('/album/'+albums[0].id+'/photo/'+photo_id);
                                             }
-                                            d.trigger('close');
+                                            d_instance.close();
                                             return;
                                         }
                                     }
                                 }
-                                $('#photo-albums').html(tmpl('template-photo-albums', {
-                                    albums: albums
-                                }));
-                                d.trigger('close');
+                                $('#photo-albums').html(tmpl('template-photo-albums', { albums }));
+                                d_instance.close();
                             }
                         }
                     });
@@ -72,9 +70,8 @@
             var photo_id = $.photos.photo_stream_cache.getCurrent().id;
             $.photos.showManageAccessDialog(
                 'photo_id='+photo_id,
-                function(d) {
-                    var f = $(this),
-                        data = f.serializeArray();
+                function($dialog, dialog) {
+                    let data = $dialog.find('form').serializeArray();
 
                     data.push({
                         name: 'one_photo',
@@ -82,7 +79,7 @@
                     });
                     $.photos.saveAccess({
                         photo_id: $.photos.photo_stream_cache.getCurrent().id,
-                        data: data,
+                        data,
                         fn: function(r) {
                             var photo = r.data.photo,
                                 stack = r.data.stack;
@@ -92,7 +89,7 @@
                                 // update content control panel
                                 $.photos.initPhotoContentControlWidget({
                                     frontend_link_template: r.data.frontend_link_template,
-                                    photo: photo
+                                    photo
                                 });
                                 $.photos.updatePhotoImgs(photo);
                             } else if (stack && $.isArray(stack) && stack.length) {
@@ -107,7 +104,7 @@
                                 });
                                 $.photos.updatePhotoImgs(current);
                             }
-                            d.trigger('close');
+                            dialog.close();
                         },
                         onDeniedExist: function() {
                             alert($_("You don't have sufficient access rights"));

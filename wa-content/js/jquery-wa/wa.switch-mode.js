@@ -75,20 +75,28 @@ new class ThemeMode {
 
     handleOrientationChange(mql) {
         const that = this;
-        let event_matches;
+        let event_matches,
+            $html = document.querySelector('html');
 
         if (mql.target !== undefined) {
             event_matches = mql.target.matches;
         }
 
         setMediaColorScheme();
+        $html.setAttribute('data-theme', mql.matches || event_matches ? 'dark' : 'light');
+
+        if(!this.wa_theme_user_mode || this.wa_theme_user_mode === 'auto') {
+            return;
+        }
 
         if (mql.matches || event_matches) {
             if (this.wa_theme_user_mode === 'light') {
+                $html.setAttribute('data-theme', 'light');
                 setMediaColorScheme('light');
             }
         } else {
             if (this.wa_theme_user_mode === 'dark') {
+                $html.setAttribute('data-theme', 'dark');
                 setMediaColorScheme('light');
             }
         }

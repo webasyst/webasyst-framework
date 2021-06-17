@@ -80,10 +80,10 @@
         hooks = o.hooks;
         %}
         <section class="p-photo-header">
-            <h3 class="flexbox middle space-16">
+            <h3 class="flexbox wrap middle space-16">
                 <span class="editable title custom-ml-0" id="photo-name">{%#p.name%}</span>
-                <input type="text" id="photo-name-input" class="p-photo-h1-edit bold" style="display:none;">
-                <span class="p-rate nowrap flexbox middle space-10">
+                <input type="text" id="photo-name-input" class="p-photo-h1-edit bold custom-ml-4" style="display:none;">
+                <span class="p-rate nowrap flexbox middle space-10 custom-ml-4">
                 <a href="javascript: void(0);" title="[`Rate photo`]" id="photo-rate" class="p-rate-photo" data-rate="{%#p.rate%}">
                     {%#$.photos.getRatingHtml(p.rate, 16, true)%}
                 </a>
@@ -102,8 +102,8 @@
                 <i class="icon16 exclamation"></i> [`Photo is not in album`]
             </span>
         </div>
-        <div class="flexbox middle full-width">
-            <div class="p-content-control flexbox middle nowrap space-10 small" id="photo-content-control">
+        <div class="flexbox wrap middle full-width">
+            <div class="p-content-control flexbox wrap middle space-10 small" id="photo-content-control">
                 {% include('template-photo-content-control', { frontend_link_template: frontend_link_template, url: p.url, status: p.status, photo: p }); %}
             </div>
             <div class="block half-padded float-right hint" id="photo-albums">
@@ -148,7 +148,7 @@
         </div>
     </div>
     <div class="article">
-        <div class="article-header" id="p-info-area"></div>
+        <div class="article-header break-all" id="p-info-area"></div>
         <div class="article-body">
             <div class="p-description">
                 <span class="editable" id="photo-description">{%#p.description%}</span>
@@ -183,7 +183,7 @@
                 <a id="photo-frontend-link" class="bold break-all" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">
                     {%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}
                 </a>
-                <input type="text" id="photo-frontend-url-input" class="bold short" style="display:none;">
+                <input type="text" id="photo-frontend-url-input" class="bold short" style="width:fit-content;display:none;">
                 <span class="slash" style="display:none;">/<em class="errormsg" style="display:none;"></em></span>
 
                 &nbsp;
@@ -522,7 +522,7 @@
         TYPE_DYNAMIC: '{photosAlbumModel::TYPE_DYNAMIC}'
     };
 </script>
-
+{if $rights.upload}{$upload_dialog}{/if}
 <div id="photo-list-tags-dialog" class="dialog">
     <div class="dialog-background"></div>
     <form action="" class="dialog-body">
