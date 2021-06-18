@@ -16,8 +16,8 @@
 
 {function name="_render_1_1"}
     <div class="slider" id="slider-1-1">
-        <input type="text" id="min-1-1" value="1">
-        <input type="text" id="max-1-1" value="25">
+        <input type="text" id="min-1-1" class="custom-mt-24" value="1">
+        <input type="text" id="max-1-1" class="custom-mt-24" value="25">
         <script>
             ( function($) {
                 $("#slider-1-1").waSlider({
@@ -32,8 +32,8 @@
 
 {function name="_render_2"}
 <div class="slider" id="slider-2">
-    <input type="text" id="min-2" value="60">
-    <input type="text" id="max-2" value="140">
+    <input type="text" id="min-2" class="custom-mt-24" value="60">
+    <input type="text" id="max-2" class="custom-mt-24" value="140">
 
     <script>
         ( function($) {
@@ -94,8 +94,10 @@
     <h1 class="u-page-title">{$_title|escape}</h1>
     <h2><code>.slider</code></h2>
 
+    <blockquote class="small">Для работы компонента требуется подключение <code>wa-content/js/jquery-wa/<b>wa.js</b></code> — файла, в котором релизованы все базовые JS-компоненты Webasyst 2.</blockquote>
+
     <div class="line">
-        <p>Простой пример</p>
+        <p>Простой пример:</p>
         {_render_1}
     </div>
 
@@ -104,7 +106,7 @@
     </div>
 
     <div class="line">
-        <p>Простой пример с привязкой полей</p>
+        <p>Простой пример с привязкой полей:</p>
         {_render_1_1}
     </div>
 
@@ -113,7 +115,7 @@
     </div>
 
     <div class="line">
-        <p>Задание стартовых величин</p>
+        <p>Задание стартовых величин:</p>
         {_render_2}
     </div>
 
@@ -122,7 +124,7 @@
     </div>
 
     <div class="line">
-        <p>События изменения состояний</p>
+        <p>События изменения состояний:</p>
         {_render_3}
     </div>
 

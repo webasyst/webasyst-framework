@@ -42,10 +42,16 @@
         <li><code>.link</code> — выделение отдельного текста в виде <span class="link">контентной ссылки</span> (синим — в светлой теме и желтым — в темной),</li>
         <li><code>.gray</code> — <span class="gray">блеклый вспомогательный текст серого цвета</span>,</li>
         <li><code>.hint</code> — <span class="hint">небольшая подсказка такого же серого цвета, только меньшего размера,</li>
+        <li class="custom-mе-16"><code>.state-error</code>,<br>
+            <code>.state-success</code>,<br>
+            <code>.state-caution</code>
+             — способ отобразить сообщение о <span class="state-error">блокирующем</span>, <span class="state-success">успешном</span> и <span class="state-caution">ошибочном</span> состоянии в рамках текстового блока без специального фона (например, когда использование <a href="{$wa_app_url}component/alert/">.alert</a> не уместно),</li>
         <li class="custom-mb-24"><code>.state-error-hint</code>,<br>
             <code>.state-success-hint</code>,<br>
             <code>.state-caution-hint</code>
              — подсказки к <span class="state-error-hint">блокирующему</span>, <span class="state-success-hint">успешному</span> и <span class="state-caution-hint">ошибочному</span> состоянию элементов формы <a href="{$wa_app_url}component/inputs/">ввода данных</a>,</li>
+
+        <li class="custom-mb-24"><span class="editable" style="font-family: monospace, monospace;">.editable</span> — <span class="editable">подсветка</span> <span class="editable">интерактивного элемента</span> по <span class="editable">:hover</span>,</li>
 
         <li><code>.uppercase</code> — <span class="uppercase">верхний</span> регистр (text-transform: uppercase),</li>
         <li><code>.lowercase</code> — <span class="lowercase">нижний</span> регистр (text-transform: lowercase),</li>
@@ -184,7 +190,7 @@
         <li><code>.wa-animation-swing</code></li>
         <li><code>.wa-animation-spin</code></li>
     </ul>
-    <p>Для "оживления" элементов интерфейса можно использовать системные классы</p>
+    <p>Для «оживления» элементов интерфейса можно использовать системные классы</p>
 
     <script>
         $.wa_ui.title.set({$_title|json_encode});

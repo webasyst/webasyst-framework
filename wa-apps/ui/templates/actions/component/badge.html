@@ -2,41 +2,45 @@
 {$wa->title($_title)}
 
 {function name="_render"}
-    <p>
-        <span class="badge smallest gray">1</span>
-        <span class="badge smaller gray">2</span>
-        <span class="badge small gray">3</span>
+<span class="badge smallest gray">1</span>
+<span class="badge smaller gray">2</span>
+<span class="badge small gray">3</span>
 
-        <span class="badge">1</span>
-        <span class="badge blue">2</span>
-        <span class="badge green">3</span>
-        <span class="badge yellow">4</span>
-        <span class="badge orange">VIP</span>
-        <span class="badge purple"><i class="fas fa-globe"></i></span>
-        <span class="badge brown">.brown</span>
-        <span class="badge pink">!!!</span>
-        <span class="badge black">13</span>
-        <span class="badge dark-gray">12</span>
-        <span class="badge gray">👌</span>
+<span class="badge">1</span>
+<span class="badge blue">2</span>
+<span class="badge green">3</span>
+<span class="badge yellow">4</span>
+<span class="badge orange">VIP</span>
+<span class="badge purple"><i class="fas fa-globe"></i></span>
+<span class="badge brown">.brown</span>
+<span class="badge pink">!!!</span>
+<span class="badge black">13</span>
+<span class="badge dark-gray">12</span>
+<span class="badge gray">👌</span>
 
-        <span class="badge large light-gray">1</span>
-        <span class="badge larger light-gray">2</span>
-        <span class="badge largest light-gray">3</span>
-    </p>
+<span class="badge large light-gray">1</span>
+<span class="badge larger light-gray">2</span>
+<span class="badge largest light-gray">3</span>
 {/function}
 
 {function name="_user"}
-    <p>
-        <span class="badge user">Cтатус</span>
-        <span class="badge user blue">Cтатус</span>
-        <span class="badge user green">Cтатус</span>
-        <span class="badge user yellow">Cтатус</span>
-        <span class="badge user orange">Cтатус</span>
-        <span class="badge user purple"><i class="fas fa-globe"></i>Cтатус</span>
+<span class="badge user">Cтатус</span>
+<span class="badge user blue">Cтатус</span>
+<span class="badge user green">Cтатус</span>
+<span class="badge user yellow">Cтатус</span>
+<span class="badge user orange">Cтатус</span>
+<span class="badge user purple"><i class="fas fa-globe"></i>Cтатус</span>
 
-        <span class="badge user small blue"><i class="fas fa-globe"></i>Cтатус</span>
-        <span class="badge user smaller blue"><i class="fas fa-globe"></i>Cтатус</span>
-    </p>
+<span class="badge user small blue"><i class="fas fa-globe"></i>Cтатус</span>
+<span class="badge user smaller blue"><i class="fas fa-globe"></i>Cтатус</span>
+{/function}
+
+{function name="_squared"}
+<span class="badge squared">DANGER ZONE</span>
+<span class="badge squared blue">New</span>
+<span class="badge squared green">In progress</span>
+<span class="badge squared yellow">Testing</span>
+<span class="badge squared gray">Archived</span>
 {/function}
 
 <div class="u-component-page">
@@ -59,6 +63,16 @@
     </div>
     <div class="line">
         <pre class="prettyprint">{_user|escape}</pre>
+    </div>
+
+    <h3>.badge<code>.squared</code></h3>
+    <p>Вариант бейджа с малым скругление углов — <code>.badge<strong>.squared</strong></code>.</p>
+
+    <div class="line">
+        {_squared}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_squared|escape}</pre>
     </div>
 
 
