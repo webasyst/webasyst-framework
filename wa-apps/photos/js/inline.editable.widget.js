@@ -289,8 +289,10 @@
             height = settings.maxSize.height && height > settings.maxSize.height ? settings.maxSize.height : height;
             width = settings.maxSize.width && width > settings.maxSize.width ? settings.maxSize.width : width;
 
-            dst.height(height);
-            dst.width(width);
+            if(!dst.filter('[class*="short"]') && !dst.filter('[class*="long"]').length) {
+                dst.height(height);
+                dst.width(width);
+            }
         }
 
         function _scalarToFunc(scalar) {

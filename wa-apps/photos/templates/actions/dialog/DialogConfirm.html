@@ -18,19 +18,18 @@
     {assign var="button_text" value='[`OK`]'}
     {assign var="button_class" value='green'}
 {/if}
-<div class="dialog width400px height250px">
+<div class="dialog">
     <div class="dialog-background"></div>
     <form method="post" action="">
-    <div class="dialog-window">
+    <div class="dialog-body">
+        <header class="dialog-header"><h3>{$title}</h3></header>
         <div class="dialog-content">
-            <div class="dialog-content-indent">
-                <h1>{$title}</h1>
-                {$text}
-            </div>
+            {$text}
         </div>
-        <div class="dialog-buttons">
+        <div class="dialog-buttons dialog-footer">
             <div class="dialog-buttons-gradient">
-                <input class="button {$button_class}" type="submit" value="{$button_text}"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                <input class="button {$button_class}" type="submit" value="{$button_text}">
+                <a class="cancel button light-gray js-close-dialog" href="javascript:void(0);">[`Cancel`]</a>
             </div>
         </div>
     </div>

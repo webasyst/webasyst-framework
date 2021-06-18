@@ -7,19 +7,19 @@
 #photo-embedded-selector .thumbs.li100px li.selected .p-details label strong { background: #fdda3b; }
 #photo-embedded-selector .album-list a .count { display: none; }
 #photo-embedded-selector .empty-album { margin-top: 50px; color: #aaa; text-align: center; }
-#photo-embedded-selector img.p-app16x16icon-menu-v { width: 16px; height: 16px; position: absolute; left: 2px; }
+#photo-embedded-selector img.p-app16x16icon-menu { width: 16px; height: 16px; position: absolute; left: 2px; }
 </style>
 <div id="photo-embedded-selector">
-    <div class="sidebar left200px">
+    <aside class="sidebar hide-scrollbar scrolls-with-content right width-12rem">
         <div class="block">
             {if $app_albums}
                 <div class="hierarchical">
-                <ul class="menu-v with-icons">
+                <ul class="menu">
                     {foreach $app_albums as $item}
                         <li>
                             <span class="count">{$item.count}</span>
                             <a href="#/app/{$item.id}/">
-                                <img class="p-app16x16icon-menu-v" src="{$item.icon}">
+                                <img class="p-app16x16icon-menu" src="{$item.icon}">
                                 {$item.name}
                             </a>
                         </li>
@@ -33,9 +33,9 @@
                 {$albums_tree_html}
             </div>
         </div>
-    </div>
-    <div class="content left200px">
-        <div class="block">
+    </aside>
+
+    <section class="content hide-scrollbar box">
         <ul class="thumbs li100px">
         {foreach $photos as $p}
             <li data-photo-id="{$p.id}">
@@ -43,7 +43,7 @@
                     <div class="p-image">
                         <img src="{$p.thumb_crop.url}">
                     </div>
-                    <div class="p-details">
+                    <div class="p-details break-all">
                         <label>
                             <input type="checkbox" name="photo_id[]" value="{$p.id}" data-photo-url="{$p.thumb_big.url}">
                             <strong>{$p.name|escape}</strong>
@@ -57,8 +57,7 @@
         {foreachelse}
             <p class="empty-album">[`There are no photos in this album.`]</p>
         {/foreach}
-        </div>
-    </div>
+    </section>
 </div>
 
 <script>(function() { "use strict";

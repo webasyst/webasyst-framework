@@ -1,24 +1,69 @@
-<ul class="menu-v">
-    <li>
-        <label>
-        <input type="radio" name="delete-photos" value="0" checked>
-        [`Don't delete photos`] <span class="hint">[`All photos will remain in the photo stream, and only the album will be deleted`]</span>
-        </label>
-    </li>
-    <li>
-        <label>
-        <input type="radio" name="delete-photos" value="1" {if $album.type == photosAlbumModel::TYPE_DYNAMIC}disabled{/if}>
-        {assign var="del_photos_text" value='[`Delete all photos stored in this album (%d)`]'|sprintf:$photos_count}
-        {$del_photos_text}{if $album.type == photosAlbumModel::TYPE_DYNAMIC}<em class="hint"> [`Not available for smart albums.`]</em>{/if}
-        </label>
-    </li>
-    {if !empty($offspring)}
+{if $wa->whichUI() == '2.0'}
+    <div class="fields vertical">
+        <div class="field">
+            <div class="value">
+                <label>
+                    <span class="wa-radio">
+                        <input type="radio" name="delete-photos" value="0" checked>
+                        <span></span>
+                    </span>
+                    [`Keep photos`]
+                </label>
+                <p class="hint">[`All photos will remain in the photo stream, and only the album will be deleted`]</p>
+            </div>
+        </div>
+        <div class="field">
+            <div class="value">
+                <label>
+                    <span class="wa-radio">
+                        <input type="radio" name="delete-photos" value="1" {if $album.type == photosAlbumModel::TYPE_DYNAMIC}disabled{/if}>
+                        <span></span>
+                    </span>
+                    {assign var="del_photos_text" value='[`Delete all photos stored in this album (%d)`]'|sprintf:$photos_count}
+                    {$del_photos_text}
+                </label>
+                {if $album.type == photosAlbumModel::TYPE_DYNAMIC}<p class="hint italic">[`Not available for smart albums.`]</p>{/if}
+            </div>
+            {if !empty($offspring)}
+            <div class="value">
+                <label>
+                    <span class="wa-checkbox">
+                        <input type="checkbox" name="delete-offspring" value="{join(',', $offspring)}" checked>
+                        <span>
+                            <span class="icon">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </span>
+                    </span>
+                    [`Delete sub albums too`] ({count($offspring)})
+                </label>
+            </div>
+            {/if}
+        </div>
+    </div>
+{else}
+    <ul class="menu-v">
         <li>
-            <hr>
             <label>
-                <input type="checkbox" name="delete-offspring" value="{join(',', $offspring)}" checked>
-                <em>[`Delete sub albums too`] ({count($offspring)})</em>
+                <input type="radio" name="delete-photos" value="0" checked>
+                [`Keep photos`] <span class="hint">[`All photos will remain in the photo stream, and only the album will be deleted`]</span>
             </label>
         </li>
-    {/if}
-</ul>
+        <li>
+            <label>
+                <input type="radio" name="delete-photos" value="1" {if $album.type == photosAlbumModel::TYPE_DYNAMIC}disabled{/if}>
+                {assign var="del_photos_text" value='[`Delete all photos stored in this album (%d)`]'|sprintf:$photos_count}
+                {$del_photos_text}{if $album.type == photosAlbumModel::TYPE_DYNAMIC}<em class="hint"> [`Not available for smart albums.`]</em>{/if}
+            </label>
+        </li>
+        {if !empty($offspring)}
+            <li>
+                <hr>
+                <label>
+                    <input type="checkbox" name="delete-offspring" value="{join(',', $offspring)}" checked>
+                    <em>[`Delete sub albums too`] ({count($offspring)})</em>
+                </label>
+            </li>
+        {/if}
+    </ul>
+{/if}

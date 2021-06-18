@@ -13,11 +13,15 @@ class photosPluginsActions extends waPluginsActions
 
     public function defaultAction()
     {
-        $config = $this->getConfig();
-        $sidebar_width = $config->getSidebarWidth();
+        $ui = wa()->whichUI();
 
-        echo '<div class="content left'.$sidebar_width.'px">';
-        parent::defaultAction();
-        echo '</div>';
+        if ($ui === '1.3') {
+            $sidebar_width = $this->getConfig()->getSidebarWidth();
+            echo '<div class="content left'.$sidebar_width.'px">';
+            parent::defaultAction();
+            echo '</div>';
+        }else{
+            parent::defaultAction();
+        }
     }
 }

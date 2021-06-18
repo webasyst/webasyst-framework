@@ -1,0 +1,50 @@
+<div class="content left{$sidebar_width}px"><div class="double-padded block">
+
+    {if !count($albums)}
+
+        <div class="block double-padded p-welcome" id="welcome-block">
+            <p>[`The album list is empty.`]</p>
+        </div>
+        <p class="gray"></p>
+            
+    {else}
+    
+        <h1>[`Albums`]</h1>   
+        <ul class="thumbs li250px p-albums" id="album-thumbs-list">
+            {foreach $albums as $a}
+                <li data-album-id="{$a.id}">
+                    <div class="p-image">
+                        <div class="p-image-corner top left">
+                            {if $a.status <= 0}<i class="icon16 lock-bw p-private-photo" title="[`Private album`]"></i>{/if}
+                        </div>
+                        <div class="p-image-corner top right"></div>
+                        {if $a.count > 1}
+                            <div class="p-sublayer layer1"></div>
+                            <div class="p-sublayer layer2"></div>
+                        {/if}
+                        <a href="#/album/{$a.id}/">
+                            {if $a.key_photo}
+                                <img src="{$a.key_photo.thumb.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if}" alt="{$a.name|escape}">
+                            {else}
+                                <img src="{$wa_app_static_url}img/album-dummy.png" alt="{$a.name|escape}">
+                            {/if}
+                        </a>
+                    </div>
+                    <div class="p-details">
+                        <strong{if $a.status <= 0} class="gray" title="[`Private album`]"{/if}>{$a.name|default:'[`(no name)`]'|escape}</strong>
+                        <span class="p-count">{sprintf( _w('%d photo','%d photos',$a.count), $a.count)}</span>
+                    </div>
+                </li>
+            {/foreach}
+        </ul>
+
+    {/if}
+</div></div>
+
+<script>(function() { "use strict";
+    $.photos.forceHash('#/albums/');
+    $.photos.highlightSidebarItem();
+    $.photos.initAlbumThumbsDragAndDrop($('#album-thumbs-list'), 0);
+    $.Retina && $.photos.options.retina_2x_enabled && $('#album-thumbs-list img').retina();
+})();</script>
+

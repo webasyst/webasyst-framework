@@ -4,6 +4,11 @@ class photosBackendController extends waViewController
 {
     public function execute()
     {
-        $this->setLayout(!$this->getRequest()->isMobile() ? new photosDefaultLayout() : new photosMobileLayout());
+        if ($this->getRequest()->isMobile() && wa()->whichUI('photos') === '1.3') {
+            $layout = new photosMobileLayout();
+        } else {
+            $layout = new photosDefaultLayout();
+        }
+        $this->setLayout($layout);
     }
 }

@@ -27,6 +27,9 @@ $.photos.widget.loupe = {
     link : null,
     offset : {},
     status : 'thumb',
+    image_container_width: 0,
+    image_container_height: 0,
+
 
     init : function(options) {
         this.options = $.extend(this.options, options || {});
@@ -55,21 +58,43 @@ $.photos.widget.loupe = {
     prepare : function(img, photo, proper_thumb) {
 
         var self = this;
-        $('.p-one-photo a.next').die('click.loupe').live('click.loupe', function(e) {
+        $('.p-one-photo a.next').off('click.loupe').on('click.loupe', function(e) {
             return self.clickNextHandler.apply(self, [this, e]);
         });
         this.trace('prepare, status='+this.status);
         this.photo_data = photo;
         this.container = img;
         this.thumb_data = {
-                height : proper_thumb.size.height,
-                width : proper_thumb.size.width,
-                src : proper_thumb.url
+            height : proper_thumb.size.height,
+            width : proper_thumb.size.width,
+            src : proper_thumb.url
         };
+
+        let image_container = self.container.closest('.p-one-photo');
+        self.image_container_width = image_container.width();
+        self.image_container_height = image_container.height();
+
 
         if (this.status != 'thumb') {
             this.stop();
         }
+
+        self.container.css({
+            'width' : this.thumb_data.width + 'px',
+            'height' : this.thumb_data.height + 'px',
+        });
+
+        /*if (this.photo_data.height >= self.image_container_height) {
+            self.container.css({
+                'height' : self.image_height + 'px',
+            });
+        }else{
+            self.container.css({
+                'width' : proper_thumb.size.width + 'px',
+                'height' : proper_thumb.size.height + 'px',
+            });
+        }*/
+
 
         this.loaded = false;
         this.reset();
@@ -185,12 +210,12 @@ $.photos.widget.loupe = {
         $('#photo').removeClass("ui-draggable").closest('.p-image').addClass('p-image-maximized');
         this.offset = this.container.offset();
         this.offset.x = Math
-                .round((this.thumb_data.width - this.photo_data.width) / 2);
+            .round((this.thumb_data.width - this.photo_data.width) / 2);
         this.offset.y = Math
-                .round((this.thumb_data.height - this.photo_data.height) / 2);
+            .round((this.thumb_data.height - this.photo_data.height) / 2);
         this.container.wrap('<div class="photo-loupe-wrapper" style="height:'
-                + this.thumb_data.height + 'px;width:' + this.thumb_data.width
-                + 'px;position: relative;"/>');
+            + this.thumb_data.height + 'px;width:' + this.thumb_data.width
+            + 'px;position: relative;"/>');
         this.container.removeAttr('width').removeAttr('height').css({
             'width' : this.thumb_data.width + 'px',
             'height' : this.thumb_data.height + 'px',
@@ -236,7 +261,7 @@ $.photos.widget.loupe = {
             });
         }
         var src = '?module=photo&action=download&photo_id='
-                + this.photo_data.id + '&attach='+(this.photo_data.edit_datetime||this.photo_data.upload_datetime);
+            + this.photo_data.id + '&attach='+(this.photo_data.edit_datetime||this.photo_data.upload_datetime);
         this.helper.attr('src', src);
     },
     enlargeComplete : function() {
@@ -363,16 +388,16 @@ $.photos.widget.loupe = {
             e.preventDefault();
 
             this.offset.x = Math.min(0, Math.max(this.thumb_data.width
-                    - this.photo_data.width, Math.round(this.offset.x
-                    - this.offset.mouseX + e.pageX)));
+                - this.photo_data.width, Math.round(this.offset.x
+                - this.offset.mouseX + e.pageX)));
             this.offset.y = Math.min(0, Math.max(this.thumb_data.height
-                    - this.photo_data.height, Math.round(this.offset.y
-                    - this.offset.mouseY + e.pageY)));
+                - this.photo_data.height, Math.round(this.offset.y
+                - this.offset.mouseY + e.pageY)));
             this.offset.mouseX = e.pageX;
             this.offset.mouseY = e.pageY;
             var item = (this.status == 'loading')
-                    ? this.container
-                    : this.helper;
+                ? this.container
+                : this.helper;
             item.css({
                 'margin-left' : this.offset.x + 'px',
                 'margin-top' : this.offset.y + 'px'

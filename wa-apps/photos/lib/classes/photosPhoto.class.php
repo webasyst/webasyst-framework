@@ -103,15 +103,21 @@ class photosPhoto
 
     public static function generateThumbs($photo, $sizes = array())
     {
+        /**
+         * @var photosConfig $app_config
+         */
+        $app_config = wa('photos')->getConfig();
+
         $photo_path = self::getPhotoPath($photo);
-        $apply_sharp = wa('photos')->getConfig()->getOption('sharpen');
+        $apply_sharp = $app_config->getOption('sharpen');
 
         $main_thumbnail_size = photosPhoto::getBigPhotoSize();
         $main_thumbnail_path = self::getPhotoThumbPath($photo, $main_thumbnail_size);
 
-        $quality = wa('photos')->getConfig()->getSaveQuality();
+        $quality = $app_config->getSaveQuality();
 
-        foreach ((array)$sizes as $size) {
+        $sizes = (array)$sizes;
+        foreach ($sizes as $size) {
             if ($size == $main_thumbnail_size) {
                 continue;
             }
@@ -129,7 +135,38 @@ class photosPhoto
             $image->save(self::getPhotoThumbPath($photo, $size), $quality);
         }
 
-        // sharp for mail thumbnail
+        // 2x-size thumbnails
+        if ($app_config->getOption('enable_2x')) {
+
+            $main_thumbnail_size2x = self::convertTo2xSize($main_thumbnail_size);
+            $main_thumbnail_path2x = self::getPhotoThumbPath($photo, $main_thumbnail_size . '@2x');
+
+            foreach ($sizes as $size) {
+                if ($size == $main_thumbnail_size) {
+                    continue;
+                }
+
+                $size2x = self::convertTo2xSize($size);
+
+                $image = self::generateThumb(array(
+                    'path' => $main_thumbnail_path2x,
+                    'size' => $main_thumbnail_size2x
+                ),
+                    $photo_path,
+                    $size2x,
+                    $apply_sharp
+                );
+
+                if (!$image) {
+                    continue;
+                }
+
+                $image->save(self::getPhotoThumbPath($photo, $size.'@2x'), $quality);
+            }
+
+        }
+
+        // sharp for main thumbnail
         if ($apply_sharp) {
             $image = waImage::factory($main_thumbnail_path);
             $image->sharpen(self::SHARP_AMOUNT);
@@ -403,6 +440,7 @@ class photosPhoto
         return array(
             'size' => photosPhoto::getRealSizesOfThumb($photo, $size_info),
             'url' => photosPhoto::getPhotoUrl($photo, $size, $absolute, wa('photos')->getConfig()->getCDN()),
+            'url2x' => photosPhoto::getPhotoUrl($photo, $size.'@2x', $absolute, wa('photos')->getConfig()->getCDN()),
             'bound' => array(
                 'width' => $size_info['width'],
                 'height' => $size_info['height']
@@ -583,16 +621,32 @@ class photosPhoto
             return '';
         }
         $html = '';
-        for ($i = 1; $i <= 5; $i += 1) {
-            $html .= '<i class="icon'.$size.' star';
-            if ($i > $rating) {
-                if ($i - $rating == 0.5) {
-                    $html .= '-half';
+        if (wa()->whichUI() == '2.0') {
+            for ($i = 1; $i <= 5; ++$i) {
+                $html .= '<i class="fas fa-star';
+                if ($i > $rating) {
+                    if ($i - $rating == 0.5) {
+                        $html .= '-half';
+                    } else {
+                        $html .= ' text-light-gray';
+                    }
                 } else {
-                    $html .= '-empty';
+                    $html .= ' text-yellow';
                 }
+                $html .= '" data-rate-value="'.$i.'"></i>';
             }
-            $html .= '"></i>';
+        }else{
+            for ($i = 1; $i <= 5; $i += 1) {
+                $html .= '<i class="icon'.$size.' star';
+                if ($i > $rating) {
+                    if ($i - $rating == 0.5) {
+                        $html .= '-half';
+                    } else {
+                        $html .= '-empty';
+                    }
+                }
+                $html .= '"></i>';
+            }
         }
         return $html;
     }
@@ -632,5 +686,15 @@ class photosPhoto
             $str = date('Ymd');
         }
         return strtolower($str);
+    }
+
+    public static function convertTo2xSize($size)
+    {
+        $size = explode('x', $size);
+        foreach ($size as &$s) {
+            $s *= 2;
+        }
+        unset($s);
+        return implode('x', $size);
     }
 }

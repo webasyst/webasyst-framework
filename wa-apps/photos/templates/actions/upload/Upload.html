@@ -1,155 +1,160 @@
-<div class="dialog width500px height400px p-drop-files-here-zone" id="p-uploader">
-    <form id="fileupload" action="?module=upload&amp;action=photo" method="POST" enctype="multipart/form-data">
+<div class="dialog p-drop-files-here-zone" id="p-uploader">
     <div class="dialog-background"></div>
-    <div class="dialog-window">
+    <form id="fileupload" class="dialog-body" action="?module=upload&amp;action=photo" method="POST" enctype="multipart/form-data">
         <div class="dialog-content">
-            <div class="dialog-content-indent">
-                    <!-- #1 -->
-                    <div class="align-center" id="p-upload-step1">
-                        <a href="javascript:void(0);" class="button blue fileinput-button" id="p-upload-step1-select-photos">
-                            [`Select photos`]
-                            <input type="file" name="files[]" multiple="">
-                        </a>
-                        <br><br><br>
-                        <span class="hint">[`or drag photos here`]</span>
-                        <br><br>
-                        <img class="p-drag-photos-here" src="{$wa_app_static_url}img/drag-photos-here.png" alt="[`or drag photos here`]">
-                        <br><br><br>
-                        <span class="hint">[`or`] <a href="#" class="cancel" id="p-upload-step1-cancel">[`cancel`]</a></span>
-                    </div>
 
-                    <!-- #2 -->
-                    <div id="p-upload-step2" style="display: none;">
-
-                        <h1>
-                            <span class="hint"></span>
-                        </h1>
-
-                        <div class="fields p-upload-access-level">
-
-                            <div class="field-group">
-                                <div class="field">
-                                    <div class="name">
-                                        [`Access to photos`]
-                                    </div>
-                                    <div class="value">
-                                        <label for="u-access-public">
-                                            <i class="icon10 yes overhanging"></i>
-                                            <input id="u-access-public" type="radio" name="status" value="1" checked="checked">
-                                            [`Public`]
-                                            <span class="hint">[`Photos automatically appear in the public gallery`]</span>
-                                        </label>
-                                    </div>
-                                    <div class="value">
-                                        <label for="u-access-private">
-                                            <i class="icon10 lock overhanging"></i>
-                                            <input id="u-access-all-groups" type="hidden" name="groups[]" value="0">
-                                            <input id="u-access-private" type="radio" value="0" name="status" >
-                                            [`Private`]
-                                            <span class="hint">
-                                                [`Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps`].
-                                                <a href="#" class="inline-link p-privacy-settings-link"><b><i>[`Privacy settings`]</i></b></a>
-                                            </span>
-                                        </label>
-                                        <div class="hint p-privacy-settings" style="display: none;">
-                                            <br><br>
-                                            {if !empty($groups)}
-                                                [`Select user groups you want to have access to these photos:`]
-                                                <div class="block">
-                                                    {foreach from=$groups item=g_name key=g_id}
-                                                    <label for="user-group-{$g_id}"><input id="user-group-{$g_id}" name="groups[]" type="checkbox" value="{$g_id}" checked disabled> <span>{$g_name|escape}</span></label><br>
-                                                    {/foreach}
-                                                </div>
-                                                <em>[`Uncheck all groups to make photos visible to you only.`]</em>
-                                            {else}
-                                                <input type="hidden" name="groups[]" value="0" disabled>
-                                                <em>[`There are no user groups thus you cant't manage access to photos`]</em>
-                                            {/if}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="field-group">
-                                <div class="field">
-                                    <div class="name">
-                                        [`Add to album`]
-                                    </div>
-                                    <div class="value">
-                                        <label for="upload-album-id">
-                                            <select name="album_id" id="upload-album-id">
-                                                <option value="" selected>
-                                                    [`Don't add to album`]
-                                                </option>
-                                                <option value="new">
-                                                    [`Create new album`]…
-                                                </option>
-                                                <optgroup label="---">
-                                                    {function upload_album_menu parent=0 level=0}
-                                                        {foreach $albums as $album}
-                                                            {if $album.parent_id == $parent}
-                                                              <option value="{$album.id}">{if $parent}{"-"|str_repeat:$level}&nbsp;{/if}{$album.name|escape}</option>
-                                                              {call upload_album_menu parent=$album.id level=($level+1)}
-                                                            {/if}
-                                                        {/foreach}
-                                                    {/function}
-                                                    {call upload_album_menu}
-                                                </optgroup>
-                                            </select>
-                                        </label>
-
-                                        <div id="upload-album-name-field" style="display:none; line-height: 1.3em;">
-                                            <br>
-                                            <br>
-                                            <span class="hint">[`Name the album for this upload`]</span>
-                                            <br>
-                                            <input id="upload-album-name" name="album_name" type="text" >
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <!-- #3 -->
-                    <div id="p-upload-step3" style="display: none;">
-
-                        <div id="p-upload-photolist">
-                            <ul class="zebra files"></ul>
-                        </div>
-                    </div>
-            </div>
-        </div>
-        <div class="dialog-buttons">
-            <div class="dialog-buttons-gradient">
-
-                <div id="p-upload-step2-buttons" style="display: none;">
-                    <input type="button" class="button blue start" value="[`Start upload`]" id="p-start-upload-button">
-                    [`or`] <a href="#" class="cancel">[`cancel`]</a>
+            <!-- #1 -->
+            <div class="align-center box uploadbox" id="p-upload-step1">
+                <div class="upload custom-mt-48">
+                    <label id="p-upload-step1-select-photos" class="button purple fileinput-button">
+                        <span>[`Select photos`]</span>
+                        <input type="file" name="files[]" multiple="">
+                    </label>
                 </div>
+                <p class="small gray custom-mb-48">[`or drag photos here`]</p>
+            </div>
 
-                <div id="p-upload-step3-buttons" style="display: none;">
-                    <div class="block float-right" style="padding-top: 13px;">
-                        <a href="#" class="hint cancel">[`Stop upload`]</a>
-                    </div>
-                    <div class="block">
-                        <div class="progressbar blue small width300px float-left">
-                            <div class="progressbar-outer">
-                                <div class="progressbar-inner fileupload-progressbar" id="my-custom-progressbar-id"></div>
+            <!-- #2 -->
+            <div id="p-upload-step2" style="display: none;">
+                <h3>
+                    <span class="hint"></span>
+                </h3>
+                <div class="fields p-upload-access-level">
+                    <div class="fields-group">
+                        <div class="field">
+                            <div class="name for-checkbox">
+                                [`Access to photos`]
+                            </div>
+                            <div class="value">
+                                <label for="u-access-public">
+                                    <span class="wa-radio">
+                                        <input id="u-access-public" type="radio" name="status" value="1" checked="checked">
+                                        <span></span>
+                                    </span>
+                                    <strong class="semibold">[`Public`]</strong>
+                                    <p class="hint custom-mt-4">[`Photos automatically appear in the public gallery`]</p>
+                                </label>
                             </div>
                         </div>
-                        <div class="float-left" style="margin-top: 5px;" id="p-upload-filescount"></div>
-                        <div id="upload-error" style="display:none" class="block half-padded errormsg">
+                        <div class="field">
+                            <div class="name"></div>
+                            <div class="value">
+                                <label for="u-access-private">
+                                    <span class="wa-radio">
+                                        <input id="u-access-all-groups" type="hidden" name="groups[]" value="0">
+                                        <input id="u-access-private" type="radio" value="0" name="status" >
+                                        <span></span>
+                                    </span>
+                                    <strong class="semibold">[`Private`]</strong>
+                                    <span class="icon shift-2 gray">
+                                        <i class="fas fa-lock fa-xs"></i>
+                                    </span>
+                                    <p class="hint custom-mt-4">
+                                        [`Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps`].
+                                        <a href="#" class="p-privacy-settings-link">[`Privacy settings`]</a>
+                                    </p>
+                                </label>
+                                <ul class="hint p-privacy-settings small box" style="display: none;">
+                                    {if !empty($groups)}
+                                        <li class="black">[`Select user groups you want to have access to these photos:`]</li>
+                                        {foreach from=$groups item=g_name key=g_id}
+                                            <li>
+                                                <label for="user-group-{$g_id}" class="black">
+                                                    <input id="user-group-{$g_id}" name="groups[]" type="checkbox" value="{$g_id}" checked disabled> {$g_name|escape}
+                                                </label>
+                                            </li>
+                                        {/foreach}
+                                        <li class="gray">[`Uncheck all groups to make photos visible to you only.`]</li>
+                                    {else}
+                                        <li class="gray">
+                                            <input type="hidden" name="groups[]" value="0" disabled>
+                                            [`There are no user groups thus you cant't manage access to photos`]
+                                        </li>
+                                    {/if}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name for-input">
+                                [`Add to album`]
+                            </div>
+                            <div class="value">
+                                <div class="wa-select">
+                                    <label for="upload-album-id">
+                                        <select name="album_id" id="upload-album-id">
+                                            <option value="" selected>
+                                                [`Don't add to album`]
+                                            </option>
+                                            <option value="new">
+                                                [`Create new album`]…
+                                            </option>
+                                            <optgroup label="---">
+                                                {function upload_album_menu parent=0 level=0}
+                                                    {foreach $albums as $album}
+                                                        {if $album.parent_id == $parent}
+                                                          <option value="{$album.id}">{if $parent}{"-"|str_repeat:$level}&nbsp;{/if}{$album.name|escape}</option>
+                                                          {call upload_album_menu parent=$album.id level=($level+1)}
+                                                        {/if}
+                                                    {/foreach}
+                                                {/function}
+                                                {call upload_album_menu}
+                                            </optgroup>
+                                        </select>
+                                    </label>
+                                </div>
+                                <p id="upload-album-name-field" style="display:none;">
+                                    <span class="hint">[`Name the album for this upload`]</span>
+                                    <br>
+                                    <input id="upload-album-name" name="album_name" class="bold" type="text" >
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- #3 -->
+            <div id="p-upload-step3" style="display: none;">
+                <div id="p-upload-photolist">
+                    <div class="files"></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="dialog-footer">
+
+            <div id="p-upload-step1-buttons">
+                <a href="#" class="js-close-dialog cancel button light-gray" id="p-upload-step1-cancel">[`Cancel`]</a>
+            </div>
+
+            <div id="p-upload-step2-buttons" style="display: none;">
+                <input type="button" class="button purple start" value="[`Start upload`]" id="p-start-upload-button">
+                <a href="#" class="js-close-dialog button light-gray cancel">[`Cancel`]</a>
+            </div>
+
+            <div id="p-upload-step3-buttons" style="display: none;">
+                <div class="flexbox space-12">
+                    <div class="wide custom-pt-4 custom-pb-4">
+                        <div class="progressbar">
+                            <div class="progressbar-line-wrapper text-outside">
+                                <div class="progressbar-outer">
+                                    <div class="progressbar-inner bg-purple fileupload-progressbar">
+                                        <div class="progressbar-text width-50" id="p-upload-filescount"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="upload-error" style="display:none" class="state-error">
                             [`Files uploaded with errors`]
                         </div>
                     </div>
+                    <div>
+                        <a href="#" class="button light-gray js-close-dialog cancel">[`Stop upload`]</a>
+                    </div>
                 </div>
-
             </div>
         </div>
-    </div>
-    <input type="hidden" value="0" id="p-uploader-parent" name="parent_id">
+        <input type="hidden" value="0" id="p-uploader-parent" name="parent_id">
     </form>
 </div>
 
@@ -166,45 +171,61 @@
 {capture name="template-upload"}{literal}
 
     {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
-    <li class="template-upload">
-        <div class="p-upload-onephoto-progress">
-            <div class="p-photo-filename">
-                {%=file.name%}
-                <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+    <div class="template-upload">
+        <span class="bold">{%=file.name%}</span>
+        <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+        <div class="progressbar custom-my-8">
+            <div class="progressbar-line-wrapper text-inside">
+                <div class="progressbar-outer">
+                    <div class="progressbar-inner bg-purple">
+                    </div>
+                </div>
             </div>
-            <span class="start"></span><span class="cancel"></span>
         </div>
-        &nbsp;
-    </li>
+        <span class="start"></span>
+        <span class="cancel"></span>
+    </div>
     {% } %}
 {/literal}{/capture}
 {capture name="template-download"}{literal}
     {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
-    <li class="template-upload {% if (file.error) { %}error{% } %}">
+    <div class="template-upload {% if (file.error) { %}error{% } %}">
         {% if (file.error) { %}
-            <div class="p-upload-onephoto-progress" style="width:100%">
-                <div class="p-photo-filename">
-                    <b>{%=file.name%}</b>
-                    {% if (typeof file.error === 'object' && file.error instanceof SyntaxError) { %}
-                        {% if (file.responseText) { %}
-                            {%#file.responseText%}
-                        {% } else { %}
-                            {%=$_('Failed to upload. Most probably, there were not enough memory to create thumbnails.')%}.
-                        {% } %}
-                    {% } else { %}
-                        {%=file.error%}
-                    {% } %}
+            <span class="bold">{%=file.name%}</span>
+            <div class="progressbar custom-my-8">
+                <div class="progressbar-line-wrapper text-inside">
+                    <div class="progressbar-outer">
+                        <div class="progressbar-inner bg-red" style="width: 100%">
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <div class="state-error-hint">
+                {% if (typeof file.error === 'object' && file.error instanceof SyntaxError) { %}
+                    {% if (file.responseText) { %}
+                        {%#file.responseText%}
+                    {% } else { %}
+                        {%=$_('Failed to upload. Most probably, there were not enough memory to create thumbnails.')%}.
+                    {% } %}
+                {% } else { %}
+                    {%=file.error%}
+                {% } %}
+            </div>
         {% } else { %}
-            <div class="p-upload-onephoto-progress" style="width:100%">
-                <div class="p-photo-filename">
-                    {%=file.name%} <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+            <span class="bold">{%=file.name%}</span>
+            <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+            <div class="progressbar custom-mt-8">
+                <div class="progressbar-line-wrapper text-inside">
+                    <div class="progressbar-outer">
+                        <div class="progressbar-inner bg-green" style="width: 100%">
+                        </div>
+                    </div>
                 </div>
             </div>
         {% } %}
         &nbsp;
-    </li>
+    </div>
     {% } %}
 {/literal}{/capture}
 
@@ -214,19 +235,32 @@
 <script type="text/javascript" src="{$wa_app_static_url}js/jquery.fileupload-wa.js?v{$wa->version()}"></script>
 <script type="text/javascript">
     $(function () {
-        var d = $("#p-uploader");
-        $("a.p-privacy-settings-link", d).click(function () {
-             if ($("div.p-privacy-settings", d).is(":hidden")) {
-                 $("#u-access-all-groups", d).attr('disabled', 'disabled');
-                 $("div.p-privacy-settings input", d).removeAttr('disabled');
-                 $("div.p-privacy-settings", d).show();
+        const $dialog = $("#p-uploader"),
+            $privacy_settings_link = $dialog.find("a.p-privacy-settings-link"),
+            $privacy_settings = $dialog.find(".p-privacy-settings"),
+            $privacy_settings_input = $dialog.find(".p-privacy-settings input"),
+            $access_all_groups = $dialog.find("#u-access-all-groups"),
+            $access_public = $dialog.find("#u-access-public"),
+            $access_private = $dialog.find("#u-access-private");
+
+        $privacy_settings_link.on('click', function (e) {
+            e.preventDefault();
+             if ($privacy_settings.is(":hidden")) {
+                 $access_all_groups.attr('disabled', 'disabled');
+                 $privacy_settings_input.removeAttr('disabled');
+                 $privacy_settings.show();
+                 $access_private.attr('checked', true);
              } else {
-                 $("#u-access-all-groups", d).removeAttr('disabled');
-                 $("div.p-privacy-settings input", d).attr('disabled', 'disabled');
-                 $("div.p-privacy-settings", d).hide();
+                 $access_all_groups.removeAttr('disabled');
+                 $privacy_settings_input.attr('disabled', 'disabled');
+                 $privacy_settings.hide();
              }
-             return false;
         });
+
+        $access_public.on('click', function () {
+            $privacy_settings.hide();
+        });
+
         $('#upload-album-id').change(function() {
             if (this.value != 'new') {
                 $('#upload-album-name-field').hide();
@@ -234,10 +268,11 @@
                 $('#upload-album-name-field').show();
             }
         });
-        $('#p-upload-step1-cancel').click(function() {
-            d.trigger('close');
-            return false;
-        });
+
+        $(document).on('close', function () {
+            $.photos.dialogClearSteps.call($dialog);
+        })
+
         // Initialize the jQuery File Upload widget:
         $('#fileupload').fileupload({
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i

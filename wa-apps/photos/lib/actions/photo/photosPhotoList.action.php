@@ -52,7 +52,7 @@ class photosPhotoListAction extends waViewAction
     public function getTemplate()
     {
         $template = parent::getTemplate();
-        if ($this->getRequest()->isMobile()) {
+        if ($this->getRequest()->isMobile() && wa()->whichUI() === '1.3') {
             $template = str_replace('actions', 'actions-mobile', $template);
         }
         return $template;
@@ -61,7 +61,7 @@ class photosPhotoListAction extends waViewAction
     public function getPhotos($offset, $limit)
     {
         $fields = "*,thumb,thumb_crop,thumb_middle,thumb_big,tags,edit_rights";
-        if ($this->getRequest()->isMobile()) {
+        if ($this->getRequest()->isMobile() && wa()->whichUI() === '1.3') {
             $fields = "*,thumb_mobile";
         }
         return $this->collection->getPhotos($fields, $offset, $limit);

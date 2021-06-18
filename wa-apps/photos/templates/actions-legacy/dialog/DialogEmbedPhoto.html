@@ -1,0 +1,74 @@
+<div class="dialog width600px height350px">
+    <div class="dialog-background"></div>
+    <form method="post" action="">
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>[`Share photo`]</h1>
+                <div class="fields form p-dialog-form">
+                    <div class="field-group">
+                        {if $photo.frontend_link}
+                        <div class="field">
+                            <div class="name">
+                                <strong>[`Link`]</strong>
+                            </div>
+                            <div class="value">
+                                <input name="link" class="bold p-full-width-input" value="{$photo.frontend_link}">
+                                <a href="{$photo.frontend_link}" target="_blank"><i class="icon16 new-window"></i></a>
+                            </div>
+                        </div>
+                        {/if}
+                        <div class="field">
+                            <div class="name">
+                                <strong>[`HTML`]</strong>
+                            </div>
+                            <div class="value">
+                                <textarea name="html">{$contexts[$size]['html']|escape}</textarea>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[`Image URL`]</div>
+                            <div class="value">
+                                <input name="url" class="p-full-width-input" value="{$contexts[$size]['url']}">
+                            </div>
+                        </div>
+                        {if $photo.status != 1 && $photo.hash}
+                        <div class="field">
+                            <div class="value small no-shift">
+                                <i class="icon10 exclamation"></i> [`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]
+                            </div>
+                        </div>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="block double-padded float-right">
+                <select name="size">
+                    {foreach $sizes as $sz}
+                        <option value="{$sz}" {if $sz == $size}selected{/if}>{$sz}px</option>
+                    {/foreach}
+                </select>
+            </div>
+            {if !empty($domains)}
+                <div class="block double-padded float-right">
+                    <select name="domain" data-original-domain="{$original_domain|escape}">
+                        {foreach $domains as $d}
+                            <option value="{$d.url|escape}" data-frontend-url="{$d.frontend_url|escape}">{$d.url|escape|truncate:42:'...':false:true}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            {/if}
+            <div class="dialog-buttons-gradient">
+                <input class="button cancel" type="submit" value="[`Close`]">
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function() {
+        $('#embed-photo-dialog').data('contexts', {json_encode($contexts)});
+    });
+</script>

@@ -7,7 +7,7 @@ $(function() {
         init: function(options) {
             this.options = options || {};
             this.onLoadData();
-            $('.rewind,.ff').live('click', function(e) {
+            $('.rewind,.ff').on('click', function(e) {
                 var self = $(this);
                 if (self.hasClass('ff')) {
                     $.photos.shiftPhotoInStack('next', self.parents('.stack-nav'));
@@ -68,7 +68,7 @@ $(function() {
                 $(".lazyloading-wrapper .lazyloading-progress").hide();
                 $(".lazyloading-wrapper .lazyloading-link").hide();
             }
-            $('.lazyloading-wrapper a.lazyloading-link').die('click.lazyloading').live('click.lazyloading', function() {
+            $('.lazyloading-wrapper a.lazyloading-link').off('click.lazyloading').on('click.lazyloading', function() {
                 $(window).lazyLoad('force');
                 return false;
             });

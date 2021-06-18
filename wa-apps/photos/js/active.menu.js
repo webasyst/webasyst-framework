@@ -38,7 +38,7 @@
                 settings['on'+options.substr(0,1).toUpperCase() + options.substr(1)].call(this);
                 return this;
             }
-        };
+        }
 
         this.data('activeMenuSettings', $.extend({
             beforeAnyAction: function() {},
@@ -57,12 +57,13 @@
 
         function init() {
             var self = this;
-            if (this.data('inited')) {  // has inited already. Don't init again
+            if (self.data('inited')) {  // has inited already. Don't init again
                 return;
             }
-            this.bind('click.photos-active-menu', function(e) {
-                var item = e.target;
-                var root = self.get(0);
+            self.on('click.photos-active-menu', function(e) {
+                var item = e.target,
+                    root = this;
+
                 while (item.tagName != 'LI') {
                     if (item == root) {
                         return;
@@ -70,6 +71,7 @@
                     item = $(item).parent().get(0);
                 }
                 item = $(item);
+
                 var action = item.attr('data-action') || 'default',
                     parts = action.split('-');
                 for (var i = 1; i < parts.length; i++) {
@@ -86,8 +88,8 @@
                 }
                 e.preventDefault();
             });
-            settings.onInit(this);
-            this.data('inited', true);
+            settings.onInit(self);
+            self.data('inited', true);
         }
 
         return this;

@@ -13,16 +13,18 @@
  */
 
 return array(
-	
 	'php.exif'=>array(
 		'strict'=>false,
 		'value'=>1,
-),
+	),
 	'app.installer' => array(
-		'version' => '>=1.5.0',
+		'version' => '>=2.2.0',
 		'strict' => true
 	),
-
+    'php' => array(
+        'version' => '>=7.2',
+        'strict'  => true,
+    ),
 );
 
 //EOF
