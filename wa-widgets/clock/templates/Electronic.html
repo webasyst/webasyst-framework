@@ -1,5 +1,5 @@
 {* WA2 Widget*}
-{if $wa->whichUI() == '2.0'}
+{if $ui == '2.0'}
     {strip}
     <div class="electronic-clock-wrapper {if !empty($town)}has-town{/if}">
         <div class="electronic-clock-block">
@@ -7,7 +7,7 @@
                 <span class="date-wrapper">{_ws(waDateTime::date('D'))}, {_ws(waDateTime::date('d'))} <span>{_ws(waDateTime::date('M'))}</span></span>
                 <span class="time-wrapper"></span>
             </div>
-            {if !empty($town)}<span class="town-wrapper">{$town|escape}</span>{/if}
+            {if !empty($town)}<span class="town-wrapper align-center">{$town|escape}</span>{/if}
         </div>
     </div>
     {/strip}
