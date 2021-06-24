@@ -1,5 +1,5 @@
 $(function() {
-    $('.comment-reply').live('click', function() {
+    $('.comment-reply').on('click', function() {
         var item = $(this).parents('.comment');
         var form = $('#add-comment-form'),
             self = $(this),
@@ -11,7 +11,7 @@ $(function() {
     });
 
     // add comment action
-    $('#add-comment-button').live('click', function() {
+    $('#add-comment-button').on('click', function() {
         $.photos.comments_plugin.addComment('frontend');
         $('.comment').removeClass('in-reply-to');
         return false;

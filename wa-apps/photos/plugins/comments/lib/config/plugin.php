@@ -5,7 +5,7 @@ return array(
     'description'  => /*_wp*/('Allows frontend visitors to comment on photos'),
     'img' => 'img/comments.png',
     'vendor' => 'webasyst',
-    'version' => '1.0.0',
+    'version' => '1.1.0',
     'frontend'    => true,
     'handlers' => array(
         'backend_photo'   => 'backendPhoto',

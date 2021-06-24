@@ -67,7 +67,7 @@ class photosCommentModel extends waNestedSetModel
         }
     }
 
-    public function getList(array $options = array(), $offset, $count)
+    public function getList(array $options, $offset, $count)
     {
         $offset = (int) $offset;
         $count = (int) $count;

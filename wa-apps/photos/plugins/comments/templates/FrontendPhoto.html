@@ -7,28 +7,28 @@
     {$parent=array()}
     {foreach $comments as $comment}
         {if $comment.depth > $depth}
-            <ul class="menu-v with-icons">
+            <ul class="menu-v with-icons menu">
             {if $comment.depth-$depth > 1}
                 {$loop=$comment.depth-$depth-1}
                 {section name="end-comment" loop=$loop}
                     <li>
-                        <div class="comment deleted">
+                        <div class="comment deleted item">
                             <s>[`comment deleted`]</s>
                         </div>
-                        <ul class="menu-v with-icons">
+                        <ul class="menu-v with-icons menu">
                 {/section}
             {/if}
         {elseif isset($parent[$comment.depth]) && $parent[$comment.depth] != $comment.parent}
             {section name="end-comment" loop=$depth}
                 </li></ul>
             {/section}
-            </li></ul><ul class="menu-v with-icons">
+            </li></ul><ul class="menu-v with-icons menu">
                 {section name="end-comment" loop=$comment.depth}
                 <li>
                     <div class="comment deleted">
                         <s>[`comment deleted`]</s>
                     </div>
-                    <ul class="menu-v with-icons">
+                    <ul class="menu-v with-icons menu">
                 {/section}
         {else if $comment.depth < $depth}
             {$loop=$depth-$comment.depth}
@@ -43,7 +43,7 @@
         {$parent[$depth]=$comment.parent}
         <li id="comment-{$comment.id}">{include file='./FrontendComment.html' inline}
     {foreachelse}
-        <ul class="menu-v with-icons" style="display:none;"><li>
+        <ul class="menu-v with-icons menu" style="display:none;"><li>
     {/foreach}
     {section name="end-comment" loop=$depth }
         </li></ul>
