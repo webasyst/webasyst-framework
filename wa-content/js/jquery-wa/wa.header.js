@@ -248,7 +248,7 @@ class WaHeader {
                     let $link = $(event.item).find('a'),
                         href = $link.attr('href');
                     $link.attr('href', 'javascript:void(0);');
-                    setTimeout(() => $link.attr('href', href),500)
+                    setTimeout(() => $link.attr('href', href), 500)
 
                     let data = this.toArray(),
                         apps = [];
@@ -263,42 +263,20 @@ class WaHeader {
                     let url = backend_url + "?module=settings&action=save";
                     $.post(url, {name: 'apps', value: apps});
                 }
-            };
-
-            $app_list.sortable(options);
+            }
+            $app_list.sortable(options)
         }
 
-        if(typeof Sortable !== 'undefined') {
-            app_list_sortable()
-        } else if (!$('#wa').hasClass('disable-sortable-header')) {
-            let urls = ['wa-content/js/sortable/sortable.min.js', 'wa-content/js/sortable/jquery-sortable.min.js'],
-                $script = $("#wa-header-js"),
-                path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
-
-            const sortableDefer = $.Deferred();
-            for (let i = 0; i < urls.length; i++) {
-                sortableDefer.then(function () {
-                    return $.ajax({
-                        cache: true,
-                        dataType: "script",
-                        url: path + urls[i]
-                    });
-                });
-            }
-
-            $.when.apply($, sortableDefer).done(app_list_sortable);
-
-            // Determine user timezone when "Timezone: Auto" is saved in profile
-            if ($script.data('determine-timezone') && !document.cookie.match(/\btz=/)) {
-                let version = $script.attr('src').split('?', 2)[1];
-                $.ajax({
-                    cache: true,
-                    dataType: "script",
-                    url: path + "wa-content/js/jquery-wa/wa.js?" + version,
-                    success: function () {
-                        $.wa.determineTimezone(path);
-                    }
-                });
+        if (!$('#wa').hasClass('disable-sortable-header')) {
+            if (window.Sortable) {
+                app_list_sortable()
+            } else {
+                let path = $("#wa-header-js").attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
+                (async () => {
+                    await import(`${path}wa-content/js/sortable/sortable.min.js`).then((async () => {
+                        await import(`${path}wa-content/js/sortable/jquery-sortable.min.js`).then(() => app_list_sortable())
+                    }))
+                })()
             }
         }
     }
