@@ -60,7 +60,7 @@
 
                     let $item = $(event.item),
                         $list_parent = $item.parent('ul').parent('li'),
-                        id = $item.data('id'),
+                        id = $item.data('id') || $item.attr('rel'),
                         before_id = $item.next().data('id') || null,
                         parent_id = $list_parent.length ? $list_parent.data('id') : 0;
 

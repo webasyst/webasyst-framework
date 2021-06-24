@@ -389,8 +389,8 @@ class photosPhoto
             $size_info = $size;
         }
         $type = $size_info['type'];
-        $width = $size_info['width'];
-        $height = $size_info['height'];
+        $width = intval($size_info['width']);
+        $height = intval($size_info['height']);
         switch($type) {
             case 'max':
                 if ($photo['width'] > $photo['height']) {
