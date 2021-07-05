@@ -123,7 +123,7 @@ REPORT;
         return str_replace($this->template_id, $this->plugin_id, $file);
     }
 
-    protected function createConfig()
+    protected function createConfig($params = array())
     {
         return array(
             'name'        => empty($params['name']) ? ucfirst($this->plugin_id) : $params['name'],
@@ -136,13 +136,13 @@ REPORT;
 
     protected function create($params = array())
     {
-        $config = $this->createConfig();
+        $config = $this->createConfig($params);
 
         $structure = array(
             'lib/classes',
             'lib/vendors',
             'lib/config/plugin.php' => $config,
-            //TODO add plugin's images
+            'img'
         );
 
         $files = array(
@@ -180,7 +180,7 @@ REPORT;
         }
 
         $this->createStructure($structure);
-        $this->protect(array('lib', 'lib/config'));
+        $this->protect(array('lib', 'templates'));
 
         return $config;
     }
