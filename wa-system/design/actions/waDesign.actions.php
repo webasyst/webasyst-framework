@@ -1096,7 +1096,7 @@ HTACCESS;
     {
         // If you add svg here, then on sites with cdn such pictures will not be loaded.
         // Design themes must use the $wa_real_theme_url variable for settings with the image type.
-        $allowed = array('jpg', 'jpeg', 'png', 'gif');
+        $allowed = array('jpg', 'jpeg', 'png', 'gif', 'svg');
         if (!in_array(strtolower($f->extension), $allowed)) {
             $error = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;
