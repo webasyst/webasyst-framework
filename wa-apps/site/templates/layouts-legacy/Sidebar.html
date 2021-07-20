@@ -1,0 +1,144 @@
+<div class="s-site-mgmt-tab" style="margin-top: 15px;">
+    <ul class="block s-domain menu-h dropdown">
+        <li class="s-domain-list">
+            <a href="javascript:void(0);" class="s-selected-domain-name" title="{waIdna::dec(str_replace('www.','',$domains[$domain_id].title)|escape)}">
+                {waIdna::dec(str_replace('www.','',$domains[$domain_id].title)|escape)}
+                <i class="icon10 darr"></i>
+                <i class="shortener"></i>
+            </a>
+            {* Domains list *}
+            <ul class="menu-v right s-domain-list-wrapper">
+                {foreach $domains as $d_id => $_domain}
+                    {$_domain_title = waIdna::dec(str_replace('www.','',$_domain.title))}
+                    <li class="s-domain-list-item{if $d_id == $domain_id} active{/if}">
+                        <a href="?domain_id={$d_id}" class="s-domain-link" title="{$_domain_title|escape}">
+                            <i class="indicator red error-domain-icon {if isset($routing_errors['apps'][$d_id])}visible{else}hide{/if}" id="error-domain-{$d_id}">!</i>
+                            <i class="icon16 favicon" style="background-image:url('http{if waRequest::isHttps()}s{/if}://{$_domain.name|escape}/favicon.ico')"></i>{$_domain_title|escape}
+                            <i class="shortener"></i>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        </li>
+    </ul>
+
+    {* Domain settings *}
+    <ul class="menu-v s-links with-icons">
+        {if empty($domain_alias)}
+            <li id="s-link-pages">
+                <a href="#/pages/">
+                    <i class="icon16 notebook"></i>[s`Pages`]
+                </a>
+            </li>
+            {if $wa->userRights('design')}
+                <li id="s-link-design"><a href="#/design/"><i class="icon16 palette"></i>[s`Design`]</a></li>
+            {/if}
+            <li id="s-link-routing">
+                <a href="#/routing/">
+                    <i class="icon16 split"></i>[`Structure`]
+                </a>
+                <i class="indicator red error-structure-icon" style="display: {if isset($routing_errors['not_install']) || isset($routing_errors['apps'][$domain_id]) }block{else}none{/if}">!</i>
+            </li>
+            <li id="s-link-personal">
+                <a href="#/personal/" title="[`Login, signup, and personal account`]">
+                    <i class="icon16 access"></i>[`Personal`]
+                </a>
+            </li>
+        {/if}
+        <li id="s-link-settings">
+            <a href="#/settings/">
+                <i class="icon16 settings"></i>[`Site settings`]
+            </a>
+        </li>
+
+        {* @event backend_sidebar.%plugin_id%.menu_li *}
+        <!-- plugin hook: "backend_sidebar.menu" -->
+        {foreach $backend_sidebar as $plugin => $output}
+            {if is_array($output) && isset($output.menu_li)}{$output.menu_li}{/if}
+        {/foreach}
+    </ul>
+    {if !empty($domain_alias)}
+    <div class="block align-center hint">
+        {sprintf('[`This is a mirror site (alias) for <strong>%s</strong>.`]', $domain_alias)}
+    </div>
+    {/if}
+</div>
+
+{* Add new site *}
+{if $rights.admin}
+    <div class="s-add-site-block">
+        <ul class="menu-v s-links with-icons">
+            <li class="s-domain-list-item">
+                <a href="javascript:void(0);" class="s-add-new-site inline-link">
+                    <b><i><i class="icon16 add"></i>[`New site`]</i></b>
+                </a>
+            </li>
+        </ul>
+    </div>
+{/if}
+
+{* System block *}
+<div class="s-system-block">
+	<ul class="menu-v with-icons s-links">
+		{if $rights.blocks}<li id="s-link-blocks"><a href="#/blocks/"><i class="icon16 zone"></i>[`Blocks`]</a></li>{/if}
+		{if $rights.files}<li id="s-link-files"><a href="#/files/"><i class="icon16 upload"></i>[`File manager`]</a></li>{/if}
+		{if $rights.admin}
+            <li id="s-link-plugins"><a href="#/plugins/"><i class="icon16 plugins"></i>[s`Plugins`]</a></li>
+        {/if}
+
+        {* @event backend_sidebar.%plugin_id%.system_li *}
+        <!-- plugin hook: "backend_sidebar.system" -->
+        {foreach $backend_sidebar as $plugin => $output}
+        {if is_array($output) && isset($output.system_li)}{$output.system_li}{/if}
+        {/foreach}
+	</ul>
+</div>
+
+{* Template for dialogue adding a new site *}
+<div style="display:none" id="addsite-dialog">
+    <form method="post" action="?module=domains&amp;action=save">
+        <div class="dialog-content">
+            <h1>[`New site`]</h1>
+            <p>
+                <strong class="large">http://</strong><input type="text" id="domain-name" name="name" class="bold large long" value="" placeholder="www.mydomain.ru" />
+                <br /><span class="hint">[`E.g. mydomain.com, www.mydomain.com, subdomain.mydomain.com`]</span>
+            </p>
+
+            <p>[`Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name.`] <a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></p>
+
+            <p>
+            <ul class="menu-v">
+                <li>
+                    <label>
+                        <input type="radio" name="alias" value="0" checked> [`New site`]
+                    </label>
+                </li>
+                <li>
+                    <label>
+                        <input type="radio" name="alias" value="1">
+                        [`Alias (mirror site) for`]
+                        <select id="alias-domain" name="domain">
+                            {foreach $domains as $d_id => $d}
+                                {if empty($d.is_alias)}
+                                    <option value="{$d.name|escape}">{waIdna::dec($d.name)}</option>
+                                {/if}
+                            {/foreach}
+                        </select>
+                        <script type="text/javascript">
+                            $('#alias-domain').on('change', function () {
+                                $('#alias-domain').parent().find('input').attr('checked', 'checked');
+                            });
+                        </script>
+                    </label>
+                </li>
+            </ul>
+            </p>
+            <span class="errormsg"></span>
+        </div>
+        <div class="dialog-buttons">
+            <input type="submit" class="button green" value="[`Create site`]">
+            [`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+
+        </div>
+    </form>
+</div>

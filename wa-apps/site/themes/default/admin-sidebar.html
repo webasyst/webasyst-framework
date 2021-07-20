@@ -31,9 +31,9 @@
 
     {elseif $action == 'page'}
         {$href = false}
-        {if $app == 'shop' && !empty($page)}
+        {if $app == 'shop' && !empty($page.id)}
             {$href = "{$wa_backend_url}{$app}/?action=storefronts#/pages/{$page.id}"}
-        {elseif $app == 'blog' && !empty($page)}
+        {elseif $app == 'blog' && !empty($page.id)}
             {$href = "{$wa_backend_url}{$app}/?module=pages#/{$page.id}"}
         {/if}
         {if $href}
@@ -43,7 +43,7 @@
             ]}
         {/if}
 
-    {elseif $app == 'site' && !empty($page)}
+    {elseif $app == 'site' && !empty($page.id)}
         {$quick_links[] = [
             "name" => "[s`Edit`]",
             "href" => "{$wa_backend_url}{$app}/#/pages/{$page.id}"

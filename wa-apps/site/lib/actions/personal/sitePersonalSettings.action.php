@@ -7,13 +7,6 @@ class sitePersonalSettingsAction extends waViewAction
         $domain = siteHelper::getDomain();
         $auth_config = waDomainAuthConfig::factory($domain);
 
-        $personal_sidebar = wa('site')->event('backend_personal');
-        foreach ($personal_sidebar as &$items) {
-            foreach ($items as &$item) {
-                $item['url'] .= '&domain='.urlencode($domain);
-            }
-        }
-
         $verification_channels = $auth_config->getAvailableVerificationChannels();
         $email_channels = $sms_channels = array();
         foreach ($verification_channels as $id => $channel) {
@@ -58,7 +51,6 @@ class sitePersonalSettingsAction extends waViewAction
             'verification_channel_types' => $auth_config->getVerificationChannelTypes(),
             'domain'                     => waIdna::dec($domain),
             'domain_id'                  => siteHelper::getDomainId(),
-            'personal_sidebar'           => $personal_sidebar,
         ));
     }
 }

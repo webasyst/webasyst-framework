@@ -5,7 +5,7 @@ return array(
     'icon'       => 'img/site512.png',
     'sash_color' => '#49a2e0',
     'frontend'   => true,
-    'version'    => '2.5.24',
+    'version'    => '2.5.26',
     'critical'   => '2.5.0',
     'vendor'     => 'webasyst',
     'system'     => true,
