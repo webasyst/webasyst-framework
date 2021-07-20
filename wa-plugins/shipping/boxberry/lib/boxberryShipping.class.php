@@ -337,6 +337,11 @@ class boxberryShipping extends waShipping
 
     public function getAddress($field = null)
     {
-        return parent::getAddress($field);
+        $address = parent::getAddress($field);
+        if ($field == 'region' && $address >= 1 && $address <= 9) {
+            $address = '0' . (int)$address;
+        }
+
+        return $address;
     }
 }
