@@ -140,7 +140,7 @@ class waAuth implements waiAuth
             $where[] = "c.is_user = 1";
         }
         $where[] = "c.password != ''";
-        $where[] = "e.email LIKE s:email";
+        $where[] = "e.email = s:email";
         $where[] = "e.sort = 0";
 
         $where = join(' AND ', $where);
