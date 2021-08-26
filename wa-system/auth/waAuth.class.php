@@ -140,7 +140,7 @@ class waAuth implements waiAuth
             $where[] = "c.is_user = 1";
         }
         $where[] = "c.password != ''";
-        $where[] = "e.email LIKE s:email";
+        $where[] = "e.email LIKE 'l:email'";
         $where[] = "e.sort = 0";
 
         $where = join(' AND ', $where);
@@ -259,7 +259,6 @@ class waAuth implements waiAuth
         // do always first try by phone as it
         $contact = $this->findByPhone($phone);
         if ($contact) {
-            $contact['phone'] = $phone;
             return $contact;
         }
 
@@ -274,7 +273,6 @@ class waAuth implements waiAuth
         if ($result['status']) {
             $contact = $this->findByPhone($result['phone']);
             if ($contact) {
-                $contact['phone'] = $result['phone'];
                 return $contact;
             }
         }
@@ -285,7 +283,8 @@ class waAuth implements waiAuth
     /**
      * Find registered contact by phone without taking into account transformation settings of auth config
      * @param $phone
-     * @return array|null
+     * @return array|null, wa_contact record + key 'phone' with wa_contact_data record
+     * @throws waDbException|waException
      */
     protected function findByPhone($phone)
     {
@@ -307,11 +306,34 @@ class waAuth implements waiAuth
 
         $where = join(' AND ', $where);
 
-        $sql = "SELECT c.* FROM wa_contact c
+        $select = ['c.*'];
+        foreach ((new waContactDataModel())->getMetadata() as $field => $_) {
+            $select[] = "d.{$field} AS d_{$field}";
+        }
+        $select = join(', ', $select);
+
+        $sql = "SELECT {$select} FROM wa_contact c
                 JOIN wa_contact_data d ON c.id = d.contact_id AND d.field = 'phone'
                 WHERE {$where}
                 ORDER BY c.id LIMIT 1";
-        return $model->query($sql, array('phone' => $phone))->fetchAssoc();
+
+        $contact = $model->query($sql, array('phone' => $phone))->fetchAssoc();
+        if (!$contact) {
+            return null;
+        }
+
+        $phone = [];
+        foreach ($contact as $field => $value) {
+            if (substr($field, 0, 2) === 'd_') {
+                unset($contact[$field]);
+                $field = substr($field, 2);
+                $phone[$field] = $value;
+            }
+        }
+
+        $contact['phone'] = $phone;
+
+        return $contact;
     }
 
     /**

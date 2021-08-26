@@ -331,6 +331,7 @@ return array(
         'type' => array('varchar', 20, 'null' => 0),
         'parent_id' => array('int', 11),
         'order_id' => array('varchar', 50),
+        'part_number' => array('int', 11, 'null' => 0, 'default' => '0'),
         'customer_id' => array('varchar', 50),
         'result' => array('varchar', 20, 'null' => 0),
         'error' => array('varchar', 255),

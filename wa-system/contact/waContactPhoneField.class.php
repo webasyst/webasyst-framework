@@ -144,7 +144,7 @@ class waContactPhoneField extends waContactStringField
      * Checks that suggested phone value for current contact ALREADY exists among all default phones of authorized contacts
      * Authorize contact is contact with password != 0
      * @param string $suggested_phone_value
-     * @param id|null $contact_id
+     * @param int|null $contact_id
      * @return bool
      */
     protected function phoneExistsAmongAuthorizedContacts($suggested_phone_value, $contact_id = null)

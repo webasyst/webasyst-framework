@@ -1,11 +1,11 @@
 {* if invisible recaptcha passed once in session then no need to render capcha again *}
 {if !$recaptcha_passed}
     {$_wrapper_id = uniqid('wa-invisible-recaptcha')}
-    <div class="{$wrapper_class} wa-invisible-recaptcha" id="{$_wrapper_id}">
+    <div class="{$wrapper_class|escape} wa-invisible-recaptcha" id="{$_wrapper_id|escape}">
         <a class="wa-captcha-refresh" style="display:none;"></a>
         <img class="wa-captcha-img" src="" alt="" style="display: none;">
         <div class="g-recaptcha"
-             data-sitekey="{$sitekey}"
+             data-sitekey="{$sitekey|escape}"
              data-size="invisible"
              data-callback="onRecaptchaDataCallback"
              data-error-callback="onRecaptchaErrorCallback"
@@ -16,12 +16,12 @@
 
             // if already has captcha in page
             if (window.grecaptcha_once) return;
-
             window.grecaptcha_once = true;
 
             var widget_id = null,
                 $wrapper = $('#{$_wrapper_id}'),
-                $widget = $wrapper.find('.g-recaptcha');
+                $widget = $wrapper.find('.g-recaptcha'),
+                expire_timeout = null;
 
             var setCookie = function (value) {
                 document.cookie = "g-recaptcha-response=" + encodeURIComponent(value) + "; max-age=300"
@@ -32,6 +32,7 @@
             };
 
             window.onRecaptchaErrorCallback = function (error) {
+                debugLog('Captcha Error', error);
                 if (error === "Timeout") {
                     try {
                         grecaptcha.reset(widget_id);
@@ -45,21 +46,52 @@
             };
 
             window.onRecaptchaExpireCallback = function () {
+                debugLog('Captcha expired, reloading');
                 try {
                     grecaptcha.reset(widget_id);
-                    grecaptcha.execute(widget_id);
-                    $(window).trigger('wa_recaptcha_loaded');
+                    setTimeout(function() {
+                        try {
+                            grecaptcha.execute(widget_id);
+                            $(window).trigger('wa_recaptcha_loaded');
+                        } catch (e) {
+                            console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
+                            console.log(e);
+                        }
+                    }, 77);
                 } catch (e) {
                     console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
                     console.log(e);
                 }
-
+                updateForceReloadTimeout();
             };
 
             window.onloadWaRecaptchaCallback = function () {
+                debugLog('Captcha init');
                 widget_id = grecaptcha.render($widget.get(0));
                 grecaptcha.execute(widget_id);
+                updateForceReloadTimeout();
             };
+
+            // expired-callback is unreliable on some sites for some reason and is never called
+            // so we use timeout as a fallback method
+            function updateForceReloadTimeout() {
+                if (expire_timeout) {
+                    clearTimeout(expire_timeout);
+                }
+                expire_timeout = setTimeout(forceReloadCaptcha, 95000);
+            }
+
+            function forceReloadCaptcha() {
+                debugLog('Force Reload Captcha');
+                onRecaptchaExpireCallback();
+            }
+
+            function debugLog() {
+                return; // logging disabled
+                var args = Array.prototype.slice.call(arguments);
+                args.splice(0, 0, (new Date()).getHours()+':'+(new Date()).getMinutes()+':'+(new Date()).getSeconds());
+                console.log.apply(console, args);
+            }
 
             $(function () {
                 $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadWaRecaptchaCallback");

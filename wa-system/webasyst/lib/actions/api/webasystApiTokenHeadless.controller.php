@@ -40,7 +40,7 @@ class webasystApiTokenHeadlessController extends waController
             $this->response([
                 'error' => 'invalid_grant',
                 'error_description' => 'No backend user is linked with this Webasyst ID',
-            ]);
+            ], 403);
             return;
         }
 
@@ -106,14 +106,14 @@ class webasystApiTokenHeadlessController extends waController
                 $this->response(array(
                     'error' => 'invalid_request',
                     'error_description' => 'Required parameter is missing: '.$field
-                ));
+                ), 400);
                 return false;
             }
             if (is_array($values) && !in_array($v, $values)) {
                 $this->response(array(
                     'error' => ($field == 'grant_type' ? 'unsupported_grant_type' : 'invalid_request'),
                     'error_description' => 'Invalid '.$field.': '.$v
-                ));
+                ), 400);
                 return false;
             }
         }
@@ -142,6 +142,14 @@ class webasystApiTokenHeadlessController extends waController
     {
         $url = $this->client_manager->getWebasystIDConfig()->getAuthCenterUrl('auth/token');
         $credentials = $this->client_manager->getCredentials();
+
+        if (empty($credentials)) {
+            return [
+                'status_code' => 403,
+                'error' => 'not_enabled',
+                'error_description' => 'Webasyst ID service is not enabled'
+            ];
+        }
 
         $net_options = [
             'timeout' => 20,
@@ -172,7 +180,7 @@ class webasystApiTokenHeadlessController extends waController
                     return [
                         'status_code' => $status_code,
                         'error' => $error_code,
-                        'error_description' => $error_description
+                        'error_description' => 'Webasyst ID service error: ' . $error_description
                     ];
                 }
                 $response['status_code'] = $status_code;

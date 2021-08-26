@@ -95,7 +95,7 @@ class Smarty_Security {
         'forward_static_call', 'forward_static_call_array', 'get_defined_functions',
         'dom_import_simplexml', 'simplexml_load_string', 'show_source', 'php_strip_whitespace', 'get_meta_tags',
         'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init',
-        'debug_backtrace', 'mail', 'mb_send_mail', 'set', 'php_uname',
+        'debug_backtrace', 'mail', 'mb_send_mail', 'set', 'php_uname', 'session_save_path',
         //'move_uploaded_file', 'tmpfile', 'highlight_file', 'parse_ini_file', 'simplexml_load_file', 'ini_alter', 'ini_get',
     );
     /**

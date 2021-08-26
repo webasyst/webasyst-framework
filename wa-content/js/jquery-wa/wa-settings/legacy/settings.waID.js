@@ -223,7 +223,7 @@ var WASettingsWaID = ( function($) {
 
         if (!oauth_modal) {
             var referrer_url = window.location.href;
-            window.location = href + '&referrer_url=' + referrer_url;
+            window.location = href + '&referrer_url=' + encodeURIComponent(referrer_url);
             return;
         }
 

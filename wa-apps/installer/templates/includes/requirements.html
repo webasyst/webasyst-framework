@@ -15,7 +15,7 @@ Requirements list
                     <li>
                         <span class="{if strstr($subject,'app.') == $subject}hint{else}{$class}{/if}" title="{$requirement.name|escape}">
                             {if $icon}<i class="icon10 no{if $requirement.passed}-bw{/if}"></i>{/if}
-                            {$requirement.warning|default:$requirement.note|escape}
+                            {$requirement.warning|default:$requirement.note|regex_replace:"/<[^>]+>/":" "|escape}
                         </span>
                     </li>
                 {/if}

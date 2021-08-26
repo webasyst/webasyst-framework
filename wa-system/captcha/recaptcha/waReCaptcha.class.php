@@ -12,7 +12,11 @@ class waReCaptcha extends waAbstractCaptcha
 
     // for invisible captcha only - save success result in session
     // if user pass captcha test once in this session consider user is not a robot
-    // need to prevent problem where there is multiple captcha instances in page
+    // need to prevent problem where there is multiple captcha instances in page,
+    // or when user has multiple forms on multiple tabs open:
+    // after first form is sumbitted, second form will not have its captcha code valid anymore
+    // until next scheduled update.
+    // TODO: disabling captcha via session is generally a bad idea. Bots may exploit that :(
     const SESSION_KEY = 'recaptcha_passed';
 
     public function getHtml()
@@ -37,14 +41,13 @@ class waReCaptcha extends waAbstractCaptcha
 
     public function isValid($code = null, &$error = '')
     {
-        if ($code) {
-            return $this->verify($code, $error);
-        }
-
-        $code = waRequest::cookie('g-recaptcha-response');
         $invisible = ifset($this->options['invisible']);
         if ($invisible && wa()->getStorage()->get(self::SESSION_KEY)) {
             return true;
+        }
+
+        if (!$code) {
+            $code = waRequest::cookie('g-recaptcha-response');
         }
 
         $is_valid = $this->verify($code, $error);

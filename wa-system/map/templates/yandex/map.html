@@ -156,7 +156,7 @@
                     $wrapper: $('#{$wrapper_id}'),
                     $map: $('#{$map_id}'),
                     url: {$url|json_encode},
-                    address: {$address|default:''|json_encode},
+                    address: {$address|default:''|escape|json_encode},
                     center: {$center|default:null|json_encode},
                     options: options,
                     type: {$type|json_encode},     // query type of point: 'address', 'coords'

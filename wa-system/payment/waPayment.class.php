@@ -330,7 +330,6 @@ abstract class waPayment extends waSystemPlugin
             $module = static::factory($module_id);
             static::log($module_id, $log);
 
-
             $response = $module->callbackInit($request)->init()->callbackHandler($request);
             if (class_exists('waPaymentDebug')) {
                 waPaymentDebug::endDebugCallback($module_id, $response);
@@ -710,11 +709,7 @@ abstract class waPayment extends waSystemPlugin
 
     protected static function log($module_id, $data)
     {
-        static $id;
-        if (empty($id)) {
-            $id = uniqid();
-        }
-        $rec = '#'.$id."\n";
+        $rec = '#'.self::getLogRequestId()."\n";
         $module_id = strtolower($module_id);
         if (!preg_match('@^[a-z][a-z0-9]+$@', $module_id)) {
             $rec .= 'Invalid module_id: '.$module_id."\n";
@@ -727,6 +722,15 @@ abstract class waPayment extends waSystemPlugin
         }
         $rec .= "$data\n";
         waLog::log($rec, $filename);
+    }
+
+    private static function getLogRequestId()
+    {
+        static $id;
+        if (empty($id)) {
+            $id = uniqid();
+        }
+        return $id;
     }
 
     /**
@@ -869,6 +873,7 @@ abstract class waPayment extends waSystemPlugin
             'date_time'       => date('Y-m-d H:i:s'),
             'update_datetime' => date('Y-m-d H:i:s'),
             'result'          => true,
+            'part_number'     => 0,
         );
         return $transaction_data;
     }
@@ -1212,8 +1217,11 @@ abstract class waPayment extends waSystemPlugin
 
         $transactions = self::filterTransactionsByDate($transactions);
 
+        $active_part_number = $this->getActivePartNumber($transactions);
         foreach ($transactions as $transaction) {
-            $state_transactions[$map[$transaction['state']]] = $transaction;
+            if ($transaction['part_number'] == $active_part_number) {
+                $state_transactions[$map[$transaction['state']]] = $transaction;
+            }
         }
 
         return $state_transactions;
@@ -1314,8 +1322,16 @@ abstract class waPayment extends waSystemPlugin
             }
 
 
-            $transactions = self::getTransactionsByFields($search);
-            $transactions = self::filterTransactionsByDate($transactions);
+            $unfiltered_transactions = self::getTransactionsByFields($search);
+            $unfiltered_transactions = self::filterTransactionsByDate($unfiltered_transactions);
+            $active_part_number = $this->getActivePartNumber($unfiltered_transactions);
+
+            $transactions = [];
+            foreach ($unfiltered_transactions as $transaction) {
+                if ($transaction['part_number'] == $active_part_number) {
+                    $transactions[] = $transaction;
+                }
+            }
 
             $refunded_amount = 0.0;
 
@@ -1355,6 +1371,60 @@ abstract class waPayment extends waSystemPlugin
         }
 
         return $this->capture_transaction;
+    }
+
+    /**
+     * This is backwards-compatibility code to support apps and payment plugins written before v.2.2.1
+     * Before then, payment plugins could only support one payment transaction per order.
+     * ALl records with the same wa_tranasction.order_id (and belonging to the same plugin instance)
+     * were considered as one big log of a single payment transaction.
+     *
+     * Since 2.2.1, `wa_tranasction` table contains column `part_number`. Values of part_number
+     * distinguish between different unrelated transactions in the same order. Apps and plugins
+     * that are aware of this column, can use it to retry a failed payment, or support
+     * payment via several smaller transactions, etc. - which was not possible before.
+     *
+     * This method is used to determine single active transaction of an order
+     * for legacy places that require log of a single transaction:
+     * methods getRelatedTransactions() and formalizeData().
+     *
+     * @since Webasyst Framework 2.2.1
+     */
+    protected static function getActivePartNumber($all_transactions)
+    {
+        $force_state = [
+            waPayment::STATE_VERIFIED => 0,
+            waPayment::STATE_AUTH => 1,
+            waPayment::STATE_CAPTURED => 2,
+        ];
+        $transactions = array_filter($all_transactions, function($t) use ($force_state) {
+            return isset($force_state[$t['state']]);
+        });
+        if (!$transactions) {
+            if ($all_transactions) {
+                return max(array_column($all_transactions, 'part_number'));
+            } else {
+                return 0;
+            }
+        }
+        usort($transactions, function($a, $b) use ($force_state) {
+            $state_a = $force_state[$a['state']];
+            $state_b = $force_state[$b['state']];
+            if ($state_a < $state_b) {
+                return -1;
+            } else if ($state_a > $state_b) {
+                return 1;
+            }
+            $part_a = $a['part_number'];
+            $part_b = $b['part_number'];
+            if ($part_a < $part_b) {
+                return -1;
+            } else if ($part_a > $part_b) {
+                return 1;
+            }
+            return 0;
+        });
+        return array_pop($transactions)['part_number'];
     }
 
     protected function getRefundTransactionData($transaction_raw_data)

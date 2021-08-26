@@ -521,6 +521,25 @@ class waModel
                     return (int) $value;
                 }
             case 'decimal':
+                if (is_float($value)) {
+                    // this fixes an interesting case of 99999999999.9999
+                    // if this float is converted to string any other way, it becomes '100000000000'
+                    // but var_export keeps it '99999999999.9999'
+                    $value = var_export($value, true);
+                }
+                if (is_string($value) && strpos($value, ',') !== false) {
+                    // paranoid mode: when PHP locale is set up to use commas in floats
+                    // very likely is not needed in modern PHP environments but keeps lingering in code and tests
+                    $value = str_replace(',', '.', $value);
+                }
+                if (is_numeric($value)) {
+                    // if looks like a decimal number, we're done
+                    return $value;
+                }
+                // otherwise, if does not look like a number, then apply brutal sanitation
+                // can't just apply to all strings because convertion to PHP double
+                // introduces rounding errors - unacceptable for decimal type.
+                // breakthrough
             case 'double':
             case 'float':
                 if (strpos($value, ',') !== false) {

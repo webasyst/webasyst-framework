@@ -218,6 +218,9 @@ class installerConfig extends waAppConfig
             'hash'   => $wa_installer->getHash(),
             'domain' => waRequest::server('HTTP_HOST'),
         );
+        if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
+            $init_url_params['previous_hash'] = $previous_hash;
+        }
 
         $init_url = $wa_installer->getInstallerTokenUrl();
         $init_url .= '?'.http_build_query($init_url_params);
