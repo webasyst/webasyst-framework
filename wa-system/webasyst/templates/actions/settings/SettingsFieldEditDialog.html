@@ -159,7 +159,7 @@
                         <div class="name">[s`Address fields`]</div>
                     </div>
                     <div class="field">
-                        <table class="subfields-list zebra">
+                        <table class="subfields-list zebra" id="subfileds-list">
                             <tbody class="ui-sortable">
                                 {foreach $cf->getParameter('fields') as $_sf}
                                     {wa_action app="webasyst" module="settings" action="FieldFormRow" fid=$_sf->getId() f=$_sf parent='address' css_class='field-row editor-off'}
@@ -167,10 +167,9 @@
                                 {wa_action app="webasyst" module="settings" action="FieldFormRow" fid='%FID%' f=null parent='address' css_class='hidden field-row template editor-on just-added'}
                                 <tr class="white add-field">
                                     <td class="min-width">&nbsp;</td>
-                                    <td class="min-width"><a class="js-add-subfield" href="#"><i class="fas fa-plus-circle"></i></a>
-                                    </td>
-                                    <td>
-                                        <a href="javascript:void(0)" class="inline-link js-add-subfield"><b><i>[s`Add field`]</i></b></a>
+                                    <td class="min-width"><a class="js-add-subfield" href="#"><i class="fas fa-plus-circle"></i></a></td>
+                                    <td colspan="2">
+                                        <a href="#" class="inline-link js-add-subfield"><b><i>[s`Add field`]</i></b></a>
                                     </td>
                                 </tr>
                             </tbody>

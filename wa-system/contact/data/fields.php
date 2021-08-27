@@ -27,7 +27,7 @@ return array(
     new waContactHiddenField('company_contact_id', '', array(
         'storage' => 'info', 'type' => 'Hidden'
     )),
-    
+
     new waContactRadioSelectField('sex', 'Gender', array(
         'storage' => 'info',
         'fconstructor' => 'fixed',
@@ -42,11 +42,11 @@ return array(
         'max_length' => 50, 'storage' => 'info',
         'fconstructor' => 'fixed',
     )),
-    
+
     new waContactStringField('company', 'Company', array(
         'max_length' => 150, 'storage' => 'info'
     )),
-    
+
     new waContactEmailField('email', 'Email', array(
         'multi' => true, 'storage' => 'email',
         'ext' => array(
@@ -66,19 +66,22 @@ return array(
         ),
         'top' => true
     )),
-    
+
     new waContactStringField('im', 'Instant messenger', array(
         'multi' => true,
         'type' => 'IM',
         'ext' => array(
-            'icq' => 'ICQ',
-            'skype' => 'Skype',
-            'jabber' => 'Jabber',
-            'yahoo' => 'Yahoo',
-            'aim' => 'AIM',
-            'msn' => 'MSN',
+            'whatsapp' => 'WhatsApp',
             'telegram' => 'Telegram',
-            'viber' => 'Viber'
+            'signal' => 'Signal',
+            'viber' => 'Viber',
+            'facebook' => 'Facebook Messenger',
+            'skype' => 'Skype',
+            'wechat' => 'WeChat',
+            'imessage' => 'iMessage',
+            'line' => 'Line',
+            'qq' => 'QQ',
+            'icq' => 'ICQ'
         ),
         'formats' => array(
                 'top' => new waContactIMTopFormatter(),
@@ -92,9 +95,11 @@ return array(
         'type' => 'SocialNetwork',
         'ext' => array(
             'facebook' => 'Facebook',
+            'instagram' => 'Instagram',
+            'tiktok' => 'TikTok',
             'twitter' => 'Twitter',
             'linkedin' => 'LinkedIn',
-            'vkontakte' => 'VKontakte',
+            'vkontakte' => 'VK',
         ),
         'formats' => array(
             'top' => new waContactSocialNetworkTopFormatter(),
@@ -107,7 +112,7 @@ return array(
             'linkedin' => null
         )
     )),
-    
+
     new waContactAddressField('address', 'Address', array(
         'multi' => true,
         'ext' => array(

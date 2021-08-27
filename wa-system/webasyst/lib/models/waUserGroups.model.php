@@ -116,9 +116,10 @@ class waUserGroupsModel extends waModel
     }
 
     /**
-      * @param array $contacts list of user ids
-      * @return array user_id => array(group_id, group_id, ...)
-      */
+     * @param array $contacts list of user ids
+     * @return array user_id => array(group_id, group_id, ...)
+     * @throws waDbException
+     */
     public function getGroupIdsForUsers($contacts) {
         if (!$contacts) {
             return array();

@@ -4,10 +4,10 @@ class installerSettingsStaticIDController extends waJsonController
 {
     public function execute()
     {
-        $this->response['id'] = $this->getStaticID();
+        $this->response = $this->doQuery();
     }
 
-    protected function getStaticID()
+    protected function doQuery()
     {
         $options = [
             'timeout' => 30,
@@ -28,22 +28,56 @@ class installerSettingsStaticIDController extends waJsonController
             return null;
         }
 
-        if (!$response || empty($response['data']['id'])) {
-            return null;
+        if (!$response) {
+            $this->logError('empty response');
+            return [
+                'id' => '',
+                'beta_test_products' => []
+            ];
         }
 
-        return $response['data']['id'];
+        if (empty($response['status']) || empty($response['data'])) {
+            $this->logError('fail response');
+            return [
+                'id' => '',
+                'beta_test_products' => []
+            ];
+        }
+
+        $id = isset($response['data']['id']) ? $response['data']['id'] : '';
+        $beta_test_products = isset($response['data']['beta_test_products']) ? $response['data']['beta_test_products'] : [];
+
+        $this->workupBetaTestProducts($beta_test_products);
+
+        return [
+            'id' => $id,
+            'beta_test_products' => $beta_test_products
+        ];
+    }
+
+    protected function workupBetaTestProducts(array &$beta_test_products)
+    {
+        foreach ($beta_test_products as &$product) {
+            $datetime = !empty($product['beta_test_create_datetime']) ? $product['beta_test_create_datetime'] : null;
+            $product['beta_test_create_date_formatted'] = null;
+            if ($datetime) {
+                $product['beta_test_create_date_formatted'] = wa_date('humandate', $datetime);
+            }
+        }
+        unset($product);
     }
 
     protected function getUrl()
     {
         $wa_installer = installerHelper::getInstaller();
-        $init_url_params = array(
+        $params = [
             'hash'   => $wa_installer->getHash(),
             'domain' => waRequest::server('HTTP_HOST'),
-        );
+            'beta_test_products' => 1,
+            'locale' => wa()->getLocale(),
+        ];
         $url = $wa_installer->getInstallationStaticIDUrl();
-        $url .= '?'.http_build_query($init_url_params);
+        $url .= '?'.http_build_query($params);
         return $url;
     }
 

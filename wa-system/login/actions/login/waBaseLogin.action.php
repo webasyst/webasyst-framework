@@ -265,7 +265,7 @@ abstract class waBaseLoginAction extends waLoginModuleController
             if ($contact_info) {
 
                 // phone as it is in DB
-                $phone = isset($contact_info['phone']) ? $contact_info['phone'] : $data['login'];
+                $phone = isset($contact_info['phone']) && isset($contact_info['phone']['value']) ? $contact_info['phone']['value'] : $data['login'];
 
                 $dm = new waContactDataModel();
                 $dm->updateContactPhoneStatus($contact_info['id'], $phone, waContactDataModel::STATUS_CONFIRMED);

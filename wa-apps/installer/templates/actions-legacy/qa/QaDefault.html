@@ -1,0 +1,60 @@
+{*extends file="../../layouts/Backend.html"*}
+{block name="sidebar"}
+    <div class="block highlighted">
+        <h3>Sandbox</h3>
+        <ul class="menu-v">
+            <li style="display:inline-block; margin-right: 20px; min-width: unset;" {if $action eq 'default'} class="selected"{/if}>
+                <a href="?module=qa"><i class="fas fa-arrow-alt-circle-down"></i> [`Install`]</a>
+            </li>
+            <li style="display:inline-block; margin-right: 20px; min-width: unset;" {if ($action eq 'list') && ($subject =='apps')} class="selected"{/if}>
+                <a href="?module=qa&action=list&subject=apps"><i class="fab fa-adn"></i> [`Applications`]</a>
+            </li>
+            <li style="display:inline-block; margin-right: 20px; min-width: unset;" {if ($action eq 'list') && ($subject =='plugins')} class="selected"{/if}>
+                <a href="?module=qa&action=list&subject=plugins"><i class="fas fa-share-alt-square"></i> [`Plugins`]</a>
+            </li>
+            <li style="display:inline-block; margin-right: 20px; min-width: unset;" {if ($action eq 'list') && ($subject =='themes')} class="selected"{/if}>
+                <a href="?module=qa&action=list&subject=themes"><i class="fas fa-pen-square"></i> [`Themes`]</a>
+            </li>
+            <li style="display:inline-block; margin-right: 20px; min-width: unset;" {if ($action eq 'list') && ($subject =='widgets')} class="selected"{/if}>
+                <a href="?module=qa&action=list&subject=widgets"><i class="fas fa-window-restore"></i> [`Widgets`]</a>
+            </li>
+        </ul>
+    </div>
+{/block}
+{block name="content"}
+<div class="block double-padded" id="qa-list">
+    <form action="?module=qa&action=install" method="post" id="install-form">
+        {$wa->csrf()}
+        <div class="fields">
+            <div class="field">
+                <div class="name">Temp URL</div>
+                <div class="value large"><input type="url" name="source" placeholder="Temp URL"></div>
+            </div>
+            <div class="field">
+                <div class="value no-shift"><input type="submit" value="[`Install`]" class="button2"></div>
+            </div>
+            <div class="field">
+                <div class="value no-shift"><pre id="install-report" style="white-space: pre; display: none; width: 100%; height: 400px;"></pre>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+
+        $('#install-form').submit(function () {
+            var $form = $(this);
+            var data = $form.serialize();
+            if (data) {
+                $form.find(':submit').attr('disabled', true);
+                $.post($form.attr('action'), data).done(function (data) {
+                    $('#install-report').show().text(data);
+                    $form.find(':submit').attr('disabled', null);
+                });
+                return false;
+            }
+        })
+
+    </script>
+</div>
+{/block}

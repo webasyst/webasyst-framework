@@ -80,7 +80,11 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
 
         $referrer_url = $this->getReferrerUrl();
         if ($referrer_url) {
-            $callback_url .= '&referrer_url=' . $referrer_url;
+            if (!waUtils::isUrlSafeBase64Encoded($referrer_url)) {
+                $callback_url .= '&referrer_url=' . waUtils::urlSafeBase64Encode($referrer_url);
+            } else {
+                $callback_url .= '&referrer_url=' . $referrer_url;
+            }
         }
 
         // all other get params leave as it is
@@ -364,7 +368,6 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
             ]
         ];
     }
-
 
     public function bindWithWebasystContact($params, $force = false)
     {

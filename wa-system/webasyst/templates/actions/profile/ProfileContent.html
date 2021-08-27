@@ -5,7 +5,7 @@
  * Layout for a profile tab inside iframe.
  *
  * This template does not have a corresponding action
- * and instead included by ProfileTabs.html
+ * and instead included by ProfileSidebar.html
  *}
 <html>
 <head>
@@ -13,8 +13,9 @@
     <title></title>
     <style>.t-dynamic-content:before, .t-dynamic-content:after{ content: " "; display: table; }</style>
     {$wa->css()}
-    <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
     <script>window.wa_skip_ajax_setup=1;</script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version(true)}"></script>
     {$wa->js()}
 </head>
@@ -32,10 +33,10 @@
 
 <script>( function($) {
 
-    var ProfileTab = ( function($) {
+    var ProfileSection = ( function($) {
 
-        ProfileTab = function(options) {
-            var that = this;
+        ProfileSection = function(options) {
+            const that = this;
 
             // DOM
             that.$frame = options["$frame"];
@@ -49,37 +50,37 @@
             that.initClass();
         };
 
-        ProfileTab.prototype.initClass = function() {
-            var that = this;
+        ProfileSection.prototype.initClass = function() {
+            const that = this;
             //
             that.bindEvents();
         };
 
-        ProfileTab.prototype.bindEvents = function() {
-            var that = this;
+        ProfileSection.prototype.bindEvents = function() {
+            const that = this;
 
             /* Make links open in parent window instead of iframe */
             $(document).on("click", "a", function() {
-                var $link = $(this);
+                const $link = $(this);
                 if (!$link.attr("target")) {
                     $link.attr("target", "_parent");
                 }
             });
         };
 
-        ProfileTab.prototype.reload = function() {
-            var that = this,
+        ProfileSection.prototype.reload = function() {
+            const that = this,
                 rootWindow = that.rootWindow;
 
             rootWindow.setTimeout(function() {
-                var $tab = rootWindow.$(".t-profile-tabs .t-tab.is-selected", rootWindow.document.body);
+                const $section = rootWindow.$(".t-profile-sidebar.right section.is-active", rootWindow.document.body);
                 that.$frame.remove();
-                $tab.removeClass("selected").find("a").click();
+                $section.removeClass("is-active").find("a").click();
             }, 0);
         };
 
-        ProfileTab.prototype.initScrollWatcher = function( $block, callback ) {
-            var that = this;
+        ProfileSection.prototype.initScrollWatcher = function( $block, callback ) {
+            const that = this;
 
             if ( !(callback && (typeof callback === "function") ) ) {
                 return false;
@@ -88,9 +89,9 @@
             $(that.rootWindow).on("scroll resize", onScroll);
 
             function onScroll() {
-                var is_exist = ( $.contains(that.rootWindow.document, that.$frame[0]) && $.contains(document, $block[0]) );
+                const is_exist = ( $.contains(that.rootWindow.document, that.$frame[0]) && $.contains(document, $block[0]) );
                 if (is_exist) {
-                    var visibleFrameH = getVisibleFrameHeight();
+                    const visibleFrameH = getVisibleFrameHeight();
                     callback(visibleFrameH);
                 } else {
                     $(that.rootWindow).off("scroll resize", onScroll);
@@ -98,7 +99,7 @@
             }
 
             function getVisibleFrameHeight() {
-                var $window = $(that.rootWindow),
+                let $window = $(that.rootWindow),
                     display_w = parseInt( $window.width() ),
                     display_h = parseInt( $window.height() ),
                     scroll_top = parseInt( $window.scrollTop() ),
@@ -118,17 +119,17 @@
 
                 top = 0;
                 if (scroll_top > frame_top) {
-                    var delta = parseInt(scroll_top - frame_top);
+                    const delta = parseInt(scroll_top - frame_top);
                     top = (delta > frame_h) ? frame_h : delta;
                 }
 
                 left = right = null;
 
                 return {
-                    top: top,
-                    right: right,
-                    bottom: bottom,
-                    left: left,
+                    top,
+                    right,
+                    bottom,
+                    left,
                     display: {
                         width: display_w,
                         height: display_h
@@ -141,16 +142,16 @@
             }
         };
 
-        ProfileTab.prototype.trigger = function() {
-            var $ifr = this.rootWindow.$(this.$frame[0]);
+        ProfileSection.prototype.trigger = function() {
+            const $ifr = this.rootWindow.$(this.$frame[0]);
             $ifr.trigger.apply($ifr, [].slice.call(arguments));
         };
 
-        return ProfileTab;
+        return ProfileSection;
 
     })(jQuery);
 
-    window.profileTab = new ProfileTab({
+    window.profileSection = new ProfileSection({
         $frame: $(window.frameElement),
         rootWindow: window.parent
     });

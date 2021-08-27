@@ -90,7 +90,7 @@ abstract class waActions extends waController
         // If path contains / or : then it's a full path to template
         if (strpbrk($template, '/:') === false) {
             $match = array();
-            if (!preg_match("/^[a-z]+([A-Z][a-z]+Plugin)?([A-Z][^A-Z]+)([A-Za-z]*)Actions$/", get_class($this), $match)) {
+            if (!preg_match($this->getValidClassNameRegExp(), get_class($this), $match)) {
                 throw new Exception('bad class name for waActions class');
             }
 
@@ -120,6 +120,12 @@ abstract class waActions extends waController
         }
 
         return $template;
+    }
+
+    private static function getValidClassNameRegExp()
+    {
+        // allow app ID as symbol '_' in the middle (but only in the middle)
+        return "/^(?:[a-z]+|[a-z][a-z_]*[a-z])([A-Z][a-z]+Plugin)?([A-Z][^A-Z]+)([A-Za-z]*)Actions$/";
     }
 
     public function display(array $data, $template = null, $return = false)

@@ -1,31 +1,24 @@
-<tr>
-
-    <td class="i-update-icon">
-    
+<tr{if $item_type != 'systemplugin' && $item_type != 'plugin' && $item_type != 'theme' && $item_type != 'widget'} class="installer-update__table-tr"{/if}>
+    <td{if $item_type != 'app' && empty($item.icons.48)} class="installer-update__table-hidden"{/if}>
         {* ICON *}
-        
         {if $item_type eq 'app' &&  !empty($item.icons.48)}
-
-            <img src="{$item.icons.48|default:$item.icons.16}" alt="">
+        <div class="i-assets-col-icon">
+            <img src="{$wa_url}{$item.icons.48|default:$item.icons.16|ltrim:'/'}" alt="">
+        </div>
         {else}
             &nbsp;
         {/if}
     </td>
 
-    <td class="i-update-name">
-    
+    <td class="small i-update-name">
         {* PRODUCT NAME *}
-        
         {if $item_type eq 'plugin' ||  $item_type eq 'theme' || $item_type eq 'widget' }
-
             {* theme or plugin *}
-            
             {if !empty($item.icons) && false}
                 <img src="{$item.icons.16}" alt="">
             {else}
-                <i class="icon16 {if $item_type eq 'plugin'}plugins{elseif $item_type eq 'widget'}widgets{else}design{/if}"></i>
-            {/if}            
-            
+                <i class="fas fa-{if $item_type eq 'plugin'}plug{elseif $item_type eq 'widget'}table{else}palette{/if}" style="color: {if $item_type eq 'plugin'}var(--text-color-strong){elseif $item_type eq 'widget'}var(--light-gray){else}var(--orange){/if};"></i>
+            {/if}
             {if $item_type eq 'plugin'}
                 {sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}
             {elseif $item_type eq 'theme' }
@@ -38,29 +31,29 @@
         {else}
 
             {* apps and system plugins *}
-            
             {if $item_type eq 'systemplugin'}
                 <strong>{sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}</strong>
             {else}
                 <strong class="large">{$item.name|default:$item_id|escape}</strong>
             {/if}
-
         {/if}
 
         {if !empty($item.vendor_name)}
-            <span class="hint">{$item.vendor_name|escape}</span>
+            <p class="hint">{$item.vendor_name|escape}</p>
         {/if}
     </td>
 
-    <td class="i-update-data">
-    
+    <td class="small{if empty($item.version) && empty($item.installed.version) && empty($item.changelog)}  installer-update__table-hidden{/if}">
         {* UPDATE INFO & CHANGELOG *}
-
         {if !empty($item.version)}
             <strong class="i-new-version-info">
                 <span class="i-version">{$item.version}</span>
                 {if $item.beta_test|default:false}
-                    <span class="i-beta-test small">[`(beta-version)`]</span>
+                    <span class="js-update-tooltip">([`beta version`]) <i class="fas fa-info-circle"></i></span>
+
+                    <div class="wa-tooltip-template" id="update-beta-notice">
+                        [`Beta test notice`]
+                    </div>
                 {/if}
             </strong>
         {/if}
@@ -70,7 +63,7 @@
             {if $_version|substr:-2 === '.p'}
                 {$_version = $_version|substr:0:-2}
             {/if}
-            <span class="hint">{$_version|string_format:'[`Your current version is %s.`]'}</span>
+            <p class="hint">{$_version|string_format:'[`Your current version is %s.`]'}</p>
         {/if}
 
         {* changelog text *}
@@ -82,32 +75,29 @@
                     {if !$record@last}<br><br>{/if}
                     {if $record@first && !$record@last}
                         <a class="inline-link js-changelog-more" href="#"><b><i>[`more`]</i></b></a>
-                        <span style="display: none;">
                     {/if}
                     {if !$record@first && $record@last}
-                        </span>
+                        <span style="display: none;"></span>
                     {/if}
                 {/foreach}
             </div>
         {/if}
-
     </td>
 
-    <td class="i-update-button">
-    
+    <td class="small align-center{if empty($item.applicable) && !in_array($item.action, [
+    waInstallerApps::ACTION_UPDATE,
+    waInstallerApps::ACTION_CRITICAL_UPDATE,
+    waInstallerApps::ACTION_INSTALL
+    ], true) } installer-update__table-hidden{/if}">
         {* UPDATE BUTTON *}
-
         {if !empty($item.applicable) && in_array($item.action, [
         waInstallerApps::ACTION_UPDATE,
         waInstallerApps::ACTION_CRITICAL_UPDATE,
         waInstallerApps::ACTION_INSTALL
         ], true) }
             {if !empty($item.commercial) && empty($item.purchased)}
-
                 {* not allowed to install the app, i.e. expired *}
-
-                <p class="small red">[`License is either expired or not valid for this installation`]</p>
-
+                <p class="small state-error">[`License is either expired or not valid for this installation`]</p>
                 {if $item_type eq 'app'}
                     {$link="app/`$item.id`"}
                 {elseif $item_type eq 'theme'}
@@ -124,7 +114,7 @@
                     {/if}
                 {/if}
 
-                <a href="{$wa_app_url}store/{$link}/" {*class="button2 white small"*}>[`Get license`]</a>
+                <a href="{$wa_app_url}store/{$link}/" class="button rounded">[`Get license`]</a>
 
             {elseif !empty($item.inbuilt)}
 
@@ -135,16 +125,20 @@
                     id="checkbox_{$item.slug|replace:'/':'___'}" data-app="{$item.app|default:''|escape}">
 
             {else}
+                <div>
+                    <input type="hidden" name="app_id[{$item.slug}]"
+                           value="{$item.vendor}{if isset($item.edition) && $item.edition}:{$item.edition}{/if}"
+                           id="checkbox_{$item.slug|replace:'/':'___'}">
 
-                <input type="hidden" name="app_id[{$item.slug}]"
-                       value="{$item.vendor}{if isset($item.edition) && $item.edition}:{$item.edition}{/if}"
-                       id="checkbox_{$item.slug|replace:'/':'___'}">
-                <input {*class="button2 small"*} type="submit" id="update_{$item.slug|replace:'/':'___'}" value="[`Install update`]">
+                    <button type="submit" id="update_{$item.slug|replace:'/':'___'}" class="button light-gray rounded flexbox middle{if $item.beta_test|default:false} js-update-confirm{/if}">
+                        <span class="icon"><i class="fas fa-arrow-circle-down text-blue"></i></span>
+                        [`Install update`]
+                    </button>
+                </div>
 
             {/if}
         {/if}
 
         {include file="../../includes/requirements.html" inline}
     </td>
-
 </tr>

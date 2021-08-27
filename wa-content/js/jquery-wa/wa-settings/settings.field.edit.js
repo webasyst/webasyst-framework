@@ -330,6 +330,7 @@ class WASettingsFieldEdit {
                 tr = tmpl.clone().insertBefore(tmpl).removeClass('template').removeClass('hidden');
 
             that.dialog.resize();
+            $(this)[0].scrollIntoView({block: "end", inline: "nearest"})
 
             // Replace field id placeholder with generated field id
             let fid = '__'+max_field;
@@ -344,14 +345,20 @@ class WASettingsFieldEdit {
         });
 
         // Edit subfield
-        $wrapper.on('click', '.edit', function(e) {
+        $wrapper.on('click', '.js-edit-subfield', function(e) {
             e.preventDefault();
-            $(this).parents('tr').addClass('editor-on').removeClass('editor-off');
+            $(this).closest('tr').addClass('editor-on').removeClass('editor-off');
             that.toggleButton(true);
         });
 
         // Delete subfield
-        $wrapper.on('click', '.js-delete-subfield', function() {
+        $wrapper.on('click', '.js-delete-subfield', function(e) {
+            e.preventDefault();
+
+            const dialogTitle = $(this).attr('title');
+            const dialogRemoveButtonText = $(this).data('dialog-remove-button-text');
+            const dialogCancelButtonText = $(this).data('dialog-cancel-button-text');
+
             let $tr = $(this).closest('tr');
 
             if ($tr.hasClass('just-added')) {
@@ -359,23 +366,24 @@ class WASettingsFieldEdit {
                 return false;
             }
 
-            that.dialog.hide();
-
-            new WASettingsDialog({
-                html: $(that.remove_subitem_confirm),
-                onConfirm: function () {
+            $.waDialog.confirm({
+                title: `<i class=\"fas fa-exclamation-triangle smaller state-error\"></i> ${dialogTitle}?`,
+                text: "",
+                success_button_title: `${dialogRemoveButtonText}`,
+                success_button_class: 'danger',
+                cancel_button_title: `${dialogCancelButtonText}`,
+                cancel_button_class: 'light-gray',
+                onSuccess: function(dialog) {
+                    console.log(dialog)
                     $tr.addClass('editor-off').removeClass('editor-on');
                     let name = $tr.find('input:hidden[name$="[_disabled]"]').attr('name').replace("[_disabled]", "[_deleted]");
                     $('.js-field-form-edit').append($('<input type="hidden" name="" value="1">').attr('name', name));
                     $tr.children().children(':not(label)').remove();
                     $tr.find('label').addClass('gray').addClass('strike');
                     that.toggleButton(true);
-                    that.dialog.show();
-                },
-                onCancel: function () {
-                    that.dialog.show();
                 }
             });
+
         });
 
         // Just resize on click to 'add item'

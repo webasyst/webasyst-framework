@@ -2406,6 +2406,15 @@ class waInstallerApps
         }
     }
 
+    public function getInstallationBetaTestProductDisconnectUrl()
+    {
+        try {
+            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/beta_test_product/disconnect');
+        } catch (Exception $e) {
+            throw new Exception('Unable to build URL to get static id');
+        }
+    }
+
     public function getCheckProductLeaseStatusUrl()
     {
         try {

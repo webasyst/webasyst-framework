@@ -155,22 +155,23 @@
 }
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 104px));
   max-width: 100%;
-  justify-content: flex-start;
+}
+#wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul.collapsed,
+#wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul.collapsed {
+  overflow: hidden;
+}
+#wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul.expanded,
+#wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul.expanded {
+  height: auto !important;
+  padding-bottom: 80px;
 }
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li {
-  width: 96px;
-  margin-bottom: 1.25rem;
-  margin-right: 0.875rem;
-}
-@media screen and (max-width: 760px) {
-  #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li,
-  #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li {
-    display: inline-block;
-  }
+  padding-right: 0.875rem;
+  padding-bottom: 1.25rem;
 }
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li a,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li a {
@@ -185,12 +186,39 @@
 #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul > li a .badge,
 #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul > li a .badge {
   font-size: 1rem;
+  right: 1rem;
 }
-@media screen and (max-width: 1439px) {
-  #wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul,
-  #wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul {
-    justify-content: stretch;
-  }
+#wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul .expand,
+#wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul .expand {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8;
+  height: 80px;
+  color: var(--blue);
+  font-size: 2.5rem;
+  border-radius: 0.5rem;
+  padding: 0;
+  background-image: linear-gradient(to bottom, transparent, var(--light-gray));
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+#wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul .expand:hover,
+#wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul .expand:hover {
+  opacity: 1;
+}
+#wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul .expand svg,
+#wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul .expand svg {
+  filter: drop-shadow(0 0 6px var(--white));
+  transition: transform 0.3s;
+}
+#wa-app .content .wa-dashboard-page #wa_apps #wa-applist > ul .expand svg.rotated,
+#wa-app .content #dashboard-wrapper #wa_apps #wa-applist > ul .expand svg.rotated {
+  transform: rotate(180deg);
 }
 @media screen and (max-width: 1439px) {
   #wa-app .content .wa-dashboard-page #wa_apps,

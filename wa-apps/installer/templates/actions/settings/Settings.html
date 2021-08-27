@@ -1,56 +1,78 @@
-<div class="shadowed">
-    <div class="i-white-core-content">
-        <div class="block double-padded">
-            <div class="fields">
-                <div class="field-group">
-                    <div class="field">
-                        <div class="name">
-                            [`System settings`]
-                        </div>
-                        <div class="value">
-                            {sprintf('[`<a href="%s">Change system settings in Settings app</a>.`]', "`$wa_backend_url`webasyst/settings/")}
-                        </div>
+<div class="article">
+    <div class="article-body">
+        <h1>[`System settings`]</h1>
+
+        <div class="fields">
+            <div class="fields-group">
+                <div class="field">
+                    <div class="name">
+                        [`Webasyst version`]
                     </div>
-                    <div class="field">
-                        <div class="name">
-                            [`Webasyst version`]
-                        </div>
-                        <div class="value no-shift">{$version}</div>
-                    </div>
-                    <div class="field">
-                        <div class="name">[`Installer ID`]</div>
-                        <div class="value no-shift">
-                            <a href="javascript:void(0)" class="js-show-installer-static-id">[`View ...`] <i class="icon16 loading" style="display: none"></i></a>
+                    <div class="value no-shift bold">{$version}</div>
+                </div>
 
-                            <span class="js-installer-static-id"></span>
-                            &nbsp;
-                            <a href="javascript:void(0)" class="hint js-installer-static-id-copy" style="display: none">[`copy`]</a>
-                            <i class="icon10 yes js-installer-static-id-copied" style="display: none; margin-left: 10px;"></i>
+                <div class="field">
+                    <div class="name">[`Installer ID`]</div>
+                    <div class="value no-shift">
+                        <a href="javascript:void(0)" class="js-show-installer-static-id flexbox">
+                            <span>[`View ...`]</span>
+                            <span class="loading spinner custom-ml-4" style="display: none"></span>
+                        </a>
 
-                        </div>
+                        <span class="bold js-installer-static-id"></span>
 
+                        <a href="javascript:void(0)" class="hint js-installer-static-id-copy" style="display: none">[`copy`]</a>
+                        <i class="fas fa-check-circle js-installer-static-id-copied" hidden></i>
                     </div>
                 </div>
-                <div class="field-group">
-                    <div class="field">
-                        <div class="name" style="margin-top: 8px;">
-                            [`Clear cache`]
-                        </div>
-                        <div class="value">
-                            <input type="button" class="button gray" name="clear_cache" value="[`Clear cache`]">
-                            <span id="installer-cache-state" style="display: none;"><!-- state placeholder --></span>
+
+                <div class="field custom-mt-20 js-beta-test-products-wrapper" style="display: none;">
+                    <div class="name">[`Beta test`]</div>
+                    <div class="value js-beta-test-products">
+                        <div class="js-beta-test-product js-is-template" style="display: none;">
+                            <div class="flexbox middle">
+                                <span class="js-name width-20 custom-mr-12"></span>
+                                <a href="#" class="js-disconnect-beta-test-product small text-gray flexbox middle">
+                                    <span class="icon"><i class="fas fa-plug text-red custom-mr-4"></i></span>
+                                    [`Disconnect`]
+                                    <i class="fas fa-spinner loading custom-ml-4" style="display: none;"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="fields-group">
+                <div class="field">
+                    <div class="name for-button">[`Clear cache`]</div>
+                    <div class="value">
+                        <input type="button" class="button gray outlined rounded" name="clear_cache" value="[`Clear cache`]">
+                        <span id="installer-cache-state" style="display: none;"><!-- state placeholder --></span>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="clear"></div>
+
+        <p class="small">
+            {sprintf('[`<a href="%s">Change system settings in Settings app</a>.`]', "`$wa_backend_url`webasyst/settings/")}
+        </p>
+
     </div>
 </div>
 
 <script src="{$wa_app_static_url}js/settings.js?v={$wa->version()}" type="text/javascript"></script>
+
+{$_locale = [
+    'confirm_disconnect' => _w('Are you sure disconnect this product form beta test?'),
+    'disconnect' => _w('[`Disconnect`]'),
+    'cancel' => _w('[`Cancel`]')
+]}
+
 <script type="text/javascript">
     $(document).ready(function () {
-        $.installer_settings.init();
+        $.installer_settings.init({
+          messages: {$_locale|json_encode}
+        });
     });
 </script>

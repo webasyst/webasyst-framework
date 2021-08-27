@@ -1,30 +1,23 @@
 var InstallerStore = (function ($) {
 
-    InstallerStore = function (options) {
+    InstallerStore = function (elem, options) {
         var that = this;
 
         // DOM
-        that.$wrapper = options["$wrapper"];
+        that.$body = $('body');
+        that.$wrapper = $(elem);
         that.$frame = that.$wrapper.find('.js-store-frame');
         that.$loading_wrapper = that.$wrapper.find('.js-loading-wrapper');
+        that.$toggle = $('.js-installer-toggle');
+        that.$toggleLink = that.$toggle.find('.js-installer-toggle-link');
+        that.$routeLink = $('.js-installer-route');
+        that.$filterLink = $('.js-installer-sidebar-filter');
 
-        // VARS
-        that.app_url = options["app_url"];
-        that.path_to_module = options["path_to_module"];
-        that.store_url = options["store_url"];
-        that.store_path = options["store_path"];
-        that.store_token = (options["store_token"] || {});
-        that.installer_url = options["installer_url"];
-        that.in_app = options["in_app"];
-        that.return_url = options["return_url"];
-        that.user_locale = options["user_locale"];
-        that.locale = options["locale"];
-        that.templates = options["templates"];
-        that.csrf = options["csrf"];
+        // OPTIONS
+        that.options = (options || {});
 
         that.api_enabled = !!(window.history && window.history.pushState);
-
-        // DYNAMIC VARS
+        that.filters = {};
 
         // INIT
         that.initClass();
@@ -33,9 +26,10 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.initClass = function () {
         var that = this;
 
-        //
+        that.setDefaultFilters();
+        that.initToggle();
         that.initIframe(true);
-        //
+        that.initLoader();
         that.initEventListener();
     };
 
@@ -53,11 +47,27 @@ var InstallerStore = (function ($) {
         }
     };
 
+    InstallerStore.prototype.initToggle = function() {
+        const that = this;
+
+        that.$toggle.waToggle({
+            change: function(event, target, toggle) {
+                //console.log(event, target, toggle)
+            }
+        });
+    }
+
+    InstallerStore.prototype.initLoader = function() {
+        const that = this;
+
+        that.loading = $.waLoading();
+    }
+
     InstallerStore.prototype.initIframe = function (inst_context, error_handling) {
         var that = this,
-            iframe_src = that.buildStoreUrl(that.store_path, inst_context, error_handling);
+            iframe_src = that.buildStoreUrl(that.options.store_path, inst_context, error_handling);
 
-        if (!that.store_url) {
+        if (!that.options.store_url) {
             that.$loading_wrapper.remove();
             return;
         }
@@ -67,9 +77,9 @@ var InstallerStore = (function ($) {
 
     InstallerStore.prototype.buildStoreUrl = function (store_path, init_request, error_handling) {
         var that = this,
-            store_token = that.store_token,
+            store_token = that.options.store_token,
             inst_id_param = (init_request && store_token["inst_id"]) ? store_token["inst_id"] + '/' : '',
-            url = that.store_url + inst_id_param + store_path,
+            url = that.options.store_url + inst_id_param + store_path,
             separator = (url.indexOf('?') === -1) ? '?' : '&';
 
         if (init_request) {
@@ -77,8 +87,8 @@ var InstallerStore = (function ($) {
             url += 'token_key=' + (store_token["token"] || '');
             url += '&token_sign=' + (store_token["sign"] || '');
             url += '&token_expire_datetime=' + (store_token["remote_expire_datetime"] || '');
-            url += '&installer_url=' + (that.installer_url || '');
-            url += '&locale=' + (that.user_locale || 'ru_RU');
+            url += '&installer_url=' + (that.options.installer_url || '');
+            url += '&locale=' + (that.options.user_locale || 'ru_RU');
         }
 
         if (error_handling) {
@@ -91,6 +101,10 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.initEventListener = function () {
         var that = this;
 
+        that.$toggleLink.on('click.Store', $.proxy(that.toggleClick, that));
+        that.$routeLink.on('click.Store', $.proxy(that.routeClick, that));
+        that.$filterLink.on('click.Store', $.proxy(that.filterClick, that));
+
         if (window.addEventListener) {
             window.addEventListener("message", dispatchMessage, false);
         } else if (window.attachEvent) {
@@ -101,7 +115,7 @@ var InstallerStore = (function ($) {
 
         function dispatchMessage(event) {
             try {
-                var data = $.parseJSON(event.data);
+                const data = JSON.parse(event.data);
 
                 switch (data.action) {
                     case 'page_loaded':
@@ -113,6 +127,7 @@ var InstallerStore = (function ($) {
                             that.$loading_wrapper.remove();
                         } else {
                             that.setUri(data.current_path, data.title);
+                            that.changeSidebar(data.sidebar);
                         }
                         break;
 
@@ -148,17 +163,22 @@ var InstallerStore = (function ($) {
                     case 'product_rate_submit_response':
                         $(document).trigger('product_rate_submit_response', data.data);
                         break;
+
+                    case 'route_inner':
+                        that.goToInnerRoute(data.data);
+                        break;
+
                 }
 
             } catch (e) {
-                return false;
+                return;
             }
         }
     };
 
     InstallerStore.prototype.initCustomDialog = function (data) {
         var that = this,
-            $wrapper = $(that.templates["custom_dialog"]).clone(),
+            $wrapper = $(that.options.templates["custom_dialog"]).clone(),
             dialog_data = {
                 wrapper: $wrapper
             };
@@ -184,7 +204,7 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.setUri = function (path, title) {
         var that = this,
             window_path = window.location.href.replace(window.location.origin, ''),
-            current_path = that.path_to_module + path,
+            current_path = that.options.path_to_module + path,
             is_current_path = window_path == current_path;
 
         if (title) {
@@ -216,18 +236,18 @@ var InstallerStore = (function ($) {
 
     InstallerStore.prototype.getNetToken = function (data) {
         var that = this,
-            href = that.path_to_module + '?action=newToken';
+            href = that.options.path_to_module + '?action=newToken';
 
-        that.store_path = data.current_path;
+        that.options.store_path = data.current_path;
 
         $.get(href, function (res) {
             if (res.status == 'ok' && res.data) {
-                that.store_token = res.data;
+                that.options.store_token = res.data;
 
                 // If the token is reissued when loading pagination, we stupidly reload the page
                 if (data.is_paginator) {
                     window.location.reload();
-                    
+
                 // If there is no pagination, restart the iframe
                 } else {
                     that.initIframe(true, true);
@@ -245,7 +265,7 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.checkRequirements = function(data) {
         var that = this,
             requirements = data.requirements,
-            controller_url = that.app_url+'requirements/',
+            controller_url = that.options.app_url+'requirements/',
             controller_data = {requirements: requirements},
             warning_requirements = [];
 
@@ -271,9 +291,9 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.productInstall = function (data) {
         var that = this,
             matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)")),
-            csrf = matches ? decodeURIComponent(matches[1]) : that.csrf,
+            csrf = matches ? decodeURIComponent(matches[1]) : that.options.csrf,
             type = data.type,
-            url = that.app_url + '?module=update&action=manager',
+            url = that.options.app_url + '?module=update&action=manager',
             fields = [
                 { name: 'install', value: 1 },
                 //{ name: 'app_id['+ data.slug +']', value: data.vendor },
@@ -294,7 +314,7 @@ var InstallerStore = (function ($) {
             fields.push({name: 'app_id['+ slug +']', value: data.vendor});
         });
 
-        var return_url = that.return_url;
+        var return_url = that.options.return_url;
         if (data.return_url) {
             return_url = data.return_url;
         }
@@ -311,7 +331,7 @@ var InstallerStore = (function ($) {
         // If the Store is open in app (not the Installer) -
         // before installing show the confirm.
         // App can cancel confirmations in the options!
-        if (!that.in_app || (that.in_app && confirm(that.locale['confirm_product_install']))) {
+        if (!that.options.in_app || (that.options.in_app && confirm(that.options.locale['confirm_product_install']))) {
             that.initForm(url, fields);
         }
     };
@@ -319,8 +339,8 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.productUpdate = function (data) {
         var that = this,
             matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)")),
-            csrf = matches ? decodeURIComponent(matches[1]) : that.csrf,
-            url = that.app_url + '?module=update&action=manager',
+            csrf = matches ? decodeURIComponent(matches[1]) : that.options.csrf,
+            url = that.options.app_url + '?module=update&action=manager',
             type = data.type,
             fields = [
                 { name: '_csrf', value: csrf }
@@ -346,9 +366,9 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.productRemove = function (data) {
         var that = this,
             matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)")),
-            csrf = matches ? decodeURIComponent(matches[1]) : that.csrf,
+            csrf = matches ? decodeURIComponent(matches[1]) : that.options.csrf,
             type = data.type,
-            url = that.app_url + '?module='+ type +'s&action=remove',
+            url = that.options.app_url + '?module='+ type +'s&action=remove',
             field = data.type == 'app' ? 'app_id' : 'extras_id',
             fields = [
                 { name: '_csrf', value: csrf }
@@ -368,7 +388,7 @@ var InstallerStore = (function ($) {
             fields.push({name: field+'['+ slug +']', value: data.vendor});
         });
 
-        if (confirm(that.locale.confirm_product_remove)) {
+        if (confirm(that.options.locale.confirm_product_remove)) {
             that.initForm(url, fields);
         }
     };
@@ -377,7 +397,7 @@ var InstallerStore = (function ($) {
         var that = this,
             is_success = false,
             is_rate_click = data.is_rate_click,
-            $wrapper = $(that.templates["review_dialog"]),
+            $wrapper = $(that.options.templates["review_dialog"]),
             $errors_place = $wrapper.find('.js-errors-place');
 
         if (is_rate_click) {
@@ -436,7 +456,7 @@ var InstallerStore = (function ($) {
         }else{
 
             $.waDialog({
-                wrapper: $(that.templates["review_dialog"]),
+                wrapper: $(that.options.templates["review_dialog"]),
                 onOpen: initDialogContent,
                 onClose: function() {
                     if (is_success) {
@@ -454,7 +474,7 @@ var InstallerStore = (function ($) {
                 $signup_user_info = $wrapper.find('.js-dialog-signup-user-info'),
                 $logout_link = $wrapper.find('.js-customer-center-logout-link'),
                 $content_title = $wrapper.find(".js-content-title"),
-                content_title_text = that.locale.your_review + ' ' + data.header_locale,
+                content_title_text = that.options.locale.your_review + ' ' + data.header_locale,
                 $comment_field = $wrapper.find(".js-comment-field"),
                 $errors_place = $wrapper.find('.js-errors-place'),
                 $button = $wrapper.find(".js-send-comment"),
@@ -499,13 +519,13 @@ var InstallerStore = (function ($) {
 
             $comment_field.on("keyup", function() {
                 var is_empty = !$.trim($comment_field.val()).length,
-                    text = that.locale["button_default"];
+                    text = that.options.locale["button_default"];
 
                 if (is_empty) {
-                    text = (is_edit ? that.locale["button_edit_default"] : that.locale["button_default"]);
+                    text = (is_edit ? that.options.locale["button_edit_default"] : that.options.locale["button_default"]);
                     $user.hide();
                 } else {
-                    text = (is_edit ? that.locale["button_edit_active"] : that.locale["button_active"]);
+                    text = (is_edit ? that.options.locale["button_edit_active"] : that.options.locale["button_active"]);
                     $user.show();
                 }
 
@@ -539,7 +559,7 @@ var InstallerStore = (function ($) {
                 is_locked = false;
 
                 if (res.status == 'ok') {
-                    $wrapper.find(".i-comment-section").html(that.templates["confirm"]);
+                    $wrapper.find(".i-comment-section").html(that.options.templates["confirm"]);
                     $button.remove();
                     dialog.resize();
 
@@ -673,6 +693,159 @@ var InstallerStore = (function ($) {
 
         $form.appendTo('body').submit();
     };
+
+    InstallerStore.prototype.setDefaultFilters = function() {
+        const that = this;
+
+        const isFiltersEmpty = $.isEmptyObject(that.filters);
+        const isActiveFiltersEmpty = $.isEmptyObject(that.options.activeFilters);
+        if(isFiltersEmpty && !isActiveFiltersEmpty) {
+            Object.assign(that.filters, that.options.activeFilters);
+        }
+    }
+
+    InstallerStore.prototype.toggleClick = function(e) {
+        e.preventDefault();
+
+        const that = this;
+        const link = e.target.closest('.js-installer-toggle-link');
+
+        if ($(link).hasClass('selected')) {
+            return;
+        }
+
+        that.clearFilters();
+
+        that.toggleAnimate(link);
+
+        // unmark all selected items in sidebar then mark first element
+        $('.js-installer-sidebar-menu').find('.selected').removeClass('selected');
+        $('.js-selected').closest('li').addClass('selected');
+
+        const href = $(link).data('href');
+        that.setRoute(href);
+    }
+
+    InstallerStore.prototype.toggleAnimate = function(link) {
+        $(link).addClass('selected').siblings('a').removeClass('selected');
+
+        const thisLeftPos = $(link).position().left;
+        const thisWidth = $(link).width();
+        const type = $(link).data('type-link');
+
+        $(link).siblings('.animation-block').css({
+            'left': thisLeftPos,
+            'width': thisWidth,
+        });
+
+        $('.js-installer-sidebar-menu').hide();
+
+        $(link).closest('.sidebar').find('[data-type='+ type +']').fadeIn();
+        $(link).closest('.sidebar').find('.sidebar-body')[0].scrollTop = 0;
+    }
+
+    InstallerStore.prototype.changeSidebar = function(data) {
+        const that = this;
+
+        const link = that.$toggle.find('[data-type-link=' + data.toUpperCase() + ']');
+        if (!link.hasClass('selected')) {
+            that.toggleAnimate(link);
+        }
+    }
+
+    InstallerStore.prototype.routeClick = function(e) {
+        e.preventDefault();
+
+        const that = this;
+        const link = e.target.closest('.js-installer-route');
+
+        if ($(link).hasClass('selected')) {
+            return;
+        }
+
+        that.clearFilters();
+
+        $('.js-installer-sidebar-menu').find('.selected').removeClass('selected');
+        $(link).closest('li').addClass('selected');
+
+        const href = $(link).data('href');
+        that.setRoute(href);
+    }
+
+    InstallerStore.prototype.filterClick = function(e) {
+        e.preventDefault();
+
+        const that = this;
+        const link = e.target.closest('.js-installer-sidebar-filter');
+
+        $('.js-installer-sidebar-nav').find('.selected').removeClass('selected');
+
+        if ($(link).hasClass('selected')) {
+            return;
+        }
+
+        $(link).closest('li').addClass('selected').siblings().removeClass('selected');
+
+        const itemFilterName = $(link).data('filter-name');
+        const itemFilterValue = $(link).data('filter-value');
+        const itemStore = $(link).data('store');
+
+        Object.assign(that.filters, {
+            [itemFilterName]: itemFilterValue
+        });
+
+        const buildedString = that.buildStorePath(that.filters);
+
+        const href = `${itemStore}?${buildedString}`;
+        that.setRoute(href);
+    }
+
+    InstallerStore.prototype.buildStorePath = function(data) {
+        return Object.keys(data).map(key => `filters[${key}]=${data[key]}`).join('&');
+    }
+
+    InstallerStore.prototype.setRoute = function(href) {
+        const that = this;
+
+        const value = that.buildStoreUrl(href, true);
+        that.$frame.attr('src', value);
+        that.loading.animate(10000, 100, false);
+
+        that.$frame.on('load', function() {
+            that.loading.done();
+        });
+    }
+
+    InstallerStore.prototype.clearFilters = function() {
+        const that = this;
+
+        that.filters = {};
+    }
+
+    InstallerStore.prototype.goToInnerRoute = function(data) {
+        const that = this;
+
+        $('.js-installer-sidebar-menu').find('.selected').removeClass('selected');
+        $('.js-installer-sidebar-menu').find('[data-href="'+ data.href +'"]').closest('li').addClass('selected');
+
+        that.setRoute(data.href);
+
+        if (!data.filterName) {
+            return;
+        }
+
+        // remove item from filters object on cancel link click inside store filter
+        if (data.filterName) {
+            delete that.filters[data.filterName];
+        }
+
+        for (let [key, value] of Object.entries(data.filters)) {
+            // prevent add selected class for canceled filter
+            if (key !== data.filterName && value !== data.filterValue.toString()) {
+                $('.js-installer-sidebar-filter-section').find(`[data-filter-name="${key}"][data-filter-value="${value}"]`).closest('li').addClass('selected');
+            }
+        }
+    }
 
     return InstallerStore;
 

@@ -42,7 +42,11 @@ class installerStoreAction extends waViewAction
         $in_app = (bool) ifempty($this->params, 'in_app', false);
         $return_url = ifempty($this->params, 'return_url', null);
 
-        $user_locale = wa()->getLocale();
+        $app_settings_model = new waAppSettingsModel();
+        $user_locale = $app_settings_model->get('webasyst', 'locale');
+        if (empty($user_locale)) {
+            $user_locale = wa()->getLocale();
+        }
         if ($user_locale != 'ru_RU') {
             $user_locale = 'en_US';
         }

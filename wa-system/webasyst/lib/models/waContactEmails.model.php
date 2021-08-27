@@ -118,7 +118,7 @@ class waContactEmailsModel extends waModel
         $exclude_ids = waUtils::dropNotPositive($exclude_ids);
 
         $where = array(
-            "e.email LIKE s:email",
+            "e.email LIKE 'l:email'",
             "e.sort = 0",
             "c.password != ''"
         );

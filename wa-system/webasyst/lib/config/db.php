@@ -107,8 +107,11 @@ return array(
     'wa_contact_calendars' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'name' => array('varchar', 255, 'null' => 0),
-        'bg_color' => array('varchar', 7),
-        'font_color' => array('varchar', 7),
+        'bg_color' => array('varchar', 7),              // background color for events
+        'font_color' => array('varchar', 7),            // font color for events
+        'status_bg_color' => array('varchar', 7),       // background color for statuses
+        'status_font_color' => array('varchar', 7),     // font color for statuses
+        'icon' => array('varchar', 255),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
         'is_limited' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
         'default_status' => array('varchar', 255),
@@ -207,6 +210,18 @@ return array(
             'uid' => 'uid',
             'contact_id' => 'contact_id',
             'calendar_id' => 'calendar_id',
+        ),
+    ),
+    'wa_contact_files' => array(
+        'id' => array('int', 11, 'null' => 0,  'autoincrement' => 1),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'purpose' => array('enum', "'cover','general'", 'null' => 0, 'default' => 'general'),
+        'name' => array('varchar', 255),
+        'sort' => array('int', 11, 'null' => 0, 'default' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'contact_id' => 'contact_id',
+            'purpose' => 'purpose'
         ),
     ),
     'wa_contact_field_values' => array(
@@ -331,6 +346,7 @@ return array(
         'type' => array('varchar', 20, 'null' => 0),
         'parent_id' => array('int', 11),
         'order_id' => array('varchar', 50),
+        'part_number' => array('int', 11, 'null' => 0, 'default' => '0'),
         'customer_id' => array('varchar', 50),
         'result' => array('varchar', 20, 'null' => 0),
         'error' => array('varchar', 255),

@@ -127,10 +127,17 @@ trait webasystHeaderTrait
         $announcements = array();
         $announcements_apps = array();
         foreach ($data as $row) {
+
             // show no more than 1 message per application
             if ($one_per_app && !empty($announcements_apps[$row['app_id']])) {
                 continue;
             }
+
+            // app is available for current user
+            if (!isset($apps[$row['app_id']])) {
+                continue;
+            }
+
             $announcements_apps[$row['app_id']] = true;
             $row['app'] = $apps[$row['app_id']];
             $announcements[] = $row;

@@ -188,7 +188,10 @@ class waWebasystIDWAAuthController extends waViewController
         ]);
 
         // update invited contact by webasyst ID contact info
-        $this->updateByWaContactInfo($invite_contact, $auth_response_data);
+        $profile_info = (new waWebasystIDApi())->loadProfileInfo($auth_response_data);
+        if ($profile_info) {
+            $this->updateContactByWaProfile($invite_contact, $profile_info);
+        }
 
         wa()->getAuth()->auth(['id' => $invite_contact->getId()]);
 
@@ -273,19 +276,31 @@ class waWebasystIDWAAuthController extends waViewController
      */
     protected function processBindAuth(array $auth_response_data)
     {
-        $result = $this->auth->bindWithWebasystContact($auth_response_data);
+        $current_backend_user = wa()->getUser();
+        $result = $this->auth->bindUserWithWebasystContact($current_backend_user, $auth_response_data);
 
         // if binding fail, save server data in session for latter use
         if (!$result['status']) {
             $this->getStorage()->set('webasyst_id_server_data', $auth_response_data);
-        } else {
-            // delete webasyst ID invite token (exists it or not)
-            $app_tokens_model = new waAppTokensModel();
-            $app_tokens_model->deleteByField([
-                'app_id' => 'webasyst',
-                'type' => 'webasyst_id_invite',
-                'contact_id' => wa()->getUser()->getId()
-            ]);
+            return $result;
+        }
+
+        // delete webasyst ID invite token (exists it or not)
+        $app_tokens_model = new waAppTokensModel();
+        $app_tokens_model->deleteByField([
+            'app_id' => 'webasyst',
+            'type' => 'webasyst_id_invite',
+            'contact_id' => wa()->getUser()->getId()
+        ]);
+
+        $profile_info = !empty($result['details']['webasyst_contact_info']) ? $result['details']['webasyst_contact_info'] : [];
+
+        if (!$profile_info) {
+            $profile_info = (new waWebasystIDApi())->loadProfileInfo($auth_response_data);
+        }
+
+        if ($profile_info) {
+            $this->updateContactByWaProfile($current_backend_user, $profile_info);
         }
 
         return $result;
@@ -499,69 +514,66 @@ class waWebasystIDWAAuthController extends waViewController
         ];
     }
 
-    /**
-     * @param waContact $contact
-     * @return array
-     * @throws waException
-     */
-    private function getContactInfo(waContact $contact)
+    protected function updateContactByWaProfile(waContact $contact, array $profile_info = [])
     {
-        $info = [
-            'name' => '',
-            'userpic' => wa()->getRootUrl().'wa-content/img/userpic96x96.jpg',
-            'email' => [],
-            'phone' => [],
-        ];
-
-        if (!$contact->exists()) {
-            $info['name'] = sprintf(_w('deleted contact %s'), $contact->getId());
-            return $info;
-        }
-
-        $info['name'] = $contact->getName();
-        $info['userpic'] = $contact->getPhoto();
-        $info['email'] = $contact->get('email');
-        $info['phone'] = $contact->get('phone');
-
-        return $info;
-    }
-
-    protected function updateByWaContactInfo(waContact $contact, array $params)
-    {
-        $api = new waWebasystIDApi();
-        $profile_info = $api->loadProfileInfo($params);
-        if (!$profile_info) {
-            return;
-        }
-
         $update_data = [];
 
         // add new emails into list of contact's emails
-        $has_added_new = false;
-        $emails = $profile_info['email'];
+        $has_added_new_email = false;
+        $emails = isset($profile_info['email']) && is_array($profile_info['email']) ? $profile_info['email'] : [];
         $contact_emails_list = $contact->get('email'); // list with full records
         $contact_emails = waUtils::getFieldValues($contact_emails_list, 'value'); // only emails
         foreach ($emails as $email) {
             if (!in_array($email['value'], $contact_emails, true)) {
-                $has_added_new = true;
+                $has_added_new_email = true;
                 $contact_emails_list[] = $email;
             }
         }
 
-        if ($has_added_new) {
+        if ($has_added_new_email) {
             $update_data['email'] = $contact_emails_list;
         }
 
+        // add new phones into list of contact's phones
+        $has_added_new_phone = false;
+        $phones = isset($profile_info['phone']) && is_array($profile_info['phone']) ? $profile_info['phone'] : [];
+        $contact_phone_list = $contact->get('phone');   // list with full records
+        $contact_phones = waUtils::getFieldValues($contact_phone_list, 'value');    // only phones
+        $contact_phones = array_map(['waContactPhoneField', 'cleanPhoneNumber'], $contact_phones);
+        foreach ($phones as $phone) {
+            if (!in_array(waContactPhoneField::cleanPhoneNumber($phone['value']), $contact_phones, true)) {
+                $has_added_new_phone = true;
+                $contact_phone_list[] = $phone;
+            }
+        }
+
+        if ($has_added_new_phone) {
+            $update_data['phone'] = $contact_phone_list;
+        }
+
+
         $name_fields = ['firstname', 'lastname', 'middlename'];
+        $is_empty_name = true;
         foreach ($name_fields as $name_field) {
-            $update_data[$name_field] = $profile_info[$name_field];
+            if (!empty($contact[$name_field])) {
+                $is_empty_name = false;
+                break;
+            }
+        }
+
+        // if all three part on names is empty then is allowed to update all three name's parts
+        if ($is_empty_name) {
+            foreach ($name_fields as $name_field) {
+                $update_data[$name_field] = isset($profile_info[$name_field]) ? $profile_info[$name_field] : '';
+            }
         }
 
         if ($update_data) {
             $contact->save($update_data);
         }
 
-        if ($profile_info['userpic_uploaded']) {
+        // update userpic if only contact doesn't has it yet
+        if (!$contact->get('photo') && !empty($profile_info['userpic_uploaded']) && !empty($profile_info['userpic_original_crop'])) {
             $this->saveUserpic($contact, $profile_info['userpic_original_crop']);
         }
     }

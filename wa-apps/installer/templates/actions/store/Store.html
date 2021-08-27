@@ -3,7 +3,7 @@
 <div class="{$_class}" id="{$_id}">
 
     {if !$store_url}
-        <div class="block double-padded i-message-fail">
+        <div class="alert warning">
             <i class="fas fa-times-circle"></i>
             [`Failed to get the URL of the remote Store`]
         </div>
@@ -19,7 +19,8 @@
         iFrameResize({
             log: false,
             heightCalculationMethod: 'max',
-            resizedCallback: function() {
+            checkOrigin: false,
+            onResized: function() {
                 $('.js-loading-wrapper').remove();
             }
         }, '.js-store-frame');
@@ -79,7 +80,7 @@
                         [`If you want to add a review as another customer, please <a class="js-customer-center-logout-link">sign out</a>.`]
                     </p>
                 </div>
-                
+
                 <button class="button2 large blue js-send-comment">[`Add a review`]</button>
             </div>
             <span class="wa-close-icon js-close-dialog">
@@ -118,8 +119,7 @@
 
 <script>
     (function ($) {
-        new InstallerStore({
-            $wrapper: $("#{$_id}"),
+        const installer = new InstallerStore($("#{$_id}"), {
             app_url: {$wa_app_url|json_encode},
             path_to_module: {$path_to_module|json_encode},
             store_url: {$store_url|json_encode},
@@ -135,7 +135,8 @@
                 custom_dialog: {$_store_custom_dialog_template|json_encode},
                 confirm: {$_confirm_text_template|json_encode}
             },
-            csrf: {$csrf|json_encode}
+            csrf: {$csrf|json_encode},
+            activeFilters: {json_encode($filters)}
         });
     })(jQuery);
 </script>

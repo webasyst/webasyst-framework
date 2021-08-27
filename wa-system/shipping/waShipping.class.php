@@ -1701,11 +1701,7 @@ HTML;
 
     protected static function log($module_id, $data)
     {
-        static $id;
-        if (empty($id)) {
-            $id = uniqid();
-        }
-        $rec = '#'.$id."\n";
+        $rec = '#'.self::getLogRequestId()."\n";
         $module_id = strtolower($module_id);
         if (!preg_match('@^[a-z][a-z0-9]+$@', $module_id)) {
             $rec .= 'Invalid module_id: '.$module_id."\n";
@@ -1718,5 +1714,14 @@ HTML;
         }
         $rec .= "$data\n";
         waLog::log($rec, $filename);
+    }
+
+    private static function getLogRequestId()
+    {
+        static $id;
+        if (empty($id)) {
+            $id = uniqid();
+        }
+        return $id;
     }
 }

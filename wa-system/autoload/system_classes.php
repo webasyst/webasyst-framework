@@ -41,6 +41,9 @@ return array(
     'waBackendAuthConfig'               => 'config/waBackendAuthConfig.class.php',
     'waAuthConfig'                      => 'config/waAuthConfig.class.php',
 
+    'waContactCoverThumbnailCreator'    => 'contact/cover/waContactCoverThumbnailCreator.class.php',
+    'waContactCoverList'                => 'contact/cover/waContactCoverList.class.php',
+
     'waActionTemplatePathBuilder'       => 'controller/waActionTemplatePathBuilder.trait.php',
     'waAction'                          => 'controller/waAction.class.php',
     'waActions'                         => 'controller/waActions.class.php',

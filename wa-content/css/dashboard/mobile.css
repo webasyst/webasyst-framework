@@ -11,6 +11,7 @@ html.mobile #wa-nav #wa-header .wa-header-sitename {
   white-space: nowrap;
   text-overflow: ellipsis;
   position: relative;
+  margin-right: auto;
 }
 html.mobile #wa-nav #wa-header .wa-header-sitename .h3 {
   margin-bottom: 0;
@@ -48,64 +49,42 @@ html.mobile #wa-nav #wa-header > .button {
   align-self: center;
 }
 html.mobile #wa-app .content .dashboard-apps ul {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  grid-gap: 1.5rem 10px;
   list-style-type: none;
-  padding-left: 0;
-  margin: 1rem auto 4rem;
-  justify-content: flex-start;
+  padding: 15px;
+}
+@media (max-width: 320px) {
+  html.mobile #wa-app .content .dashboard-apps ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 html.mobile #wa-app .content .dashboard-apps ul li {
-  display: inline-block;
   text-align: center;
-  vertical-align: top;
   position: relative;
-  width: calc(100% / 3 - 1rem * (3 - 1) / 3);
-  margin-right: 1rem;
-  margin-bottom: 1rem;
-}
-html.mobile #wa-app .content .dashboard-apps ul li:nth-of-type(3n) {
-  margin-right: 0;
 }
 html.mobile #wa-app .content .dashboard-apps ul li a {
   display: block;
-  font-size: 1rem;
-  line-height: 1.25em;
-  text-align: center;
-  text-decoration: none;
   color: var(--text-color);
-  padding-bottom: 13px;
-  padding-top: 5px;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  text-decoration: none;
 }
 html.mobile #wa-app .content .dashboard-apps ul li a img {
-  border: 0;
   display: block;
-  margin: 0 auto 1rem;
-  width: 4.5rem;
+  border: 0;
+  margin: 0 auto 0.6rem;
+  width: 3.5rem;
 }
 html.mobile #wa-app .content .dashboard-apps ul li a .badge {
   position: absolute;
-  top: 0.125rem;
-  right: 1.25rem;
-  font-size: 1rem;
+  top: 0;
+  left: 45%;
+  font-size: 0.8125rem;
+  font-weight: normal;
   padding: 0.25em 0.4375em;
-}
-@media all and (orientation: landscape) {
-  html.mobile #wa-app .content .dashboard-apps ul li {
-    display: inline-block;
-    text-align: center;
-    vertical-align: top;
-    position: relative;
-    width: calc(100% / 6 - 1rem * (6 - 1) / 6);
-    margin-right: 1rem;
-    margin-bottom: 1rem;
-  }
-  html.mobile #wa-app .content .dashboard-apps ul li:nth-of-type(3n) {
-    margin-right: 1rem;
-  }
-  html.mobile #wa-app .content .dashboard-apps ul li:nth-of-type(6n) {
-    margin-right: 0;
-  }
+  transform: translate(calc(3.5rem / 2 - 50%));
 }
 html.mobile #wa-app .content .dashboard-activity {
   position: relative;
@@ -119,8 +98,21 @@ html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .ac
   top: 0;
   right: 0;
 }
+@media (max-width: 468px) {
+  html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-filter-wrapper {
+    position: static;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+  }
+}
 html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper #activity-filter {
   padding: 3rem 0 1rem 0;
+}
+@media (max-width: 468px) {
+  html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper #activity-filter {
+    padding: 0;
+  }
 }
 html.mobile #wa-app .content .dashboard-activity .dashboard-activity-wrapper .activity-list-block .users-group {
   display: inline-flex;

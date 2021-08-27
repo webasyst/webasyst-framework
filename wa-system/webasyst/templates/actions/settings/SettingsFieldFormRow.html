@@ -18,7 +18,7 @@
 
 {if $f->getType() != "Hidden"}
     <tr class="{$tr_classes}" data-field-id="{$fid}"{if !$new_field} data-field-type="{$f->getType()}"{/if}>
-        <td class="min-width"><i class="icon16 sort js-subfield-sort"></i></td>
+        <td class="min-width"><i class="fas fa-bars js-subfield-sort" style="cursor: move"></i></td>
         <td class="min-width">
             {if $f->getParameter('always_required')}
                 <input type="hidden" name="{$prefix}[{$fid}][_disabled]" value="">
@@ -33,7 +33,7 @@
             <input type="text" class="name-input" placeholder="[s`Field name`]" name="{$prefix}[{$fid}][localized_names]" value="{$f->getName(null, true)}">
 
             {if !$new_field}
-                <span class="name-hint hint">{localizedType f=$f}</span>
+                <p class="name-hint hint">{localizedType f=$f}</p>
                 {if $f->getType() === 'Composite'}
                     <ul class="hint">
                         {foreach $f->getParameter('fields') as $sf}
@@ -47,9 +47,15 @@
             {if !$new_field}
                 <div class="s-link-wrapper">
                     <div style="min-width: 36px; display: inline-block; text-align: left;">
-                        <a href="javascript:void(0)" class="inline" title="[s`Edit`]"><i class="icon16 edit"></i></a>
+                        <a href="#" class="inline js-edit-subfield" title="[s`Edit`]"><i class="fas fa-edit"></i></a>
                         {if $can_delete}
-                            <a href="javascript:void(0)" class="inline" title="[s`Delete`]"><i class="icon16 no js-delete-subfield"></i></a>
+                            <a
+                                href="#"
+                                class="inline js-delete-subfield"
+                                title="[s`Delete`] {$f->getName(null, true)}"
+                                data-dialog-remove-button-text="[s`Delete`]"
+                                data-dialog-cancel-button-text="[s`Cancel`]"
+                            ><i class="fas fa-trash-alt"></i></a>
                         {/if}
                     </div>
                 </div>
@@ -57,15 +63,17 @@
 
             {if $new_field}
                 <div class="hide-when-field-disabled">
-                    <select class="type-selector" name="{$prefix}[%FID%][_type]">
-                        <option value="string">[s`Text (input)`]</option>
-                        <option value="textarea">[s`Text (textarea)`]</option>
-                        <option value="number">[s`Number (input)`]</option>
-                        <option value="branch">[s`Selectable (radio)`]</option>
-                        <option value="select">[s`Selectable (select)`]</option>
-                        <option value="conditional">[s`Conditional (select/input)`]</option>
-                        <option value="checkbox">[s`Checkbox`]</option>
-                    </select>
+                    <div class="wa-select">
+                        <select class="type-selector" name="{$prefix}[%FID%][_type]">
+                            <option value="string">[s`Text (input)`]</option>
+                            <option value="textarea">[s`Text (textarea)`]</option>
+                            <option value="number">[s`Number (input)`]</option>
+                            <option value="branch">[s`Selectable (radio)`]</option>
+                            <option value="select">[s`Selectable (select)`]</option>
+                            <option value="conditional">[s`Conditional (select/input)`]</option>
+                            <option value="checkbox">[s`Checkbox`]</option>
+                        </select>
+                    </div>
                     <div class="field-advanced-settings"></div>
                 </div>
             {else}

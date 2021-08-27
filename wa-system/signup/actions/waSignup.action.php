@@ -1292,14 +1292,13 @@ class waSignupAction extends waViewAction
         // phone was transformed?
         $phone_transformed = false;
 
-        $channels = $this->auth_config->getVerificationChannelInstances();
+        $channels = $this->getChannelsForConfirmation();
         $contact = null;
 
         $errors = [];
 
         foreach ($channels as $channel) {
 
-            // try email first
             if ($channel->isEmail() && !empty($data['email'])) {
 
                 // We might need rollback contact creation when sending link has failed
@@ -1339,7 +1338,6 @@ class waSignupAction extends waViewAction
                 }
             }
 
-            // then try sms
             if ($channel->isSMS() && !empty($data['phone'])) {
 
                 list($ok, $details) = $this->sendCode($data['phone']);
@@ -1386,6 +1384,15 @@ class waSignupAction extends waViewAction
         );
 
         return array(self::SIGNED_UP_STATUS_FAILED, $errors);
+    }
+
+    /**
+     * You can in child custom action override it and return for example only one channel possible for confirmation
+     * @return waVerificationChannel[]
+     */
+    protected function getChannelsForConfirmation()
+    {
+        return $this->auth_config->getVerificationChannelInstances();
     }
 
     /**

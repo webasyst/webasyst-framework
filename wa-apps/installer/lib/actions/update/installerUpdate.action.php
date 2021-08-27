@@ -24,7 +24,8 @@ class installerUpdateAction extends waViewAction
             'payware'    => 0,
         );
         $items = array();
-        try {
+
+        $do_logic = function () use(&$counter, &$item) {
 
             $items = installerHelper::getUpdates();
             $counter = installerHelper::getUpdatesCounter(null);
@@ -33,12 +34,9 @@ class installerUpdateAction extends waViewAction
             };
             if (isset($items['webasyst'])) {
                 $items['webasyst']['name'] = _w('Webasyst Framework');
-            };
-
-        } catch (Exception $ex) {
-            // Save the error in the log and add to the common array
-            installerHelper::handleException($ex, $messages);
-        }
+            }
+        };
+        $this->safeCall($do_logic, $messages);
 
         installerHelper::checkUpdates($messages);
 
@@ -54,6 +52,8 @@ class installerUpdateAction extends waViewAction
             $this->view->assign('messages', $messages);
         }
 
+        $this->resortItems($items);
+
         $this->view->assign('error', false);
         $this->view->assign('update_counter', $counter['total']);
         $this->view->assign('update_counter_applicable', $counter['applicable']);
@@ -63,5 +63,43 @@ class installerUpdateAction extends waViewAction
         $this->view->assign('version', wa()->getVersion('installer'));
 
         $this->view->assign('title', _w('Updates'));
+    }
+
+    protected function resortItems(array &$items)
+    {
+        $top = [
+            'installer'
+        ];
+
+        $top_items = [];
+        foreach ($top as $key) {
+            if (isset($items[$key])) {
+                $top_items[$key] = $items[$key];
+                unset($items[$key]);
+                continue;
+            }
+        }
+
+        $items = array_merge($top_items, $items);
+    }
+
+    protected function safeCall($callback, &$messages = [])
+    {
+        $legacy = version_compare(PHP_VERSION, '7.0') < 0;
+        if ($legacy) {
+            try {
+                $callback();
+            } catch (Exception $ex) {
+                // Save the error in the log and add to the common array
+                installerHelper::handleException($ex, $messages);
+            }
+        } else {
+            try {
+                $callback();
+            } catch (Throwable $ex) {
+                // Save the error in the log and add to the common array
+                installerHelper::handleException($ex, $messages);
+            }
+        }
     }
 }

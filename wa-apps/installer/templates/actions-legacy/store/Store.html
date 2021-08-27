@@ -1,0 +1,141 @@
+{$_class = 'i-store-wrapper'}
+{$_id = uniqid($_class)}
+<div class="{$_class}" id="{$_id}">
+
+    {if !$store_url}
+        <div class="block double-padded i-message-fail">
+            <i class="fas fa-times-circle"></i>
+            [`Failed to get the URL of the remote Store`]
+        </div>
+    {/if}
+
+    <iframe class="i-store-frame js-store-frame" frameborder="0" width="100%" height="0" marginheight="0" marginwidth="0" scrolling="no"></iframe>
+
+    {include file="./LaunchStore.inc.html" inline}
+
+    {* Resize iframe *}
+    <script src="{$wa_app_static_url}js/plugins/iframeResizer/iframeResizer.min.js?v={$wa->version()}"></script>
+    <script>
+        iFrameResize({
+            log: false,
+            heightCalculationMethod: 'max',
+            resizedCallback: function() {
+                $('.js-loading-wrapper').remove();
+            }
+        }, '.js-store-frame');
+    </script>
+
+</div>
+
+<script src="{$wa_app_static_url}js/store.js?v={$wa->version()}"></script>
+
+{$_locale = [
+    'confirm_product_install' => _w('Do you confirm the installation?'),
+    'confirm_product_remove'  => _w('This will delete the product’s source code and data, without a recovery option. Are you sure?'),
+    'button_default'          => _w("Add a rate"),
+    'button_active'           => _w("Add a rate and a review"),
+    'button_edit_default'     => _w("Change rate"),
+    'button_edit_active'      => _w("Change rate and review"),
+    'your_review'             => _w("Your review")
+]}
+
+{capture assign="_product_review_dialog_template"}
+    <div class="wa-dialog i-product-review-dialog">
+        <div class="wa-dialog-background"></div>
+        <div class="wa-dialog-body">
+            <div class="wa-dialog-header"><h1 class="js-content-title"></h1></div>
+            <div class="wa-dialog-content">
+
+                <div class="i-comment-section">
+                    {strip}
+                        <div class="i-rates-list js-rates-list">
+                            {for $_index = 1 to 5}
+                                <span class="i-rate js-set-rate"><i class="fas fa-star"></i></span>
+                            {/for}
+                        </div>
+                    {/strip}
+
+                    <div class="i-description">[`What you like or dislike about this product`] <span class="gray">([`optional`])</span>:</div>
+
+                    <textarea class="i-comment-field js-comment-field"></textarea>
+
+                </div>
+
+                <div class="i-comment-user js-comment-user" style="display: none;">
+                    <i class="userpic20 icon16"></i>
+                    <strong class="user">{if isset($reviewer_info)}{$reviewer_info.name|escape}{/if}</strong>
+                    <span class="hint">{wa_date('humandate')}</span>
+                </div>
+
+                <div class="i-errors-place js-errors-place" style="display: none;"></div>
+
+            </div>
+
+            <div class="wa-dialog-footer">
+
+                <div class="hint js-dialog-signup-user-info" style="display: none;">
+                    <p>
+                        [`You are currently signed into Webasyst as <span class="js-customer-center-user-name"></span>`]<br>
+                        [`If you want to add a review as another customer, please <a class="js-customer-center-logout-link">sign out</a>.`]
+                    </p>
+                </div>
+                
+                <button class="button2 large blue js-send-comment">[`Add a review`]</button>
+            </div>
+            <span class="wa-close-icon js-close-dialog">
+                <i class="far fa-times-circle"></i>
+            </span>
+        </div>
+    </div>
+{/capture}
+
+{capture assign="_store_custom_dialog_template"}
+    <div class="wa-dialog i-store-custom-dialog">
+        <div class="wa-dialog-background"></div>
+        <div class="wa-dialog-body">
+
+            <div class="wa-dialog-header">
+                <h1 class="js-dialog-title"></h1>
+            </div>
+
+            <div class="wa-dialog-content js-dialog-content"></div>
+
+            <div class="wa-dialog-footer js-dialog-footer">
+                <button class="button2 blue js-close-dialog">[`Close`]</button>
+            </div>
+
+            <span class="wa-close-icon js-close-dialog">
+                <i class="far fa-times-circle"></i>
+            </span>
+
+        </div>
+    </div>
+{/capture}
+
+{capture assign="_confirm_text_template"}
+    <div class="i-confirm-text">[`Your review has been added, thank you!`]</div>
+{/capture}
+
+<script>
+    (function ($) {
+        new InstallerStore({
+            $wrapper: $("#{$_id}"),
+            app_url: {$wa_app_url|json_encode},
+            path_to_module: {$path_to_module|json_encode},
+            store_url: {$store_url|json_encode},
+            store_path: {$store_path|json_encode},
+            store_token: {$store_token|json_encode},
+            installer_url: {$installer_url|json_encode},
+            in_app: {if $in_app}true{else}false{/if},
+            return_url: {if $return_url}{$return_url|json_encode}{else}null{/if},
+            user_locale: {$user_locale|json_encode},
+            locale: {$_locale|json_encode},
+            templates: {
+                review_dialog: {$_product_review_dialog_template|json_encode},
+                custom_dialog: {$_store_custom_dialog_template|json_encode},
+                confirm: {$_confirm_text_template|json_encode}
+            },
+            csrf: {$csrf|json_encode}
+        });
+    })(jQuery);
+</script>

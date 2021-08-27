@@ -1,166 +1,151 @@
 {strip}
 
-<div class="i-main-sidebar-wrapper">
-    <div class="i-main-sidebar" id="js-main-sidebar">
+{if !empty($store_sidebar_items)}
+    {* Mobile toggle *}
+    <nav class="sidebar-mobile-toggle">
+        <div class="box align-center">
+            <a href="javascript:void(0);"><i class="fas fa-bars"></i> [`Show navigation`]</a>
+        </div>
+    </nav>
 
-        {if !empty($store_sidebar_items)}
-            {* Product-type switch *}
-            <div>
-                <div class="i-type-switch">
-                    {foreach $store_sidebar_items as $_type => $_sidebar_item}
-                        <a href="{$wa_app_url}store{$_sidebar_item.TOP.base_url|escape}"{if $store_sidebar_type == $_type} class="selected"{/if}>{$_sidebar_item.name}</a>
-                    {/foreach}
-                </div>
-            </div>
-
-            {* Top product-type links *}
-            <div class="i-sidebar-top-block">
+    {* Product-type switch *}
+    <div class="sidebar-header">
+        <div class="box custom-pb-4">
+            <div class="toggle js-installer-toggle">
                 {foreach $store_sidebar_items as $_type => $_sidebar_item}
-                    {if $store_sidebar_type == $_type}
-                        <ul class="menu-v i-link-block" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
-                            {foreach $_sidebar_item.TOP.list as $_item}
-                                {$_store_url = "`$_sidebar_item.TOP.base_url``$_item.url`"}
-                                {$_link = "`$wa_app_url`store`$_store_url`"}
-
-                                <li{if $_store_url == "/`$store_path`"} class="selected"{/if}>
-                                    <a href="{$_link|escape}" data-store-url="{$_store_url|escape}">
-                                        <i class="{$_item.icon|escape}"></i>
-                                        <span>{$_item.name|escape}</span>
-                                    </a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                    {/if}
+                <a href="{$wa_app_url}store{$_sidebar_item.TOP.base_url|escape}" data-href="{$_sidebar_item.TOP.base_url|escape|substr:1}" data-type-link="{$_sidebar_item@key}" class="js-installer-toggle-link{if $store_sidebar_type == $_type} selected{/if}">{$_sidebar_item.name}</a>
                 {/foreach}
             </div>
+        </div>
+    </div>
 
-            {if $store_sidebar_type == 'FEATURED'}
-            {* Featured categories *}
-                {if !empty($store_sidebar_items.FEATURED)}
-                    <ul class="menu-v i-link-block">
-                        {foreach $store_sidebar_items.FEATURED.CATEGORIES as $_category}
-                            {$_store_url = "`$store_sidebar_items.FEATURED.TOP.base_url``$_category.url`"}
-                            {$_link = "`$wa_app_url`store`$_store_url`"}
-                            {$_is_active = false}
-                            {if $wa->currentUrl(true)|strstr:$_link}
-                                {$_is_active = true}
+    <div class="sidebar-body hide-scrollbar">
+        {* Top product-type links *}
+        {foreach $store_sidebar_items as $_type => $_sidebar_item}
+            <ul class="menu js-installer-sidebar-menu js-installer-sidebar-nav" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
+                {foreach $_sidebar_item.TOP.list as $_item}
+                    {$_store_url = "`$_sidebar_item.TOP.base_url``$_item.url`"}
+                    {$_link = "`$wa_app_url`store`$_store_url`"}
+
+                    <li{if $_store_url == "/`$store_path`"} class="selected"{/if}>
+                        <a href="{$_link|escape}" data-href="{$_store_url|escape|substr:1}" class="flexbox middle js-installer-route{if $_item@index == 0} js-selected{/if}">
+                            <span class="icon"><i class="{$_item.icon|escape}"></i></span>
+                            <span>{$_item.name|escape}</span>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        {/foreach}
+
+        {* Featured categories *}
+        {if !empty($store_sidebar_items.FEATURED)}
+            <ul class="menu js-installer-sidebar-menu js-installer-sidebar-nav" data-type="FEATURED"{if $store_sidebar_type !== 'FEATURED'} style="display: none;"{/if}>
+                {foreach $store_sidebar_items.FEATURED.CATEGORIES as $_category}
+                    {$_store_url = "`$store_sidebar_items.FEATURED.TOP.base_url``$_category.url`"}
+                    {$_link = "`$wa_app_url`store`$_store_url`"}
+                    {$_is_active = false}
+                    {if $wa->currentUrl(true)|strstr:$_link}
+                        {$_is_active = true}
+                    {/if}
+                    <li{if $_is_active} class="selected"{/if}>
+                        <a href="{$_link|escape}" data-href="{$_store_url|escape}" class="flexbox middle js-installer-route">
+                            {if !empty($_category.icon)}
+                            <span class="icon"><i class="{$_category.icon|escape}"></i></span>
                             {/if}
-                            <li{if $_is_active} class="selected"{/if}>
-                                <a href="{$_link|escape}" data-store-url="{$_store_url|escape}">
-                                    {if !empty($_category.icon)}
-                                        <i class="{$_category.icon|escape}"></i>
-                                    {/if}
-                                    <span>{$_category.name|escape}</span>
+
+                            <span>{$_category.name|escape}</span>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        {/if}
+
+        {* Product type filters *}
+        {foreach $store_sidebar_items as $_type => $_sidebar_item}
+            <div class="js-installer-sidebar-menu js-installer-sidebar-filters" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
+                {foreach ifset($_sidebar_item.FILTERS, []) as $_filter_id => $_filter_data}
+                <h5 class="heading">{$_filter_data.name|escape}</h5>
+
+                {if $_filter_id == 'color'}
+                <div class="box custom-pt-0 custom-pb-0">
+                    <ul class="menu flexbox wrap js-themes-color js-installer-sidebar-filter-section" id="i-themes-color">
+                        {foreach $_filter_data.list as $_filter_row}
+                            {$_store_type_url = $_sidebar_item.TOP.base_url}
+                            {$_link = "`$wa_app_url`store`$_store_type_url`"}
+
+                            <li class="custom-mr-4 custom-mb-4{if isset($filters.color) && $filters.color == $_filter_row.filter_value} selected{/if}">
+                                <a href="{$_link|escape}{$wa->installer->getFilters($_filter_row.filter_name, $_filter_row.filter_value)}" data-href="{$_store_type_url|ltrim:'/'}?filters[{$_filter_row.filter_name}]={$_filter_row.filter_value}" data-filter-name="{$_filter_row.filter_name}" data-filter-value="{$_filter_row.filter_value}" data-store="{$_store_type_url|ltrim:'/'}" class="custom-p-0 i-style-color js-installer-sidebar-filter{if $_filter_row.filter_value != '@any'} i-style-color_{$_filter_row.filter_value}{else} i-style-color_any{/if}">
+                                    <span class="i-style-color-icon js-style-color-icon">
+                                        <i class="fas fa-check i-check-icon custom-m-0"></i>
+                                        <i class="fas fa-times i-close-icon custom-m-0"></i>
+                                    </span>
                                 </a>
                             </li>
                         {/foreach}
                     </ul>
+                </div>
                 {/if}
-            {else}
 
-            {* Product type filters *}
-            <div class="i-sidebar-filters-params js-sidebar-filters-params">
-                {foreach $store_sidebar_items as $_type => $_sidebar_item}
-                    <div class="i-sidebar-product-type-filters js-sidebar-product-type-filters" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
-                        {foreach ifset($_sidebar_item.FILTERS, []) as $_filter_id => $_filter_data}
-                            <div class="i-sidebar-filter-wrapper js-sidebar-spoiler-wrapper is-invisible" data-id="{$store_sidebar_type|default:"unknown"|mb_strtolower}-{$_filter_id|escape}">
-                                <a class="i-sidebar-spoiler-title js-sidebar-spoiler" href="javascript:void(0);">{$_filter_data.name|escape}</a>
-                                <div class="s-sidebar-spoiler-block js-sidebar-spoiler-block">
-                                    {if $store_sidebar_type == 'THEMES' && $_filter_id == 'color'}
-                                        <ul class="menu-v i-themes-color js-themes-color">
-                                            {foreach $_filter_data.list as $_filter_row}
-                                                {$_store_type_url = $_sidebar_item.TOP.base_url}
-                                                {$_link = "`$wa_app_url`store`$_store_type_url`"}
-                                                <li class="{if $_filter_row.filter_value != '@any'}i-style-color-{$_filter_row.filter_value}{else}i-style-color-any{/if}">
-                                                    <a href="{$_link|escape}{$wa->installer->getFilters($_filter_row.filter_name, $_filter_row.filter_value)}"{if isset($filters.color) && $filters.color == $_filter_row.filter_value} class="selected"{/if}>
-                                                        <span class="i-style-color-icon js-style-color-icon">
-                                                            {if isset($filters.color) && $filters.color == $_filter_row.filter_value} <i class="fas fa-check i-check-icon"></i> <i class="fas fa-times i-close-icon"></i>{/if}
-                                                        </span>
-                                                    </a>
-                                                </li>
-                                            {/foreach}
-                                        </ul>
+                {if $_filter_id != 'color'}
+                <ul class="menu js-installer-sidebar-filter-section">
+                    {foreach $_filter_data.list as $_filter_row}
+                        {$_store_type_url = $_sidebar_item.TOP.base_url}
+                        {$_link = "`$wa_app_url`store`$_store_type_url`"}
+                        <li{if isset($filters[$_filter_row.filter_name]) && $filters[$_filter_row.filter_name] == $_filter_row.filter_value} class="selected"{/if}>
+                            <a href="{$_link|escape}{$wa->installer->getFilters($_filter_row.filter_name, $_filter_row.filter_value)}" data-href="{$_store_type_url|ltrim:'/'}?filters[{$_filter_row.filter_name}]={$_filter_row.filter_value}" data-filter-name="{$_filter_row.filter_name}" data-filter-value="{$_filter_row.filter_value}" data-store="{$_store_type_url|ltrim:'/'}" class="flexbox middle js-installer-sidebar-filter">
+                                {if array_key_exists('count', $_filter_row)}
+                                <span class="count">
+                                    {$_filter_row.count|escape}
+                                </span>
+                                {/if}
 
-                                    {else}
-                                        <ul class="menu-v i-sidebar-spoiler-content">
-                                            {foreach $_filter_data.list as $_filter_row}
-                                                {$_store_type_url = $_sidebar_item.TOP.base_url}
-                                                {$_link = "`$wa_app_url`store`$_store_type_url`"}
-                                                <li>
-                                                    <a href="{$_link|escape}{$wa->installer->getFilters($_filter_row.filter_name, $_filter_row.filter_value)}"{if isset($filters[$_filter_row.filter_name]) && $filters[$_filter_row.filter_name] == $_filter_row.filter_value} class="selected"><i class="fas fa-check i-selected-icon"></i><i class="fas fa-times i-close-icon"></i>{else}>{/if}
-                                                        <div class="i-filter-name">
-                                                            {$_filter_row.name|escape}
-                                                            {if array_key_exists('count', $_filter_row)}
-                                                                <span class="i-count">
-                                                                    {$_filter_row.count|escape}
-                                                                </span>
-                                                            {/if}
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                            {/foreach}
-                                        </ul>
-                                    {/if}
-                                </div>
-                            </div>
-                        {/foreach}
-                    </div>
+                                <span class="icon i-selected-icon"><i class="fas fa-check"></i></span>
+
+                                <span>{$_filter_row.name|escape}</span>
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+                {/if}
                 {/foreach}
             </div>
-            {/if}
-
-        {/if}
-
-        {* App native actions *}
-        <div class="i-app-links">
-
-            <div class="i-sticky-links-wrapper js-sticky-links-wrapper">
-                <ul class="menu-v i-link-block">
-                    <li{if $module == 'assets'} class="selected"{/if}>
-                        <a href="{$wa_app_url}assets/">
-                            <i class="fas fa-check-double"></i>
-                            <span>[`Manage apps`]</span>
-                        </a>
-                    </li>
-
-                    <li{if $module == 'reviews'} class="selected"{/if}>
-                    <a href="{$wa_app_url}reviews/">
-                        <i class="fas fa-star"></i>
-                        <span>[`Reviews`]</span>
-                    </a>
-                    </li>
-
-                    <li{if $module == 'update'} class="selected"{/if}>
-                        <a href="{$wa_app_url}updates/">
-                            <i class="fas fa-sync"></i>
-                            <span>[`Updates`]</span>
-                            {if $update_counter > 0}
-                                <span class="i-count">{$update_counter}</span>
-                            {/if}
-                        </a>
-                    </li>
-
-                    <li{if $module == 'settings'} class="selected"{/if}>
-                        <a href="{$wa_app_url}settings/">
-                            <i class="fas fa-cogs"></i>
-                            <span>[`Settings`]</span>
-                        </a>
-                    </li>
-                    
-                </ul>
-            </div>
-
-        </div>
-
-        <script>
-            ( function($) {
-                var installer = window.waInstaller;
-                installer.sidebar = new installer.init.Sidebar({
-                    $wrapper: $("#js-main-sidebar").removeAttr("id")
-                });
-            })(jQuery);
-        </script>
+        {/foreach}
     </div>
-</div>
+{/if}
 
+<div class="sidebar-footer shadowed">
+    <ul class="menu">
+        <li{if $module == 'assets'} class="selected"{/if}>
+            <a href="{$wa_app_url}assets/" class="flexbox middle js-router">
+                <i class="fas fa-tasks"></i>
+                <span>[`Manage apps`]</span>
+            </a>
+        </li>
+
+        <li{if $module == 'reviews'} class="selected"{/if}>
+            <a href="{$wa_app_url}reviews/" class="flexbox middle js-router">
+                <i class="fas fa-star"></i>
+                <span>[`Reviews`]</span>
+            </a>
+        </li>
+
+        <li{if $module == 'update'} class="selected"{/if} id="i-apply-updates-sidebar-item">
+            <a href="{$wa_app_url}updates/" class="flexbox middle js-router">
+                {if $update_counter > 0}
+                    <span class="count">{$update_counter}</span>
+                {/if}
+
+                <i class="fas fa-sync"></i>
+                <span>[`Updates`]</span>
+            </a>
+        </li>
+
+        <li{if $module == 'settings'} class="selected"{/if}>
+            <a href="{$wa_app_url}settings/" class="flexbox middle js-router">
+                <i class="fas fa-cog"></i>
+                <span>[`Settings`]</span>
+            </a>
+        </li>
+    </ul>
+</div>
 {/strip}

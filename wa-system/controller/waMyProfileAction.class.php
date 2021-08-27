@@ -22,21 +22,18 @@ abstract class waMyProfileAction extends waViewAction
         $this->form = $this->getForm();
         $this->contact = $this->getContact();
 
-        $saved = false;
         if (waRequest::post()) {
             $saved = $this->saveFromPost($this->form, $this->contact);
             if ($saved) {
-                // We already save successfully all data into contact,
-                // so reset POST data, to get data right from contact
-                $this->form->post = null;
-                unset($_POST[$this->form->opt('namespace')]);
+                wa()->getStorage()->set('my/profile/updated', true);
+                $this->redirect(wa()->getConfig()->getRequestUrl(false, true));
             }
         }
 
         // here is updated contact
         $this->form->setValue($this->contact);
 
-        $this->view->assign('saved', $saved);
+        $this->view->assign('saved', boolval(wa()->getStorage()->getOnce('my/profile/updated')));
         $this->view->assign('contact', $this->contact);
         $this->view->assign('form', $this->form);
         $this->view->assign('user_info', $this->getFormFieldsHtml());
@@ -186,14 +183,26 @@ abstract class waMyProfileAction extends waViewAction
         }
 
         foreach ($phones as &$phone) {
-            $result = $this->transformPhone($phone);
+            if (is_array($phone)) {
+                $value = $phone['value'];
+                $ext = $phone['ext'];
+            } else {
+                $value = $phone;
+                $ext = '';
+            }
+
+            $result = $this->transformPhone($value);
+            $result['phone'] = waContactPhoneField::cleanPhoneNumber($result['phone']);
+
             $status = waContactDataModel::STATUS_UNKNOWN;
             if (isset($map[$result['phone']])) {
                 $status = $map[$result['phone']];
             }
+
             $phone = [
                 'value' => $result['phone'],
-                'status' => $status
+                'status' => $status,
+                'ext' => $ext
             ];
         }
         unset($phone);
@@ -241,7 +250,7 @@ abstract class waMyProfileAction extends waViewAction
         unset($address);
     }
 
-    private function transformPhone($phone)
+    protected function transformPhone($phone)
     {
         if ($this->isValidPhoneNumber($phone)) {
             // non-international phone try to convert to international

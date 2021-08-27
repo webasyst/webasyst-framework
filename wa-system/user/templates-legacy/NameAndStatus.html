@@ -1,0 +1,79 @@
+{strip}
+
+{$_styles = []}
+{if is_array($user)}{$_event = $user._event}{else}{$_event = $user->getEvent()}{/if}
+{if !empty($_event.bg_color)}
+    {$_styles[] = "background: `$_event.bg_color`;"}
+{/if}
+{if !empty($_event.font_color)}
+    {$_styles[] = "color: `$_event.font_color`;"}
+{/if}
+{$_user_name = $formatted_user_name|default:$user.name|default:''|escape}
+
+<span class="wa-user-info">
+    {if !empty($user._online_status)}
+        {if $user._online_status == 'online'}
+            {$title = sprintf(_ws('%s is now online'), $_user_name)}
+            {if $wa->whichUI() === '1.3'}
+                <i class="icon16 status-green-tiny" title="{$title}"></i>
+            {else}
+                {*
+                    wa2ui version for online status here
+                    <i class="fas fa-user-circle" style="color: var(--green);" title="{$title}"></i>
+                *}
+            {/if}
+        {elseif $user._online_status == 'idle'}
+            {$title = sprintf(_ws('%s is now away'), $_user_name)}
+            {if $wa->whichUI() === '1.3'}
+                <i class="icon16 status-yellow-tiny" title="{$title}"></i>
+            {else}
+                {*
+                    wa2ui version for away status here
+                    <i class="fas fa-user-circle fa-xs" style="color: var(--yellow);" title="{$title}"></i>
+                *}
+            {/if}
+        {/if}
+    {/if}
+    {*if !empty($user.photo_url_16)}
+        <i class="icon16 userpic20" style="background-image: url('{$user.photo_url_16}');"></i>
+    {/if*}
+    {if !empty($_user_name)}
+        {$_is_user = null}
+        {if isset($user.is_user)}{$_is_user = $user.is_user}{/if}
+        <span class="user-name {if $_is_user == 0}italic{/if} {if $_is_user <= 0}gray{/if}">{$_user_name}</span>
+    {/if}
+    {if !empty($user.birth_day) && $user.birth_day == waDateTime::format('j') && $user.birth_month == waDateTime::format('n')}
+        {$title = sprintf(_ws('%s\'s birthday — %s'), $_user_name, $user_birthday_str)}
+        <i class="icon16 cake" title="{$title}"></i>
+    {/if}
+    {if !empty($_event)}
+        {if $_event.is_allday}{$_timezone = waDateTime::getDefaultTimeZone()}{else}{$_timezone = null}{/if}
+
+        {if (waDateTime::format('Y', $_event.start) == waDateTime::format('Y'))}
+            {$_start_date = waDateTime::format('shortdate', $_event.start, $_timezone)}
+        {else}
+            {$_start_date = waDateTime::format('humandate', $_event.start, $_timezone)}
+        {/if}
+
+        {if (waDateTime::format('Y', $_event.end) == waDateTime::format('Y'))}
+            {$_end_date = waDateTime::format('shortdate', $_event.end, $_timezone)}
+        {else}
+            {$_end_date = waDateTime::format('humandate', $_event.end, $_timezone)}
+        {/if}
+
+        {if $_start_date == $_end_date}
+            {$title = "`$_event.summary` (`$_start_date`)"}
+        {else}
+            {$title = "`$_event.summary` (`$_start_date` — `$_end_date`)"}
+        {/if}
+
+        <span class="user-badge" {if !empty($_styles)}style="{$_styles|join:""}"{/if} title="{$title}">
+            {$_event.summary}
+        </span>
+    {/if}
+    {*{if !empty($user.login)}*}
+        {*<span class="user-login">{$user.login}</span>*}
+    {*{/if}*}
+</span>
+
+{/strip}

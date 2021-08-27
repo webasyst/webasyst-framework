@@ -1,0 +1,86 @@
+{capture assign='installer_sidebar'}{include file="./BackendStoreSidebar.html" inline}{/capture}
+
+{if $sidebar_only}
+
+    {* Installer Sidebar *}
+    {$installer_sidebar}
+
+{else}
+
+<!DOCTYPE html>
+<html>
+<head>
+    {* META *}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{$title|default:$wa->appName()} — {$wa->accountName()}</title>
+
+    {* CSS *}
+    {$wa->css()}
+    <link href="{$wa_app_static_url}css/app.installer-legacy.css?v={$wa->version()}" rel="stylesheet">
+    <link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.autocomplete.css" rel="stylesheet" type="text/css" />
+
+    {* JS *}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
+    <script defer src="{$wa_app_static_url}fonts/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
+
+    {wa_js}
+        {$wa_url}wa-content/js/jquery-wa/wa.core.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
+        {$wa_app_static_url}js/sidebar.js
+        {$wa_app_static_url}js/licenses/licenses.js
+        {$wa_app_static_url}js/licenses/license.js
+    {/wa_js}
+
+    {* Include WA Dialog *}
+    <link href="{$wa_url}wa-content/js/dialog/dialog.css" rel="stylesheet">
+    <script src="{$wa_url}wa-content/js/dialog/dialog.js"></script>
+
+</head>
+<body>
+
+<div id="wa">
+
+    {* WA Header *}
+    {$wa->header()}
+
+    <div id="wa-app">
+
+        <section class="i-app-wrapper">
+            {* Installer Sidebar *}
+            <nav class="i-main-sidebar-section" role="navigation">
+                {$installer_sidebar}
+            </nav>
+
+            {* Installer Content (Store iframe and native app pages) *}
+            <div class="i-content js-content">
+
+                {if !empty($messages)}
+                    {foreach $messages as $message}
+                        <div class="block double-padded i-message-{$message.result}">
+                            {if $message.result == 'success'}
+                                <i class="fas fa-check-circle"></i>
+                            {elseif $message.result == 'fail'}
+                                <i class="fas fa-times-circle"></i>
+                            {/if}
+                            {$message.text|escape}
+                        </div>
+                    {/foreach}
+                {/if}
+
+                {$content}
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+{/if}
