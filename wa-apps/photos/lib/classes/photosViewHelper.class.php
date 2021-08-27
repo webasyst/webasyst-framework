@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class photosViewHelper
+ */
 class photosViewHelper extends waAppViewHelper
 {
     /**
@@ -14,6 +17,7 @@ class photosViewHelper extends waAppViewHelper
      * If $limit and $offset are omitted that method returns first 500 items
      *
      * @return array
+     * @throws waException
      */
     public function photos($hash = '', $size = null, $offset = null, $limit = null)
     {
@@ -34,6 +38,19 @@ class photosViewHelper extends waAppViewHelper
         }
         $photos = $collection->getPhotos("*,frontend_link,tags,".$sizes, $offset, $limit, true);
         $photos = photosCollection::extendPhotos($photos);
+
+        /**
+         * Output photos in the smarty template. After the collection is initialized.
+         *
+         * @param array $photos
+         *
+         * @event view_photos
+         */
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+        wa('photos')->event('view_photos', $photos);
+        waConfig::set('is_template', $is_from_template);
+
         return $photos;
     }
 
@@ -46,11 +63,16 @@ class photosViewHelper extends waAppViewHelper
      */
     public function photo($id, $size = null)
     {
-        $id = max(1,intval($id));
+        $id = max(1, intval($id));
         $photos = $this->photos("id/{$id}", $size);
         return array_shift($photos);
     }
 
+    /**
+     * @param $name
+     * @return array|mixed|null
+     * @throws waException
+     */
     public function option($name)
     {
         return wa('photos')->getConfig()->getOption($name);
@@ -61,7 +83,8 @@ class photosViewHelper extends waAppViewHelper
      * Get photos albums tree
      * @param bool $return_html
      * @param bool $custom_params get with custom params or not
-     * @return string
+     * @return array|string
+     * @throws waException
      */
     public function albums($return_html = true, $custom_params = true)
     {
@@ -95,6 +118,19 @@ class photosViewHelper extends waAppViewHelper
                     $albums[$album['parent_id']]['childs'][] = &$albums[$album_id];
                 }
             }
+
+            /**
+             * Output albums in the smarty template.
+             *
+             * @param array $albums
+             *
+             * @event view_albums
+             */
+            $is_from_template = waConfig::get('is_template');
+            waConfig::set('is_template', null);
+            wa('photos')->event('view_albums', $albums);
+            waConfig::set('is_template', $is_from_template);
+
             foreach ($albums as $album_id => $album) {
                 if ($album['parent_id']) {
                     unset($albums[$album_id]);
@@ -117,6 +153,19 @@ class photosViewHelper extends waAppViewHelper
             $tag['name'] = photosPhoto::escape($tag['name']);
         }
         unset($tag);
+
+        /**
+         * Output tags in the smarty template.
+         *
+         * @param array $cloud
+         *
+         * @event view_tags
+         */
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+        wa('photos')->event('view_tags', $cloud);
+        waConfig::set('is_template', $is_from_template);
+
         return $cloud;
     }
 
@@ -137,17 +186,28 @@ class photosViewHelper extends waAppViewHelper
         return photosPhoto::getEmbedImgHtml($photo, $size, $attributes, $style, false, $this->cdn);
     }
 
+    /**
+     * @param $rating
+     * @param int $size
+     * @param false $show_when_zero
+     * @return string
+     */
     public function ratingHtml($rating, $size = 10, $show_when_zero = false)
     {
         return photosPhoto::getRatingHtml($rating, $size, $show_when_zero);
     }
 
+    /**
+     * @param int $parent_album_id
+     * @return array
+     * @throws waException
+     */
     public function childAlbums($parent_album_id=0)
     {
         $album_model = new photosAlbumModel();
         $child_albums = $album_model->getChildren($parent_album_id);
 
-        foreach($child_albums as $i => &$ca) {
+        foreach ($child_albums as $i => &$ca) {
             if (!$ca['status']) {
                 unset($child_albums[$i]);
                 continue;
@@ -158,14 +218,29 @@ class photosViewHelper extends waAppViewHelper
 
         $album_model->keyPhotos($child_albums);
 
-        foreach($child_albums as &$ca) {
+        foreach ($child_albums as &$ca) {
             $ca = photosFrontendAlbum::escapeFields($ca);
         }
         unset($ca);
 
+        /**
+         * Output childAlbums in the smarty template.
+         *
+         * @param array $child_albums
+         *
+         * @event view_child_albums
+         */
+        $is_from_template = waConfig::get('is_template');
+        waConfig::set('is_template', null);
+        wa('photos')->event('view_child_albums', $child_albums);
+        waConfig::set('is_template', $is_from_template);
+
         return $child_albums;
     }
 
+    /**
+     * @return string
+     */
     public function getCDN()
     {
         return $this->cdn;

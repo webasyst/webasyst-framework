@@ -8,6 +8,7 @@ class photosCollection
     protected $frontend_base_url;
     protected $frontend_rights_user;
     protected $where;
+    protected $fields = [];
     protected $order_by = 'p.upload_datetime DESC,p.id';
     protected $joins;
     protected $join_index = array();
@@ -88,7 +89,7 @@ class photosCollection
     {
         $photo_model = $this->getModel();
         if ($fields == '*') {
-            return 'p.*';
+            return 'p.*'.($this->fields ? ",".implode(",", $this->fields) : '');
         }
 
         $required_fields = array('id' => 'p', 'ext' => 'p', 'hash' => 'p', 'status' => 'p'); // field => table, to be added later in any case
@@ -123,6 +124,14 @@ class photosCollection
         foreach ($required_fields as $field => $table) {
             $fields[] = ($table ? $table."." : '').$field;
         }
+
+        if ($this->fields) {
+            foreach (array_unique($this->fields) as $f) {
+                $fields[] = $f;
+            }
+        }
+
+        $fields = array_unique($fields);
 
         return implode(",", $fields);
     }
@@ -371,6 +380,7 @@ class photosCollection
             );
             $this->where[] = "ap.album_id = ".(int)$id;
             $this->order_by = 'ap.sort ASC';
+            $this->fields['order_by'] = 'ap.sort';
         }
     }
 

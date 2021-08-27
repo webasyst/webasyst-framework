@@ -205,6 +205,11 @@
             let form = $('#blog-post-form');
             let photo_ids = [...document.querySelectorAll('#photo-list > li.selected')].map(el => el.getAttribute('data-photo-id'));
 
+            if (!photo_ids.length) {
+                alert($_('Please select at least one photo'));
+                return;
+            }
+
             let counter =[0,0];
             for(let i=0;i<photo_ids.length;i++) {
                 let photo = $.photos.photo_stream_cache.getById(photo_ids[i]);
@@ -821,6 +826,15 @@
 
         selectPhotosAction: function(item) {
             var $counter = $('.js-toolbar-dropdown-button > .js-count');
+
+            if (!$.photos.total_count) {
+                const alertNoItems = $(`<div class="alert-fixed-box"><span class="alert warning">${item[0].dataset.errorMsg}</span></div>`);
+                $('body').append(alertNoItems);
+                setTimeout(() => {
+                    alertNoItems.remove();
+                }, 2000)
+                return;
+            }
 
             if (!item.data('checked')) {
                 item.data('checked', true);

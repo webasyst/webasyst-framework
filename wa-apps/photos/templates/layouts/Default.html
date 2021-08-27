@@ -77,11 +77,13 @@
         stack = o.stack,
         albums = o.albums,
         frontend_link_template = o.frontend_link_template,
-        hooks = o.hooks;
+        hooks = o.hooks,
+        author = o.author,
+        exif = o.exif;
         %}
         <section class="p-photo-header">
             <h3 class="flexbox wrap middle space-16">
-                <span class="editable title custom-ml-0" id="photo-name">{%#p.name%}</span>
+                <span class="editable title custom-ml-0" id="photo-name">{%=p.name%}</span>
                 <input type="text" id="photo-name-input" class="p-photo-h1-edit bold custom-ml-4" style="display:none;">
                 <span class="p-rate nowrap flexbox middle space-10 custom-ml-4">
                 <a href="javascript: void(0);" title="[`Rate photo`]" id="photo-rate" class="p-rate-photo" data-rate="{%#p.rate%}">
@@ -97,11 +99,13 @@
             </span>
             </h3>
         </section>
+
         <div id="p-warning-not-in-album" style="display: none;">
             <span title="[`This photo is no longer in current dynamic album`]">
                 <i class="icon16 exclamation"></i> [`Photo is not in album`]
             </span>
         </div>
+
         <div class="flexbox wrap middle full-width">
             <div class="p-content-control flexbox wrap middle space-10 small" id="photo-content-control">
                 {% include('template-photo-content-control', { frontend_link_template: frontend_link_template, url: p.url, status: p.status, photo: p }); %}
@@ -110,7 +114,87 @@
                 {% include('template-photo-albums', { albums: albums }); %}
             </div>
         </div>
+
+        <div class="p-description custom-mt-12 small">
+            <span class="editable" id="photo-description">{%=p.description%}</span>
+            <a href="javascript:void(0);" class="hint" id="photo-description-edit-link">
+                <i class="fas fa-edit"></i>
+            </a>
+        </div>
+
+        <ul class="menu flexbox wrap custom-mt-16" id="photo-organize-menu">
+            <li data-action='unstack' class="custom-mr-8 custom-mb-8">
+                <button class="button light-gray rounded large">
+                    <i class="fas fa-layer-group text-blue custom-mr-4"></i>
+                    <span>[`Unstack`]</span>
+                </button>
+            </li>
+            <li data-action='add-to-album' class="custom-mr-8 custom-mb-8">
+                <button class="button light-gray rounded large">
+                    <i class="fas fa-images text-purple custom-mr-4"></i>
+                    <span>[`Add to album`]</span>
+                </button>
+            </li>
+            <li data-action='manage-access' class="custom-mr-8 custom-mb-8">
+                <button class="button light-gray rounded large">
+                    <i class="fas fa-lock text-yellow custom-mr-4"></i>
+                    <span>[`Manage access`]</span>
+                </button>
+            </li>
+            <li data-action="delete-photo" class="custom-mb-8">
+                <button class="button light-gray rounded large">
+                    <i class="fas fa-trash-alt text-red custom-mr-4"></i>
+                    <span>[`Delete`]</span>
+                </button>
+            </li>
+        </ul>
+
+        <hr class="custom-mb-16">
+
+        <div class="custom-mt-16 custom-mb-16">
+            <h5 class="heading custom-mt-0 custom-mb-4 custom-ml-0">[`Tags`]</h5>
+            <input id="photo-tags" type="text" value=""/>
+            <div id="photos-photo-popular-tags" class="tags">
+                {/literal}
+                {if $popular_tags}
+                <span class="smaller">[`Popular tags`]:</span>
+                <ul class="chips tags smaller custom-my-0">
+                    {foreach $popular_tags as $tag}
+                    <li>
+                        <a data-tag-id="{$tag.id}" href="javascript:void(0);" class="bold italic"><i class="fas fa-hashtag"></i>{$tag.name|escape}</a>
+                    </li>
+                    {/foreach}
+                </ul>
+                {/if}
+                {literal}
+            </div>
+            <span id="photo-save-tags-status" style="display:none;"></span>
+        </div>
+
         <div class="flexbox middle space-16 custom-my-16" id="p-toolbar"></div>
+
+        <div class="fields">
+            {% if (author && photo) { %}
+            <div class="field">
+                <div class="name">[`Info`]</div>
+                <div class="value" id="photo-author">
+                    {% include('template-photo-author', { author: author, photo: p }); %}
+                </div>
+            </div>
+            {% } %}
+
+            {% if (exif) { %}
+            <div class="custom-mt-16" id="photo-exif">
+                {% include('template-photo-exif', { exif: exif}); %}
+            </div>
+            {% } %}
+
+            {% if (photo) { %}
+            <div class="custom-mt-16" id="photo-original">
+                {% include('template-photo-original', { photo: photo}); %}
+            </div>
+            {% } %}
+        </div>
     {/literal}
 {/capture}
 
@@ -120,7 +204,8 @@
             stack = o.stack,
             albums = o.albums,
             frontend_link_template = o.frontend_link_template,
-            hooks = o.hooks;
+            hooks = o.hooks,
+            smallSize = o.smallSize;
     %}
 
     <div class="align-center bg-chess">
@@ -128,20 +213,33 @@
             <div class="p-image-corner top left">
                 <!-- plugin hook: backend-photo-image-corner-top-left -->
             </div>
+
             <div class="p-image-corner top right">
                 {% if(p.edit_rights) { %}
-                    <a href="#" id="photo-loupe-link" class="p-loupe-button" style="display:none;">{/literal}
+                    <a href="#" id="photo-loupe-link" class="p-loupe-button hidden">{/literal}
                         <i class="maximize fas fa-search-plus" title="[`Full size`]"></i>
                         <i class="minimize fas fa-search-minus" title="[`Normal size`]" style="display:none;"></i>
                     </a>{literal}
                 {% } %}
                 <!-- plugin hook: backend-photo-image-corner-top-right -->
             </div>
-            <i class="fas fa-angle-left p-image-nav p-rewind" title="[`← Previous`]"></i>
-            <i class="fas fa-angle-right p-image-nav p-ff " title="[`Next →`]"></i>
-            <a href="#" class="next" title="[`Next →`]">
-                <img {% if (p.thumb_big.url2x) { %} srcset="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb_big.url2x %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x"{% } %} src="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo"/>
-            </a>
+
+            {% if (smallSize) { %}
+            <img src="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo"/>
+            {% } else { %}
+            <img {% if (p.thumb_big.url2x) { %} srcset="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 1x, {%#p.thumb_big.url2x %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %} 2x"{% } %} src="{%#p.thumb_big.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo"/>
+            {% } %}
+
+            <div class="p-image-nav">
+                <div class="p-image-nav-item p-rewind">
+                    <span class="p-image-nav-item-icon p-image-nav-item-icon_rewind"><i class="fas fa-angle-left" title="[`← Previous`]"></i></span>
+                </div>
+
+                <div class="p-image-nav-item p-ff">
+                    <span class="p-image-nav-item-icon p-image-nav-item-icon_forward"><i class="fas fa-angle-right" title="[`Next →`]"></i></span>
+                </div>
+            </div>
+
             <!-- stacks only -->
             <ul class="thumbs p-mini-stream" id="stack-stream"></ul>
             <section id="photo-stream"></section>
@@ -149,25 +247,19 @@
     </div>
     <div class="article">
         <div class="article-header break-all" id="p-info-area"></div>
-        <div class="article-body">
-            <div class="p-description">
-                <span class="editable" id="photo-description">{%#p.description%}</span>
-                <a href="javascript:void(0);" class="hint" id="photo-description-edit-link">
-                    <i class="fas fa-edit"></i>
-                </a>
-            </div>
-            <div id="photo-hook-bottom">
-        <!-- plugin hook: "backend_photo.bottom" -->
-        {% if (hooks.backend_photo) { %}
-            {% for (var plugin in hooks.backend_photo) { %}
-                {%# hooks.backend_photo[plugin].bottom %}
+
+        <div id="photo-hook-bottom">
+            <!-- plugin hook: "backend_photo.bottom" -->
+            {% if (hooks.backend_photo) { %}
+                {% for (var plugin in hooks.backend_photo) { %}
+                    {%# hooks.backend_photo[plugin].bottom %}
+                {% } %}
             {% } %}
-        {% } %}
-        <!-- end plugin hook: "backend_photo.bottom" -->
-    </div>
+            <!-- end plugin hook: "backend_photo.bottom" -->
         </div>
     </div>
     <img id="preload-photo" src="" data-photo-id="" style="display:none;" alt="">
+    <img id="preload-photo-prev" src="" data-photo-id="" style="display:none;" alt="">
 {/literal}
 {/capture}
 
@@ -232,7 +324,7 @@
     <!-- end plugin hook: "backend_photo_toolbar.top" -->
 
     <div class="dropdown js-p-toolbar-dropdown">
-        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-share text-blue"></i> <span class="desktop-and-tablet-only">[`Share`]</span></button>
+        <button class="dropdown-toggle button small light-gray nowrap" type="button"><i class="fas fa-share text-blue"></i> <span class="desktop-and-tablet-only">[`Share`]</span></button>
         <div class="dropdown-body">
             <ul class="menu compact" id="share-menu">
                 <li data-action='embed'>
@@ -272,7 +364,7 @@
     </div>
 
     <div class="dropdown js-p-toolbar-dropdown">
-        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-edit text-orange"></i> <span class="desktop-and-tablet-only">[`Edit`]</span></button>
+        <button class="dropdown-toggle button small light-gray nowrap" type="button"><i class="fas fa-edit text-orange"></i> <span class="desktop-and-tablet-only">[`Edit`]</span></button>
         <div class="dropdown-body">
             <ul class="menu compact" id="edit-menu">
                 <li data-action='rotate-left'>
@@ -312,80 +404,7 @@
     <!-- end plugin hook: "backend_photo_toolbar.bottom" -->
 
 {literal}
-    <div class="dropdown js-p-toolbar-dropdown">
-        <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-hashtag text-green"></i> <span class="desktop-and-tablet-only">[`Organize`]</span></button>
-        <div class="dropdown-body">
-            <div class="box">
-                <h5 class="heading custom-mt-0 custom-mb-4 custom-ml-0">[`Tags`]</h5>
-                <input id="photo-tags" type="text" value=""/>
-                <div id="photos-photo-popular-tags" class="tags">
-                    {/literal}
-                        {if $popular_tags}
-                            <span class="smaller">[`Popular tags`]:</span>
-                            <ul class="chips tags smaller custom-my-0">
-                            {foreach $popular_tags as $tag}
-                                <li>
-                                    <a data-tag-id="{$tag.id}" href="javascript:void(0);" class="bold italic"><i class="fas fa-hashtag"></i>{$tag.name|escape}</a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                        {/if}
-                    {literal}
-                </div>
-                <span id="photo-save-tags-status" style="display:none;"></span>
-            </div>
-            <hr class="custom-mb-4">
-            <ul class="menu custom-mt-0" id="photo-organize-menu">
-                <li data-action='unstack'>
-                    <a href="#">
-                        <i class="fas fa-layer-group text-black"></i>
-                        <span>[`Unstack`]</span>
-                    </a>
-                </li>
-                <li data-action='add-to-album'>
-                    <a href="#">
-                        <i class="fas fa-images text-purple"></i>
-                        <span>[`Add to album`]</span>
-                    </a>
-                </li>
-                <li data-action='manage-access'>
-                    <a href="#">
-                        <i class="fas fa-lock text-gray"></i>
-                        <span>[`Manage access`]</span>
-                    </a>
-                </li>
-                <li data-action="delete-photo">
-                    <a href="#">
-                        <i class="fas fa-trash-alt text-red"></i>
-                        <span>[`Delete`]</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-<div class="dropdown js-p-toolbar-dropdown">
-    <button class="dropdown-toggle button small light-gray" type="button"><i class="fas fa-info-circle text-gray"></i> <span class="desktop-and-tablet-only">[`Info`]</span></button>
-    <div class="dropdown-body small" style="min-width: 300px;">
-        <section class="box" id="photo-author">
-            {% if (author && photo) { %}
-            {% include('template-photo-author', { author: author, photo: photo }); %}
-            {% } %}
-        </section>
-        {% if (exif) { %}
-        <section class="box p-exif small" id="photo-exif">
-            {% include('template-photo-exif', { exif: exif}); %}
-        </section>
-        {% } %}
-        <section class="box p-original small" id="photo-original">
-            {% if (photo) { %}
-            {% include('template-photo-original', { photo: photo}); %}
-            {% } %}
-        </section>
-    </div>
-</div>
-
-<a href="#{%#o.hash%}/" title="[`Back`]" class="gray js-toolbar-close"><i class="fas fa-times-circle fa-lg"></i></a>
+<a href="#{%#o.hash%}/" title="[`Back`]" class="gray p-toolbar-close js-toolbar-close"><i class="fas fa-arrow-circle-left fa-2x"></i></a>
 {/literal}
 {/capture}
 
@@ -460,17 +479,32 @@
 {capture name="template-photo-original"}
 {literal}
 {% var photo = o.photo; %}
-{% if (photo.edit_rights) { %}[`Full size`]:
-<a href="?module=photo&action=download&photo_id={%# photo.id %}"><strong id="photo-name-original">{%# photo.name + '.' + photo.ext %}</strong></a><br>
+{% if (photo.edit_rights) { %}
+<div class="field small custom-mt-4">
+    <div class="name">[`Full size`]</div>
+    <div class="value">
+        <a href="?module=photo&action=download&photo_id={%# photo.id %}"><strong id="photo-name-original">{%# photo.name + '.' + photo.ext %}</strong></a>
+    </div>
+</div>
 {% } %}
-[`Dimensions`]: <strong>{%# photo.width %}x{%# photo.height %}</strong><br>
-[`Size`]: <strong>{%# $.wa.util.formatFileSize(photo.size) %}</strong><br>
+<div class="field small custom-mt-4">
+    <div class="name">[`Dimensions`]</div>
+    <div class="value">{%# photo.width %}x{%# photo.height %}</strong></div>
+</div>
+<div class="field small custom-mt-4">
+    <div class="name">[`Size`]</div>
+    <div class="value"><strong>{%# $.wa.util.formatFileSize(photo.size) %}</strong></div>
+</div>
 {% if (photo.original_exists && photo.edit_rights ) { %}
-<br>
-<div class="original-info">
-    [`Original image`]: <a href="?module=photo&action=download&photo_id={%# photo.id %}&original=1"><i class="fas fa-download"></i> <span>{%# photo.name + '.' + photo.ext %}</span></a>
-    <br><br>
-    <a class="button outlined light-gray small" onclick="$.photos.restoreOriginal(this)" href="javascript:void(0);" id="restore-original">[`Revert to original`]</a>
+<div class="field small">
+    <div class="name">[`Original image`]</div>
+    <div class="value">
+        <div class="original-info">
+            <a href="?module=photo&action=download&photo_id={%# photo.id %}&original=1"><i class="fas fa-download"></i> <span>{%# photo.name + '.' + photo.ext %}</span></a>
+            <br><br>
+            <a class="button outlined light-gray small" onclick="$.photos.restoreOriginal(this)" href="javascript:void(0);" id="restore-original">[`Revert to original`]</a>
+        </div>
+    </div>
 </div>
 {% } %}
 {/literal}{/capture}
@@ -478,22 +512,40 @@
 {capture name="template-photo-exif"}{literal}
 {% var exif = o.exif; %}
 {% if (exif.Model) { %}
-    [`Camera`]: <strong>{%# exif.Model %}</strong><br>
+<div class="field small custom-mt-4">
+    <div class="name">[`Camera`]</div>
+    <div class="value"><strong>{%# exif.Model %}</strong></div>
+</div>
 {% } %}
 {% if (exif.ISOSpeedRatings) { %}
-    [`ISO`]: <strong>{%# exif.ISOSpeedRatings %}</strong><br>
+<div class="field small custom-mt-4">
+    <div class="name">[`ISO`]</div>
+    <div class="value"><strong>{%# exif.ISOSpeedRatings %}</strong></div>
+</div>
 {% } %}
 {% if (exif.ExposureTime) { %}
-    [`Shutter`]: <strong>{%# exif.ExposureTime %}</strong><br>
+<div class="field small custom-mt-4">
+    <div class="name">[`Shutter`]</div>
+    <div class="value"><strong>{%# exif.ExposureTime %}</strong></div>
+</div>
 {% } %}
 {% if (exif.FNumber) { %}
-    [`Aperture`]: <strong>{%# exif.FNumber %}</strong><br>
+<div class="field small custom-mt-4">
+    <div class="name">[`Aperture`]</div>
+    <div class="value"><strong>{%# exif.FNumber %}</strong></div>
+</div>
 {% } %}
 {% if (exif.FocalLength) { %}
-    [`Focal length`]: <strong>{%# exif.FocalLength %}</strong><br>
+<div class="field small custom-mt-4">
+    <div class="name">[`Focal length`]</div>
+    <div class="value"><strong>{%# exif.FocalLength %}</strong></div>
+</div>
 {% } %}
 {% if (exif.DateTimeOriginal) { %}
-    [`Taken`]: <strong>{%# exif.DateTimeOriginal %}</strong><br>
+<div class="field small custom-mt-4">
+    <div class="name">[`Taken`]</div>
+    <div class="value"><strong>{%# exif.DateTimeOriginal %}</strong></div>
+</div>
 {% } %}
 <div id="photo-map" style="display:none;"></div>
 {/literal}{/capture}
@@ -555,7 +607,6 @@
         </div>
     </form>
 </div>
-
 
 <div id="photo-blog-dialog" class="dialog">
     <div class="dialog-background"></div>

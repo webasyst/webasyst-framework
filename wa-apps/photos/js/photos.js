@@ -74,6 +74,11 @@
             } else {
                 this.dispatch();
             }
+
+            this.container = $('#content');
+            this.containerWidth = this.container.width();
+            this.containerHeight = this.container.height();
+
             $(document).on('close', function (event) {
                 $(event.target).hide();
             })
@@ -286,6 +291,7 @@
         },
 
         appAction: function (app_id) {
+            console.log('unused method');
             $.photos.loadDispatch(arguments, function() {
                 $.photos.load("?module=photo&action=list&app_id=" + app_id, $.photos.onLoadPhotoList);
             });
@@ -361,7 +367,7 @@
         loadDispatch: function(delegated_arguments, loadCollectionCallback) { // delegated_arguments is an instance of Arguments
             var args = Array.prototype.slice.call(delegated_arguments, 1);
             for (var i = 0; i < args.length; i++) {
-                if (args[i] == 'photo' && i < args.length - 1) {
+                if (args[i] === 'photo' && i < args.length - 1) {
                     this.loadPhoto(args[i + 1]);
                     return;
                 }
@@ -460,8 +466,6 @@
                 }
 
             }
-            // disable retina.js because now using srcset attribute
-            //$.Retina && $.photos.options.retina_2x_enabled && target.find('img').retina();
         },
 
         selectPhotoListView: function(view) {
@@ -542,9 +546,6 @@
             $.photos.menu.init('list');
             $.photos.selectPhotoListView(view);
 
-            // disable retina.js because now using srcset attribute
-            //$.Retina && $.photos.options.retina_2x_enabled && $('#album-thumbs-list img').retina();
-
             const $toggle = $("#js-photos-view-toggle");
 
             $toggle.waToggle({
@@ -558,17 +559,6 @@
                     }
                 }
             });
-
-            /*$('#p-block .p-content-control li a.album-view').click(function() {
-                var new_view = $(this).attr('data-action');
-                if(new_view != view) {
-                    view = new_view.replace(/-view$/,'');
-                    $.photos.list_template = 'template-photo-' + view;
-                    $.photos.renderPhotoList();
-                    $.photos.selectPhotoListView(view);
-                }
-                return false;
-            });*/
 
             $('#photo-list .js-description div, .js-description-editable').on('click', function() {
                 var self = $(this),
@@ -625,7 +615,7 @@
                         button.hide();
                         $('#'+this.id+'-hint').hide();
                         if (value) {
-                            self.text(value.truncate(255));
+                            // self.text(value.truncate(255));
                             self.parent().find('.js-full-description:first').text(value).html();
                         } else {
                             self.parent().find('.js-full-description:first').html('');
@@ -837,22 +827,25 @@
         loadPhoto: function (id) {
             // check case when jumping from photo-page of one collection
             // to photo-page of another collection by passing the going to page of collection (photo-list)
-            if ($.photos.photo_stream_cache.hash != $.photos.hash) {
+            if ($.photos.photo_stream_cache.hash !== $.photos.hash) {
                 $.photos.loadNewPhoto(id);
-            } else {
-                var photo = $.photos.photo_stream_cache.getById(id);
-                if (!photo) {
-                    photo = $.photos.photo_stack_cache.getById(id);
-                    if (photo) {
-                        $.photos.setTitle(photo.name_not_escaped);
-                        $.photos.loadPhotoInStack(photo);
-                    } else {
-                        $.photos.loadNewPhoto(id);
-                    }
-                } else {
-                    $.photos.setTitle(photo.name_not_escaped);
-                    $.photos.loadPhotoCompletly(photo);
+                return;
+            }
+
+            const stream = $.photos.photo_stream_cache.getById(id);
+            if (!stream || stream.stack_count > 0) {
+                // navigation through stack
+                const stack = $.photos.photo_stack_cache.getById(id);
+                if (stack) {
+                    this.setTitle(stack.name);
+                    $.photos.loadPhotoInStack(stack);
+                    return;
                 }
+            }
+
+            if (stream) {
+                $.photos.setTitle(stream.name);
+                $.photos.loadPhotoCompletly(stream);
             }
         },
 
@@ -864,17 +857,9 @@
             $.photos.hooks_manager.trigger('beforeLoadPhoto', photo);
             $.photos.photo_stack_cache.setCurrent(photo);
             var proper_thumb = $.photos._chooseProperThumb(photo);
-            let $photo = $('#photo')
-            if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                $photo.width(proper_thumb.size.width).height(proper_thumb.size.height);
-/*                let photo_container_height = document.querySelector(".p-one-photo").clientHeight;
-                if (photo.height >= photo_container_height) {
-                    $('#photo').height(photo_container_height).attr('srcset', `${proper_thumb.url}${photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''} 1x, ${proper_thumb.url2x}${photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''} 2x`);
-                }else{
-                    $('#photo').attr('srcset', `${proper_thumb.url} 1x, ${proper_thumb.url2x} 2x`);
-                }*/
-            }
+            let $photo = $('#photo');
 
+            $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
 
             $photo.proper_thumb = {
                 url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
@@ -883,27 +868,41 @@
 
             replaceImg(
                 $photo,
-                photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
+                proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 null
             );
+
+            if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                $photo.addClass('contain');
+            } else {
+                $photo.removeClass('contain');
+            }
+
+            $photo.removeClass('fade-in').addClass('fade-in');
+            $photo.on('animationend', function() {
+                $photo.removeClass('fade-in');
+            });
+
             $.photos.setNextPhotoLink();
             var xhr = $.post('?module=photo&action=load', { id: photo.id, in_stack: 1 },
                 function(r) {
                     var data = r.data,
                         photo = data.photo;
+
+
                     photo = $.photos.photo_stack_cache.updateById(photo.id, photo);
                     data.photo = photo;
+
                     $.photos.updateViewChildPhoto(data);
-                    /**
-                     * @hook
-                     */
-                    $.photos.hooks_manager.trigger('afterLoadPhoto', photo);
+
+                    const isFirst = () => data.photo_stream.photos[0].id === photo.id
+                    const isLast = () => data.photo_stream.photos[data.photo_stream.photos.length - 1].id === photo.id
+                    $.photos.hooks_manager.trigger('afterLoadPhoto', { first: isFirst(), last: isLast() });
                     delete f.xhr;
                 },
                 'json'
             );
             f.xhr = xhr;
-            $('#photo-name').html(photo.name);
         },
 
         updateViewChildPhoto: function(data) {
@@ -913,15 +912,21 @@
                 photo = data.photo;
 
             $.photos.renderPhotoImg(photo);
+
             $('#photo-author').html(tmpl('template-photo-author', {
                 photo: photo,
                 author: author
             }));
+
             $.photos.updatePhotoOriginalBlock(photo);
-            $('#photo-exif').html(tmpl('template-photo-exif', {
-                exif: exif
-            }));
-            $.photos.renderMap(exif.GPSLatitude, exif.GPSLongitude, photo.name);
+
+            if(exif.length) {
+                $('#photo-exif').html(tmpl('template-photo-exif', {
+                    exif: exif
+                }));
+                $.photos.renderMap(exif.GPSLatitude, exif.GPSLongitude, photo.name);
+            }
+
             $('#photo-albums').html(tmpl('template-photo-albums', {
                 albums: albums
             }));
@@ -930,6 +935,9 @@
                 frontend_link_template: data.frontend_link_template,
                 photo: photo
             });
+
+            $.photos.updatePhotoName(photo.name, photo.edit_rights);
+            $.photos.initPhotoStackWidgetActiveItem(photo.index);
         },
 
         loadNewPhoto: function method(id) {
@@ -948,21 +956,28 @@
 
                     var data = r.data,
                         photo = data.photo;
+
                     $.photos.renderViewPhoto(data);
 
                     // preloading next photo
-                    var next_photo = $.photos.photo_stream_cache.getNext();
+                    const next_photo = $.photos.photo_stream_cache.getNext(photo);
                     if (next_photo) {
                         $.photos.preloadPhoto(next_photo);
+                    }
+
+                    // preloading prev photo
+                    const prev_photo = $.photos.photo_stream_cache.getPrev(photo);
+                    if (prev_photo) {
+                        $.photos.preloadPhotoPrev(prev_photo);
                     }
 
                     if (data.album) {
                         $.photos.setAlbum(data.album);
                     }
-                    /**
-                     * @hook
-                     */
-                    $.photos.hooks_manager.trigger('afterLoadPhoto', photo);
+
+                    const isFirst = () => data.photo_stream.photos[0].id === id;
+                    const isLast = () => data.photo_stream.photos[data.photo_stream.photos.length - 1].id === id;
+                    $.photos.hooks_manager.trigger('afterLoadPhoto', { first: isFirst(), last: isLast() });
                 },
             'json');
         },
@@ -982,9 +997,10 @@
             // get alive next/prev action if comes from menu
             $.photos.photo_stream_cache.set(photo_stream.photos);
 
-            var not_in_dynamic_album = false;
+            let not_in_dynamic_album = false;
+
             if (album && !in_collection) {
-                if (album.type == Album.TYPE_STATIC) {
+                if (album.type == Album.TYPE_STATIC && !stack) {
                     $.photos.goToHash('album/' + album.id + '/');
                     return;
                 } else {
@@ -996,18 +1012,18 @@
             $('#content').html(tmpl('template-p-block'));
 
             $.photos.renderPhotoBlock({
-                photo: photo,
+                photo,
                 hash: $.photos.hash,
-                albums: albums,
-                hooks: hooks,
+                author,
+                exif,
+                albums,
+                hooks,
                 frontend_link_template: frontend_link_template
             });
 
             $.photos.initPhotoToolbar({
-                photo: photo,
-                author: author,
-                exif: exif,
-                stack: stack,
+                photo,
+                stack,
                 hash: $.photos.hash
             });
 
@@ -1068,26 +1084,15 @@
             // clean prev hooks results
             $('#photo-hook-bottom').html('');
             var is_preloaded = $.photos.isPhotoPreloaded(photo);
-            if (is_preloaded) {
-                $.photos.renderPhotoImg(photo);
+            var is_prevPreloaded = $.photos.isPrevPhotoPreloaded(photo);
+
+            if (is_preloaded || is_prevPreloaded) {
+                $.photos.renderPhotoImg(photo, is_preloaded, is_prevPreloaded);
             } else {
                 var proper_thumb = $.photos._chooseProperThumb(photo),
                     $photo = $('#photo');
 
-
-                /*if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                    $photo.width(proper_thumb.size.width).height(proper_thumb.size.height);
-                }*/
-
-                /*$photo.css({
-                    opacity: 0,
-                    display: 'none'
-                });
-
-                let photo_container_height = document.querySelector(".p-one-photo").clientHeight;
-                if (photo.height >= photo_container_height) {
-                    $photo.height(photo_container_height);
-                }*/
+                $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
 
                 $photo.proper_thumb = {
                     url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
@@ -1098,8 +1103,19 @@
                     $photo,
                     proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                     function(){
-                        if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                            $photo.width(proper_thumb.size.width).height(proper_thumb.size.height);
+                        if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                            $photo.addClass('contain');
+                        } else {
+                            $photo.removeClass('contain');
+                        }
+
+                        const is_prevInStack = $.photos.photo_stack_cache.getPrev(photo);
+                        const is_nextInStack = $.photos.photo_stack_cache.getNext(photo);
+                        if (is_prevInStack || is_nextInStack) {
+                            $photo.removeClass('fade-in').addClass('fade-in');
+                            $photo.on('animationend', function() {
+                                $photo.removeClass('fade-in');
+                            });
                         }
                     }
                 );
@@ -1107,13 +1123,18 @@
             $.photos.updatePhotoTags(photo.tags);
 
             // preload next photo
-            var next_photo = $.photos.photo_stream_cache.getNext();
+            const next_photo = $.photos.photo_stream_cache.getNext();
             if (next_photo) {
                 $.photos.preloadPhoto(next_photo);
             }
 
+            const prev_photo = $.photos.photo_stream_cache.getPrev();
+            if (prev_photo) {
+                $.photos.preloadPhotoPrev(prev_photo);
+            }
+
             // load addition info about photo
-            var xhr = $.post('?module=photo&action=load', { id: photo.id },
+            var xhr = $.post('?module=photo&action=load', { id: photo.id, hash: $.photos.hash },
                 function (r) {
                     if (r.status == 'ok') {
                         var data = r.data,
@@ -1142,10 +1163,13 @@
                         photo = $.photos.photo_stream_cache.updateById(photo.id, photo);
                         data.photo = photo;
                         $.photos.updateViewPhoto(data, is_preloaded);
+
                         /**
                          * @hook
                          */
-                        $.photos.hooks_manager.trigger('afterLoadPhoto', photo);
+                        const isFirst = () => data.photo_stream.photos[0].id === photo.id
+                        const isLast = () => data.photo_stream.photos[data.photo_stream.photos.length - 1].id === photo.id
+                        $.photos.hooks_manager.trigger('afterLoadPhoto', { first: isFirst(), last: isLast() });
                         delete f.xhr;
                     }
                 },
@@ -1240,9 +1264,11 @@
             }
         },
 
-        renderPhotoImg: function(photo) {
+        renderPhotoImg: function(photo, preload, prevPreload) {
             let proper_thumb = $.photos._chooseProperThumb(photo),
                 $photo = $('#photo');
+
+            $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
 
             $photo.proper_thumb = {
                 url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
@@ -1253,12 +1279,19 @@
                 $photo,
                 proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 function() {
-                    if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                        $(this).width(proper_thumb.size.width).height(proper_thumb.size.height);
+                    if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                        $photo.addClass('contain');
+                    } else {
+                        $photo.removeClass('contain');
                     }
-                    /**
-                     * @hook
-                     */
+
+                    if (preload || prevPreload) {
+                        $photo.removeClass('fade-in').addClass('fade-in');
+                        $photo.on('animationend', function() {
+                            $photo.removeClass('fade-in');
+                        });
+                    }
+
                     $.photos.hooks_manager.trigger('afterRenderImg', this, photo, proper_thumb);
                 }
             );
@@ -1274,17 +1307,19 @@
             if (edit) {
                 $.photos.menu.enable('photo','#photo-organize-menu');
                 $.photos.menu.enable('photo','#edit-menu');
-                $('#photo-tags').parent().show();
+                // $('#photo-tags').parent().show();
             } else {
                 $.photos.menu.disable('photo','#photo-organize-menu');
                 $.photos.menu.disable('photo','#edit-menu');
-                $('#photo-tags').parent().hide();
+                // $('#photo-tags').parent().hide();
             }
         },
 
         preloadPhoto: function(photo) {
             var preload_photo_img = $('#preload-photo');
             preload_photo_img.attr('data-photo-id', '');
+
+            preload_photo_img.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
 
             replaceImg(
                 preload_photo_img,
@@ -1295,8 +1330,27 @@
             );
         },
 
+        preloadPhotoPrev: function(photo) {
+            var preload_photo_img = $('#preload-photo-prev');
+            preload_photo_img.attr('data-photo-id', '');
+
+            preload_photo_img.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
+            replaceImg(
+              preload_photo_img,
+              photo.thumb_big.url,
+              function() {
+                  preload_photo_img.attr('data-photo-id', photo.id);
+              }
+            );
+        },
+
         isPhotoPreloaded: function(photo) {
             return $('#preload-photo').attr('data-photo-id') == photo.id;
+        },
+
+        isPrevPhotoPreloaded: function(photo) {
+            return $('#preload-photo-prev').attr('data-photo-id') == photo.id;
         },
 
         abortPrevLoading: function() {
@@ -1389,6 +1443,7 @@
             $('#photo-name').inlineEditable({
                 placeholder: $('#photo-name').text() ? null : $_('Edit title...'),
                 placeholderClass: 'gray',
+                html: false,
                 afterBackReadable: function(input, e) {
                     if (!e.changed) {
                         return;
@@ -1401,7 +1456,7 @@
                         id: $.photos.getPhotoId(),
                         type: 'photo',
                         name: 'name',
-                        value: value,
+                        value: value.replace(/&/g, '&amp;').replace(/\s/g,' ').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
                         fn: function(r) {
                             $('#photo-name').inlineEditable('setOption', {
                                 placeholder: null
@@ -1435,7 +1490,7 @@
                 placeholderClass: 'gray',
                 makeReadableBy: ['esc'],
                 updateBy: ['ctrl+enter'],
-                html: true,
+                html: false,
                 allowEmpty: true,
                 beforeMakeEditable: function(input) {
                     var button = $('#photo-description-save');
@@ -1462,7 +1517,7 @@
                         id: $.photos.photo_stream_cache.getCurrent().id,
                         type: 'photo',
                         name: 'description',
-                        value: $(input).val(),
+                        value: $(input).val().replace(/&/g, '&amp;').replace(/\s/g,' ').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
                         fn: function() {}
                     });
                 },
@@ -1521,11 +1576,7 @@
                 items: 'li.dr',
                 opacity: 0.75,
                 tolerance: 'pointer',
-                start: function() {
-                    document.ondragstart = function() { return false; }
-                },
-                stop: function (event, ui) {
-                    document.ondragstart = null;
+                onEnd: function (ui) {
                     var li = $(ui.item);
                     var id = parseInt(li.attr('data-photo-id'));
                     var next = li.next(),
@@ -1539,39 +1590,34 @@
                             before_id: before_id
                         },
                         function (response) {
-                            if (response.status == 'ok') {
-                                if (response.data.stack) {
-                                    var stack = response.data.stack;
-                                    var prev_parent_id = $('#stack-stream').data('parent_id');
-                                    var new_parent = stack[0];
-                                    var new_parent_id = new_parent.id;
-                                    // if stack parent has changed than we need update photo-stream
-                                    // (but before it we need update photo_stream_cache)
-                                    if (prev_parent_id != new_parent_id) {
-                                        var prev_parent = $.photos.photo_stream_cache.getById(prev_parent_id);
-                                        new_parent.tags = prev_parent.tags;
-                                        $.photos.photo_stream_cache.replace(prev_parent, new_parent);
-                                        // Say stack-stream that we have new parent
-                                        $('#stack-stream').data('parent_id', new_parent_id);
-                                        // update photo-stream visually
-                                        $.photos.updatePhotoStreamWidget({
-                                            current_photo: new_parent
-                                        });
-                                    }
-                                }
+                            if (response.status !== 'ok') {
+                                return;
                             }
+
+                            if (!response.data.stack) {
+                                return;
+                            }
+
+                            const stack = response.data.stack;
+                            $.photos.photo_stack_cache.set(stack).setCurrent(response.data.stack[0]);
+
+                            const oldPhoto = $.photos.photo_stream_cache.getById(parent_id);
+                            const newPhoto = $.photos.photo_stack_cache.getAll()[0];
+
+                            $.photos.photo_stream_cache.replace(oldPhoto, newPhoto);
                         },
                     "json");
-            }});
+                }
+            });
             if ($('#stack-stream').data('inited')) {
                 return false;
             }
 
-            $('#stack-stream li.dr').on('click', function() {
-                $('#stack-stream li.dr.selected').removeClass('selected');
-                $(this).addClass('selected');
-            });
             $('#stack-stream').data('inited', true);
+        },
+
+        initPhotoStackWidgetActiveItem: function(id) {
+            $(document).find('#stack-stream li.dr').removeClass('selected').siblings(`li:nth-child(${id + 1})`).addClass('selected');
         },
 
         initPhotoTagsWidget: function(tags) {
@@ -1608,8 +1654,7 @@
             try {
                 tags_input.tagsInput({
                     autocomplete_url: '?module=tag&action=list',
-                    height: 120,
-                    width: 150,
+                    width: '100%',
                     defaultText: default_text,
                     onChange: function () {
                         // this event calls every time list of tags is changed, event by importTags, so don't use it for ajax!
@@ -1822,8 +1867,8 @@
                 is_start = false;
 
             $('#photo-stream ul.photostream:first').photoStreamSlider({
-                backwardLink: '#photo-stream .rewind',
-                forwardLink: '#photo-stream .ff',
+                backwardLink: '#photo-stream .p-rewind',
+                forwardLink: '#photo-stream .p-ff',
                 photoStream: photo_stream,
                 duration: duration,
                 onForward: function f() {
@@ -1924,7 +1969,6 @@
             // make shift in photo-stream
             if (data.shift) {
                 photo_stream.find('li.selected').removeClass('selected');
-                photo_stream.find('li[data-photo-id=' + data.shift + ']').addClass('selected');
                 var fn = data.fn || function() {};
                 photo_stream.trigger('home', [fn, !$.photos.shift_next]);
                 $.photos.shift_next = false;
@@ -2030,10 +2074,11 @@
                         $(this).closest('#wa-header').removeClass('has-toolbar').find('#p-toolbar').remove();
                     })
                     $(document).on('keyup', event => {
-                        let key = event.which || event.keyCode || 0;
+                        const key = event.which || event.keyCode || 0;
                         if (key === 27) {
                             let $toolbar = $('#wa-header').find('#p-toolbar');
-                            if ($toolbar.length) {
+                            const isDialogOpened = $('.dialog-opened').length;
+                            if ($toolbar.length && !isDialogOpened) {
                                 let $toolbar_close = $('.js-toolbar-close'),
                                     hash = $toolbar_close.attr('href');
 
@@ -2041,21 +2086,9 @@
                                 $.wa.setHash(hash)
                             }
                         }
-
                     })
                 }
                 $.photos.menu.init('photo');
-                // init only once
-                var pop_tags = $('#photos-photo-popular-tags');
-                if (!pop_tags.data('inited')) {
-                    pop_tags.off('click.photos', 'a').
-                    on('click.photos', 'a', function() {
-                        var name = $(this).text();
-                        var tags_input = $('#photo-tags')
-                        tags_input.removeTag(name);
-                        tags_input.addTag(name);
-                    }).data('inited', true);
-                }
 
                 $.photos.updateViewPhotoMenu(($.isArray(data.stack) && data.stack.length), data.photo.edit_rights);
 
@@ -2070,44 +2103,33 @@
 
         renderPhotoBlock: function(data) {
             var photo = data.photo,
-                proper_thumb = $.photos._chooseProperThumb(photo),
-                size = photo.thumb.size;
+                proper_thumb = $.photos._chooseProperThumb(photo);
 
-            if (typeof proper_thumb.size === 'object' && proper_thumb.size) {
-                // for gradual load image effect we first render image with thumb.url but with proper_thumb sizes
-                // and than load with proper_thumb.url
-                photo.thumb.size = {
-                    width: proper_thumb.size.width,
-                    height: proper_thumb.size.height
-                };
-            }
+            const newData = data;
+            newData.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
 
-            $("#p-block").html(tmpl('template-photo', data)).addClass('rendered');
+            $("#p-block").html(tmpl('template-photo', newData)).addClass('rendered');
             $("#p-info-area").html(tmpl('template-info-area', data)).addClass('rendered');
 
             $('#p-toolbar').prependTo($('#wa-header-content-area'));
             let $photo = $('#photo');
-
-
-            if (typeof size === 'object' && size) {
-                // restore real sizes for this thumb
-                photo.thumb.size = {
-                    width: size.width,
-                    height: size.height
-                };
-            }
+            $photo.smallSize = newData.smallSize;
 
             $photo.proper_thumb = {
                 url: proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 url2x: proper_thumb.url2x + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '')
             }
 
+            // first time open photo from gallery
             replaceImg($photo,
                 proper_thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 function() {
-                    /**
-                     * @hook
-                     */
+                    if ((photo.thumb_big.size.width < photo.width) || (photo.thumb_big.size.height < photo.height) ) {
+                        $photo.addClass('contain');
+                    } else {
+                        $photo.removeClass('contain');
+                    }
+
                     $.photos.hooks_manager.trigger('afterRenderImg', this, photo, proper_thumb);
                 }
             );
@@ -2149,7 +2171,7 @@
             });
 
             // Go to prev or next photo when user clicks on an arrow over the photo
-            $('#p-block .p-one-photo > .p-image-nav').on('click', function() {
+            $('#p-block .p-one-photo > .p-image-nav .p-image-nav-item').on('click', function() {
                 if (this.classList.contains('p-rewind')) {
                     var prev = $.photos.photo_stream_cache.getPrev();
 
@@ -2168,35 +2190,7 @@
         },
 
         _chooseProperThumb: function(photo) {
-            var thumb_big = photo.thumb_big,
-                thumb_middle = photo.thumb_middle,
-                proper_thumb,
-                block_width = $('#p-block').width();
-
-            proper_thumb = thumb_big;
-            if (typeof thumb_big.size === 'object' && thumb_big.size) {
-                if (parseInt(thumb_big.size.height, 10) > parseInt(thumb_middle.bound.height, 10) && // is vertical photo
-                        parseInt(thumb_big.size.height, 10) > $(window).height())
-                {
-                    proper_thumb = thumb_middle;
-                }
-                if (parseInt(proper_thumb.size.width, 10) > block_width) {
-                    proper_thumb.size.height = Math.round(block_width/parseInt(proper_thumb.size.width, 10)*parseInt(proper_thumb.size.height, 10));
-                    proper_thumb.size.width = block_width;
-                }
-            } else {
-                proper_thumb.size = {
-                    width: block_width,
-                    height: ''
-                };
-            }
-            if (typeof proper_thumb.size !== 'object' || !proper_thumb.size) {
-                proper_thumb.size = {
-                    width: block_width,
-                    height: ''
-                };
-            }
-            return proper_thumb;
+            return photo.thumb_big;
         },
 
         setNextPhotoLink: function(next) {
@@ -2391,19 +2385,21 @@
 
             $.post('?module=photo&action=rotate', { id: id, direction: direction },
                 function(r) {
-                    if (r.status == 'ok') {
-                        var photo = r.data.photo;
-                        if (photo.parent_id == 0) {
-                            photo = $.photos.photo_stream_cache.updateById(id, photo);
-                        } else {
-                            photo = $.photos.photo_stack_cache.updateById(id, photo);
-                        }
-                        $.photos.updatePhotoOriginalBlock(photo);
-                        $.photos.updatePhotoImgs(photo, fn);
-
-                        waLoading.done();
-                        $wrapper.removeClass(locked_class);
+                    if (r.status !== 'ok') {
+                        return;
                     }
+
+                    var photo = r.data.photo;
+                    if (photo.parent_id == 0) {
+                        photo = $.photos.photo_stream_cache.updateById(id, photo);
+                    } else {
+                        photo = $.photos.photo_stack_cache.updateById(id, photo);
+                    }
+                    $.photos.updatePhotoOriginalBlock(photo);
+                    $.photos.updatePhotoImgs(photo, fn);
+
+                    waLoading.done();
+                    $wrapper.removeClass(locked_class);
                 },
             'json').error(function(xhr) {
                 $.photos.showServerError(xhr.responseText);
@@ -2420,6 +2416,8 @@
                 salt = photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '',
                 $photo = $('#photo');
 
+            $photo.smallSize = (photo.width < this.containerWidth && photo.height < this.containerHeight);
+
             $photo.proper_thumb = {
                 url: proper_thumb.url + salt,
                 url2x: proper_thumb.url2x + salt
@@ -2429,13 +2427,6 @@
                 $photo,
                 proper_thumb.url + salt,
                 function() {
-                    /*let photo_container_height = document.querySelector(".p-one-photo").clientHeight;
-                    if (photo.height >= photo_container_height) {
-                        $(this).height(photo_container_height).attr('srcset', `${proper_thumb.url}${salt} 1x, ${proper_thumb.url2x}${salt} 2x`);
-                    }else{
-                        $(this).attr('srcset', `${proper_thumb.url}${salt} 1x, ${proper_thumb.url2x}${salt} 2x`);
-                    }*/
-
                     $('#photo-stream .selected img, #stack-stream .selected img').each(function() {
                         var self = $(this);
                         if (self.hasClass('thumb')) {
@@ -3701,10 +3692,6 @@
 
 $(function () {
 
-    $('.p-one-photo .next').on('click', function () {
-        $.photos.shift_next = true;
-    });
-
     $('.dialog').off().on('change_loading_status', function(e, status) {
         var status = status || false,
             self = $(this),
@@ -3841,16 +3828,16 @@ $(function () {
         );
 
     // Hide arrows over the photo if there are nowhere to go in its direction
-    $.photos.hooks_manager.bind('afterLoadPhoto', function() {
-        if ($.photos.photo_stream_cache.getPrev()) {
-            $('#p-block .p-one-photo > .p-image-nav.p-rewind').show();
-        } else {
-            $('#p-block .p-one-photo > .p-image-nav.p-rewind').hide();
+    $.photos.hooks_manager.bind('afterLoadPhoto', function(status) {
+        $('#p-block .p-one-photo > .p-image-nav .p-rewind').show();
+        $('#p-block .p-one-photo > .p-image-nav .p-ff').show();
+
+        if (status.first) {
+            $('#p-block .p-one-photo > .p-image-nav .p-rewind').hide();
         }
-        if ($.photos.photo_stream_cache.getNext()) {
-            $('#p-block .p-one-photo > .p-image-nav.p-ff').show();
-        } else {
-            $('#p-block .p-one-photo > .p-image-nav.p-ff').hide();
+
+        if (status.last) {
+            $('#p-block .p-one-photo > .p-image-nav .p-ff').hide();
         }
     });
 

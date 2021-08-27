@@ -24,7 +24,7 @@
 
                 {if isset($album)}
 
-                    <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note}{/if}</span>
+                    <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note|escape}{/if}</span>
                     <input type="text" id="photo-album-note-input" style="display: none;" class="p-photo-note-edit hint short">
 
                     {if $album.edit_rights}
@@ -74,28 +74,28 @@
                             </span>
                             {if $album.edit_rights}
                                 <span class="desktop-only">
-                                    <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="break-all">{$frontend_link}</a>
+                                    <a target="_blank" href="{$frontend_link|escape}" id="photo-list-frontend-link" class="break-all">{$frontend_link|escape}</a>
                                 </span>
                                 <span class="tablet-only mobile-only">
-                                    <a target="_blank" href="{$frontend_link}" class="button gray circle" id="photo-list-frontend-link" title="[`Private album`]"><i class="fas fa-external-link-alt"></i></a>
+                                    <a target="_blank" href="{$frontend_link|escape}" class="button gray circle" id="photo-list-frontend-link" title="[`Private album`]"><i class="fas fa-external-link-alt"></i></a>
                                 </span>
                             {/if}
                         {else}
                             <span class="desktop-only">
-                                <a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a>
+                                <a target="_blank" href="{$frontend_link|escape}" class="bold" id="photo-list-frontend-link">{$frontend_link|escape}</a>
                             </span>
                             <span class="tablet-only mobile-only">
-                                <a target="_blank" href="{$frontend_link}" class="button circle" id="photo-list-frontend-link"><i class="fas fa-external-link-alt"></i></a>
+                                <a target="_blank" href="{$frontend_link|escape}" class="button circle" id="photo-list-frontend-link"><i class="fas fa-external-link-alt"></i></a>
                             </span>
                         {/if}
                     {/if}
 
                 {elseif (!empty($frontend_link))}
                     <span class="desktop-only">
-                        [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link}" class="bold" id="photo-list-frontend-link">{$frontend_link}</a> <i class="fas fa-external-link-alt fa-xs text-blue opacity-50"></i>
+                        [`Public link`]:&nbsp;<a target="_blank" href="{$frontend_link|escape}" class="bold" id="photo-list-frontend-link">{$frontend_link|escape}</a> <i class="fas fa-external-link-alt fa-xs text-blue opacity-50"></i>
                     </span>
                     <span class="tablet-only mobile-only">
-                        <a target="_blank" href="{$frontend_link}" class="button circle" id="photo-list-frontend-link" title="[`Public link`]"><i class="fas fa-external-link-alt"></i></a>
+                        <a target="_blank" href="{$frontend_link|escape}" class="button circle" id="photo-list-frontend-link" title="[`Public link`]"><i class="fas fa-external-link-alt"></i></a>
                     </span>
                 {/if}
 
@@ -178,7 +178,7 @@
                                 <h5 class="heading">
                                     <span>[`Descriptions`]</span>
                                 </h5>
-                                <ul class="menu descriptions-view-menu break-words custom-mb-0" id="save-menu">
+                                <ul class="menu descriptions-view-menu break-words custom-my-0" id="save-menu">
                                     <li data-action="save-description" class="box">
                                         <input type="button" value="[`Save`]" class="button">
                                     </li>
@@ -214,7 +214,7 @@
                             <hr>
                             <section id="selector-menu-block" style="display: none;">
                                 <ul class="menu custom-mb-0 custom-mt-0 thumbs-view-menu ellipsis" id="selector-menu">
-                                    <li data-action="select-photos">
+                                    <li data-action="select-photos" data-error-msg="[`Stack is empty`]">
                                         <a href="#">
                                             <i class="fas fa-check-double"></i>
                                             <span class="unchecked">[`Select all photos`]</span>
@@ -391,8 +391,8 @@
         </div>
         <div class="p-description js-description">
             {% if (p.description) { %}
-                <div class="hint {% if (p.edit_rights) { %}editable js-description-editable{% } %}">{%#p.description.truncate(255)%}</div>
-                <div class="full-description js-full-description" style="display:none;">{%#p.description%}</div>
+                <div class="hint p-description-preview {% if (p.edit_rights) { %}editable js-description-editable{% } %}">{%=p.description%}</div>
+                <div class="full-description js-full-description" style="display:none;">{%=p.description%}</div>
             {% } else { %}
                 {% if (p.edit_rights) { %}
                     <div class="hint editable" style="display: inline;">[`add description`]</div>
