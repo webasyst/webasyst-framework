@@ -1,7 +1,7 @@
 {function name="_render" class=""}
 <div class="flexbox {$class|default:""}" style="border: 1px dashed gold;">
     <div style="line-height: 0;">
-        <img class="userpic" src="/wa-content/img/userpic20.jpg" />
+        <img class="userpic" src="{$wa_url}wa-content/img/userpic20.jpg" />
     </div>
     <div>Элемент 2</div>
     <div>
@@ -21,7 +21,7 @@
 {function name="_render_1"}
 <div class="flexbox space-16" style="border: 1px dashed gold;">
     <div class="middle" style="line-height: 0;">
-        <img class="userpic" src="/wa-content/img/userpic20.jpg" />
+        <img class="userpic" src="{$wa_url}wa-content/img/userpic20.jpg" />
     </div>
     <div>Элемент 2</div>
     <div>
@@ -64,11 +64,8 @@
     <div class="u-example-section">
         <h3><code>.flexbox</code></h3>
         <div class="u-example">{_render}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render|escape}</pre>
-            </div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape}</pre>
         </div>
     </div>
 
@@ -76,11 +73,8 @@
         <h3>.flexbox<code>.space-XX</code></h3>
         <p>С помощью дополнительных классов <code>.flexbox<strong>.space-XX</strong></code> добавляются внутренние отступы для дочерних элементов, где XX — значение в пикселях с шагом 4 — <code>0</code>, <code>4</code>, <code>8</code>, <code>12</code>, <code>16</code>, <code>20</code>, <code>24</code>, <strike>28</strike>, <code>32</code>, <strike>36</strike>, <code>40</code>, <strike>44</strike>, <code>48</code>. Шаг в 4 пикселя выбран исходя из соображений сохранения визуальной сетки интерфейса и практической полезности. Пиксели будут <a href="{$wa_app_url}component/typography/">пересчитаны в rem</a>.</p>
         <div class="u-example">{_render class="space-16"}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render|escape class="space-16"}</pre>
-            </div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="space-16"}</pre>
         </div>
     </div>
 
@@ -88,11 +82,8 @@
         <h3>.flexbox<code>.middle</code></h3>
         <p>Дополнительный класс <code>.flexbox<strong>.middle</strong></code> центрирует каждый дочерний элемент.</p>
         <div class="u-example">{_render class="middle space-16"}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render|escape class="middle space-16"}</pre>
-            </div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="middle space-16"}</pre>
         </div>
     </div>
 
@@ -100,11 +91,8 @@
         <h3>.flexbox > <code>.middle</code></h3>
         <p>Класс <code>.middle</code> можно использовать и на отдельных дочерних элементах.</p>
         <div class="u-example">{_render_1}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render_1|escape}</pre>
-            </div>
+        <div class="line">
+            <pre class="prettyprint">{_render_1|escape}</pre>
         </div>
     </div>
 
@@ -112,23 +100,17 @@
         <h3>.flexbox<code>.full-width</code></h3>
         <p>Дополнительный класс <code>.flexbox<strong>.full-width</strong></code> заставляет блок занять всю доступную ему ширину.</p>
         <div class="u-example">{_render class="full-width"}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render|escape class="full-width"}</pre>
-            </div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="full-width"}</pre>
         </div>
     </div>
 
     <div class="u-example-section">
         <h3>.flexbox > <code>.wide</code></h3>
         <p>Класс <code>.wide</code> на дочернем элементе заставляет занять его все доступное пространство.</p>
-        <div class="u-example">{_render_2 class="full-width"}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render_2|escape class="full-width"}</pre>
-            </div>
+        <div class="u-example">{_render_2 class="wide"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render_2|escape class="wide"}</pre>
         </div>
     </div>
 
@@ -137,11 +119,8 @@
         <p>В этом режиме ячейки равномерно заполняют свободное пространство по аналогии с таблицей. В отличие от <span class="bold">.full-width</span>, пространство является шириной ячейки.</p>
         <p>Если контент ячейки не влезает с рассчитанное пространство, ячейка будет растянута. Такова особенность <code>display: flex</code>. Если нужно жестко зафиксировать ячейку, используется <code>.tablebox</code> вместо <code>.flexbox</code>.</p>
         <div class="u-example">{_render class="fixed"}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render|escape class="fixed"}</pre>
-            </div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="fixed"}</pre>
         </div>
     </div>
 
@@ -154,12 +133,9 @@
         <p>Flexbox будет «разорван», если дочерние элементы не помещаются по ширине в одну строку (<code>flex-wrap: wrap;</code>).</p>
         <h3>.flexbox<code>.wrap-mobile</code></h3>
         <p>Аналогично, но только на мобильных устройствах (<=760px по ширине).</p>
-        <div class="u-example">{_render class="vertical"}</div>
-        <div class="u-code-wrapper">
-            <span class="u-link js-toggle-code">Показать код</span>
-            <div class="line">
-                <pre class="prettyprint">{_render|escape class="vertical"}</pre>
-            </div>
+        <div class="u-example">{_render class="wrap-mobile"}</div>
+        <div class="line">
+            <pre class="prettyprint">{_render|escape class="vertical"}</pre>
         </div>
     </div>
 

@@ -63,6 +63,7 @@
                     $.wa_ui.content = $.wa_ui.init.initContentRouter({
                         $content: $("#wa-app-content"),
                         onLoad: function() {
+                            $('.temp-element').remove();
                             $("html, body").scrollTop(0);
                         }
                     });
@@ -100,6 +101,5 @@
             })(jQuery);
         </script>
     </div>
-
 </body>
 </html>

@@ -24,6 +24,45 @@
 </p>
 {/function}
 
+{function name="_render_disabled"}
+<p>
+    <button disabled="disabled">button:disabled</button>
+    <a class="button blue disabled">.blue</a>
+    <button class="button green" disabled="disabled">.green</button>
+    <button class="button yellow" disabled="disabled">.yellow</button>
+    <button class="button orange" disabled="disabled">.orange</button>
+    <button class="button red" disabled="disabled">.red</button>
+</p>
+<p>
+    <button class="button purple disabled">.purple</button>
+    <button class="button pink" disabled="disabled">.pink</button>
+    <button class="button brown" disabled="disabled">.brown</button>
+    <button class="button gray" disabled="disabled">.gray</button>
+    <button class="button dark-gray" disabled="disabled">.dark-gray</button>
+    <button class="button black" disabled="disabled">.black</button>
+    <button class="button light-gray" disabled="disabled">.light-gray</button>
+    <button class="button white" disabled="disabled">.white</button>
+</p>
+<p>
+    <button class="button outlined" disabled="disabled">.outlined:disabled</button>
+    <a class="button blue outlined disabled">.blue</a>
+    <button class="button outlined green" disabled="disabled">.green</button>
+    <button class="button outlined yellow" disabled="disabled">.yellow</button>
+    <button class="button outlined orange" disabled="disabled">.orange</button>
+    <button class="button outlined red" disabled="disabled">.red</button>
+</p>
+<p>
+    <button class="button outlined disabled purple">.purple</button>
+    <button class="button outlined pink" disabled="disabled">.pink</button>
+    <button class="button outlined brown" disabled="disabled">.brown</button>
+    <button class="button outlined gray" disabled="disabled">.gray</button>
+    <button class="button outlined dark-gray" disabled="disabled">.dark-gray</button>
+    <button class="button outlined black" disabled="disabled">.black</button>
+    <button class="button outlined light-gray" disabled="disabled">.light-gray</button>
+    <button class="button outlined white" disabled="disabled">.white</button>
+</p>
+{/function}
+
 {function name="_render_dws"}
 <p>
     <a href="#" class="button danger">.danger</a>
@@ -137,6 +176,7 @@
     <a href="#" class="button rounded brown">.brown</a>
     <a href="#" class="button rounded gray">.gray</a>
     <a href="#" class="button rounded dark-gray">.dark-gray</a>
+    <a href="#" class="button rounded light-gray">.light-gray</a>
     <a href="#" class="button rounded black">.black</a>
     <a href="#" class="button rounded white">.white</a>
 </p>
@@ -156,6 +196,7 @@
     <a href="#" class="button rounded brown outlined">.brown</a>
     <a href="#" class="button rounded gray outlined">.gray</a>
     <a href="#" class="button rounded dark-gray outlined">.dark-gray</a>
+    <a href="#" class="button rounded light-gray outlined">.light-gray</a>
     <a href="#" class="button rounded black outlined">.black</a>
     <a href="#" class="button rounded white outlined">.white</a>
 </p>
@@ -302,6 +343,15 @@
     </div>
     <div class="line">
         <pre class="prettyprint">{_render_dws|escape}</pre>
+    </div>
+
+    <h3>.button<code>:disabled</code></h3>
+    <p>HTML-элементы button и input в задизейбленном состоянии <code><strong>:disabled</strong></code> и любые другие элементы с дополнительным классом <code>.button<strong>.disabled</strong></code> имеют приглушенный некликабельный вид:</p>
+    <div class="line">
+        {_render_disabled}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_disabled|escape}</pre>
     </div>
 
     <h3>Общие рекомендации</h3>

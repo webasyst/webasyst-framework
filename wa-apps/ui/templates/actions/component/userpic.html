@@ -3,142 +3,142 @@
 
 {function name="_render_icon"}
 <!-- в базовом варианте юзерпик-иконка будет смасштабирована до 20х20px -->
-<span class="icon userpic" style="background-image: url('/wa-content/img/userpic.svg');"></span>
+<span class="icon userpic" style="background-image: url('{$wa_url}wa-content/img/userpic.svg');"></span>
 
 <!-- можно использовать модификаторы размера иконок .icon -->
 <span class="icon userpic size-24">
-    <i style="background-image: url('/wa-content/img/userpic.svg');"></i>
+    <i style="background-image: url('{$wa_url}wa-content/img/userpic.svg');"></i>
 </span>
 {/function}
 
 {function name="_render1"}
 <p>
     Без .userpic:
-    <img src="/wa-content/img/company.svg" alt="" />
-    <img src="/wa-content/img/userpic.svg" alt="" />
+    <img src="{$wa_url}wa-content/img/company.svg" alt="" />
+    <img src="{$wa_url}wa-content/img/userpic.svg" alt="" />
 </p>
 <p>
     С .userpic:
-    <img class="userpic" src="/wa-content/img/company.svg" alt="" />
-    <img class="userpic" src="/wa-content/img/userpic.svg" alt="" />
+    <img class="userpic" src="{$wa_url}wa-content/img/company.svg" alt="" />
+    <img class="userpic" src="{$wa_url}wa-content/img/userpic.svg" alt="" />
 </p>
 {/function}
 
 {function name="_render2"}
 <p>
-    <img class="userpic userpic-20" src="/wa-content/img/userpic.svg" />
-    <img class="userpic userpic-32" src="/wa-content/img/userpic.svg" />
-    <img class="userpic userpic-48" src="/wa-content/img/userpic.svg" />
-    <img class="userpic userpic-96" src="/wa-content/img/userpic.svg" />
-    <img class="userpic userpic-144" src="/wa-content/img/userpic.svg" />
-    <img class="userpic userpic-192" src="/wa-content/img/userpic.svg" />
+    <img class="userpic userpic-20" src="{$wa_url}wa-content/img/userpic.svg" />
+    <img class="userpic userpic-32" src="{$wa_url}wa-content/img/userpic.svg" />
+    <img class="userpic userpic-48" src="{$wa_url}wa-content/img/userpic.svg" />
+    <img class="userpic userpic-96" src="{$wa_url}wa-content/img/userpic.svg" />
+    <img class="userpic userpic-144" src="{$wa_url}wa-content/img/userpic.svg" />
+    <img class="userpic userpic-192" src="{$wa_url}wa-content/img/userpic.svg" />
 </p>
 <p>
-    <i class="userpic userpic-20" style="background-image: url('/wa-content/img/company.svg');"></i>
-    <i class="userpic userpic-32" style="background-image: url('/wa-content/img/company.svg');"></i>
-    <a href="#" class="userpic userpic-48" style="background-image: url('/wa-content/img/company.svg');"></a>
-    <span class="userpic userpic-96" style="background-image: url('/wa-content/img/company.svg');"></span>
-    <span class="userpic userpic-144" style="background-image: url('/wa-content/img/company.svg');"></span>
-    <span class="userpic userpic-192" style="background-image: url('/wa-content/img/company.svg');"></span>
+    <i class="userpic userpic-20" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></i>
+    <i class="userpic userpic-32" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></i>
+    <a href="#" class="userpic userpic-48" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></a>
+    <span class="userpic userpic-96" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></span>
+    <span class="userpic userpic-144" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></span>
+    <span class="userpic userpic-192" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></span>
 </p>
 {/function}
 
 {function name="_userstatus"}
 <p>
-    <span class="userpic userpic20" style="background-image: url('/wa-content/img/company.svg');">
+    <span class="userpic userpic20" style="background-image: url('{$wa_url}wa-content/img/company.svg');">
         <span class="userstatus"></span>
     </span>
-    <span class="userpic userpic32" style="background-image: url('/wa-content/img/company.svg');">
+    <span class="userpic userpic32" style="background-image: url('{$wa_url}wa-content/img/company.svg');">
         <span class="userstatus"></span>
     </span>
-    <span class="userpic userpic48" style="background-image: url('/wa-content/img/company.svg');">
+    <span class="userpic userpic48" style="background-image: url('{$wa_url}wa-content/img/company.svg');">
         <span class="userstatus"></span>
     </span>
-    <span class="userpic userpic96" style="background-image: url('/wa-content/img/company.svg');">
+    <span class="userpic userpic96" style="background-image: url('{$wa_url}wa-content/img/company.svg');">
         <span class="userstatus"></span>
     </span>
-    <span class="userpic userpic144" style="background-image: url('/wa-content/img/company.svg');">
+    <span class="userpic userpic144" style="background-image: url('{$wa_url}wa-content/img/company.svg');">
         <span class="userstatus"></span>
     </span>
-    <span class="userpic userpic192" style="background-image: url('/wa-content/img/company.svg');">
-        <span class="userstatus"></span>
-    </span>
-</p>
-<p>
-    <span class="userpic userpic20">
-        <img src="/wa-content/img/userpic.svg" alt="">
-        <span class="userstatus"></span>
-    </span>
-    <span class="userpic userpic32">
-        <img src="/wa-content/img/userpic.svg" alt="">
-        <span class="userstatus"></span>
-    </span>
-    <span class="userpic userpic48">
-        <img src="/wa-content/img/userpic.svg" alt="">
-        <span class="userstatus"></span>
-    </span>
-    <span class="userpic userpic96">
-        <img src="/wa-content/img/userpic.svg" alt="">
-        <span class="userstatus"></span>
-    </span>
-    <span class="userpic userpic144">
-        <img src="/wa-content/img/userpic.svg" alt="">
-        <span class="userstatus"></span>
-    </span>
-    <span class="userpic userpic192">
-        <img src="/wa-content/img/userpic.svg" alt="">
+    <span class="userpic userpic192" style="background-image: url('{$wa_url}wa-content/img/company.svg');">
         <span class="userstatus"></span>
     </span>
 </p>
 <p>
     <span class="userpic userpic20">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic32">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic48">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic96">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic144">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+    <span class="userpic userpic192">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
+        <span class="userstatus"></span>
+    </span>
+</p>
+<p>
+    <span class="userpic userpic20">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic32">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic48">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic96">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic144">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic192">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
     </span>
 </p>
 <p>
     <span class="userpic userpic20 outlined">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic32 outlined">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus bg-blue"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic48 outlined">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus bg-purple"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic96 outlined">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus bg-brown"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic144 outlined">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus bg-red"><i class="fas fa-umbrella-beach"></i></span>
     </span>
     <span class="userpic userpic192 outlined">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus bg-green"><i class="fas fa-umbrella-beach"></i></span>
     </span>
 </p>
@@ -147,11 +147,11 @@
 {function name="_tooltip"}
 <p>
     <span class="userpic userpic32 tooltip-demo" data-wa-tooltip-icon="fas fa-umbrella-beach">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus bg-blue"></span>
     </span>
     <span class="userpic userpic48 tooltip-demo">
-        <img src="/wa-content/img/userpic.svg" alt="">
+        <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
         <span class="userstatus bg-blue"><i class="fas fa-umbrella-beach"></i></span>
     </span>
 </p>
@@ -187,7 +187,7 @@
 
     <div class="line">
         <h3>.icon<code>.userpic</code></h3>
-        <p>В рамках произвольного текстового контента рекомендуется оформлять юзерпики в виде иконок <code>.icon.userpic</code>, чтобы все было <span class="icon userpic" style="background-image: url('/wa-content/img/userpic.svg');"></span> ровно и <span class="icon userpic" style="background-image: url('/wa-content/img/company.svg');"></span> красиво.</p>
+        <p>В рамках произвольного текстового контента рекомендуется оформлять юзерпики в виде иконок <code>.icon.userpic</code>, чтобы все было <span class="icon userpic" style="background-image: url('{$wa_url}wa-content/img/userpic.svg');"></span> ровно и <span class="icon userpic" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></span> красиво.</p>
         <p>Для управления вертикальной позацией относительно окружения используйте модификаторы <code>.baseline</code> и <code>.top</code>.</p>
         <div class="u-example">{_render_icon}</div>
         <div class="line">
