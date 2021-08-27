@@ -119,6 +119,32 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         try {
+            // Если уже была попытка оплаты этого заказа, нужно узнать, что с ней произошло.
+            // Мы берём последнюю попытку оплаты. Если она отменена (например, протухла по таймауту),
+            // то создадим новую. Если нет, то продолжим работать с той, что есть.
+            $transaction_model = new waTransactionModel();
+            $fields = array(
+                'plugin' => $this->id,
+                'app_id' => $this->app_id,
+                'merchant_id' => $this->merchant_id,
+            );
+            $fields['order_id'] = filter_var($order_data['id'], FILTER_SANITIZE_NUMBER_INT);
+
+            $transactions = $transaction_model->getByFields($fields);
+            $actual_transaction_data = [];
+            $unique_native_ids = [];
+            if ($transactions) {
+                foreach ($transactions as $transaction) {
+                    if (!empty($transaction['native_id']) && !isset($unique_native_ids[$transaction['native_id']])) {
+                        $unique_native_ids[$transaction['native_id']] = $transaction['native_id'];
+                    }
+                }
+                if ($unique_native_ids) {
+                    $last_transaction_id = end($unique_native_ids);
+                    $actual_transaction_data = $this->getPaymentInfo($last_transaction_id);
+                }
+            }
+
             $order = waOrder::factory($order_data);
 
             $type = $this->payment_type;
@@ -132,8 +158,17 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 }
             }
 
-            $payment = $this->createPayment($order, $type);
-
+            $full_refund = !empty($actual_transaction_data['refunded_amount']['value'])
+                && $actual_transaction_data['amount']['value'] == $actual_transaction_data['refunded_amount']['value'];
+            $changed_total = !empty($actual_transaction_data) && $actual_transaction_data['amount']['value'] != $order->total;
+            if (empty($actual_transaction_data)
+                || ifset($actual_transaction_data, 'status', '') == 'canceled' || $full_refund || $changed_total
+            ) {
+                $attempt = $unique_native_ids ? count($unique_native_ids) : 0;
+                $payment = $this->createPayment($order, $type, $attempt);
+            } else {
+                $payment = $actual_transaction_data;
+            }
             switch ($payment['status']) {
                 case 'succeeded':
                 case 'canceled':
@@ -484,14 +519,15 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
     /**
      * @param waOrder $order
      * @param string  $type
+     * @param int     $attempt   порядковый номер попытки оплаты этого заказа (начиная с 0). Нужен, чтобы был разный ключ идемпотентности для API.
      * @return array
      * @throws waException
      */
-    protected function createPayment(waOrder $order, $type)
+    protected function createPayment(waOrder $order, $type, $attempt)
     {
         #Payment data
         $data = $this->formatPaymentData($order, $type);
-        $hash = md5(var_export($order, true).var_export($this->getSettings(), true));
+        $hash = md5(var_export($order, true) . var_export($this->getSettings(), true) . ($attempt ? var_export($attempt, true) : ''));
 
         return $this->apiQuery('create', $data, $hash);
     }
@@ -609,17 +645,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 break;
             case self::OPERATION_CANCEL:
-                $app_payment_method = self::CALLBACK_CANCEL;
                 $transaction_data['state'] = self::STATE_CANCELED;
+                $app_payment_method = self::CALLBACK_NOTIFY;
                 break;
             case self::OPERATION_REFUND:
-                if ($transaction_data['state'] == self::STATE_REFUNDED) {
-                    //XXX update parent state;
-                    $app_payment_method = self::CALLBACK_REFUND;
-                    $app_payment_method = self::CALLBACK_NOTIFY;
-                } else {
-                    $app_payment_method = self::CALLBACK_NOTIFY;
-                }
+                $app_payment_method = self::CALLBACK_NOTIFY;
                 break;
             case self::OPERATION_AUTH_ONLY:
                 $app_payment_method = self::CALLBACK_AUTH;
@@ -1200,9 +1230,7 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
 
                 $canceled_by_user = isset($transaction_raw_data['cancellation_details']['party'])
                     && $transaction_raw_data['cancellation_details']['party'] == 'merchant';
-                $payment_irretrievably_canceled = isset($transaction_raw_data['cancellation_details']['reason'])
-                    && ($transaction_raw_data['cancellation_details']['reason'] == 'expired_on_confirmation'
-                        || $transaction_raw_data['cancellation_details']['reason'] == 'permission_revoked');
+                $payment_irretrievably_canceled = isset($transaction_raw_data['cancellation_details']['reason']);
                 if (!empty($refunded)) {
                     if (($transaction_raw_data['refunded_amount']['value'] == $transaction_raw_data['amount']['value'])
                         && empty($transaction_raw_data['refundable'])
@@ -1227,6 +1255,11 @@ class yandexkassaPayment extends waPayment implements waIPayment, waIPaymentCanc
                 } elseif ($canceled_by_user || $payment_irretrievably_canceled) {
                     $data['state'] = self::STATE_CANCELED;
                     $data['type'] = self::OPERATION_CANCEL;
+                    if ($transaction_raw_data['cancellation_details']['reason'] == 'expired_on_confirmation') {
+                        $view[] = 'Истек срок оплаты';
+                    } elseif ($transaction_raw_data['cancellation_details']['reason'] == 'permission_revoked') {
+                        $view[] = 'Нельзя провести безакцептное списание';
+                    }
                 } else {
                     $data['state'] = self::STATE_VERIFIED;
                     $data['type'] = self::OPERATION_CHECK;

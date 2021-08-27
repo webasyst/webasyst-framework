@@ -261,12 +261,25 @@ class worldwideShipping extends waShipping
         $region = $this->getAddress('region');
 
         $item = $this->findItemByCountryAndRegion($country, $region);
+        $is_empty_item = true;
+        if (isset($item['rate'])) {
+            if (is_string($item['rate']) && !empty($item['rate'])) {
+                $is_empty_item = false;
+            } elseif (is_array($item['rate'])) {
+                foreach ($item['rate'] as $rate) {
+                    if (!empty($rate)) {
+                        $is_empty_item = false;
+                        break;
+                    }
+                }
+            }
+        }
         if (!$item) {
             $item = $this->findItemByCountryAndRegion($country);
             if (!$item) {
                 return false;
             }
-        } elseif (isset($item['rate']) && empty($item['rate']) && empty($item['disabled'])) {
+        } elseif ($is_empty_item && empty($item['disabled'])) {
             $item = $this->findItemByCountryAndRegion($country);
             unset($item['items']);
         }
@@ -310,6 +323,9 @@ class worldwideShipping extends waShipping
                 } elseif ($rate < 0) {
                     return $this->_w('Package weight exceeds maximum allowed weight');
                 } else {
+                    if (is_array($rate) && empty($rate)) {
+                        $rate = '';
+                    }
                     $price = $this->parseCost($rate);
                 }
 
@@ -416,8 +432,7 @@ class worldwideShipping extends waShipping
         $cost = 0.0;
 
         $string = preg_replace('@\\s+@', '', $string);
-
-        foreach (preg_split('@\+|(\-)@', $string, null, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY) as $chunk) {
+        foreach (preg_split('@\+|(\-)@', $string, -1, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY) as $chunk) {
             $value = str_replace(',', '.', trim($chunk[0]));
             if (strpos($value, '%')) {
                 $value = round($this->getTotalPrice() * floatval($value) / 100.0, 2);

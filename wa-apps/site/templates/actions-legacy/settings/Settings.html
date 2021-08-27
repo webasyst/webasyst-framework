@@ -1,0 +1,491 @@
+{function name="_renderCdnItem" _cdn=''}
+    <div class="s-cdn-item js-cdn">
+        <input class="s-cdn-input" type="text" name="cdn[]" value="{$_cdn}" autocomplete="off" placeholder="[`CDN address`]" />
+        <i class="icon10 no s-cdn-remove js-cdn-remove" title="[`Remove`]" style="display: none;"></i>
+    </div>
+{/function}
+{function name="_renderRobotsControl"}
+    <div class="field">
+        <div class="name">robots.txt</div>
+        <div class="value">
+            <textarea name="robots">{$robots|escape}</textarea>
+            <br />
+            {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
+        </div>
+    </div>
+{/function}
+<script type="text/javascript">
+    document.title = '[`Site setup`] — ' + {json_encode($domain_idn)};
+</script>
+<div class="content">
+<div class="s-editor s-white">
+<div class="block s-grey-toolbar">
+    <div class="float-right">
+        <ul class="menu-h">
+            {if empty($domain_alias)}
+            <!-- plugin hook: 'backend_settings.action_button_li' -->
+            {* @event backend_settings.%plugin_id%.action_button_li *}
+            {foreach $backend_settings as $_}{ifset($_.action_button_li)}{/foreach}
+            {/if}
+            <li><a id="s-delete" href="#"><i class="icon16 delete"></i>[`Delete entire website`]</a></li>
+        </ul>
+    </div>
+
+    <h4 style="margin-left: 4px; margin-top:2px;">[`Site settings`]</h4>
+</div>
+
+<div>
+    <div class="block double-padded fields form">
+        <form target="s-settings-iframe" id="s-settings-form" method="post" action="?module=settings&action=save&domain_id={$domain_id}" enctype="multipart/form-data">
+            {$wa->csrf()}
+            <div class="field-group">
+                <div class="field">
+                    <div class="name bold">[`Domain name`]</div>
+                    <div class="value">
+                        <strong>http://</strong><input type="text" class="bold" name="url" value="{waIdna::dec($domain|escape)}" /><br />
+                        <span class="hint">
+                            [`A valid URL pointing to this Webasyst installation.`]<br />
+                            [`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]<br />
+                            <strong>[`IMPORTANT`]:</strong> [`The URL entered must point to the root of this Webasyst framework installation.`]
+                        </span>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name bold">[`Site name`]</div>
+                    <div class="value no-shift">
+                        <input id="s-domain-title" type="checkbox" {if !$title}checked="checked"{/if} /> <label for="s-domain-title">[`Matches domain name`]</label>
+                        <div {if !$title}style="display:none"{/if}>
+                            <input type="text" class="bold" name="title" value="{$title|escape}" /><br />
+                            <span class="hint">[`Site alias used within site selection menu (at the top left corner), and as the anchor name in frontend's <em>$wa->apps()</em> navigation menu array.`]</span>
+                        </div>
+                    </div>
+                </div>
+            {if !empty($domain_alias)}
+                <div class="field">
+                    <div class="name bold">[`Alias (mirror site) for`]</div>
+                    <div class="value no-shift">
+                        {$domain_alias}
+                    </div>
+                </div>
+            {else}
+
+                <div class="field">
+                    <div class="name bold">[`Security`]</div>
+                    <div class="value no-shift">
+                        <label>
+                            <input type="checkbox" name="ssl_all" id="ssl_all" {if ifset($ssl_all)} checked='checked'{/if} {if empty($is_https)}disabled{/if}/> [`Redirect to HTTPS`]<br>
+                            <span class="hint ssl_server_https bold" style="{if !empty($is_https)}display: none{/if}">[`You cannot enable redirection because your web server does not allow to distinguish HTTP from HTTPS.`]<br></span>
+                            <span class="hint ssl_all_hide bold" style="display: none">[`To activate this option, <a>log in via HTTPS</a>.`]<br></span>
+                            <span class="hint">[`Redirect website visitors from ordinary HTTP to secure HTTPS connection.`]
+                            <br>
+                            [`This option will work only if an SSL certificate is installed for your domain name.`]</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">
+                        <strong>&#123;$wa-&gt;apps()&#125; [`menu`]</strong>
+                        <br />
+                        <span class="hint"> [`The array defining core website navigation menu`]</span>
+                    </div>
+                    <div class="value no-shift">
+                        <input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0" /><label for="waapps-auto"> [`All settled apps`] <span class="hint">[`Automatically define navigation menu according to the routing rules`]</span></label>
+                    </div>
+                    <div class="value">
+                        <input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" /><label for="waapps-select"> [`Setup manually`]</label>
+                        <div {if !$domain_apps_type}style="display:none"{/if}>
+                            <table id="s-wa-apps" class="zebra s-settings-apps">
+                                {foreach $domain_apps as $row}
+                                <tr>
+                                   <td class="s-app"><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>
+                                      <span>{$row.name|escape}</span>
+                                      <input style="display:none" type="text" name="apps[name][]" value="{$row.name|escape}" />
+                                   </td>
+                                   <td>
+                                      <span>{$row.url|escape}</span>
+                                      <input style="display:none" type="text" name="apps[url][]" value="{$row.url|escape}" />
+                                   </td>
+                                   <td class="s-actions">
+                                        <a href="#" class="s-apps-edit" title="[`Edit`]"><i class="icon16 edit"></i></a>
+                                        <a href="#" class="s-apps-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>
+                                   </td>
+                                </tr>
+                                {/foreach}
+                            </table>
+                            <div style="display:none; float: right;"><em class="hint">[`When done editing, click “Save” to apply changes.`]</em></div>
+                            <a href="#" class="inline-link" id="s-apps-add"><i class="icon16 add"></i>
+                               <b><i>[`Add link`]</i></b>
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            {/if}
+            </div>
+
+            {if !empty($domain_alias)}
+            {* ROBOTS.TXT *}
+            {_renderRobotsControl}
+            {/if}
+
+            {if empty($domain_alias)}
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[`Background`]</div>
+                    <div class="value">
+                        <ul class="menu-h s-site-background-selector">
+                            {$classes = array('white', 'grey', 'blue', 'yellow', 'red', 'green', 'purple')}
+                            {foreach $classes as $c}
+                            <li class="s-{$c}"><a href="javascript:void(0)"><input type="radio" name="background" value="{$c}"{if $style==$c} checked="checked"{/if}></a></li>
+                            {/foreach}
+                            <li style="">
+                                <a href="javascript:void(0)" style="margin-right: 5px;{if substr($style, 0, 1) == '.'}background:url({$wa_url}wa-data/public/site/background/{$domain_id}{$style}){/if}">
+                                    <input name="background" type="radio" value="{if substr($style, 0, 1) == '.'}{$style}{/if}"{if substr($style, 0, 1) == '.'} checked="checked"{/if}>
+                                </a>
+                                <span class="small">[`Custom`]:</span>
+                                <input id="background_file" type="file" name="background_file">
+                            </li>
+                        </ul>
+                        <script type="text/javascript">
+                            $(".s-site-background-selector a").click(function (e) {
+                                if (e.target.tagName != 'INPUT') {
+                                    $(this).children('input').click();
+                                }
+                            });
+                            $(".s-site-background-selector input:radio").click(function (e) {
+                                var c = $(this).val();
+                                if (c) {
+                                    if (c.substr(0, 1) == '.') {
+                                        $("#wa").removeAttr('class');
+                                        $("#wa").css('background', 'url({$wa_url}wa-data/public/site/background/{$domain_id}' + c + ')');
+                                    } else {
+                                        $("#wa").removeAttr('style');
+                                        $("#wa").attr('class', 's-' + c);
+                                    }
+                                } else {
+                                    $("#wa").removeAttr('class');
+                                }
+                                return true;
+                            });
+                            $("#background_file").change(function () {
+                               $(this).parent().children('a').click();
+                            });
+                        </script>
+                        <span class="hint">[`Background is for customizing your Site app backend, which is useful when you have multiple websites powered by the single Webasyst installation. Selected background will not be shown in the frontend.`]</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Custom head JS`]</div>
+                    <div class="value">
+                        [`Google Analytics Property ID`]:
+                        <input type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
+                        &nbsp;
+                        <label class="small">
+                            <input type="checkbox" name="google_analytics[universal]" value="1" {if !empty($google_analytics.universal)}checked{/if}> [`Universal Analytics`]
+                        </label>
+                        <br />
+                        <span class="hint">[`E.g. <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag.`]</span>
+                        <br /><br />
+                    </div>
+                    <div class="value no-shift">
+                        [`Additional JS code to be added before the closing &lt;/head&gt; tag:`]<br />
+                        <textarea name="head_js" placeholder="&lt;script&gt;&lt;/script&gt;">{$head_js|escape}</textarea><br />
+                        <span class="hint">
+                            &lt;/head&gt;
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                {* FAVICON *}
+                <div class="field">
+                    <div class="name">[`Favicon`]</div>
+                    <div class="value">
+                        <i class="icon16 favicon"
+                            style="background-image: url('{$favicon}');"></i>
+                        [`Upload favicon`] (.ICO): <input name="favicon" type="file" />
+                        {if isset($favicon_message)}<br /><span class="small" style="color: #f00;">{$favicon_message}</span>{/if}
+                    </div>
+                </div>
+
+                {* ICON FOR IOS *}
+                <div class="field">
+                    <div class="name">[`Touch icon for iOS`]</div>
+                    <div class="value">
+                        {if $touchicon}<img src="{$touchicon}" class="s-touchicon"><br>{/if}
+                        [`Upload iOS touch icon`] (.PNG, [`from 152x152 and up to 1024x1024 px`]): <input name="touchicon" type="file" />
+                        {if isset($touchicon_message)}<br /><span class="small" style="color: #f00;">{$touchicon_message}</span>{/if}
+                    </div>
+                </div>
+
+                {* ROBOTS.TXT *}
+                {_renderRobotsControl}
+
+                {* CDN *}
+                <div class="field">
+                    <div class="name">[`CDN`]</div>
+                    <div class="value js-cdn-wrapper">
+                        <div class="js-cdn-list">
+                            {foreach $cdn_list as $_cdn}
+                                {_renderCdnItem _cdn=$_cdn}
+                            {foreachelse}
+                                {_renderCdnItem}
+                            {/foreach}
+                        </div>
+                        <a href="javascript:void(0)" class="s-cdn-add js-cdn-add inline-link"><i class="icon10 add"></i> <b><i>[`Add`]</i></b></a>
+                        <p class="hint">
+                            [`Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix.`]
+                        </p>
+                    </div>
+                </div>
+
+                {* ERROR NOTIFICATIONS *}
+                <div class="field">
+                    <div class="name">[`Site structure error notifications`]</div>
+                    <div class="value no-shift">
+                        <input id="s-url-notification" name="url_notification" type="checkbox" {if empty($url_notification)}checked="checked"{/if} /><br>
+                        <span class="hint">[`Show error notifications in site structure settings.`]</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- plugin hook: 'backend_settings.section' -->
+            {* @event backend_settings.%plugin_id%.section *}
+            {foreach $backend_settings as $_}{ifset($_.section)}{/foreach}
+
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[`Authorization`]</div>
+                    <div class="value no-shift">
+                        {sprintf('[`Personal &rarr; <a href="%s">Auth &amp; Sign Up</a>`]', '#/personal/settings/')}
+                    </div>
+                </div>
+            </div>
+            {/if}
+
+            <div class="field">
+                <div class="value">
+                    <input type="submit" name="save" class="button green" value="[`Save`]">
+                    <span id="s-settings-form-status" style="display:none">[`Saved`]</span>
+                </div>
+            </div>
+        </form>
+        <iframe style="display:none" name="s-settings-iframe" id="s-settings-iframe"></iframe>
+    </div>
+
+</div>
+<div class="clear"></div>
+</div>
+</div>
+<script type="text/javascript">
+
+    // Disabled ssl checkbox
+    if (window.location.protocol.replace(':', '') != 'https') {
+        $('#ssl_all').attr('disabled', true);
+        $('.ssl_server_https').hide();
+        $('.ssl_all_hide').show();
+        $('.ssl_all_hide a').attr('href', window.location.href.replace('http', 'https'));
+    }
+
+    $("input.adapter").click(function () {
+        var el = $(this).parent().find('div.adapter-controls');
+        if ($(this).is(':checked')) {
+            el.show();
+        } else {
+            el.hide();
+        }
+    });
+
+    $("#s-auth-adapters").click(function () {
+        if ($(this).is(':checked')) {
+            $("#s-auth-adapters-list").show();
+        } else {
+            $("#s-auth-adapters-list").hide();
+        }
+    });
+
+    $("#s-auth-enabled").click(function () {
+        if ($(this).is(":checked")) {
+            $("#s-auth-app").show();
+        } else {
+            $("#s-auth-app").hide();
+        }
+    });
+
+
+    $("a#s-apps-add").click(function () {
+        $('#s-wa-apps').append('<tr><td><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>' +
+                              '<span></span><input type="text" name="apps[name][]" value="" /></td>' +
+                              '<td><span></span><input type="text" name="apps[url][]" value="" /></td>' +
+                              '<td class="s-actions">' +
+                                '<a href="#" class="s-apps-edit" title="[`Edit`]"><i class="icon16 edit"></i></a>' +
+                                '<a href="#" class="s-apps-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>' +
+                              '</td></tr>');
+        $('#s-wa-apps').next('div').show();
+        return false;
+    });
+
+    $("#s-wa-apps a.s-apps-edit").live('click', function () {
+        var tr = $(this).parents('tr');
+        tr.find('span').hide();
+        tr.find('input').show();
+        $('#s-wa-apps').next('div').show();
+        return false;
+    });
+
+    $("#s-wa-apps a.s-apps-delete").live('click', function () {
+        if (confirm('[`This will delete the link from the menu. Are you sure?`]')) {
+            $(this).parents('tr').remove();
+        }
+        $('#s-wa-apps').next('div').show();
+        return false;
+    });
+
+    $("#s-wa-apps").sortable({
+        distance: 5,
+        helper: 'clone',
+        items: 'tr',
+        opacity: 0.75,
+        tolerance: 'pointer',
+        stop: function (event, ui) {
+            $("#s-wa-apps").next('div').show();
+        }
+    });
+
+    $("input[name=wa_apps_type]").change(function () {
+        if ($("#waapps-select").is(":checked")) {
+            $("#waapps-select").parent().children('div').show();
+        } else {
+            $("#waapps-select").parent().children('div').hide();
+        }
+    });
+
+    $("#s-domain-title").click(function () {
+        if ($(this).is(":checked")) {
+            $(this).parent().children('div').hide().children('input').attr('disabled', 'disabled');
+        } else {
+            $(this).parent().children('div').show().children('input').removeAttr('disabled');
+        }
+    });
+
+    $("#s-settings-form").submit(function () {
+        //Remove notification indicator
+        $('#wa-app-site').find('.indicator').remove();
+
+        $("#s-settings-iframe").one('load', function () {
+            var response = $.parseJSON($(this).contents().find('body').html());
+            if (response.status == 'ok') {
+                $("#s-settings-form-status").html("[`Saved`]").css('color', '#000');
+                $("#s-settings-form-status").fadeIn("slow", function () {
+                    $("#s-settings-form-status").fadeOut(3000);
+                });
+                location.reload();
+            } else {
+                $("#s-settings-form-status").html(response.errors ? response.errors : response).css('color', 'red');
+                $("#s-settings-form-status").fadeIn("slow");
+            }
+        });
+    });
+
+    $("#s-delete").click(function () {
+
+        {$_domains = $domains|default:[]}
+        {$_domains_count = $_domains|count}
+        {$_latter_apps_names = $latter_apps_names|default:[]}
+        {$_latter_apps_names_count = $_latter_apps_names|count}
+
+        var single_site = {($_domains_count === 1)|json_encode},
+            content = '[`This will delete entire website including all its pages without the ability to recover. Are you sure?`]';
+
+        if (single_site) {
+            content = '[`Deleting this site will also delete routing rules set up for installed apps. This will limit their functionality. Delete the site?`]';
+        }
+        {if !empty($latter_apps_names)}
+            content = '{sprintf(_w( "Deleting this site will also delete routing rules set up for <b>%s</b> app. This will limit its functionality.</p><p>Upon site deletion, set up routing rules for this app in the structure settings of remaining sites to continue using all functions.", "Deleting this site will also delete routing rules set up for <b>%s</b> apps. This will limit their functionality.</p><p>Upon site deletion, set up routing rules for these apps in the structure settings of remaining sites to continue using all functions.", count($latter_apps_names), false), $latter_apps_names|join:"[`”</b>, <b>“`]")}';
+        {/if}
+
+        {if !empty($domain_alias) && empty($latter_apps_names)}
+            content = '[`Delete this site alias? It will <strong>not</strong> delete any data of the main site.`]';
+        {/if}
+
+        $().waDialog({
+            'title': '[`Delete entire website`]',
+            'content': '<p>'+ content +'</p>',
+            'height': '246px',
+            'width': '450px',
+            'buttons': '<input type="submit" class="button red" value="[s`Delete`]"> [s`or`] <a href="javascript:void(0);" class="cancel">[s`cancel`]</a>',
+            onSubmit: function (d) {
+                deleteSite();
+                d.trigger('close');
+                return false;
+            }
+        });
+        
+        function deleteSite() {
+            $.post('?module=settings&action=delete', "domain_id={$domain_id}", function (response) {
+                if (response.status == 'ok') {
+                    if ($.wa.site.domain == {$domain_id}) {
+                        location.href = '?';
+                    } else {
+                        var l = $("#s-settings-domains li.selected");
+                        if (l.prev().length) {
+                            $.wa.setHash(l.prev().children('a').attr('href'));
+                        } else if (l.next().length) {
+                            $.wa.setHash(l.next().children('a').attr('href'));
+                        }
+                        l.remove();
+                        $("a[href='?domain_id={$domain_id}']").parent().remove();
+                    }
+                }
+            }, "json");
+        }
+        
+        return false;
+    });
+    
+    // CDN
+    var $cdn_wrapper = $('.js-cdn-wrapper'),
+        $cnd_list = $cdn_wrapper.find('.js-cdn-list'),
+        $add_cdn = $cdn_wrapper.find('.js-cdn-add'),
+        cdn_template = {_renderCdnItem|json_encode};
+
+    switchCdnRemoveIcon();
+    
+    $add_cdn.on('click', function (e) {
+        e.preventDefault();
+        addCdnInput();
+    });
+    
+    $cdn_wrapper.on('click', '.js-cdn-remove', function (e) {
+        var $item = $(this).parent('.js-cdn');
+        removeCdnInput($item);
+    });
+    
+    function switchCdnRemoveIcon() {
+        var $items = $cdn_wrapper.find('.js-cdn');
+        
+        if ($items.length > 1) {
+            $items.each(function (i, item) {
+                var $item = $(item);
+                $item.find('.js-cdn-remove').show();
+            });
+        } else {
+            $items.each(function (i, item) {
+                var $item = $(item);
+                $item.find('.js-cdn-remove').hide();
+            });
+        }
+    }
+    
+    function addCdnInput() {
+        var $item = $(cdn_template);
+        $cnd_list.append($item);
+        switchCdnRemoveIcon();
+    }
+    
+    function removeCdnInput($item) {
+        $item.remove();
+        switchCdnRemoveIcon();
+    }
+</script>

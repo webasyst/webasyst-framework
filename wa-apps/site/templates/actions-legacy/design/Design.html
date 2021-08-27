@@ -1,0 +1,79 @@
+<script type="text/javascript">
+	document.title = {if $file.id}{json_encode($file.id)}{else}'[`New file`]'{/if} + ' — ' + {json_encode($domain)};
+	{if substr($file.id, -5) == '.html'}
+		$.wa.site.setHelper("app={$app_id}&file={$file.id}");
+	{else}
+		$.wa.site.setHelper();
+	{/if}
+</script>
+<div class="s-editor s-white">
+	<form id="site-form" method="post" action="?module=design&action=save&app={$app_id}&theme={$theme}{if $file.id}&file={$file.id|escape}{/if}">
+	<div class="block s-grey-toolbar">
+	{if !empty($file.custom)}
+	<div {if !$file.id}style="display:none"{/if} id="s-div-settings" class="float-right"><ul class="menu-h">
+		<li><a href="#" class="inline-link" id="s-page-settings-toggle"><i class="icon16 edit"></i><b><i>[`Template settings`]</i></b></a></li>
+		<li><a class="s-page-delete" href="#"><i class="icon16 delete"></i>[`Delete`]</a></li>
+	</ul></div>
+	{/if}
+	<h4>{$file.id|escape}</h4>								
+	<span id="s-desc" class="hint">{$file.description|escape}</span>			
+		
+	{if !empty($file.custom)}
+	<div id="s-page-settings" style="{if $file.id}display: none; {/if}height:130px">
+		<div class="fields form">
+			<div class="field">
+				<div class="name bold">
+					[`File name`]
+				</div>
+				<div class="value">
+					<input name="file" type="text" class="bold" value="{$file.id|escape}" />
+					<br /><span class="hint">[`File should have one of the allowed extensions: .html, .css, .js`]</span>
+				</div>
+			</div>
+			<div class="field">
+				<div class="name">
+					[`Description`]
+				</div>
+				<div class="value">
+					<textarea id="s-text-desc" name="description">{$file.description|escape}</textarea>
+					<br /><span class="hint">[`Optional template description`]</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	{/if}		
+	</div>	
+	<div class="s-editor-core-wrapper">
+		<textarea id="content" data-type="{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{/if}" name="content">{if !empty($content)}{$content|escape}{/if}</textarea>
+	</div>
+	</form>
+	<div class="clear"></div>
+</div>
+
+<script type="text/javascript">
+$("#site-form").bind('response', function (e, response) {
+	if (response.status == 'ok') {
+		$.wa.setHash("#/design/route={$route_id}&theme=" + response.data.theme + "&file=" +response.data.id);
+	}
+});
+
+$("a.s-page-delete").click(function () {
+	if (confirm('[`File will be deleted without the ability to recover. Are you sure?`]')) {
+		var li = $("ul.s-theme li.selected");
+		var theme = li.parent().attr('id').replace(/theme-/, '');
+		var file = li.attr('data-file');
+		$.post("?module=design&action=delete&app={$app_id}", { theme: theme, file: file}, function (response) {
+			if (li.next().length && !li.next().hasClass('add-file')) {
+				var hash = li.next().find('a').attr('href');
+			} else if (li.prev().length) {
+				var hash = li.prev().find('a').attr('href');
+			} else {
+				var hash = $("ul.s-theme:first li:first a").atrr('href');
+			}
+			$.wa.setHash(hash);
+		});
+	}
+	return false;
+});
+</script>
+

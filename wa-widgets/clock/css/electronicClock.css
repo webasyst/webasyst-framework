@@ -9,6 +9,7 @@
   justify-content: space-between;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 }
 .electronic-clock-wrapper .electronic-clock-block .date-block {
   display: flex;
