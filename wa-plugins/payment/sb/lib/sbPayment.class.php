@@ -87,43 +87,66 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             }
 
             $order_data = waOrder::factory($order_data);
-            $redirect_url = null;
 
             $transactions = $this->getAvailableTransactions($order_data->id);
+            $create_new_transaction = true;
+            $maximum_part_number = null;
+            foreach ($transactions as $transaction) {
+                if ($transaction['part_number'] > $maximum_part_number) {
+                    $maximum_part_number = $transaction['part_number'];
+                }
+            }
             if (isset($transactions[waPayment::TRANSACTION_PAYMENT])) {
+                $create_new_transaction = false;
                 $create_transaction = $transactions[waPayment::TRANSACTION_PAYMENT];
+                $maximum_part_number = $create_transaction['part_number'];
                 $transaction_data = $this->getGatewayTransactionStatus($order_data['order_id'], $create_transaction);
-
-                if ($transaction_data['amount'] != $order_data['total']) {
-                    if ($this->isInstallmentOrder($order_data->id)) {
-                        $data_log = array(
-                            'order_id' => $order_data['id'],
-                            'plugin' => $this->getId(),
-                            'state' => "Стоимость заказа после начисления процентов Сбербанком {$transaction_data['amount']}"
-                        );
-                        $this->getAdapter()->execCallbackHandler(self::CALLBACK_NOTIFY, $data_log);
+                if ($transaction_data['state'] == waPayment::STATE_DECLINED
+                    || $transaction_data['state'] == waPayment::STATE_CANCELED
+                ) {
+                    $create_new_transaction = true;
+                }
+                if ($create_new_transaction == false) {
+                    if ($transaction_data['amount'] != $order_data['total']) {
+                        if ($this->isInstallmentOrder($order_data->id)) {
+                            $data_log = array(
+                                'order_id' => $order_data['id'],
+                                'plugin' => $this->getId(),
+                                'state' => "Стоимость заказа после начисления процентов Сбербанком {$transaction_data['amount']}"
+                            );
+                            $this->getAdapter()->execCallbackHandler(self::CALLBACK_NOTIFY, $data_log);
+                            $this->handleTransaction($transaction_data);
+                        } else {
+                            try {
+                                $create_new_transaction = true;
+                                $this->cancel($create_transaction);
+                            } catch (waException $e) {
+                                return 'Сумма оплаты отличается от суммы заказа';
+                            }
+                        }
+                    } elseif (!empty($transaction_data['callback_method'])) {
                         $this->handleTransaction($transaction_data);
+                        return 'Состояние платежа изменилось — обновите страницу.';
+                    } elseif (!empty($create_transaction['raw_data']['formUrl'])) {
+                        return $this->viewForm($create_transaction['raw_data']['formUrl'], $auto_submit);
                     } else {
-                        return 'Сумма оплаты отличается от суммы заказа';
+                        return 'Ошибка получения формы оплаты.';
                     }
-                } elseif (!empty($transaction_data['callback_method'])) {
-                    $this->handleTransaction($transaction_data);
-                    return 'Состояние платежа изменилось — обновите страницу.';
-                } elseif (!empty($create_transaction['raw_data']['formUrl'])) {
-                    return $this->viewForm($create_transaction['raw_data']['formUrl'], $auto_submit);
-                } else {
-                    return 'Ошибка получения формы оплаты.';
                 }
 
-            } else {
-                // It's a new order, we need to create new transaction
+            }
+            if ($create_new_transaction) {
+                // create new transaction
                 $storage = wa()->getStorage();
                 $storage->write('sb_order', $order_data);
+                if (isset($maximum_part_number)) {
+                    $maximum_part_number++;
+                }
                 $get_query = array(
                     'register_order' => 1,
                     'app_id' => $this->app_id,
                     'merchant_id' => $this->merchant_id,
-                    'orderNumber' => $this->getOrderNumber($order_data['order_id']),
+                    'orderNumber' => $this->getOrderNumber($order_data['order_id'], $maximum_part_number),
                 );
                 $redirect_url = wa()->getRootUrl() . 'payments.php/sb/?' . http_build_query($get_query);
                 return $this->viewForm($redirect_url, $auto_submit);
@@ -312,6 +335,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             if (empty($native_id)) {
                 // Register a new payment for bundles
                 $order_data['is_recurrent'] = true;
+                // TODO ADD PART_NUMBER?
                 $transaction_data = $this->registerOrder($order_data);
                 $native_id = ifset($transaction_data, 'native_id', null);
             } else {
@@ -441,8 +465,13 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $transaction_raw_data = $this->formalizeRawData($transaction_raw_data);
 
         $related_transactions = $this->getRelatedTransactions($transaction_raw_data['order_id']);
+        $related_transactions = array_filter($related_transactions, function($t) {
+            // ignore repeated callbacks
+            return !empty($t['type']) && ifset($t, 'result', '') !== 'is_repeated';
+        });
         $transaction = end($related_transactions);
-
+        $orderNumber = $transaction_raw_data['orderNumber'];
+        $order_number_parts = explode('_', $orderNumber);
         $transaction_data += array(
             'native_id'   => $transaction['native_id'],
             'order_id'    => $transaction_raw_data['order_id'],
@@ -451,6 +480,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             'amount'      => intval($transaction_raw_data['amount']) / 100,
             'currency_id' => $transaction['currency_id'],
             'result'      => 1,
+            'part_number' => !empty($order_number_parts[3]) ? (int)$order_number_parts[3] : 0,
         );
 
         $view_data = &$transaction_data['view_data'];
@@ -464,6 +494,19 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 //требуется getOrderStatusExtended 03 и выше
                 break;
             case 'CREATED': # заказ создан;
+                if (!empty($transaction_raw_data['actionCodeDescription']) || !empty($transaction_raw_data['actionCode'])) {
+                    // Была неудачная попытка оплаты, но возможна повторная оплата того же самого заказа на стороне сбера
+                    $view_data[] = 'Зафиксирована неудачная попытка оплаты';
+                    if (!empty($transaction_raw_data['actionCodeDescription'])) {
+                        $transaction_data['error'] = $transaction_raw_data['actionCodeDescription'];
+                        if (!empty($transaction_raw_data['actionCode'])) {
+                            $transaction_data['error'] .= ' ('.$transaction_raw_data['actionCode'].')';
+                        }
+                    } elseif (!empty($transaction_raw_data['actionCode'])) {
+                        $transaction_data['error'] = $transaction_raw_data['actionCode'];
+                    }
+                    $view_data[] = $transaction_data['error'];
+                }
                 $transaction_data += array(
                     'type'  => waPayment::OPERATION_CHECK,
                     'state' => waPayment::STATE_VERIFIED,
@@ -644,7 +687,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             } elseif (!empty($transaction_raw_data['actionCode'])) {
                 $transaction_data['error'] = $transaction_raw_data['actionCode'];
             }
-            $view_data[] = $transaction_data['error'];
+            if (!empty($transaction_data['error'])) {
+                $view_data[] = $transaction_data['error'];
+            }
         }
 
         foreach ($card_fields as $field => $format) {
@@ -699,9 +744,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         $order_id = null;
         if (!empty($request['orderNumber'])) {
-            $request = $this->extendByCallbackRequest($request);
-            $this->app_id = ifset($request, 'app_id', null);
-            $this->merchant_id = ifset($request, 'merchant_id', null);
+            $modified_request = $this->extendByCallbackRequest($request);
+            $this->app_id = ifset($modified_request, 'app_id', null);
+            $this->merchant_id = ifset($modified_request, 'merchant_id', null);
         } else {
             throw new waPaymentException('Empty required field(s)');
         }
@@ -718,14 +763,31 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         if (isset($request['register_order'])) {
             $storage = wa()->getStorage();
+            /** @var waOrder $order_data */
             $order_data = $storage->get('sb_order');
-            $transaction = $this->registerOrder($order_data);
+            $order_number_parts = explode('_', $request['orderNumber']);
+            $part_number = 0;
+            if (!empty($order_number_parts[3])) {
+                $part_number = $order_number_parts[3];
+            }
+            $transaction = $this->registerOrder($order_data, $part_number);
             $redirect_url = $transaction['raw_data']['formUrl'];
             $storage->remove('sb_order');
             wa()->getResponse()->redirect($redirect_url);
         }
-
-        $verified = $this->verifyRequest($request);
+        try {
+            $verified = $this->verifyRequest($request);
+        } catch (waPaymentException $e) {
+            // Process badly signed callback as untrusted: as if a customer comes back to store page.
+            // Will not use data from GET. Will load fresh data from API and act accordindly.
+            $verified = false;
+            static::log($this->id, [
+                'message' => 'API callback signature is invalid. Process as if data came from untrusted source.',
+                'error' => $e->getMessage(),
+                'method'  => __METHOD__,
+                'request' => $request,
+            ]);
+        }
 
         //extend request data
         $request = $this->extendByCallbackRequest($request);
@@ -753,9 +815,58 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 if ($transaction = $this->getGatewayTransactionStatus($order_id, $related)) {
                     $transaction['credit_type'] = isset($transactions[waPayment::TRANSACTION_CONFIRM]['raw_data']['credit_type']) ? $transactions['confirm']['raw_data']['credit_type'] : null;
                     $transaction['confirm_amount'] = isset($transactions[waPayment::TRANSACTION_CONFIRM]['amount']) ? (double)$transactions['confirm']['amount'] : null;
+
+                    if ($this->TESTMODE) {
+                        static::log($this->id, [
+                            'message' => 'getGatewayTransactionStatus result',
+                            'order_id' => $order_id,
+                            'transaction' => $transaction,
+                            'related' => $related,
+                        ]);
+                    }
+
+                    if (isset($transaction['callback_method']) && $transaction['callback_method'] != self::CALLBACK_NOTIFY) {
+                        // When we know API callbacks are enabled and they work,
+                        // do not try to perform app action when user comes back to store page.
+                        // This action is better performed during API callback.
+                        if ($this->getSettings('api_callbacks_enabled') && !$this->isApiCallbackRequest($request)) {
+                            static::log($this->id, [
+                                'method'                => __METHOD__,
+                                'message'               => 'Ignore browser-based order notification because API callbacks are enabled',
+                                'order_id'              => $order_id,
+                                'old_type'              => $transaction['type'],
+                                'old_result'            => $transaction['result'],
+                                'old_callback_method'   => $transaction['callback_method'],
+                                'new_type'              => '',
+                                'new_result'            => 'is_repeated',
+                                'new_callback_method'   => self::CALLBACK_NOTIFY,
+                            ]);
+                            $transaction['callback_method'] = self::CALLBACK_NOTIFY;
+                            $transaction['result'] = 'is_repeated';
+                            $transaction['type'] = '';
+                        }
+                    }
+
                     $transaction_data = $this->handleTransaction($transaction);
+                } else {
+                    if ($this->TESTMODE) {
+                        static::log($this->id, [
+                            'message' => 'getGatewayTransactionStatus returned nothing',
+                            'order_id' => $order_id,
+                            'transaction' => $transaction,
+                            'related' => $related,
+                        ]);
+                    }
                 }
             } catch (waException $ex) {
+                static::log($this->id, [
+                    'message' => 'Error handling callback',
+                    'order_id' => $order_id,
+                    'error' => $ex->getMessage(),
+                    'trace' => $ex->getFullTraceAsString(),
+                    'request' => $request,
+                    'related' => $related,
+                ]);
                 if ($verified) {
                     if (empty($transaction_data['callback_method'])) {
                         //Запрос обработан, но требуются расширенные данные
@@ -769,7 +880,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
 
-        if ($verified) {
+        if ($verified || $this->isApiCallbackRequest($request)) {
             //It's gateway callback
             return array(
                 'message' => 'YES',
@@ -866,6 +977,11 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         }
 
         return $transaction_data;
+    }
+
+    protected function isApiCallbackRequest($request)
+    {
+        return isset($request['orderNumber']) && isset($request['mdOrder']) && isset($request['operation']);
     }
 
     /**
@@ -1033,11 +1149,21 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     {
         if (isset($transaction_data['callback_method'])) {
             $app_payment_method = $transaction_data['callback_method'];
+        } else if (ifset($transaction_data, 'state', '') === self::STATE_DECLINED) {
+            $app_payment_method = self::CALLBACK_NOTIFY;
         } else {
             switch ($transaction_data['type']) {
                 case self::OPERATION_CHECK:
-                    $app_payment_method = true;
-                    $transaction_data['state'] = self::STATE_VERIFIED;
+                    if (!empty($transaction_data['raw_data']['actionCodeDescription']) && !empty($transaction_data['view_data'])) {
+                        // случай, когда происходит неудачная (но не фатальная) попытка оплаты, и от сбера приходит колбек
+                        // надо уведомить об этом приложение, и пометить запись в wa_transaction как информационную
+                        $app_payment_method = self::CALLBACK_NOTIFY;
+                        $transaction_data['state'] = null;
+                        $transaction_data['type'] = null;
+                    } else {
+                        $app_payment_method = true;
+                        $transaction_data['state'] = self::STATE_VERIFIED;
+                    }
                     break;
                 case self::OPERATION_AUTH_ONLY:
                     $app_payment_method = self::CALLBACK_AUTH;
@@ -1213,9 +1339,9 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
      * @return array
      * @throws waException
      */
-    protected function registerOrder($wa_order)
+    protected function registerOrder($wa_order, $part_number = 0)
     {
-        $order_number = $this->getOrderNumber($wa_order->id);
+        $order_number = $this->getOrderNumber($wa_order->id, $part_number);
         $return_url = $this->getRelayUrl().'?orderNumber='.$order_number;
         $fail_url = $this->getRelayUrl().'?orderNumber='.$order_number.'&wa_result=fail';
         $register_fields = array(
@@ -1278,6 +1404,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
                 'result'      => 1,
                 'type'        => self::OPERATION_CHECK,
                 'state'       => self::STATE_VERIFIED,
+                'part_number' => $part_number,
                 'raw_data'    => array(
                     'formUrl' => $response['formUrl'],
                 ),
@@ -2128,7 +2255,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
             return true;
         }
 
-        $signature = hex2bin($signature);
+        $signature = @hex2bin($signature);
 
         #cleanup and prepare request data
         $data = '';
@@ -2184,7 +2311,7 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
         $rsa_key->setSignatureMode(phpseclib\Crypt\RSA::SIGNATURE_PKCS1);
         $rsa_key->setHash('sha512');
 
-        if ($rsa_key->verify($data, $signature)) {
+        if ($signature !== false && $rsa_key->verify($data, $signature)) {
             return true;
         }
 

@@ -22,6 +22,9 @@ return array(
     'fiscalization'            => array(
         'value' => '',
     ),
+    'api_callbacks_enabled'    => array(
+        'value' => '',
+    ),
     'payment_method'           => array(
         'value'        => '1',
     ),
