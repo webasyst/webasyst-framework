@@ -202,7 +202,6 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
 
         foreach ($this->getQuotes() as $quote) {
             $word_pattern = $this->getWordPattern($quote);
-            $app_pattern = $this->getAppPattern($quote, $this->getDomain());
 
             if ($webasyst_functions) {
                 $plural_pattern = $this->getPluralPattern($webasyst_functions, $word_pattern);
@@ -213,11 +212,14 @@ abstract class waLocaleParseEntity implements waLocaleParseEntityInterface
             }
 
             if ($domain_function) {
-                $domain_plural_pattern = $this->getDomainPluralPattern($word_pattern, $app_pattern);
-                $result = $this->mergeResult($result, $this->getByPlural($domain_plural_pattern, $text, $path, $quote));
+                foreach ($this->getQuotes() as $app_quote) {
+                    $app_pattern = $this->getAppPattern($app_quote, $this->getDomain());
+                    $domain_plural_pattern = $this->getDomainPluralPattern($word_pattern, $app_pattern);
+                    $result = $this->mergeResult($result, $this->getByPlural($domain_plural_pattern, $text, $path, $quote));
 
-                $domain_default_pattern = $this->getDomainDefaultPattern($word_pattern, $app_pattern);
-                $result = $this->mergeResult($result, $this->getByDefault($domain_default_pattern, $text, $path, $quote));
+                    $domain_default_pattern = $this->getDomainDefaultPattern($word_pattern, $app_pattern);
+                    $result = $this->mergeResult($result, $this->getByDefault($domain_default_pattern, $text, $path, $quote));
+                }
             }
 
             if ($open_functions) {
