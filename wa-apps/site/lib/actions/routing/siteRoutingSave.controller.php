@@ -170,6 +170,10 @@ class siteRoutingSaveController extends waJsonController
                 $routes[$domain][$route_id] = $new;
             }
 
+            if (!$this->validate($new)) {
+                return;
+            }
+
             $params = array(
                 'domain'   => $domain,
                 'route'    => &$new,
@@ -329,5 +333,31 @@ class siteRoutingSaveController extends waJsonController
         }
 
         return $r;
+    }
+
+    protected function validate($route = [])
+    {
+        $valid = true;
+        $path = $this->getConfig()->getAppsPath($route['app'], 'lib/config/site.php');
+        if (file_exists($path)) {
+            waSystem::getInstance($route['app'])->setActive($route['app']);
+            $site = include($path);
+            waSystem::setActive('site');
+
+            if (isset($site['params'])) {
+                foreach ($site['params'] as $name => $param) {
+                    $type = ifempty($param, 'type', '');
+                    if (!empty($type) && 'select' === $type) {
+                        $items = ifempty($param, 'items', []);
+                        if (!in_array($route[$name], array_keys($items))) {
+                            $valid = false;
+                            $this->errors = sprintf(_w('Invalid value: %s.'), ifempty($param, 'name', ''));
+                        }
+                    }
+                }
+            }
+        }
+
+        return $valid;
     }
 }

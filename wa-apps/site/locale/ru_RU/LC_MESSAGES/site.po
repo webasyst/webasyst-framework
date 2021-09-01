@@ -1575,3 +1575,6 @@ msgstr[2] "%d правил «Перенаправление» настроены
 
 msgid "Homepage"
 msgstr "Главная страница"
+
+msgid "Invalid value: %s."
+msgstr "Недопустимое значение: %s."
