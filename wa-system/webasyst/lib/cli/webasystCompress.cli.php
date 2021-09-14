@@ -1483,7 +1483,7 @@ HELP;
                 '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
                 '@(locale)\/.+\.(te?mp)(\.(po|mo))?$@'                => 'temp files in the locale directory',
                 '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
-                '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
+                '@\b\.(svn|hg_archival\.txt)\b@'                      => 'CVS file',
                 '@(/|^)\.git.*@'                                      => 'GIT file',
                 '@(/|^)\.[^/]+/@'                                     => 'directory with leading dot',
                 '@(/|^)\.(project|buildpath)@'                        => 'IDE file',
