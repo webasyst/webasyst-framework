@@ -6,11 +6,11 @@
             <div class="fields form">
                 <div class="fields-group">
                     <div class="field">
-                        <div class="name">
+                        <div class="name for-input">
                             [`Album name`]
                         </div>
                         <div class="value">
-                            <input name="name" type="text" class="p-full-width-input full-width" />
+                            <input name="name" type="text" class="p-full-width-input full-width bold large long" />
                         </div>
                     </div>
                     <div class="field" id="frontend-url-field" style="display:none">
@@ -19,7 +19,7 @@
                         </div>
                         <div class="value">
                             {if isset($full_base_url)}
-                                <span>{$full_base_url}</span><input type="text" name="url" value="">/
+                                <span>{$full_base_url|escape}</span><input type="text" name="url" value="">/
                             {else}
                                 <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>
                             {/if}
@@ -194,7 +194,7 @@
                                         {foreach $cloud as $tag}
                                             <li>
                                                 <label class="chip">
-                                                    <input type="checkbox" name="tag[]" value="{$tag.name}" {if isset($tag.checked)}checked{/if}>
+                                                    <input type="checkbox" name="tag[]" value="{$tag.name|escape}" {if isset($tag.checked)}checked{/if}>
                                                     <span class="p-tag" data-id="{$tag.id}">
                                                         <i class="fas fa-hashtag"></i>
                                                         {$tag.name|escape|default:""}

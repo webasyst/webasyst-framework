@@ -174,7 +174,7 @@
                 <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{if isset($album) && empty($title)}[`(no name)`]{else}{$title|escape}{/if}</span>
                 <input type="text" id="photo-list-name-input" style="display: none;" class="p-photo-h1-edit">
                 {if isset($album)}
-                    <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note}{/if}</span>
+                    <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note|escape}{/if}</span>
                     <input type="text" id="photo-album-note-input" style="display: none;" class="p-photo-h1-edit hint">
                 {/if}
                 {if isset($album) && $album.type == photosAlbumModel::TYPE_DYNAMIC}
@@ -203,10 +203,10 @@
                         {if $frontend_link}
                             {if $album.status <= 0}
                                 <i class="icon10 lock-bw"></i>
-                                [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link}</a>
+                                [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link|escape}</a>
                                 <i class="icon10 new-window"></i>{/if}
                             {else}
-                                [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
+                                [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link|escape}</a>
                                 <i class="icon10 new-window"></i>
                             {/if}
                             &nbsp;&nbsp;
@@ -219,7 +219,7 @@
                             <a href="#" id="p-album-delete" class="gray">[`Delete album`]</a>
                         {/if}
                     {else if (!empty($frontend_link))}
-                        [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
+                        [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link|escape}</a>
                         <i class="icon10 new-window"></i>
                     {/if}
                 </li>
@@ -229,7 +229,7 @@
 
             {if !empty($album)}
                 {if !empty($album.description)}
-                    <p class="small">{$album.description|strip_tags|truncate:512}</p>
+                    <p class="small">{$album.description|escape|strip_tags|truncate:512}</p>
                 {/if}
                 {if $child_albums}
                     <ul class="thumbs li150px p-albums" id="album-thumbs-list">
