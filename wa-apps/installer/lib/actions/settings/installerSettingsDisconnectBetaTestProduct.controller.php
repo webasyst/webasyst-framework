@@ -8,7 +8,7 @@ class installerSettingsDisconnectBetaTestProductController extends waJsonControl
         if (!$ok) {
             $this->errors = [
                 'error' => 'cant_disconnect',
-                'description' => _w("Can't disconnect")
+                'description' => _w("Can’t disconnect.")
             ];
         }
     }

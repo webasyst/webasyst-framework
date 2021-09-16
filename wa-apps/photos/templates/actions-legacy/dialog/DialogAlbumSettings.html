@@ -32,7 +32,7 @@
                             </div>
                             <div class="value">
                                 {if isset($album.full_base_url)}
-                                    <span>{if $album.full_base_url}{$album.full_base_url}{/if}</span><input type="text" name="url" value="{$album.url}">/
+                                    <span>{if $album.full_base_url}{$album.full_base_url|escape}{/if}</span><input type="text" name="url" value="{$album.url}">/
                                     <em class="errormsg"></em>
                                 {else}
                                     <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>

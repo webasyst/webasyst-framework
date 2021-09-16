@@ -58,6 +58,9 @@ class installerRequirementsChecker
         $warning_requirements = array();
 
         foreach ($this->requirements as $requirement) {
+            if (!isset($requirement['product_id'])) {
+                continue;
+            }
             $product_id = $requirement['product_id'];
             foreach ($requirement['requirements'] as $subject => $r) {
                 if (!empty($r['strict']) && !empty($r['warning'])) {

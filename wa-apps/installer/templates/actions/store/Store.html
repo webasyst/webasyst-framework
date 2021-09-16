@@ -127,6 +127,7 @@
             store_token: {$store_token|json_encode},
             installer_url: {$installer_url|json_encode},
             in_app: {if $in_app}true{else}false{/if},
+            uiVersion: '{$wa->whichUI()}',
             return_url: {if $return_url}{$return_url|json_encode}{else}null{/if},
             user_locale: {$user_locale|json_encode},
             locale: {$_locale|json_encode},

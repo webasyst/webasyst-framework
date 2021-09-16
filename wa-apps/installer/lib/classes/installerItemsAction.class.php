@@ -39,6 +39,9 @@ abstract class installerItemsAction extends waViewAction
         );
 
         $this->store_path = $this->buildStorePath($params);
+
+        // Set ui version from current app
+        waRequest::setParam('force_ui_version', wa()->whichUI($slug));
     }
 
     public function display($clear_assign = true)

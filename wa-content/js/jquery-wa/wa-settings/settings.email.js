@@ -518,25 +518,18 @@ class WASettingsEmailTemplate {
         that.ace.commands.removeCommand('find');
         ace.config.set("basePath", window.wa_url + 'wa-content/js/ace/');
 
-        let $them_mode = document.querySelector('#wa-dark-mode').getAttribute('media');
-        if ($them_mode === '(prefers-color-scheme: dark)') {
-            that.ace.setTheme("ace/theme/eclipse");
-        }else{
-            that.ace.setTheme("ace/theme/monokai");
-        }
-        document.addEventListener('wa_theme_mode_dark', function() {
-            that.ace.setTheme("ace/theme/monokai");
-        })
-        document.addEventListener('wa_theme_mode_light', function() {
-            that.ace.setTheme("ace/theme/eclipse");
-        })
-        document.addEventListener('wa_theme_mode_auto', function() {
-            if ($them_mode === '(prefers-color-scheme: dark)') {
-                that.ace.setTheme("ace/theme/eclipse");
-            }else{
+        setEditorTheme();
+        document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
+
+        function setEditorTheme() {
+            const theme = document.documentElement.dataset.theme;
+
+            if (theme === 'dark') {
                 that.ace.setTheme("ace/theme/monokai");
+            } else {
+                that.ace.setTheme("ace/theme/eclipse");
             }
-        })
+        }
 
         that.ace.renderer.setShowGutter(false);
         let session = that.ace.getSession();

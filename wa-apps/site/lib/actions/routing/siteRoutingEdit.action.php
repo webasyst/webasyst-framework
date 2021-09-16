@@ -164,7 +164,7 @@ class siteRoutingEditAction extends waViewAction
             $value = $info['default'];
         }
 
-        if ($info['type'] == 'select') {
+        if (!empty($route_id) && $info['type'] == 'select') {
             if (!isset($info['items'][$value])) {
                 $new_value = ifset($value, '');
                 $info['items'] = array($new_value => $new_value) + $info['items'];

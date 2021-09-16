@@ -8,9 +8,16 @@
 class waWebasystIDClientManager
 {
     /**
+     * @see getWebasystIDConfig
      * @var waWebasystIDConfig
      */
     protected $config;
+
+    /**
+     * @see
+     * @var waWebasystIDUrlsProvider
+     */
+    protected $provider;
 
     /**
      * Lazy loader property, use getAppSettingsModel
@@ -93,6 +100,9 @@ class waWebasystIDClientManager
         try {
             $response = $net->query($this->getConnectUrl());
         } catch (Exception $e) {
+            if ($e instanceof waNetTimeoutException) {
+                $this->getWebasystIDUrlsProvider()->complainAboutAuthEndpoint();
+            }
             $this->logException($e);
             $this->logError([
                 'method' => __METHOD__,
@@ -247,7 +257,7 @@ class waWebasystIDClientManager
      */
     protected function getConnectUrl()
     {
-        return $this->getWebasystIDConfig()->getAuthCenterUrl('connect', [
+        return $this->getWebasystIDUrlsProvider()->getAuthCenterUrl('connect', [
             'token' => $this->getToken(),
             'domain' => $this->getDomain(),
             'hash' => $this->getIdentityHash(),
@@ -261,7 +271,7 @@ class waWebasystIDClientManager
      */
     protected function getDisconnectUrl()
     {
-        return $this->getWebasystIDConfig()->getAuthCenterUrl('disconnect');
+        return $this->getWebasystIDUrlsProvider()->getAuthCenterUrl('disconnect');
     }
 
     /**
@@ -311,6 +321,19 @@ class waWebasystIDClientManager
             $this->config = new waWebasystIDConfig();
         }
         return $this->config;
+    }
+
+    /**
+     * @return waWebasystIDUrlsProvider
+     */
+    protected function getWebasystIDUrlsProvider()
+    {
+        if (!$this->provider) {
+            $this->provider = new waWebasystIDUrlsProvider([
+                'config' => $this->getWebasystIDConfig()
+            ]);
+        }
+        return $this->provider;
     }
 
     /**

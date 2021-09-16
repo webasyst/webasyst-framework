@@ -1349,7 +1349,7 @@
                 placeholderClass: 'gray',
                 makeReadableBy: ['esc'],
                 updateBy: ['ctrl+enter'],
-                html: true,
+                html: false,
                 allowEmpty: true,
                 beforeMakeEditable: function(input) {
                     var button = $('#photo-description-save');
@@ -1376,7 +1376,7 @@
                         id: $.photos.photo_stream_cache.getCurrent().id,
                         type: 'photo',
                         name: 'description',
-                        value: $(input).val(),
+                        value: $.wa.encodeHTML($(input).val()),
                         fn: function() {}
                     });
                 },
@@ -1508,7 +1508,7 @@
                 $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saving')).fadeIn('slow');
                 $.photos.assignTags({
                     photo_id: $.photos.getPhotoId(),
-                    tags: $('#photo-tags').val(),
+                    tags: $.wa.encodeHTML($('#photo-tags').val()),
                     fn: function() {
                         $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saved')).fadeOut('slow');
                     },
@@ -1862,7 +1862,7 @@
         updatePhotoDescription: function(description, edit_status) {
             if (typeof description === 'boolean' || typeof description === 'undefined') {
                 edit_status = description;
-                description = $('#photo-description').html();
+                description = $.wa.encodeHTML($('#photo-description').html());
             }
             var photo_description = $('#photo-description'),
                 placeholder = null,
@@ -2788,7 +2788,7 @@
 
         highlightSidebarItem: function() {
             var href = decodeURIComponent($.photos.hash);
-            
+
             $('#p-sidebar li.selected').removeClass('selected');
             var link = $('#p-sidebar li a[href="#'+(href||'/')+'"]');
             if (!link.length) {

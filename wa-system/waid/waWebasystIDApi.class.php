@@ -9,11 +9,9 @@
 class waWebasystIDApi
 {
     /**
-     * @var waWebasystIDConfig
+     * @var waWebasystIDUrlsProvider
      */
-    protected $config;
-
-    protected $options = [];
+    protected $provider;
 
     /**
      * waWebasystIDApi constructor.
@@ -24,8 +22,18 @@ class waWebasystIDApi
      */
     public function __construct(array $options = [])
     {
-        $this->config = new waWebasystIDConfig();
-        $this->options = $options;
+        if (isset($options['provider']) && $options['config'] instanceof waWebasystIDUrlsProvider) {
+            $this->provider = $options['provider'];
+        } else {
+            if (isset($options['config']) && $options['config'] instanceof waWebasystIDConfig) {
+                $config = $options['config'];
+            } else {
+                $config = new waWebasystIDConfig();
+            }
+            $this->provider = new waWebasystIDUrlsProvider([
+                'config' => $config
+            ]);
+        }
     }
 
     /**
@@ -391,7 +399,7 @@ class waWebasystIDApi
      * @param string $access_token
      * @param array $params
      * @param string $http_method - waNet::METHOD_
-     * @params array $net_options
+     * @param array $net_options
      * @return array $result
      *      int|null    $result['status']   - http status or if failed before net query NULL
      *      array       $result['response'] - response data
@@ -399,11 +407,11 @@ class waWebasystIDApi
      *                          array $result['response'] - as it has been returned by server
      *                      ELSE:
      *                          string $result['response']['error'] - error from server
-     * @throws waException
+     * @throws waNetTimeoutException|waException
      */
     protected function requestApiMethod($api_method, $access_token, array $params = [], $http_method = waNet::METHOD_GET, array $net_options = [])
     {
-        $url = $this->config->getApiUrl($api_method);
+        $url = $this->provider->getApiUrl($api_method);
 
         $default_net_options = [
             'timeout' => 20,
@@ -425,6 +433,9 @@ class waWebasystIDApi
         try {
             $response = $net->query($url, $params, $http_method);
         } catch (Exception $e) {
+            if ($e instanceof waNetTimeoutException) {
+                $this->provider->complainAboutApiEndpoint();
+            }
             $exception = $e;
         }
 
@@ -435,6 +446,10 @@ class waWebasystIDApi
                 'status' => 204,
                 'response' => []
             ];
+        }
+
+        if (!$status || $status >= 500) {
+            $this->provider->complainAboutApiEndpoint();
         }
 
         if ($exception) {

@@ -22,9 +22,9 @@
     <div class="dialog-background"></div>
     <form method="post" action="">
     <div class="dialog-body">
-        <header class="dialog-header"><h3>{$title}</h3></header>
+        <header class="dialog-header"><h3>{$title|escape}</h3></header>
         <div class="dialog-content">
-            {$text}
+            {$text|escape}
         </div>
         <div class="dialog-buttons dialog-footer">
             <div class="dialog-buttons-gradient">

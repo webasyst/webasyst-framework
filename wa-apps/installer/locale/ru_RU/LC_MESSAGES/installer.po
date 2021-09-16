@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 2.0.6\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -1335,3 +1335,24 @@ msgstr "<p><b>Бета-версия может содержать ошибки!<
 
 msgid "Beta test"
 msgstr "Бета-тест"
+
+msgid "disconnect"
+msgstr "отключить"
+
+msgid "Confirm disconnection from the beta testing of this product"
+msgstr "Подтвердите отключение от бета-тестирования этого продукта"
+
+msgid "Disconnect"
+msgstr "Отключить"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "Show navigation"
+msgstr "Показать меню"
+
+msgid "Products whose beta testing is enabled for this backend:"
+msgstr "Список продуктов, к бета-тестированию которых подключена установка:"
+
+msgid "Can’t disconnect."
+msgstr "Не удалось выполнить отключение."

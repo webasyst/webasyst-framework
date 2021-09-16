@@ -99,7 +99,7 @@ html {
     --border-color-input:                     rgba(0, 0, 0, 0.1);
     --border-color-input-hover:               rgba(0, 0, 0, 0.2);
     --border-color-soft:                      rgba(0, 0, 0, 0.1);
-    --border-color-hard:                      rgba(0, 0, 0, 0.3);
+    --border-color-hard:                      rgba(0, 0, 0, 0.25);
 
     /* menus */
     --menu-link-color:                        #333;
@@ -243,7 +243,7 @@ html[data-theme='dark'] {
     --border-color-input:                     rgba(255, 255, 255, 0.2);
     --border-color-input-hover:               rgba(255, 255, 255, 0.3);
     --border-color-soft:                      rgba(255, 255, 255, 0.1);
-    --border-color-hard:                      rgba(255, 255, 255, 0.3);
+    --border-color-hard:                      rgba(255, 255, 255, 0.25);
 
     --menu-link-color:                        #aab;
     --menu-link-color-hover:                  #ccd;
@@ -388,7 +388,7 @@ h6, .h6 { font-size: 1.0rem; }
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 { line-height: 1.2em; margin-bottom: 1rem; font-weight: bold; color: var(--text-color-stronger); }
 h1, .h1 { color: var(--text-color-strongest); }
 ol { list-style: decimal; }
-hr { border-color: var(--border-color-soft); border-width: 1px 0 0; margin: 0 0 1.5em; }
+hr { border-color: var(--border-color-hard); border-width: 1px 0 0; margin: 0 0 1.5em; }
 blockquote { color: var(--text-color); padding: 1.5em 2em; background: var(--background-color-blockquote); margin: 0 0 1rem; }
 code { background: var(--background-color-blockquote); color: var(--text-color-strong); border-radius: 0.25rem; padding: 0.125rem 0.25rem; }
 
@@ -625,8 +625,8 @@ textarea.largest { font-size: 150%; height: 11em; }
 .wa-checkbox input { display: none; }
 .wa-checkbox input + span { position: relative; display: inline-block; vertical-align: top; width: 1em; line-height: 1.5em; height: 1em; border-radius: 0.25em; border: 1px solid var(--background-color-checkbox-border); background: var(--background-color-input); cursor: pointer; box-sizing: border-box; }
 .wa-checkbox input + span.default:before { content: ""; position: absolute; top: 20%; left: 20%; width: 60%; height: 60%; border-radius: 50%; box-sizing: border-box; }
-.wa-checkbox input + span .icon { display: inline-block; vertical-align: top; width: 100%; visibility: hidden; font-size: 0.75em !important; margin-top: 0.125em; line-height: 1em; text-align: center; color: var(--white); }
-.wa-checkbox input + span .icon svg { color: var(--white) !important; margin: 0 !important; }
+.wa-checkbox input + span .icon { display: inline-block; vertical-align: top; width: 100%; visibility: hidden; font-size: 0.75em !important; margin: 0.125em 0 0 !important; line-height: 1em; text-align: center; color: var(--white); max-width: none !important; max-height: none !important; }
+.wa-checkbox input + span .icon svg { color: var(--white) !important; font-size: inherit !important; margin: 0 !important; }
 .wa-checkbox input:checked + span { background: var(--accent-color); }
 .wa-checkbox input:checked + span.default:before { background: var(--text-color-input); }
 .wa-checkbox input:checked + span .icon { visibility: visible; }
@@ -1857,7 +1857,7 @@ ul.breadcrumbs > li * > a { color: inherit; }
 
 @media screen and (max-width: 760px) { /* mobile */
 
-    .fields .field > .name { width: auto; }
+    .fields:not(.vertical) .field > .name, .fields .field > .name { width: 100%; padding-right: 0; }
     .fields .field > .name.for-input,
     .fields .field > .name.for-button,
     .fields .field > .name.for-checkbox { padding-top: 0.1875rem; }
@@ -2140,7 +2140,7 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
 .wa-tooltip-box[data-theme~=bordered][data-placement^=top] > .wa-tooltip-arrow:after { border-top-color: var(--tooltip-border-color); border-width: 7px 7px 0; top: 17px; left: 1px}
 .wa-tooltip-box[data-theme~=bordered][data-placement^=bottom] > .wa-tooltip-arrow:after { border-bottom-color: var(--tooltip-border-color); border-width: 0 7px 7px; }
 .wa-tooltip-box[data-theme~=bordered][data-placement^=left] > .wa-tooltip-arrow:after { border-left-color: var(--tooltip-border-color); border-width: 7px 0 7px 7px; }
-.wa-tooltip-box[data-theme~=bordered][data-placement^=right] > .wa-tooltip-arrow:after { border-width: 7px 7px 7px 0; var(--tooltip-border-color) }
+.wa-tooltip-box[data-theme~=bordered][data-placement^=right] > .wa-tooltip-arrow:after { border-right-color: var(--tooltip-border-color); border-width: 7px 7px 7px 0; }
 
 .wa-header-tooltip { font-size: 0.8125rem; background: rgba(0, 0, 0, 0.75); color: #fff; border-color: red; padding: 0.25rem 0.5rem; }
 

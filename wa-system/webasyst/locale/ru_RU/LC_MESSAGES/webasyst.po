@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-08-05 11:15+0300\n"
+"PO-Revision-Date: 2021-09-15 12:13+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 3.0\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -6510,3 +6510,15 @@ msgstr "Опубликовать"
 
 msgid "Menu"
 msgstr "Меню"
+
+msgid "Try again"
+msgstr "Повторите попытку"
+
+msgid "Or <a class=\"link\" href=\"%s\">sign into your backend in the usual way</a>."
+msgstr "Или <a class=\"link\" href=\"%s\">войдите в свой бекенд обычным способом</a>."
+
+msgid "Drag & drop a file here or upload it manually (JPG, GIF or PNG)"
+msgstr "Перетащите сюда файл или загрузите его вручную (JPG, GIF или PNG)"
+
+msgid "Choose file"
+msgstr "Выберите файл"

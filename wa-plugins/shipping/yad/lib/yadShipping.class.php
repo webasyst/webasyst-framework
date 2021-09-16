@@ -284,58 +284,12 @@ class yadShipping extends waShipping
                 return array();
             }
 
-            $params = array();
-            $params['senderId'] = $this->senderId;
-
-            $params += $this->prepareAddress();
-
-            $total_weight = $this->getTotalWeight();
-            if (!empty($total_weight)) {
-                $package_size = $this->getPackageSize($total_weight);
-                if (!empty($package_size)) {
-                    $params['dimensions'] = [
-                        'weight' => $total_weight
-                    ];
-                    $params['dimensions'] += $package_size;
-                }
-            }
-            $params['shipment']['warehouseId'] = $this->warehouseId;
-
-            /** @var string $departure_datetime SQL DATETIME */
-            $departure_datetime = $this->getPackageProperty('departure_datetime');
-            if ($departure_datetime) {
-                $params['shipment']['date'] = date('Y-m-d', strtotime($departure_datetime));
-            }
-
-            $country_id = $this->getAddress('country');
-            $region_id = $this->getAddress('region');
-            if (!empty($country_id) && !empty($region_id)) {
-                if (is_numeric($region_id)) {
-                    $region_model = new waRegionModel();
-                    $region_data = $region_model->getByField(array(
-                        'country_iso3' => $country_id,
-                        'code' => $region_id,
-                    ));
-                    $name_region = $region_data['name'];
-                } else {
-                    // here region_id is the name of the region
-                    $name_region = $region_id;
-                }
-                $to_location = $params['to']['location'];
-                if (!empty($name_region)) {
-                    $params['to']['location'] = $name_region . ', ' . $to_location;
-                }
-                $zip = $this->getAddress('zip');
-                if (!empty($zip)) {
-                    $params['to']['location'] .= ', ' . $zip;
-                } elseif (!empty($params['to']['geoId'])) {
-                    $params['to']['location'] .= ', ' . $params['to']['geoId'];
-                }
-
-                $options = $this->getExactAddressesForMainSelector($params['to']['location']);
+            $delivery_options = $this->getDeliveryOptionsParams();
+            if (isset($delivery_options['simple_location'])) {
+                $options = $this->getExactAddressesForMainSelector($delivery_options['params']['to']['location']);
                 $addresses_do_not_match = true;
                 foreach ($options as $option) {
-                    if (mb_strpos(mb_strtolower($option['value']), mb_strtolower($to_location)) !== false) {
+                    if (mb_strpos(mb_strtolower($option['value']), mb_strtolower($delivery_options['simple_location'])) !== false) {
                         $addresses_do_not_match = false;
                     }
                 }
@@ -350,12 +304,9 @@ class yadShipping extends waShipping
                 }
             }
 
-            $params['cost']['assessedValue'] = $this->getAssessedPrice($this->insurance);
-            $params['cost']['itemsSum'] = $this->getTotalPrice();
-
             try {
                 $callback = array($this, 'handleCalculateResponse');
-                $services = $this->apiQuery('searchDeliveryList', $params, $callback);
+                $services = $this->apiQuery('searchDeliveryList', $delivery_options['params'], $callback);
 
                 return $this->handleCalculateResponse(null, $services);
             } catch (waException $ex) {
@@ -447,6 +398,65 @@ class yadShipping extends waShipping
         return $data;
     }
 
+    /**
+     * Add places or dimensions
+     * @param $data
+     * @param bool $check_empty
+     * @throws waException
+     */
+    protected function addDimensions(&$data, $check_empty = true)
+    {
+        if ($this->size['type'] != 'places') {
+            $total_weight = $this->getTotalWeight();
+            if (!empty($total_weight)) {
+                $package_size = $this->getPackageSize($total_weight);
+                if (!empty($package_size)) {
+                    $data['dimensions'] = [
+                        'weight' => $total_weight
+                    ];
+                    $data['dimensions'] += $package_size;
+                }
+            }
+        }
+        if (empty($data['dimensions'])) {
+            foreach ($this->getItems() as $item) {
+                if (!empty($item['weight'])) {
+                    $place = [
+                        'dimensions' => $this->getItemDimensions($item)
+                    ];
+
+                    if (!isset($data['places'])) {
+                        $data['places'] = [];
+                    }
+
+                    $data['places'][] = $place;
+                }
+            }
+        }
+        if ($check_empty && empty($data['places']) && empty($data['dimensions'])) {
+            $data['dimensions'] = [
+                'length' => 1,
+                'width' => 1,
+                'height' => 1,
+                'weight' => 1,
+            ];
+        }
+    }
+
+    /**
+     * @param $item
+     * @return array
+     */
+    private function getItemDimensions($item)
+    {
+        return [
+            'weight' => $item['weight'],
+            'length' => empty($item['length']) || ceil($item['length']) <= 1 ? 1 : ceil($item['length']),
+            'width'  => empty($item['width']) || ceil($item['width']) <= 1 ? 1 : ceil($item['width']),
+            'height' => empty($item['height']) || ceil($item['height']) <= 1 ? 1 : ceil($item['height']),
+        ];
+    }
+
     private function getAssessedPrice($string)
     {
         $cost = 0.0;
@@ -474,6 +484,66 @@ class yadShipping extends waShipping
         }
 
         return round(max(0.0, $cost), 2);
+    }
+
+    /**
+     * @return array|array[]
+     * @throws waException
+     */
+    private function getDeliveryOptionsParams()
+    {
+        $params = [
+            'senderId' => $this->senderId,
+            'shipment' => [
+                'warehouseId' => $this->warehouseId
+            ],
+            'cost' => [
+                'assessedValue' => $this->getAssessedPrice($this->insurance),
+                'itemsSum' => $this->getTotalPrice(),
+            ]
+        ];
+
+        $params += $this->prepareAddress();
+
+        $this->addDimensions($params, false);
+
+        /** @var string $departure_datetime SQL DATETIME */
+        $departure_datetime = $this->getPackageProperty('departure_datetime');
+        if ($departure_datetime) {
+            $params['shipment']['date'] = date('Y-m-d', strtotime($departure_datetime));
+        }
+
+        $country_id = $this->getAddress('country');
+        $region_id = $this->getAddress('region');
+        $to_location = null;
+        if (!empty($country_id) && !empty($region_id)) {
+            if (is_numeric($region_id)) {
+                $region_model = new waRegionModel();
+                $region_data = $region_model->getByField(array(
+                    'country_iso3' => $country_id,
+                    'code' => $region_id,
+                ));
+                $name_region = $region_data['name'];
+            } else {
+                // here region_id is the name of the region
+                $name_region = $region_id;
+            }
+            $to_location = $params['to']['location'];
+            if (!empty($name_region)) {
+                $params['to']['location'] = $name_region . ', ' . $to_location;
+            }
+            $zip = $this->getAddress('zip');
+            if (!empty($zip)) {
+                $params['to']['location'] .= ', ' . $zip;
+            } elseif (!empty($params['to']['geoId'])) {
+                $params['to']['location'] .= ', ' . $params['to']['geoId'];
+            }
+        }
+
+        return [
+            'simple_location' => $to_location,
+            'params' => $params
+        ];
     }
 
     public function handleCalculateResponse($net, $result)
@@ -803,8 +873,6 @@ HTML;
                 $required = array_intersect($payment_types, (array)$options['payment_types']);
                 if ($required) {
                     $cost += floatval($_service['cost']);
-                } else {
-                    $cost -= floatval($_service['cost']);
                 }
             }
         }
@@ -1378,17 +1446,17 @@ HTML;
         $delivery_type = strtoupper($delivery_type);
         $data += array(
             'senderId' => $this->senderId,
+            'comment' => $order->comment,
             'deliveryType' => $delivery_type,
-            'items' => array(),
             'cost' => array(
+                'manualDeliveryForCustomer' => $shipping_discount,
                 'assessedValue' => $this->getAssessedPrice($this->insurance),
-                'manualDeliveryForCustomer' => empty($shipping_discount) ? 0 : 1,
-                'fullyPrepaid' => $order->paid_datetime ? true : false,
+                'fullyPrepaid' => (bool)$order->paid_datetime,
             ),
             'deliveryOption' => array(
-                'delivery' => number_format($order->shipping - $shipping_discount, 0, '.', ''),
+                'delivery' => max(0, number_format($order->shipping - $shipping_discount, 0, '.', '')),
             ),
-            'comment' => $order->comment,
+            'recipient' => [],
         );
 
         $order_shipping_type = preg_replace('@\..+$@', '', $order->shipping_rate_id);
@@ -1403,52 +1471,90 @@ HTML;
         );
 
         $data['shipment']['type'] = $this->shipping_type;
-        if ($this->shipping_type != 'import') {
+        if (strtolower($data['shipment']['type']) != 'import') {
             $data['shipment']['partnerTo'] = $delivery[0];
             $data['shipment']['warehouseFrom'] = $this->warehouseId;
         }
 
+        // RECIPIENT
         $shipping_address = $order->shipping_address;
-        $data['recipient']['address'] = array(
-            'country'    => ifset($shipping_address['country_name']),
-            'region'     => ifset($shipping_address['region_name']),
-            'locality'   => ifset($shipping_address['city']),
-            'street'     => ifset($shipping_address['street']),
-            'postalCode' => ifset($shipping_address['zip']),
-        );
-
+        $data['recipient'] += $this->getContactFields($shipping_address, $order, 'recipient');
+        foreach (['country' => 'country_name', 'region' => 'region_name',
+                     'locality' => 'city', 'street' => 'street', 'postalCode' => 'zip'] as $yad_field => $wa_field
+        ) {
+            if (!empty($shipping_address[$wa_field])) {
+                if (!isset($data['recipient']['address'])) {
+                    $data['recipient']['address'] = [];
+                }
+                $data['recipient']['address'][$yad_field] = $shipping_address[$wa_field];
+            }
+        }
         if (!empty($order['shipping_params']['geo_id_to'])) {
             $data['recipient']['address']['geoId'] = (int)$order['shipping_params']['geo_id_to'];
         } elseif (!empty($order['shipping_params_geo_id_to'])) {
             $data['recipient']['address']['geoId'] = (int)$order['shipping_params_geo_id_to'];
         }
 
-        $data['recipient'] += $this->getContactFields($shipping_address, $order, 'recipient');
+        // CONTACTS
+        $contacts_fields = $this->getContactFields($shipping_address, $order, 'contacts');
+        if ($contacts_fields) {
+            $data['contacts'][0]['type'] = 'RECIPIENT';
+            $data['contacts'][0] += $contacts_fields;
+        }
+
+        $this->addDimensions($data);
+
+        // items are now deprecated
         foreach ($this->getItems() as $item) {
             $item_params = array(
                 'externalId' => $item['id'],
                 'name'       => $item['name'],
                 'count'      => $item['quantity'],
-                'price'      => round($item['price'] - $item['discount']),
+                'price'      => max(0, round($item['price'] - $item['discount'])),
                 'tax'        => $this->getTaxType($item),
             );
 
-            if (!empty(round($item['weight'], 2))) {
-                $item_params['dimensions'] = array(
-                    'weight' => round($item['weight'], 2),
-                    'length' => empty(ceil($item['length'])) ? 1 : ceil($item['length']),
-                    'width'  => empty(ceil($item['width'])) ? 1 : ceil($item['width']),
-                    'height' => empty(ceil($item['height'])) ? 1 : ceil($item['height']),
-                );
+            if (!empty($item['weight'])) {
+                $item_params['dimensions'] = $this->getItemDimensions($item);
             }
 
             $data['items'][] = $item_params;
         }
 
-        $contacts_fields = $this->getContactFields($shipping_address, $order, 'contacts');
-        if ($contacts_fields) {
-            $data['contacts'][0]['type'] = 'RECIPIENT';
-            $data['contacts'][0] += $contacts_fields;
+        if (!empty($data['recipient']['pickupPointId'])) {
+            $search_delivery_params = $this->getDeliveryOptionsParams()['params'];
+            $search_delivery_params['to']['pickupPointIds'] = [
+                $data['recipient']['pickupPointId']
+            ];
+            $search_delivery_params['cost']['fullyPrepaid'] = (bool)$order->paid_datetime;
+            $search_delivery_params['deliveryType'] = $delivery_type;
+            $search_delivery_params['cost']['manualDeliveryForCustomer'] = $shipping_discount;
+
+            // Get missing data in the waOrder
+            $delivery_list = $this->apiQuery('searchDeliveryList', $search_delivery_params);
+            foreach ($delivery_list as $item) {
+                if (is_array($item['pickupPointIds']) && in_array($data['recipient']['pickupPointId'], $item['pickupPointIds'])) {
+                    $data['deliveryOption'] += [
+                        'calculatedDeliveryDateMin' => $item['delivery']['calculatedDeliveryDateMin'],
+                        'calculatedDeliveryDateMax' => $item['delivery']['calculatedDeliveryDateMax'],
+                    ];
+                    foreach ($item['services'] as $service) {
+                        if (!isset($data['deliveryOption']['services'])) {
+                            $data['deliveryOption']['services'] = [];
+                        }
+                        $data['deliveryOption']['services'][] = [
+                            'code' => $service['code'],
+                            'cost' => $service['cost'],
+                            'customerPay' => $service['customerPay'],
+                        ];
+                    }
+
+                    $delivery_for_customer = $item['cost']['deliveryForCustomer'];
+                    if (!empty($delivery_for_customer)) {
+                        $data['deliveryOption']['deliveryForCustomer'] = $delivery_for_customer;
+                    }
+                }
+            }
         }
 
         try {
@@ -1543,7 +1649,7 @@ HTML;
 
             $this->setItems($items);
             if ($total_discount > $total) {
-                return $total_discount - $total;
+                return $total_discount;
             }
         }
 
@@ -1932,7 +2038,13 @@ HTML;
 
         $radio_params = $params;
         $radio_params['value'] = ifset($params['value']['type']);
-        $radio_params['options'] = array();
+        $radio_params['options'] = array(
+            array(
+                'value'       => 'places',
+                'title'       => 'Передавать габариты товаров отдельными позициями',
+                'description' => '',
+            )
+        );
         if (isset($params['instance'])) {
             /** @var yadShipping $instance */
             $instance = $params['instance'];

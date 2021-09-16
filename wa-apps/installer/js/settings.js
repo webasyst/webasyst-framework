@@ -162,6 +162,16 @@
                     return;
                 }
 
+                if (typeof $.waDialog.confirm === 'undefined') {
+                    let confirmDisconnect = confirm(that.options.messages.confirm_disconnect);
+
+                    if (confirmDisconnect) {
+                        disconnectFromBeta();
+                    }
+
+                    return;
+                }
+
                 $.waDialog.confirm({
                     title: that.options.messages.confirm_disconnect,
                     success_button_title: that.options.messages.disconnect,
@@ -169,24 +179,28 @@
                     cancel_button_title: that.options.messages.cancel,
                     cancel_button_class: 'light-gray',
                     onSuccess: function() {
-                        $link.find('.loading').show();
-                        $link.data('is_loading', true);
-
-                        const $product = $link.closest('.js-beta-test-product');
-                        const id = $product.data('id');
-
-                        $.post('?module=settings&action=disconnectBetaTestProduct', { product_id: id })
-                            .done(function (r) {
-                                if (r && r.status === 'ok') {
-                                    $product.remove();
-                                }
-                            })
-                            .always(function () {
-                                $link.find('.loading').hide();
-                                $link.data('is_loading', false);
-                            });
+                        disconnectFromBeta();
                     }
                 });
+
+                function disconnectFromBeta() {
+                    $link.find('.loading').show();
+                    $link.data('is_loading', true);
+
+                    const $product = $link.closest('.js-beta-test-product');
+                    const id = $product.data('id');
+
+                    $.post('?module=settings&action=disconnectBetaTestProduct', { product_id: id })
+                      .done(function (r) {
+                          if (r && r.status === 'ok') {
+                              $product.remove();
+                          }
+                      })
+                      .always(function () {
+                          $link.find('.loading').hide();
+                          $link.data('is_loading', false);
+                      });
+                }
             };
 
             $beta_test_products_wrapper.on('click', '.js-disconnect-beta-test-product', function (e) {

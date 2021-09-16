@@ -63,9 +63,16 @@ new class ThemeMode {
         if (theme === 'auto') {
             const userTheme = this.getSystemTheme();
             document.documentElement.setAttribute('data-theme', userTheme);
+            this.changeThemeEvent();
             return;
         }
 
         document.documentElement.setAttribute('data-theme', theme);
+        this.changeThemeEvent();
+    }
+
+    changeThemeEvent() {
+        const eventChange = new Event('wa-theme-change');
+        document.documentElement.dispatchEvent(eventChange);
     }
 }

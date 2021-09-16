@@ -67,7 +67,7 @@
         %}
         <h1>
             <a href="#{%#o.hash%}/" class="p-back-to-list">{%#$_('← Back')%}</a>
-            <span class="editable title" id="photo-name">{%#p.name%}</span>
+            <span class="editable title" id="photo-name">{%=p.name%}</span>
             <input type="text" id="photo-name-input" class="p-photo-h1-edit" style="display:none;">
             <span class="p-rate">
                 <a href="javascript: void(0);" title="[`Rate photo`]" id="photo-rate" class="p-rate-photo" data-rate="{%#p.rate%}">
@@ -117,7 +117,7 @@
         <ul class="thumbs p-mini-stream" id="stack-stream">
         </ul><br>
         <div class="p-description">
-            <span class="editable" id="photo-description">{%#p.description%}</span>
+            <span class="editable" id="photo-description">{%=p.description%}</span>
             <a href="javascript:void(0);" class="hint inline-link" id="photo-description-edit-link"><i class="icon10 edit"></i><b><i>[`edit`]</i></b></a>
         </div>
         <div id="photo-hook-bottom">

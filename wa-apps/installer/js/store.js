@@ -121,6 +121,12 @@ var InstallerStore = (function ($) {
                     case 'page_loaded':
                         that.postMessage({action: 'custom_dialogs_supported'});
                         that.postMessage({action: 'theme_trial_supported'});
+                        if (that.options.uiVersion !== '1.3') {
+                            that.postMessage({
+                                action: 'this_new_ui',
+                                version: that.options.uiVersion
+                            })
+                        }
 
                         if (data.in_app && data.title) {
                             document.title = data.title;
@@ -807,8 +813,11 @@ var InstallerStore = (function ($) {
     InstallerStore.prototype.setRoute = function(href) {
         const that = this;
 
-        const value = that.buildStoreUrl(href, true);
-        that.$frame.attr('src', value);
+        if (!that.options.in_app) {
+            const value = that.buildStoreUrl(href, true);
+            that.$frame.attr('src', value);
+        }
+
         that.loading.animate(10000, 100, false);
 
         that.$frame.on('load', function() {

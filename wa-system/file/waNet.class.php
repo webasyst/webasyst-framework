@@ -185,7 +185,7 @@ class waNet
                 $response = $this->runSocketContext($url, $content, $method);
                 break;
             default:
-                throw new waException('There no suitable network transports', 500);
+                throw new waNetException('There no suitable network transports', 500);
                 break;
         }
 
@@ -209,7 +209,7 @@ class waNet
                 $expected = preg_split('@[,:;.\s]+@', $this->options['expected_http_code']);
             }
             if (empty($this->response_header['http_code']) || !in_array($this->response_header['http_code'], $expected)) {
-                throw new waException($response, $this->response_header['http_code']);
+                throw new waNetException($response, $this->response_header['http_code']);
             }
         }
     }
@@ -249,7 +249,7 @@ class waNet
                     $method = self::METHOD_POST;
                     break;
                 case self::METHOD_DELETE:
-                    throw new waException('Too long URL for METHOD_DELETE');
+                    throw new waNetException('Too long URL for METHOD_DELETE');
             }
             $content = array_merge($post, $content);
         }
@@ -354,10 +354,10 @@ class waNet
                             $content = (string)$content->saveXML();
                         } else {
                             $message = 'Unsupported class "%s" of content object. Expected instance of SimpleXMLElement or DOMDocument classes.';
-                            throw new waException(sprintf($message, $class));
+                            throw new waNetException(sprintf($message, $class));
                         }
                     } else {
-                        throw new waException('XML content must be an instance of SimpleXMLElement or DOMDocument classes.');
+                        throw new waNetException('XML content must be an instance of SimpleXMLElement or DOMDocument classes.');
                     }
                     break;
                 default:
@@ -418,7 +418,7 @@ class waNet
                          * @var LibXMLError $error
                          */
                         $this->log($error->message);
-                        throw new waException('Error while decode XML response: '.$error->message, $error->code);
+                        throw new waNetException('Error while decode XML response: '.$error->message, $error->code);
                     }
                 }
                 break;
@@ -540,7 +540,11 @@ class waNet
         if (empty($response)) {
             $error_no = curl_errno($this->ch);
             $error_str = curl_error($this->ch);
-            throw new waException(sprintf('Curl error %d: %s', $error_no, $error_str));
+            if ($error_no == 28) {
+                throw new waNetTimeoutException(sprintf('Curl error %d: %s', $error_no, $error_str), $error_no);
+            } else {
+                throw new waNetException(sprintf('Curl error %d: %s', $error_no, $error_str), $error_no);
+            }
         } else {
             $header_size = curl_getinfo($this->ch, CURLINFO_HEADER_SIZE);
             $this->parseHeader(preg_split('@[\r\n]+@', substr($response, 0, $header_size)));
@@ -634,11 +638,11 @@ class waNet
         if (extension_loaded('curl') && function_exists('curl_init')) {
             if (empty($this->ch)) {
                 if (!($this->ch = curl_init())) {
-                    throw new waException(_ws("Error cUrl init"));
+                    throw new waNetException(_ws("Error cUrl init"));
                 }
 
                 if (curl_errno($this->ch) != 0) {
-                    throw new waException(_ws("Error cUrl init").' '.curl_errno($this->ch).' '.curl_error($this->ch));
+                    throw new waNetException(_ws("Error cUrl init").' '.curl_errno($this->ch).' '.curl_error($this->ch));
                 }
                 if (!is_array($curl_options)) {
                     $curl_options = array();
@@ -805,7 +809,7 @@ class waNet
                 if (empty($hint)) {
                     $hint = $this->getHint(__LINE__);
                 }
-                throw new waException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
+                throw new waNetException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
             }
         }
 
@@ -912,6 +916,7 @@ class waNet
         $body = null;
 
         $socket = @fsockopen($host, $port, $error_no, $error_str, $this->options['timeout']);
+
         $response = '';
         if ($socket) {
             $path = parse_url($url, PHP_URL_PATH);
@@ -932,7 +937,6 @@ class waNet
                 $response .= fgets($socket, 1024);
             }
             fclose($socket);
-
         }
 
         if (!$response) {
@@ -944,7 +948,7 @@ class waNet
             }
             $this->log($hint);
 
-            throw new waException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fsockopen used)");
+            throw new waNetException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fsockopen used)");
         } else {
             list($header, $body) = explode("\r\n\r\n", $response, 2);
             $this->parseHeader(preg_split('@[\r\n]+@', $header));

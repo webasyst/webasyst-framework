@@ -32,17 +32,18 @@
 
                         <div class="value js-beta-test-products-wrapper" style="display: none;">
 
-                            <div class="js-title" style="margin: 20px 0">[`Список продуктов, к бета-тестированию которых установка подключена:`]</div>
+                            <div class="js-title" style="margin: 20px 0">[`Products whose beta testing is enabled for this backend:`]</div>
 
                             <div class="js-beta-test-products">
 
                                 {* dom template for js *}
                                 <div class="js-beta-test-product js-is-template" style="display: none; margin-bottom: 10px;">
-                                    <div>ID: <span class="js-id"></span></div>
-                                    <div>SLUG: <span class="js-slug"></span></div>
-                                    <div>NAME: <span class="js-name"></span></div>
-                                    <div>[`Added to beta test:`] <span class="js-added-datetime"></span></div>
-                                    <div><a href="javascript:void(0)" class="js-disconnect-beta-test-product small">[`disconnect`] <i class="icon16 loading" style="display: none;"></i></a></div>
+                                    <div class="field">
+                                        <div class="name"><span class="js-name"></span></div>
+                                        <div class="value">
+                                            <a href="javascript:void(0)" class="js-disconnect-beta-test-product small">[`disconnect`] <i class="icon16 loading" style="display: none;"></i></a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -70,7 +71,7 @@
 <script src="{$wa_app_static_url}js/settings.js?v={$wa->version()}" type="text/javascript"></script>
 
 {$_locale = [
-    'confirm_disconnect' => _w('Are you sure disconnect this product form beta test?')
+    'confirm_disconnect' => _w('Confirm disconnection from the beta testing of this product')
 ]}
 
 <script type="text/javascript">

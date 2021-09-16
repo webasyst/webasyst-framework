@@ -19,7 +19,8 @@
         iFrameResize({
             log: false,
             heightCalculationMethod: 'max',
-            resizedCallback: function() {
+            checkOrigin: false,
+            onResized: function() {
                 $('.js-loading-wrapper').remove();
             }
         }, '.js-store-frame');
@@ -27,7 +28,7 @@
 
 </div>
 
-<script src="{$wa_app_static_url}js/store.js?v={$wa->version()}"></script>
+<script src="{$wa_app_static_url}js/store-legacy.js?v={$wa->version()}"></script>
 
 {$_locale = [
     'confirm_product_install' => _w('Do you confirm the installation?'),
@@ -79,7 +80,7 @@
                         [`If you want to add a review as another customer, please <a class="js-customer-center-logout-link">sign out</a>.`]
                     </p>
                 </div>
-                
+
                 <button class="button2 large blue js-send-comment">[`Add a review`]</button>
             </div>
             <span class="wa-close-icon js-close-dialog">
@@ -115,7 +116,6 @@
 {capture assign="_confirm_text_template"}
     <div class="i-confirm-text">[`Your review has been added, thank you!`]</div>
 {/capture}
-
 <script>
     (function ($) {
         new InstallerStore({

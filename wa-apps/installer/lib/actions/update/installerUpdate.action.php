@@ -25,7 +25,7 @@ class installerUpdateAction extends waViewAction
         );
         $items = array();
 
-        $do_logic = function () use(&$counter, &$item) {
+        $do_logic = function () use(&$counter, &$items) {
 
             $items = installerHelper::getUpdates();
             $counter = installerHelper::getUpdatesCounter(null);

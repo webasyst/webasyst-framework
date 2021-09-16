@@ -520,6 +520,7 @@ $(function () {
                     $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow', function () {
                         site_routing_full();
                     });
+                $form.find('input.button:submit').removeClass('red').addClass('green');
             } else if (response.status === 'fail') {
                 $("#s-settings-form-status").html('<span class="small" style="color: #f00;">' + response.errors + '</span>');
                 $form.find('input.button:submit').removeClass('green').addClass('red');
@@ -562,8 +563,9 @@ $(function () {
             } else {
                 callback(response);
             }
-
-            updateRoutingErrors(response.data.routing_errors);
+            if (response.hasOwnProperty('data') && response.data.hasOwnProperty('routing_errors')) {
+                updateRoutingErrors(response.data.routing_errors);
+            }
 
         }, "json");
         return false;

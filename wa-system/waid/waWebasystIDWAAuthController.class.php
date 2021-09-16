@@ -39,15 +39,28 @@ class waWebasystIDWAAuthController extends waViewController
             //
             $this->tryAuth();
 
-
-        } catch (waWebasystIDAccessDeniedAuthException $e) {
-            // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish proccess)
-            $this->displayAuth(['type' => 'access_denied']);
-        } catch (waWebasystIDAuthException $e) {
-            $this->displayError($e->getMessage());  // show legitimate error from webasyst ID auth adapter
+        } catch (waWebasystIDException $e) {
+            if ($e instanceof waWebasystIDAccessDeniedAuthException && !$this->auth->isBackendAuth()) {
+                // if webasyst ID server response 'access_denied' it means that user not allowed authorization, so not showing error (just finish proccess)
+                $this->displayAuth(['type' => 'access_denied']);
+            } else {
+                $this->displayError($e->getMessage());
+            }
         } catch (Exception $e) {
             throw $e; // Caught in waSystem->dispatch()
         }
+    }
+
+    protected function getAuthType()
+    {
+        if ($this->auth->isBackendAuth()) {
+            $type = 'backend';
+        } elseif ($this->auth->getInviteAuthToken()) {
+            $type = 'invite';
+        } else {
+            $type = 'bind';
+        }
+        return $type;
     }
 
     /**
@@ -59,16 +72,20 @@ class waWebasystIDWAAuthController extends waViewController
     {
         $auth_response_data = $this->auth->auth();
 
-        if ($this->auth->isBackendAuth()) {
-            $type = 'backend';
-            $result = $this->processBackendAuth($auth_response_data);
-        } elseif ($invite_token = $this->auth->isInviteAuth()) {
-            // this is case of invite user to team
-            $type = 'invite';
-            $result = $this->processInviteAuth($auth_response_data, $invite_token);
-        } else {
-            $type = 'bind';
-            $result = $this->processBindAuth($auth_response_data);
+        $type = $this->getAuthType();
+        $result = null;
+
+        switch ($type) {
+            case 'backend':
+                $result = $this->processBackendAuth($auth_response_data);
+                break;
+            case 'invite':
+                $invite_token = $this->auth->getInviteAuthToken();
+                $result = $this->processInviteAuth($auth_response_data, $invite_token);
+                break;
+            case 'bind':
+                $result = $this->processBindAuth($auth_response_data);
+                break;
         }
 
         if ($result) {
@@ -364,7 +381,7 @@ class waWebasystIDWAAuthController extends waViewController
      */
     protected function displayAuth(array $result)
     {
-        $invite_token = $this->auth->isInviteAuth();
+        $invite_token = $this->auth->getInviteAuthToken();
 
         $type = $result['type'];
 
@@ -394,7 +411,8 @@ class waWebasystIDWAAuthController extends waViewController
         $this->executeAction(new webasystOAuthAction([
             'provider_id' => waWebasystIDAuthAdapter::PROVIDER_ID,
             'result' => [
-                'type' => 'error',
+                'type' => $this->getAuthType(),
+                'is_system_error' => true,
                 'error_msg' => $error
             ]
         ]));

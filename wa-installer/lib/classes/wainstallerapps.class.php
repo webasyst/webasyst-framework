@@ -2420,7 +2420,16 @@ class waInstallerApps
         try {
             return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/product_lease_status');
         } catch (Exception $e) {
-            throw new Exception('Unable to build URL to get announcements');
+            throw new Exception('Unable to build URL to get product lease status');
+        }
+    }
+
+    public function getEndpointsUrl()
+    {
+        try {
+            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'config/endpoints');
+        } catch (Exception $e) {
+            throw new Exception('Unable to build URL to get endpoints');
         }
     }
 }

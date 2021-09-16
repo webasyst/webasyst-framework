@@ -6,4 +6,12 @@
 <p>
     {$_system_error_msg}
 </p>
-<button onclick="onClickRedirect()">[`Back`]</button>
+
+{if $_auth_type === 'backend' && $_is_backend_auth_forced}
+    <button onclick="onClickRedirect()">[`Try again`]</button>
+    <p>
+        {sprintf(_ws('Or <a class="link" href="%s">sign into your backend in the usual way</a>.'), $forced_login_url)}
+    </p>
+{else}
+    <button onclick="onClickRedirect()">[`Back`]</button>
+{/if}
