@@ -128,9 +128,10 @@
                         if (widget_groups_count === 1) {
                             group.onWidgetListClick(event.originalEvent, $(event.item).find('.image-block'));
                         }else{
-                            $(event.item).remove();
                             group.onEmptyGroupDrop(event, $(event.item).find('.image-block'));
                         }
+
+                        $(event.item).remove();
                     }
                 };
 

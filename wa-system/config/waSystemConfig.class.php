@@ -634,4 +634,24 @@ class waSystemConfig
 
         return $clean;
     }
+
+    /**
+     * Not documented method for only system use!
+     * In future could be deleted, so don't use it
+     * @deprecated
+     */
+    public static function whichBackendUI()
+    {
+        $default_system_ui = waSystemConfig::systemOption('ui');
+        if (!$default_system_ui) {
+            $default_system_ui = '1.3';
+        }
+        $default_system_ui = $default_system_ui === '2.0' ? '2.0' : '1.3';
+
+        $force_version = waRequest::cookie('force_set_wa_backend_ui_version');
+        if (!$force_version) {
+            $force_version = $default_system_ui;
+        }
+        return $force_version === '2.0' ? '2.0' : '1.3';
+    }
 }

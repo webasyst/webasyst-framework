@@ -12,7 +12,7 @@
             <li class="wa-theme-globalnav-switch">
                 <!-- active app settlement / theme selector -->
                 <a href="#" class="inline-link" id="wa-theme-active">
-                    <img src="{$wa_url}{$app.icon.48}">
+                    <img src="{$wa_url}{$app.icon.48}" style="width:48px;height:48px;">
                     <b><i><span class="url">{if $route}{$_route_label = $route._domain|cat:'/':$route.url}{else}{$_route_label = $theme.name}{/if}{str_replace('www.','',$_route_label)|truncate:23:'...':false:true}</span></i></b>
                     <i class="icon10 darr"></i>
                     <br>

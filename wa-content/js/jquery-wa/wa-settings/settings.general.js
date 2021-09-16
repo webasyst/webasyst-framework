@@ -349,9 +349,7 @@ const WASettingsGeneral = ( function($) {
                                 $h3 = $logo.find('h3'),
                                 company_name = $.trim(that.$form.find('#config-logo-text').val());
 
-                            if($('#two-line-text').is(':checked')){
-                                $logo.css('width', '64px')
-                                company_name = that.insertChar(company_name, '\n', 2)
+                            if($('#two-line-text').is(':checked')) {
                                 $h3.addClass('two-lines').text(company_name);
                             }else{
                                 $logo.find('h3').removeClass('two-lines').text(company_name);

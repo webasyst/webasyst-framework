@@ -18,7 +18,7 @@ class installerAssetsAction extends waViewAction
     {
         $messages = array();
 
-        try {
+        $do_logic = function() {
             $options = array(
                 'installed'    => true,  // list all local apps
                 'requirements' => true,  // check system requirements
@@ -81,11 +81,9 @@ class installerAssetsAction extends waViewAction
             }
 
             $this->view->assign('items', $items);
+        };
 
-        } catch (Exception $ex) {
-            // Save the error in the log and add to the common array
-            installerHelper::handleException($ex, $messages);
-        }
+        $this->safeCall($do_logic, $messages);
 
         if (!waRequest::get('_')) {
             $this->setLayout(new installerBackendStoreLayout());
@@ -98,5 +96,25 @@ class installerAssetsAction extends waViewAction
         }
 
         $this->view->assign('title', _w('Assets'));
+    }
+
+    protected function safeCall($callback, &$messages = [])
+    {
+        $legacy = version_compare(PHP_VERSION, '7.0') < 0;
+        if ($legacy) {
+            try {
+                $callback();
+            } catch (Exception $ex) {
+                // Save the error in the log and add to the common array
+                installerHelper::handleException($ex, $messages);
+            }
+        } else {
+            try {
+                $callback();
+            } catch (Throwable $ex) {
+                // Save the error in the log and add to the common array
+                installerHelper::handleException($ex, $messages);
+            }
+        }
     }
 }

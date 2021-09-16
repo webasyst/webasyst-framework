@@ -24,6 +24,7 @@ class waWebasystIDAccessTokenManager
      *
      * Other keys is optional
      *      string      $params['email']      - email of contact for whom release token
+     *      string      $params['device_id']  - device ID
      *
      * @param string $secret - secret for sign
      * @return string|null - if something wrong returns null
@@ -61,12 +62,18 @@ class waWebasystIDAccessTokenManager
 
         $now_time = $this->getNowTime();
 
+        $sub = [
+            'contact_id' => intval($params['contact_id']),
+            'client_id' => $params['client_id']
+        ];
+
+        if (!empty($params['device_id'])) {
+            $sub['device_id'] = $params['device_id'];
+        }
+
         $payload = [
             'iss' => $params['issuer'],
-            'sub' => json_encode([
-                'contact_id' => intval($params['contact_id']),
-                'client_id' => $params['client_id']
-            ]),
+            'sub' => json_encode($sub),
             'scopes' => json_encode($scopes),
             'iat' => $now_time,
             'exp' => $now_time + intval($params['ttl']),
@@ -97,7 +104,8 @@ class waWebasystIDAccessTokenManager
      *      string $result['client_id']     - String ID of client for whom release token, contact must be "related" with this client, if failure on extract this info then ''
      *      string $result['scopes']        - scopes of token
      *
-     *      string $result['email'] [optional] - email of contact for whom release token, default is ''
+     *      string $result['email'] [optional]      - email of contact for whom release token, default is ''
+     *      string $result['device_id'] [optional]  - device ID
      */
     public function extractTokenInfo($token)
     {
@@ -110,6 +118,7 @@ class waWebasystIDAccessTokenManager
             'issuer' => '',
             'contact_id' => 0,
             'client_id' => '',
+            'device_id' => '',
             'email' => '',
             'scopes' => []
         ];
@@ -128,6 +137,9 @@ class waWebasystIDAccessTokenManager
             }
             if (isset($sub['client_id']) && is_string($sub['client_id'])) {
                 $info['client_id'] = $sub['client_id'];
+            }
+            if (isset($sub['device_id']) && is_string($sub['device_id'])) {
+                $info['device_id'] = $sub['device_id'];
             }
         }
 

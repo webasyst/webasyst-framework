@@ -34,6 +34,8 @@ class webasystConfig extends waAppConfig
             //'settings' => 1,
         );
 
+        (new waWebasystIDConfig())->keepEndpointsSynchronized();
+
         return $n;
     }
 

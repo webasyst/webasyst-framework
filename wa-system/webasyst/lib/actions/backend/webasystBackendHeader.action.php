@@ -68,6 +68,12 @@ class webasystBackendHeaderAction extends waViewAction
         $header_middle = [];
         $header_bottom = [];
         $header_notification = [];
+
+        $header_user_area = [
+            'main' => [],
+            'aux' => [],
+        ];
+
         foreach ($backend_header as $app_id => $header) {
             if (is_array($header)) {
 
@@ -86,6 +92,16 @@ class webasystBackendHeaderAction extends waViewAction
 
                 if ($ui_version === '2.0' && !empty($header['notification'])) {
                     $header_notification[] = $header['notification'];
+                }
+
+                // header_user_area allowed for 2.0
+                if ($ui_version == '2.0' && !empty($header['user_area'])) {
+                    if (isset($header['user_area']['main'])) {
+                        $header_user_area['main'][] = $header['user_area']['main'];
+                    }
+                    if (isset($header['user_area']['aux'])) {
+                        $header_user_area['aux'][] = $header['user_area']['aux'];
+                    }
                 }
 
             } elseif (is_string($header) && $ui_version === '1.3') {
@@ -134,6 +150,7 @@ class webasystBackendHeaderAction extends waViewAction
             'header_top'      => $header_top,
             'header_middle'   => $header_middle,
             'header_bottom'   => $header_bottom,
+            'header_user_area' => $header_user_area,
             'include_wa_push' => $include_wa_push,
             'webasyst_id_auth_banner' => $this->getWebasystIDAuthBanner(),
             'show_connection_banner'  => $this->showConnectionBanner(),

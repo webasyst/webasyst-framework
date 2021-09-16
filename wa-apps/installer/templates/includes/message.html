@@ -1,6 +1,6 @@
 {if !empty($messages)}
     {foreach $messages as $message}
-        <div class="block double-padded i-message-{$message.result}">
+        <div class="alert {$message.result}{if $message.result == 'fail'} danger{/if}">
             {if $message.result == 'success'}
                 <i class="fas fa-check-circle"></i>
             {elseif $message.result == 'fail'}

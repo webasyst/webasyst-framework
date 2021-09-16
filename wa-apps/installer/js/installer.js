@@ -210,6 +210,7 @@ String.prototype.translate = function () {
                 setTimeout(function () {
                     $("#wa-app-installer span.indicator").remove();
                     $("#wa-app li span.indicator").remove();
+                    $("#i-apply-updates-sidebar-item").find('.i-count,.count').remove();
                 }, interval);
             }
         },

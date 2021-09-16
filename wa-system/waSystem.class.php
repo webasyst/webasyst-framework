@@ -709,8 +709,8 @@ class waSystem
      */
     public function whichUI($app_id = null)
     {
-        $force_version = waRequest::cookie('force_set_wa_backend_ui_version');
-        $force_version = $force_version === '2.0' ? '2.0' : '1.3';
+        $force_version = waRequest::param('force_ui_version', null, waRequest::TYPE_STRING_TRIM);
+        $force_version = ($force_version === '1.3' || $force_version === '2.0') ? $force_version : waSystemConfig::whichBackendUI();
 
         // special case if pass FALSE - return current value of version saved in cookie
         if ($app_id === false) {

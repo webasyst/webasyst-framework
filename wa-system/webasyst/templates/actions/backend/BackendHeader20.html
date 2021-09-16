@@ -98,10 +98,15 @@
 
             {* user quick action tools *}
 
-            {* custom params injection: inject custom user content *}
-            {if $custom_params.aux}
+            {if $custom_params.aux || $header_user_area.aux}
                 <div class="wa-header-custom-aux-content">
+                    {* custom params injection: inject custom user content *}
                     {$custom_params.aux}
+
+                    {* content from special header hook (available only in ui 2.0) *}
+                    {foreach $header_user_area.aux as $_aux_content}
+                        {$_aux_content}
+                    {/foreach}
                 </div>
             {/if}
 
@@ -113,7 +118,7 @@
                     <a class="wa-toggle-panel-unlock js-toggle-panel wa-toggle-panel larger" href="#"><i class="fas fa-angle-up"></i></a>
                 *}
             {else}
-                <a class="wa-toggle-apps js-toggle-apps large" href="#" title="[s`All apps`]"><i class="fas fa-th"></i></a>
+                <a class="wa-toggle-apps rotate180 js-toggle-apps" href="#" title="[s`All apps`]"><i class="fas fa-th fa-lg"></i></a>
             {/if}
 
             {if $request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard}
@@ -158,7 +163,7 @@
                                     [s`Try it in both light and dark modes:`]
                                     <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: white; box-shadow: 0 3px 5px -2px rgba(0,0,0,0.2); position: relative; top: 3px; margin: 0 5px 0 8px; cursor: pointer" title="[s`Light mode`]" data-wa-theme-mode="light"></span>
                                     <span style="display: inline-block; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; background: #333; box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Dark mode`]" data-wa-theme-mode="dark"></span>
-                                    {* <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span> *}
+                                    <span style="display: inline-block; border-radius: 50%; overflow: hidden; border: 1px solid rgba(0,0,0,0.2); width: 18px; height: 18px; position: relative; top: 3px; margin: 0 2px; cursor: pointer" title="[s`Auto (based on device settings)`]" data-wa-theme-mode="auto"><i style="background: linear-gradient(-90deg, rgba(51,51,51,1) 40%, rgba(255,255,255,1) 60%); box-shadow: 0 3px 6px -2px rgba(0,0,0,0.42); display: block; width: 18px; height: 18px;"></i></span>
                                 </p>
 
                                 <button class="button gray outlined small custom-mr-4" onClick="_setCookie('force_set_wa_backend_ui_version', '1.3', 365); _setCookie('force_hide_wa2ui_teaser', 0, -1); window.location.reload();"><span>[s`Back to the classic UI`]</span></button>
@@ -216,9 +221,9 @@
             const $notifications_bell = $('.js-notifications-bell');
             $notifications_bell.on('click', function (e){
                 e.preventDefault();
-                $(this).toggleClass('wa-animation-swing');
-                setTimeout(() => $(this).toggleClass('wa-animation-swing'), 1000);
-                $(this).next('.js-notification-wrapper').toggle();
+                $(this).toggleClass('wa-animation-bell');
+                setTimeout(() => $(this).toggleClass('wa-animation-bell'), 1000);
+                $(this).next('.js-notification-wrapper').toggle().removeClass('hidden');
             });
             /* Active All Notifications On Main Dashboard */
             {if !empty($notifications) && ($request_uri == $backend_url || $request_uri == "`$backend_url`/" || $is_dashboard)}
@@ -230,7 +235,7 @@
                 const $wa2ui = $('.js-wa2ui');
                 $wa2ui.on('click', function (e){
                     e.preventDefault();
-                    $(this).next('.alert-fixed-box').toggle();
+                    $(this).next('.alert-fixed-box').toggle().removeClass('hidden');
                 });
             {/if}
 

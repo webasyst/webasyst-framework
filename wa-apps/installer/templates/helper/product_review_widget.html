@@ -33,8 +33,8 @@
 {/capture}
 
 
-<link href="{$wa_url}wa-apps/installer/css/app.installer.css?v={$wa->version()}" rel="stylesheet">
-{if $wa->whichUi() === '1.3' && $_is_modal}
+<link href="{$wa_url}wa-apps/installer/css/app.installer{if $wa->whichUI() === '1.3'}-legacy{/if}.css?v={$wa->version()}" rel="stylesheet">
+{if $wa->whichUI() === '1.3' && $_is_modal}
     {$dialog_prefix = 'wa-'}
     <link href="{$wa_url}wa-content/js/dialog/dialog.css" rel="stylesheet">
     <script src="{$wa_url}wa-content/js/dialog/dialog.js"></script>

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-08-05 11:15+0300\n"
+"PO-Revision-Date: 2021-09-15 12:13+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4111,6 +4111,9 @@ msgstr "%s отмечает день рождения — %s"
 msgid "%s is now online"
 msgstr "%s сейчас онлайн"
 
+msgid "%s is now away"
+msgstr "%s онлайн, но не активен"
+
 msgid "Plugin not found"
 msgstr "Плагин не найден"
 
@@ -6504,3 +6507,18 @@ msgstr "Все плагины"
 
 msgid "Publish"
 msgstr "Опубликовать"
+
+msgid "Menu"
+msgstr "Меню"
+
+msgid "Try again"
+msgstr "Повторите попытку"
+
+msgid "Or <a class=\"link\" href=\"%s\">sign into your backend in the usual way</a>."
+msgstr "Или <a class=\"link\" href=\"%s\">войдите в свой бекенд обычным способом</a>."
+
+msgid "Drag & drop a file here or upload it manually (JPG, GIF or PNG)"
+msgstr "Перетащите сюда файл или загрузите его вручную (JPG, GIF или PNG)"
+
+msgid "Choose file"
+msgstr "Выберите файл"

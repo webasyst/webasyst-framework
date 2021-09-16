@@ -41,6 +41,9 @@ return array(
     'waBackendAuthConfig'               => 'config/waBackendAuthConfig.class.php',
     'waAuthConfig'                      => 'config/waAuthConfig.class.php',
 
+    'waContactCoverThumbnailCreator'    => 'contact/cover/waContactCoverThumbnailCreator.class.php',
+    'waContactCoverList'                => 'contact/cover/waContactCoverList.class.php',
+
     'waActionTemplatePathBuilder'       => 'controller/waActionTemplatePathBuilder.trait.php',
     'waAction'                          => 'controller/waAction.class.php',
     'waActions'                         => 'controller/waActions.class.php',
@@ -86,6 +89,8 @@ return array(
     'waDbException'                     => 'exception/waDbException.class.php',
     'waException'                       => 'exception/waException.class.php',
     'waRightsException'                 => 'exception/waRightsException.class.php',
+    'waNetException'                    => 'exception/waNetException.class.php',
+    'waNetTimeoutException'             => 'exception/waNetTimeoutException.class.php',
 
     'waFiles'                           => 'file/waFiles.class.php',
     'waNet'                             => 'file/waNet.class.php',
@@ -236,8 +241,11 @@ return array(
     'waWebasystIDAccessTokenManager'           => 'waid/waWebasystIDAccessTokenManager.class.php',
     'waWebasystIDApi'                          => 'waid/waWebasystIDApi.class.php',
     'waWebasystIDCustomerCenterAuthController' => 'waid/waWebasystIDCustomerCenterAuth.controller.php',
-    'waWebasystIDUserInviting'                 => 'waid/waWebasystIDUserInviting.class.php'
+    'waWebasystIDUserInviting'                 => 'waid/waWebasystIDUserInviting.class.php',
+    'waWebasystIDCache'                        => 'waid/waWebasystIDCache.class.php',
+    'waWebasystIDEndpointsConfig'              => 'waid/waWebasystIDEndpointsConfig.class.php',
+    'waWebasystIDEndpointsHealthChecker'       => 'waid/waWebasystIDEndpointsHealthChecker.class.php',
+    'waWebasystIDUrlsProvider'                 => 'waid/waWebasystIDUrlsProvider.class.php'
 
     // </WEBASYST ID MODULE>
 );
-

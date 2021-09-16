@@ -12,24 +12,21 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
     const TYPE_WA = 'wa';
     const TYPE_SITE = 'site';
 
-    /**
-     * On-demand instance, use getter getConfig
-     * @see getConfig
-     * @var waWebasystIDConfig
-     */
-    protected $config;
 
     /**
-     * @return waWebasystIDConfig
+     * On-demand
+     * @see getProvider
+     * @var waWebasystIDUrlsProvider
      */
-    protected function getConfig()
+    protected $provider;
+
+    protected function getProvider()
     {
-        if (!$this->config) {
-            $this->config = new waWebasystIDConfig();
+        if (!$this->provider) {
+            $this->provider = new waWebasystIDUrlsProvider();
         }
-        return $this->config;
+        return $this->provider;
     }
-
 
     /**
      * Get credentials for authorize: client_id and client_secret
@@ -80,7 +77,8 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
         $options = [
             'timeout' => 20,
             'request_format' => waNet::FORMAT_RAW,
-            'format' => waNet::FORMAT_JSON
+            'format' => waNet::FORMAT_JSON,
+            'expected_http_code' => null
         ];
 
         $access_token_url = $this->getAccessTokenUrl();
@@ -97,7 +95,15 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
                 'client_secret' => $client_secret
             ], waNet::METHOD_POST);
         } catch (Exception $e) {
+            if ($e instanceof waNetTimeoutException) {
+                $this->provider->complainAboutAuthEndpoint();
+            }
             $exception = $e;
+        }
+
+        $status = $net->getResponseHeader('http_code');
+        if (!$status || $status >= 500) {
+            $this->provider->complainAboutAuthEndpoint();
         }
 
         // No response from API
@@ -200,6 +206,19 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
     }
 
     /**
+     * @return string
+     */
+    public function getHealthyRedirectUri()
+    {
+        // before getting redirect url ensure we have any healthy auth endpoint
+        $ok = $this->getProvider()->ensureHealthyAuthEndpoint();
+        if (!$ok) {
+            return '';
+        }
+        return $this->getRedirectUri();
+    }
+
+    /**
      * @inheritDoc
      */
     public function getUrl()
@@ -239,7 +258,7 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
             $params['mode'] = waRequest::get('mode');
         }
 
-        return $this->getConfig()->getAuthCenterUrl('auth/code', $params);
+        return $this->getProvider()->getAuthCenterUrl('auth/code', $params);
     }
 
     protected function getAuthScope()
@@ -277,7 +296,29 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
             'client_secret' => $credentials['client_secret'],
         ]);
 
-        $response = $this->post($url, $params);
+        $net_options = [
+            'timeout' => 20,
+            'format' => waNet::FORMAT_RAW,
+            'request_format' => waNet::FORMAT_RAW,
+            'expected_http_code' => null,
+        ];
+
+        $net = new waNet($net_options);
+
+        $response = null;
+        try {
+            $response = $net->query($url, $params, waNet::METHOD_POST);
+        } catch (Exception $e) {
+            if ($e instanceof waNetTimeoutException) {
+                $this->provider->complainAboutAuthEndpoint();
+            }
+        }
+
+        $status = $net->getResponseHeader('http_code');
+        if (!$status || $status >= 500) {
+            $this->provider->complainAboutAuthEndpoint();
+        }
+
         if (!$response) {
             return [
                 'status' => false,
@@ -382,7 +423,7 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
      */
     protected function getAccessTokenUrl()
     {
-        return $this->getConfig()->getAuthCenterUrl('auth/token');
+        return $this->getProvider()->getAuthCenterUrl('auth/token');
     }
 
     /**

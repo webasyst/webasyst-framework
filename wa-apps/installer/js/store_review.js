@@ -48,16 +48,24 @@ var InstallerStoreReview = ( function($) {
         var that = this,
             $i_product_review_block = that.$reviews_list.find('.i-product-review-block'),
             $i_reviews_filter = that.$wrapper.find('.js-reviews-filter'),
-            $i_reviews_filter_button = $i_reviews_filter.find('button'),
+            $i_reviews_filter_button = $i_reviews_filter.find('a'),
             location = window.location;
 
-        $i_reviews_filter_button.on('click', function () {
-            var btn = $(this);
-            btn.toggleClass('active').attr('disabled','disabled').siblings().removeClass('active').removeAttr('disabled');
+        $i_reviews_filter_button.on('click', function (e) {
+            e.preventDefault();
+
+            const link = $(this);
+            if (link.closest('li').hasClass('selected')) {
+                return;
+            }
+
+            link.closest('li').addClass('selected').siblings().removeClass('selected');
             $i_product_review_block.toggleClass('hidden');
-            if (btn.hasClass('js-rated-button') && location.search !== that.url_param) {
+            if (link.hasClass('js-rated-button') && location.search !== that.url_param) {
+                that.$reviews_list.addClass('rated');
                 history.pushState(null,null,location.href + that.url_param);
             }else{
+                that.$reviews_list.removeClass('rated');
                 history.pushState(null,null,location.origin + location.pathname)
             }
         })
@@ -191,7 +199,7 @@ var InstallerStoreReview = ( function($) {
             $product_review_icon = $wrapper.find('.js-product-review-icon'),
             $product_review_desc = $wrapper.find('.js-product-review-desc'),
             $rates_list = $wrapper.find('.js-rates-list'),
-            product_icons = data.product.icons || ['/wa-apps/installer/img/dummy-plugin.png'],
+            product_icons = data.product.icons || [`${that.app_url}img/dummy-plugin.png`],
             product_url = data.product.url || '#',
             product_support_url = data.product.support,
             product_name = data.product.name || '',

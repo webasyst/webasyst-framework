@@ -152,9 +152,15 @@ abstract class waRightConfig
      * @param array $rights access_key => value for both system-managed and app-managed rights
      * @param array $inherited access_key => value for rights inherited from groups member is in. Default is null: do not show group UI at all (e.g. when  managing group access)
      * @return string - generated HTML
+     * @throws waException
      */
     public function getHTML($rights = array(), $inherited=null)
     {
+        // UI 2.0 branch
+        if (wa()->whichUI($this->app) == '2.0') {
+            return $this->getUI20HTML($rights, $inherited);
+        }
+
         if ($inherited !== null) {
             $html = '<table class="zebra c-access-app"><tr><th></th>'.
                 '<th width="1%">'._ws('Effective<br/>rights').'</th>'.
@@ -288,6 +294,12 @@ HTML;
      * @throws waException
      */
     protected function getItemHTML($name, $label, $type, $params, $rights, $inherited=null) {
+
+        // UI 2.0 branch
+        if (wa()->whichUI($this->app) == '2.0') {
+            return $this->getUI20ItemHTML($name, $label, $type, $params, $rights, $inherited);
+        }
+
         $own = isset($rights[$name]) ? $rights[$name] : '';
         $group = $inherited && isset($inherited[$name]) ? $inherited[$name] : null;
         if (!isset($params['cssclass'])) {
@@ -422,6 +434,34 @@ HTML;
             default:
                 throw new waException('Unknown control: '.$type);
         }
+    }
+
+    /**
+     * @param array $rights
+     * @param null $inherited
+     * @return string
+     */
+    private function getUI20HTML($rights = array(), $inherited=null)
+    {
+        // TODO: implement for UI 2.0
+        // IMPORTANT: inside should call getItemHTML, NOT getUI20ItemHTML, so customization by inheritance could works
+        return '';
+    }
+
+    /**
+     * @param $name
+     * @param $label
+     * @param $type
+     * @param $params
+     * @param $rights
+     * @param null $inherited
+     * @return string
+     */
+    private function getUI20ItemHTML($name, $label, $type, $params, $rights, $inherited=null)
+    {
+        // TODO: implement for UI 2.0
+        // IMPORTANT: inside should call getItemHTML, NOT getUI20ItemHTML, so customization by inheritance could works
+        return '';
     }
 }
 

@@ -33,15 +33,15 @@ class WASettingsWaIDConnectDialog {
             html: that.$dialog,
             onOpen: function () {
                 that.connect();
+            },
+            onClose() {
+                that.close();
             }
         });
     }
 
     close() {
-        const that = this;
-        if (that.dialog) {
-            that.dialog.close();
-        }
+        $.wa.content.load(location.pathname, true);
     }
 
     connect() {

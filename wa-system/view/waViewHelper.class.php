@@ -59,6 +59,43 @@ class waViewHelper
         return wa_header($options);
     }
 
+    /**
+     * @param $app_id
+     * @param bool
+     * @return string
+     * @throws waException
+     */
+    public function appIconUrl($app_id, $absolute = false)
+    {
+        $static_app_url = wa()->getAppStaticUrl($app_id, $absolute);
+
+        $app_info = wa()->getAppInfo($app_id);
+
+        $icon = '';
+
+        $icons = isset($app_info['icon']) && is_array($app_info['icon']) ? $app_info['icon'] : [];
+        if ($icons) {
+            $max_size = max(array_keys($icons));
+            $icon = $icons[$max_size];
+        } elseif (isset($app_info['img'])) {
+            $icon = $app_info['img'];
+        }
+
+        if (!$icon) {
+            return '';
+        }
+
+        $icon = ltrim($icon, '/');
+        $prefix = 'wa-apps/' . $app_id . '/';
+        $prefix_len = strlen($prefix);
+
+        if (substr($icon, 0, $prefix_len) === $prefix) {
+            $icon = substr($icon, $prefix_len);
+        }
+
+        return $static_app_url . $icon;
+    }
+
     public function app()
     {
         return wa()->getApp();
@@ -400,7 +437,6 @@ HTML;
             }
 
             $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css">
-            <link id="wa-dark-mode" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-2.0-dark.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" media="(prefers-color-scheme: dark)">
             <script src="'.wa()->getRootUrl().'wa-content/js/jquery-wa/wa.switch-mode.js?v'.$this->version(true).'"></script>
     <script defer src="'.wa()->getRootUrl().'wa-content/js/fontawesome/fontawesome-all.min.js?v=513"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no, user-scalable=0" />';
@@ -1347,6 +1383,40 @@ HTML;
         } else {
             return $view->fetch(wa()->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileTabs.html', 'webasyst'));
         }
+    }
+
+    public function contactProfileSidebar($id, $options = array())
+    {
+        if (!wa_is_int($id)) {
+            throw new waException('bad parameters', 500);
+        }
+
+        $sections = ifset($options['sections']);
+        if (!is_array($sections)) {
+            $sections = $this->getContactTabs((int)$id);
+        }
+
+        $selected_section = ifset($options['selected_section']);
+        if (!$selected_section) {
+            $selected_section = key($sections);
+        }
+
+        $wa = wa();
+        $view = $wa->getView();
+        $view->assign([
+            'profile_content_layout_template' => $wa->getAppPath('templates/actions/profile/ProfileContent.html', 'webasyst'),
+            'uniqid'                          => str_replace('.', '-', uniqid('s', true)),
+            'selected_section'                => $selected_section,
+            'contact_id'                      => $id,
+            'sections'                        => $sections,
+        ]);
+
+        $template_file = $this->getConfig()->getConfigPath('ProfileSidebar.html', true, 'webasyst');
+        if (file_exists($template_file)) {
+            return $view->fetch('file:' . $template_file);
+        }
+
+        return $view->fetch($wa->getAppPath('templates/actions/profile/ProfileSidebar.html', 'webasyst'));
     }
 
     public function getContactTabs($id)

@@ -32,7 +32,7 @@ class WASettingsField {
             item_index,
             xhr = false,
             $block = that.$wrapper.find('.wa-other-fields');
-        console.log($block)
+
         $block.sortable({
             handle: '.sort',
             items: '.field',

@@ -1,0 +1,151 @@
+{$_product_is_disabled = in_array($item_type,['app','plugin']) && empty($item.enabled) && empty($app.virtual)}
+
+<tr{if $_product_is_disabled} class="grey"{/if}>
+    <td class="i-update-icon">
+        {* ICON *}
+        {if ($item_type eq 'app') && (!empty($item.icons.48)||!empty($item.img))}
+            <img src="{$wa_url}{$item.icons.48|default:$item.img|default:''|ltrim:'/'}" alt="">
+        {else}
+            &nbsp;
+        {/if}
+
+    </td>
+    <td class="i-update-name">
+        {* PRODUCT NAME *}
+        {if $item_type eq 'plugin' ||  $item_type eq 'theme' || $item_type eq 'widget' }
+
+            {* theme or plugin *}
+            {if !empty($item.icons) && false}
+                <img src="{$wa_url}{$item.icons.16}" alt="">
+            {else}
+                <i class="icon16 {if $item_type eq 'plugin'}plugins{elseif $item_type eq 'widget'}widgets{else}design{/if}"></i>
+            {/if}
+
+            {if $item_type eq 'plugin'}
+
+                {if strpos($item.slug,'wa-plugins/') === 0}
+
+                    {sprintf('[`Plugin <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/plugin/{str_replace('wa-plugins/','',$item.slug|escape)}/", $item.name|default:$item_id|escape, $item_id|escape)}
+
+                {else}
+
+                    {sprintf('[`Plugin <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/plugin/{$item.app|default:''}/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
+
+                {/if}
+
+            {elseif $item_type eq 'theme' }
+
+                {sprintf('[`Theme <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/theme/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
+
+            {elseif $item_type eq 'widget' }
+
+                {sprintf('[`Widget <a href="%s">%s</a> (%s)`]', "{$wa_app_url}store/widget/{$item.id|escape}/", $item.name|default:$item_id|escape, $item_id|escape)}
+
+            {else}
+
+                {$item.name|default:$item_id|escape}
+
+            {/if}
+
+        {else}
+            {* apps and system plugins *}
+            {if $item_type eq 'systemplugin'}
+                <strong>{sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}</strong>
+
+            {elseif ($item.slug eq 'installer')}
+                <strong class="large">{$item.name|default:$item_id|escape}</strong>
+
+            {elseif empty($item.virtual)}
+                <a href="{$wa_app_url}store/app/{$item.id|escape}/"><strong class="large">{$item.name|default:$item_id|escape}</strong></a>
+
+            {else}
+                <a href="{$wa_app_url}store/?filters[category]=plugins:{str_replace('wa-plugins/','',$item.slug|escape)}"><strong class="large">{$item.name|default:$item_id|escape}</strong></a>
+
+            {/if}
+        {/if}
+        {if !empty($item.vendor_name) && empty($item.virtual)}
+            <span class="hint">{$item.vendor_name|escape}</span>
+        {/if}
+    </td>
+
+    <td class="i-update-data">
+        {if !empty($item.installed.version)}
+            {$_version = $item.installed.version}
+            {if $_version|substr:-2 === '.p'}
+                {$_version = $_version|substr:0:-2}
+            {/if}
+            <span class="{if $item_type =='app'} bold{/if}">{$_version|escape}</span>
+        {/if}
+        {if ($item_type !='theme') && empty($item.virtual)}
+            {if $item_type !='widget' && ($item_type !='plugin' || empty($app.virtual))}
+                {if empty($item.enabled)}
+                    ([`Paused`])
+                {/if}
+            {/if}
+            {if !$item.applicable}
+                <i class="icon10 exclamation"></i>
+                [`System requirements not met:`]
+            {/if}
+            {include file="../../includes-legacy/requirements.html" inline}
+        {/if}
+    </td>
+
+    <td>
+        {if
+        empty($item.virtual)
+        &&
+        (
+            !in_array($item_type,['plugin','widget'])
+            ||
+            !empty($app.enabled)
+            ||
+            !empty($app.virtual)
+            ||
+            ($item_type=='app')
+        )}
+        <ul class="menu-h with-icons float-right">
+            {if in_array($item_type,['plugin','app'])}
+                {if empty($app.virtual)}
+                    {if empty($item.enabled)}
+                        {if $item.applicable}
+                            <li><a href="{$wa_app_url}assets/"
+                                   data-url="?module={$item_type}s&action=enable"
+                                   data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
+                                   style="color: #03c; display: block{*xxx zebra class override it *}" class="js-switch-item"><i class="icon16 play"></i>[`Resume`]</a></li>
+                        {else}
+                            {* requiremnts not sutisfied *}
+                        {/if}
+                    {elseif empty($item.system)}
+                        <li><a href="{$wa_app_url}assets/"
+                               data-url="?module={$item_type}s&action=disable"
+                               data-data="app_id={$app.id}{if $item_type=='plugin'}&plugin_id={$item.id|default:'wtf'}{/if}"
+                               class="gray js-switch-item" style="display: block{*xxx zebra class override it *}"><i class="icon16 pause"></i>[`Pause`]</a></li>
+                    {/if}
+                {/if}
+
+            {/if}
+
+            {if
+            empty($item.system)
+            &&
+            (
+                !in_array($item_type,['app','plugin'])
+                ||
+                ( $item_type =='plugin' && !empty($app.virtual))
+                ||
+                !empty($item.enabled)
+            )
+            }
+            <li><a href="{$wa_app_url}assets/" class="js-remove-item" style="color: #03c; display: block{*xxx zebra class override it *}" data-confirm="[`This will delete the product’s source code and data, without a recovery option. Are you sure?`]"><i class="icon16 delete"></i>[`Delete`]</a>
+                {if $item_type=='app'}{$field = 'app_id'}{else}{$field='extras_id'}{/if}
+                <form action="?module={$item_type}s&action=remove" method="post">
+                    {$wa->csrf()}
+                    <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
+                </form>
+                {/if}
+            </li>
+            {/if}
+        </ul>
+
+    </td>
+</tr>

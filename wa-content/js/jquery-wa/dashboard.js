@@ -1434,6 +1434,7 @@ const Page = ( function($, backend_url) {
             $edit_dashboard.on('click', function (e) {
                 e.preventDefault()
                 that.onShowLinkClick();
+                Dashboard.toggleEmptyWidgetNotice(true);
             });
 
             // $dashboardList.on("click", 'a', function() {

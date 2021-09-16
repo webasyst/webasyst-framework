@@ -8,7 +8,7 @@
 {/if}
 
 {if in_array($ftype, array('select', 'checklist', 'radio', 'branch'))}
-    <table id="{$uniqid}" class="s-subfield-editor">
+    <table id="{$uniqid}">
         <tbody class="ui-sortable">
             {if $f->getParameter('options')}
                 {if $ftype == 'branch'}
@@ -16,29 +16,29 @@
                 {/if}
                 {foreach $f->getOptions() as $value => $label}
                     <tr class="item-row">
-                        <td class="min-width"><i class="icon16 sort ui-sortable-handle"></i></td>
+                        <td class="min-width"><i class="fas fa-bars ui-sortable-handle" style="cursor: move;"></i></td>
                         <td>
-                            <input type="text" name="{$prefix}[{$fid}][options][{$value}]" value="{$label|escape}" class="s-small-input">
+                            <input type="text" name="{$prefix}[{$fid}][options][{$value}]" value="{$label|escape}" class="full-width smallest">
                             {if $ftype == 'branch'}
                                 <input type="hidden" name="{$prefix}[{$fid}][hide][{$value}]" value="{implode(',', ifempty($hide[$value], array()))}">
                             {/if}
                         </td>
-                        <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]"><i class="icon10 no js-delete-subitem"></i></a></td>
+                        <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]" class="js-delete-subitem"><i class="fas fa-trash-alt"></i></a></td>
                     </tr>
                 {/foreach}
             {/if}
             <tr class="hidden item-row template">
-                <td class="min-width"><i class="icon16 sort ui-sortable-handle"></i></td>
+                <td class="min-width"><i class="fas fa-bars ui-sortable-handle" style="cursor: move;"></i></td>
                 <td>
-                    <input type="text" name="{$prefix}[{$fid}][options][]" class="s-small-input">
+                    <input type="text" name="{$prefix}[{$fid}][options][]" class="full-width smallest">
                     {if $ftype == 'branch'}
                         <input type="hidden" name="{$prefix}[{$fid}][hide][]" value="">
                     {/if}
                 </td>
-                <td class="min-width"><a href="javascript:void(0);" title="[s`Delete`]"><i class="icon10 no js-delete-subitem"></i></a></td>
+                <td class="min-width"><a href="#" title="[s`Delete`]" class="js-delete-subitem"><i class="fas fa-trash-alt"></i></a></td>
             </tr>
-            <tr class="add-item">
-                <td colspan="3"><a class="inline-link add-item small" href="javascript:void(0);"><i class="icon10 add"></i> <b><i>[s`Add item`]</i></b></a></td>
+            <tr>
+                <td colspan="3"><a class="js-add-item small" href="#"><i class="fas fa-plus-circle"></i> <b><i>[s`Add item`]</i></b></a></td>
             </tr>
         </tbody>
     </table>
@@ -83,18 +83,20 @@
             // Sort sub-items
             $table.find(".ui-sortable").sortable({
                 items : ".item-row",
-                handle : "i.sort",
+                handle : ".ui-sortable-handle",
                 axis: 'y'
             });
 
             // Add sub-item
-            $table.on('click', 'tr.add-item a.add-item', function() {
+            $table.on('click', '.js-add-item', function(e) {
+                e.preventDefault();
                 var $tmpl = $table.find('tbody > .item-row.template');
                 $tmpl.clone().insertBefore($tmpl).removeClass('template').removeClass('hidden');
             });
 
             // Delete sub-item
-            $table.on('click', '.js-delete-subitem', function() {
+            $table.on('click', '.js-delete-subitem', function(e) {
+                e.preventDefault();
                 $(this).closest('tr').remove();
             });
 

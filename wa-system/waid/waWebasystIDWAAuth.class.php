@@ -58,7 +58,10 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
 
         // otherwise it is beginning of auth process, adapter didn't ask webasyst ID server yet
         // redirect to provider auth page
-        $request_url = $this->getRedirectUri();
+        $request_url = $this->getHealthyRedirectUri();
+        if (!$request_url) {
+            throw new waWebasystIDException(_w('Webasyst ID auth endpoint is not available'));
+        }
         wa()->getResponse()->redirect($request_url);
     }
 
@@ -74,7 +77,7 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
 
         if ($this->isBackendAuth()) {
             $callback_url .= '&backend_auth=' . waRequest::get('backend_auth');
-        } elseif ($invite_auth = $this->isInviteAuth()) {
+        } elseif ($invite_auth = $this->getInviteAuthToken()) {
             $callback_url .= '&invite_token=' . $invite_auth;
         }
 
@@ -98,6 +101,15 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
         }
 
         return $callback_url;
+    }
+
+    public function getDecodedReferrerUrl()
+    {
+        $referrer_url = $this->getReferrerUrl();
+        if ($referrer_url && waUtils::isUrlSafeBase64Encoded($referrer_url)) {
+            $referrer_url = waUtils::urlSafeBase64Decode($referrer_url);
+        }
+        return $referrer_url;
     }
 
     /**
@@ -186,10 +198,10 @@ class waWebasystIDWAAuth extends waWebasystIDAuthAdapter
     }
 
     /**
-     * Is auth (sing up) into backend by invite link
-     * @return string - if invite auth returns not empty invite auth token, otherwise empty string
+     * If auth (sing up) into backend by invite link return token
+     * @return string
      */
-    public function isInviteAuth()
+    public function getInviteAuthToken()
     {
         return waRequest::get('invite_token');
     }

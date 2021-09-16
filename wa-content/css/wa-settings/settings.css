@@ -464,6 +464,7 @@
   font-size: 1.6em;
   line-height: 1.8rem;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 .s-general-settings-page .config-text-logo .color-picker .color-picker-button {
   box-shadow: none;
@@ -1228,6 +1229,10 @@
 .s-field-settings-page .s-new-field .add {
   margin-right: 7px;
 }
+#subfileds-list {
+  display: table;
+  table-layout: fixed;
+}
 .s-field-edit-dialog .s-values-textarea-wrapper textarea {
   min-width: 350px;
 }
@@ -1261,12 +1266,6 @@
 .s-field-edit-dialog .show-always {
   display: block;
 }
-.s-field-edit-dialog .show-always .icon10 {
-  margin-top: 0;
-}
-.s-field-edit-dialog .type-selector {
-  margin-top: 5px;
-}
 .s-field-edit-dialog .hide-when-field-enabled {
   display: none;
 }
@@ -1281,12 +1280,6 @@
 }
 .s-field-edit-dialog .s-link-wrapper a:hover {
   opacity: 1;
-}
-.s-field-edit-dialog .s-link-wrapper .icon16 {
-  margin: 0 4px 0 0;
-}
-.s-field-edit-dialog .s-link-wrapper .icon16:last-child {
-  margin-right: 0;
 }
 .s-field-edit-dialog .ellipsis {
   white-space: nowrap;

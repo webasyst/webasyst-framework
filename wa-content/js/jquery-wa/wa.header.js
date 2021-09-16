@@ -243,13 +243,11 @@ class WaHeader {
                 forceFallback: true,
                 delay: 200,
                 delayOnTouchOnly: true,
+                onStart(event) {
+                    $(event.item).css('pointer-events', 'none');
+                },
                 onEnd(event) {
-                    /* хак для предотвращения срабатывания клика по элементу после его перетаскивания*/
-                    let $link = $(event.item).find('a'),
-                        href = $link.attr('href');
-                    $link.attr('href', 'javascript:void(0);');
-                    setTimeout(() => $link.attr('href', href), 500)
-
+                    $(event.item).css('pointer-events', '');
                     let data = this.toArray(),
                         apps = [];
 

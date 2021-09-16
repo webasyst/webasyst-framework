@@ -26,7 +26,7 @@ class webasystDashboardActivityAction extends waViewAction
         }
         $this->view->assign('activity_load_more', $count == 50);
 
-        $this->view->assign('today_users', $this->getTodayUsers());
+        $this->view->assign('today_users', (new webasystTodayUsers())->getGroups());
     }
 
     public function getLogs($filters = array(), &$count = null, $autoload_more = true)
@@ -170,10 +170,5 @@ class webasystDashboardActivityAction extends waViewAction
         } else {
             return _ws('365 Days');
         }
-    }
-
-    private function getTodayUsers()
-    {
-        return (new webasystTodayUsers())->getGroups();
     }
 }

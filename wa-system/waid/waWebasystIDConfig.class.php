@@ -5,70 +5,91 @@ class waWebasystIDConfig
     protected $config = [];
     protected $config_path;
 
+    protected $sync_endpoints_timeout = 86400;    // 24 hours
+
     /**
      * waWebasystIDConfig constructor.
      */
     public function __construct()
     {
-        $this->config_path = waConfig::get('wa_path_config') . '/waid.php';
-        if (file_exists($this->config_path)) {
-            $this->config = include($this->config_path);
-        }
+        $this->config_path = $this->getConfigPath();
+        $this->config = $this->readData($this->config_path);
 
+        $change = false;
         if (!$this->config) {
             $this->config = $this->generateDefaultConfig();
-            if ($this->config) {
-                waUtils::varExportToFile($this->config, $this->config_path);
+            $change = true;
+        }
+
+        if (empty($this->config['endpoints'])) {
+            $default_config = $this->generateDefaultConfig();
+            $this->config['endpoints'] = $default_config['endpoints'];
+            $change = true;
+        }
+
+        if ($change) {
+            $this->commit();
+        }
+    }
+
+    /**
+     * @return int
+     */
+    protected function getMTime()
+    {
+        if (file_exists($this->config_path)) {
+            $time = @filemtime($this->config_path);
+            if (wa_is_int($time) && $time > 0) {
+                return $time;
             }
         }
+        return 0;
+    }
 
-        $this->config = $this->typecastConfig($this->config);
+    protected function getConfigPath()
+    {
+        return waConfig::get('wa_path_config') . '/waid.php';
+    }
+
+    protected function readData($config_path)
+    {
+        if (file_exists($config_path)) {
+            return include($config_path);
+        }
+        return [];
     }
 
     /**
-     * @param string $controller_url [optional] - controller url of auth center
-     * @param array $params [optional] - get params for url
-     * @return string
+     * @return array
+     *      [
+     *          ['oauth2' => <oauth2_endpoint>, 'api' => <api_endpoint>],
+     *          ...
+     *      ]
      */
-    public function getAuthCenterUrl($controller_url = null, $params = [])
+    public function getEndpoints()
     {
-        $auth_center_url = rtrim($this->config['auth_center_url'], '/') . '';
-        if ($controller_url) {
-            $auth_center_url .= '/' . $controller_url;
+        if (isset($this->config['custom_endpoints']) && is_array($this->config['custom_endpoints'])) {
+            return $this->config['custom_endpoints'];
         }
-        if ($params) {
-            $auth_center_url .= '?' . http_build_query($params);
-        }
-        return $auth_center_url;
+        return isset($this->config['endpoints']) && is_array($this->config['endpoints']) ? $this->config['endpoints'] : [];
     }
 
     /**
-     * @param string $controller_url - api method (controller)
-     * @param array $params - get parameters of api method
-     *      - string $params['version'] [optional] - Additional parameter - version of API, default is v1
-     * @return mixed|string
+     * Update (actualize) endpoints when timeout passed
      */
-    public function getApiUrl($controller_url, $params = [])
+    public function keepEndpointsSynchronized()
     {
-        $api_url = rtrim($this->config['api_url'], '/');
-
-        $api_v = 1;
-        if ($params && isset($params['version'])) {
-            $api_v = $params['version'];
-            unset($params['version']);
+        $elapsed = time() - $this->getMTime();
+        if ($elapsed > $this->sync_endpoints_timeout) {
+            $endpoints = (new waWebasystIDEndpointsConfig())->getEndpoints();
+            if ($endpoints) {
+                $changed = !isset($this->config['endpoints']) || (isset($this->config['endpoints']) && $this->config['endpoints'] != $endpoints);
+                if ($changed) {
+                    $this->config['endpoints'] = $endpoints;
+                    $this->commit();
+                }
+            }
         }
-
-        // default is /v1/
-        $api_url .= '/v' . $api_v . '/';
-
-        // api controller itself
-        $api_url .= trim($controller_url, '/');
-
-        if ($params) {
-            $api_url .= '?' . http_build_query($params);
-        }
-
-        return $api_url;
     }
 
     /**
@@ -78,6 +99,18 @@ class waWebasystIDConfig
     public function isBackendAuthForced()
     {
         return !empty($this->config['backend_auth_forced']);
+    }
+
+    /**
+     * @return int
+     */
+    public function getEndpointMaxTries()
+    {
+        $threshold = 3; // default
+        if (isset($this->config['endpoint_max_tries']) && wa_is_int($this->config['endpoint_max_tries']) && $this->config['endpoint_max_tries'] > 0) {
+            $threshold = intval($this->config['endpoint_max_tries']);
+        }
+        return $threshold;
     }
 
     /**
@@ -109,79 +142,9 @@ class waWebasystIDConfig
      */
     protected function generateDefaultConfig()
     {
-        $installer_sources_path = waConfig::get('wa_path_root') . '/wa-installer/lib/config/sources.php';
-        if (file_exists($installer_sources_path)) {
-            $sources = include($installer_sources_path);
-            $auth_center_url = $this->getAuthCenterUrlByInstallerSources($sources);
-            if ($auth_center_url) {
-                $api_url = str_replace('oauth2/', 'api/', $auth_center_url);
-                return [
-                    'auth_center_url' => $auth_center_url,
-                    'api_url' => $api_url
-                ];
-            }
-        }
-        return [];
-    }
-
-    /**
-     * Get auth center by installer sources
-     * @param array $sources
-     * @return string|null
-     */
-    protected function getAuthCenterUrlByInstallerSources(array $sources)
-    {
-        if (isset($sources['webasyst'])) {
-            $sources = $sources['webasyst'];
-        }
-
-        if (!is_array($sources)) {
-            return null;
-        }
-
-        foreach ($sources as $type => $url) {
-            if (!filter_var($url, FILTER_VALIDATE_URL)) {
-                continue;
-            }
-
-            $parsed = parse_url($url);
-
-            if (!isset($parsed['host'])) {
-                continue;
-            }
-
-            $build_url = [
-                'https://'
-            ];
-            
-            if (isset($build_url['user']) && isset($build_url['pass'])) {
-                $build_url[] = $build_url['user'] . ':' . $build_url['pass'] . '@';
-            }
-
-            $build_url[] = $parsed['host'];
-            $build_url[] = '/id/oauth2/';
-
-            $build_url = join('', $build_url);
-
-            return $build_url;
-        }
-
-        return null;
-    }
-
-    /**
-     * @param mixed $config
-     * @return array
-     */
-    protected function typecastConfig($config)
-    {
-        $config = is_array($config) ? $config : [];
-        if (!isset($config['auth_center_url']) || !is_scalar($config['auth_center_url'])) {
-            $config['auth_center_url'] = '';
-        }
-        if (!isset($config['api_url']) || !is_scalar($config['api_url'])) {
-            $config['api_url'] = '';
-        }
-        return $config;
+        $endpoints = (new waWebasystIDEndpointsConfig())->getEndpoints();
+        return [
+            'endpoints' => $endpoints
+        ];
     }
 }

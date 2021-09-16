@@ -265,7 +265,9 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
         $this->invalidateHash($params['hash']);
 
         // auth
-        $auth->auth($contact);
+        if ($auth->auth($contact)) {
+            $this->afterAuth();
+        }
         $this->assign('contact', $contact);
 
         // redirect
@@ -273,6 +275,8 @@ abstract class waBaseForgotPasswordAction extends waLoginModuleController
             $this->redirect(wa()->getAppUrl());
         }
     }
+
+    protected function afterAuth() {}
 
     /**
      * Validate input data for set password step (and user password mode)

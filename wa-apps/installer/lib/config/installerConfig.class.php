@@ -183,7 +183,7 @@ class installerConfig extends waAppConfig
     public function getInitData($locale = null)
     {
         if (!$locale) {
-            $locale = wa()->getLocale();
+            $locale = $this->getLocale();
         }
 
         $function_cache = new waFunctionCache(array($this, 'loadInitData'), array(
@@ -338,5 +338,17 @@ class installerConfig extends waAppConfig
             $wcsm->exec("DELETE FROM {$wcsm->getTableName()} WHERE app_id = 'installer' AND name IN('"
                 .join("','", $wcsm->escape($del))."')");
         }
+    }
+
+    protected function getLocale() {
+        $app_settings_model = new waAppSettingsModel();
+        $locale = $app_settings_model->get('webasyst', 'locale');
+        if (empty($locale)) {
+            $locale = wa()->getLocale();
+        }
+        if ($locale != 'ru_RU') {
+            $locale = 'en_US';
+        }
+        return $locale;
     }
 }

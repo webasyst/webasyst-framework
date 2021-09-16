@@ -1,31 +1,25 @@
-<section class="i-assets js-assets">
-    <div class="shadowed">
+<section class="article js-assets">
+    <div class="article-body">
+
+        <h1>[`Manage apps`]</h1>
 
         {if !empty($messages)}
             {foreach $messages as $message}
-                <div class="block double-padded i-message-{$message.result}">
+                <h2 class="state-{$message.result}">
                     {if $message.result == 'success'}
                         <i class="fas fa-check-circle"></i>
                     {elseif $message.result == 'fail'}
                         <i class="fas fa-times-circle"></i>
                     {/if}
                     {$message.text|escape}
-                </div>
+                </h2>
             {/foreach}
         {/if}
 
-        <table class="zebra i-updates" id="i-assets-list">
-            <thead>
-            <tr>
-                <th class="min-width"></th>
-                <th>[`Application`]</th>
-                <th>[`Version`]</th>
-                <th>&nbsp;</th>
-            </tr>
-            </thead>
-            <tbody>
+        <table id="i-assets-list" class="i-assets-list">
 
-            <!-- list of available updates -->
+            <tbody>
+            {* list of available updates *}
             {foreach $items as $app_id => $app}
 
                 {if empty($app.virtual) || !empty($app.plugins)}
@@ -53,7 +47,6 @@
                 {/if}
 
             {/foreach}
-
             </tbody>
         </table>
     </div>
@@ -74,11 +67,11 @@
         var url = $link.data('url');
         var data = $link.data('data');
         $link.data('url', null);
-        $link.find('.icon16').removeClass('pause play').addClass('loading');
+        $link.find('.js-installer-assets-icon').hide();
+        $link.find('.js-installer-assets-spinner').addClass('-active');
         if (url) {
             $.post(url, data, function (data, textStatus) {
                 if (data.status == 'ok') {
-                    $link.find('.icon16').removeClass('pause play loading').addClass('yes');
                     setTimeout(function () {
                         window.location.reload();
                     }, 1000);

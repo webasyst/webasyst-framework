@@ -10,7 +10,7 @@
 .wa-design { margin-bottom: 80px; }
 
 .wa-editor-core-wrapper { background: white; }
-.fontawesome-i2svg-active .wa-editor-core-wrapper { background: var(--background-color-blank); }
+.is-wa2 .wa-editor-core-wrapper { background: var(--background-color-blank); }
 
 .wa-design-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 420px; z-index: 1}
 

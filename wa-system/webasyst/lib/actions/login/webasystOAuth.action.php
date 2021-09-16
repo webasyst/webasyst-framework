@@ -24,7 +24,7 @@ class webasystOAuthAction extends waViewAction
      *          - array $auth_result['result']['details']
      *
      * if system error happens
-     *      - string $auth_result['type'] - 'error'
+     *      - bool $auth_result['is_system_error']
      *      - string $auth_result['error_msg'] - message of system error
      *
      * If user click cancel link in webasyst ID auth form

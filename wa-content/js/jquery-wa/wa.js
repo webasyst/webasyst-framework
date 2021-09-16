@@ -63,8 +63,9 @@
  * */
 ( function($) {
 
-    var class_names = {
+    const class_names = {
         "wrapper": "dialog",
+        "wrapper-opened": "dialog-opened",
             "background": "dialog-background",
             "body": "dialog-body",
                 "header": "dialog-header",
@@ -72,20 +73,28 @@
                 "footer": "dialog-footer"
     };
 
-    var locked_class = "is-locked";
+    const locked_class = "is-locked";
+    const dialogs = [];
 
     var Dialog = ( function($) {
 
         Dialog = function(options) {
-            var that = this;
+            const that = this;
+
+            that.$body = $('body');
+            that.$window = $(window);
+            that.$document = $(document);
 
             that.$wrapper = options["$wrapper"];
 
             if (that.$wrapper && that.$wrapper.length) {
+                // GENERATE ID
+                that.component_id = Object.generateId(this);
+
                 // DOM
+                that.$background = that.$wrapper.find( getSelector("background") )
                 that.$block = that.$wrapper.find( getSelector("body") );
-                that.$body = $(document).find("body");
-                that.$window = $(window);
+                that.$content = that.$block.find( getSelector("content") );
 
                 // CONST
                 that.esc = (typeof options["esc"] === "boolean" ? options["esc"] : true);
@@ -99,6 +108,7 @@
                 // DYNAMIC VARS
                 that.is_visible = false;
                 that.is_removed = false;
+                that.is_ontop = true;
 
                 // HELPERS
                 that.onOpen = (typeof options["onOpen"] === "function" ? options["onOpen"] : null);
@@ -112,89 +122,43 @@
             } else {
                 log("Error: bad data for dialog");
             }
+
+            dialogs.push(that);
         };
 
         Dialog.prototype.init = function() {
-            var that = this;
+            const that = this;
+
             // save link on dialog
             that.$wrapper.data("dialog", that);
-            //
-            that.render();
 
-            // Delay binding close events so that dialog does not close immidiately
-            // from the same click that opened it.
-            setTimeout(function() {
-                that.bindEvents();
-            }, 0);
+            that.bindEvents();
         };
 
         Dialog.prototype.bindEvents = function() {
-            var that = this,
-                $window = $(window),
-                $document = $(document),
-                $block = (that.$block) ? that.$block : that.$wrapper;
+            const that = this;
 
-            $block.on("click", ".js-close-dialog, .js-dialog-close", function(event) {
-                event.preventDefault();
-                that.close();
-            });
+            that.$wrapper.on("click.Dialog", ".js-close-dialog, .js-dialog-close", $.proxy(this.close, that));
 
-            that.$wrapper.on("dialog-close", function() {
-                that.close();
-            });
+            that.$wrapper.on("dialog-close", $.proxy(this.close, that));
 
             // Click on background, default nothing
-            that.$wrapper.on("click", getSelector("background"), function(event) {
-                if (that.onBgClick) {
-                    that.onBgClick(event, that.$wrapper, that);
-                }
-            });
+            if (that.onBgClick) {
+                that.$wrapper.on("click.Dialog", getSelector("background"), $.proxy(that.backgroundClick, that));
+            }
 
             if (that.esc) {
-                $document.on("keyup", escapeWatcher);
-                function escapeWatcher(event) {
-                    var is_exist = $.contains(document, that.$wrapper[0]);
-                    if (is_exist) {
-                        var escape_code = 27;
-                        if (event.keyCode === escape_code) {
-                            that.close();
-                        }
-                    } else {
-                        if (that.is_removed) {
-                            $document.off("keyup", escapeWatcher);
-                        }
-                    }
-                }
+                that.$document.on(`keyup.Dialog.${that.component_id}`, $.proxy(that.escapeWatcher, that))
             }
 
-            $window.on("resize", onResize);
-            function onResize() {
-                var is_exist = $.contains(document, that.$wrapper[0]);
-                if (is_exist) {
-                    that.resize();
-                } else {
-                    if (that.is_removed) {
-                        $window.off("resize", onResize);
-                    }
-                }
-            }
+            that.$window.on(`resize.Dialog.${that.component_id}`, $.proxy(that.resizeDialog, that));
+            that.$document.on(`refresh.Dialog.${that.component_id}`, $.proxy(that.resizeDialog, that));
 
-            // refresh dialog position
-            $document.on("refresh", resizeDialog);
-            function resizeDialog() {
-                var is_exist = $.contains(document, that.$wrapper[0]);
-                if (is_exist) {
-                    that.resize();
-                } else {
-                    if (that.is_removed) {
-                        $document.off("resizeDialog", resizeDialog);
-                    }
-                }
-            }
+            that.render();
         };
 
         Dialog.prototype.render = function() {
-            var that = this;
+            const that = this;
 
             try {
                 that.show();
@@ -208,106 +172,134 @@
             }
         };
 
-        Dialog.prototype.setPosition = function() {
-            var that = this,
-                $window = that.$window,
-                $block = (that.$block) ? that.$block : that.$wrapper,
-                $content = $block.find( getSelector("content") );
+        Dialog.prototype.show = function() {
+            const that = this;
 
-            $content.css("height", "auto");
+            const is_exist = $.contains(document, that.$wrapper);
 
-            var window_w = $window.width(),
-                window_h = $window.height(),
-                wrapper_w = $block.outerWidth(),
-                wrapper_h = $block.outerHeight(),
-                pad = 20,
-                css;
-
-            var getPosition = getDefaultPosition;
-
-            if (that.position) {
-                getPosition = that.position;
-                pad = 0;
+            if (!is_exist) {
+                that.$body.append(that.$wrapper);
             }
 
-            css = getPosition({
-                width: wrapper_w,
-                height: wrapper_h
-            });
+            that.$wrapper.addClass(class_names["wrapper-opened"]);
+            that.is_visible = true;
 
-            if (css.left > 0) {
-                if (css.left + wrapper_w > window_w) {
-                    css.left = window_w - wrapper_w - pad;
+            // set is_ontop flag only on last element
+            dialogs.map((item) => {
+                if (item.component_id !== that.component_id) {
+                    item.is_ontop = false;
                 }
+            })
+
+            that.setPosition();
+
+            if (that.animate) {
+                that.animateDialog(true);
+            }
+
+            if (that.lock_body_scroll) {
+                that.lockBodyScroll(true);
+            }
+        };
+
+        Dialog.prototype.setPosition = function() {
+            const that = this;
+
+            that.$content.css("height", "auto");
+
+            const window_w = that.$window.width();
+            const window_h = that.$window.height();
+            const wrapper_w = that.$block.outerWidth();
+            const wrapper_h = that.$block.outerHeight();
+
+            let pad = 20;
+
+            let css;
+
+            let getPosition = getDefaultPosition;
+
+            if (that.position) {
+                css = that.position();
+                pad = 0;
+            } else {
+                css = getPosition({
+                    width: wrapper_w,
+                    height: wrapper_h
+                });
+            }
+
+            if (css.left > 0 && css.left + wrapper_w > window_w) {
+                css.left = window_w - wrapper_w - pad;
             }
 
             if (css.top > 0) {
                 if (css.top + wrapper_h > window_h) {
-                    css.top = window_h - wrapper_h - pad;
+                    const customPad = pad ? pad : 20;
+                    css.top = pad ? pad : css.top;
+                    that.$background.css('height', that.$block.outerHeight() + customPad + css.top);
+                    that.$wrapper.css({
+                        'overflow-y': 'scroll',
+                        'padding-bottom': pad,
+                    });
+                    that.$block.css('position', 'relative');
+                    that.$block.css('margin-bottom', customPad);
+                } else {
+                    that.$background.height('');
+                    that.$wrapper.css({
+                        'overflow-y': 'auto',
+                        'padding-bottom': 0,
+                    });
                 }
             } else {
                 css.top = pad;
 
-                $content.hide();
+                that.$content.hide();
 
-                var block_h = $block.outerHeight(),
-                    content_h = window_h - block_h - pad * 2;
+                const block_h = that.$block.outerHeight();
+                const content_h = window_h - block_h - pad * 2;
 
-                if (content_h > 0){
-                    $content
-                        .css("height", content_h + "px")
-                        .addClass("is-long-content")
-                        .show();
-                }else{
-                    $content
-                        .css("height", "auto")
-                        .addClass("is-long-content")
-                        .show();
-                }
+                that.$content
+                  .css("height", content_h > 0 ? `${content_h}px` : 'auto')
+                  .addClass("is-long-content")
+                  .show();
 
             }
 
-            $block.css(css);
+            that.$block.css({'top': css.top, 'left': css.left});
 
             function getDefaultPosition(area) {
                 return {
-                    left: Math.floor( (window_w - area.width)/2 ),
-                    top: Math.floor( (window_h - area.height)/2 )
+                    top: Math.abs( (window_h - area.height)/2 ),
+                    left: Math.abs( (window_w - area.width)/2 )
                 };
             }
         };
 
-        Dialog.prototype.close = function() {
-            var that = this,
-                result = null;
+        Dialog.prototype.lockBodyScroll = function(state) {
+            const that = this;
 
-            if (that.is_visible) {
-                if (that.onClose) {
-                    result = that.onClose(that);
-                }
-
-                if (result !== false) {
-                    if (that.animate) {
-                        that.animateDialog(false).then( function() {
-                            that.$wrapper.remove();
-                        });
-                    } else {
-                        that.$wrapper.remove();
-                    }
-
-                    if (that.lock_body_scroll) {
-                        Dialog.lockBodyScroll(false);
-                    }
-
-                    that.is_removed = true;
-                }
+            if (state) {
+                const scroll_width = Math.abs(window.innerWidth - document.documentElement.clientWidth);
+                that.$body.addClass(locked_class);
+                that.$body.css('padding-right', scroll_width + 'px');
+            } else {
+                that.$body.removeClass(locked_class);
+                that.$body.css('padding-right', '');
             }
+        }
 
-            return result;
-        };
+        Dialog.prototype.resizeDialog = function() {
+            const that = this;
+
+            const is_exist = $.contains(document, that.$wrapper[0]);
+
+            if (is_exist) {
+                that.resize();
+            }
+        }
 
         Dialog.prototype.resize = function() {
-            var that = this;
+            const that = this;
 
             that.setPosition();
 
@@ -316,8 +308,85 @@
             }
         };
 
+        Dialog.prototype.backgroundClick = function(event) {
+            const that = this;
+
+            that.onBgClick(event, that.$wrapper, that);
+        }
+
+        Dialog.prototype.escapeWatcher = function(event) {
+            const that = this;
+
+            // prevent all system keyboard events
+            event.preventDefault();
+
+            const is_exist = $.contains(document, that.$wrapper[0]);
+
+            if (!is_exist) {
+                return;
+            }
+
+            const ESCAPE_CODE = 27;
+
+            if (event.keyCode === ESCAPE_CODE && dialogs.length && that.is_ontop) {
+                const currentDialog = dialogs[dialogs.length - 1];
+                currentDialog.close();
+            }
+        }
+
+        Dialog.prototype.close = function(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            const that = this;
+
+            let result = null;
+
+            if (!that.is_visible || result) {
+                return;
+            }
+
+            if(!dialogs.length) {
+                return;
+            }
+
+            if (that.onClose) {
+                result = that.onClose(that);
+            }
+
+            dialogs.pop()
+
+            // set is_ontop flag on a last dialog in array
+            dialogs.map((item, index) => {
+                if (dialogs.length === index + 1) {
+                    item.is_ontop = true;
+                }
+            })
+
+            if (that.animate) {
+                that.animateDialog(false).then( function() {
+                    that.$wrapper.remove()
+                });
+            } else {
+                that.$wrapper.remove();
+            }
+
+            const dialogLength = that.$body.find(`div.${class_names["wrapper-opened"]}:visible`).length;
+            if (that.lock_body_scroll && !(dialogLength > 1)) {
+                that.lockBodyScroll(false);
+            }
+
+            that.is_removed = true;
+            that.is_visible = false;
+
+            that.destroy();
+
+            return result;
+        };
+
         Dialog.prototype.hide = function() {
-            var that = this;
+            const that = this;
 
             if (that.animate) {
                 that.animateDialog(false).then( function() {
@@ -330,33 +399,41 @@
             that.is_visible = false;
 
             if (that.lock_body_scroll) {
-                Dialog.lockBodyScroll(false);
+                that.lockBodyScroll(false);
             }
         };
 
-        Dialog.prototype.show = function() {
-            var that = this,
-                is_exist = $.contains(document, that.$wrapper[0]);
+        Dialog.prototype.unbindEvents = function() {
+            const that = this;
 
-            if (!is_exist) {
-                that.$body.append(that.$wrapper);
-            }
+            that.$wrapper.off(".Dialog");
+            that.$window.off(`resize.Dialog.${that.component_id}`);
+            that.$document.off(`keyup.Dialog.${that.component_id}`);
+            that.$document.off(`refresh.Dialog.${that.component_id}`);
+        }
 
-            that.$wrapper.show();
-            that.is_visible = true;
+        Dialog.prototype.destroy = function() {
+            const that = this;
 
-            // set position
-            that.setPosition();
+            that.unbindEvents()
+            that.$wrapper.removeData("dialog");
+        }
 
-            // enable animation
-            if (that.animate) {
-                that.animateDialog(true);
-            }
+        if ( typeof Object.generateId == "undefined" ) {
+            let id = 0;
 
-            if (that.lock_body_scroll) {
-                Dialog.lockBodyScroll(true);
-            }
-        };
+            Object.generateId = function(o) {
+                if ( typeof o.__uniqueid == "undefined" ) {
+                    Object.defineProperty(o, "__uniqueid", {
+                        value: ++id,
+                        enumerable: false,
+                        writable: false
+                    });
+                }
+
+                return o.__uniqueid;
+            };
+        }
 
         /**
          * @param {Boolean} animate
@@ -391,18 +468,6 @@
             return deferred.promise();
         };
 
-        Dialog.lockBodyScroll = function(state) {
-            const $body = document.querySelector('body');
-            if (state) {
-                const scroll_width = Math.abs(window.innerWidth - document.documentElement.clientWidth);
-                $body.classList.add(locked_class);
-                $body.style.paddingRight = scroll_width + 'px';
-            }else{
-                $body.classList.remove(locked_class);
-                $body.style.paddingRight = '';
-            }
-        }
-
         return Dialog;
 
     })($);
@@ -423,7 +488,7 @@
     };
 
     function getWrapper(options) {
-        var result;
+        let result;
 
         if (options["html"]) {
             result = $(options["html"]);
@@ -438,14 +503,14 @@
         return result;
 
         function generateDialog($header, $content, $footer) {
-            var result = false;
+            let result = false;
 
-            var $wrapper = $("<div />").addClass( class_names["wrapper"] ),
-                $bg = $("<div />").addClass( class_names["background"] ),
-                $body = $("<div />").addClass( class_names["body"] ),
-                $header_w = ( $header ? $("<div />").addClass( class_names["header"] ).append($header) : false ),
-                $content_w = ( $content ? $("<div />").addClass( class_names["content"] ).append($content) : false ),
-                $footer_w = ( $footer ? $("<div />").addClass( class_names["footer"] ).append($footer) : false );
+            const $wrapper = $("<div />").addClass( class_names["wrapper"] );
+            const $bg = $("<div />").addClass( class_names["background"] );
+            const $body = $("<div />").addClass( class_names["body"] );
+            const $header_w = ( $header ? $("<div />").addClass( class_names["header"] ).append($header) : false );
+            const $content_w = ( $content ? $("<div />").addClass( class_names["content"] ).append($content) : false );
+            const $footer_w = ( $footer ? $("<div />").addClass( class_names["footer"] ).append($footer) : false );
 
             if ($header_w || $content_w || $footer_w) {
                 if ($header_w) {
@@ -470,7 +535,7 @@
 
     function log(data) {
         if (console && console.log) {
-            console.log(data);
+            console.trace(data);
         }
     }
 
@@ -595,7 +660,6 @@
 
         Drawer.prototype.render = function() {
             var that = this;
-
             var direction_class = (that.direction === "left" ? "left" : "right");
             that.$wrapper.addClass(direction_class).addClass(that.hide_class).show();
             that.$wrapper[0].style.display = 'block';
@@ -714,7 +778,6 @@
         if (options["$wrapper"]) {
             result = new Drawer(options);
         }
-
         return result;
     };
 
@@ -724,11 +787,11 @@
         if (options["html"]) {
             result = $(options["html"]);
 
-        } else if (options["wrapper"]) {
-            result = options["wrapper"];
+        } else if (options["$wrapper"]) {
+            result = options["$wrapper"];
 
         } else {
-            // result = generateDrawer(options["header"], options["content"], options["footer"]);
+            result = generateDrawer(options["header"], options["content"], options["footer"]);
         }
 
         return result;
@@ -738,28 +801,31 @@
 
             var wrapper_class = "drawer",
                 bg_class = "drawer-background",
-                block_class = "drawer-body",
+                body_class = "drawer-body",
+                block_class = "drawer-block",
                 header_class = "drawer-header",
                 content_class = "drawer-content",
                 footer_class = "drawer-footer";
 
             var $wrapper = $("<div />").addClass(wrapper_class),
                 $bg = $("<div />").addClass(bg_class),
-                $body = $("<div />").addClass(block_class),
+                $body = $("<div />").addClass(body_class),
+                $block = $("<div />").addClass(block_class),
                 $header_w = ( $header ? $("<div />").addClass(header_class).append($header) : false ),
                 $content_w = ( $content ? $("<div />").addClass(content_class).append($content) : false ),
                 $footer_w = ( $footer ? $("<div />").addClass(footer_class).append($footer) : false );
 
             if ($header_w || $content_w || $footer_w) {
                 if ($header_w) {
-                    $body.append($header_w)
+                    $block.append($header_w)
                 }
                 if ($content_w) {
-                    $body.append($content_w)
+                    $block.append($content_w)
                 }
                 if ($footer_w) {
-                    $body.append($footer_w)
+                    $block.append($footer_w)
                 }
+                $body.append($block);
                 result = $wrapper.append($bg).append($body);
             }
 
@@ -2011,11 +2077,17 @@
             function refresh() {
                 var area = getArea(that.$active);
 
-                $wrapper.css(area);
+                let sum = 0;
+                for (let key in area) {
+                    sum += area[key];
+                }
 
-                if (!is_ready) {
-                    $wrapper.prependTo(that.$wrapper);
-                    is_ready = true;
+                if (sum > 0) {
+                    $wrapper.css(area);
+                    if (!is_ready) {
+                        $wrapper.prependTo(that.$wrapper);
+                        is_ready = true;
+                    }
                 }
             }
 
@@ -2274,6 +2346,8 @@
             if (!tooltip.popper.innerText) {
                 tooltip.destroy()
             }
+
+            that.$wrapper.dataset.tooltip = tooltip;
         };
 
         Tooltip.prototype.setContent = function () {
@@ -2367,27 +2441,27 @@
 
     var Upload = (function ($) {
 
-        Upload = function(options) {
+        Upload = function(elem, options) {
             var that = this;
 
             // DOM
-            that.$wrapper = options["$wrapper"][0];
-            that.$file_input = that.$wrapper.querySelector('[type="file"]')
-            that.$upload_wrapper = that.$wrapper.querySelector('.upload')
-
-            // VARS
-            that.is_uploadbox = (typeof options["is_uploadbox"] === "boolean" ? options["is_uploadbox"] : false)
-            that.show_file_name = (typeof options["show_file_name"] === "boolean" ? options["show_file_name"] : true)
+            that.component_id = Object.generateId(that);
+            that.$body = $('body');
+            that.$wrapper = $(elem);
+            that.$file_input = that.$wrapper.find('[type="file"]');
+            that.$upload_wrapper = that.$wrapper.find('.upload');
 
             // INIT
-            that.initClass();
+            that.initClass(options);
         };
 
-        Upload.prototype.initClass = function () {
+        Upload.prototype.initClass = function (options) {
             let that = this;
 
-            if (that.is_uploadbox) {
-                that.$wrapper.classList.add('box', 'uploadbox')
+            that.options = $.extend(true, $.fn['waUpload'].defaults, options);
+
+            if (that.options.is_uploadbox) {
+                that.$wrapper.addClass('box uploadbox');
             }
 
             that.bindEvents();
@@ -2396,65 +2470,105 @@
         Upload.prototype.bindEvents = function () {
             let that = this;
 
-            if(that.is_uploadbox) {
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    that.$wrapper.addEventListener(eventName, preventDefaults, false);
-                    document.body.addEventListener(eventName, preventDefaults, false);
-                });
+            that.$file_input.on('change', $.proxy(that.handleFiles, that));
 
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    that.$wrapper.addEventListener(eventName, highlight, false);
-                });
-
-                ['dragleave', 'drop'].forEach(eventName => {
-                    that.$wrapper.addEventListener(eventName, unhighlight, false);
-                });
-
-                that.$wrapper.addEventListener('drop', handleDrop, false);
-
-                function handleDrop(e) {
-                    let dt = e.dataTransfer,
-                        files = dt.files;
-                    handleFiles(files);
-                }
-
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-
-                function highlight() {
-                    that.$wrapper.classList.add('highlighted');
-                }
-
-                function unhighlight() {
-                    that.$wrapper.classList.remove('highlighted');
-                }
-            }
-            function handleFiles(files = []) {
-                if (!files.length) {
-                    files = this.files;
-                }
-                files = [...files];
-                if (that.show_file_name) {
-                    files.forEach(getName);
-                }
+            if(!that.options.is_uploadbox) {
+                return;
             }
 
-            function getName(file) {
-                let filename = file.name,
-                    $span = that.$upload_wrapper.querySelector('.filename');
+            that.$body.on(`dragover.waUpload.${that.component_id}`, $.proxy(that.preventDefaults, that));
+            that.$body.on(`drop.waUpload.${that.component_id}`, $.proxy(that.preventDefaults, that));
 
-                if (!$span) {
-                    $span = document.createElement("span");
-                }
+            that.$wrapper.on('dragover.waUpload, drop.waUpload', $.proxy(that.preventDefaults, that));
+            that.$wrapper.on('dragenter.waUpload', $.proxy(that.highlight, that));
+            that.$wrapper.on('dragleave.waUpload, drop.waUpload', $.proxy(that.unhighlight, that));
+            that.$wrapper.on('drop.waUpload', $.proxy(that.handleDrop, that));
+        }
 
-                $span.classList.add('filename', 'hint');
-                $span.textContent = filename;
-                that.$upload_wrapper.appendChild($span);
+        Upload.prototype.preventDefaults = function(e) {
+            e.preventDefault();
+        }
+
+        Upload.prototype.highlight = function() {
+            const that = this;
+
+            that.$wrapper.addClass('highlighted');
+        }
+
+        Upload.prototype.unhighlight = function(e) {
+            if ( e.currentTarget.contains(e.relatedTarget) ) {
+                return;
             }
 
-            that.$file_input.addEventListener('change', handleFiles, false);
+            const that = this;
+            that.$wrapper.removeClass('highlighted');
+        }
+
+        Upload.prototype.handleDrop = function(e) {
+            const that = this;
+
+            that.files = e.originalEvent.dataTransfer.files;
+
+            that.handleFiles(that.files);
+        }
+
+        Upload.prototype.handleFiles = function(files) {
+            const that = this;
+
+            if (!that.options.show_file_name) {
+                return;
+            }
+
+            if (files.target) {
+                that.files = files.target.files;
+            }
+
+            that.$upload_wrapper.find('.filename').remove();
+
+            for (let file of that.files) {
+                that.getName(file)
+            }
+        }
+
+        Upload.prototype.getName = function(file) {
+            const that = this;
+
+            const filename = file.name;
+            const $span = $('<span></span>');
+
+            $span.addClass('filename hint');
+            $span.text(filename);
+            $span.appendTo(that.$upload_wrapper);
+        }
+
+        Upload.prototype.unbindEvents = function() {
+            const that = this;
+
+            that.$body.off('.waUpload');
+            that.$wrapper.off('.waUpload');
+        }
+
+        Upload.prototype.destroy = function() {
+            var that = this;
+
+            that.unbindEvents();
+            that.$wrapper.removeData('waUpload');
+        };
+
+        if ( typeof Object.generateId == "undefined" ) {
+            let id = 0;
+
+            Object.generateId = function(o) {
+                if ( typeof o.__uniqueid == "undefined" ) {
+                    Object.defineProperty(o, "__uniqueid", {
+                        value: ++id,
+                        enumerable: false,
+                        writable: false
+                    });
+                }
+
+                return o.__uniqueid;
+            };
         }
 
         return Upload;
@@ -2463,7 +2577,7 @@
 
     var plugin_name = "upload";
 
-    $.fn.waUpload = function(plugin_options) {
+    $.fn['waUpload'] = function(plugin_options) {
         var return_instance = ( typeof plugin_options === "string" && plugin_options === plugin_name),
             $items = this,
             result = this;
@@ -2479,11 +2593,7 @@
                 var $wrapper = $(item);
 
                 if (!$wrapper.data(plugin_name)) {
-                    var options = $.extend(true, plugin_options, {
-                        $wrapper: $wrapper
-                    });
-
-                    $wrapper.data(plugin_name, new Upload(options));
+                    $wrapper.data(plugin_name, new Upload($wrapper, plugin_options));
                 }
             });
         }
@@ -2492,6 +2602,11 @@
             return $items.first().data(plugin_name);
         }
     };
+
+    $.fn['waUpload'].defaults = {
+        'is_uploadbox': false,
+        'show_file_name': true,
+    }
 
 })(jQuery);
 
@@ -2845,12 +2960,14 @@
         Sidebar.prototype.toggleAction = function() {
             let that = this;
             that.$sidebar_content.each(function (i, el) {
-                $(el).slideToggle(400, function () {
-                    let self = $(this);
-                    if(self.is(':hidden')) {
-                        self.css('display', '');
-                    }
-                });
+                if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
+                    $(el).slideToggle(400, function () {
+                        let self = $(this);
+                        if(self.is(':hidden')) {
+                            self.css('display', '');
+                        }
+                    });
+                }
             })
         };
 
@@ -2966,7 +3083,9 @@
         Loading.prototype.abort = function() {
             var that = this;
 
-            if (!that.is_rendered) { return false; }
+            if (!that.is_rendered) {
+                return false;
+            }
 
             that.$wrapper.addClass(abort_class);
 
@@ -2976,7 +3095,9 @@
         Loading.prototype.done = function() {
             var that = this;
 
-            if (!that.is_rendered) { return false; }
+            if (!that.is_rendered) {
+                return
+            }
 
             that.$wrapper.addClass(done_class);
 
@@ -3045,6 +3166,11 @@
         $.ajaxSetup({ cache: false });
 
         $(document).ajaxError(function(e, xhr, settings, exception) {
+            // if abort xhr
+            if (xhr.status === 0 || xhr.readyState === 0) {
+                return;
+            }
+
             // Ignore 502 error in background process
             if (xhr.status === 502 && exception === 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
                 console && console.log && console.log('Notice: XHR failed on load: '+ settings.url);
@@ -3388,11 +3514,18 @@
             return result;
         },
 
+        encodeHTML: function(html) {
+            return html && (''+html).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        },
+        decodeHTML: function(html) {
+            return html.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+        },
+
         confirm: function(options) {
             var deferred = $.Deferred();
 
             var header = ( options.title ? '<h2>' + options.title + '</h2>' : null );
-            var text = ( options.text ? options.text : "&nbsp;" );
+            var text = ( options.text ? options.text : "" );
             var success_button_title = ( options.success_button_title ? options.success_button_title : $.wa.translate("Confirm") );
             var success_button_class = ( options.success_button_class ? options.success_button_class : "blue" );
             var cancel_button_title = ( options.cancel_button_title ? options.cancel_button_title : $.wa.translate("Cancel") );
@@ -3438,7 +3571,7 @@
             var deferred = $.Deferred();
 
             var header = ( options.title ? '<h2>' + options.title + '</h2>' : null );
-            var text = ( options.text ? options.text : "&nbsp;" );
+            var text = ( options.text ? options.text : "" );
             var button_title = (options.button_title ? options.button_title : $.wa.translate("Dismiss"));
             var button_class = (options.button_class ? options.button_class : 'light-gray');
             var footer = `<button class="js-dialog-close button ${button_class}">${button_title}</button>`;
@@ -3460,6 +3593,63 @@
 
         escape: function(string) {
             return $("<div />").text(string).html();
+        },
+
+        loadFiles: function(files) {
+
+            // Convert arguments to an array of filenames/promises
+            if (!$.isArray(files)) {
+                // Allows to pass hashmap { filename: boolean }
+                if (typeof files === 'object' && !$.isArray(files)) {
+                    files = $.map(files, function(should_load, file) {
+                        return should_load ? file : null;
+                    });
+                }
+                // allows to pass several filenames directly as arguments
+                else {
+                    files = [].slice.apply(arguments);
+                }
+            }
+
+            // Start loading and obtain list of promises
+            var promises = files.map(function(file) {
+                // make sure `file` is a non-empty string
+                if (!file) {
+                    return null;
+                } else if (typeof file != 'string') {
+                    if (typeof file === 'object' && typeof file.then === "function") {
+                        return file; // allows to mix in custom promises
+                    } else {
+                        return null;
+                    }
+                }
+
+                // CSS?
+                if (file.match(/\.css(\?.*)?$/)) {
+                    $('<link>').appendTo('head').attr({
+                        type: 'text/css',
+                        rel: 'stylesheet',
+                        href: file
+                    });
+
+                    // Trying to figure out when CSS loads is cumbersome.
+                    // So we don't bother for now.
+                    return null;
+                }
+
+                // Otherwise it's a JS script
+                return $.ajax({
+                    cache: true,
+                    dataType: "script",
+                    url: file
+                });
+
+            }).filter(function(file) {
+                return !!file;
+            });
+
+            // Combine promises into a single one
+            return $.when.apply($, promises);
         },
 
         sizeWatcher: function(options) {
@@ -3525,7 +3715,55 @@
         }
     });
 
+    /** Localization */
+
+    // strings set up by apps
+    $.wa.locale = $.wa.locale || {};
+
+    /** One parameter: translate a string.
+     * Two parameters, int and string: translate and get correct word form to use with number. */
+    $_ = function(p1, p2) {
+        if (!$ || !$.wa || !$.wa.locale) {
+            console.log('JS localization failed: empty $.wa.locale');
+            return ('string' === typeof p2) ? p2 : p1;
+        }
+        // Two parameters: number and string?
+        if (p2) {
+            if (!$.wa.locale[p2]) {
+                if (console){
+                    console.log('JS localization failed: '+p2);
+                }
+                return p2;
+            }
+            if (typeof $.wa.locale[p2] == 'string') {
+                return $.wa.locale[p2];
+            }
+
+            var d = Math.floor(p1 / 10) % 10,
+                e = p1 % 10;
+            if (d == 1 || e > 4 || e == 0) {
+                return $.wa.locale[p2][2];
+            }
+            if (e == 1) {
+                return $.wa.locale[p2][0];
+            }
+            return $.wa.locale[p2][1];
+        }
+
+        // Just one parameter: a string
+        if ($.wa.locale[p1]) {
+            return typeof $.wa.locale[p1] == 'string' ? $.wa.locale[p1] : $.wa.locale[p1][0];
+        }
+
+        if (console){
+            console.log('JS localization failed: '+p1);
+        }
+        return p1;
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
+        document.documentElement.classList.add('is-wa2')
+
         /* hide/show scrollbar */
         $('.sidebar, .sidebar-body, .content').on('hover', function () {
             let $element = $(this),

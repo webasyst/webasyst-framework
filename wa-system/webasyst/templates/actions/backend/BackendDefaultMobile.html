@@ -11,7 +11,7 @@
     <script>backend_url = {$wa_backend_url|json_encode};</script>
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.switch-mode.js?v{$wa->version(true)}"></script>
     <link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/mobile.css?v={$wa->version()}">
-    <script defer src="/wa-content/js/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
+    <script defer src="{$wa_url}wa-content/js/fontawesome/fontawesome-all.min.js?v={$wa->version()}"></script>
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
     <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version()}"></script>
@@ -55,7 +55,7 @@
                 <div class="wa-header-sitename">
                     <span class="h3">{$wa->accountName()|truncate:42}</span>
                 </div>
-                <div class="dropdown" id="wa-notifications-dropdown">
+                <div class="dropdown dashboard-main-page" id="wa-notifications-dropdown">
                     <button class="icon large wa-notifications-bell dropdown-toggle without-arrow js-notifications-bell" title="[s`Notifications`]"><i class="fas fa-bell"></i>{if !empty($notifications)}<span class="badge">{$notifications|count}</span>{/if}</button>
                     {include file="../dashboard/DashboardAnnouncement.html" inline}
                 </div>
@@ -221,8 +221,8 @@
             const $notifications_bell = $('.js-notifications-bell');
             $notifications_bell.on('click', function (e){
                 e.preventDefault();
-                $(this).toggleClass('wa-animation-swing');
-                setTimeout(() => $(this).toggleClass('wa-animation-swing'), 1000);
+                $(this).toggleClass('wa-animation-bell');
+                setTimeout(() => $(this).toggleClass('wa-animation-bell'), 1000);
                 $(this).next('.js-notification-wrapper').toggle();
             });
             {if !empty($notifications)}
