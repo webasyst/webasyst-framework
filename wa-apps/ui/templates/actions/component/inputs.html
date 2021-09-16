@@ -118,6 +118,13 @@
 {/function}
 
 <div class="u-component-page" id="js-fields-component-page">
+    <style>
+        @media (max-width: 768px) {
+            input, textarea {
+                width: 100%;
+            }
+        }
+    </style>
     <h1 class="u-page-title">{$_title|escape}</h1>
 
     <p>В отличие от wa-1.3.css, в wa-2.0.css элементы ввода данных стилизуются не операционной системой пользователя, а единым образом, независимым от типа устройства и ОС. Назначение каких-либо специфических классов на <code>input</code> и <code>textarea</code> не требуется. Стандартные <code>input</code> и <code>textarea</code> всегда будут выглядеть примерно так:</p>

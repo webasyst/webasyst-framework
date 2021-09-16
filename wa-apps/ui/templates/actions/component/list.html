@@ -5,35 +5,35 @@
     [
         "name" => "Order #100500",
         "note" => "Lorem ipsum",
-        "userpic" => "/wa-content/img/userpic.svg",
+        "userpic" => "{$wa_url}wa-content/img/userpic.svg",
         "count" => "5"
     ],
     [
         "name" => "Order #100499",
         "note" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-        "userpic" => "/wa-content/img/company.svg",
+        "userpic" => "{$wa_url}wa-content/img/company.svg",
         "count" => "<span class='badge green'>2</span> 23"
     ],
     [
         "name" => "Order #100498",
-        "userpic" => "/wa-content/img/company.svg"
+        "userpic" => "{$wa_url}wa-content/img/company.svg"
     ],
     [
         "name" => "Order #100497",
         "note" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        "userpic" => "/wa-content/img/company.svg",
+        "userpic" => "{$wa_url}wa-content/img/company.svg",
         "selected" => 1,
         "count" => "<span class='badge red'>1</span>"
     ],
     [
         "name" => "Order #100497",
         "note" => "Lorem ipsum",
-        "userpic" => "/wa-content/img/company.svg"
+        "userpic" => "{$wa_url}wa-content/img/company.svg"
     ]
 ]}
 
 {function name="_render_1"}
-<div style="width: 400px;">
+<div style="width: 100%; max-width: 400px;">
 
     <h5 class="heading large">Orders</h5>
     <ul class="list">
@@ -56,7 +56,7 @@
 {/function}
 
 {function name="_render_2"}
-<div style="width: 400px;">
+<div style="width: 100%; max-width: 400px;">
 
     <div class="list">
 {foreach $_list as $_item}

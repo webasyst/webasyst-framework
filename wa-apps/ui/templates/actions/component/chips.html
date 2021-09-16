@@ -18,6 +18,7 @@
     "name" => "Санкт-Петербург",
     "url" => "javascript:void(0);",
     "icon_class" => "fas fa-heart",
+    "class" => "desktop-and-tablet-only",
     "count" => "New!"
 ],
 [
@@ -43,13 +44,12 @@
 [
     "name" => "Париж",
     "url" => "javascript:void(0);",
-    "icon_url" => "/wa-content/img/userpic20@2x.jpg",
+    "icon_url" => "{$wa_url}wa-content/img/userpic20@2x.jpg",
     "icon_userpic" => true
 ],
 [
     "name" => "Рио-де-Жанейро",
     "icon_class" => "fas fa-mask",
-    "class" => "accented",
     "url" => "javascript:void(0);"
 ],
 [
@@ -60,7 +60,7 @@
 [
     "name" => "Сан-Франциско 🌁",
     "url" => "javascript:void(0);",
-    "class" => "rounded"
+    "class" => "rounded desktop-and-tablet-only"
 ],
 [
     "name" => "Парамарибо",
@@ -129,7 +129,7 @@
     </div>
 
     <div class="line">
-        <pre class="prettyprint">{_render|escape}</pre>
+        <pre class="prettyprint break-word">{_render|escape}</pre>
     </div>
 
     <h3>Размер меню</h3>

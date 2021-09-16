@@ -2,21 +2,21 @@
 {$wa->title($_title)}
 
 {function name="_render_icon"}
-<span class="icon userpic top" style="background-image: url('/wa-content/img/userpic.svg');"></span>
+<span class="icon userpic top" style="background-image: url('{$wa_url}wa-content/img/userpic.svg');"></span>
 
 <span class="icon userpic size-32 top">
-    <i style="background-image: url('/wa-content/img/userpic.svg');"></i>
+    <i style="background-image: url('{$wa_url}wa-content/img/userpic.svg');"></i>
 </span>
 
 <span class="icon userpic size-48 top">
-    <img src="/wa-content/img/userpic.svg" alt="">
+    <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
 </span>
 
 <span class="icon userpic size-72 top">
-    <img src="/wa-content/img/userpic.svg" alt="">
+    <img src="{$wa_url}wa-content/img/userpic.svg" alt="">
 </span>
 
-<span class="icon userpic size-96" style="background-image: url('/wa-content/img/company.svg');"></span>
+<span class="icon userpic size-96" style="background-image: url('{$wa_url}wa-content/img/company.svg');"></span>
 {/function}
 
 {function name="_render"}
@@ -83,7 +83,7 @@
             <p><code>img</code> больших размеров внутри <code>.icon</code> будет сужен до размера контейнера.</p>
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;img&gt;</strong>&lt;/span&gt;</code>
-                <span class="icon"><img src="/wa-apps/ui/img/ui.svg?v={$wa->version()}" alt=""></span>
+                <span class="icon"><img src="{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}" alt=""></span>
             </p>
             <br>
         </li>
@@ -91,8 +91,8 @@
             <p>Прочие ситуации, когда нужно иконку, картинку или цвет реализовать через фон. Стили <code>.icon</code> адаптированы для этого.</p>
             <p>Класс <code>.rounded</code> на внутренний элемент сделает иконку круглой.</p>
             <p>
-                <code>&lt;span class="icon"&gt;<strong>&lt;i style="background-image: url('/wa-apps/ui/img/ui.svg?v={$wa->version()}');"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
-                <span class="icon"><i style="background-image: url('/wa-apps/ui/img/ui.svg?v={$wa->version()}');"></i></span>
+                <code>&lt;span class="icon"&gt;<strong>&lt;i style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}');"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
+                <span class="icon"><i style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}');"></i></span>
             </p>
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;i class="rounded" style="background: orangered;"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
@@ -101,7 +101,7 @@
             <p>Класс <code>.userpic</code> на внутренний элемент сделает иконку чуть более различимой (1.25rem&times;1.25rem ≈ 20&times;20px) и правильно расставит отступы.</p>
             <p>
                 <code>&lt;span class="icon"&gt;<strong>&lt;i class="userpic" style="background-image: url('/wa-content/img/userpic20@2x.jpg');"&gt;&lt;/i&gt;</strong>&lt;/span&gt;</code>
-                <span class="icon"><i class="userpic" style="background-image: url('/wa-content/img/userpic20@2x.jpg');"></i></span>
+                <span class="icon"><i class="userpic" style="background-image: url('{$wa_url}wa-content/img/userpic20@2x.jpg');"></i></span>
             </p>
         </li>
     </ul>
@@ -127,7 +127,7 @@ css-background:
     <p class="inlinebox space-10">
         {strip}
         {foreach [10,12,14,16,18,20,22,24,26,28,30] as $_size}
-            <span class="icon size-{$_size|escape} rounded" style="background-image: url('/wa-apps/ui/img/ui.svg?v={$wa->version()}');"></span>
+            <span class="icon size-{$_size|escape} rounded" style="background-image: url('{$wa_url}wa-apps/ui/img/ui.svg?v={$wa->version()}');"></span>
         {/foreach}
         {/strip}
     </p>
