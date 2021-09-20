@@ -12,10 +12,12 @@ class webasystApiTokenHeadlessController extends waController
      * @var waWebasystIDClientManager
      */
     protected $client_manager;
+    protected $url_provider;
 
     public function __construct()
     {
         $this->client_manager = new waWebasystIDClientManager();
+        $this->url_provider = new waWebasystIDUrlsProvider();
     }
 
     public function execute()
@@ -140,7 +142,7 @@ class webasystApiTokenHeadlessController extends waController
 
     protected function getAccessToken($code, $apps)
     {
-        $url = $this->client_manager->getWebasystIDConfig()->getAuthCenterUrl('auth/token');
+        $url = $this->url_provider->getAuthCenterUrl('auth/token');
         $credentials = $this->client_manager->getCredentials();
 
         if (empty($credentials)) {

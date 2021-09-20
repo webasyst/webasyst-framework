@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-09-15 12:13+0300\n"
+"PO-Revision-Date: 2021-09-17 18:46+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -6522,3 +6522,6 @@ msgstr "Перетащите сюда файл или загрузите его 
 
 msgid "Choose file"
 msgstr "Выберите файл"
+
+msgid "Unable to delete certain files."
+msgstr "Не удалось удалить некоторые файлы."
