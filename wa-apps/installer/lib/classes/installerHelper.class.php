@@ -96,7 +96,7 @@ class installerHelper
             if ($errors) {
                 return $errors;
             } else {
-                return array(_ws('Unable to delete certain files'));
+                return array(_ws('Unable to delete certain files.'));
             }
         } else {
             return array(); // went fine the second time

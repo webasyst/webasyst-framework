@@ -157,8 +157,8 @@ class waAPIController
         $token = waRequest::request('access_token', null, 'string');
         if (!$token) {
             if (function_exists('getallheaders')) {
-                $headers = getallheaders();
-                $token = ifset($headers, 'Authorization', null);
+                $headers = array_change_key_case(getallheaders(), CASE_LOWER);
+                $token = ifset($headers, 'authorization', null);
             }
             if (!$token) {
                 $token = waRequest::server('HTTP_AUTHORIZATION', null, 'string');
