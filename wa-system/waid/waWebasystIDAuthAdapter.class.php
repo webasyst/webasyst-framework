@@ -164,7 +164,7 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
     {
         // check state first
         if (!$this->verifyState()) {
-            throw new waWebasystIDAuthException(_ws('Invalid or expired state'));
+            throw new waWebasystIDAuthException(_ws('The time for authorization has expired. Please go back using the button below and try again.'));
         }
 
         // check error from server
@@ -287,7 +287,7 @@ abstract class waWebasystIDAuthAdapter extends waOAuth2Adapter
         $credentials = $this->getCredentials();
 
         $redirect_uri = $this->getCallbackUrl(true);
-        
+
         $params = array_merge($params, [
             'code' => $code,
             'grant_type' => 'authorization_code',
