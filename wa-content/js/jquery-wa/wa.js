@@ -3712,6 +3712,18 @@
 
                 if (callback) { callback(timezone); }
             }
+        },
+
+        util: {
+            formatFileSize: function(bytes) {
+                var i = -1;
+                do {
+                    bytes = bytes / 1024;
+                    i++;
+                } while (bytes > 99);
+
+                return Math.max(bytes, 0.01).toFixed(2) + ((i >=0)? (' ' + $_(['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i])):'');
+            }
         }
     });
 
