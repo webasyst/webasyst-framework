@@ -352,8 +352,9 @@ class WASettingsEmail {
             e.preventDefault();
             let $item = that.$item_template.clone().removeClass('js-template').addClass('js-item');
             $item.find('.js-key').val('');
-            that.$items_wrapper.append($item);
+            that.$items_wrapper.prepend($item);
             that.$form.trigger('input');
+            $item.find(that.transport_class).trigger('change');
         });
 
         // Remove item

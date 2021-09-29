@@ -10,7 +10,6 @@
 
             {* KEY *}
             {if $key == 'default'}
-                <h4 class="heading black">[s`Default`]</h4>
                 <input class="js-key" data-name="key" value="{$key|escape}" type="hidden">
             {else}
                 <div class="flexbox">
@@ -32,17 +31,17 @@
                 <div class="name for-input">[s`Transport`]</div>
                 <div class="value">
                     <div class="wa-select">
-                    <select class="js-transport" data-name="type">
-                        {foreach $available_transports as $id => $transport}
-                            <option value="{$id|escape}"{if $_transport == $id} selected{/if}>
-                                {if is_string($transport)}
-                                    {$transport}
-                                {else}
-                                    {ifset($transport.name)}
-                                {/if}
-                            </option>
-                        {/foreach}
-                    </select>
+                        <select class="js-transport" data-name="type">
+                            {foreach $available_transports as $id => $transport}
+                                <option value="{$id|escape}"{if $_transport == $id} selected{/if}>
+                                    {if is_string($transport)}
+                                        {$transport}
+                                    {else}
+                                        {ifset($transport.name)}
+                                    {/if}
+                                </option>
+                            {/foreach}
+                        </select>
                     </div>
                     {foreach $available_transports as $id => $transport}
                         <p class="hint js-transport-description js-{$id}-description" style="display: {if $_transport == $id}inline-block{else}none{/if}">{$transport.description|default:null}</p>
@@ -89,12 +88,12 @@
                         <div class="name for-input">[s`Encryption`]</div>
                         <div class="value">
                             <div class="wa-select">
-                            <select data-name="encryption">
-                                <option value="">[s`None`]</option>
-                                <option{if $config.encryption|default:null == 'ssl'} selected{/if} value="ssl">[s`SSL/TLS`]</option>
-                                <option{if $config.encryption|default:null == 'tls'} selected{/if} value="tls">[s`STARTTLS`]</option>
-                            </select>
-                        </div>
+                                <select data-name="encryption">
+                                    <option value="">[s`None`]</option>
+                                    <option{if $config.encryption|default:null == 'ssl'} selected{/if} value="ssl">[s`SSL/TLS`]</option>
+                                    <option{if $config.encryption|default:null == 'tls'} selected{/if} value="tls">[s`STARTTLS`]</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     {if !empty($config.pop3_host)}
@@ -242,16 +241,25 @@
         </div>
 
         {* Editor for wa-config/mail.php *}
-        {* <p class="s-description">
-            [s`Select how email messages must be sent by default from your Webasyst.`]
-        </p> *}
+
+        <h4 class="heading black">[s`Default sending parameters`]</h4>
+        <p class="hint">{sprintf(_ws('The email sending parameters specified below are used by default for all outgoing email messages. If you need to use other parameters for all or certain sender addresses or domains then add extra rules using the “<strong>%s</strong>” button.'), _ws('Add email sending rule'))}</p>
+
+        <div class="fields-group s-settings-items">
+           {_renderConfig key='default' config=$main_configs.default is_template=false}
+        </div>
+
+        <h4 class="heading black">[s`Additional sending parameters`]</h4>
+
+        <a href="javascript:void(0);" class="button gray rounded outlined s-add-item js-add-item"><span><i class="fas fa-plus-circle"></i> [s`Add email sending rule`]</span></a>
+
         <div class="fields-group s-settings-items js-settings-items">
             {foreach $main_configs as $key => $config}
-                {_renderConfig key=$key config=$config is_template=false}
+                {if $key !== 'default'}
+                    {_renderConfig key=$key config=$config is_template=false}
+                {/if}
             {/foreach}
         </div>
-        <p class="s-description">[s`If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section.`]</p>
-        <a href="javascript:void(0);" class="button gray rounded outlined s-add-item js-add-item"><span><i class="fas fa-plus-circle"></i> [s`Add email sending rule`]</span></a>
         <div class="s-form-buttons fields-group">
             <div class="s-footer-actions js-footer-actions field">
                 <div class="value submit">

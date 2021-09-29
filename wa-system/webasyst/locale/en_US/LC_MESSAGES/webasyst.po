@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-09-22 09:47+0300\n"
+"PO-Revision-Date: 2021-09-27 12:26+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1980,9 +1980,6 @@ msgid "Reply-To address for system email notifications sent by Webasyst."
 msgstr ""
 
 msgid "Select how email messages must be sent by default from your Webasyst."
-msgstr ""
-
-msgid "If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section."
 msgstr ""
 
 msgid "Add email sending rule"

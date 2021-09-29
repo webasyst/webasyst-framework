@@ -66,7 +66,7 @@
 
 <div class="dialog" id="wa-theme-upload-dialog">
     <div class="dialog-background"> </div>
-    <div class="dialog-window" style="height: 200px; min-height: 200px; width: 400px; min-width: 350px">
+    <div class="dialog-window" style="height: 225px; min-height: 225px; width: 500px; min-width: 350px">
         <form target="wa-theme-upload-iframe" id="wa-theme-upload-form" method="post" action="?module=design&amp;action=themeUpload" enctype="multipart/form-data">
             <div class="dialog-content">
                 <div class="dialog-content-indent">
@@ -150,32 +150,17 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    $(function () {
-        function handleError(data) {
-            var error = '';
-            if (typeof data.errors == 'string') {
-                error += (error ? '\n' : '') + data.errors;
-            } else {
-                for (error_item in data.errors) {
-                    error += (error ? '\n' : '') + data.errors[error_item][0];
-                }
-            }
-            if ($(".dialog:visible").length) {
-                $(".dialog:visible .wa-theme-dialog-error").html(error + '<br><br>');
-            } else if ($(".wa-theme-dialog-error:first:visible").length) {
-                $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
-            } else {
-                alert('Error:' + error);
-            }
-            $("#wa-theme-name-dialog input[type=submit]").removeAttr('disabled');
-            $("#wa-theme-upload-dialog input[type=submit]").removeAttr('disabled');
-        };
-        $("#wa-theme-upload-link").click(function () {
+<script>
+    ( function($) {
+        var $dialog = $("#wa-theme-upload-dialog").detach();
+
+        $("#wa-theme-upload-link").on("click", function(event) {
             if (!waDesignConfirm()) return false;
-            $(".wa-theme-dialog-error").text('');
-            $("#wa-theme-upload-dialog div.loading").hide();
-            $("#wa-theme-upload-dialog").waDialog({
+
+            $dialog.find(".wa-theme-dialog-error").text('');
+            $dialog.find("div.loading").hide();
+
+            $dialog.waDialog({
                 disableButtonsOnSubmit: true,
                 onSubmit: function () {
                     $("#wa-theme-upload-dialog div.loading").show();
@@ -192,7 +177,7 @@
                                 $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
                                 handleError(response);
                             } else if (response.status == 'ok') {
-                                $("#wa-theme-upload-dialog").hide();
+                                $dialog.hide();
                                 $(".wa-theme-dialog-error").text('');
                                 location.reload();
                             }
@@ -213,11 +198,34 @@
                     });
 
                 },
-                onLoad: function () {
-
+                onOpen: function() {
+                    $dialog.appendTo( $("body") );
+                },
+                onClose: function () {
+                    $dialog.detach();
                 }
             });
             return false;
         });
-    });
+
+        function handleError(data) {
+            var error = '';
+            if (typeof data.errors == 'string') {
+                error += (error ? '\n' : '') + data.errors;
+            } else {
+                for (error_item in data.errors) {
+                    error += (error ? '\n' : '') + data.errors[error_item][0];
+                }
+            }
+            if ($(".dialog:visible").length) {
+                $(".dialog:visible .wa-theme-dialog-error").html(error + '<br><br>');
+            } else if ($(".wa-theme-dialog-error:first:visible").length) {
+                $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
+            } else {
+                alert('Error:' + error);
+            }
+            $("#wa-theme-name-dialog input[type=submit]").removeAttr('disabled');
+            $("#wa-theme-upload-dialog input[type=submit]").removeAttr('disabled');
+        }
+    })(jQuery);
 </script>
