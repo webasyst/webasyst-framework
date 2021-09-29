@@ -1,48 +1,82 @@
-<div class="t-group-access-page">
+<div class="t-group-access-page article">
+    <div class="article-body">
     {* HEADER *}
-    <header class="t-content-header">
-        <h1>
-            <a class="t-back-link" href="{$wa_app_url}group/{$group.id}/">← [`Back`]</a>
-            {$group.name|escape}
+    <header class="t-content-header flexbox middle">
+        <h1 class="flexbox wide space-16 custom-mb-0 custom-pr-16">
+            <a class="t-back-link gray" href="{$wa_app_url}group/{$group.id}/" title="[`Back`]"><i class="fas fa-arrow-circle-left"></i></a>
+            <span>{$group.name|escape}</span>
         </h1>
+
+        <div class="dropdown js-change-group custom-mt-8 small">
+            <button class="dropdown-toggle button light-gray" type="button"><i class="fas fa-cog text-blue"></i> [`Manage group`]</button>
+            <div class="dropdown-body dd-wide">
+                <ul class="menu">
+                    <li>
+                        <a href="{$wa_app_url}group/{$group.id}/manage/">
+                            <i class="fas fa-users text-orange"></i><span>[`Настроить участников`]</span>
+                        </a>
+                    </li>
+                    {if $wa->user()->isAdmin('webasyst')}
+                        <li class="selected">
+                            <a href="javascript:void(0);">
+                                <i class="fas fa-lock text-green"></i><span>[`Manage access`]</span>
+                            </a>
+                        </li>
+                    {/if}
+                    <li>
+                        <a class="js-edit-group" href="javascript:void(0);">
+                            <i class="fas fa-pencil-alt text-gray"></i><span>[`Edit group`]</span>
+                        </a>
+                    </li>
+                    {if $wa->user()->isAdmin('webasyst')}
+                        <li>
+                            <a class="js-delete-group" href="javascript:void(0);">
+                                <i class="fas fa-trash-alt text-red"></i><span>[`Delete group`]</span>
+                            </a>
+                        </li>
+                    {/if}
+                </ul>
+            </div>
+            <script>
+                ( function($) {
+                    $(".js-change-group").waDropdown();
+                })(jQuery);
+            </script>
+        </div>
     </header>
 
     {* CONTENT *}
     <div class="t-content-body">
-        <p class="hint">[`Access level selected for this group will be applied to all its members.`]<br>[`To extend access rights of individual users within the group, edit their personal access settings.`]</p>
+        <p class="gray">[`Access level selected for this group will be applied to all its members.`] [`To extend access rights of individual users within the group, edit their personal access settings.`]</p>
         <div class="c-access-rights-wrapper" id="c-access-rights-wrapper">
-            <table>
-                <tbody>
-                    {foreach $apps as $app_id => $app}
-                        <tr>
-                            <td class="t-app-icon">
-                                <img src="{$wa_url}{$app.img}">&nbsp;
-                            </td>
-                            <td class="t-app-name">
-                                {$app.name|escape}
-                            </td>
-                            <td class="t-app-access">
-                                {if $app.access > 1}
-                                    {$_access = $access_types.full}
-                                {elseif $app.access}
-                                    {$_access = $access_types.limited}
-                                {else}
-                                    {$_access = $access_types.no}
-                                {/if}
-                                <div class="t-access-status type-{$_access.id}"
-                                    data-app-id="{$app_id}"
-                                    title="[`Edit access`]"
-                                >
-                                    {* Output all possible names to be able to change them via JS *}
-                                    {foreach $access_types as $at}
-                                        <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
-                                    {/foreach}
-                                </div>
-                            </td>
-                        </tr>
-                    {/foreach}
-                </tbody>
-            </table>
+            <ul class="unstyled">
+                {foreach $apps as $app_id => $app}
+                    <li class="t-access-app">
+                        <img class="t-app-icon" src="{$wa_url}{$app.img}">
+                        <span class="t-app-name small custom-mt-4-mobile">
+                            {$app.name|escape}
+                        </span>
+                        <div class="t-app-access">
+                            {if $app.access > 1}
+                                {$_access = $access_types.full}
+                            {elseif $app.access}
+                                {$_access = $access_types.limited}
+                            {else}
+                                {$_access = $access_types.no}
+                            {/if}
+                            <div class="t-access-status type-{$_access.id}"
+                                 data-app-id="{$app_id}"
+                                 title="[`Edit access`]"
+                            >
+                                {* Output all possible names to be able to change them via JS *}
+                                {foreach $access_types as $at}
+                                    <span class="t-access-name small type-{$at.id}">{$at.name|default:""|escape}</span>
+                                {/foreach}
+                            </div>
+                        </div>
+                    </li>
+                {/foreach}
+            </ul>
         </div>
     </div>
 
@@ -50,12 +84,19 @@
     <script>
         ( function($) {
             $(function() { "use strict";
+                const $wrapper = $('.t-group-access-page');
                 new UserAccessTable({
-                    $wrapper: $('#c-access-rights-wrapper'),
+                    $wrapper,
                     contact_id: -{$group.id}
+                });
+
+                new GroupManage({
+                    $wrapper,
+                    group_id: {if !empty($group.id)}{$group.id}{else}false{/if},
                 });
             });
         })(jQuery);
     </script>
+    </div>
 </div>
 

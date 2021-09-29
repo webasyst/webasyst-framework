@@ -1,15 +1,15 @@
 {strip}
 
-<div class="t-users-page" id="t-users-page">
-    {* HEADER *}
-    <header class="t-content-header">
-        <h1>{$search|escape}</h1>
-    </header>
-
+<div class="t-users-page article" id="t-users-page">
     {* CONTENT *}
-    <div class="t-content-body">
+    <div class="t-content-body article-body">
+        {* HEADER *}
+        <header class="t-content-header custom-mb-32">
+            <h1>{$search|escape}</h1>
+        </header>
         {if !empty($contacts)}
-            {include file="./Users.inc.html" contacts=$contacts}
+            {$_list_context = "search/`$search|escape`"}
+            {include file="./Users.inc.html" contacts=$contacts list_context=$_list_context}
         {else}
             <p class="t-description">[`No users found.`]</p>
         {/if}

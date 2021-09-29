@@ -4,140 +4,114 @@
 
 {function name="account_info_html" calendar=[]}
     {if !empty($calendar.plugin.account_info_html)}
-        <div class="t-html small">{$calendar.plugin.account_info_html}</div>
+        <div class="custom-my-8 hint">{$calendar.plugin.account_info_html}</div>
     {/if}
 {/function}
 
 {function name="mapped_calendar_name_html" calendar=[]}
     {$_styles = []}
     {if !empty($calendar.calendar.bg_color)}
-        {$_styles[] = "background: `$calendar.calendar.bg_color`;"}
+        {$_styles[] = "background: `$calendar.calendar.bg_color|escape`;"}
     {/if}
     {if !empty($calendar.calendar.font_color)}
-        {$_styles[] = "color: `$calendar.calendar.font_color`;"}
+        {$_styles[] = "color: `$calendar.calendar.font_color|escape`;"}
     {/if}
-
-    &rarr;&nbsp;<span class="t-calendar-name" style="{$_styles|join:""}">{$calendar.calendar.name|escape}</span>
+    <i class="fas fa-long-arrow-alt-right custom-mx-8"></i>&nbsp<span class="badge user" style="{$_styles|join:""}">
+    {if !empty($calendar.calendar.icon)}<i class="{$calendar.calendar.icon|escape}"></i>{/if}{$calendar.calendar.name|escape}
+</span>
 {/function}
 
 {function name="not_connected_html" calendar=[]}
-    <div class="t-offline">
-        <span class="t-notice">[`Not connected`]</span>
+    <div class="custom-my-8">
+        <span class="text-red">[`Not connected`]</span>
         {if $calendar.is_own}
-            <a href="{$wa_app_url}calendar/external/?id={$calendar.id}">[`Configure`]</a>
+            <a class="custom-ml-8" href="{$wa_app_url}calendar/external/?id={$calendar.id}">[`Configure`]</a>
         {/if}
     </div>
 {/function}
 
-<div class="t-dialog-wrapper is-full-screen t-outside-calendars-dialog" id="t-outside-calendars">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <form action="" method="post">
-            <header class="t-dialog-header">
-                <h1>[`Personal calendar settings`]</h1>
-            </header>
-            <div class="t-dialog-content">
+<div class="dialog t-outside-calendars-dialog" id="t-outside-calendars">
+    <div class="dialog-background"></div>
+    <form action="" method="post" class="dialog-body">
+        <h3 class="dialog-header">[`Personal calendar settings`]</h3>
+        <div class="dialog-content">
+            <!-- begin plugin hook: 'backend_schedule_settings.top' -->
+            {* @event backend_schedule_settings.%plugin_id%.top *}
+            {if !empty($backend_schedule_settings)}{foreach $backend_schedule_settings as $_}{ifset($_.top)}{/foreach}{/if}
+            <!-- end plugin hook: 'backend_schedule_settings.top' -->
 
-                <!-- begin plugin hook: 'backend_schedule_settings.top' -->
-                {* @event backend_schedule_settings.%plugin_id%.top *}
-                {if !empty($backend_schedule_settings)}{foreach $backend_schedule_settings as $_}{ifset($_.top)}{/foreach}{/if}
-                <!-- end plugin hook: 'backend_schedule_settings.top' -->
+            {if !empty($calendars)}
+                <ul class="bordered">
+                    {foreach $calendars as $calendar}
+                        <li class="flexbox middle">
+                            <div class="t-column">
+                                {*<span class="t-plugin-name">{$calendar.plugin.name|escape}</span>*}
 
-                {if !empty($calendars)}
-                    <ul class="t-o_calendar-list">
-                        {foreach $calendars as $calendar}
-                            <li class="t-o_calendar-item">
-                                <div class="t-layout">
-                                    <div class="t-column">
-                                        {*<span class="t-plugin-name">{$calendar.plugin.name|escape}</span>*}
+                                <p class="custom-mb-8">
+                                    {if !empty($calendar.plugin.icon)}
+                                        <i class="icon custom-mr-8" style="background-image: url('{$calendar.plugin.icon}');"></i>
+                                    {/if}
 
-                                        <div class="line">
-                                            {if !empty($calendar.plugin.icon)}
-                                                <i class="icon16 kill-wa-style t-plugin-icon" style="background-image: url('{$calendar.plugin.icon}');"></i>
-                                            {/if}
+                                    <span>{$calendar.name|escape}</span>
 
-                                            <span class="t-name">{$calendar.name|escape}</span>
+                                    {if $calendar.is_mapped}
+                                        {mapped_calendar_name_html calendar=$calendar}
+                                    {/if}
+                                </p>
 
-                                            {if $calendar.is_mapped}
-                                                {mapped_calendar_name_html calendar=$calendar}
-                                            {/if}
-                                        </div>
+                                {if $calendar.is_connected || $calendar.is_mapped}
+                                    {account_info_html calendar=$calendar}
+                                {/if}
 
-                                        {if $calendar.is_connected || $calendar.is_mapped}
-                                            <div class="line">
-                                                {account_info_html calendar=$calendar}
-                                            </div>
-                                        {/if}
+                                {if !$calendar.is_connected || !$calendar.is_mapped}
+                                    {not_connected_html calendar=$calendar}
+                                {/if}
 
-                                        {if !$calendar.is_connected || !$calendar.is_mapped}
-                                            <div class="line">
-                                                {not_connected_html calendar=$calendar}
-                                            </div>
-                                        {/if}
+                                <p class="custom-my-8">{$calendar.integration_level_name}</p>
 
-                                        <div class="line">
-                                            <span class="t-sub-info">{$calendar.integration_level_name}</span>
-                                        </div>
-
-                                        {if !empty($calendar.create_datetime)}
-                                            <div class="line">
-                                                <span class="t-date">{$calendar.create_datetime|wa_date:'humandatetime'}</span>
-                                            </div>
-                                        {/if}
-                                    </div>
-                                    <div class="t-column right">
-                                        <a class="t-external-calendar-unmount" href="javascript:void(0)" data-id="{$calendar.id}">
-                                            <i class="icon16 delete"></i>
-                                            {if $calendar.is_connected}[`unlink`]{else}[`delete`]{/if}
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                        {/foreach}
-                    </ul>
-                {else}
-                    <p>[`No external calendars connected`]</p>
-                {/if}
-
-                <ul class="menu-v t-actions">
-                    {if $is_own_profile}
-                        <li>
-                            <a class="js-add-external-calendar" href="{$wa_app_url}calendar/external/">
-                                <i class="icon16 add"></i>
-                                [`Add external calendar`]
+                                {if !empty($calendar.create_datetime)}
+                                    <p class="hint custom-mt-8">{$calendar.create_datetime|wa_date:'humandatetime'}</p>
+                                {/if}
+                            </div>
+                            <a class="t-external-calendar-unmount custom-ml-auto" title="{if $calendar.is_connected}[`unlink`]{else}[`delete`]{/if}" href="javascript:void(0)" data-id="{$calendar.id}">
+                                <i class="fas fa-trash-alt text-red"></i>
                             </a>
                         </li>
-                    {/if}
-
-                    <!-- begin plugin hook: 'backend_schedule_settings.li' -->
-                    {* @event backend_schedule_settings.%plugin_id%.li *}
-                    {if !empty($backend_schedule_settings)}{foreach $backend_schedule_settings as $_}{if isset($_.li)}
-                        <li>{ifset($_.li)}</li>
-                    {/if}{/foreach}{/if}
-                    <!-- end plugin hook: 'backend_schedule_settings.li' -->
+                    {/foreach}
                 </ul>
+            {else}
+                <p>[`No external calendars connected`]</p>
+            {/if}
 
-                <!-- begin plugin hook: 'backend_schedule_settings.bottom' -->
-                {* @event backend_schedule_settings.%plugin_id%.bottom *}
-                {if !empty($backend_schedule_settings)}{foreach $backend_schedule_settings as $_}{if isset($_.bottom)}
-                    {$_.bottom}
-                {/if}{/foreach}{/if}
-                <!-- end plugin hook: 'backend_schedule_settings.bottom' -->
+            {if $is_own_profile}
+                <a href="{$wa_app_url}calendar/external/" class="button rounded outlined js-add-external-calendar js-close-dialog">
+                    <i class="fas fa-plus"></i>&nbsp;[`Add external calendar`]
+                </a>
+            {/if}
+            <!-- begin plugin hook: 'backend_schedule_settings.li' -->
+            {* @event backend_schedule_settings.%plugin_id%.li *}
+            {if !empty($backend_schedule_settings)}
+                <ul class="menu t-actions">
+                    {foreach $backend_schedule_settings as $_}
+                        {if isset($_.li)}
+                            <li>{ifset($_.li)}</li>
+                        {/if}
+                    {/foreach}
+                </ul>
+            {/if}
+            <!-- end plugin hook: 'backend_schedule_settings.li' -->
 
-            </div>
-            <footer class="t-dialog-footer">
-                <div class="t-actions">
-
-                    <div class="t-layout">
-                        <div class="t-column left">
-                            <input type="button" class="button grey t-button js-close-dialog" value="[`Close`]">
-                        </div>
-                    </div>
-
-                </div>
-            </footer>
-        </form>
-    </div>
+            <!-- begin plugin hook: 'backend_schedule_settings.bottom' -->
+            {* @event backend_schedule_settings.%plugin_id%.bottom *}
+            {if !empty($backend_schedule_settings)}{foreach $backend_schedule_settings as $_}{if isset($_.bottom)}
+                {$_.bottom}
+            {/if}{/foreach}{/if}
+            <!-- end plugin hook: 'backend_schedule_settings.bottom' -->
+        </div>
+        <footer class="dialog-footer">
+            <button type="button" class="button light-gray js-close-dialog">[`Close`]</button>
+        </footer>
+    </form>
     <script>
         ( function($) {
             new OutsideCalendarsDialog({

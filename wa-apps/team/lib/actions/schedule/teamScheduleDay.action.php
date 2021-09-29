@@ -42,6 +42,11 @@ class teamScheduleDayAction extends teamCalendarAction
                     'is_allday'   => 1,
                     'is_status'   => null,
                 );
+                if (wa('team')->whichUi('team')) {
+                    $events['birthday'.$id]['bg_color'] = '#e43a89';
+                    $events['birthday'.$id]['font_color'] = '#ffffff';
+                    $events['birthday'.$id]['icon'] = 'fas fa-birthday-cake';
+                }
             }
         }
 

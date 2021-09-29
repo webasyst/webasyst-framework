@@ -1,0 +1,558 @@
+{$_upload_url = "`$wa_app_url`?module=profile&action=coverSave"}
+{$_sort_url = "`$wa_app_url`?module=profile&action=coverSort"}
+{$_delete_url = "`$wa_app_url`?module=profile&action=coverDelete"}
+{$random_id = uniqid(time())}
+<div class="dialog" id="{$random_id}">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header">
+            <div class="flexbox wrap">
+                <h5 class="wide custom-mt-8{if !$wa->isMobile()} custom-mb-0{/if}">Загрузите или перетащите фото</h5>
+
+                <div class="dropdown{if !$cover_thumbnails} hidden{/if}" id="cover-upload-dropdown">
+                    <button class="dropdown-toggle button light-gray nowrap" type="button" style="height: 34px;">[`Actions`] <span class="upload-cover__badge js-upload-cover-counter"></span></button>
+                    <div class="dropdown-body{if !$wa->isMobile()} right{/if}">
+                        <ul class="menu">
+                            <li><a href="#" class="js-upload-cover-remove" data-disable-routing><i class="fas fa-trash-alt text-red"></i><span>[`Remove`]</span></a></li>
+                            <li>
+                                <a href="#" class="js-upload-cover-select-all flexbox middle" data-disable-routing>
+                                    <i class="fas fa-check-double text-blue"></i>
+                                    <span class="js-upload-cover-select-select">[`Select all`]</span>
+                                    <span class="js-upload-cover-select-unselect hidden">[`Unselect`]</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="dialog-content">
+            <div class="box uploadbox js-upload-cover-wrapper">
+                <div class="upload">
+                    <label class="button purple outlined rounded">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>[`Choose file`]</span>
+                        <input type="file" multiple autocomplete="off" accept=".png, .jpg, .jpeg, .gif">
+                    </label>
+
+                    <div class="hint custom-mt-8 custom-mb-20">В обложке показывается не более 8 фотографий. Чтобы изменить последовательность фотографий, перемещайте их между собой.</div>
+
+                    <div class="upload-cover__items js-upload-cover-dialog-sort">
+                        {foreach $cover_thumbnails|array_reverse as $cover}
+                        <div class="upload-cover__item" data-id="{$cover.id}">
+                            <div class="upload-cover__item-pic js-upload-cover-sort">
+                                <img src="{$cover.urls['preview']}" alt="" loading="lazy">
+                            </div>
+
+                            <div class="upload-cover__item-check">
+                                <label>
+                                    <span class="wa-checkbox">
+                                        <input type="checkbox" value="{$cover.id}" class="js-upload-cover-check">
+                                        <span>
+                                            <span class="icon">
+                                                <i class="fas fa-check"></i>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        {/foreach}
+                    </div>
+                </div>
+            </div>
+
+            <div class="js-upload-cover-template hidden">
+                <div class="upload-cover__item js-upload-cover-clone" data-id="">
+                    <div class="upload-cover__item-pic">
+                        <img src="" alt="" loading="lazy" class="hidden">
+                        <div class="skeleton js-upload-cover-template-preview">
+                            <div class="skeleton-custom-box" style="height: 100px;"></div>
+                        </div>
+                        <button class="button circle light-gray upload-cover__item-cancel js-upload-cover-cancel"><i class="fas fa-times"></i></button>
+                    </div>
+
+                    <div class="upload-cover__item-check hidden js-upload-cover-template-check">
+                        <label>
+                            <span class="wa-checkbox">
+                                <input type="checkbox" name="upload-cover" class="js-upload-cover-check">
+                                <span>
+                                    <span class="icon">
+                                        <i class="fas fa-check"></i>
+                                    </span>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="upload-cover__template-progress js-upload-cover-progress">
+                        <progress max="100" value="0" class="color-purple"></progress>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="dialog-footer">
+            <button class="js-close-dialog button light-gray">[`Done`]</button>
+        </footer>
+    </div>
+
+    <script>
+      (function($) {
+        new class UploadCoverImage {
+          constructor() {
+            // Data
+            this.upload_url = '{$_upload_url}';
+            this.delete_url = '{$_delete_url}';
+            this.sort_url = '{$_sort_url}';
+            this.dialog_id = '{$random_id}';
+            this.user_id = {$user.id|json_encode};
+
+            // DOM
+            this.$body = $('body');
+            this.$dialog = $('#' + this.dialog_id).closest('.dialog');
+            this.$wrapper = this.$dialog.find('.js-upload-cover-wrapper');
+            this.$input = this.$wrapper.find('input:file');
+            this.$dropdown = this.$dialog.find('#cover-upload-dropdown');
+            this.$dropdownBadge = this.$dropdown.find('.js-upload-cover-counter');
+            this.$removeButton = this.$dropdown.find('.js-upload-cover-remove');
+            this.$selectAllButton = this.$dropdown.find('.js-upload-cover-select-all');
+            this.$selectAllButtonSelect = this.$selectAllButton.find('.js-upload-cover-select-select');
+            this.$selectAllButtonUnSelect = this.$selectAllButton.find('.js-upload-cover-select-unselect');
+            this.$grid = this.$wrapper.find('.js-upload-cover-dialog-sort');
+            this.$checkboxes = this.$grid.find('.js-upload-cover-check');
+            this.$uploadTemplate = this.$dialog.find('.js-upload-cover-template .js-upload-cover-clone');
+
+            this.dialog = {};
+
+            this.init();
+          }
+
+          init() {
+            const that = this;
+
+            setTimeout(() => {
+              that.dialog = that.$dialog.data('dialog');
+            });
+
+            that.initDropdown();
+            that.bindEvents();
+            that.sortItems();
+          }
+
+          bindEvents() {
+            this.$body.on('dragover.UploadCover drop.UploadCover', $.proxy(this.preventSystemDnd, this));
+            this.$wrapper.on('dragover.UploadCover drop.UploadCover', $.proxy(this.preventSystemDnd, this));
+
+            this.$wrapper.on('dragenter.UploadCover', $.proxy(this.highlight, this));
+            this.$wrapper.on('dragleave.UploadCover, drop.UploadCover', $.proxy(this.unhighlight, this));
+            this.$wrapper.on('drop.UploadCover', $.proxy(this.handleDrop, this));
+
+            this.$input.on('focus.UploadCover', $.proxy(this.clearInput, this));
+            this.$input.on('change.UploadCover', $.proxy(this.chooseFile, this));
+
+            this.$removeButton.on('click.UploadCover', $.proxy(this.removeItems, this));
+            this.$selectAllButton.on('click.UploadCover', $.proxy(this.selectAllItems, this));
+            this.$grid.on('change.UploadCover', '.js-upload-cover-check', $.proxy(this.changeSelectedItemsCounter, this));
+          }
+
+          preventSystemDnd(e) {
+            e.preventDefault();
+          }
+
+          highlight() {
+            this.$wrapper.addClass('highlighted');
+          }
+
+          unhighlight(e) {
+            if (e.currentTarget.contains(e.relatedTarget)) {
+              return;
+            }
+
+            this.$wrapper.removeClass('highlighted');
+          }
+
+          handleDrop(e) {
+            try {
+              const files = e.originalEvent.dataTransfer.files;
+              this.fileUpload(files);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+
+          clearInput() {
+            const that = this;
+
+            that.$input[0].value = null;
+          }
+
+          chooseFile() {
+            const that = this;
+
+            const files = that.$input[0].files;
+
+            if (!that.$input[0].files.length || !that.$input[0].files[0]) {
+              return;
+            }
+
+            this.fileUpload(files);
+          }
+
+          fileUpload(files) {
+            const that = this;
+
+            for (let file of files) {
+              that.fileUploadHandle(file);
+            }
+          }
+
+          fileUploadHandle(file) {
+            const that = this;
+
+            if (!file.type.match(/^image\/(png|jpe?g|gif)$/)) {
+              $.waDialog.alert({
+                title: "[`Not an image or invalid image:`] " + file.name,
+                button_title: '[`Close`]',
+                button_class: 'warning',
+              });
+
+              return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+              const clone = that.$uploadTemplate.clone().removeClass('.js-upload-cover-clone');
+              that.$grid.prepend(clone);
+
+              const cloneProgress = clone.find('.js-upload-cover-progress');
+              const cloneProgressElement = cloneProgress.find('progress');
+              const cloneSkeleton = clone.find('.js-upload-cover-template-preview');
+              const cloneImg = clone.find('img');
+              const cloneCheckboxWrapper = clone.find('.js-upload-cover-template-check');
+              const cloneCheckbox = cloneCheckboxWrapper.find('.js-upload-cover-check');
+              const cloneCancel = clone.find('.js-upload-cover-cancel');
+
+              const formData = new FormData();
+              formData.append('id', that.user_id);
+              formData.append('files', file);
+
+              $.ajax({
+                xhr: function() {
+                  const xhr = new window.XMLHttpRequest();
+
+                  xhr.upload.addEventListener('progress', function(event) {
+                    if (event.lengthComputable) {
+                      let percentComplete = event.loaded / event.total;
+                      percentComplete = parseInt(percentComplete * 100);
+
+                      cloneProgressElement[0].value = percentComplete;
+                    }
+                  }, false);
+
+                  cloneCancel.on('click', function() {
+                    xhr.abort();
+                  });
+
+                  return xhr;
+                },
+                url: that.upload_url,
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(responce) {
+                  if (responce.data.rejected.length) {
+                    clone.remove();
+
+                    const rejectName = responce.data.rejected[0].name;
+                    const rejectDescription = responce.data.rejected[0].description;
+                    const rejectDiv = $('<div />', { 'class': 'hint text-red bold custom-mb-12', text: rejectName + ': ' + rejectDescription } );
+                    rejectDiv.insertBefore(that.$grid).hide().fadeIn().delay(5000).animate({
+                      opacity: 0
+                    }, 500, function () {
+                      $(this).remove();
+                    });
+
+                    that.dialog.resize();
+                    return;
+                  }
+
+                  cloneCancel.remove();
+                  cloneSkeleton.remove();
+                  cloneProgress.remove();
+                  cloneImg.attr('src', responce.data.thumbnails[0].urls.preview).removeClass('hidden').addClass('fadeIn js-upload-cover-sort');
+                  cloneCheckboxWrapper.removeClass('hidden');
+                  cloneCheckbox[0].value = responce.data.added[0].photo_id;
+                  clone.attr('data-id', responce.data.added[0].photo_id);
+
+                  that.toggleDropdown();
+                  that.dialog.resize();
+                  that.updateParentContent();
+                },
+                error: function(event) {
+                  clone.addClass('removed');
+                  clone.on('animationend', function() {
+                    const oldGridInfo = that.getGridInfo(that.$grid[0]);
+                    $(this).remove();
+                    const newGridInfo = that.getGridInfo(that.$grid[0]);
+                    that.animateGrid(oldGridInfo, newGridInfo);
+
+                    that.changeSelectedItemsCounter();
+                  });
+
+                  that.dialog.resize();
+                }
+              });
+            }
+
+            reader.onerror = function() {
+              console.log(reader.error);
+              return;
+            }
+
+            reader.readAsDataURL(file);
+          }
+
+          initDropdown() {
+            this.$dropdown.waDropdown({
+              hover: false,
+            });
+          }
+
+          sortItems() {
+            const that = this;
+
+            const options = {
+              animation: 150,
+              dataIdAttr: 'data-id',
+              handle: '.js-upload-cover-sort',
+              onStart(event) {
+                $(event.item).css('pointer-events', 'none');
+                that.unBindEvents();
+              },
+              onEnd(event) {
+                $(event.item).css('pointer-events', '');
+                that.bindEvents();
+
+                const data = this.toArray();
+                const items = [];
+                for (let index of data.keys()) {
+                  let id = $.trim(data[index]);
+                  if (id) {
+                    items.push(id);
+                  }
+                }
+
+                items.reverse();
+
+                const formData = new FormData();
+                formData.append('id', that.user_id);
+                formData.append('photo_id', items);
+
+                $.ajax({
+                  url: that.sort_url,
+                  method: 'POST',
+                  data: formData,
+                  processData: false,
+                  contentType: false,
+                  success: function() {
+                    that.updateParentContent();
+                  },
+                  error: function(event) {
+                    console.log('sort failed: ', event)
+                  }
+                });
+              }
+            }
+
+            that.$grid.sortable(options)
+          }
+
+          updateCheckboxes() {
+            const that = this;
+
+            that.$checkboxes = that.$grid.find('.js-upload-cover-check');
+          }
+
+          getSelectedItems() {
+            const that = this;
+
+            that.updateCheckboxes();
+
+            const items = [];
+
+            for (let item of that.$checkboxes.toArray()) {
+              if (item.checked) {
+                items.push(+item.value)
+              }
+            }
+
+            return items;
+
+          }
+
+          changeSelectedItemsCounter() {
+            const that = this;
+
+            const items = that.getSelectedItems();
+
+            that.toggleSelectButtonText();
+
+            if (!items.length) {
+              that.$dropdownBadge.text('');
+              return;
+            }
+
+            that.$dropdownBadge.text(items.length);
+          }
+
+          removeItems(e) {
+            e.preventDefault();
+
+            const that = this;
+
+            const checkedItems = that.getSelectedItems();
+
+            if (!checkedItems.length) {
+              $.waDialog.alert({
+                title: '[`No one item selected`]',
+                button_title: '[`Close`]',
+                button_class: 'warning',
+              });
+
+              return;
+            }
+
+            $.waDialog.confirm({
+              title: '[`Remove selected`]',
+              success_button_title: '[`Delete`]',
+              success_button_class: 'danger',
+              cancel_button_title: '[`Cancel`]',
+              cancel_button_class: 'light-gray',
+              onSuccess: function() {
+                for (let id of checkedItems) {
+                  const itemToRemove = that.$grid.find('[data-id='+id+']');
+                  itemToRemove.addClass('removed');
+                  itemToRemove.on('animationend', function() {
+                    const oldGridInfo = that.getGridInfo(that.$grid[0]);
+                    $(this).remove();
+                    const newGridInfo = that.getGridInfo(that.$grid[0]);
+                    that.animateGrid(oldGridInfo, newGridInfo);
+
+                    that.changeSelectedItemsCounter();
+                    that.toggleDropdown();
+                  });
+                }
+
+                that.dialog.resize();
+
+                const formData = new FormData();
+                formData.append('id', that.user_id);
+                formData.append('photo_id', checkedItems);
+
+                $.ajax({
+                  url: that.delete_url,
+                  method: 'POST',
+                  data: formData,
+                  processData: false,
+                  contentType: false,
+                  success: function() {
+                    that.updateParentContent();
+                  }
+                });
+              }
+            });
+          }
+
+          selectAllItems(e) {
+            e.preventDefault();
+
+            const that = this;
+
+            that.updateCheckboxes();
+
+            const isAllChecked = that.$checkboxes.not(':checked').length === 0;
+
+            if (isAllChecked) {
+              that.$checkboxes.prop('checked', false);
+            } else {
+              that.$checkboxes.prop('checked', true);
+            }
+
+            that.changeSelectedItemsCounter();
+          }
+
+          toggleSelectButtonText() {
+            const that = this;
+            const selectedItems = that.getSelectedItems();
+
+            if (selectedItems.length < that.$checkboxes.length) {
+              that.$selectAllButtonSelect.removeClass('hidden');
+              that.$selectAllButtonUnSelect.addClass('hidden');
+            } else {
+              that.$selectAllButtonSelect.addClass('hidden');
+              that.$selectAllButtonUnSelect.removeClass('hidden');
+            }
+          }
+
+          toggleDropdown() {
+            const that = this;
+
+            that.updateCheckboxes();
+            that.$checkboxes.length ? that.$dropdown.removeClass('hidden') : that.$dropdown.addClass('hidden');
+          }
+
+          getGridInfo(container) {
+            return [...container.children].map((item) => ({
+              element: item,
+              x: item.getBoundingClientRect().left,
+              y: item.getBoundingClientRect().top
+            }));
+          }
+
+          animateGrid(oldGrid, newGrid) {
+            for (const newItemInfo of newGrid) {
+              const oldItemInfo = oldGrid.find((itemInfo) => itemInfo.element === newItemInfo.element);
+
+              const translateX = oldItemInfo.x - newItemInfo.x;
+              const translateY = oldItemInfo.y - newItemInfo.y;
+              {literal}
+              newItemInfo.element.animate([
+                {
+                  transform: `translate3D(${translateX}px, ${translateY}px, 0)`,
+                },
+                {
+                  transform: 'none'
+                },
+              ], {
+                duration: 250,
+                easing: 'ease-out',
+              });
+              {/literal}
+            }
+          }
+
+          unBindEvents() {
+            const that = this;
+
+            that.$body.off('.UploadCover');
+            that.$wrapper.off('.UploadCover');
+            that.$input.off('.UploadCover');
+            that.$removeButton.off('.UploadCover');
+            that.$selectAllButton.off('.UploadCover');
+            that.$grid.off('.UploadCover');
+          }
+
+          updateParentContent() {
+            $.ajax({
+              url: location.href,
+              success: function(response) {
+                $("#t-content").html(response).hide().fadeIn();
+              }
+            });
+          }
+        }
+      })(jQuery);
+    </script>
+</div>

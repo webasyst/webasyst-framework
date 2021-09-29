@@ -4,6 +4,10 @@ class teamUsersInvitedAction extends teamContentViewAction
 {
     public function execute()
     {
+        if (!teamHelper::hasRights('add_users')) {
+            throw new waRightsException(_w('Access denied'));
+        }
+
         $invited = self::getInvited();
         $contacts = array();
         if ($invited) {

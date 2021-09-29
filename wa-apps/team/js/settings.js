@@ -9,8 +9,7 @@ var SettingsPage = ( function($) {
         that.$wrapper = options["$wrapper"];
         that.$calendarToggle = that.$wrapper.find("#t-calendar-settings");
         that.$form = that.$wrapper.find("form");
-        that.$submitButton = that.$form.find("input[type=\"submit\"]");
-
+        that.$submitButton = $(document).find('.bottombar [type="submit"]');
         // VARS
         that.locales = options["locales"];
 
@@ -60,7 +59,7 @@ var SettingsPage = ( function($) {
         function setChanged() {
             if (!that.is_form_changed) {
                 that.is_form_changed = true;
-                that.$submitButton.removeClass("green").addClass("yellow");
+                that.$submitButton.addClass("yellow");
             }
         }
     };
@@ -69,20 +68,25 @@ var SettingsPage = ( function($) {
         var that = this,
             item_index;
 
-        that.$calendarToggle.find("ul").sortable({
+        that.$calendarToggle.sortable({
+            animation: 150,
             handle: ".t-toggle",
-            items: "> .t-calendar-item",
-            axis: "y",
-            start: function(event,ui) {
-                item_index = ui.item.index();
+            direction: "vertical",
+            filter: '.t-actions',
+            onMove(event) {
+                if(event.related.classList.contains('t-actions')) {
+                    return -1
+                }
+            },
+            onStart() {
                 if (that.$notice) {
                     that.$notice.remove();
                     that.$notice = false;
                 }
             },
-            stop: function(event,ui) {
-                if (item_index != ui.item.index()) {
-                    that.saveCalendarsSort(ui);
+            onEnd(event) {
+                if (event.oldIndex !== event.newIndex) {
+                    that.saveCalendarsSort(event.item);
                 }
             }
         });
@@ -103,15 +107,15 @@ var SettingsPage = ( function($) {
         }
 
         that.xhr = $.post(href, data, function( html ) {
-            that.dialog = new TeamDialog({
+            that.dialog = $.waDialog({
                 html: html
             });
         });
     };
 
-    SettingsPage.prototype.saveCalendarsSort = function(ui) {
+    SettingsPage.prototype.saveCalendarsSort = function(item) {
         var that = this,
-            $item = ui.item,
+            $item = $(item),
             href = $.team.app_url + "?module=settings&action=calendarsSortSave",
             data = {
                 calendars: getIndexArray()
@@ -157,7 +161,7 @@ var SettingsPage = ( function($) {
 
         function showLoadingNotice( $item ) {
             var text = ( that.locales["saving"] || ""),
-                $notice = $('<span class="t-notice"><i class="icon16 loading"></i>' + text + '</span>');
+                $notice = $('<span class="t-notice">&nbsp;<i class="fas fa-spin fa-spinner"></i>&nbsp;' + text + '</span>');
 
             $notice.appendTo( $item );
 
@@ -166,7 +170,7 @@ var SettingsPage = ( function($) {
 
         function showSavedNotice( $item ) {
             var text = ( that.locales["saved"] || ""),
-                $notice = $('<span class="t-notice"><i class="icon16 yes"></i>' + text + '</span>');
+                $notice = $('<span class="t-notice state-success">&nbsp;<i class="fas fa-check-circle"></i>&nbsp;' + text + '</span>');
 
             $notice.appendTo( $item );
 
@@ -177,28 +181,29 @@ var SettingsPage = ( function($) {
     SettingsPage.prototype.save = function( $form ) {
         var that = this,
             url = $.team.app_url + "?module=settings&action=save",
-            data = $form.serializeArray();
+            data = $form.serializeArray(),
+            btn_text = that.$submitButton.text();
 
-        var $loading = $("<i class=\"icon16 loading\" style=\"margin: 0 4px;\"></i>");
-        $loading.insertAfter( that.$submitButton );
+        that.$submitButton.html(`${btn_text}&nbsp;<i class="fas fa-spin fa-spinner"></i>`);
 
         if (!that.is_locked) {
             that.is_locked = true;
             $.post(url, data, function(r) {
                 that.is_form_changed = false;
-                that.$submitButton.removeClass("yellow").addClass("green");
+                that.$submitButton.removeClass("yellow");
 
                 if (r.status === 'ok') {
                     if (r.data.map_info.adapter === 'google') {
                         $.getScript('https://maps.googleapis.com/maps/api/js?sensor=false&key=' +
                             (r.data.map_info.settings.key || '') + '&lang=' + r.data.lang);
                     } else if (r.data.map_info.adapter === 'yandex') {
-                        $.getScript('https://api-maps.yandex.ru/2.1/?lang=' + r.data.lang);
+                        $.getScript('https://api-maps.yandex.ru/2.1/?apikey=' +
+                            (r.data.map_info.settings.apikey || '') + '&lang=' + r.data.lang);
                     }
                 }
 
             }).always( function() {
-                $loading.remove();
+                that.$submitButton.text(btn_text);
                 that.is_locked = false;
             });
         }
@@ -217,19 +222,24 @@ var CalendarEditDialog = ( function($) {
 
         // DOM
         that.$wrapper = options["$wrapper"];
-        that.$block = that.$wrapper.find(".t-dialog-block");
-        that.$form = that.$block.find("form");
+        that.$block = that.$wrapper.find(".dialog-body");
+        that.$form = that.$block;
         that.$styleWrapper = that.$block.find(".t-style-wrapper");
+        that.$iconsWrapper = that.$block.find(".t-calendar-icons");
         that.$limitedToggle = that.$block.find(".t-limited-toggle");
+        that.$colorToggle = that.$block.find(".t-color-toggle");
         that.$nameField = that.$block.find('input[name="data[name]"]');
+        that.$iconField = that.$block.find('input[name="data[icon]"]');
+        that.$badge_status = that.$block.find(".js-badge-preview.is-status");
+        that.$badge_event = that.$block.find(".js-badge-preview.is-event");
 
         // VARS
         that.calendar_id = options["calendar_id"];
         that.selected_class = "is-selected";
         that.hidden_class = "is-hidden";
-        that.has_error_class = "error";
+        that.has_error_class = "state-error";
         that.locales = options["locales"];
-        that.teamDialog = that.$wrapper.data("teamDialog");
+        that.teamDialog = that.$wrapper.data("dialog");
 
         // DYNAMIC VARS
         that.$selectedStyleButton = that.$styleWrapper.find("." + that.selected_class);
@@ -263,6 +273,30 @@ var CalendarEditDialog = ( function($) {
             that.setStyleToggle( $(this) );
         });
 
+        that.$styleWrapper.on("click", ".js-custom-color", function(event) {
+            event.preventDefault();
+            $(this).find('svg').toggleClass('fa-caret-down fa-caret-up')
+            that.$colorToggle.toggleClass('hidden')
+        });
+
+        that.$iconsWrapper.on("click", ".t-calendar-icons--item", function(event) {
+            event.preventDefault();
+            let $icon = $(this),
+                $svg = $icon.find('svg'),
+                icon = `${$svg.attr('data-prefix')} fa-${$svg.attr('data-icon')}`
+
+            $icon.addClass(that.selected_class).siblings().removeClass(that.selected_class);
+            that.$badge_status.find('*:not(span)').remove().end().prepend(`<i class="${icon}"></i>`)
+            that.$badge_event.find('*:not(span)').remove().end().prepend(`<i class="${icon}"></i>`)
+            that.$iconField.val(icon);
+        });
+
+        that.$block.on("click", ".js-custom-icon", function(event) {
+            event.preventDefault();
+            $(this).find('svg').toggleClass('fa-caret-down fa-caret-up')
+            that.$iconField.attr('type', (i, type) => type == 'hidden' ? 'text' : 'hidden');
+        });
+
         that.$form.on("submit", function(event) {
             event.preventDefault();
             if (!that.locked) {
@@ -287,7 +321,7 @@ var CalendarEditDialog = ( function($) {
                 $field
                     .removeClass(that.has_error_class)
                     .closest(".value")
-                    .find(".t-error").remove();
+                    .find(".state-error-hint").remove();
             }
         });
 
@@ -311,7 +345,9 @@ var CalendarEditDialog = ( function($) {
     CalendarEditDialog.prototype.setStyleToggle = function( $button ) {
         var that = this,
             bg_color = $button.css("background-color"),
-            font_color = $button.css("color");
+            font_color = $button.css("color"),
+            bg_color_status = that.colorConvert(bg_color, +40).hex,
+            font_color_status = that.colorConvert(bg_color, -15).hex;
 
         if (that.$selectedStyleButton.length) {
             that.$selectedStyleButton.removeClass(that.selected_class);
@@ -321,16 +357,35 @@ var CalendarEditDialog = ( function($) {
 
         $button.addClass(that.selected_class);
         that.$selectedStyleButton = $button;
+
+        that.$badge_status.css({
+            'background-color': bg_color_status,
+            'color': font_color_status,
+        })
+        that.$badge_event.css({
+            'background-color': bg_color,
+            'color': font_color,
+        })
+
+        that.$styleWrapper.find('[name="data[status_bg_color]"]').val(bg_color_status)
+        that.$styleWrapper.find('[name="data[status_font_color]"]').val(font_color_status)
+
     };
 
     CalendarEditDialog.prototype.setStyleData = function(bg_color, font_color) {
         var that = this;
 
-        bg_color = rgbToHex(bg_color);
-        font_color = rgbToHex(font_color);
+        if (!bg_color.includes('#')) {
+            bg_color = rgbToHex(bg_color);
+        }
+        if (!font_color.includes('#')) {
+            font_color = rgbToHex(font_color);
+        }
 
         that.$form.find('[name="data[bg_color]"]').val(bg_color).trigger("change");
         that.$form.find('[name="data[font_color]"]').val(font_color).trigger("change");
+        that.$form.find('[name="data[status_bg_color]"]').val(that.colorConvert(bg_color, +40).hex).trigger("change");
+        that.$form.find('[name="data[status_font_color]"]').val(that.colorConvert(bg_color, -15).hex).trigger("change");
 
         function rgbToHex( color_string ) {
             var a, b;
@@ -361,134 +416,187 @@ var CalendarEditDialog = ( function($) {
         }
 
         that.xhr = $.get(href, data, function(html) {
-            new TeamDialog({
+            $.waDialog({
                 html: html
             });
 
             that.is_locked = false;
 
-            that.$wrapper.trigger("close");
+            that.teamDialog.close();
         });
     };
 
     CalendarEditDialog.prototype.initColorPicker = function() {
-        var dialog = this;
+        let dialog = this;
 
-        var ColorPicker = ( function($) {
+        var ColorPicker = ( function() {
 
             ColorPicker = function(options) {
-                var that = this;
+                let that = this;
 
                 // DOM
                 that.$wrapper = options["$wrapper"];
-                that.$field = that.$wrapper.find(".t-color-field");
-                that.$icon = that.$wrapper.find(".js-show-color-picker");
-                that.$colorPicker = that.$wrapper.find(".t-color-picker");
+                that.$field = that.$wrapper.querySelector(".t-color-field");
+                that.$pick_color_btn = that.$wrapper.querySelector(".js-show-color-picker");
 
                 // VARS
+                that.pickr_options = {
+                    el: that.$pick_color_btn,
+                    theme: 'classic',
+                    appClass: 'wa-pcr-app small',
+                    lockOpacity: true,
+                    position: 'right-start',
+                    useAsButton: true,
+                    container: dialog.$wrapper[0],
+                    default: that.$field.value || '#42445a',
+                    components: {
+                        palette: true,
+                        hue: true,
+                    }
+                }
 
                 // DYNAMIC VARS
-                that.is_opened = false;
-                that.farbtastic = false;
 
                 // INIT
                 that.initClass();
             };
 
             ColorPicker.prototype.initClass = function() {
-                var that = this;
+                let that = this;
 
-                that.farbtastic = $.farbtastic(that.$colorPicker, function(color) {
-                    that.$field.val( color ).change();
-                });
+                const color_picker = Pickr.create(that.pickr_options)
+                    .on('change', color =>  eventHandler(color))
+                    .on('changestop', (event, pickr) => pickr.hide());
 
-                that.$wrapper.data("colorPicker", that);
+                that.$wrapper.dataset['colorPicker'] = that;
 
-                that.bindEvents();
-            };
-
-            ColorPicker.prototype.bindEvents = function() {
-                var that = this;
-
-                that.$field.on("change keyup", function() {
-                    var color = $(this).val();
-                    //
-                    that.$icon.css("background-color", color);
-                    that.farbtastic.setColor(color);
-                });
-
-                that.$icon.on("click", function(event) {
-                    event.preventDefault();
-                    // close others opened
-                    closeOthersColorPickers();
-                    // show current
-                    that.displayToggle( !that.is_opened );
-                });
-
-                that.$wrapper.on("click", function(event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                });
-
-                that.$field.on("focus", function() {
-                    if (!that.is_opened) {
-                        closeOthersColorPickers();
-                        that.displayToggle( true );
+                function eventHandler(color) {
+                    let color_hex;
+                    if (color.hasOwnProperty('toHEXA')) {
+                        color_hex = color.toHEXA().toString(0);
+                    }else{
+                        color_hex = color.target.value;
                     }
-                });
 
-                var $background = dialog.$wrapper.find(".t-dialog-background");
-                $background.on("click", function() {
-                    if (that.is_opened) {
-                        that.displayToggle( false );
-                    }
-                });
-                dialog.$block.on("click", function() {
-                    if (that.is_opened) {
-                        that.displayToggle( false );
-                    }
-                });
+                    that.$field.value = color_hex;
+                    that.$pick_color_btn.style.backgroundColor = color_hex;
 
-                function closeOthersColorPickers() {
-                    that.$wrapper.siblings().each( function() {
-                        var colorPicker = $(this).data("colorPicker");
-                        if (colorPicker && colorPicker.is_opened) {
-                            colorPicker.displayToggle( false );
-                        }
-                    });
+                    if (that.$pick_color_btn.classList.contains('js-bg-color')) {
+                        dialog.$badge_event[0].style.backgroundColor = color_hex;
+                        dialog.$badge_status[0].style.backgroundColor = dialog.colorConvert(color_hex, +40).hex;
+                        dialog.$badge_status[0].style.color = color_hex;
+
+                        dialog.$form[0].querySelector('[name="data[status_bg_color]"]').value = dialog.colorConvert(color_hex, +40).hex;
+                        dialog.$form[0].querySelector('[name="data[status_font_color]"]').value = dialog.colorConvert(color_hex, -15).hex;
+                    }
+                    if (that.$pick_color_btn.classList.contains('js-font-color')) {
+                        dialog.$badge_event[0].style.color = color_hex;
+                    }
                 }
-            };
 
-            ColorPicker.prototype.displayToggle = function( show ) {
-                var that = this,
-                    hidden_class = "is-hidden",
-                    $colorPicker = that.$colorPicker;
+                that.$field.addEventListener('keyup', eventHandler, false)
 
-                if (show) {
-                    $colorPicker.removeClass(hidden_class);
-                    that.is_opened = true;
-                } else {
-                    $colorPicker.addClass(hidden_class);
-                    that.is_opened = false;
-                }
             };
 
             return ColorPicker;
 
-        })(jQuery);
+        })();
 
-        dialog.$styleWrapper.find(".t-color-toggle .t-toggle").each( function() {
+        dialog.$styleWrapper.find(".t-color-toggle .t-toggle").each(function () {
             new ColorPicker({
-                $wrapper: $(this)
-            });
+                $wrapper: this
+            })
         });
-
-    };
+    }
 
     CalendarEditDialog.prototype.setPreviewName = function(value) {
         var that = this;
-        that.$styleWrapper.find(".t-style-item").text( value );
+        that.$block.find(".js-badge-preview > span").text( value );
     };
+
+    CalendarEditDialog.prototype.colorConvert = function(hex, brightness = 0) {
+        let r = 0, g = 0, b = 0;
+        if (hex.includes('#')) {
+            // Convert hex to RGB first
+            if (hex.length == 4) {
+                r = "0x" + hex[1] + hex[1];
+                g = "0x" + hex[2] + hex[2];
+                b = "0x" + hex[3] + hex[3];
+            } else if (hex.length == 7) {
+                r = "0x" + hex[1] + hex[2];
+                g = "0x" + hex[3] + hex[4];
+                b = "0x" + hex[5] + hex[6];
+            }
+        }else{
+            // Parse RGB
+            let rgb = hex.split("(")[1].split(")")[0].split(",").splice(0,3);
+            r = rgb[0];
+            g = rgb[1];
+            b = rgb[2];
+        }
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        let cmin = Math.min(r,g,b),
+            cmax = Math.max(r,g,b),
+            delta = cmax - cmin,
+            h = 0,
+            s = 0,
+            l = 0;
+
+        if (delta == 0) {
+            h = 0;
+        }else if (cmax == r) {
+            h = ((g - b) / delta) % 6;
+        }else if (cmax == g){
+            h = (b - r) / delta + 2;
+        }else {
+            h = (r - g) / delta + 4;
+        }
+        h = Math.round(h * 60);
+
+        if (h < 0) {
+            h += 360;
+        }
+
+        l = (cmax + cmin) / 2;
+        s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+        s = +(s * 100).toFixed();
+        l = +(l * 100).toFixed();
+
+        if (brightness !== 0) {
+            let ratio = 20;
+            if(l >= 50) {
+                l = l - ratio;
+            }
+            if (brightness > 0) {
+                l = l + parseInt(brightness, 10);
+                if (l >= 100) {
+                    l = l - 10
+                }
+            }else if(brightness < 0) {
+                l = l + parseInt(brightness, 10)
+            }
+        }
+
+        let result_obj = {
+            hsl: `hsl(${h},${s}%,${l}%)`
+        }
+
+        // convert hsl to hex
+        l /= 100;
+        const a = s * Math.min(l, 1 - l) / 100,
+            f = n => {
+                const k = (n + h / 30) % 12,
+                    color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+            };
+
+        result_obj.hex = `#${f(0)}${f(8)}${f(4)}`;
+
+        return result_obj;
+    }
 
     CalendarEditDialog.prototype.save = function() {
         var that = this,
@@ -504,6 +612,7 @@ var CalendarEditDialog = ( function($) {
                         $.team.content.reload();
                         $.team.sidebar.reload();
                         that.is_locked = false;
+                        that.teamDialog.close();
                     }
                 });
             } else {
@@ -539,7 +648,7 @@ var CalendarEditDialog = ( function($) {
 
             function showErrors( errors ) {
                 // Remove old errors
-                that.$form.find(".t-error").remove();
+                that.$form.find(".state-error-hint").remove();
 
                 // Display new errors
                 $.each(errors, function(index, item) {
@@ -547,7 +656,7 @@ var CalendarEditDialog = ( function($) {
                     if ($field.length) {
                         $field
                             .addClass(that.has_error_class)
-                            .after('<span class="t-error">' + that.locales[item.locale] + '</span>')
+                            .after('<span class="state-error-hint">' + that.locales[item.locale] + '</span>')
                     }
                 });
             }
@@ -565,7 +674,7 @@ var CalendarDeleteDialog = ( function($) {
 
         // DOM
         that.$wrapper = options["$wrapper"];
-        that.$block = that.$wrapper.find(".t-dialog-block");
+        that.$block = that.$wrapper.find(".dialog-body");
 
         // VARS
         that.calendar_id = options["calendar_id"];
@@ -600,7 +709,7 @@ var CalendarDeleteDialog = ( function($) {
         $.post(href, data, function(response) {
             if (response.status == "ok") {
                 $.team.content.reload();
-                that.$wrapper.trigger("close");
+                that.$wrapper.data("dialog").close();
             }
         }, "json");
     };

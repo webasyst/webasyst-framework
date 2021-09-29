@@ -5,6 +5,7 @@
         content: false,
         sidebar: false,
         calendar: false,
+        profile: false,
         /* Need for title generation */
         title_pattern: "Team — %s",
 
@@ -56,28 +57,29 @@
         },
 
         /* Open dialog to confirm contact deletion */
-        confirmContactDelete: function(contact_ids, o) {
+        confirmContactDelete: function(contact_ids) {
             $.post('?module=users&action=prepareDelete', { id: contact_ids }, function(html) {
-                var dialog = new TeamDialog({
-                    html: html
-                });
+                $.waDialog({
+                    html,
+                    onOpen($dialog, dialog){
+                        const allowed_ids = $dialog.data('allowed-ids'),
+                            $delete_button = $dialog.find('.js-delete-button')
 
-                if (o && o.onInit) {
-                    o.onInit();
-                }
-                if (o && o.onCancel) {
-                    dialog.$wrapper.on('close', o.onCancel);
-                }
-                if (o.onCancel || o.onDelete) {
-                    dialog.$wrapper.on('contacts_deleted', function(e, contact_ids) {
-                        if (o && o.onCancel) {
-                            dialog.$wrapper.off('close', o.onCancel);
+                        if (allowed_ids) {
+                            $delete_button.on('click', function() {
+                                let btn_text = $delete_button.text();
+                                $delete_button.attr('disabled', true).html(`${btn_text} <i class="fas fa-spin fa-spinner"></i>`);
+
+                                $.post('?module=users&action=delete', { id: allowed_ids }, function(){
+                                    dialog.close();
+                                    $.team.content.load($.team.app_url);
+                                }).always(function () {
+                                    $delete_button.attr('disabled', false).html(btn_text);
+                                });
+                            });
                         }
-                        if (o && o.onDelete) {
-                            o.onDelete(contact_ids);
-                        }
-                    });
-                }
+                    }
+                });
             });
         },
 
@@ -90,7 +92,6 @@
             setTimeout(run, $.team.is_debug ? 100 : delay / 2);
 
             function run() {
-                console.log('send sync request');
                 $.post($.team.app_url + "?module=calendarExternal&action=sync")
                     .always(function () {
                         xhr = null;
@@ -114,6 +115,7 @@ var ContentRouter = ( function($) {
         // DOM
         that.$window = $(window);
         that.$content = options["$content"];
+        that.$app = $('#wa-app');
 
         // VARS
         that.api_enabled = ( window.history && window.history.pushState );
@@ -121,6 +123,9 @@ var ContentRouter = ( function($) {
         // DYNAMIC VARS
         that.xhr = false;
         that.is_enabled = true;
+
+        // LOADER
+        that.waLoading = $.waLoading();
 
         // INIT
         that.initClass();
@@ -138,7 +143,11 @@ var ContentRouter = ( function($) {
         // When user clicks a link that leads to team app backend,
         // load content via XHR instead.
         var full_app_url = window.location.origin + $.team.app_url;
-        $(document).on('click', 'a', function(event) {
+        that.$app.on('click', 'a', function(event) {
+            if ($(this)[0].hasAttribute('data-disable-routing')) {
+                return;
+            }
+
             var use_content_router = ( that.is_enabled && ( this.href.substr(0, full_app_url.length) == full_app_url ) );
 
             if (event.ctrlKey || event.shiftKey || event.metaKey) {
@@ -171,8 +180,6 @@ var ContentRouter = ( function($) {
             return false;
         }
 
-        that.animate( true );
-
         if (that.xhr) {
             that.xhr.abort();
         }
@@ -182,6 +189,8 @@ var ContentRouter = ( function($) {
             content_uri: content_uri
         });
 
+        that.animate(true);
+
         that.xhr = $.get(content_uri, function(html) {
             if (!is_reload && that.api_enabled) {
                 history.pushState({
@@ -190,9 +199,10 @@ var ContentRouter = ( function($) {
                     // content: html,              // ajax html, string
                 }, "", content_uri);
             }
+
             that.setContent( html );
 
-            that.animate( false );
+            that.animate(false);
 
             that.xhr = false;
             $(document).trigger("wa_loaded");
@@ -251,20 +261,15 @@ var ContentRouter = ( function($) {
         }
     };
 
-    ContentRouter.prototype.animate = function( show ) {
-        var that = this,
-            $content = that.$content;
-
-        $(".router-loading-indicator").remove();
+    ContentRouter.prototype.animate = function(show, ) {
+        const that = this;
 
         if (show) {
-            var $header = $content.find(".t-content-header h1"),
-                loading = '<i class="icon16 loading router-loading-indicator"></i>';
-
-            if ($header.length) {
-                $header.append(loading);
-            }
+            that.waLoading.animate(3000, 96, false);
+            return;
         }
+
+        that.waLoading.done();
     };
 
     return ContentRouter;
@@ -508,6 +513,7 @@ var TeamEditable = ( function($) {
         // VARS
         that.save = ( options["onSave"] || function() {} );
         that.render = ( options["onRender"] || false );
+        that.on_toggle = ( options["onToggle"] || function() {} );
 
         // DYNAMIC VARS
         that.is_empty = that.$wrapper.hasClass("is-empty");
@@ -555,7 +561,7 @@ var TeamEditable = ( function($) {
     TeamEditable.prototype.renderField = function() {
         var that = this,
             text = that.$wrapper.text(),
-            $field = $('<input class="bold" type="text" name="" />');
+            $field = $('<input class="input-editable" type="text" name="" style="width: 100%; min-height: 34px;" />');
 
         if (!that.is_empty) {
             $field.val(text);
@@ -570,7 +576,6 @@ var TeamEditable = ( function($) {
         field_w = ( wrapper_w > field_w ) ? wrapper_w : field_w;
 
         $field
-            .width(field_w)
             .hide();
 
         that.$wrapper.after($field);
@@ -595,6 +600,10 @@ var TeamEditable = ( function($) {
         }
 
         that.is_edit = id_edit;
+
+        if (that.on_toggle) {
+            that.on_toggle(that);
+        }
     };
 
     return TeamEditable;

@@ -20,13 +20,16 @@ class teamCalendarAction extends waViewAction
             $event_count = $cem->select('COUNT(*) cnt')->where("calendar_id=$calendar_id")->fetchField('cnt');
         } else {
             $calendar = array(
-                'id'             => null,
-                'name'           => null,
-                'bg_color'       => null,
-                'font_color'     => null,
-                'sort'           => null,
-                'is_limited'     => null,
-                'default_status' => null,
+                'id'                => null,
+                'name'              => null,
+                'bg_color'          => null,
+                'font_color'        => null,
+                'status_bg_color'   => null,
+                'status_font_color' => null,
+                'icon'              => null,
+                'sort'              => null,
+                'is_limited'        => null,
+                'default_status'    => null,
             );
             $event_count = 0;
         }

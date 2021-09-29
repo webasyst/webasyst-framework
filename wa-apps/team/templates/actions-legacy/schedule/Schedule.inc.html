@@ -1,0 +1,240 @@
+{strip}
+
+{**
+@var array $data
+@var array $calendars
+@var array $users
+@var string $period_start
+*}
+
+{$_is_profile = ( !empty($context) && $context == "profile" )}
+
+{$_user_id = $wa->user("id")}
+{$_is_admin = $wa->user()->isAdmin($wa->app())}
+{$_limit = 2}
+
+{* CALENDAR *}
+{if $selected_calendar_id && !empty($calendars[$selected_calendar_id])}
+    {$selected_calendar = $calendars[$selected_calendar_id]}
+{else}
+    {$selected_calendar = $calendars["all"]}
+{/if}
+
+{* USER *}
+{if $selected_user_id && !empty($users[$selected_user_id])}
+    {$selected_user = $users[$selected_user_id]}
+{else}
+    {$selected_user = $users["all"]}
+{/if}
+
+{if !empty($data)}
+    <div class="t-calendar-wrapper">
+
+        {if empty($hide_labels)}
+            <div class="t-labels-wrapper">
+                <table>
+                    <tr>
+                        <td class="t-column">[`Mon`]</td>
+                        <td class="t-column">[`Tue`]</td>
+                        <td class="t-column">[`Wed`]</td>
+                        <td class="t-column">[`Thu`]</td>
+                        <td class="t-column">[`Fri`]</td>
+                        <td class="t-column">[`Sat`]</td>
+                        <td class="t-column">[`Sun`]</td>
+                    </tr>
+                </table>
+            </div>
+        {/if}
+
+        <div class="t-calendar-block" id="t-calendar-block">
+            {* displays consecutive weeks *}
+            {$_now = waDateTime::format('Y-m-d')}
+            {foreach $data as $_week}
+                <div class="t-week-row">
+                    {* background *}
+                    <table class="t-week-background">
+                        <tr>
+                            {foreach $_week.days_data as $_day}
+                                {$_current_month = date('Y-m')}
+                                {if !empty($period_start)}
+                                    {$_current_month = date('Y-m', strtotime($period_start))}
+                                {/if}
+                                {$_is_current_month = ( $_current_month === date('Y-m', strtotime($_day.date) ) )}
+
+                                {$_day_classes = []}
+                                {if ( $_day.date == "`$_now` 00:00:00" )}
+                                    {$_day_classes[] = "is-active"}
+                                {elseif !$_is_profile && !$_is_current_month}
+                                    {$_day_classes[] = "is-unactive"}
+                                {/if}
+
+                                <td class="t-column">
+                                    <div class="t-day-ornament {$_day_classes|join:""}" data-date="{$_day.date}"></div>
+                                </td>
+                            {/foreach}
+                        </tr>
+                    </table>
+                    {* content *}
+                    <table class="t-week-table">
+                        <tr>
+                            {foreach $_week.days_data as $_day}
+                                <td class="t-column">
+                                    <div class="t-day-wrapper">
+                                        {waDateTime::date('j', $_day.date)}
+                                    </div>
+                                </td>
+                            {/foreach}
+                        </tr>
+
+                        {$_event_groups = ifempty($_week.events, array())}
+                        {$_count = count($_event_groups)}
+                        {$_events_in_week = [
+                            "view" => [[],[],[],[],[],[],[]],
+                            "all" => [[],[],[],[],[],[],[]]
+                        ]}
+
+                        {foreach $_event_groups as $_event_group}
+                            <tr>
+                                {foreach $_event_group as $_event}
+                                    {$_is_my_event = ( !empty($_event.contact_id) && $_event.contact_id == $_user_id )}
+                                    {$_can_edit = !empty($_event.can_edit)}
+
+                                    {$_calendar = [
+                                        "id" => null,
+                                        "bg_color" => "#f00",
+                                        "font_color" => "#fff"
+                                    ]}
+                                    {if !empty($_event.calendar_id) && !empty($calendars[$_event.calendar_id])}
+                                        {$_calendar = $calendars[$_event.calendar_id]}
+                                    {/if}
+
+                                    {if $_event_group@iteration <= $_limit}
+                                        {* if event *}
+                                        {if isset($_event.colspan)}
+                                            {if $_event.colspan > 0}
+
+                                                {$_is_birthday = ( $_event.calendar_id == "birthday" )}
+                                                {$_is_part_of_day = ( !$_event.is_allday && $_event.colspan == 1 )}
+
+                                                {$_styles = []}
+                                                {if $_event.is_status}
+                                                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                                                    {$_styles[] = "color: `$_calendar.font_color`;"}
+                                                {else}
+                                                    {$_styles[] = "color: `$_calendar.bg_color`;"}
+                                                {/if}
+
+                                                {$_classes = []}
+                                                {if !empty($_event.id) && !empty($_calendar.id)}
+                                                    {$_classes[] = "js-view-event"}
+                                                {/if}
+                                                {if $_event.colspan == 1}
+                                                    {$_classes[] = "is-single"}
+                                                {/if}
+                                                {if $_event.is_status}
+                                                    {$_classes[] = "is-status"}
+                                                {else}
+                                                    {$_classes[] = "is-event"}
+                                                {/if}
+
+                                                <td class="t-column" colspan="{$_event.colspan}">
+                                                    <div class="t-event-wrapper {if $_can_edit && !$_is_birthday}js-move-event{/if}"
+                                                        {if !empty($_event.id)}data-id="{$_event.id}"{/if}
+                                                        {if $_can_edit && !$_is_birthday && !empty($_event.day_count) && $_event.day_count > 1}data-day-count="{$_event.day_count}"
+                                                        data-move-hint="{_w('%d day', '%d days', $_event.day_count)}"{/if}>
+
+                                                        {$_user = null}
+                                                        {if !empty($users[$_event.contact_id])}
+                                                            {$_user = $users[$_event.contact_id]}
+                                                        {/if}
+
+                                                        <div class="t-event-block {$_classes|join:" "}" style="{$_styles|join:""}">
+                                                            {if !empty($_event.icon_class)}
+                                                                <i class="icon16 {if !empty($_event.icon_image)}kill-wa-style{/if} {$_event.icon_class}" style="{if !empty($_event.icon_image)}background-image: url({$_event.icon_image});{/if}"></i>
+                                                            {elseif $_is_birthday && $_user}
+                                                                {$title = sprintf(_w("%s's birthday — %s"), $_user.name|escape, $_event.birthday_str)}
+                                                                <i class="icon16 cake" title="{$title}"></i>
+                                                            {/if}
+
+                                                            {if $_user}
+                                                                {if $_is_birthday}
+                                                                    <span class="t-login">{$_user.name|escape}</span>
+                                                                {elseif !empty($_user.photo_url_16)}
+                                                                    <i class="icon16 userpic20" style="background-image: url({$_user.photo_url_16})" title="{$_user.name|escape}"></i>
+                                                                {/if}
+                                                            {/if}
+
+                                                            {if !$_is_birthday && $_is_part_of_day && $_event.start}
+                                                                {$_styles2 = []}
+                                                                {*{$_styles2[] = "background: `$_calendar.bg_color`;"}*}
+                                                                {*{$_styles2[] = "color: `$_calendar.font_color`;"}*}
+                                                                <span class="t-start" style="{$_styles2|join:""}">{wa_date("H:i", strtotime($_event.start))}</span>
+                                                            {/if}
+
+                                                            {if !$_is_birthday}
+                                                                {$_event.summary|escape}
+                                                            {/if}
+                                                        </div>
+
+                                                    </div>
+                                                </td>
+                                            {/if}
+
+                                            {$_events_in_week["view"][$_event@index][] = $_event.id}
+
+                                        {* if empty *}
+                                        {else}
+                                            <td class="t-column">&nbsp;</td>
+                                        {/if}
+                                    {/if}
+
+                                    {if isset($_event.colspan)}
+                                        {$_events_in_week["all"][$_event@index][] = $_event.id}
+                                    {/if}
+                                {/foreach}
+                            </tr>
+                        {/foreach}
+
+                        {* show "more" button *}
+                        <tr>
+                            {foreach $_week.days_data as $_day}
+                                {$_view_count = count($_events_in_week["view"][$_day@index])}
+                                {$_full_count = count($_events_in_week["all"][$_day@index])}
+                                <td class="t-column">
+                                    {if $_full_count > $_view_count}
+                                        <div class="t-action-wrapper">
+                                            <span class="t-action show-full-days-events" data-date="{$_day.date}" data-events-id="{$_events_in_week["all"][$_day@index]|join:","}">+ [`more`] {$_full_count - $_view_count}</span>
+                                        </div>
+                                    {/if}
+                                </td>
+                            {/foreach}
+                        </tr>
+
+                    </table>
+                </div>
+            {/foreach}
+        </div>
+
+        <script>
+            ( function($) {
+                $.team.calendar = new TeamCalendar({
+                    $wrapper: $("#t-calendar-block"),
+                    user_id: "{$_user_id}",
+                    is_profile: {if $_is_profile}true{else}false{/if},
+                    has_right_to_change: {if !$_is_profile || ( $_is_admin || teamUser::canEdit($selected_user.id) )}true{else}false{/if},
+                    selected_user_id: {if $selected_user.id > 0}{$selected_user.id}{else}false{/if},
+                    selected_calendar_id: {if $selected_calendar.id > 0}{$selected_calendar.id}{else}false{/if},
+                    period_start: {if !empty($period_start)}{$period_start|json_encode}{else}false{/if},
+                    period_end: {if !empty($period_end)}{$period_end|json_encode}{else}false{/if},
+                    locales: {
+                        move: "%s [`days`]"
+                    }
+                });
+            })(jQuery);
+        </script>
+    </div>
+{else}
+    <div class="">[`Data is broken`]</div>
+{/if}
+
+{/strip}

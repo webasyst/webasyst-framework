@@ -18,22 +18,23 @@
 {/if}
 
 
-<div class="block t-edit-external-calendar-page t-external-calendar-create" id="{$container_id}">
-    <h1>{$title}</h1>
-    <form>
+<div class="content article box t-edit-external-calendar-page t-external-calendar-create" id="{$container_id}">
+    <div class="t-content-body article-body">
+        <header class="t-content-header flexbox">
+            <h1 class="custom-my-0 wide">{$title}</h1>
+        </header>
+    <form id="external-calendar-create" class="custom-mt-32">
 
-        <div class="line">
+        <p class="flexbox middle space-8 custom-my-0">
             {if !empty($calendar.plugin.icon)}
-                <i class="icon16 t-plugin-icon" style="background-image: url('{$calendar.plugin.icon}');"></i>
+                <i class="icon t-plugin-icon" style="background-image: url('{$calendar.plugin.icon}');"></i>
             {/if}
             <span class="t-name">{$calendar.plugin.name|escape}</span>
-        </div>
-        <div class="line">
+        </p>
+        <p class="custom-my-0">
             <span class="t-date">{$calendar.create_datetime|wa_date:'humandatetime'}</span>
-        </div>
-        <div class="line">
-            <div class="t-html">{$calendar.plugin.account_info_html}</div>
-        </div>
+        </p>
+        <div class="t-html">{$calendar.plugin.account_info_html}</div>
 
         <div class="fields form" style="float: none;">
 
@@ -42,7 +43,38 @@
                     [`Inner calendars`]
                 </div>
                 <div class="value">
+                    <div class="dropdown small js-calendar-dropdown">
+                        {* CALENDAR LIST *}
+                        <a class="t-selected-item dropdown-toggle button rounded dark-gray"
+                           style="{if !empty($_selected_calendar.bg_color)}background-color:{$_selected_calendar.bg_color|escape};{/if}{if !empty($_selected_calendar.font_color)}color:{$_selected_calendar.font_color|escape};{/if}"
+                           href="javascript:void(0);">
+                            <i class="{if !empty($_selected_calendar.icon)}{$_selected_calendar.icon|escape}{else}fas fa-circle{/if}"></i>
+                            &nbsp;<span class="custom-ml-8">{$_selected_calendar.name|escape}</span>
+                        </a>
+                        {if !empty($_calendars)}
+                            <div class="dropdown-body">
+                                <ul class="menu">
+                                    {foreach $_calendars as $_c}
+                                        <li class="t-menu-item{if $_selected_calendar.id == $_c.id} selected{/if}"
+                                            data-id="{$_c.id}"
+                                            data-font-color="{if !empty($_c.font_color)}{$_c.font_color|escape}{/if}"
+                                            data-icon="{if !empty($_c.icon)}{$_c.icon|escape}{else}fas fa-circle{/if}"
+                                            data-bg-color="{if !empty($_c.bg_color)}{$_c.bg_color|escape}{/if}">
+                                            <a href="javascript:void(0);">
+                                                <i class="{if !empty($_c.icon)}{$_c.icon|escape}{else}fas fa-circle{/if}"
+                                                        {if !empty($_c.bg_color)} style="color:{$_c.bg_color};"{/if}
+                                                ></i>
+                                                <span>{$_c.name|escape}</span>
+                                            </a>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                            <input name="inner_calendar" value="{$_selected_calendar.id}" type="hidden">
+                        {/if}
+                    </div>
 
+{*
                     <ul class="menu-h dropdown t-calendar-toggle">
                         <li>
                             <a class="t-selected-item inline-link" href="javascript:void(0);">
@@ -64,7 +96,7 @@
                             <input name="inner_calendar" value="{$_selected_calendar.id}" type="hidden">
                         </li>
                     </ul>
-
+*}
                 </div>
             </div>
 
@@ -79,18 +111,19 @@
                         {/if}
                     </div>
                     <div class="value">
-
-                        <ul class="menu-v">
+                        <ul>
                             {foreach $external_calendars as $external_calendar}
                                 <li>
                                     <label>
-                                        <input type="radio" name="external_calendar[id]" value="{$external_calendar.id}" {if $external_calendar@first}checked="checked"{/if}>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="external_calendar[id]" value="{$external_calendar.id}"{if $external_calendar@first} checked="checked"{/if}>
+                                            <span></span>
+                                        </span>
                                         {$external_calendar.name|escape}
                                     </label>
                                 </li>
                             {/foreach}
                         </ul>
-
                     </div>
                 </div>
             {/if}
@@ -100,60 +133,62 @@
                     [`Integration levels`]
                 </div>
                 <div class="value">
-                    <ul class="menu-v">
+                    <ul>
                         {foreach $integration_levels as $level => $level_info}
                             <li>
                                 <label>
-                                    <input type="radio" name="integration_level" value="{$level}" {if $level_info@first}checked="checked"{/if}
-                                        {if $level_info.disabled}disabled="disabled"{/if}>
+                                        <span class="wa-radio">
+                                            <input type="radio" name="integration_level" value="{$level}"{if $level_info@first} checked="checked"{/if}{if $level_info.disabled} disabled="disabled"{/if}>
+                                            <span></span>
+                                        </span>
                                     {$level_info.name}
                                 </label>
-                                <div class="hint">{$level_info.description}</div>
+                                <p class="hint custom-my-0">{$level_info.description}</p>
                             </li>
                         {/foreach}
                     </ul>
                 </div>
             </div>
 
-            <div class="t-progress-block" style="display: none; margin-top: 40px;">
-                <div>
-                    <div class="progressbar blue float-left" style="min-width: 300px; width: 50%;">
+            <div class="t-progress-block custom-mt-40" style="display: none;">
+                <div class="progressbar">
+                    <div class="progressbar-line-wrapper text-inside">
                         <div class="progressbar-outer">
-                            <div class="progressbar-inner" style="width: 0%;"></div>
+                            <div class="progressbar-inner" style="width: 0;">
+                                <div class="progressbar-text">15%</div>
+                            </div>
                         </div>
                     </div>
-                    <img style="margin-top:8px; float: left;" src="{$wa_url}wa-content/img/loading32.gif" />
                 </div>
-                <div class="t-ready-report" style="display: none;"></div>
+                <div class="t-ready-report custom-mt-16" style="display: none;"></div>
             </div>
 
-            <div class="t-authorize-block" style="display: none; margin: 10px 0;">
-                <i class="icon16 loading"></i>
+            <div class="t-authorize-block custom-mx-12" style="display: none;">
+                <div class="spinner loading custom-mr-8"></div>
                 [`Load authorize page`]...
-            </div>
-
-            {* Buttons *}
-            <div class="t-buttons-block">
-                {if $external_calendars_count > 1}
-                    <input class="button green" type="submit" {if !$can_map}disabled="disabled"{/if} value="[`Connect & import events`]">
-                {else}
-                    <input class="button green" type="submit" {if !$can_map}disabled="disabled"{/if} value="[`Import events`]">
-                {/if}
-
-                [`or`]
-                <a href="javascript:void(0)" data-id="{$calendar.id}" class="cancel t-cancel-external-calendar">[`cancel`]</a>
-
-                <i class="icon16 loading t-buttons-loading" style="display: none"></i>
             </div>
         </div>
     </form>
 </div>
-
+</div>
+<div class="bottombar sticky bordered-top flexbox middle space-16 box">
+    <div class="article width-100">
+        <div class="article-body custom-py-0">
+            {if $external_calendars_count > 1}
+                <button class="button" form="external-calendar-create" type="submit"{if !$can_map} disabled="disabled"{/if}>[`Connect & import events`]</button>
+            {else}
+                <button class="button" form="external-calendar-create" type="submit"{if !$can_map} disabled="disabled"{/if}>[`Import events`]</button>
+            {/if}
+            <a href="javascript:void(0)" data-id="{$calendar.id}" class="cancel t-cancel-external-calendar">[`cancel`]</a>
+            <div class="spinner loading t-buttons-loading custom-ml-8" style="display: none"></div>
+        </div>
+    </div>
+</div>
 <script>
     $(function () {
         var container = $('#{$container_id}'),
             form = container.find('form'),
-            $buttons = container.find(".t-buttons-block");
+            $buttons = container.next(".bottombar");
 
         $.team.setTitle('{$title}');
 
@@ -164,7 +199,7 @@
 
         {if $can_map}
 
-            container.find('.t-cancel-external-calendar').click(function () {
+            container.find('.t-cancel-external-calendar').on('click', function () {
                 var link = $(this);
                 var loading = container.find('.t-buttons-loading');
                 $.post('?module=calendarExternal&action=delete', { id: link.data('id'), 'with_events': 1 })
@@ -176,7 +211,7 @@
                     });
             });
 
-            form.submit(function (e) {
+            form.on('submit', function (e) {
                 e.preventDefault();
 
                 form.find('.error').removeClass('error');
@@ -194,7 +229,7 @@
                     }
                 });
 
-                var external_calendar = external_calendars[external_calendar_id] || {};
+                var external_calendar = external_calendars[external_calendar_id] || { };
                 $.each(external_calendar, function (name, value) {
                     if (name != 'id') {
                         data.push({
@@ -215,8 +250,13 @@
                             var percentage = 0;
                             var increment = 8;
 
-                            $('.progressbar .progressbar-inner', container).css('width', '0%');
-                            $('.t-progress-block', container).show();
+
+                            const $progressbar_inner = container.find('.progressbar .progressbar-inner'),
+                                $progressbar_text  = $progressbar_inner.find('.progressbar-text'),
+                                $progress_block = container.find('.t-progress-block');
+
+                            $progressbar_inner.css('width', '0%');
+                            $progress_block.show();
                             $buttons.hide();
 
                             var pull_process = new LongActionProcess({
@@ -243,7 +283,8 @@
                                             percentage = 100;
                                         }
                                     }
-                                    $('.progressbar .progressbar-inner', container).css('width', percentage + '%');
+                                    $progressbar_inner.css('width', percentage + '%');
+                                    $progressbar_text.text(`${ percentage }%`);
                                     if (percentage >= 100) {
                                         this.stop();
                                     }
@@ -252,9 +293,10 @@
                                     alert('Server error');
                                 },
                                 onStop: function (r) {
-                                    $('.progressbar .progressbar-inner', container).css('width', '100%');
+                                    $progressbar_inner.css('width', '100%');
+                                    $progressbar_text.text('100%');
                                     setTimeout(function () {
-                                        $('.t-progress-block', container).hide();
+                                        $progress_block.hide();
                                         location.href = '{$redirect_url}';
                                     }, 250);
                                 }
@@ -272,6 +314,13 @@
 
     // Calendar Toggle
     ( function($) {
+
+        $(".js-calendar-dropdown").waDropdown({
+            items: ".menu > li > a",
+            change: function(event, target, dropdown) {
+
+            }
+        });
 
         var $calendarToggle = $(".t-calendar-toggle"),
             $input = $calendarToggle.find("input[name=\"inner_calendar\"]"),

@@ -1,197 +1,137 @@
 {strip}
 
 {$_icons = [
-    "user",
-    "user-black",
-    "user-black-female",
-    "user-black-female",
-    "user-business",
-    "user-business-boss",
-    "user-business-gray",
-    "user-business-gray-boss",
-    "user-detective",
-    "user-detective-gray",
-    "user-female",
-    "user-gray",
-    "user-gray-female",
-    "user-green",
-    "user-green-female",
-    "user-medical",
-    "user-medical-female",
-    "user-medium",
-    "user-medium-female",
-    "user-medium-silhouette",
-    "user-nude",
-    "user-nude-female",
-    "user-red",
-    "user-red-female",
-    "user-white",
-    "user-white-female",
-    "user-worker",
-    "user-worker-boss",
-    "user-yellow",
-    "user-yellow-female",
-    "contact",
-    "lock",
-    "folder",
-    "notebook",
-    "lock-unlocked",
-    "broom",
-    "star",
-    "livejournal",
-    "lightning",
-    "light-bulb",
-    "pictures",
-    "reports",
-    "books",
-    "marker",
-    "lens",
-    "alarm-clock",
-    "animal-monkey",
-    "anchor",
-    "bean",
-    "car",
-    "disk",
-    "cookie",
-    "burn",
-    "clapperboard",
-    "bug",
-    "clock",
-    "cup",
-    "home",
-    "fruit",
-    "luggage",
-    "guitar",
-    "smiley",
-    "sport-soccer",
-    "target",
-    "medal",
-    "phone",
-    "store"
+    "fas fa-user-friends",
+    "fas fa-user-tie",
+    "fas fa-hat-cowboy",
+    "fas fa-stethoscope",
+    "fas fa-syringe",
+    "fas fa-child",
+    "fas fa-mask",
+    "fas fa-male",
+    "fas fa-female",
+    "fas fa-tools",
+    "fas fa-hard-hat",
+    "fas fa-users",
+    "fas fa-lock",
+    "fas fa-unlock",
+    "fas fa-file",
+    "fas fa-broom",
+    "fas fa-star",
+    "fas fa-pencil-alt",
+    "fas fa-bolt",
+    "fas fa-lightbulb",
+    "fas fa-images",
+    "fas fa-chart-bar",
+    "fas fa-book",
+    "fas fa-map-marker-alt",
+    "fas fa-anchor",
+    "fas fa-car",
+    "fas fa-save",
+    "fas fa-cookie",
+    "fas fa-radiation-alt",
+    "fas fa-bug",
+    "fas fa-clock",
+    "fas fa-coffee",
+    "fas fa-home",
+    "fas fa-apple-alt",
+    "fas fa-briefcase",
+    "fas fa-guitar",
+    "fas fa-grin",
+    "fas fa-futbol",
+    "fas fa-bullseye",
+    "fas fa-award",
+    "fas fa-phone",
+    "fas fa-user-clock",
+    "fas fa-paw",
+    "fas fa-seedling",
+    "fas fa-video",
+    "fas fa-store"
 ]}
 
 {if empty($group.icon)}
     {$group.icon = reset($_icons)}
 {/if}
 
-<div class="t-dialog-wrapper is-full-screen t-edit-group-dialog" id="t-edit-group">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <header class="t-dialog-header">
-            <h1>{if !empty($group.id)}[`Edit group`]{else}[`New group`]{/if}</h1>
-        </header>
-        <form action="" method="post">
-            <div class="t-dialog-content">
-
-                <div class="t-event-form">
-
-                    {* NAME *}
-                    <div class="field">
-                        <div class="name">
-                            [`Name`]
-                        </div>
-                        <div class="value">
-
-                            <input name="data[name]" type="text" placeholder="[`Name`]" value="{$group.name|escape}">
-
-                        </div>
-                    </div>
-
-                    {* DESCRIPTION *}
-                    <div class="field">
-                        <div class="name">
-                            [`Description`]
-                        </div>
-                        <div class="value">
-
-                            <textarea name="data[description]" placeholder="[`Description`]">{$group.description|escape}</textarea>
-
-                        </div>
-                    </div>
-
-                    {* TYPE *}
-                    <div class="field">
-                        <div class="name">
-                            [`Type`]
-                        </div>
-                        <div class="value">
-
-                            <div class="t-type-toggle">
-                                <label class="t-toggle-item {if $group.type == "group"}is-selected{/if}" data-type="group">
-                                    <input type="radio" name="data[type]" value="group" {if $group.type == "group"}checked{/if}>
-                                    <span class="t-name">[`Group`]</span>
-                                    <i class="icon16 contact"></i>
-                                </label>
-                                <label class="t-toggle-item {if $group.type == "location"}is-selected{/if}" data-type="location">
-                                    <input type="radio" name="data[type]" value="location" {if $group.type == "location"}checked{/if}>
-                                    <span class="t-name">[`Location `]</span>
-                                    <i class="icon16 marker"></i>
-                                </label>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    {* ICONS *}
-                    <div class="field t-icon-toggle {if $group.type != teamWaGroupModel::WA_GROUP_TYPE_GROUP}is-hidden{/if}">
-                        <div class="name">
-                            [`Icon`]
-                        </div>
-                        <div class="value">
-
-                            <ul class="t-icon-list">
-                                {foreach $_icons as $_icon}
-                                    <li class="t-icon-item {if !empty($group.icon) && $_icon == $group.icon}is-selected{/if}" data-icon-class="{$_icon}">
-                                        <i class="icon16 {$_icon}"></i>
-                                    </li>
-                                {/foreach}
-                            </ul>
-                            <input name="data[icon]" type="hidden" value="{$group.icon}">
-
-                        </div>
-                    </div>
-
-                    {$is_location = $group.type == teamWaGroupModel::WA_GROUP_TYPE_LOCATION}
-
-                    {* ADDRESS AND MAP *}
-                    <div class="field t-address-toggle {if !$is_location}is-hidden{/if}">
-                        <div class="name">
-                            [`Address`]
-                        </div>
-                        <div class="value">
-                            <input type="text" name="data[location][address]" value="{$group.location.address|escape}" placeholder="[`Address`]" class="f-location-edit-address-input">
-                            <input type="hidden" class="t-location-longitude-input" name="data[location][longitude]" value="{$group.location.longitude|escape}">
-                            <input type="hidden" class="t-location-latitude-input" name="data[location][latitude]" value="{$group.location.latitude|escape}">
-                            <p class="t-map-hint hint" style="margin-top: .25em; {if !$group.location.address || !empty($group.location.longitude) && !empty($group.location.latitude)}display: none;{/if}">[`Specified address not found on map`]</p>
-                        </div>
-                    </div>
-
-                    {* MAP *}
-                    <div class="field t-map-toggle {if !$is_location}is-hidden{/if}">
-                        <div class="name"></div>
-                        <div class="value">
-                            <div class="t-location-edit-map" style="display: none;"></div>
-                        </div>
-                    </div>
+<div class="dialog t-edit-group-dialog" id="t-edit-group">
+    <div class="dialog-background"></div>
+    <form ction="" method="post" class="dialog-body">
+        <h3 class="dialog-header">{if !empty($group.id)}[`Edit group`]{else}[`New group`]{/if}</h3>
+        <div class="dialog-content fields">
+            {* NAME *}
+            <div class="field">
+                <div class="name">
+                    [`Name`]
                 </div>
-
+                <div class="value">
+                    <input class="full-width" name="data[name]" type="text" placeholder="[`Name`]" value="{$group.name|escape}">
+                </div>
             </div>
-            <footer class="t-dialog-footer">
-                <div class="t-actions">
-
-                    <div class="t-layout">
-                        <div class="t-column left">
-                            <input type="submit" class="button green t-button" value="{if $group.id}[`Save`]{else}[`Create`]{/if}">
-                            <span style="margin: 0 4px;">[`or`]</span>
-                            <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
-                        </div>
-                    </div>
-
+            {* DESCRIPTION *}
+            <div class="field">
+                <div class="name">
+                    [`Description`]
                 </div>
-            </footer>
-            <input name="data[id]" type="hidden" value="{if $group.id}{$group.id}{/if}">
-        </form>
-    </div>
+                <div class="value">
+                    <textarea class="full-width" name="data[description]" placeholder="[`Description`]">{$group.description|escape}</textarea>
+                </div>
+            </div>
+            {* TYPE *}
+            <div class="field">
+                <div class="name">
+                    [`Type`]
+                </div>
+                <div class="value">
+                    <div class="toggle js-type-toggle">
+                        <span class="t-toggle-item{if $group.type == "group"} selected{/if}" data-type="group"><i class="fas fa-users"></i> [`Group`]</span>
+                        <span class="t-toggle-item{if $group.type == "location"} selected{/if}" data-type="location"><i class="fas fa-map-marker-alt"></i> [`Location `]</span>
+                    </div>
+                </div>
+            </div>
+            {* ICONS *}
+            <div class="field t-icon-toggle {if $group.type != teamWaGroupModel::WA_GROUP_TYPE_GROUP}hidden{/if}">
+                <div class="name">
+                    [`Icon`]
+                </div>
+                <div class="value">
+                    <ul class="t-icon-list">
+                        {foreach $_icons as $_icon}
+                            <li class="t-icon-item {if !empty($group.icon) && $_icon == $group.icon}selected{/if}" data-icon-class="{$_icon}">
+                                <i class="{$_icon}"></i>
+                            </li>
+                        {/foreach}
+                    </ul>
+                    <input name="data[icon]" type="hidden" value="{$group.icon}">
+                </div>
+            </div>
+            {$is_location = $group.type == teamWaGroupModel::WA_GROUP_TYPE_LOCATION}
+            {* ADDRESS AND MAP *}
+            <div class="field t-address-toggle {if !$is_location}hidden{/if}">
+                <div class="name">
+                    [`Address`]
+                </div>
+                <div class="value">
+                    <input type="text" name="data[location][address]" value="{$group.location.address|escape}" placeholder="[`Address`]" class="f-location-edit-address-input full-width">
+                    <input type="hidden" class="t-location-longitude-input" name="data[location][longitude]" value="{$group.location.longitude|escape}">
+                    <input type="hidden" class="t-location-latitude-input" name="data[location][latitude]" value="{$group.location.latitude|escape}">
+                    <p class="t-map-hint hint" style="margin-top: .25em; {if !$group.location.address || !empty($group.location.longitude) && !empty($group.location.latitude)}display: none;{/if}">[`Specified address not found on map`]</p>
+                </div>
+            </div>
+            {* MAP *}
+            <div class="field t-map-toggle {if !$is_location}hidden{/if}">
+                <div class="name"></div>
+                <div class="value">
+                    <div class="t-location-edit-map" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+        <footer class="dialog-footer flexbox middle">
+            <input type="submit" class="button" value="{if $group.id}[`Save`]{else}[`Create`]{/if}">
+            <a class="js-close-dialog button light-gray" href="javascript:void(0);">[`Cancel`]</a>
+        </footer>
+        <input name="data[id]" type="hidden" value="{if $group.id}{$group.id}{/if}">
+        <input type="hidden" name="data[type]" value="{if $group.type}{$group.type|escape}{/if}">
+    </form>
     <script>
         ( function($) {
             new GroupEditDialog({

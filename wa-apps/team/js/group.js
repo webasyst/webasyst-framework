@@ -46,6 +46,20 @@ var GroupPage = ( function($) {
                 that.showMap();
             });
         }
+
+        that.$wrapper.on("click", ".js-edit-group", function(event) {
+            event.preventDefault();
+            if (that.group_id && !GroupManage.is_locked) {
+                GroupManage.prototype.showEditGroupDialog(that.group_id);
+            }
+        });
+
+        that.$wrapper.on("click", ".js-delete-group", function(event) {
+            event.preventDefault();
+            if (that.group_id && !GroupManage.is_locked) {
+                GroupManage.prototype.showDeleteDialog(that.group_id);
+            }
+        });
     };
 
     GroupPage.prototype.showMap = function() {
@@ -81,7 +95,8 @@ var GroupPage = ( function($) {
 
     GroupPage.prototype.initEditableName = function() {
         var group = this,
-            $name = group.$wrapper.find(".js-name-editable").first();
+            $name = group.$wrapper.find(".js-name-editable").first(),
+            $sort_by = group.$wrapper.find(".js-sort-by");
 
         if ($name.length) {
             new TeamEditable({
@@ -98,9 +113,7 @@ var GroupPage = ( function($) {
                             };
 
                         that.$field.attr("disabled", true);
-                        var $loading = $('<i class="icon16 loading"></i>')
-                            .css("margin", "0 0 0 4px")
-                            .insertAfter( that.$field );
+                        var $loading = $('<span class="smaller text-gray custom-ml-4"><i class="fas fa-spin fa-spinner"></i></span>').insertAfter( that.$field );
 
                         $.post(href, data, function() {
                             that.$field.attr("disabled", false);
@@ -119,6 +132,9 @@ var GroupPage = ( function($) {
                         }
                         that.toggle("hide");
                     }
+                },
+                onToggle(that) {
+                    $sort_by.toggleClass('hidden', that.is_edit)
                 }
             });
         }
@@ -143,9 +159,7 @@ var GroupPage = ( function($) {
                             };
 
                         that.$field.attr("disabled", true);
-                        var $loading = $('<i class="icon16 loading"></i>')
-                            .css("margin", "0 0 0 4px")
-                            .insertAfter( that.$field );
+                        var $loading = $('<span class="smaller text-gray custom-ml-4"><i class="fas fa-spin fa-spinner"></i></span>').insertAfter( that.$field );
 
                         $.post(href, data, function() {
                             that.$field.attr("disabled", false);
@@ -261,11 +275,11 @@ var GroupManage = ( function($) {
         });
     };
 
-    GroupManage.prototype.showEditGroupDialog = function() {
+    GroupManage.prototype.showEditGroupDialog = function(group_id) {
         var that = this,
             href = "?module=group&action=edit",
             data = {
-                id: that.group_id
+                id: that.group_id || group_id
             };
 
         if (!that.is_locked) {
@@ -277,7 +291,7 @@ var GroupManage = ( function($) {
             }
 
             that.xhr = $.get(href, data, function(response) {
-                new TeamDialog({
+                $.waDialog({
                     html: response
                 });
                 that.is_locked = false;
@@ -285,11 +299,11 @@ var GroupManage = ( function($) {
         }
     };
 
-    GroupManage.prototype.showDeleteDialog = function() {
+    GroupManage.prototype.showDeleteDialog = function(group_id) {
         var that = this,
             href = $.team.app_url + "?module=group&action=deleteConfirm",
             data = {
-                id: that.group_id
+                id: that.group_id || group_id
             };
 
         if (!that.is_locked) {
@@ -301,13 +315,11 @@ var GroupManage = ( function($) {
             }
 
             that.xhr = $.get(href, data, function(html) {
-                new TeamDialog({
+                $.waDialog({
                     html: html
                 });
 
                 that.is_locked = false;
-
-                that.$wrapper.trigger("close");
             });
         }
     };
@@ -334,39 +346,44 @@ var GroupManage = ( function($) {
                 href = $.team.app_url + "?module=group&action=userRemove";
             }
 
+            moveUser();
+
             that.xhr = $.post(href, data, function(response) {
-                if (response.status == "ok") {
-                    // Render
-                    if (add) {
-                        that.$groupUsersW.append( $user );
-                        that.group_count++;
-                        that.other_count--;
-                    } else {
-                        that.$otherUsersW.prepend( $user );
-                        that.group_count--;
-                        that.other_count++;
-                    }
-
-                    if (that.group_count <= 0) {
-                        that.$groupUsersW.addClass(that.hidden_class);
-                        that.$groupUsersHint.removeClass(that.hidden_class);
-                    } else {
-                        that.$groupUsersW.removeClass(that.hidden_class);
-                        that.$groupUsersHint.addClass(that.hidden_class);
-                    }
-
-                    if (that.other_count <= 0) {
-                        that.$otherUsersW.addClass(that.hidden_class);
-                        that.$otherUsersHint.removeClass(that.hidden_class);
-                    } else {
-                        that.$otherUsersW.removeClass(that.hidden_class);
-                        that.$otherUsersHint.addClass(that.hidden_class);
-                    }
-
-                    that.setCount( that.group_count );
+                if (response.status !== "ok") {
+                    console.error('Error while sending data on ' + href, response)
                 }
                 that.is_locked = false;
             });
+
+            function moveUser() {
+                if (add) {
+                    that.$groupUsersW.append( $user );
+                    that.group_count++;
+                    that.other_count--;
+                } else {
+                    that.$otherUsersW.prepend( $user );
+                    that.group_count--;
+                    that.other_count++;
+                }
+
+                if (that.group_count <= 0) {
+                    that.$groupUsersW.addClass(that.hidden_class);
+                    that.$groupUsersHint.removeClass(that.hidden_class);
+                } else {
+                    that.$groupUsersW.removeClass(that.hidden_class);
+                    that.$groupUsersHint.addClass(that.hidden_class);
+                }
+
+                if (that.other_count <= 0) {
+                    that.$otherUsersW.addClass(that.hidden_class);
+                    that.$otherUsersHint.removeClass(that.hidden_class);
+                } else {
+                    that.$otherUsersW.removeClass(that.hidden_class);
+                    that.$otherUsersHint.addClass(that.hidden_class);
+                }
+
+                that.setCount( that.group_count );
+            }
         }
 
     };
@@ -429,7 +446,7 @@ var GroupManage = ( function($) {
         function addHint( locale ) {
             var time = 1000;
 
-            $hint = $("<span class=\"t-hint\"><i class=\"icon16 yes\"></i>" + locale + "</span>");
+            $hint = $('<span class="t-hint"><i class="fas fa-check text-green custom-mr-4"></i>' + locale + '</span>');
             $field.after($hint);
             timeout = setTimeout( removeHint, time);
         }
@@ -518,39 +535,47 @@ var GroupEditDialog = ( function($) {
 
         // DOM
         that.$wrapper = options["$wrapper"];
-        that.$block = that.$wrapper.find(".t-dialog-block");
-        that.$form = that.$block.find("form");
+        that.$block = that.$wrapper.find(".dialog-body");
+        that.$form = that.$block;
         that.$iconToggle = that.$block.find(".t-icon-toggle");
         that.$addressToggle = that.$block.find('.t-address-toggle');
         that.$mapToggle = that.$block.find('.t-map-toggle');
         that.$submitButton = that.$form.find("input[type=\"submit\"]");
 
         // VARS
-        that.selected_class = "is-selected";
-        that.hidden_class = "is-hidden";
-        that.has_error_class = "error";
+        that.selected_class = "selected";
+        that.hidden_class = "hidden";
+        that.has_error_class = "state-error";
         that.locales = options["locales"];
-        that.dialog = that.$wrapper.data("teamDialog");
+        that.dialog = that.$wrapper.data("dialog");
 
         // DYNAMIC VARS
-        that.$activeType = that.$block.find(".t-type-toggle ." + that.selected_class);
         that.$activeIcon = that.$iconToggle.find("." + that.selected_class);
         that.is_locked = false;
         that.save_timeout = 0;
         // for map
         that.is_map_loading = false;
-
+        that.map_type = options["map_type"]  || "google"
+        that.teamMap = null
         // INIT
         that.bindEvents();
-        that.teamMap = that.initMap( ( options["map_type"] || "google") );
     };
 
     GroupEditDialog.prototype.bindEvents = function() {
         var that = this;
 
-        that.$block.on("click", ".t-type-toggle .t-toggle-item", function(event) {
-            event.stopPropagation();
-            that.setType( $(this) );
+        that.$block.find(".js-type-toggle").waToggle({
+            ready(toggle){
+                if(toggle.$active.data('type') === 'location' && !that.teamMap) {
+                    setTimeout(() => that.teamMap = that.initMap(that.map_type))
+                }
+            },
+            change(event, target) {
+                that.setType( $(target) );
+                if(target.dataset.type === 'location' && !that.teamMap) {
+                    that.teamMap = that.initMap(that.map_type);
+                }
+            }
         });
 
         that.$iconToggle.on("click", ".t-icon-item", function(event) {
@@ -562,7 +587,7 @@ var GroupEditDialog = ( function($) {
             event.preventDefault();
             if (!that.is_locked) {
                 that.$form.find('.js-submit-loading').remove();
-                that.$submitButton.parent().append("<i class='icon16 loading js-submit-loading'></i>");
+                that.$submitButton.parent().append("<i class='fas fa-spin fa-spinner js-submit-loading'></i>");
                 that.save();
             }
         });
@@ -578,35 +603,25 @@ var GroupEditDialog = ( function($) {
                 $field
                     .removeClass(that.has_error_class)
                     .closest(".value")
-                    .find(".t-error").remove();
+                    .find(".state-error-hint").remove();
             }
         });
+
+        // Set default icon
+        const $icon_list = that.$form.find('.t-icon-list');
+        if(!$icon_list.find('.t-icon-item.selected').length){
+            that.setIcon( $icon_list.find('.t-icon-item:eq(0)') );
+        }
     };
 
     GroupEditDialog.prototype.setType = function( $label ) {
         var that = this,
-            type = $label.data("type");
+            is_group = $label.data("type") === "group";
 
-        if ($label.hasClass(that.selected_class)) {
-            return false;
-        }
+        that.$iconToggle.toggleClass(that.hidden_class, !is_group);
+        that.$addressToggle.toggleClass(that.hidden_class, is_group);
+        that.$mapToggle.toggleClass(that.hidden_class, is_group);
 
-        if (that.$activeType.length) {
-            that.$activeType.removeClass(that.selected_class);
-        }
-
-        if (type == "group") {
-            that.$iconToggle.removeClass(that.hidden_class);
-            that.$addressToggle.addClass(that.hidden_class);
-            that.$mapToggle.addClass(that.hidden_class);
-        } else {
-            that.$iconToggle.addClass(that.hidden_class);
-            that.$addressToggle.removeClass(that.hidden_class);
-            that.$mapToggle.removeClass(that.hidden_class);
-        }
-
-        $label.addClass(that.selected_class);
-        that.$activeType = $label;
         // resize
         that.dialog.resize();
     };
@@ -660,6 +675,7 @@ var GroupEditDialog = ( function($) {
                             $.team.content.load( content_uri );
                             $.team.sidebar.reload();
                             that.is_locked = false;
+                            that.dialog.close()
                         }
                     });
                 };
@@ -715,7 +731,7 @@ var GroupEditDialog = ( function($) {
 
             function showErrors( errors ) {
                 // Remove old errors
-                that.$form.find(".t-error").remove();
+                that.$form.find(".state-error-hint").remove();
 
                 // Display new errors
                 $.each(errors, function(index, item) {
@@ -723,7 +739,7 @@ var GroupEditDialog = ( function($) {
                     if ($field.length) {
                         $field
                             .addClass(that.has_error_class)
-                            .after('<span class="t-error">' + that.locales[item.locale] + '</span>')
+                            .after('<p class="state-error-hint custom-my-0">' + that.locales[item.locale] + '</p>')
                     }
                 });
             }
@@ -841,6 +857,7 @@ var GroupDeleteDialog = ( function($) {
         // DOM
         that.$wrapper = options["$wrapper"];
         that.$block = that.$wrapper.find(".t-dialog-block");
+        that.$deleteButton = that.$wrapper.find('.js-delete-event');
 
         // VARS
         that.api_enabled = ( window.history && window.history.replaceState );
@@ -848,6 +865,7 @@ var GroupDeleteDialog = ( function($) {
 
         // DYNAMIC VARS
         that.is_locked = false;
+        that.dialog = {};
 
         // INIT
         that.initClass();
@@ -856,15 +874,18 @@ var GroupDeleteDialog = ( function($) {
     GroupDeleteDialog.prototype.initClass = function() {
         var that = this;
 
-        that.$block.on("click", ".js-delete-event", function(event) {
-            event.preventDefault();
-            if (!that.is_locked) {
-                that['delete']();
-            }
+        setTimeout(() => {
+            that.dialog = that.$wrapper.data('dialog');
         });
+
+        if (!that.is_locked) {
+            that.$deleteButton.on("click", $.proxy(that.deleteFunction, that));
+        }
     };
 
-    GroupDeleteDialog.prototype['delete'] = function() {
+    GroupDeleteDialog.prototype.deleteFunction = function(event) {
+        event.preventDefault();
+
         var that = this,
             href = "?module=group&action=delete",
             data = {
@@ -875,7 +896,7 @@ var GroupDeleteDialog = ( function($) {
 
         $.post(href, data, function(response) {
             if (response.status == "ok") {
-                that.$wrapper.trigger("close");
+                that.dialog.close();
 
                 if (that.api_enabled) {
                     history.state.content_uri = $.team.app_url;

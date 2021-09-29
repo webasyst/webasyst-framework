@@ -1,0 +1,17 @@
+{strip}
+<div class="sidebar right flexbox hide-scrollbar width-adaptive-wider t-profile-sidebar desktop-only">
+    <div class="sidebar-body hide-scrollbar box js-profile-sidebar-body">
+        {if $user}
+            {include file="./sidebarWidgets/Access.html" assign=access_html}
+            {include file="./sidebarWidgets/Stats.html" assign=stats_html}
+            {$wa->contactProfileSidebar($user.id, [
+                'is_profile_sidebar' => true,
+                'html' => [
+                    'access' => $access_html,
+                    'stats' => $stats_html
+                ]
+            ])}
+        {/if}
+    </div>
+</div>
+{/strip}

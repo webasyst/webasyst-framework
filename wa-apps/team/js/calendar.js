@@ -326,42 +326,15 @@ var TeamCalendar = ( function($) {
         }
 
         that.xhr = $.post( that.day_uri, data, function(html) {
-            var $linkW = $link.closest(".t-action-wrapper"),
-                $row = $linkW.closest(".t-week-row"),
-                cell_o = {
-                    top: $row.offset().top,
-                    left: $linkW.offset().left,
-                    width: $linkW.outerWidth(),
-                    height: $row.outerHeight()
-                };
-
-            var dialog = new TeamDialog({
-                html: html,
-                setPosition: setPosition
+            var dialog = $.waDialog({
+                html,
+                animate: false,
+                onBgClick(event, $dialog, dialog_instance) {
+                    dialog_instance.close()
+                }
             });
 
             that.addDialog(dialog);
-
-            function setPosition(area) {
-                var wrapper_w = area.width,
-                    wrapper_h = area.height,
-                    delta_w = ( (wrapper_w - cell_o.width)/2 ),
-                    delta_h = ( (wrapper_h - cell_o.height)/2 );
-
-                var top = cell_o.top - ( (delta_h > 0) ? delta_h : 0 ),
-                    left = cell_o.left - ( (delta_w > 0) ? delta_w : 0 );
-
-                var right_space = ( $(window).width() - (left + wrapper_w) );
-                if (right_space < 0) {
-                    var padding_r = 10;
-                    left -= Math.abs(right_space) + padding_r;
-                }
-
-                return {
-                    top: top,
-                    left: left
-                }
-            }
         });
     };
 
@@ -378,7 +351,7 @@ var TeamCalendar = ( function($) {
         }
 
         that.xhr = $.post( that.event_view_uri, data, function(html) {
-            var dialog = new TeamDialog({
+            var dialog = $.waDialog({
                 html: html
             });
             that.addDialog(dialog);
@@ -413,7 +386,7 @@ var TeamCalendar = ( function($) {
         }
 
         that.xhr = $.post( that.event_edit_uri, data, function(response) {
-            var dialog = new TeamDialog({
+            var dialog = $.waDialog({
                 html: response
             });
             that.addDialog(dialog);
@@ -803,6 +776,7 @@ var TeamCalendar = ( function($) {
         $.get(href, data, function(html) {
             $.team.calendar = false;
             that.$wrapper.closest(".t-calendar-wrapper").replaceWith(html);
+            $.team.profile.$calendar_wrapper = $(html);
         });
     };
 
@@ -904,10 +878,8 @@ var DayEventsDialog = ( function($) {
             that.xhr = false;
         }
 
-        that.xhr = $.post( that.event_view_uri, data, function(response) {
-            that.dialog = new TeamDialog({
-                html: response
-            });
+        that.xhr = $.post( that.event_view_uri, data, function(html) {
+            that.dialog = $.waDialog({ html });
         });
     };
 
@@ -925,23 +897,23 @@ var EventEditDialog = ( function($) {
         that.$wrapper = options["$wrapper"];
         that.$form = that.$wrapper.find("form");
         that.$statusToggle = that.$wrapper.find(".t-status-toggle");
-        that.$calendarToggle = that.$wrapper.find(".t-calendar-toggle");
+        that.$calendarToggle = that.$wrapper.find(".js-calendar-dropdown");
         that.$typeToggle = that.$wrapper.find(".t-type-toggle");
-        that.$userToggle = that.$wrapper.find(".t-user-toggle");
+        that.$userToggle = that.$wrapper.find(".js-user-dropdown");
         that.$startAltField = that.$wrapper.find("input[name='data[start_alt]']");
         that.$endAltField = that.$wrapper.find("input[name='data[end_alt]']");
         that.$summaryField = that.$form.find("input[name='data[summary]']");
 
         // VARS
-        that.teamDialog = that.$wrapper.data("teamDialog");
+        that.teamDialog = that.$wrapper.data("dialog");
         that.active_class = "is-active";
         that.extended_class = "is-extended";
         that.selected_class = "selected";
-        that.has_error_class = "error";
+        that.has_error_class = "state-error";
         that.locales = options["locales"];
         that.event_id = options["event_id"];
-        that.calendars = getCalendarsArray( that.$calendarToggle );
-        that.users = getUsersArray( that.$userToggle );
+        that.calendars = options["calendars"];
+        that.users = options["users"];
 
         // DYNAMIC VARS
         that.$activeStatusToggle = ( that.$statusToggle.find("." + that.active_class) || false );
@@ -973,8 +945,6 @@ var EventEditDialog = ( function($) {
         if (that.is_status) {
             //
             that.generateStatusTypes();
-            //
-            that.generatePreview();
         }
     };
 
@@ -998,10 +968,11 @@ var EventEditDialog = ( function($) {
 
         that.$statusToggle.on("click", ".t-toggle-button", function() {
             that.changeStatus( $(this) );
+            that.changeColors();
             return false;
         });
 
-        that.$calendarToggle.on("click", ".menu-v a", function(event) {
+        that.$calendarToggle.on("click", ".menu a", function(event) {
             event.preventDefault();
             that.changeCalendar( $(this) );
         });
@@ -1009,13 +980,11 @@ var EventEditDialog = ( function($) {
         that.$startAltField.on("change", function() {
             that.setStatusLocale();
             that.generateStatusTypes();
-            that.generatePreview();
         });
 
         that.$endAltField.on("change", function() {
             that.setStatusLocale();
             that.generateStatusTypes();
-            that.generatePreview();
         });
 
         that.$summaryField.on("change", function() {
@@ -1043,7 +1012,7 @@ var EventEditDialog = ( function($) {
         });
 
         if (that.$userToggle.length) {
-            that.$userToggle.on("click", ".menu-v a", function(event) {
+            that.$userToggle.on("click", ".menu a", function(event) {
                 event.preventDefault();
                 that.changeUser( $(this) );
             });
@@ -1064,7 +1033,7 @@ var EventEditDialog = ( function($) {
                 $field
                     .removeClass(that.has_error_class)
                     .closest(".value")
-                        .find(".t-error").remove();
+                        .find(".state-error-hint").remove();
             }
         });
     };
@@ -1165,7 +1134,7 @@ var EventEditDialog = ( function($) {
         }
 
         that.xhr = $.get(href, data, function(html) {
-            new TeamDialog({
+            $.waDialog({
                 html: html
             });
 
@@ -1175,6 +1144,16 @@ var EventEditDialog = ( function($) {
         });
     };
 
+    EventEditDialog.prototype.changeColors = function( ) {
+        let that = this,
+            {bg_color, font_color, status_bg_color, status_font_color} = that.calendars[that.calendar_id];
+
+        that.$calendarToggle.find('.t-selected-item').css({
+            'background-color': that.is_status ? status_bg_color : bg_color,
+            'color': that.is_status ? status_font_color : font_color,
+        });
+    }
+
     EventEditDialog.prototype.changeStatus = function( $toggle ) {
         var that = this,
             is_active = $toggle.hasClass(that.active_class);
@@ -1183,11 +1162,11 @@ var EventEditDialog = ( function($) {
             var status = $toggle.data("status-id");
 
             if (that.$activeStatusToggle) {
-                that.$activeStatusToggle.removeClass(that.active_class);
+                that.$activeStatusToggle.removeClass(that.active_class + ' ' + that.selected_class);
             }
 
             // Marking
-            $toggle.addClass(that.active_class);
+            $toggle.addClass(that.active_class + ' ' + that.selected_class);
             that.$activeStatusToggle = $toggle;
 
             that.$form.find('input[name="data[is_status]"]')
@@ -1208,18 +1187,15 @@ var EventEditDialog = ( function($) {
                 that.$wrapper.removeClass(event_class).addClass(status_class);
 
                 // For status is_allday always true
-                var $input = that.$form.find(".js-extended-date"),
-                    is_all_day = ( $input.attr("checked") == "checked" );
+                var $input = that.$form.find(".js-extended-date");
 
-                if (!is_all_day) {
+                if (!$input.prop("checked")) {
                     $input.click();
                 }
             }
 
             // Generate preview
             that.generateStatusTypes();
-            //
-            that.generatePreview();
 
             // Resize
             that.teamDialog.resize();
@@ -1234,30 +1210,37 @@ var EventEditDialog = ( function($) {
 
         if (!is_active && !that.is_locked) {
             that.is_locked = true;
+            const {bg_color, font_color, status_bg_color, status_font_color} = that.calendars[calendar_id],
+                name = $link.text(),
+                {prefix, icon} = $link.find('svg').data();
+
             //
             that.calendar_id = calendar_id;
             // unset selected
             that.$calendarToggle.find("." + that.selected_class).removeClass(that.selected_class);
             // set selection
-            that.$calendarToggle.find(".t-selected-item").html( $link.html() );
+            that.$calendarToggle.find(".t-selected-item")
+                .css({
+                    'background-color': that.is_status ? status_bg_color : bg_color,
+                    'color': that.is_status ? status_font_color : font_color
+                })
+                .html(`<i class="${prefix} fa-${icon}"></i><span class="custom-ml-8">${name}</span>`);
             // set data
-            that.$form.find('input[name="data[calendar_id]"]')
+            that.$form
+                .find('input[name="data[calendar_id]"]')
                 .val(calendar_id)
                 .trigger("change");
 
             // render
-            var $menu = that.$calendarToggle.find(".menu-v");
-            $menu.hide();
+            var $menu = that.$calendarToggle.find(".menu");
 
             setTimeout( function() {
-                $menu.removeAttr("style");
+                //$menu.removeAttr("style");
                 that.is_locked = false;
             }, 500);
 
             //
             that.generateStatusTypes();
-            //
-            that.generatePreview();
         }
     };
 
@@ -1269,18 +1252,22 @@ var EventEditDialog = ( function($) {
 
         if (!is_active && !that.is_locked) {
             that.is_locked = true;
+            const photo_url = $link.data('user-photo-url'),
+                name = $link.text();
             //
             that.user_id = user_id;
             // unset selected
             that.$userToggle.find("." + that.selected_class).removeClass(that.selected_class);
             // set selection
-            that.$userToggle.find(".t-selected-item").html( $link.html() );
+            that.$userToggle.find(".t-selected-item").html( `
+                <img src="${photo_url}" class="userpic userpic20">
+                <span class="custom-ml-8">${name}</span>` );
             // set data
             that.$form.find('input[name="data[contact_id]"]')
                 .val(user_id)
                 .trigger("change");
             // render
-            var $menu = that.$userToggle.find(".menu-v");
+            var $menu = that.$userToggle.find(".menu");
             $menu.hide();
 
             setTimeout( function() {
@@ -1288,7 +1275,6 @@ var EventEditDialog = ( function($) {
                 that.is_locked = false;
             }, 200);
 
-            that.generatePreview();
         }
     };
 
@@ -1426,7 +1412,7 @@ var EventEditDialog = ( function($) {
 
             function showErrors( errors ) {
                 // Remove old errors
-                that.$form.find(".t-error").remove();
+                that.$form.find(".state-error-hint").remove();
 
                 // Display new errors
                 $.each(errors, function(index, item) {
@@ -1434,7 +1420,7 @@ var EventEditDialog = ( function($) {
                     if ($field.length) {
                         $field
                             .addClass(that.has_error_class)
-                            .after('<span class="t-error">' + that.locales[item.locale] + '</span>')
+                            .after('<span class="state-error-hint">' + that.locales[item.locale] + '</span>')
                     }
                 });
             }
@@ -1450,37 +1436,9 @@ var EventEditDialog = ( function($) {
 
     EventEditDialog.prototype.dateToggle = function( $toggle ) {
         var that = this,
-            is_active = ( $toggle.attr("checked") == "checked" ),
             $dateFields = that.$form.find(".t-date-wrapper");
 
-        if (!is_active) {
-            $dateFields.addClass(that.extended_class);
-        } else {
-            $dateFields.removeClass(that.extended_class);
-        }
-    };
-
-    EventEditDialog.prototype.generatePreview = function() {
-        var that = this,
-            $preview = that.$wrapper.find(".t-preview-block");
-
-        var calendar = that.calendars[that.calendar_id],
-            bg_color = calendar["bg_color"],
-            font_color = calendar["font_color"];
-
-        var user = that.users[that.user_id],
-            $userIcon = user.$icon.clone(),
-            user_name = user.name;
-
-        var $type = $("<span class='t-type'>" + ( that.summary ? that.summary : that.locales.empty_type ) + "</span>").css({
-            "background": bg_color,
-            "color": font_color
-        });
-
-        $preview.html("")
-            .append($userIcon)
-            .append("<span class='t-user-name'>" + user_name + "</span>")
-            .append( $type );
+        $dateFields.toggleClass(that.extended_class, !$toggle.prop("checked"))
     };
 
     EventEditDialog.prototype.generateStatusTypes = function() {
@@ -1501,7 +1459,7 @@ var EventEditDialog = ( function($) {
                 $text = $templateItems.eq(0),
                 $field = $templateItems.eq(1);
 
-            var $list = $("<ul class='menu-v'></ul>"),
+            var $list = $("<ul></ul>"),
                 calendar = that.calendars[that.calendar_id];
 
             if (calendar.default_status) {
@@ -1548,7 +1506,7 @@ var EventEditDialog = ( function($) {
 
             $wrapper.on("change", "input:radio", function() {
                 var $input = $(this),
-                    is_checked = ( $input.attr("checked") == "checked" ),
+                    is_checked = $input.is(':checked'),
                     $text = $input.closest("li").find(".t-type"),
                     $textInput = $input.closest("li").find("input:text");
 
@@ -1562,8 +1520,6 @@ var EventEditDialog = ( function($) {
                     }
                     that.summary_type = $input.val();
                     that.$form.trigger("summaryChange");
-                    //
-                    that.generatePreview();
                 }
             });
 
@@ -1572,15 +1528,15 @@ var EventEditDialog = ( function($) {
 
                 // set active
                 var $radio = $input.closest("li").find("input:radio");
-                if ($radio.attr("checked") != "checked") {
-                    $radio.attr("checked", "checked").trigger("change");
+                if (!$radio.is(':checked')) {
+                    $radio.prop('checked', true).trigger("change");
                 }
 
                 if ( $input.hasClass( that.has_error_class ) ) {
                     $input
                         .removeClass(that.has_error_class)
                         .closest(".value")
-                        .find(".t-error").remove();
+                        .find(".state-error-hint").remove();
                 }
             });
 
@@ -1594,7 +1550,6 @@ var EventEditDialog = ( function($) {
                     that.summary = value;
                 }
 
-                that.generatePreview();
             });
 
         }
@@ -1670,50 +1625,10 @@ var EventEditDialog = ( function($) {
     EventEditDialog.prototype.close = function() {
         var that = this;
 
-        that.$wrapper.trigger("close");
+        that.teamDialog.close();
     };
 
     return EventEditDialog;
-
-    function getCalendarsArray($wrapper) {
-        var result = {};
-
-        $wrapper.find(".menu-v li").each( function() {
-            var $li = $(this),
-                $icon = $li.find(".userpic20"),
-                id = $li.data("calendar-id");
-
-            result[id] = {
-                id: id,
-                default_status: $li.data("default-status"),
-                name: $.trim( $("<div />").html( $li.text() ).text() ).toLowerCase(),
-                font_color: $icon.css("color"),
-                bg_color: $icon.css("background-color")
-            };
-
-        });
-
-        return result;
-    }
-
-    function getUsersArray($wrapper) {
-        var result = {};
-
-        $wrapper.find(".menu-v li").each( function() {
-            var $li = $(this),
-                $icon = $li.find(".userpic20"),
-                id = $li.data("user-id");
-
-            result[id] = {
-                id: id,
-                $icon: $icon,
-                name: $.trim( $("<div />").html( $li.text() ).text() )
-            };
-
-        });
-
-        return result;
-    }
 
 })(jQuery);
 
@@ -1725,7 +1640,7 @@ var EventViewDialog = ( function($) {
 
         // DOM
         that.$dialogWrapper = options["$wrapper"];
-        that.$wrapper = that.$dialogWrapper.find(".t-dialog-block");
+        that.$wrapper = that.$dialogWrapper.find(".dialog-body");
 
         // VARS
         that.event_id = options["event_id"];
@@ -1765,7 +1680,7 @@ var EventViewDialog = ( function($) {
 
             that.close();
 
-            var dialog = new TeamDialog({
+            var dialog = $.waDialog({
                 html: response
             });
             calendar.addDialog(dialog);
@@ -1775,7 +1690,7 @@ var EventViewDialog = ( function($) {
     EventViewDialog.prototype.close = function() {
         var that = this;
 
-        that.$wrapper.trigger("close");
+        that.$dialogWrapper.data('dialog').close();
     };
 
     return EventViewDialog;
@@ -1790,7 +1705,7 @@ var EventDeleteDialog = ( function($) {
 
         // DOM
         that.$wrapper = options["$wrapper"];
-        that.$block = that.$wrapper.find(".t-dialog-block");
+        that.$block = that.$wrapper.find(".dialog-body");
 
         // VARS
         that.event_id = options["event_id"];
@@ -1827,7 +1742,7 @@ var EventDeleteDialog = ( function($) {
                 if (response.data && response.data.message) {
                     alert(response.data.message);
                 }
-                that.$wrapper.trigger("close");
+                that.$wrapper.data('dialog').close();
                 $.team.calendar.reload();
             }
         });

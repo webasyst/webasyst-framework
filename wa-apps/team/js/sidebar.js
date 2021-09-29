@@ -18,10 +18,10 @@ var Sidebar = ( function($) {
             that.bottom_fix_class = "fixed-to-bottom";
 
             // DYNAMIC VARS
-            that.debug = false;
+            that.debug = true;
 
             // INIT
-            that.initClass();
+            //that.initClass();
         };
 
         ElasticBlock.prototype.log = function( string ) {
@@ -286,6 +286,7 @@ var Sidebar = ( function($) {
 
         // DOM
         that.$wrapper = options["$wrapper"];
+        that.$body = that.$wrapper.find('.sidebar-body');
         that.$groupsWrapper = that.$wrapper.find(".t-groups-list");
         that.$groups = that.$groupsWrapper.find("> li");
         that.$locationsWrapper = that.$wrapper.find(".t-locations-list");
@@ -359,7 +360,7 @@ var Sidebar = ( function($) {
             }
         });
 
-        $('#t-new-user-link').on('click', function(event) {
+        $('#t-new-user-link').off().on('click', function(event) {
             event.preventDefault();
             event.stopPropagation();
             that.showInviteDialog();
@@ -379,8 +380,8 @@ var Sidebar = ( function($) {
     Sidebar.prototype.setItem = function( $item ) {
         var that = this;
 
-        if (that.$activeMenuItem && that.$activeMenuItem[0] == $item[0]) {
-            return false;
+        if (that.$activeMenuItem && that.$activeMenuItem[0] === $item[0]) {
+            return;
         }
 
         if (that.$activeMenuItem) {
@@ -446,20 +447,24 @@ var Sidebar = ( function($) {
             that.xhr.abort();
         }
 
-        that.xhr = $.get(sidebar_uri, function(html) {
+        that.xhr = $.get(sidebar_uri, { is_reload: 1 }, function(html) {
             that.xhr = false;
-            that.$wrapper.replaceWith(html);
+            that.$body.replaceWith(html);
         });
     };
 
     Sidebar.prototype.showInviteDialog = function() {
         var that = this;
         if (!that.is_locked) {
-            that.is_locked = true;
-            $.get($.team.app_url + '?module=users&action=inviteform', function(response) {
-                that.is_locked = false;
-                new TeamDialog({
-                    html: response
+            $.get($.team.app_url + '?module=users&action=inviteform', function(html) {
+                $.waDialog({
+                    html,
+                    onOpen() {
+                        that.is_locked = true;
+                    },
+                    onClose() {
+                        that.is_locked = false;
+                    }
                 });
             });
         }
@@ -475,11 +480,13 @@ var Sidebar = ( function($) {
         if (!that.is_locked) {
             that.is_locked = true;
 
-            $.get(href, data, function (response) {
-                new TeamDialog({
-                    html: response
+            $.get(href, data, function (html) {
+                $.waDialog({
+                    html,
+                    onClose(){
+                        that.is_locked = false;
+                    }
                 });
-                that.is_locked = false;
             });
         }
     };
@@ -515,7 +522,7 @@ var Sidebar = ( function($) {
                 var $link = that.$wrapper.find('a[href="'+ href + '"]');
                 if ($link.length) {
                     var delta_count = new_count - old_count,
-                        $counter = $('<strong class="small highlighted t-indicator ' + ( (delta_count >= 0) ? 'is-green' : 'is-red' ) + '">' + delta_count + '</strong>');
+                        $counter = $('<strong class="badge yellow" style="height: 14px;">' + delta_count + '</strong>');
 
                     if (delta_count >= 0) {
                         $link.append( $counter );
@@ -826,6 +833,32 @@ var Sidebar = ( function($) {
 
         $.team.content.load( content_uri );
     };
+
+    Sidebar.prototype.setSelected = function(data) {
+        const that = this;
+
+        let $item;
+
+        switch(data.type) {
+            case 'invited':
+                $item = that.$body.find('[data-invited-item]');
+                break;
+
+            case 'inactive':
+                $item = that.$body.find('[data-inactive-item]');
+                break;
+
+            case 'search':
+                $item = that.$body.find('#all-users-sidebar-link');
+                break;
+
+            case 'group':
+                $item = that.$body.find(`[data-group-id="${data.groupId}"]`);
+                break;
+        }
+
+        that.setItem($($item));
+    }
 
     // TODO: delete it before release
     // Sidebar.prototype.setDemo = function() {

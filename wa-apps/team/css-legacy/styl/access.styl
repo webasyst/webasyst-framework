@@ -1,0 +1,280 @@
+$header_row_h = 80px
+$row_h = 60px
+$column_w = 115px
+$border_c = #f0f0f0
+
+.t-access-page
+    position relative
+    padding-top $header_row_h
+    border solid $border_c
+    border-width 1px 1px 0 1px
+    background #fff
+    user-select none
+
+    .t-elastic-header > .t-layout
+    & > .t-layout
+        table-layout fixed
+        border-bottom 1px solid $border_c
+
+        & > .t-column
+            &.left
+                width 225px;
+
+    .t-row
+        border-top 1px solid $border_c
+        height $row_h
+
+        &.t-header
+            height $header_row_h
+
+        &:first-child
+            border-top 0
+
+    .t-elastic-header
+        position absolute
+        top 0
+        left 0
+        width 100%
+        height $header_row_h
+        border solid $border_c
+        border-width 0 0 1px 0
+        box-sizing border-box
+        background #fff
+        overflow hidden
+
+        &.is-fixed
+            position fixed
+            border-width 0 1px 1px 1px
+
+        .t-toggle-wrapper
+            text-align center
+            line-height $header_row_h
+            white-space nowrap
+
+            .t-toggle-item
+                display inline-block
+                vertical-align middle
+                padding 6px $pad
+                border-radius 2px
+                line-height 1em
+
+
+                &.is-active
+                    background #e7e7e7
+                    color #666
+                    font-weight bold
+                    cursor default
+
+                    &:hover
+                        color #666 !important
+
+                    b
+                    i
+                        position static
+                        font-weight: bold;
+                        font-style: normal;
+                        border 0
+                        margin 0
+                        top: auto;
+
+    .t-users-wrapper
+        white-space nowrap
+
+        .t-user-name
+            $_line_h = 20px
+            display inline-block
+            padding ( ( $row_h - $_line_h )/2  ) $pad
+            line-height $_line_h
+
+            overflow hidden
+            text-overflow ellipsis
+            max-width 100%
+            box-sizing border-box
+
+            .icon16
+                position relative
+                top 3px
+                vertical-align baseline
+                margin 0 4px 0 0
+
+            .t-name
+                s
+                    color #aaa
+
+            .t-label
+                margin 0 0 0 4px
+                color #aaa
+
+    .t-access-wrapper
+    .t-header-apps
+        overflow hidden
+        position relative
+
+        &.type-1
+            .t-action
+                &.left
+                    display none
+                &.right
+                    display block
+
+        &.type-2
+            .t-action
+                &.left
+                    display block
+                &.right
+                    display block
+
+        &.type-3
+            .t-action
+                &.left
+                    display block
+                &.right
+                    display none
+
+        .t-action
+            display none
+
+            position absolute
+            top 0
+            width 75px
+            height 100%
+            background rgba(0,0,0,.8)
+            cursor pointer
+
+            &.left
+                left 0
+                background #fff
+                background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 25%, rgba(255,255,255,0) 100%);
+                border-left 1px solid $border_c
+
+            &.right
+                right 0
+                background #fff
+                background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 75%, rgba(255,255,255,1) 100%);
+
+    .t-header-apps
+        .t-action
+            $_icon_w = 20px
+            $_icon_h = 20px
+            $_icon_color = #aab5ba
+
+            &:after
+                content: "";
+                position: absolute;
+                top: ($header_row_h/2)
+                width: 0;
+                height: 0;
+                border solid transparent
+                border-width ($_icon_h/2) ($_icon_w/2)
+
+            &.left
+                &:after
+                    left 25%
+                    margin (-($_icon_h/2)) 0 0 (-($_icon_w * 3/4))
+                    border-right-color $_icon_color
+
+            &.right
+                &:after
+                    left 75%
+                    margin (-($_icon_h/2)) 0 0 (-($_icon_w/4))
+                    border-left-color $_icon_color
+
+        .t-apps-list
+            position relative
+            display table
+            width 100%
+            margin 0
+            border-left 1px solid $border_c
+            left 0
+            transition left 200ms linear
+
+            .t-app-column
+                display table-cell
+                vertical-align middle
+                border-left 1px solid $border_c
+
+                &:first-child
+                    border-left 0
+
+                .t-app-item
+                    display inline-block
+                    vertical-align top
+                    text-align center
+                    min-width 100%
+                    width $column_w
+
+                    .t-app-image
+                        max-width 32px
+                        height auto
+
+                    .t-app-name
+                        display block
+                        margin 4px 0 0
+                        font-size (12/$rem)em
+                        color #666
+
+    .t-access-wrapper
+        .t-access-slider
+            position relative
+            left 0
+            display table
+            width 100%
+            transition left 200ms linear
+
+            .t-access-table
+                width 100%
+                margin 0
+                border-left 1px solid $border_c
+
+                td
+                    border-left 1px solid $border_c
+
+                tr
+                    td:first-child
+                        border-left 0
+
+.t-access-status
+    min-width 100%
+    width $column_w
+    padding 0 $pad
+    box-sizing border-box
+
+    line-height $row_h
+    text-align center
+    color #bbb
+
+    white-space nowrap
+    text-overflow ellipsis
+    overflow hidden
+    max-width 100%
+    cursor pointer
+
+    .t-access-name
+        display none
+
+    &.type-no
+        .t-access-name.type-no
+            display inline
+
+    &.type-limited
+        background #e6fcda
+        color #888
+        .t-access-name.type-limited
+            display inline
+
+    &.type-full
+        background #c1eca9
+        color #666
+        .t-access-name.type-full
+            display inline
+
+    &.is-admin
+        text-align left
+        text-indent 12px
+
+    &
+    &.type-full
+    &.type-no
+    &.type-limited
+        &:hover
+            background: #ffc;

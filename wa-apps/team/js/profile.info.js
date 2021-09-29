@@ -1,40 +1,6 @@
 
 (function ($) {
 
-function scrollTo($dom, shift) {
-    if (typeof $dom === 'number') {
-        shift = $dom;
-    }
-
-    shift = shift || 0;
-    var offset_top = 0;
-
-    if ($dom && $dom.length) {
-        var offset = $dom.offset();
-        if (offset && offset.top) {
-            offset_top = offset.top;
-        }
-    }
-
-    var win = window,
-        parent = window.parent,
-        iframeShift = 0;
-
-    if (parent) {
-        $(parent.document).find('iframe').each(function() {
-            if (this.contentWindow == win) {
-                var offset = $(this).offset();
-                iframeShift = offset && offset.top ? offset.top : 0;
-            }
-        });
-    }
-
-    var top = Math.max(Math.floor(offset_top + shift + iframeShift), 0);
-
-    var $body = $( (parent || win).document ).find('html,body');
-    $body.stop().animate({ scrollTop: top }, 500);
-}
-
 /**
   * Base classs for all editor factory types, all editor factories and all editors.
   * Implements JS counterpart of contactsFieldEditor with no validation.
@@ -176,16 +142,16 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if (this.contactType === 'person') {
                     if (['firstname', 'middlename', 'lastname'].indexOf(this.fieldData.id) >= 0) {
                         cssClass = 'subname';
-                        inlineElement.find('.val').attr('placeholder', this.fieldData.name).attr('title', this.fieldData.name);
+                        inlineElement.find('.val').attr('placeholder', this.fieldData.name).attr('title', this.fieldData.name).addClass('small width-100-mobile');
                     } else if (this.fieldData.id === 'title') {
                         cssClass = 'subname title';
-                        inlineElement.find('.val').attr('placeholder', this.fieldData.name).attr('title', this.fieldData.name);
+                        inlineElement.find('.val').attr('placeholder', this.fieldData.name).attr('title', this.fieldData.name).addClass('small width-100-mobile');
                     } else if (this.fieldData.id === 'jobtitle') {
                         cssClass = 'jobtitle-company jobtitle';
-                        //inlineElement.find('.val').attr('placeholder', this.fieldData.name);
+                        inlineElement.find('.val').addClass('small width-100-mobile');
                     } else if (this.fieldData.id === 'company') {
                         cssClass = 'jobtitle-company company';
-                        //inlineElement.find('.val').attr('placeholder', this.fieldData.name);
+                        inlineElement.find('.val').addClass('small width-100-mobile');
                     }
                 } else if (this.fieldData.id === 'company') {
                     cssClass = 'company';
@@ -205,7 +171,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 var value = $.isPlainObject(this.fieldValue) ? this.fieldValue.value : this.fieldValue;
                 var result = null;
                 if (mode == 'edit') {
-                    result = $('<span><input class="val" type="text"></span>');
+                    result = $('<span class="width-100-mobile custom-mr-0-mobile"><input class="val small width-100-mobile" type="text"></span>');
                     result.find('.val').val(value);
                 } else {
                     result = $('<span class="val"></span>');
@@ -225,14 +191,16 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 }
 
                 var input = this.domElement.find('.val');
-                input.parents('.value').children('em.errormsg').remove();
+                input.parents('.value').children('.state-error-hint').remove();
 
                 if (errors !== null) {
-                    input.parents('.value').append($('<em class="errormsg">'+errors+'</em>'));
-                    input.addClass('error');
+                    input.parents('.value').append($('<p class="state-error-hint custom-mt-8">'+errors+'</p>'));
+                    input.addClass('state-error');
                 } else {
-                    input.removeClass('error');
+                    input.removeClass('state-error');
                 }
+
+                contactEditor.dialog.resize();
             },
 
             //
@@ -245,7 +213,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             fieldData: null,
 
             /** jQuery object that contains wrapping DOM element that currently
-              * represents this field in #contact-info-block. When not null,
+              * represents this field in contact info block. When not null,
               * always contains exactly one element, even if field is currently not visible. */
             domElement: null,
 
@@ -350,17 +318,17 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             var value = this.fieldValue;
             if (mode == 'edit') {
                 if (this.fieldData.input_height <= 1) {
-                    result = $('<span><input class="val" type="text"><i class="icon16 loading" style="display:none;"></i></span>');
+                    result = $('<span><input class="val small" type="text"><i class="fas fa-spinner fa-spin loading" style="display:none;"></i></span>');
                 } else {
-                    result = $('<span><textarea class="val" rows="'+this.fieldData.input_height+'"></textarea></span>');
+                    result = $('<span><textarea class="val small width-100" rows="'+this.fieldData.input_height+'"></textarea></span>');
                 }
                 result.find('.val').val(value);
             } else {
                 if (this.fieldData.input_height <= 1) {
-                    result = $('<span class="val"></span><i class="icon16 loading" style="display:none;">').text(value);
+                    result = $('<span class="val small"></span><i class="fas fa-spinner fa-spin loading" style="display:none;">').text(value);
                 } else {
                     var text = $.wa.encodeHTML(value || '').replace(/\n/g, '<br>');
-                    result = $('<span class="val"></span><i class="icon16 loading" style="display:none;">').html(text);
+                    result = $('<span class="val small"></span><i class="fas fa-spinner fa-spin loading" style="display:none;">').html(text);
                 }
             }
             return result;
@@ -406,7 +374,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             }
 
             if(mode == 'view') {
-                return $('<span class="val"></span>').text(this.fieldData.options[this.fieldValue] || this.fieldValue);
+                return $('<span class="val small"></span>').text(this.fieldData.options[this.fieldValue] || this.fieldValue);
             } else {
                 var options = '';
                 var selected = false, attrs;
@@ -435,8 +403,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
 
                     options += opt;
                 }
-                
-                return $('<div><select class="val '  + (this.fieldData.type + '').toLowerCase() + '"><option value=""'+(selected ? '' : ' selected')+'>'+this.notSet()+'</option>'+options+'</select></div>');
+
+                return $('<div class="wa-select small width-100-mobile"><select class="val '  + (this.fieldData.type + '').toLowerCase() + '"><option value=""'+(selected ? '' : ' selected')+'>'+this.notSet()+'</option>'+options+'</select></div>');
             }
         }
     });//}}}
@@ -548,7 +516,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
 
                     return $('<div></div>').append(input).append(select);
                 } else {
-                    return $('<div></div>').append($('<input type="text" class="val">').val(cond_field.fieldValue));
+                    return $('<div></div>').append($('<input type="text" class="val small width-100-mobile">').val(cond_field.fieldValue));
                 }
             }
         }
@@ -674,8 +642,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 } else {
                     // show as input
                     var result = $('<div></div>').append(contactEditor.baseFieldType.newInlineFieldElement.call(this, mode));
-                    
-                    result.find('.val').attr('placeholder', this.fieldData.name+(this.fieldData.required ? ' ('+$_('required')+')' : ''));
+
+                    result.find('.val').attr('placeholder', this.fieldData.name+(this.fieldData.required ? ' ('+$_('required')+')' : '')).addClass('small width-100-mobile');
                     return result;
                 }
             }
@@ -757,7 +725,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             var options = '';
             for(var i = 0; i<this.fieldData.oOrder.length; i++) {
                 id = this.fieldData.oOrder[i];
-                options += '<li><label><input type="checkbox" value="'+id+'"';
+                options += '<li><label><span class="wa-checkbox"><input type="checkbox" value="'+id+'"';
 
                 // Checkboxes for system categories are disabled
                 if (this.fieldData.disabled && this.fieldData.disabled[id]) {
@@ -768,9 +736,9 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     options += ' checked="checked"';
                 }
 
-                options += ' />'+((this.fieldData.options[id] && contactEditor.htmlentities(this.fieldData.options[id])) || $_('&lt;no name&gt;'))+'</label></li>';
+                options += ' /><span><span class="icon"><i class="fas fa-check"></i></span></span></span>'+((this.fieldData.options[id] && contactEditor.htmlentities(this.fieldData.options[id])) || $_('&lt;no name&gt;'))+'</label></li>';
             }
-            return contactEditor.initCheckboxList('<div class="c-checkbox-menu-container val"><div><ul class="menu-v compact with-icons c-checkbox-menu">'+options+'</ul></div></div>');
+            return contactEditor.initCheckboxList('<div class="c-checkbox-menu-container val"><div><ul class="menu c-checkbox-menu">'+options+'</ul></div></div>');
         }
     });//}}}
 
@@ -810,10 +778,11 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
         },
 
         validate: function(skipRequiredCheck) {
-            var val = this.getValue(true);
+            var that = this,
+                val = this.getValue(true);
             if (!skipRequiredCheck && this.fieldData.required && !val) {
                 // If all name parts are empy then set firstname to be value of the first visible non-empty input:text
-                var newfname = $('#contact-info-block input:visible:text[value]:not(.empty)').val();
+                var newfname = $('#' + that.options.el +  ' input:visible:text[value]:not(.empty)').val();
                 if (!newfname) {
                     return $_('At least one of these fields must be filled');
                 }
@@ -823,10 +792,11 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
         },
 
         showValidationErrors: function(errors) {
-            var el = $('#contact-info-block');
+            var that = this,
+                el = $('#' + that.options.el);
             el.find('div.wa-errors-block').remove();
             if (errors !== null) {
-                var err = $('<div class="field wa-errors-block"><div class="value"><em class="errormsg">'+errors+'</em></div></div>');
+                var err = $('<div class="field wa-errors-block"><div class="value"><p class="state-error-hint custom-mt-8">'+errors+'</p></div></div>');
                 if (contactEditor.fieldEditors.lastname) {
                     contactEditor.fieldEditors.lastname.domElement.after(err);
                 } else {
@@ -838,9 +808,9 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 var df = a[i];
                 if (contactEditor.fieldEditors[df]) {
                     if (errors !== null) {
-                        contactEditor.fieldEditors[df].domElement.find('.val').addClass('external-error');
+                        contactEditor.fieldEditors[df].domElement.find('.val').addClass('state-error');
                     } else {
-                        contactEditor.fieldEditors[df].domElement.find('.val').removeClass('external-error');
+                        contactEditor.fieldEditors[df].domElement.find('.val').removeClass('state-error');
                     }
                 }
             }
@@ -1062,7 +1032,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
         deleteSubfieldButton: function(sf) {
             var that = this;
 
-            var r = $('<a class="delete-subfield hint" href="javascript:void(0)">'+$_('delete')+'</a>').click(function() {
+            var r = $('<a class="delete-subfield text-red custom-mt-8 custom-mt-0-mobile" title="'+$_('delete')+'" href="javascript:void(0)"><i class="fas fa-trash-alt icon size-14"></i></a>').click(function() {
                 if (that.subfieldEditors.length <= 1) {
                     return false;
                 }
@@ -1171,10 +1141,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
 
             sf.domElement = value;
             sf.domElement.data('multifield-index', i).attr('data-multifield-index', i);
-            var result = $('<div class="value"></div>').append(value);
+            var result = $('<div class="value flexbox space-12 wrap-mobile"></div>').append(value);
             var rwe = result.find('.replace-with-ext');
             if (rwe.size() <= 0) {
-                result.append('<span><span class="replace-with-ext"></span></span>');
+                result.append('<span class="wide flexbox space-12 wrap-mobile custom-mt-12-mobile"><span class="replace-with-ext"></span></span>');
                 rwe = result.find('.replace-with-ext');
             }
 
@@ -1188,7 +1158,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     if (rwe.parents('.ext').size() > 0) {
                         rwe.before(contactEditor.htmlentities(ext));
                     } else {
-                        rwe.before($('<em class="hint"></em>').text(' '+ext));
+                        rwe.before($('<span class="hint" style="align-self: flex-end; margin-top: -.75rem;"></span>').text(' '+ext));
                     }
                 }
             }
@@ -1222,7 +1192,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 result.data('subfieldEditor', this.subfieldEditors[i]);
 
                 if (mode === 'edit') {
-                    result.prepend('<i class="icon16 sort sort-handler"></i>');
+                    result.prepend('<span class="sort sort-handler custom-mr-16 custom-mt-8 custom-mt-0-mobile"><i class="fas fa-grip-vertical text-light-gray"></i></span>');
                 }
                 childWrapper.append(result);
                 allEmpty = allEmpty && this.subfieldEditors[i].parentEditorData.empty;
@@ -1237,7 +1207,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             // Wrap over for all subfields to be in separate div
             var wrapper;
             if (inlineMode) {
-                wrapper = $('<div></div>').append(childWrapper);
+                wrapper = $('<div class="value"></div>').append(childWrapper);
             } else {
                 wrapper = $('<div class="field" data-field-id="'+this.fieldData.id+'"></div>').append(childWrapper);
             }
@@ -1252,7 +1222,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 }
                 var that = this;
                 adder.find('.replace-me-with-value').replaceWith(
-                    $('<a href="javascript:void(0)" class="small inline-link"><b><i>'+$_('Add another')+'</i></b></a>').click(function (e) {
+                    $('<a href="javascript:void(0)" class="button rounded outlined small light-gray custom-mb-16"><i class="fas fa-plus"></i> '+$_('Add another')+'</a>').click(function (e) {
                         var newLast = that.subfieldFactory.createEditor(this.contactType);
                         var index = that.subfieldEditors.length;
 
@@ -1272,11 +1242,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
 
                         var $value = that.newSubFieldElement(mode, index);
                         $value.data('subfieldEditor', that.subfieldEditors[index]);
-                        $value.prepend('<i class="icon16 sort sort-handler"></i>');
+                        $value.prepend('<span class="sort sort-handler custom-mr-16 custom-mt-8 custom-mt-0-mobile"><i class="fas fa-grip-vertical text-light-gray"></i></span>');
 
                         childWrapper.append($value);
-
-                        that.domElement.find('.delete-subfield').css('display', 'inline');
+                        contactEditor.dialog.resize();
                     })
                 );
                 wrapper.append(adder);
@@ -1284,22 +1253,17 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 // init sortable
                 if (this.fieldData.multi && $.fn.sortable) {
                     wrapper.find('.multifield-subfields').sortable({
-                        'distance': 5,
-                        'opacity': 0.75,
-                        'axis': 'y',
-                        'tolerance': 'pointer',
-                        'items': '> .value, > .field-composite-subfields-block',
-                        'handle': '.sort-handler',
-                        'cursor': 'move',
-                        'update': function(event, ui) {
-                            var $item = ui.item,
-                                $multifield_subfields_block = $item.closest('.multifield-subfields');
+                        direction: 'vertical',
+                        handle: '.sort-handler',
+                        animation: 150,
+                        onEnd(event) {
+                            let $item = $(event.item),
+                                $multifield_subfields_block = $item.closest('.multifield-subfields'),
+                                new_index = 0;
 
-                            var new_index = 0;
                             $multifield_subfields_block.find('[data-multifield-index]').each(function() {
-                                var $item = $(this),
-                                    editor = $item.parent().data('subfieldEditor');
-                                that.subfieldEditors[new_index] = editor;
+                                let $item = $(this);
+                                that.subfieldEditors[new_index] = $item.parent().data('subfieldEditor');
                                 $item.data('subfieldIndex', new_index).attr('data-multifield-index', new_index);
                                 new_index++;
                             });
@@ -1565,8 +1529,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             }
 
             // remove old errors
-            this.domElement.find('em.errormsg').remove();
-            this.domElement.find('.val').removeClass('error');
+            this.domElement.find('.state-error-hint').remove();
+            this.domElement.find('.val').removeClass('state-error');
 
             if (!errors) {
                 return;
@@ -1578,8 +1542,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if (typeof errors[sfid] == 'undefined') {
                     continue;
                 }
-                var input = sf.domElement.find('.val').addClass('error');
-                input.parents('.address-subfield').append($('<em class="errormsg">'+errors[sfid]+'</em>'));
+                var input = sf.domElement.find('.val').addClass('state-error');
+                input.parents('.address-subfield').append($('<p class="state-error-hint custom-mt-8">'+errors[sfid]+'</p>'));
             }
         },
 
@@ -1601,18 +1565,18 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                         map_url = this.fieldValue.for_map.with_street;
                     }
                 }
-                result = $('<div class="address-field"></div>')
+                result = $('<div class="address-field width-100-mobile"></div>')
                     //.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
-                    .append(this.fieldValue.value)
+                    .append('<span class="small">'+this.fieldValue.value+'</span>')
                     .append('<span style="display:none" class="replace-with-ext"></span> ')
-                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="small map-link">' + $_('map') + '</a>');
+                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="map-link small">' + $_('map') + '</a>');
                 return result;
             }
 
             //
             // edit mode
             //
-            var wrapper = $('<div class="address-field"></div>');
+            var wrapper = $('<div class="address-field width-100-mobile"></div>');
             wrapper.append('<span style="display:none" class="replace-with-ext"></span>');
 
 
@@ -1622,11 +1586,15 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 var sf = this.subfieldEditors[sfid];
                 var element = sf.newInlineFieldElement('edit');
                 sf.domElement = element;
-                wrapper.append($('<div class="address-subfield"></div>').append(element));
+                if (sf.fieldData.type !== 'Hidden') {
+                    wrapper.append($('<div class="address-subfield custom-mt-12"></div>').append(element));
+                } else {
+                    wrapper.append($('<div class="address-subfield"></div>').append(element));
+                }
                 if (sf.fieldData.type !== 'Hidden') {
                     //$.wa.defaultInputValue(element.find('input.val'), sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
                     var placeholder_text = sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : '');
-                    element.find('input.val,textarea.val').attr('placeholder', placeholder_text).attr('title', placeholder_text);
+                    element.find('input.val,textarea.val').attr('placeholder', placeholder_text).attr('title', placeholder_text).addClass('small width-100-mobile');
                 }
             }
             return wrapper;
@@ -1645,17 +1613,22 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             var data = this.fieldValue.data || {};
             var that = this;
             if (mode == 'edit') {
-                var day_html = $('<select class="val" data-part="day"><option data=""></option></select>');
-                for (var d = 1; d <= 31; d += 1) {
-                    var o = $('<option data="' + d + '" value="' + d + '">' + d + '</option>');
-                    if (d == data["day"]) {
-                        o.attr('selected', true);
-                    }
-                    day_html.append(o);
-                }
+                var day_html = $('<div class="wa-select small"></div>');
 
-                var month_html = $('<select class="val" data-part="month"><option data=""></option></select>');
-                var months = [
+                const day_select = $('<select class="val" data-part="day"><option data=""></option></select>');
+                const days = [...Array(32).keys()].slice(1);
+                for (let day of days) {
+                    const option = $('<option data="' + day + '" value="' + day + '">' + day + '</option>');
+                    if (day === +data['day']) {
+                        option.attr('selected', true);
+                    }
+                    day_select.append(option);
+                }
+                day_html.append(day_select);
+
+                const month_html = $('<div class="wa-select small"></div>');
+                const month_select = $('<select class="val" data-part="month"><option data=""></option></select>');
+                const months = [
                     'January',
                     'February',
                     'March',
@@ -1669,16 +1642,18 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     'November',
                     'December'
                 ];
-                for (var m = 0; m < 12; m += 1) {
-                    var v = $_(months[m]);
-                    var o = $('<option data="' + (m + 1) + '"  value="' + (m + 1) + '">' + v + '</option>');
-                    if ((m + 1) == data["month"]) {
-                        o.attr('selected', true);
+                for (let [index, month] of months.entries()) {
+                    const monthIndex = index + 1;
+                    const monthName = $_(months[index]);
+                    const option = $('<option data="' + monthIndex + '" value="' + monthIndex + '">' + monthName + '</option>');
+                    if (monthIndex === +data['month']) {
+                        option.attr('selected', true);
                     }
-                    month_html.append(o);
+                    month_select.append(option);
                 }
+                month_html.append(month_select);
 
-                var year_html = $('<input type="text" data-part="year" class="val" style="min-width: 32px; width: 32px;" placeholder="' + $_('year') + '">');
+                var year_html = $('<input type="text" data-part="year" class="val small" style="min-width: 54px; width: 54px;" placeholder="' + $_('year') + '">');
                 if (data['year']) {
                     year_html.val(data['year']);
                 }
@@ -1689,7 +1664,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                         append(' ').
                         append(year_html);
             } else {
-                result = $('<span class="val"></span>').text(this.fieldValue.value);
+                result = $('<span class="val small"></span>').text(this.fieldValue.value);
             }
             return result;
         },
@@ -1854,10 +1829,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             }
             var result = null;
             if (mode == 'edit') {
-                result = $('<span><input class="val" type="text"></span>');
+                result = $('<span class="width-100-mobile custom-mr-0-mobile"><input class="val small width-100-mobile" type="text"></span>');
                 result.find('.val').val(this.fieldValue);
             } else {
-                result = $('<span class="val"></span>').html(this.viewValue);
+                result = $('<span class="val small"></span>').html(this.viewValue);
             }
             return result;
         }
@@ -1893,10 +1868,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             }
             var result = null;
             if (mode == 'edit') {
-                result = $('<span><input class="val" type="text"></span>');
+                result = $('<span class="width-100-mobile custom-mr-0-mobile"><input class="val small width-100-mobile" type="text"></span>');
                 result.find('.val').val(this.fieldValue);
             } else {
-                result = $('<span class="val"></span>').html(this.viewValue);
+                result = $('<span class="val small"></span>').html(this.viewValue);
             }
             return result;
         }
@@ -1973,7 +1948,16 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
         newInlineFieldElement: function(mode) {
             var result = null;
             if (mode == 'edit') {
-                result = $('<span><input class="val" type="checkbox" value="1" checked="checked"></span>');
+                result = $(`<label>
+                    <span class="wa-checkbox">
+                        <input class="val" type="checkbox" value="1" checked="checked">
+                        <span>
+                            <span class="icon">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </span>
+                    </span>
+                </label>`);
                 if (!this.fieldValue) {
                     result.find('.val').removeAttr('checked');
                 }
@@ -2014,8 +1998,9 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
         saveUrl: '?module=profile&action=save', // URL to send data when saving contact
         saveGeocoordsUrl: '?module=contacts&action=saveGeocoords',  // URL to send data when saving geocoords
         regionsUrl: '?module=backend&action=regions&country=',      // URL get load regions by country
-        el: '#contact-info-block',
-        update_title: true
+        el: '#contact-info-block',  // default contact info block
+        update_title: true,
+        dialog: {}
     }, options);
 
 
@@ -2130,7 +2115,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
 
         },
 
-        /** Empty #contact-info-block and add editors there in given mode.
+        /** Empty info block and add editors there in given mode.
           * this.editorFactories and this.fieldEditors must already be initialized. */
         initContactInfoBlock: function (mode) {
             this.switchMode(mode, true);
@@ -2151,15 +2136,15 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
         /** Switch mode for all editors */
         switchMode: function (mode, init) {
             var el = $(this.el);
-            var self = this;
+            var that = this;
             if (init) {
                 el.html('');
                 el.removeClass('edit-mode view-mode');
                 el.off('click.map', '.map-link').on('click.map', '.map-link', function() {
                     var i = $(this).parent().data('multifield-index');
                     if (i !== undefined) {
-                        var fieldValue = self.fieldEditors.address.fieldValue;
-                        self.geocodeAddress(fieldValue, i);
+                        var fieldValue = that.fieldEditors.address.fieldValue;
+                        that.geocodeAddress(fieldValue, i);
                     }
                 });
             }
@@ -2173,7 +2158,9 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             $(this).trigger('before_switch_mode', [mode, this]);
 
             // Remove all buttons
-            el.find('div.field.buttons').remove();
+            el.find('.buttons').remove();
+
+
 
             // Update DOM for all fields
             var fieldsToUpdate = [];
@@ -2196,15 +2183,13 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 }
             }
 
-            var that = this;
             // Editor buttons
             if(mode == 'edit') {
                 el.addClass('edit-mode');
                 el.removeClass('view-mode');
-                $('#edit-contact-link').hide();
 
-                el.find('.subname').wrapAll('<div class="subname-wrapper"></div>');
-                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper"></div>');
+                el.find('.subname').wrapAll('<div class="subname-wrapper fields-group custom-mt-0"></div>');
+                el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper fields-group"></div>');
 
                 // Save/cancel buttons
                 var buttons = this.inplaceEditorButtons(fieldsToUpdate, function(noValidationErrors) {
@@ -2223,25 +2208,21 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
 
                     that.switchMode('view');
-                    scrollTo(0); // !!! scroll in parent window too?..
                     return false;
                 }, function() {
+                    that.dialog.close();
                     that.switchMode('view');
-                    scrollTo(0);
                 });
-                if (that.contact_id === null) {
-                    buttons.find('.cancel, .or').remove();
-                }
-                el.append(buttons);
 
-                setTimeout( function() {
-                    //initStickyButtons( el.find('.buttons') );
-                }, 666);
+                if (that.contact_id === null) {
+                    buttons.find('.cancel').remove();
+                }
+
+                that.dialog.$body.find('.dialog-footer').append(buttons);
 
             } else {
                 el.addClass('view-mode');
                 el.removeClass('edit-mode');
-                $('#edit-contact-link').show();
                 if (el.find('.subname-wrapper').length) {
                     el.find('.subname').unwrap();
                 }
@@ -2251,37 +2232,6 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             }
 
             $(this).trigger('after_switch_mode', [mode, this]);
-
-            function initStickyButtons( $block ) {
-                // VARS
-                var root = window.parent,
-                    active_class = "is-sticky",
-                    block_o = $block.offset(),
-                    block_h = $block.outerHeight();
-
-                // INIT
-                window.profileTab.initScrollWatcher( $block, onScroll);
-
-                root.setTimeout( function() {
-                    $(root).trigger("scroll");
-                }, 666);
-
-                function onScroll(data) {
-                    if (data.bottom <= block_h) {
-                        $block
-                            .addClass(active_class)
-                            .css("top", -(block_o.top) );
-                    } else if (data.bottom < block_o.top + block_h) {
-                        $block
-                            .addClass(active_class)
-                            .css("top", data.bottom - block_o.top - block_h);
-                    } else {
-                        $block
-                            .removeClass(active_class)
-                            .removeAttr("style");
-                    }
-                }
-            }
         },
 
         /** Save all modified editors, reload data from php and switch back to view mode. */
@@ -2316,7 +2266,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             }
 
             if (validationErrors) {
-                scrollTo(validationErrors, -100);
+                //scrollTo(validationErrors, -100);
                 callback(false);
                 return;
             }
@@ -2394,7 +2344,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                     }
 
                     if (validationErrors) {
-                        scrollTo(validationErrors, -100);
+                        //scrollTo(validationErrors, -100);
                         return;
                     } else if (that.contact_id && newData.data.reload) {
                         if (window.profileTab) {
@@ -2503,13 +2453,13 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             var input;
             if (custom) {
                 optString += '<option value="%custom" selected="selected">'+$_('other')+'...</option>';
-                input = '<input type="text" class="small ext">';
+                input = '<input type="text" class="shorter small ext width-100-mobile custom-mt-12-mobile">';
             } else {
                 optString += '<option value="%custom">'+$_('other')+'...</option>';
-                input = '<input type="text" class="small empty ext">';
+                input = '<input type="text" class="shorter small empty ext width-100-mobile custom-mt-12-mobile">';
             }
 
-            var result = $('<span><select class="ext">'+optString+'</select><span>'+input+'</span></span>');
+            var result = $('<div class="wa-select small width-100-mobile custom-mr-12 custom-mr-0-mobile"><select class="ext">'+optString+'</select></div><span class="width-100-mobile custom-mr-12 custom-mr-0-mobile">'+input+'</span>');
             var select = result.children('select');
             input = result.find('input');
             input.val(defValue);
@@ -2568,7 +2518,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
           * @param saveCallback function save handler. One boolean parameter: true if success, false if validation errors occured
           * @param cancelCallback function cancel button handler. If not specified, then saveCallback() is called with no parameter. */
         inplaceEditorButtons: function(fieldIds, saveCallback, cancelCallback) {
-            var buttons = $('<div class="field buttons"><div class="value submit"><em class="errormsg" id="validation-notice"></em></div></div>');
+            var buttons = $('<div class="field buttons"><div class="value"><p class="state-error-hint custom-mt-8" id="validation-notice"></p></div></div>');
             //
             // Save button and save on enter in input fields
             //
@@ -2590,13 +2540,13 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             });
 
             // Submit when user clicks save button
-            var saveBtn = $('<input type="submit" class="button green" value="'+$_('Save')+'" />').click(saveHandler);
+            var saveBtn = $('<input type="submit" class="button" value="'+$_('Save')+'" />').click(saveHandler);
 
             //
             // Cancel link
             //
             var that = this;
-            var cancelBtn = $('<a href="javascript:void(0)" class="cancel">'+$_('cancel')+'</a>').click(function(e) {
+            var cancelBtn = $('<a href="javascript:void(0)" class="cancel button light-gray js-close-dialog">'+$_('Cancel')+'</a>').click(function(e) {
                 $('.buttons .loading').hide();
                 if (typeof cancelCallback != 'function') {
                     saveCallback();
@@ -2605,20 +2555,23 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 }
                 // remove topmost validation errors
                 that.fieldEditors.name.showValidationErrors(null);
-                scrollTo(0);
+                //scrollTo(0);
                 return false;
             });
-            buttons.children('div.value.submit')
+            buttons.children('.value')
                 .append(saveBtn)
-                .append('<span class="or"> '+$_('or')+' </span>')
                 .append(cancelBtn)
-                .append($('<i class="icon16 loading" style="margin-left: 16px; display: none;"></i>'));
+                .append($('<i class="fas fa-spinner fa-spin loading custom-ml-16" style="display: none;"></i>'));
 
             return buttons;
         },
 
         destroy: function() {
             $(this.el).html('');
+        },
+
+        dialogInstance: function(dialog_instance) {
+            this.dialog = dialog_instance;
         },
 
         // UTILITIES
@@ -2639,7 +2592,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             }
 
             if (typeof value != 'object' || !(value instanceof jQuery) || value.find('div.value').size() <= 0) {
-                value = $('<div class="value"></div>').append(value);
+                value = $('<div class="value custom-mb-12"></div>').append(value);
             }
             result.append(value);
             return result;
@@ -2800,9 +2753,9 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             var updateStatus = function(i, cb) {
                 var self = $(cb || this);
                 if (self.is(':checked')) {
-                    self.parent().addClass('highlighted');
+                    self.parent().addClass('access-highlighted');
                 } else {
-                    self.parent().removeClass('highlighted');
+                    self.parent().removeClass('access-highlighted');
                 }
             };
 

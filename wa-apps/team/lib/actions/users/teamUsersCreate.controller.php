@@ -24,7 +24,7 @@ class teamUsersCreateController extends teamUsersNewUserController
         }
 
         $credentials = $this->getCredentials();
-        $error = $this->validateCredentials($credentials, $contact_info['id']);
+        $error = $this->validateCredentials($credentials, $contact_info ? $contact_info['id'] : 0);
         if ($error) {
             $this->errors[] = $error;
             return;

@@ -9,6 +9,8 @@ var Profile = ( function($) {
         that.$tabs = that.$wrapper.find(".t-profile-tabs");
         that.$tabContentPlace = that.$wrapper.find(".t-dynamic-content");
         that.$calendarPlace = that.$wrapper.find(".t-calendar-place");
+        that.$profile_header_links = that.$wrapper.find('.t-profile-actions-btn');
+        that.$profile_sidebar = that.$wrapper.find('.t-profile-sidebar');
 
         // VARS
         that.api_enabled = ( window.history && window.history.pushState );
@@ -16,7 +18,7 @@ var Profile = ( function($) {
         that.photo_dialog_url = options.photo_dialog_url;
         that.is_own_profile = options.is_own_profile || false;
         that.wa_app_url = options.wa_app_url || '';
-        that.backend_url = options.backend_url || '';
+        that.wa_backend_url = options.wa_backend_url || '';
         that.wa_url = options.wa_url || '';
         that.wa_version = options.wa_version || '';
         that.webasyst_id_auth_url = options.webasyst_id_auth_url || '';
@@ -25,9 +27,98 @@ var Profile = ( function($) {
         that.is_locked = false;
         that.xhr = false;
         that.dialogs = [];
+        that.$calendar_wrapper = null;
+        that.sidebar_drawer = null;
 
         // INIT
         that.initClass();
+        that.initEditor(options.editor || {});
+    };
+
+    Profile.prototype.initEditor = function (editor_data) {
+        if ($.isEmptyObject(editor_data) || $.isEmptyObject(editor_data.options) || $.isEmptyObject(editor_data.data)) {
+            return;
+        }
+
+        const that = this;
+
+        $.storage = new $.store();
+
+        // init editor options
+        $.each(editor_data.options || {}, function (key, value) {
+            $.wa.contactEditor[key] = value;
+        })
+
+        if (that.is_own_profile){
+            $.wa.contactEditor.wa_app_url = that.wa_backend_url;
+        }else{
+            $.wa.contactEditor.wa_app_url = that.wa_app_url;
+        }
+
+        $.wa.contactEditor.wa_backend_url = that.wa_backend_url;
+
+        $.wa.contactEditor.initFactories(editor_data.data.contactFields, editor_data.data.contactFieldsOrder);
+        $.wa.contactEditor.resetFieldEditors();
+        $.wa.contactEditor.initFieldEditors(editor_data.data.fieldValues);
+
+        // initially set to 'view' mode
+        $.wa.contactEditor.initContactInfoBlock('view');
+
+        if (that.is_own_profile || !editor_data.data.fieldValues.timezone){
+            // If user timezone setting is 'Auto', use JS to set timezone.
+            $.wa.determineTimezone(that.wa_url);
+        }
+
+        // Edit contact data
+        const dialog_template = `<div class="dialog t-edit-profile">
+            <div class="dialog-background"></div>
+            <div class="dialog-body" style="width: 800px;">
+            <h3 class="dialog-header">${ $_('Contact info') }</h3>
+                <div class="dialog-content fields"></div>
+                <div class="dialog-footer"></div>
+            </div>
+        </div>`;
+
+        that.$profile_header_links.on('click', '.edit-link', function() {
+            const $user_info = $('.js-user-info')
+            let $contact_info_block;
+            $.waDialog({
+                html: dialog_template,
+                onOpen($dialog, dialog){
+                    $.wa.contactEditor.dialogInstance(dialog);
+                    $.wa.contactEditor.switchMode('edit');
+                    $contact_info_block = $('#contact-info-block').detach()
+                    $dialog.find('.dialog-content').append($contact_info_block)
+                    dialog.resize()
+                    $($.wa.contactEditor).on('contact_saved', function(evt, data) {
+                        that.$wrapper.find('.js-username').text(data.name);
+                        that.$wrapper.find('.js-jobtitle-editable').text(data.jobtitle);
+                        let $details_item_email = that.$wrapper.find('.details-item.email'),
+                            $details_item_phone = that.$wrapper.find('.details-item.phone')
+
+                        data.email.forEach(function(email, i){
+                            $details_item_email.eq(i).html(`<a href="mailto:${ email.data }"><i class="fas fa-envelope"></i> ${ email.data }</a><span class="hint">${ email.ext }</span>`)
+                        })
+
+                        data.phone.forEach(function(phone, i){
+                            $details_item_phone.eq(i).html(`<a href="tel:${ phone.value }"><i class="fas fa-phone-alt"></i> ${ phone.value }</a><span class="hint">${ phone.ext }</span>`)
+                        })
+
+                        if (data && data.timezone === '') {
+                            // If user has just changed their timezone setting to 'Auto',
+                            // determine timezone via JS.
+                            $.wa.determineTimezone(that.wa_url);
+                        }
+                        dialog.close();
+                    });
+                },
+                onClose(){
+                    $user_info.empty().append($contact_info_block )
+                    $.wa.contactEditor.switchMode('view', true);
+                }
+            })
+        });
+
     };
 
     Profile.prototype.initClass = function() {
@@ -44,7 +135,7 @@ var Profile = ( function($) {
         new ProfileWebasystID({
             is_own_profile: that.is_own_profile,
             user: that.user,
-            backend_url: that.backend_url,
+            backend_url: that.wa_backend_url,
             wa_url: that.wa_url,
             wa_version: that.wa_version,
             webasyst_id_auth_url: that.webasyst_id_auth_url
@@ -64,7 +155,12 @@ var Profile = ( function($) {
             that.calendarToggle( $(this) );
         });
 
-        that.$calendarPlace.on("click", ".js-show-outer-calendar-manager", function(event) {
+        that.$wrapper.find('.js-sidebar-calendar').on("click", ".js-show-outer-calendar-manager", function(event) {
+            event.stopPropagation();
+            that.showOuterDialogDialog();
+        });
+
+        $(document).on("click", ".t-profile-drawer .js-show-outer-calendar-manager", function(event) {
             event.stopPropagation();
             that.showOuterDialogDialog();
         });
@@ -75,82 +171,79 @@ var Profile = ( function($) {
         });
 
         // Open photo editor when user clicks on "Change photo" link
-        that.$wrapper.find('.photo-change-link a').click(function() {
-            $('#contact-photo-crop-dialog').remove();
-            $('<div id="contact-photo-crop-dialog">')
-                .appendTo(that.$wrapper)
-                .waDialog({
-                    'class': 'large',
-                    url: that.photo_dialog_url,
-                    onLoad: function(d) {
-                        /* move buttons where appropriate */
-                        var $dialog = $(this);
-                        $dialog.find('.dialog-buttons-gradient').append($dialog.find('.dialog-content-indent .buttons'));
-                    }
+        that.$wrapper.find('.js-change-photo').on('click', function() {
+            let $wrapper = $('#contact-photo-crop-dialog');
+
+            if (!$wrapper.length) {
+                $wrapper = $('<div class="dialog" id="contact-photo-crop-dialog"/>');
+                $("body").append($wrapper);
+            }
+
+            $wrapper.load(that.photo_dialog_url, function () {
+                $.waDialog({
+                    $wrapper
+                })
+            })
+        });
+
+        that.$profile_header_links.on('click', '.delete-link', function() {
+            $.team.confirmContactDelete([that.user.id]);
+        });
+
+        $('.js-edit-groups').on('click', function(){
+            that.$wrapper.on('dialog_opened', function(e, dialog) {
+                    dialog.$content.find('.t-profile-section-iframe').on('section_content_loaded', function () {
+                        const $iframe = dialog.$content.find('.t-profile-section-iframe > iframe');
+                        if($iframe.length) {
+                            $iframe[0].contentWindow.$('#form-customize-groups', $iframe[0].contentWindow.body).show();
+                        }
+                    });
                 });
+            that.showSidebarDialog($('.js-sidebar-profile-dialog[data-section-id="access"]').data());
         });
 
-        var $profile_header_links = that.$wrapper.find('.profile-header-links');
-        $profile_header_links.on('click', '.edit-link', function() {
-            that.switchToTab('info', function($iframe) {
-                return typeof $iframe[0].contentWindow.$.wa.contactEditor.switchMode === 'function';
-            }).then(function($iframe) {
-                $iframe[0].contentWindow.$.wa.contactEditor.switchMode('edit');
-            });
-        });
-        $profile_header_links.on('click', '.delete-link', function() {
-            var $icon = $(this).find('i');
-            if ($icon.is('.loading')) {
-                return;
-            }
-            $icon.toggleClass('delete loading');
-            $.team.confirmContactDelete([that.user.id], {
-                onInit: function() {
-                    $icon.toggleClass('delete loading');
-                },
-                onDelete: function() {
-                    $.team.content.load($.team.app_url);
-                }
-            });
+        that.$wrapper.find('.js-profile-user-slider').one('click', function() {
+            $(this).animate({
+                height: '375px'
+            },function () {
+                $(this).removeClass('cursor-pointer');
+            })
         });
 
-        // When data in Contact Info tab is saved, update the block above calendar
-        var $profile_tabs_iframes = that.$wrapper.find('.t-profile-tabs-iframes');
-        var $contact_info_top = $('#contact-info-top');
-        $profile_tabs_iframes.on('contact_saved', function(evt, data) {
-            // Name, title, company, job title
-            var $wrapper = $contact_info_top.closest('.t-profile-page');
-            var $h1 = $wrapper.find('.profile .details h1').first();
-            $h1.children('.contact-name:first').text(data.name);
-            $h1.children('.title:first').text(data.title);
+        that.$wrapper.find('.js-userpic').one('click', function() {
 
-            var $work = $h1.closest('.details').find('.jobtitle-company');
-            $work.children('.company').text(data.company);
-            $work.children('.title').text(data.jobtitle);
-        });
-        $profile_tabs_iframes.on('top_fields_updated', function(evt, top) {
-            // common fields like email, phone and im
-            var html = '';
-            for (var j = 0; j < top.length; j++) {
-                var f = top[j];
-                var icon = f.id != 'im' ? (f.icon ? '<i class="icon16 ' + f.id + '"></i>' : '') : '';
-                html += '<li>' + icon + f.value + '</li>';
-            }
-            $contact_info_top.html(html);
         });
 
-        // customize groups link after list of groups in header
-        $('#header-customize-groups-link').click(function(){
-            that.switchToTab('access', function($iframe) {
-                return typeof $iframe[0].contentWindow.ProfileAccessTab === 'function';
-            }).then(function($iframe) {
-                if ($iframe[0].contentWindow.$('#form-customize-groups', $iframe[0].contentWindow.body).is(':not(:visible)')) {
-                    $iframe[0].contentWindow.$('#open-customize-groups', $iframe[0].contentWindow.body).click();
-                }
-            });
+        that.$wrapper.find('.js-toggle-user-info').on("click", function(event) {
+            event.preventDefault();
+            $(this).find('svg').toggleClass('fa-caret-down fa-caret-up')
+            that.$wrapper.find('.js-user-info').toggleClass('hidden')
+        });
+
+        that.$profile_sidebar.on("click", '.js-sidebar-profile-dialog', function(event) {
+            event.preventDefault();
+            // send all data-* attributes to controller
+            that.showSidebarDialog(this.dataset);
+        });
+
+        $(document).on("click", '.t-profile-drawer .js-sidebar-profile-dialog', function(event) {
+            event.preventDefault();
+            // send all data-* attributes to controller
+            that.showSidebarDialog(this.dataset);
+        });
+
+        that.$wrapper.find(".js-show-drawer").on("click", function (event) {
+            event.preventDefault();
+            that.showSidebarDrawer();
         });
     };
 
+    /**
+     * @deprecated
+     * @param tab_id
+     * @param testCallback
+     * @returns {any}
+     */
     Profile.prototype.switchToTab = function(tab_id, testCallback) {
 
         var $iframes_wrapper = this.$wrapper.find('.t-profile-tabs-iframes');
@@ -164,7 +257,7 @@ var Profile = ( function($) {
         } else {
             $tab_a.click();
         }
-        
+
         // Animate scroll to tabs
         if ($tab_a.length) {
             $('html, body').animate({
@@ -195,6 +288,10 @@ var Profile = ( function($) {
         }
     };
 
+    /**
+     * @deprecated
+     * @param $link
+     */
     Profile.prototype.changeTab = function( $link ) {
 
         if (this.api_enabled) {
@@ -245,10 +342,9 @@ var Profile = ( function($) {
         }
 
         function load() {
-            $.post(href, data, function(response) {
-                new TeamDialog({
-                    html: response,
-                    onRefresh: load
+            $.post(href, data, function(html) {
+                $.waDialog({
+                    html
                 });
             }).always( function() {
                 that.is_locked = false;
@@ -300,6 +396,84 @@ var Profile = ( function($) {
                     }
                 }
             });
+        }
+    };
+
+    Profile.prototype.showSidebarDialog = function (options) {
+        const that = this,
+            href = "?module=profile&action=sidebarDialog",
+            $profile_sidebar_body = $('.js-profile-sidebar-body');
+        let is_params_error = false;
+
+        options.userId = that.user.id
+
+        if (!that.is_locked) {
+            that.is_locked = true;
+
+            if(!options.sectionId || !options.userId) {
+                is_params_error = true;
+            }
+
+            const html = `
+                <div class="dialog t-sidebar-profile-dialog">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
+                        <h3 class="dialog-header">${options.dialogHeader.replace(/(<([^>]+)>)/gi, '') || ''}</h3>
+                        <div class="dialog-content wide"></div>
+                        <div class="dialog-footer custom-mt-auto">
+                            <button type="button" class="button light-gray js-close-dialog">${is_params_error ? 'Ok' : $_('Close')}</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $.waDialog({
+                html,
+                onOpen($dialog, dialog) {
+                    dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
+                    $.post(href, options, function (content) {
+                        if(options.sectionId === 'calendar'){
+                            if(!that.$calendar_wrapper) {
+                                that.$calendar_wrapper = $profile_sidebar_body.find('.js-calendar-html > .t-calendar-wrapper').detach();
+                            }
+                            dialog.$content.empty().append(that.$calendar_wrapper)
+                            dialog.resize();
+                        }else{
+                            dialog.$content.empty().html(content);
+                            that.$wrapper.trigger('dialog_opened', dialog);
+                            const $section_iframe = $dialog.find(`.t-profile-section-iframe`);
+                            if($section_iframe.length) {
+                                $section_iframe.data('dialog', dialog);
+                            }
+                        }
+                    });
+                    that.is_locked = false;
+                }
+            });
+        }
+    };
+
+    Profile.prototype.showSidebarDrawer = function (is_init = false) {
+        const that = this;
+        if (!that.sidebar_drawer) {
+            that.sidebar_drawer = $.waDrawer({
+                $wrapper: $('.js-profile-sidebar-drawer'),
+                lock_body_scroll: !is_init,
+                onClose() {
+                    this.hide()
+                    return false;
+                }
+            });
+            if (is_init) {
+                setTimeout(() => {
+                    that.sidebar_drawer.close();
+                }, 100)
+            }
+        }else{
+            let wrapper_style = that.sidebar_drawer.$wrapper[0].style;
+            wrapper_style.removeProperty('z-index')
+            wrapper_style.removeProperty('opacity')
+            that.sidebar_drawer.show();
         }
     };
 
@@ -429,10 +603,11 @@ var OutsideCalendarsDialog = ( function($) {
 
         // DOM
         that.$dialogWrapper = options["$wrapper"];
-        that.$wrapper = that.$dialogWrapper.find(".t-dialog-block");
-        that.$form = that.$wrapper.find("form");
+        that.$wrapper = that.$dialogWrapper.find(".dialog-body");
+        that.$form = that.$wrapper;
 
         // VARS
+        that.dialog = that.$dialogWrapper.data('dialog');
 
         // DYNAMIC VARS
         that.is_locked = false;
@@ -458,7 +633,7 @@ var OutsideCalendarsDialog = ( function($) {
         that.$wrapper.find(".js-add-external-calendar").on("click", function(event) {
             event.preventDefault();
             //
-            that.close();
+            that.dialog.close();
             //
             var content_uri = $(this).attr("href");
             if (content_uri) {
@@ -468,25 +643,19 @@ var OutsideCalendarsDialog = ( function($) {
     };
 
     OutsideCalendarsDialog.prototype.deleteExternalCalendar = function (id) {
-        $.get('?module=calendarExternal&action=DeleteConfirm', {
-            id : id
-        }, function (html) {
-            new TeamDialog({
-                html: html,
-                onOpen: function ($dialog) {
-                    $dialog.bind('afterDelete', function () {
+        var that = this;
+        $.get('?module=calendarExternal&action=DeleteConfirm', { id }, function (html) {
+            $.waDialog({
+                html,
+                onOpen($dialog, dialog) {
+                    $dialog.on('afterDelete', () => {
                         $.team.content.reload();
+                        that.dialog.close();
+                        dialog.close();
                     });
-
                 }
             });
         });
-    };
-
-    OutsideCalendarsDialog.prototype.close = function() {
-        var that = this;
-
-        that.$wrapper.trigger("close");
     };
 
     return OutsideCalendarsDialog;

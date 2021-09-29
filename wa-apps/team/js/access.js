@@ -206,11 +206,9 @@ var AccessPage = ( function($) {
 
             var set_fixed = ( scroll_top > that.wrapper_offset.top );
             if (set_fixed) {
-
                 that.$header
                     .addClass(that.fixed_class)
                     .css({
-                        top: 0,
                         left: that.wrapper_offset.left,
                         width: that.header_w
                     });
@@ -339,7 +337,7 @@ var AccessPage = ( function($) {
         var that = this,
             $activeUser = false,
             $activeApp = false,
-            hover_class = "highlighted";
+            hover_class = "access-highlighted";
 
         that.$wrapper.on("mouseenter", ".t-access-status", function() {
             render( $(this) );
@@ -397,18 +395,18 @@ window.AccessDialog = ( function($) {
 
         // DOM
         that.$dialogWrapper = options["$wrapper"];
-        that.$wrapper = that.$dialogWrapper.find(".t-dialog-block");
+        that.$wrapper = that.$dialogWrapper.find(".dialog-body");
         that.$limitedContent = that.$wrapper.find(".t-limited-access-form");
 
         //
-        that.active_class = "is-active";
-        that.disabled_class = "is-disabled";
+        that.active_class = "selected";
+        that.disabled_class = "disabled";
 
         // VARS
         that.wa_app_url = options["wa_app_url"];
         that.app_id = options["app_id"];
         that.contact_id = options["contact_id"];
-        that.teamDialog = ( that.$dialogWrapper.data("teamDialog") || false );
+        that.teamDialog = ( that.$dialogWrapper.data("dialog") || false );
         that.noticeToggle = getNoticeToggle( that.$wrapper );
 
         // DYNAMIC VARS
@@ -427,25 +425,30 @@ window.AccessDialog = ( function($) {
     };
 
     AccessDialog.prototype.bindEvents = function() {
-        var that = this;
+        var that = this,
+        $access_list = that.$wrapper.find('.t-access-list');
 
         // Do stuff when user clicks on no access/limited/full access buttons
         that.$wrapper.on("click", ".t-access-item", function() {
-            var $item = $(this),
-                is_active = $item.hasClass(that.active_class),
-                is_disabled = $item.hasClass(that.disabled_class);
 
-            if ( !(that.is_locked || is_active || is_disabled) ) {
-                that.changeTab( $item );
-
-                if (that.teamDialog) {
-                    that.teamDialog.resize();
-                }
-            } else if (is_disabled) {
-                alert($item.data('reason-disabled'));
-            }
         });
 
+        $access_list.waToggle({
+            use_animation: false,
+            change: function(event, target) {
+                const $item = $(target),
+                    is_disabled = $item.hasClass(that.disabled_class);
+
+                if ( !is_disabled ) {
+                    that.changeTab( $item );
+                    if (that.teamDialog) {
+                        that.teamDialog.resize();
+                    }
+                } else if (is_disabled) {
+                    alert($item.data('reason-disabled'));
+                }
+            }
+        });
         // Submit
         that.$wrapper.on("click","input[type=\"submit\"]", function(event) {
             event.stopPropagation();
@@ -456,33 +459,17 @@ window.AccessDialog = ( function($) {
     AccessDialog.prototype.changeTab = function( $link ) {
         var that = this,
             access_id = $link.data("access-id"),
-            $limitedContent = that.$limitedContent;
+            $limitedContent = that.$limitedContent,
+            $access_hint = that.$wrapper.find(".js-access");
 
-        // unmark old selected item
-        if (that.$activeTab.length) {
-            that.$activeTab.removeClass(that.active_class);
-        }
-
-        // mark this link
-        $link.addClass(that.active_class);
         that.$activeTab = $link;
 
-        that.$wrapper.find(".t-hint").hide();
-        if (access_id == "no") {
-            that.$wrapper.find(".t-hint.js-access-no").show();
-
-        } else if (access_id == "full") {
-            that.$wrapper.find(".t-hint.js-access-full").show();
-        }
+        $access_hint.addClass('hidden').filter(`.${access_id}`).removeClass('hidden');
 
         // limited
         if (that.$limitedContent.length) {
-            if (access_id == 'limited') {
-                // "Limited" status is not saved right away. User can either press "Save" or "cancel"
-                $limitedContent.show();
-            } else {
-                $limitedContent.hide();
-            }
+            // "Limited" status is not saved right away. User can either press "Save" or "cancel"
+            $limitedContent.toggleClass('hidden', !(access_id === 'limited'));
         }
     };
 
@@ -621,21 +608,21 @@ window.ProfileAccessTab = function(o) { "use strict";
     function initWebasystIDHelpLink() {
         $('.js-webasyst-id-help-link').on('click', function (e) {
             e.preventDefault();
-            window.top.$('body').trigger('wa_waid_help_link');
+            $('body').trigger('wa_waid_help_link');
         });
     }
 
     function initWebasystIDAuth() {
         $('.js-webasyst-id-auth').on('click', function (e) {
             e.preventDefault();
-            window.top.$('body').trigger('wa_webasyst_id_auth');
+            $('body').trigger('wa_webasyst_id_auth');
         });
     }
-    
+
     function initWebasystIDUnbindAuth() {
         $('.js-webasyst-id-unbind-auth').on('click', function (e) {
             e.preventDefault();
-            window.top.$('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth', {id: contact_id});
+            $('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth', {id: contact_id});
         });
     }
 
@@ -694,19 +681,20 @@ window.ProfileAccessTab = function(o) { "use strict";
         });
         $form.submit(function() {
             var form = $(this);
-            form.find('.errormsg').remove();
+            form.find('.state-error-hint').remove();
             form.find('.loading').show();
             $.post(form.attr('action'), form.serialize(), function(response) {
                 if (response.status == 'ok') {
                     try {
                         window.parent.$.team.sidebar.reload();
+                        window.parent.$.team.content.reload();
                     } catch (e) {
                     }
                     if (window.hasOwnProperty("profileTab")) {
                         window.profileTab.reload();
                     }
                 } else if (response.status == 'fail') {
-                    form.find('.c-checkbox-menu-container').after($('<em class="errormsg">'+response.errors.join('<br />')+'</em>'));
+                    form.find('.c-checkbox-menu-container').after($('<span class="state-error-hint">'+response.errors.join('<br />')+'</span>'));
                 }
             }, 'json');
             return false;
@@ -721,9 +709,9 @@ window.ProfileAccessTab = function(o) { "use strict";
             function updateStatus(i, cb) {
                 var self = $(cb || this);
                 if (self.prop('checked')) {
-                    self.parent().addClass('highlighted');
+                    self.parent().addClass('access-highlighted');
                 } else {
-                    self.parent().removeClass('highlighted');
+                    self.parent().removeClass('access-highlighted');
                 }
             }
         }
@@ -1214,7 +1202,7 @@ window.showAccessDialog = function($access, app_id, contact_id, is_attach, is_fr
             }
         }
 
-        new TeamDialog(options);
+        $.waDialog(options);
     });
 
 };//}}}

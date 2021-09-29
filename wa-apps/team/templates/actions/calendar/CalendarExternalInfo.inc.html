@@ -16,7 +16,7 @@
         <div class="profile image32px">
             <div class="image">
                 <a href="{$_user_link}">
-                    <img class="userpic" src="{$calendar.owner->getPhoto('32')}">
+                    <img class="userpic userpic32" src="{$calendar.owner->getPhoto('32')}">
                 </a>
             </div>
             <div class="details">
@@ -28,11 +28,11 @@
     {/if}
 
     <div class="line">
-        <span class="t-date">{$calendar.create_datetime|wa_date:'humandatetime'}</span>
+        <span class="hint">{$calendar.create_datetime|wa_date:'humandatetime'}</span>
     </div>
 
     <div class="line">
-        <i class="icon16 kill-wa-style t-plugin-icon" style="background-image: url('{$calendar.plugin.icon}');"></i>
+        <i class="icon custom-mr-8" style="background-image: url('{$calendar.plugin.icon}');"></i>
 
         <span class="t-name">{$calendar.name|escape}</span>
 
@@ -86,10 +86,10 @@
                         };
 
                         $.get(href, data, function(html) {
-                            new TeamDialog({
-                                html: html,
-                                onOpen: function($dialog) {
-                                    $dialog.on("afterDelete", function () {
+                            new $.waDialog({
+                                html,
+                                onOpen($dialog, dialog) {
+                                    $dialog.on('afterDelete', () => {
                                         var content_uri = "{$wa_app_url}calendar/external/";
                                         $.team.content.load(content_uri);
                                     });

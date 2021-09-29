@@ -1,0 +1,55 @@
+{strip}
+
+{$_is_admin = $wa->user()->isAdmin($wa->app())}
+{$_has_rights = teamHelper::hasRights()}
+{$_can_drag = ( $_is_admin || $_has_rights )}
+
+{if !empty($contacts)}
+    <ul class="thumbs li150px t-users-list" id="t-users-list">
+        {foreach $contacts as $user}
+            {$_title = waUser::getNameAndStatus($user)}
+            {$_user_uri = "`$wa_app_url`id/`$user.id`/"}
+            {if !empty($user.login) && $user.login != $_title}
+                {$_l = urlencode($user.login)|escape}
+                {$_user_uri = "`$wa_app_url`u/`$_l`/"}
+            {/if}
+
+            <li class="t-user-wrapper {if $user.is_user >= 1}js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
+                <div class="t-user-block">
+                    <div class="t-userpic-wrapper">
+                        <a href="{$_user_uri}">
+                            <img class="t-userpic" src="{$user.photo_url_144}">
+                        </a>
+                    </div>
+                    <h5 class="t-name">
+                        <a href="{$_user_uri}">{$_title}</a>
+                    </h5>
+                    {if !empty($user.jobtitle)}
+                        <div class="t-job">{$user.jobtitle|escape}</div>
+                    {/if}
+
+                    <div class="t-login">
+                        {if !empty($user.login) && $user.login != waUser::formatName($user)}
+                            {$user.login|escape}
+                        {else if !empty($user.name) && $user.name != waUser::formatName($user)}
+                            {$user.name|escape}
+                        {/if}
+                    </div>
+                </div>
+            </li>
+        {/foreach}
+    </ul>
+
+    {if $_can_drag}
+        <script>
+            ( function($) {
+                var $list = $("#t-users-list").removeAttr("id");
+                new UserList({
+                    $wrapper: $list
+                });
+            })(jQuery);
+        </script>
+    {/if}
+{/if}
+
+{/strip}

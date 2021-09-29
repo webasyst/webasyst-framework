@@ -1,0 +1,184 @@
+{strip}
+
+{$_selected_calendar = $all_calendars[$event.calendar_id]}
+
+<div class="t-dialog-wrapper is-full-screen t-event-popup" id="t-event-view">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <header class="t-dialog-header">
+            <div class="t-status-toggle">
+                <span class="t-toggle-button {if !$event.is_status}is-active{else}is-inactive{/if}" data-status-id="0">
+                    <span class="t-name">[`Event`]</span>
+                </span>
+                <span class="t-toggle-button {if $event.is_status}is-active{else}is-inactive{/if}" data-status-id="1">
+                    <span class="t-name">[`Status`]</span>
+                </span>
+            </div>
+        </header>
+
+        <div class="t-dialog-content">
+            <div class="t-event-form">
+
+                {* CALENDAR *}
+                <div class="field">
+                    <div class="name">
+                        [`Calendar`]
+                    </div>
+                    <div class="value">
+
+                        <div class="t-calendar-name">
+                            <i class="icon16 userpic20" style="{if !empty($_selected_calendar.bg_color)}background: {$_selected_calendar.bg_color};{/if}"></i>
+                            <span class="t-name">{$_selected_calendar.name|escape}</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                {if $user}
+                    {* USER *}
+                    <div class="field">
+                        <div class="name">
+                            [`User`]
+                        </div>
+                        <div class="value">
+
+                            <div class="t-user-name">
+                                <i class="icon16 userpic20" style="background-image: url({$user.photo_url_16});"></i>
+                                <span class="t-name">{$user.name|escape}</span>
+                            </div>
+
+                        </div>
+                    </div>
+                {/if}
+
+                {* NAME *}
+                <div class="field">
+                    <div class="name">
+                        [`Event`]
+                    </div>
+                    <div class="value">
+
+                        <div class="t-event-name">{$event.summary|escape}</div>
+
+                    </div>
+                </div>
+
+                {* DESCRIPTION *}
+                {if !empty($event.description)}
+                    <div class="field">
+                        <div class="name">
+                            [`Description`]
+                        </div>
+                        <div class="value">
+
+                            <div class="t-description">{$event.description|escape|nl2br}</div>
+
+                        </div>
+                    </div>
+                {/if}
+
+                {* LOCATION *}
+                {if !empty($event.location)}
+                    <div class="field">
+                        <div class="name">
+                            [`Location`]
+                        </div>
+                        <div class="value">
+
+                            <div class="t-location">{$event.location|escape}</div>
+
+                        </div>
+                    </div>
+                {/if}
+
+                {if empty($event.is_allday)}
+                    {$event_start = waDateTime::format('humandatetime', $event.start)}
+                    {$event_end = waDateTime::format('humandatetime', $event.end)}
+                {else}
+                    {$event_start = teamHelper::date($event.start, 'humandate')}
+                    {$event_end = teamHelper::date($event.end, 'humandate')}
+                {/if}
+
+                {* START *}
+                <div class="field">
+                    <div class="name">
+                        {if $event_start != $event_end}
+                            [`Start`]
+                        {else}
+                            [`When`]
+                        {/if}
+                    </div>
+                    <div class="value">
+                        <div class="t-date">
+                            {$event_start}
+                        </div>
+                    </div>
+                </div>
+
+                {* END *}
+                {if $event_start != $event_end}
+                    <div class="field">
+                        <div class="name">
+                            [`End`]
+                        </div>
+                        <div class="value">
+                            <div class="t-date">
+                                {$event_end}
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+
+                {if !empty($event.external_calendar_info)}
+                    <div class="field">
+                        <div class="name">
+                            [`Source`]
+                        </div>
+                        <div class="value">
+                            <div class="t-source-wrapper">
+                                <div class="line">
+                                    {if !empty($event.external_calendar_info.plugin.icon)}
+                                        <i class="icon16 kill-wa-style t-plugin-icon" style="background-image: url('{$event.external_calendar_info.plugin.icon}');" title="{$event.external_calendar_info.plugin.name|escape}"></i>
+                                    {/if}
+                                    {$event.external_calendar_info.name|escape}
+                                </div>
+                                <div class="line hint">
+                                    {$event.external_calendar_info.plugin.account_info_html}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {/if}
+            </div>
+        </div>
+
+        <footer class="t-dialog-footer">
+            <div class="t-actions">
+
+                <div class="t-layout">
+                    <div class="t-column left">
+                        {if $can_edit}
+                            <input class="button gray js-edit-event" type="button" value="[`Edit`]">
+                            <span style="margin: 0 4px;">[`or`]</span>
+                        {/if}
+                        <a class="js-close-dialog" href="javascript:void(0);">[`close`]</a>
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+
+    {if $can_edit}
+        <script>
+            ( function($) {
+                new EventViewDialog({
+                    $wrapper: $("#t-event-view"),
+                    event_id: "{$event.id}"
+                });
+            })(jQuery);
+        </script>
+    {/if}
+</div>
+
+{/strip}

@@ -18,6 +18,6 @@ class teamScheduleAction extends teamContentViewAction
             'period_start'         => $period_start,
             'context'              => $context,
         ));
-        $this->view->assign(teamCalendar::getHtml($user_id, $calendar_id, $period_start, $period));
+        $this->view->assign(teamCalendar::getHtml($user_id, $calendar_id, $period_start, (bool)$period));
     }
 }

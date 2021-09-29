@@ -1,76 +1,80 @@
 {strip}
-
-<div class="block shadowed t-settings-page" id="t-settings-page">
-    {* HEADER *}
-    <header class="t-content-header">
+<div class="article content hide-scrollbar t-settings-page box" id="t-settings-page">
+    <div class="article-body">
+        {* HEADER *}
         <h1>[`Settings`]</h1>
-    </header>
-
-    {* CONTENT *}
-    <div class="t-content-body">
-        <div class="field">
-            <div class="name">[`Calendars`]</div>
-            <div class="value">
-
-                <div class="t-calendar-settings" id="t-calendar-settings">
-                    <ul class="menu-v with-icons t-calendar-list">
-                        {foreach $calendars as $_calendar}
-                            <li class="t-calendar-item" data-id="{$_calendar.id}">
-                                <span class="t-toggle">
-                                    <i class="icon16 sort"></i>
+        {* CONTENT *}
+        <h4 class="custom-mb-8">[`Календари статусов и событий`]</h4>
+        <ul class="unstyled t-calendar-list t-calendar-settings" id="t-calendar-settings">
+            {foreach $calendars as $_calendar}
+                <li class="t-calendar-item flexbox middle bordered-bottom wrap" data-id="{$_calendar.id}">
+                    <span class="t-toggle custom-mr-16">
+                        <i class="fas fa-grip-vertical text-light-gray"></i>
+                    </span>
+                    <div class="badges-wrapper flexbox middle wrap">
+                        <span class="badge user js-badge-preview is-event" style="background-color:{$_calendar.bg_color};color:{$_calendar.font_color};">
+                            <i class="{$_calendar.icon|default:'fas fa-calendar-alt'|escape}"></i>
+                            &nbsp;<span>{$_calendar.name|default:'[`Событие`]'|escape}</span>
+                        </span>
+                        <span class="badge user js-badge-preview is-status" style="background-color:{$_calendar.status_bg_color};color:{$_calendar.status_font_color};">
+                            <i class="{$_calendar.icon|default:'fas fa-calendar-alt'|escape}"></i>
+                            &nbsp;<span>{$_calendar.name|default:'[`Статус`]'|escape}</span>
+                        </span>
+                        {if $_calendar.is_limited == 1}
+                            <span class="count">
+                                <span class="hint">
+                                    <i class="fas fa-lock fa-w-14 t-lock"></i>
                                 </span>
-                                <a class="t-name js-edit-calendar" href="javascript:void(0);">
-                                    <i class="t-userpic icon16 {if !empty($_calendar.icon_class)}{$_calendar.icon_class}{elseif !empty($_calendar.bg_color)}userpic20{/if}" style="{if !empty($_calendar.bg_color) && empty($_calendar.icon_class)}background: {$_calendar.bg_color};{/if}"></i>
-                                    {$_calendar.name|escape}
-                                </a>
-                                {if $_calendar.is_limited == 1}
-                                    <i class="t-lock icon16 lock"></i>
-                                {/if}
-                            </li>
-                        {/foreach}
-                    </ul>
-
-                    <div class="t-actions">
-                        <a class="t-add-calendar-link js-add-calendar" href="javascript:void(0);">
-                            <i class="icon16 add"></i>
-                            [`Add calendar`]
-                        </a>
+                            </span>
+                        {/if}
                     </div>
-                </div>
+                    <button type="button" class="button text-gray nobutton small js-edit-calendar custom-ml-auto">
+                        <i class="fas fa-pen"></i>
+                        &nbsp;<span class="desktop-only">[`Редактировать`]</span>
+                    </button>
+                </li>
+            {/foreach}
+            <li class="t-actions custom-py-24">
+                <button type="button" class="button rounded outlined small js-add-calendar">
+                    <i class="fas fa-plus"></i>&nbsp;
+                    [`Add calendar`]
+                </button>
+            </li>
+        </ul>
 
-            </div>
-        </div>
-
-        <form method="post">
-            <div class="t-form-wrapper">
-                <div class="field">
-                    <div class="name">[`User name format`]</div>
-                    <div class="value">
-
-                        <ul class="menu-v compact t-names-toggle" id="t-names-toggle">
-                            {foreach $user_name_formats as $format}
-                                <li class="t-item-wrapper">
-                                    <label>
-                                        <input class="t-input" type="radio" name="data[user_name_format]" value="{$format.format}"
-                                               {if $format.selected}checked="checked"{/if} {if $format.disabled}disabled="disabled"{/if}>
-                                        <span class="t-name {if $format.disabled}gray{/if}">{$format.name|escape}</span>
-                                    </label>
-                                </li>
-                            {/foreach}
-                        </ul>
-
-                    </div>
-                </div>
-            </div>
-
-            <div class="field buttons">
-                <div class="value">
-                    <input class="button green" type="submit" value="[`Save`]">
-                </div>
-            </div>
+        <h4 class="custom-mb-12">[`User name format`]</h4>
+        <form method="post" class="fields" id="calendar_settings">
+            <ul class="unstyled t-names-toggle" id="t-names-toggle">
+                {foreach $user_name_formats as $format}
+                    <li class="t-item-wrapper small custom-my-8">
+                        <label>
+                            <span class="wa-radio">
+                                <input class="t-input" type="radio" name="data[user_name_format]" value="{$format.format}"
+                                       {if $format.selected}checked="checked"{/if} {if $format.disabled}disabled="disabled"{/if}>
+                                <span></span>
+                            </span>&nbsp;
+                            <span class="t-name {if $format.disabled}gray{/if}">{$format.name|escape}</span>
+                        </label>
+                    </li>
+                {/foreach}
+            </ul>
+            {$wa->csrf()}
         </form>
-    </div>
 
+        <h4 class="custom-mb-8">[`Карта в профиле пользователя`]</h4>
+        <p class="small">
+            {$_settings_map = "`$wa_url`webasyst/webasyst/settings/maps/"}
+            {sprintf('[`<a href="%s">Настройте ключи картографических сервисов</a>, если в профиле пользователей не отображается онлайн-карта основного адреса.`]',$_settings_map)}
+        </p>
+    </div>
+</div>
+<div class="bottombar sticky bordered-top flexbox middle space-16 box">
+    <div class="article width-100">
+        <div class="article-body custom-py-0">
+            <button type="submit" form="calendar_settings" class="button">[`Save`]</button>
+        </div>
+    </div>
+</div>
     {* JS *}
     <script>
         ( function($) {
@@ -84,6 +88,4 @@
             $.team.setTitle("[`Settings`]");
         })(jQuery);
     </script>
-</div>
-
 {/strip}

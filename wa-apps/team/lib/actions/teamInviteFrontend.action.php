@@ -116,7 +116,11 @@ class teamInviteFrontendAction extends waViewAction
             'webasyst_id_auth_url' => $this->getWebasystIDAuthUrl(),
             'token_link' => $token_link
         ));
-        $this->setTemplate('templates/actions/invite/InviteFrontend.html');
+        if(wa()->whichUI() === '1.3') {
+            $this->setTemplate('templates/actions-legacy/invite/InviteFrontend.html');
+        }else{
+            $this->setTemplate('templates/actions/invite/InviteFrontend.html');
+        }
     }
 
     protected function forceWebasystIDAuth()

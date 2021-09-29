@@ -1,0 +1,314 @@
+{$container_id = uniqid('t-external-calendar-create')}
+{$external_calendars_count = count($external_calendars)}
+{$title = '[`Connect external calendar`]'}
+
+{$_calendars = []}
+{foreach $inner_calendars as $_c}
+    {if !empty($_c.can_edit)}
+        {$_calendars[] = $_c}
+    {/if}
+{/foreach}
+{$_selected_calendar = reset($_calendars)}
+{if empty($_selected_calendar)}
+    {$_selected_calendar = [
+        "id" => "",
+        "name" => "[`Empty`]",
+        "bg_color" => "#f0f0f0"
+    ]}
+{/if}
+
+
+<div class="block t-edit-external-calendar-page t-external-calendar-create" id="{$container_id}">
+    <h1>{$title}</h1>
+    <form>
+
+        <div class="line">
+            {if !empty($calendar.plugin.icon)}
+                <i class="icon16 t-plugin-icon" style="background-image: url('{$calendar.plugin.icon}');"></i>
+            {/if}
+            <span class="t-name">{$calendar.plugin.name|escape}</span>
+        </div>
+        <div class="line">
+            <span class="t-date">{$calendar.create_datetime|wa_date:'humandatetime'}</span>
+        </div>
+        <div class="line">
+            <div class="t-html">{$calendar.plugin.account_info_html}</div>
+        </div>
+
+        <div class="fields form" style="float: none;">
+
+            <div class="field">
+                <div class="name">
+                    [`Inner calendars`]
+                </div>
+                <div class="value">
+
+                    <ul class="menu-h dropdown t-calendar-toggle">
+                        <li>
+                            <a class="t-selected-item inline-link" href="javascript:void(0);">
+                                <i class="icon16 userpic20 {if !empty($_selected_calendar.icon_class)}{$_selected_calendar.icon_class}{/if}" style="{if !empty($_selected_calendar.bg_color)}background: {$_selected_calendar.bg_color};{/if}{if !empty($_selected_calendar.font_color)}color: {$_selected_calendar.font_color};{/if}"></i>
+                                <b><i>{$_selected_calendar.name|escape}</i></b>
+                            </a>
+                            {if !empty($_calendars)}
+                                <ul class="menu-v with-icons">
+                                    {foreach $_calendars as $_c}
+                                        <li class="{if $_c.id == $_selected_calendar.id}selected{/if}" data-calendar-id="{$_c.id}">
+                                            <a href="javascript:void(0);">
+                                                <i class="icon16 userpic20 {if !empty($_c.icon_class)}{$_c.icon_class}{/if}" style="{if !empty($_c.bg_color)}background: {$_c.bg_color};{/if}{if !empty($_c.font_color)}color: {$_c.font_color};{/if}"></i>
+                                                <b><i>{$_c.name|escape}</i></b>
+                                            </a>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            {/if}
+                            <input name="inner_calendar" value="{$_selected_calendar.id}" type="hidden">
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+
+            {* External calendars *}
+            {if !empty($external_calendars)}
+                <div class="field">
+                    <div class="name">
+                        {if $external_calendars_count > 1}
+                            [`External calendars`]
+                        {else}
+                            [`External calendar`]
+                        {/if}
+                    </div>
+                    <div class="value">
+
+                        <ul class="menu-v">
+                            {foreach $external_calendars as $external_calendar}
+                                <li>
+                                    <label>
+                                        <input type="radio" name="external_calendar[id]" value="{$external_calendar.id}" {if $external_calendar@first}checked="checked"{/if}>
+                                        {$external_calendar.name|escape}
+                                    </label>
+                                </li>
+                            {/foreach}
+                        </ul>
+
+                    </div>
+                </div>
+            {/if}
+
+            <div class="field">
+                <div class="name">
+                    [`Integration levels`]
+                </div>
+                <div class="value">
+                    <ul class="menu-v">
+                        {foreach $integration_levels as $level => $level_info}
+                            <li>
+                                <label>
+                                    <input type="radio" name="integration_level" value="{$level}" {if $level_info@first}checked="checked"{/if}
+                                        {if $level_info.disabled}disabled="disabled"{/if}>
+                                    {$level_info.name}
+                                </label>
+                                <div class="hint">{$level_info.description}</div>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="t-progress-block" style="display: none; margin-top: 40px;">
+                <div>
+                    <div class="progressbar blue float-left" style="min-width: 300px; width: 50%;">
+                        <div class="progressbar-outer">
+                            <div class="progressbar-inner" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <img style="margin-top:8px; float: left;" src="{$wa_url}wa-content/img/loading32.gif" />
+                </div>
+                <div class="t-ready-report" style="display: none;"></div>
+            </div>
+
+            <div class="t-authorize-block" style="display: none; margin: 10px 0;">
+                <i class="icon16 loading"></i>
+                [`Load authorize page`]...
+            </div>
+
+            {* Buttons *}
+            <div class="t-buttons-block">
+                {if $external_calendars_count > 1}
+                    <input class="button green" type="submit" {if !$can_map}disabled="disabled"{/if} value="[`Connect & import events`]">
+                {else}
+                    <input class="button green" type="submit" {if !$can_map}disabled="disabled"{/if} value="[`Import events`]">
+                {/if}
+
+                [`or`]
+                <a href="javascript:void(0)" data-id="{$calendar.id}" class="cancel t-cancel-external-calendar">[`cancel`]</a>
+
+                <i class="icon16 loading t-buttons-loading" style="display: none"></i>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        var container = $('#{$container_id}'),
+            form = container.find('form'),
+            $buttons = container.find(".t-buttons-block");
+
+        $.team.setTitle('{$title}');
+
+        var external_calendars = { };
+        $.each({$external_calendars|json_encode}, function (i, item) {
+            external_calendars[item.id] = item;
+        });
+
+        {if $can_map}
+
+            container.find('.t-cancel-external-calendar').click(function () {
+                var link = $(this);
+                var loading = container.find('.t-buttons-loading');
+                $.post('?module=calendarExternal&action=delete', { id: link.data('id'), 'with_events': 1 })
+                    .done(function () {
+                        location.href = '{$wa_app_url}u/{urlencode($wa->user('login'))}/info/';
+                    })
+                    .always(function () {
+                        loading.hide();
+                    });
+            });
+
+            form.submit(function (e) {
+                e.preventDefault();
+
+                form.find('.error').removeClass('error');
+
+                var send = true;
+                var data = form.serializeArray();
+                var external_calendar_id = '';
+                $.each(data, function (k, item) {
+                    if (!item.value) {
+                        send = false;
+                        form.find('[name="' + item.name + '"]').addClass('error');
+                    }
+                    if (item.name === 'external_calendar[id]') {
+                        external_calendar_id = item.value;
+                    }
+                });
+
+                var external_calendar = external_calendars[external_calendar_id] || {};
+                $.each(external_calendar, function (name, value) {
+                    if (name != 'id') {
+                        data.push({
+                            name: 'external_calendar[' + name + ']',
+                            value: value
+                        });
+                    }
+                });
+
+                if (send) {
+                    $.post('?module=calendarExternal&action=save&id={$calendar.id}', data,
+                        function (r) {
+
+                            if (r.status !== 'ok') {
+                                return;
+                            }
+
+                            var percentage = 0;
+                            var increment = 8;
+
+                            $('.progressbar .progressbar-inner', container).css('width', '0%');
+                            $('.t-progress-block', container).show();
+                            $buttons.hide();
+
+                            var pull_process = new LongActionProcess({
+                                url: '?module=calendarExternal&action=pull',
+                                post_data: { id: '{$calendar.id}' },
+                                onProgress: function (r) {
+                                    if (!r.done) {
+                                        percentage += increment;
+                                        if (percentage >= 50) {
+                                            increment = 4;
+                                        }
+                                        if (percentage >= 75) {
+                                            increment /= 2;
+                                        }
+                                        if (percentage >= 85) {
+                                            increment /= 1;
+                                        }
+                                        if (percentage >= 90) {
+                                            increment = 0;
+                                        }
+                                    } else {
+                                        percentage += (100 - percentage) / 2;
+                                        if (percentage >= 90) {
+                                            percentage = 100;
+                                        }
+                                    }
+                                    $('.progressbar .progressbar-inner', container).css('width', percentage + '%');
+                                    if (percentage >= 100) {
+                                        this.stop();
+                                    }
+                                },
+                                onError: function(r) {
+                                    alert('Server error');
+                                },
+                                onStop: function (r) {
+                                    $('.progressbar .progressbar-inner', container).css('width', '100%');
+                                    setTimeout(function () {
+                                        $('.t-progress-block', container).hide();
+                                        location.href = '{$redirect_url}';
+                                    }, 250);
+                                }
+                            });
+
+                            pull_process.start();
+
+                        }
+                    );
+                }
+
+            });
+        {/if}
+    });
+
+    // Calendar Toggle
+    ( function($) {
+
+        var $calendarToggle = $(".t-calendar-toggle"),
+            $input = $calendarToggle.find("input[name=\"inner_calendar\"]"),
+            $hiddenMenu = $calendarToggle.find(".menu-v"),
+            active_class = "selected",
+            $selected = $hiddenMenu.find("li." + active_class);
+
+        $hiddenMenu.on("click", "a", function() {
+            setCalendar( $(this) );
+        });
+
+        function setCalendar( $link ) {
+            var $li = $link.closest("li"),
+                calendar_id = ( $li.data("calendar-id") || false ),
+                is_active = $li.hasClass(active_class);
+
+            if (calendar_id && !is_active) {
+                // Set menu
+                if ($selected.length) {
+                    $selected.removeClass(active_class);
+                }
+                $li.addClass(active_class);
+                $selected = $li;
+
+                // Render
+                $calendarToggle.find(".t-selected-item").html( $link.html() );
+
+                // Set value
+                $input.val(calendar_id).trigger("change");
+
+                //
+                $hiddenMenu.hide();
+                setTimeout( function() {
+                    $hiddenMenu.removeAttr("style");
+                }, 500);
+            }
+        }
+
+    })(jQuery);
+</script>

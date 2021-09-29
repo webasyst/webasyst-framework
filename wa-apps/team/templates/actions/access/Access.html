@@ -1,150 +1,163 @@
 {strip}
-
-<div class="t-access-page shadowed" id="t-access-page">
-
-    <div class="t-layout">
-        <div class="t-column left">
-
-            <div class="t-users-wrapper">
-                {foreach $users as $_user}
-                    {$_icon_class = "user"}
-                    {if !empty($_user.type) && $_user.type == "location"}
-                        {$_icon_class = "marker"}
-                    {else}
-                        {if !empty($_user.photo_url_32)}
-                            {$_icon_class = "userpic20"}
-                        {elseif !empty($_user.icon)}
-                            {$_icon_class = $_user.icon}
-                        {/if}
-                    {/if}
-
-                    <div class="t-row" id="t-user-{$_user.id}">
-                        <a href="{$_user.uri}" class="t-user-name" title="{$_user.name|escape}">
-                            <i class="icon16 {if !empty($_user.photo_url_32)}kill-wa-style{/if} {$_icon_class}" style="{if !empty($_user.photo_url_32)}background-image: url({$_user.photo_url_32}){/if}"></i>
-
-                            <span class="t-name">
-                                {if $_user.is_user == -1}
-                                    <s>{$_user.name|escape}</s>
-                                {else}
-                                    {$_user.name|escape}
-                                {/if}
-                            </span>
-
-                            {if $_user.id == $wa->user("id")}
-                                <span class="t-label">([`me`])</span>
-                            {/if}
-                        </a>
-                    </div>
+<div class="flexbox">
+    <div class="sidebar scrolls-with-content bordered-right bordered-left blank t-access-sidebar small{if !$wa->isMobile()} width-adaptive-wider{/if}">
+        <div class="t-toggle-wrapper box bordered-bottom blank">
+            <div class="toggle js-toggle smaller">
+                {foreach $view_types as $type_key => $type}
+                    <a class="t-toggle-item inline-link {if $type_key == $selected_view_type}is-active selected{/if}" href="{$wa_app_url}access/{$type.uri}">
+                        {$type.name|escape}
+                    </a>
                 {/foreach}
             </div>
-
         </div>
-        <div class="t-column">
 
-            <div class="t-access-wrapper">
-                <div class="t-access-slider">
-                    <table class="t-access-table">
-                        {foreach $users as $_user}
-                            <tr class="t-row t-access-list" data-user-id="{$_user.id}">
-                                {if $_user.is_admin}
-                                    <td colspan="{count($apps)}">
+        <div class="t-users-wrapper">
+            {foreach $users as $_user}
+                {$_icon_class = "fas fa-user-friends"}
+                {if !empty($_user.type) && $_user.type == "location"}
+                    {$_icon_class = "fas fa-map-marker-alt"}
+                {else}
+                    {if !empty($_user.photo_url_32)}
+                        {$_icon_class = "userpic20"}
+                    {elseif !empty($_user.icon) && strpos($_user.icon, 'fa-') !== false}
+                        {$_icon_class = $_user.icon}
+                    {else}
+                        {$_icon_class = 'fas fa-user-friends'}
+                    {/if}
+                {/if}
+
+                <div class="box bordered-bottom t-users-item flexbox middle" id="t-user-{$_user.id}">
+                    <a href="{$_user.uri}" class="t-user-name flexbox middle space-8" title="{$_user.name|escape}">
+                        <i class="{if !empty($_user.photo_url_32)}userpic userpic20{else}{$_icon_class} icon size-20 gray{/if}"{if !empty($_user.photo_url_32)} style="background-image: url({$_user.photo_url_32})"{/if}></i>
+
+                        <span class="t-name">
+                            {if $_user.is_user == -1}
+                                <s>{$_user.name|escape}</s>
+                            {else}
+                                {$_user.name|escape}
+                            {/if}
+                        </span>
+
+                        {if $_user.id == $wa->user("id")}
+                            <span class="t-label">([`me`])</span>
+                        {/if}
+                    </a>
+                </div>
+            {/foreach}
+        </div>
+        {if isset($pages_count) && $pages_count > 1}
+            <div class="box flexbox">{wa_pagination total=$pages_count attrs=['class'=>'paging custom-mx-auto']}</div>
+        {/if}
+    </div>
+
+    <div class="t-access-page content reachstart" id="t-access-page">
+
+        <div class="t-apps-list blank">
+            <div class="t-apps-list-wrapper bordered-bottom smaller gray">
+            {foreach $apps as $app}
+                <div class="t-app-item bordered-right" id="t-app-{$app.id}">
+                    <img class="t-app-image icon size-32" src="{$wa_url}{$app.icon.48}" alt="{$app.name|escape}" >
+                    <span class="t-app-name custom-mt-8">{$app.name|escape}</span>
+                </div>
+            {/foreach}
+            </div>
+            <div class="t-apps-list-nav left">
+                <i class="fas fa-angle-left hidden"></i>
+            </div>
+            <div class="t-apps-list-nav right">
+                <i class="fas fa-angle-right"></i>
+            </div>
+        </div>
+
+        <div class="t-access-table-wrapper small">
+            <table class="t-access-table">
+                {foreach $users as $_user}
+                    <tr class="t-row t-access-list" data-user-id="{$_user.id}">
+                        {if $_user.is_admin}
+                            <td colspan="{count($apps)}">
+                                {$_access = $access_types.full}
+                                <div class="bordered-bottom t-access-status is-admin type-{$_access.id}"
+                                     data-user-id="{$_user.id}"
+                                     data-uri="{$_user.uri}"
+                                     title="[`Edit access`]"
+                                >{$_access.name|default:""|escape}</div>
+                            </td>
+                        {else}
+                            {foreach $apps as $app}
+                                {$_app_id = $app.id}
+                                {$_rights = $_user.access[$_app_id]|default:0}
+                                <td>
+                                    {if $_rights > 1}
                                         {$_access = $access_types.full}
-                                        <div class="t-access-status is-admin type-{$_access.id}"
-                                            data-user-id="{$_user.id}"
-                                            data-uri="{$_user.uri}"
-                                            title="[`Edit access`]"
-                                        >{$_access.name|default:""|escape}</div>
-                                    </td>
-                                {else}
-                                    {foreach $apps as $app}
-                                        {$_app_id = $app.id}
-                                        {$_rights = $_user.access[$_app_id]|default:0}
-                                        <td>
-                                            {if $_rights > 1}
-                                                {$_access = $access_types.full}
-                                            {elseif $_rights}
-                                                {$_access = $access_types.limited}
-                                            {else}
-                                                {$_access = $access_types.no}
-                                            {/if}
-                                            <div class="t-access-status type-{$_access.id}"
-                                                 data-user-id="{$_user.id}"
-                                                 data-app-id="{$_app_id}"
-                                                 title="[`Edit access`]">
-                                                {* Output all possible names to be able to change them via JS *}
-                                                {foreach $access_types as $at}
-                                                    <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
-                                                {/foreach}
-                                            </div>
-                                        </td>
-                                    {/foreach}
-                                {/if}
-                            </tr>
-                        {/foreach}
-                    </table>
-                </div>
-                <span class="t-action left"></span>
-                <span class="t-action right"></span>
-            </div>
+                                    {elseif $_rights}
+                                        {$_access = $access_types.limited}
+                                    {else}
+                                        {$_access = $access_types.no}
+                                    {/if}
+                                    <div class="bordered-right bordered-bottom t-access-status type-{$_access.id}"
+                                         data-user-id="{$_user.id}"
+                                         data-app-id="{$_app_id}"
+                                         title="[`Edit access`]">
 
+                                        {foreach $access_types as $at}
+                                            <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
+                                        {/foreach}
+                                    </div>
+                                </td>
+                            {/foreach}
+                        {/if}
+                    </tr>
+                {/foreach}
+            </table>
         </div>
     </div>
-
-    <div class="t-elastic-header">
-
-        <div class="t-layout">
-            <div class="t-column left">
-
-                <div class="t-row t-header t-toggle-wrapper">
-                    {foreach $view_types as $type_key => $type}
-                        <a class="t-toggle-item inline-link {if $type_key == $selected_view_type}is-active{/if}" href="{$wa_app_url}access/{$type.uri}">
-                            <b><i>{$type.name|escape}</i></b>
-                        </a>
-                    {/foreach}
-                </div>
-
-            </div>
-            <div class="t-column">
-
-                <div class="t-header-apps">
-                    <div class="t-row t-header t-apps-list">
-                        {foreach $apps as $app}
-                            <div class="t-app-column" id="t-app-{$app.id}">
-
-                                <div class="t-app-item">
-                                    <img class="t-app-image" src="{$wa_url}{$app.icon.48}" alt="{$app.name|escape}">
-                                    <span class="t-app-name">{$app.name|escape}</span>
-                                </div>
-
-                            </div>
-                        {/foreach}
-                    </div>
-                    <span class="t-action left"></span>
-                    <span class="t-action right"></span>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <script>
-        ( function($) {
-            var page = new AccessPage({
-                $wrapper: $("#t-access-page")
-            });
-
-            ( function($) {
-                $.team.setTitle("[`Access`]");
-            })(jQuery);
-        })(jQuery);
-    </script>
-
-    {if isset($pages_count) && $pages_count > 1}
-        <div>
-            {wa_pagination total=$pages_count attrs=['class'=>'menu-h']}
-        </div>
-    {/if}
-
 </div>
-
 {/strip}
+<script>
+    ( function($) {
+        var page = new AccessPage({
+            $wrapper: $("#t-access-page")
+        });
+
+        $.team.setTitle("[`Access`]");
+
+        $(".js-toggle").waToggle({ });
+
+    })(jQuery);
+
+    new SwiperSlider({
+        selector: '.t-apps-list',
+        watchNav: true,
+        params: {
+            roundLengths: true,
+            watchOverflow: true,
+            resistance: true,
+            mousewheel: true,
+            freeMode: true,
+            freeModeMomentum: false,
+            grabCursor: true,
+            resistanceRatio: 0,
+            slidesPerView: 'auto',
+            wrapperClass: 't-apps-list-wrapper',
+            slideClass: 't-app-item',
+            waTable: document.querySelector('.t-access-table'),
+            navigation: {
+                nextEl: ".t-apps-list-nav.right",
+                prevEl: ".t-apps-list-nav.left",
+            }
+        },
+        events: {
+            setTransition(swiper, transition) {
+                if(swiper.passedParams.waTable) {
+                    swiper.passedParams.waTable.style.transitionDuration = `${ transition }ms`;
+                }
+            },
+            setTranslate(swiper, translate) {
+                if(swiper.passedParams.waTable) {
+                    swiper.passedParams.waTable.style.transform = `translate3d(${ translate }px, 0, 0)`;
+                }
+            }
+        }
+    });
+
+</script>

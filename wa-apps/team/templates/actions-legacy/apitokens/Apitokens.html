@@ -1,0 +1,101 @@
+{strip}
+
+    <div class="shadowed t-api-tokens-page" id="t-api-tokens-page">
+        {* HEADER *}
+        <header class="t-content-header">
+            <h2 class="t-page-name">[`API tokens`]</h2>
+        </header>
+
+        {* CONTENT *}
+        <div class="t-content-body">
+            {if !empty($api_tokens)}
+                <table class="zebra tc-api-tokens-list js-api-tokens-list">
+                <thead style="font-size: 11px; color: #777; text-transform: uppercase; font-weight: bold;">
+                <tr class="white">
+                    <td class="tc-column"></td>
+                    <td class="tc-column-user">[`User`]</td>
+                    <td class="tc-column-date">[`Create date`]</td>
+                    <td class="tc-column-client-id">[`Client id`]</td>
+                    <td class="tc-column-scope">[`Scope`]</td>
+                    <td class="tc-column-last-use-datetime">[`Last use date`]</td>
+                    <td class="tc-column-expires">[`Expires`]</td>
+                    <td class="tc-column-remove"></td>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach $api_tokens as $_token}
+                    <tr class="js-token-item" data-contact-id="{$_token.contact_id}" data-token="{$_token.token|escape}">
+                        <td class="tc-column"></td>
+                        <td class="tc-column-user">
+                            {if isset($_token.contact)}
+                                <div class="tc-layout">
+                                    <div class="tc-column tc-column-image">
+                                        <a href="{$wa_app_url}u/{$_token.contact.login|escape}">
+                                            <img src="{$_token.contact.photo|escape}" alt="{$_token.contact.name|escape}">
+                                        </a>
+                                    </div>
+                                    <div class="tc-column middle">
+                                        <div class="line">
+                                            <a href="{$wa_app_url}u/{$_token.contact.login|escape}">
+                                                {$_token.contact.name|escape}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {elseif $_token.contact_id == 0}
+                                <span style="color: #999;" title="id=0">[`Unknown user`]</span>
+                            {else}
+                                <span style="color: #999;">deleted_user_id={$_token.contact_id}</span>
+                            {/if}
+                        </td>
+                        <td class="tc-column-date">{$_token.create_datetime|wa_date:humandatetime}</td>
+                        <td class="tc-column-client-id">{$_token.client_id|escape}</td>
+                        <td class="tc-column-scope">
+                            {foreach $_token.installed_apps as $_app}
+                                <img src="/{$_app.img}" title="{$_app.name|escape}" style="width: 16px; height: 16px;" />
+                            {/foreach}
+                            {foreach $_token.not_installed_apps as $_app}
+                                <span style="color: #999;">{$_app|escape}{if !$_app@last},{/if}</span>
+                            {/foreach}
+                        </td>
+                        <td class="tc-column-last-use-datetime">{if !empty($_token.last_use_datetime)}{$_token.last_use_datetime|wa_date:humandatetime}{else}<span style="color: #999;">—</span>{/if}</td>
+                        <td class="tc-column-expires">{if !empty($_token.expires)}{$_token.expires|wa_date:humandatetime}}{else}<span style="color: #999;">—</span>{/if}</td>
+                        <td class="tc-column-remove"><a href="#" title="[`Remove token`]" class="js-remove-api-token" style="display: inline-block;"><i class="icon16 no"></i></a></td>
+                    </tr>
+                {/foreach}
+                </tbody>
+            </table>
+            {else}
+                <div class="t-no-tokens">
+                    [`No API tokens`]
+                </div>
+            {/if}
+
+            {$_url_params = ''}
+            {foreach waRequest::get() as $_k=>$_v}
+                {if $_k != '_' && $_k != 'page' && $_v}
+                    {$_url_params = "`$_url_params`&`$_k`=`$_v`"}
+                {/if}
+            {/foreach}
+            {$_url_params = substr($_url_params, 1)}
+
+            {$wa->team->pager($total_count|default:0, $page, $_url_params)}
+
+        </div>
+    </div>
+
+    {* JS *}
+    <script>
+        ( function($) {
+            new SiteApiTokenPage({
+                $wrapper: $("#t-api-tokens-page"),
+                locale: {
+                    'remove_ask': '[`The user will not be able to send API requests using this token.`]'
+                }
+            });
+
+            $.team.setTitle("[`API tokens`]");
+        })(jQuery);
+    </script>
+
+{/strip}

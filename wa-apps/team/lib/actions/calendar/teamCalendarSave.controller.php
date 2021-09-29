@@ -7,9 +7,15 @@ class teamCalendarSaveController extends waJsonController
             throw new waRightsException();
         }
         $post_data = waRequest::post('data', null, waRequest::TYPE_ARRAY_TRIM);
+        $ui = wa('team')->whichUi('team');
         $required = array(
             'name' => 1, 'bg_color' => 0, 'font_color' => 0, 'default_status' => 0,
         );
+        if ($ui !== '1.3') {
+            $required['status_bg_color'] = 0;
+            $required['status_font_color'] = 0;
+            $required['icon'] = 0;
+        }
         foreach ($required as $field => $not_null) {
             if (($not_null && empty($post_data[$field])) || (!$not_null && !isset($post_data[$field]))) {
                 throw new waException('Field not found: '.$field);
@@ -29,6 +35,12 @@ class teamCalendarSaveController extends waJsonController
             $calendar['is_limited'] = isset($post_data['is_limited']) && 1;
             $calendar['default_status'] = $post_data['default_status'];
 
+            if ($ui  !== '1.3') {
+                $calendar['status_bg_color'] = $post_data['status_bg_color'];
+                $calendar['status_font_color'] = $post_data['status_font_color'];
+                $calendar['icon'] = $post_data['icon'];
+            }
+
             $ccm->updateById($calendar_id, $calendar);
 
             $this->logAction('calendar_edit', $calendar_id);
@@ -41,6 +53,16 @@ class teamCalendarSaveController extends waJsonController
                 'is_limited' => isset($post_data['is_limited']) && 1,
                 'default_status' => $post_data['default_status'],
             );
+            if ($ui  !== '1.3') {
+                $calendar['status_bg_color'] = $post_data['status_bg_color'];
+                $calendar['status_font_color'] = $post_data['status_font_color'];
+                $calendar['icon'] = $post_data['icon'];
+            }
+            if ($ccm->countAll()) {
+                $calendar['sort'] = $ccm->select('MAX(sort)')->fetchField() + 1;
+            } else {
+                $calendar['sort'] = 0;
+            }
             $calendar['id'] = $ccm->insert($calendar);
 
             $this->logAction('calendar_add', $calendar['id']);

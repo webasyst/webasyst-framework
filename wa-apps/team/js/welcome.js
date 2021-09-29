@@ -10,10 +10,11 @@ var WelcomePage = ( function($) {
 
         // VARS
         that.locales = options["locales"];
-        that.error_class = "error";
+        that.error_class = "state-error";
 
         // DYNAMIC VARS
         that.is_locked = false;
+        that.switch_count = 3;
 
         // INIT
         that.initClass();
@@ -27,10 +28,7 @@ var WelcomePage = ( function($) {
             $.team.content.is_enabled = false;
         });
 
-        var $iButtons = that.$inviteList.find("input:checkbox");
-        $iButtons.each( function() {
-            that.initIButton( $(this) );
-        });
+        that.initWaToggle();
 
         that.bindEvents();
     };
@@ -64,17 +62,18 @@ var WelcomePage = ( function($) {
         });
     };
 
-    WelcomePage.prototype.initIButton = function( $button ) {
-        var that = this;
+    WelcomePage.prototype.initWaToggle = function() {
+        var that = this,
+            $accessToggle = that.$inviteWrapper.find(".js-access-toggle");
 
-        $button.iButton({
-            labelOn : "",
-            labelOff : "",
-            classContainer: "t-ibutton ibutton-container mini"
+        $accessToggle.waToggle({
+            change(event, target, toggle) {
+                toggle.$wrapper
+                    .find('[type="hidden"]')
+                    .prop('checked', target.dataset.type === 'full')
+                    .attr('checked', target.dataset.type === 'full')
+            }
         });
-
-        // $button.on("change" ,function () {
-        // });
     };
 
     WelcomePage.prototype.addNewInvite = function() {
@@ -82,18 +81,28 @@ var WelcomePage = ( function($) {
             html = that.$inviteWrapper.find(".t-invite-template").clone().html(),
             $template = $("<li>" + html + "</li>");
 
+        that.switch_count = that.switch_count + 1;
+
+        $template
+            .find('[type="checkbox"]')
+            .attr('id', `access_switch_${that.switch_count}`)
+        $template
+            .find('label')
+            .attr('for', `access_switch_${that.switch_count}`)
+
         that.$inviteList.append($template);
 
-        var $input = $template.find("input:checkbox");
-        that.initIButton( $input );
+        that.initWaToggle();
     };
 
     WelcomePage.prototype.sendInvites = function() {
         var that = this,
             href = $.team.app_url + "?module=welcome&action=save",
-            data = prepareData();
+            data = prepareData(),
+            $send_invites_btn = that.$wrapper.find('.js-send-invites');
 
         that.is_locked = true;
+        $send_invites_btn.attr('disabled', that.is_locked).find('svg').toggleClass('hidden', !that.is_locked);
 
         if (data) {
             $.post(href, data, function(response) {
@@ -104,9 +113,11 @@ var WelcomePage = ( function($) {
                 }
             }).always( function() {
                 that.is_locked = false;
+                $send_invites_btn.attr('disabled', that.is_locked).find('svg').toggleClass('hidden', !that.is_locked);
             });
         } else {
             that.is_locked = false;
+            $send_invites_btn.attr('disabled', that.is_locked).find('svg').toggleClass('hidden', !that.is_locked);
         }
 
         function prepareData() {
@@ -115,10 +126,10 @@ var WelcomePage = ( function($) {
                 errors = [];
 
             $items.each( function(index) {
-                var $email = $(this).find("input:text"),
-                    $access = $(this).find("input:checkbox"),
+                var $email = $(this).find('[type="email"]'),
+                    $access = $(this).find('[type="checkbox"]'),
                     email = $email.val(),
-                    access = ( $access.attr("checked") == "checked" );
+                    access = $access.prop("checked");
 
                 if ( $.trim(email).length ) {
                     var is_email_good = checkEmail(email);
@@ -158,9 +169,9 @@ var WelcomePage = ( function($) {
             $.each(errors, function(i, error) {
                 var name = error.name,
                     locale = error.text,
-                    index = parseInt( name.replace("data[", "").replace("][email]", "") );
+                    index = parseInt( name.replace(/[^0-9]/g, '') );
 
-                var $field = that.$inviteList.find(".t-invite-item").eq(index).find(".t-field");
+                var $field = that.$inviteList.find(".t-invite-item").eq(index).find('[type="email"]');
                 if ($field.length) {
                     result.push({
                         $field: $field,
@@ -178,9 +189,9 @@ var WelcomePage = ( function($) {
 
         if ($input) {
             $input.removeClass(error_class);
-            $input.parent().find(".t-error").remove();
+            $input.parent().find(".state-error-hint").remove();
         } else {
-            that.$inviteList.find(".t-error").remove();
+            that.$inviteList.find(".state-error-hint").remove();
             that.$inviteList.find("." + error_class).removeClass(error_class);
         }
     };
@@ -192,11 +203,11 @@ var WelcomePage = ( function($) {
         that.removeErrors();
 
         $.each(errors, function(index, item) {
-            var error = '<span class="t-error">' + item.locale + '</span>';
+            var error = '<span class="state-error-hint" style="display: block">' + item.locale + '</span>';
 
             item.$field
                 .addClass(error_class)
-                .before( error );
+                .after( error );
         });
 
     };

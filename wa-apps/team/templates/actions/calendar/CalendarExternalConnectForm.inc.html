@@ -1,46 +1,60 @@
-<div class="t-block t-connect-info-block" style="display: none; margin: 20px 0;">
-    <div style="margin-left: -0.25em; padding-bottom: 10px;">
-        <i class="icon16 yes"></i><span class="f-text" style="text-decoration: line-through;">[`Register application on %s`]</span>
-    </div>
-    <div><span class="f-text">2. [`Connect %s account:`]</span></div>
+<div class="t-block t-connect-info-block custom-my-32" style="display: none;">
+    <ul class="unstyled">
+        <li>
+            <i class="fas fa-check-circle text-green"></i>
+            <span class="f-text" style="text-decoration: line-through;">[`Register application on %s`]</span>
+        </li>
+        <li>
+            <span class="f-text">2. [`Connect %s account:`]</span>
+        </li>
+    </ul>
 </div>
 
 <form>
-    <div class="fields form">
+    <div class="fields custom-mt-32">
         <div class="field">
             <div class="name">
                 [`External calendar type`]
             </div>
-            {foreach $plugins as $plugin}
-                <div class="value t-external-calendar-item-wrapper">
-                    <label>
-                        <i class="icon16 kill-wa-style" style="background-image: url({$plugin.icon16_url});"></i>
-                        <input type="radio" name="id" value="{$plugin.id}"
-                               {if empty($plugin['enabled'])}disabled="disabled"{/if}
-                                {if !empty($plugin['checked'])}checked="checked"{/if}>
-                        <span class="t-external-calendar-name">
-                            {$plugin.name|escape}
-                        </span>
+            <div class="value t-external-calendar-item-wrapper">
+                <ul>
+                {foreach $plugins as $plugin}
+                    <li>
+                        <i class="icon" style="background-image: url({$plugin.icon16_url});"></i>
+                        <label>
+                            <span class="wa-radio">
+                                <input type="radio" name="id" value="{$plugin.id}"
+                                       {if empty($plugin['enabled'])} disabled="disabled"{/if}
+                                        {if !empty($plugin['checked'])} checked="checked"{/if}>
+                                <span></span>
+                            </span>
+                            <span class="t-external-calendar-name">
+                                {$plugin.name|escape}
+                            </span>
+                        </label>
                         {if $plugin.required_settings|default:false}
                             <a href="{$wa_app_url}plugins/#/{$plugin.id}/" class="small">[`specify settings`]</a>
                         {/if}
-                    </label>
-                </div>
-            {/foreach}
+                    </li>
+                {/foreach}
+                </ul>
+            </div>
         </div>
-        <div class="field t-buttons-block">
+        <div class="field t-buttons-block custom-mt-32">
             <div class="name"></div>
             <div class="value">
-                <input class="button green" type="submit" value="[`Continue`]" disabled="disabled"> [`or`]
-                <a href="javascript:void(0);" {if $calendar} data-id="{$calendar.id}" {/if} class="cancel t-cancel-external-calendar">[`cancel`]</a>
-                <i class="icon16 loading t-buttons-loading" style="display: none"></i>
+                <div class="flexbox middle">
+                    <input class="button" type="submit" value="[`Continue`]" disabled="disabled">
+                    <a href="javascript:void(0);"{if $calendar} data-id="{$calendar.id}"{/if} class="cancel t-cancel-external-calendar">[`cancel`]</a>
+                    <div class="spinner t-buttons-loading custom-ml-8" style="display: none"></div>
+                </div>
             </div>
         </div>
     </div>
 </form>
 
-<div class="t-authorize-block" style="display: none; margin: 10px 0;">
-    <i class="icon16 loading"></i>
+<div class="t-authorize-block custom-my-12" style="display: none;">
+    <div class="spinner loading"></div>
     [`Load authorize page`]...
 </div>
 

@@ -1,14 +1,15 @@
 {strip}
 
-<div class="t-users-page is-online-page" id="t-users-page">
-    {* HEADER *}
-    <header class="t-content-header">
-        <h1>[`Invitations`]</h1>
-    </header>
+<div class="t-users-page content article box is-online-page" id="t-users-page">
 
-    <div class="t-content-body">
+    <div class="t-content-body article-body">
+        {* HEADER *}
+        <header class="t-content-header">
+            <h1>[`Invitations`]</h1>
+        </header>
+
         {if !empty($contacts)}
-            {include file="./Users.inc.html" contacts=$contacts}
+            {include file="./Users.inc.html" contacts=$contacts list_context="invited"}
         {else}
             <p class="t-description">[`No invited contacts.`]</p>
         {/if}

@@ -31,23 +31,23 @@ class teamViewHelper
             $pages = ceil($total / $limit);
             if ($pages > 1) {
                 $page = intval($page);
-                $html = '<ul class="pager">';
+                $html = '<ul class="paging">';
                 if (is_numeric($count)) {
-                    $html .= '<li>'._w('Total:').' <em>'.number_format((float)$count, 0, '.', ' ').'</em></li>';
+                    $html .= '<li><span>'._w('Total:').' <em>'.number_format((float)$count, 0, '.', ' ').'</em></span></li>';
                 }
                 if (!empty($count['folders'])) {
-                    $html .= '<li>'._w('Folders:').' <em>'.number_format((float)$count['folders'], 0, '.', ' ').'</em></li>';
+                    $html .= '<li><span>'._w('Folders:').' <em>'.number_format((float)$count['folders'], 0, '.', ' ').'</em></span></li>';
                 }
                 if (!empty($count['files'])) {
-                    $html .= '<li>'._w('Files:').' <em>'.number_format((float)$count['files'], 0, '.', ' ').'</em></li>';
+                    $html .= '<li><span>'._w('Files:').' <em>'.number_format((float)$count['files'], 0, '.', ' ').'</em></span></li>';
                 }
 
-                $html .= ' <span>'._w('Page:').'</span></li>';
+                $html .= '<li><span>'._w('Page:').'</span></li>';
 
                 if ($page > 1) {
                     $title = _w('prev');
                     $url = self::$url . ($page - 1) . (strlen($url_params) > 0 ? '&' . $url_params : '');
-                    $html .= "<li><a href='{$url}' title='{$title}'><i class='icon10 larr'></i>{$title}</a></li>";
+                    $html .= "<li><a href='{$url}' title='{$title}'><i class='fas fa-long-arrow-alt-left'></i> {$title}</a></li>";
                 }
 
                 $html .= self::item(1, $page, $url_params);
@@ -58,7 +58,7 @@ class teamViewHelper
                     ) {
                         $html .= self::item($i, $page, $url_params);
                     } elseif (strpos(strrev($html), '...') != 5) { // 5 = strlen('</li>')
-                        $html .= '<li>...</li>';
+                        $html .= '<li><span>...</span></li>';
                     }
                 }
 
@@ -67,7 +67,7 @@ class teamViewHelper
                 if ($page < $pages) {
                     $title = _w('next');
                     $url = self::$url . ($page + 1) . (strlen($url_params) > 0 ? '&' . $url_params : '');
-                    $html .= "<li><a href='{$url}' title='{$title}'>{$title}<i class='icon10 rarr'></i></a></li>";
+                    $html .= "<li><a href='{$url}' title='{$title}'>{$title} <i class='fas fa-long-arrow-alt-right'></i></i></a></li>";
                 }
             }
         }
@@ -86,7 +86,7 @@ class teamViewHelper
             $url = self::$url . $i . (strlen($url_params) > 0 ? '&' . $url_params : '');
             return "<li><a href='{$url}'>".number_format((float)$i, 0, '.', ' ')."</a></li>";
         } else {
-            return "<li class='selected'>".number_format((float)$i, 0, '.', ' ')."</li>";
+            return "<li class='selected'><span>".number_format((float)$i, 0, '.', ' ')."</span></li>";
         }
     }
 }

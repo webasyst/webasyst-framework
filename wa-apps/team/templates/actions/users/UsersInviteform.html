@@ -1,193 +1,411 @@
 {strip}
-<div class="t-dialog-wrapper is-full-screen t-invite-user-dialog">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <form method="post" id="t-invite-user-form">
-            <header class="t-dialog-header">
-                <h1>[`Invite new user`]</h1>
-            </header>
-
-            <div class="t-dialog-content">
-
-                <div class="fields form" style="float: none;">
-                    <div class="field-group">
+<div class="dialog t-invite-user-dialog" id="t-invite-user-dialog">
+    <div class="dialog-background"></div>
+    <form class="dialog-body" method="post" id="t-invite-user-form">
+        <h3 class="dialog-header">[`Invite new user`]</h3>
+        <div class="dialog-content">
+            <div class="fields">
+                <div class="fields-group">
+                    <div class="toggle rounded js-invite-type">
+                        <span class="selected" data-type="email"><i class="fas fa-envelope"></i> [`By email`]</span>
+                        <span data-type="link"><i class="fas fa-link"></i> [`By link`]</span>
+                        {if !$is_waid_forced}
+                        <span data-type="login"><i class="fas fa-key"></i> [`Ввести логин и пароль`]</span>
+                        {/if}
+                    </div>
+                </div>
+                <div class="fields-group js-by-email">
+                    <p class="small by-login-hint hidden">[`Введите логин и пароль для этого пользователя, чтобы не отправлять ему приглашение.`]</p>
+                    <div class="field">
+                        <div class="name">[`Email`]</div>
+                        <div class="value">
+                            <input class="long bold" type="text" name="email" placeholder="[`name@company.com`]">
+                            <p class="hint by-email-hint">[`Please specify an email to send user invitation with further instructions.`]</p>
+                        </div>
+                    </div>
+                    <div class="t-create-user-credentials hidden">
                         <div class="field">
-                            <div class="name">[`Email`]</div>
+                            <div class="name">[`Login`]</div>
                             <div class="value">
-
-                                <div class="t-input-wrapper">
-                                    <input class="long bold large" type="text" name="email" placeholder="[`name@company.com`]">
-                                </div>
-                                <p class="hint">[`Please specify an email to send user invitation with further instructions.`]</p>
-
-                                {if !$is_waid_forced}
-                                    <div style="margin-top: 1em;">
-                                        <label>
-                                            <input type="checkbox" name="create_user" value="1" class="t-create-user-toggle"> [`I will enter password on behalf of this user so no invitation will be sent.`]
-                                        </label>
-                                    </div>
-                                {/if}
-
+                                <input type="text" name="login">
                             </div>
                         </div>
-                        <div class="t-create-user-credentials" style="display: none">
-                            <div class="field">
-                                <div class="name">[`Login`]</div>
-                                <div class="value">
-                                    <div class="t-input-wrapper">
-                                        <input type="text" name="login">
-                                    </div>
-                                </div>
+                        <div class="field">
+                            <div class="name">
+                                [`Password`]
                             </div>
-                            <div class="field">
-                                <div class="name">
-                                    [`Password`]
-                                </div>
-                                <div class="value">
-                                    <div class="t-input-wrapper">
-                                        <input type="password" name="password">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="name">
-                                    [`Confirm password`]
-                                </div>
-                                <div class="value">
-                                    <div class="t-input-wrapper">
-                                        <input type="password" name="password_confirm">
-                                    </div>
-                                </div>
+                            <div class="value">
+                                <input type="password" name="password">
                             </div>
                         </div>
-                    </div>
-
-                    <div class="t-groups-wrapper">
-                        <div class="field-group">
-                            {if $groups}
-                                <div class="field">
-                                    <div class="name">[`Groups`]</div>
-                                    <div class="value">
-                                        <ul class="menu-v" style="margin-top: 0;">
-                                            {foreach $groups as $_g}
-                                                <li data-group-id="{$_g.id}">
-                                                    <label>
-                                                        <input type="checkbox" name="groups[{$_g.id}]">
-                                                        {*<i class="icon16 {if $_g.icon}{$_g.icon}{else}user{/if}"></i>*}
-                                                        &nbsp;{$_g.name|escape}
-                                                    </label>
-                                                </li>
-                                            {/foreach}
-                                        </ul>
-                                    </div>
-                                </div>
-                            {/if}
-                        </div>
-
-                        <div class="field-group">
-                            {if $locations}
-                                <div class="field">
-                                    <div class="name">[`Locations`]</div>
-                                    <div class="value">
-                                        <ul class="menu-v" style="margin-top: 0;">
-                                            {foreach $locations as $_g}
-                                                <li data-group-id="{$_g.id}">
-                                                    <label>
-                                                        <input type="checkbox" name="groups[{$_g.id}]">
-                                                        {*<i class="icon16 {if $_g.icon}{$_g.icon}{else}user{/if}"></i>*}
-                                                        &nbsp;{$_g.name|escape}
-                                                    </label>
-                                                </li>
-                                            {/foreach}
-                                        </ul>
-                                    </div>
-                                </div>
-                            {/if}
+                        <div class="field">
+                            <div class="name">
+                                [`Confirm password`]
+                            </div>
+                            <div class="value">
+                                <input type="password" name="password_confirm">
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="fields-group js-by-link hidden">
+                    <div class="field">
+                        <div class="value">
+                            <input class="short bold" type="text" name="firstname" placeholder="[`Firstname`]">
+                            <input class="short bold" type="text" name="lastname" placeholder="[`Lastname`]">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="value">
+                            <p class="hint">[`Если Имя и Фамилия не указаны, то будет использовано временное имя в виде даты приглашения.`]</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="t-groups-wrapper custom-mt-32">
+                    <div class="fields-group">
+                        {if $groups}
+                            <div class="field">
+                                <div class="name for-checkbox">[`Groups`]</div>
+                                <div class="value">
+                                    <ul class="small">
+                                        {foreach $groups as $_g}
+                                            <li data-group-id="{$_g.id}">
+                                                <label>
+                                                    <span class="wa-checkbox">
+                                                        <input type="checkbox" name="groups[{$_g.id}]">
+                                                        <span>
+                                                            <span class="icon">
+                                                                <i class="fas fa-check"></i>
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                    &nbsp;{$_g.name|escape}
+                                                </label>
+                                            </li>
+                                        {/foreach}
+                                    </ul>
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
 
+                    <div class="fields-group">
+                        {if $locations}
+                            <div class="field">
+                                <div class="name for-checkbox">[`Locations`]</div>
+                                <div class="value">
+                                    <ul class="small">
+                                        {foreach $locations as $_g}
+                                            <li data-group-id="{$_g.id}">
+                                                <label>
+                                                    <span class="wa-checkbox">
+                                                        <input type="checkbox" name="groups[{$_g.id}]">
+                                                        <span>
+                                                            <span class="icon">
+                                                                <i class="fas fa-check"></i>
+                                                            </span>
+                                                        </span>
+                                                    </span>
+                                                    &nbsp;{$_g.name|escape}
+                                                </label>
+                                            </li>
+                                        {/foreach}
+                                    </ul>
+                                </div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
             </div>
+        </div>
+        <footer class="dialog-footer fields">
+            {if $groups || $locations}
+            <div class="field t-apps-list-wrapper custom-my-16 invisible">
+                <div class="name">[`Пользователю будут доступны`]</div>
+                <div class="value js-swiper-groups swiper-container">
+                    {$apps = $groups[$groups|@key]['apps']}
+                    <div class="t-user-groups-nav left blank ">
+                        <i class="fas fa-angle-left"></i>
+                    </div>
+                    <ul class="swiper-wrapper custom-m-0">
+                        {foreach $apps as $app_id => $app}
+                            <li class="t-access-app custom-mt-0 swiper-slide">
+                                <img class="t-dialog-app-icon"
+                                     src="{$wa_url}{$app.img}"
+                                     alt="{$app.name|escape}"
+                                     title="{$app.name|escape}"
+                                     data-wa-tooltip-template=".access-info-{$app_id}">
 
-            <footer class="t-dialog-footer">
-                <div class="t-actions">
-                    <input type="submit" class="button green t-button js-submit-button" value="[`Send`]">
-                    <span style="margin: 0 4px;">[`or`]</span>
-                    <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                                <div class="wa-tooltip-template access-info-{$app_id}" data-app-id="{$app_id}">
+                                    {if $groups}
+                                        {foreach $groups as $group}
+                                            {$_app = $group['apps'][$app_id]}
+                                            {if $_app.access > 1}
+                                                {$_access = $access_types.full}
+                                            {elseif $_app.access}
+                                                {$_access = $access_types.limited}
+                                            {else}
+                                                {$_access = $access_types.no}
+                                            {/if}
+                                            <span class="hidden"
+                                                  data-access-id="{$_access.id}"
+                                                  data-access-name="{$_access.name|default:''|escape}"
+                                                  data-group-id="{$group.id}"
+                                            >
+                                                {$_access.name|default:""|escape}
+                                            </span>
+                                        {/foreach}
+                                    {/if}
+                                    {if $locations}
+                                        {foreach $locations as $loc}
+                                            {$_app = $loc['apps'][$app_id]}
+                                            {if $_app.access > 1}
+                                                {$_access = $access_types.full}
+                                            {elseif $_app.access}
+                                                {$_access = $access_types.limited}
+                                            {else}
+                                                {$_access = $access_types.no}
+                                            {/if}
+                                            <span class="hidden"
+                                                  data-access-id="{$_access.id}"
+                                                  data-access-name="{$_access.name|default:''|escape}"
+                                                  data-group-id="{$loc.id}"
+                                            >
+                                                {$_access.name|default:""|escape}
+                                            </span>
+                                        {/foreach}
+                                    {/if}
+                                </div>
+                            </li>
+                        {/foreach}
+                    </ul>
+                    <div class="t-user-groups-nav right blank">
+                        <i class="fas fa-angle-right"></i>
+                    </div>
                 </div>
-            </footer>
-        </form>
-    </div>
+            </div>
+            {/if}
+            <div class="action-buttons">
+                <div class="flexbox middle js-by-link hidden">
+                    <input type="text" class="wide js-invite-link text-gray hidden">
+                    <button type="button" class="button outlined js-get-link"><i class="fas fa-link"></i> [`Получить ссылку`]</button>
+                    <button type="button" class="button js-copy-link hidden"><i class="fas fa-copy"></i> [`Скопировать`]</button>
+                    <button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>
+                </div>
+                <input type="submit" class="button js-submit-button js-by-email" value="[`Send`]">
+                <button type="button" class="button light-gray js-close-dialog js-by-email">[`Cancel`]</button>
+            </div>
+        </footer>
+    </form>
 </div>
 {/strip}
-<script>( function($) { "use strict";
+<script>
+    (function ($) {
+        "use strict";
 
-    var locales = {
-        "add": {_w("Add")|json_encode},
-        "send": {_w("Send")|json_encode}
-    };
+        const dialog = $('#t-invite-user-dialog').data('dialog'),
+            $dialog = dialog.$wrapper,
+            locales = {
+                "get_link": {_w("Получить ссылку")|json_encode},
+                "make_invite": {_w("Создаем приглашение")|json_encode},
+                "copy": {_w("Скопировать")|json_encode},
+                "copied": {_w("Скопировано")|json_encode},
+                "add": {_w("Add")|json_encode},
+                "send": {_w("Send")|json_encode},
+                "done": '[`Done`]'
+            },
+            $form = $dialog.find('form'),
+            $button = $form.find(".js-submit-button"),
+            $groups_wrapper = $form.find('.t-groups-wrapper'),
+            $login_hint = $form.find('.js-by-login-hint');
 
-    var $form = $('#t-invite-user-form'),
-        $button = $form.find(".js-submit-button");
+        let form_action = "?module=users&action=invite";
 
-    $form.on('keyup change', '.error', function() {
-        $(this)
-            .removeClass('error')
-            .parent()
-                .find(".errormsg").remove();
-    });
+        const apps_group_slider = new Swiper('.js-swiper-groups', {
+            roundLengths: true,
+            slideClass: 't-access-app',
+            height: 48,
+            slidesPerView: 'auto',
+            slidesOffsetBefore: 48,
+            slidesOffsetAfter: 48,
+            spaceBetween: 5,
+            navigation: {
+                nextEl: ".t-user-groups-nav.right",
+                prevEl: ".t-user-groups-nav.left",
+            },
+            mousewheel: true
+        });
 
-    var $create_user_toggle = $form.find('.t-create-user-toggle');
-    $create_user_toggle.change(function () {
-        var $el = $(this);
-        var $credentials = $form.find('.t-create-user-credentials');
-        if ($el.is(':checked')) {
-            $credentials.show().find(':input').attr('disabled', false);
-            $button.val(locales["add"]);
-        } else {
-            $credentials.hide().find(':input').attr('disabled', true);
-            $button.val(locales["send"]);
-        }
-    });
+        $(".t-dialog-app-icon").waTooltip();
 
-    $form.submit(function(e) {
-        e.preventDefault();
+        $form.on('keyup change', '.state-error', function () {
+            $(this)
+                .removeClass('state-error')
+                .parent()
+                .find(".state-error-hint").remove();
+        });
 
-        $form.find('.errormsg').remove();
-        $form.find('.error').removeClass('error');
+        $form.on('click', '[name^="groups"]', function () {
+            let group_id = this.closest('li').dataset.groupId,
+                $checked = $groups_wrapper.find(':checked'),
+                has_checked = $checked.length,
+                $apps_group_wrapper = $form.find('.t-apps-list-wrapper'),
+                $apps_group = $apps_group_wrapper.find('.swiper-wrapper'),
+                $tooltips = $apps_group.find('.wa-tooltip-template');
 
-        var action = "?module=users&action=invite";
-        if ($create_user_toggle.is(':checked')) {
-            action = "?module=users&action=create";
-        }
+            $apps_group_wrapper.toggleClass('invisible', !has_checked)
 
-        $.post(action, $form.serialize(), function(result) {
-            if (result.status == 'ok') {
-                // close dialog
-                $form.closest('.t-dialog-wrapper').trigger('close');
-                // reload sidebar
-                $.team.sidebar.reload();
-                // reload content
-                if (result.data.contact_url) {
-                    $.team.content.load(result.data.contact_url);
-                }
-            } else {
-                $.each(result.errors, function(key, value) {
-                    var $div = null;
-                    if ($.isArray(value)) {
-                        $div = $form.find('[name="' + value[1] + '"]').addClass('error').parent('.t-input-wrapper');
-                        value = value[0];
-                    } else {
-                        $div = $form.find('[name="email"]').addClass('error').parent('.t-input-wrapper');
+            dialog.resize();
+
+            if(has_checked) {
+                $tooltips.each(function () {
+                    let $tooltip = this,
+                        $group_tooltip = $($tooltip).find(`[data-group-id="${ group_id }"]`),
+                        $group_parent = $group_tooltip.closest('li'),
+                        access_name = '',
+                        checked_group_access = { },
+                        no_access = false;
+
+                    $checked.each(function () {
+                        const group_id = this.closest('li').dataset.groupId,
+                            tooltip_data = $tooltip.querySelector(`[data-group-id="${ group_id }"]`).dataset;
+                        checked_group_access[tooltip_data.accessId] = tooltip_data.accessName;
+                    })
+
+                    if ('full' in checked_group_access) {
+                        access_name = checked_group_access["full"];
+                    }else if('limited' in checked_group_access){
+                        access_name = checked_group_access["limited"];
+                    }else if('no' in checked_group_access){
+                        no_access = true;
+                        access_name = checked_group_access["no"];
                     }
-                    $div.append(
-                        $('<em class="errormsg"></em>').text(value)
-                    );
+
+                    $group_parent.toggleClass('hidden', no_access);
+                    $group_parent.find('.t-dialog-app-icon')[0]._tippy.setContent(access_name);
                 });
+
+                let apps_count = apps_group_slider.$wrapperEl.find(`.${ apps_group_slider.params.slideClass }:not(.hidden)`).length,
+                    apps_fit = (apps_count < 7);
+
+                if (apps_count) {
+                    apps_group_slider.navigation.nextEl.classList.toggle('hidden', apps_fit)
+                    apps_group_slider.navigation.prevEl.classList.toggle('hidden', apps_fit)
+                    apps_group_slider.params.slidesOffsetBefore = 0;
+                    if (apps_fit) {
+                        apps_group_slider.params.slidesOffsetBefore = 0;
+                        apps_group_slider.params.slidesOffsetAfter = 0;
+                    }else{
+                        apps_group_slider.params.slidesOffsetBefore = 48;
+                        apps_group_slider.params.slidesOffsetAfter = 48;
+                    }
+                    apps_group_slider.update();
+                    apps_group_slider.slideTo(0);
+                }else{
+                    $apps_group_wrapper.addClass('invisible');
+                    dialog.resize();
+                }
             }
-        }, 'json');
+        });
 
-    });
+        $(".js-invite-type").waToggle({
+            change: function (event, target)  {
+                const $by_email = document.querySelectorAll('.js-by-email'),
+                    $by_link = document.querySelectorAll('.js-by-link');
 
-})(jQuery);</script>
+                Array.from($by_email).forEach(item => item.classList.toggle('hidden', (target.dataset.type !== 'email' && target.dataset.type !== 'login')))
+                Array.from($by_link).forEach(item => item.classList.toggle('hidden', target.dataset.type !== 'link'))
+
+                let is_login = (target.dataset.type === 'login');
+                $form.find('.t-create-user-credentials').toggleClass('hidden', !is_login).find(':input').attr('disabled', !is_login);
+                $button.val(is_login ? locales["add"] : locales["send"]);
+                $by_email[0].classList.toggle('is-by-login', is_login);
+
+                $login_hint.toggleClass('hidden', !is_login)
+
+                if (is_login) {
+                    form_action = "?module=users&action=create";
+                }
+
+                dialog.resize();
+            }
+        });
+
+        $form.submit(function (e) {
+            e.preventDefault();
+
+            $form.find('.state-error-hint').remove();
+            $form.find('.state-error').removeClass('state-error');
+
+            $.post(form_action, $form.serialize(), function (result) {
+                if (result.status === 'ok') {
+                    // close dialog
+                    dialog.close();
+                    // reload sidebar
+                    $.team.sidebar.reload();
+                    // reload content
+                    if (result.data.contact_url) {
+                        $.team.content.load(result.data.contact_url);
+                    }
+                } else {
+                    $.each(result.errors, function (key, value) {
+                        let $input;
+                        if ($.isArray(value)) {
+                            $input = $form.find('[name="' + value[1] + '"]').addClass('state-error');
+                            value = value[0];
+                        } else {
+                            $input = $form.find('[name="email"]').addClass('state-error');
+                        }
+
+                        $input.after($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                    });
+                }
+            }, 'json');
+
+        });
+
+        // Get Link
+        $('.js-get-link').on('click', function () {
+            const $get_link = $(this);
+            $get_link.html(`<i class="fas fa-link"></i> ${ locales.make_invite }... <i class="fas fa-spinner fa-spin"></i>`)
+
+            $.post($.team.app_url + '?module=users&action=createInvitation', $form.serialize(), function(response) {
+                if(response.status === 'ok') {
+                    $('.js-close-dialog:first').toggleClass('light-gray gray').text(locales.done)
+                    $get_link.remove()
+                    $('.js-invite-link').val(`${ response.data.invitation_link }`).toggleClass('hidden')
+                    $('.js-copy-link').toggleClass('hidden')
+                    // reload sidebar
+                    $.team.sidebar.reload();
+                }else{
+                    $.each(response.errors, function (key, value) {
+                        $form.find(`[name="${ key }"]`)
+                        .addClass('state-error')
+                        .parent()
+                        .append($(`<p class="state-error-hint custom-my-4">${ value }</p>`));
+                    });
+                }
+            }, 'json').always( function() {
+                $get_link.html(`<i class="fas fa-link"></i> ${ locales.get_link }`)
+            });
+
+        })
+        // Copy link
+        $('.js-copy-link').on('click', function () {
+            let $invite_link = document.querySelector('.js-invite-link'),
+                $btn = $(this);
+
+            $invite_link.select();
+            $invite_link.setSelectionRange(0, 99999);
+
+            document.execCommand("copy");
+            $btn.addClass('green').html(`<i class="fas fa-check"></i> ${ locales.copied }`)
+            setTimeout(()=>{
+                $btn.removeClass('green').html(`<i class="fas fa-copy"></i> ${ locales.copy }`)
+            }, 1500)
+
+        })
+
+    })(jQuery);
+</script>

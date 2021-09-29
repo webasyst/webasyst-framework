@@ -1,0 +1,51 @@
+{strip}
+    {if $is_connected_to_webasyst_id && ($contact['is_user'] == '1' || $is_bound_with_webasyst_contact)}
+
+        {if $is_bound_with_webasyst_contact}
+
+            {* own or other uses's profile is connected to webasyst ID *}
+
+            <i class="fas fa-check-circle text-green custom-mr-4"></i>
+
+            {if $webasyst_id_email}
+                {sprintf(_w('Webasyst ID account <span class="bold">%s</span> is connected.'), $webasyst_id_email)}
+            {else}
+                {sprintf(_w('%sSign-in with Webasyst ID%s is connected.'), '<span class="bold">', '</span>')}
+            {/if}
+
+            {if !$is_webasyst_id_forced}
+                <a href="javascript:void(0);" class="hint js-webasyst-id-unbind-auth custom-ml-8">[`Disconnect`]</a>
+            {/if}
+
+        {elseif $is_own_profile}
+            {if $webasyst_id_auth_url}
+                <div class="custom-mt-8">
+                    <a class="button webasyst-magic-wand full-width small js-webasyst-id-auth" href="javascript:void(0)">
+                        <span class="icon"></span>&nbsp;{sprintf(_w('Enable sign-in with %s'), 'Webasyst ID')}
+                    </a>
+                    <a href="javascript:void(0);" class="hint js-webasyst-id-help-link">[`What is Webasyst ID?`]</a>
+                </div>
+            {elseif $customer_center_auth_url}
+                {* Auth into customer center *}
+                <div class="custom-mt-8">
+                    <div class="js-customer-center-auth-link-wrapper">
+                        <a class="js-customer-center-auth small flexbox middle space-4" href="{$customer_center_auth_url}">
+                            <span class="icon custom-mb-4"><img src="{$wa_url}wa-content/img/wa-settings/ws-waid-green.svg" alt=""></span>
+                            <span>[`Go to the Webasyst Customer Center`]</span>
+                        </a>
+                    </div>
+                </div>
+            {else}
+                {* own profile is not connected to webasyst ID *}
+
+                <p class="small custom-mt-0 custom-mb-4">[`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="javascript:void(0);" class="js-webasyst-id-help-link">[`What is Webasyst ID?`]</a></p>
+                <a class="button webasyst-magic-wand full-width small js-webasyst-id-auth" href="javascript:void(0)"><i class="icon"></i>&nbsp;<span>{sprintf(_w('Enable sign-in with %s'), 'Webasyst ID')}</span></a>
+            {/if}
+        {else}
+
+            {* other user's profile (not own) is connected to webasyst ID *}
+
+            <span><i class="fas fa-times-circle text-red"></i> {sprintf(_w('%sSign-in with Webasyst ID%s is not connected.'), '<span class="bold">', '</span>')}</span>
+        {/if}
+    {/if}
+{/strip}

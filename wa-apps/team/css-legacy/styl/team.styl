@@ -1,0 +1,227 @@
+@import "nib";
+
+$pad = 10px
+$rem = 14
+
+$link_c = #03c
+
+// Calendar, many used variables
+$event_max_count = 4
+$event_h = 22px
+$event_pad = 2px
+$row_h = ($event_h + $event_pad * 2)
+$week_h = $row_h * $event_max_count
+
+#wa-app
+    overflow inherit
+
+    &:before
+    &:after
+        display none
+
+// PAGER
+ul.pager
+    li
+        display inline-block
+        font-weight normal
+        line-height 1em
+        list-style-type none
+        margin 0 10px 0 0
+        padding 5px
+        text-align left
+
+// LAYOUT
+.tc-layout
+    display table
+    width 100%
+
+    &.inline
+        width auto
+        max-width 100%
+
+    & > .tc-column
+        display table-cell
+        vertical-align top
+
+        &.middle
+            vertical-align middle
+
+        &.right
+            text-align right
+
+.todo
+    border 1px dashed #963 !important
+    box-sizing border-box
+
+.t-app-wrapper
+    display table
+    width: 100%
+    table-layout fixed
+
+    .t-sidebar-wrapper
+    .t-content-wrapper
+        float none
+        display table-cell
+        vertical-align top
+
+    .t-sidebar-wrapper
+        margin: 0
+        padding: 0
+
+        @import "./sidebar.styl"
+
+    .t-content-wrapper
+        margin: 0
+        padding: $pad ($pad * 1.5)
+
+        .shadowed
+            margin 0
+
+        .t-content-block
+            position relative
+            min-height 600px
+
+            .t-back-link
+                position relative
+                top -4px
+                padding: 4px
+                font-size: 11px;
+                background: #eee;
+                color: #777;
+                border-radius: 4px;
+                white-space nowrap
+
+            .router-loading-indicator
+                vertical-align baseline
+                margin 0 0 0 4px;
+
+// CONTENT HEADER
+@import "./header.styl"
+
+// CALENDAR PAGE
+@import "./calendar.styl"
+
+// USERS PAGE
+@import "./users.styl";
+
+// USER PAGE
+@import "./profile.styl";
+@import "./profile.stats.styl";
+
+// ACCESS PAGE
+@import "./access.styl";
+
+// API TOKENS PAGE
+@import "./api-tokens.styl";
+
+//
+@import "./icons.styl";
+
+//
+@import "./dialogs.styl";
+
+//
+@import "./settings.styl";
+
+//
+@import "./welcome.styl";
+
+//
+@import "./todo.styl";
+
+.t-layout
+    display table
+    width 100%
+
+    & > .t-column
+        display table-cell
+        vertical-align top
+
+        &.right
+            text-align right
+
+.t-info-notice-wrapper
+    position relative
+    border 1px solid #eed
+    margin 1em 0
+    padding 1em 3em 1em 1em
+
+    background #ffffe0
+    color #555
+    font-size 0.9em
+    line-height 1.3em
+
+    p
+        margin 1em 0 0
+
+        &:first-child
+            margin-top 0
+
+    .t-info-notice-toggle
+        position absolute
+        top 50%
+        right .5em
+        width 1em
+        height 1em
+        padding .5em
+        margin -1em 0 0
+        color: #333;
+        line-height 1em
+        text-align center
+        cursor pointer
+
+body
+    .ui-datepicker
+        display none
+
+    .ui-widget
+        font-size .9em
+
+    .ui-autocomplete
+        width auto !important
+        max-width 500px
+
+        .ui-menu-item
+            & > a
+                white-space nowrap
+                text-overflow ellipsis
+                max-width 100%
+                overflow hidden
+
+                .icon16
+                    position relative
+                    top 2px
+                    vertical-align baseline
+                    margin 0 4px 0 0
+
+.t-error
+    display inline-block
+    margin 2px 0 0
+    font-size: 0.9em;
+    font-weight: bold;
+    font-style: italic;
+    color: red;
+
+.errormsg
+    margin 2px 0 0
+
+h1
+h2
+h3
+h4
+h5
+h6
+    &:last-child
+        margin-bottom 0
+
+p
+    &:first-child
+        margin-top 0
+
+    &:last-child
+        margin-bottom 0
+
+.editable
+    &:hover
+        background: #eed;
+        cursor: text;

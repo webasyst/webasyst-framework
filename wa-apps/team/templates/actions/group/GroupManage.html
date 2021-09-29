@@ -4,29 +4,37 @@
 
 {function name=user_block user=[]}
 {strip}
-    <div class="t-user-block">
+    <div class="image">
+        <i class="userpic userpic32 custom-mt-4" style="background-image: url('{$user.photo_url_96}')"></i>
+    </div>
+    <div class="t-user-block details">
         <div class="t-layout">
-            <div class="t-column left">
-                <div class="t-userpic-wrapper">
-                    <img class="userpic t-userpic" src="{$user.photo_url_96}">
-                </div>
-            </div>
             <div class="t-column">
-                <h5 class="t-name">{$user.name|escape}</h5>
+                <h6 class="t-name small">{$user.name|escape}</h6>
                 {if !empty($user.login)}
                     <div class="t-login">@{$user.login|escape}</div>
                 {/if}
             </div>
             <div class="t-column right">
                 <div class="t-actions">
-                    <a class="inline-link js-move-user" href="javascript:void(0);">
+                    <a class="js-move-user text-blue{if $wa->isMobile()} button circle light-gray smallest{/if}" href="javascript:void(0);">
                         <span class="t-add-text" title="[`Add to group`]">
-                            <i class="icon16 add"></i>
-                            <b><i>[`Add to group`]</i></b>
+                            {if $wa->isMobile()}
+                            <i class="fas fa-plus text-green"></i>
+                            {else}
+                            <i class="fas fa-plus-circle text-green"></i>
+                            {/if}
+
+                            <span class="desktop-and-tablet-only custom-ml-4">[`Add to group`]</span>
                         </span>
                         <span class="t-remove-text" title="[`Remove from group`]">
-                            <i class="icon16 delete"></i>
-                            <b><i>[`Remove from group`]</i></b>
+                            {if $wa->isMobile()}
+                            <i class="fas fa-minus text-red"></i>
+                            {else}
+                            <i class="fas fa-minus-circle text-red"></i>
+                            {/if}
+
+                            <span class="desktop-and-tablet-only custom-ml-4">[`Remove from group`]</span>
                         </span>
                     </a>
                 </div>
@@ -36,48 +44,64 @@
 {/strip}
 {/function}
 
-<div class="t-group-manage-page" id="t-group-manage-page">
-    {* HEADER *}
-    <header class="t-content-header">
-        <h1>
-            <a class="t-back-link" href="{$wa_app_url}group/{$group.id}/">← [`Back`]</a>
-            <span class="editable js-name-editable">{$group.name|escape}</span>
-        </h1>
+<div class="t-group-manage-page content article box" id="t-group-manage-page">
 
-        <ul class="menu-h t-actions">
-            {* ACCESS *}
-            {if $_is_global_admin}
-                <li>
-                    <a href="{$wa_app_url}group/{$group.id}/access/"><i class="icon16 lock"></i>[`Manage access`]</a>
-                </li>
-            {/if}
-            {* EDIT *}
-            <li>
-                <a class="js-edit-group" href="javascript:void(0);"><i class="icon16 edit"></i>[`Edit group`]</a>
-            </li>
-            {* DELETE *}
-            {if $wa->user()->isAdmin('webasyst')}
-                <li>
-                    <a class="js-delete-group" href="javascript:void(0);"><i class="icon16 delete"></i>[`Delete group`]</a>
-                </li>
-            {/if}
-        </ul>
+    <div class="t-content-body article-body">
+        {* HEADER *}
+        <header class="t-content-header flexbox middle">
+            <h1 class="flexbox wide space-16 custom-mb-0 custom-pr-16">
+                <a class="t-back-link gray" href="{$wa_app_url}group/{$group.id}/" title="[`Back`]"><i class="fas fa-arrow-circle-left"></i></a>
+                <span class="editable js-name-editable custom-pt-0">{$group.name|escape}</span>
+            </h1>
 
-    </header>
-
-    <div class="t-content-body">
-
+            <div class="dropdown js-change-group custom-mt-8 small">
+                <button class="dropdown-toggle button light-gray" type="button"><i class="fas fa-cog text-blue"></i> [`Изменить`]</button>
+                <div class="dropdown-body dd-wide">
+                    <ul class="menu">
+                        <li class="selected">
+                            <a href="javascript:void(0);">
+                                <i class="fas fa-users text-orange"></i><span>[`Настроить участников`]</span>
+                            </a>
+                        </li>
+                        {if $wa->user()->isAdmin('webasyst')}
+                            <li>
+                                <a href="{$wa_app_url}group/{$group.id}/access/">
+                                    <i class="fas fa-lock text-green"></i><span>[`Manage access`]</span>
+                                </a>
+                            </li>
+                        {/if}
+                        <li>
+                            <a class="js-edit-group" href="javascript:void(0);">
+                                <i class="fas fa-pencil-alt text-gray"></i><span>[`Edit group`]</span>
+                            </a>
+                        </li>
+                        {if $wa->user()->isAdmin('webasyst')}
+                            <li>
+                                <a class="js-delete-group" href="javascript:void(0);">
+                                    <i class="fas fa-trash-alt text-red"></i><span>[`Delete group`]</span>
+                                </a>
+                            </li>
+                        {/if}
+                    </ul>
+                </div>
+                <script>
+                    ( function($) {
+                        $(".js-change-group").waDropdown();
+                    })(jQuery);
+                </script>
+            </div>
+        </header>
         <div class="t-autocomplete-wrapper">
-            <input class="t-input long large bold" type="text" placeholder="[`Find and add user`]">
+            <input class="t-input longer bold" type="text" placeholder="[`Find and add user`]">
         </div>
 
         {* USERS IN GROUP *}
         <div class="t-users-wrapper">
-            <h5 class="heading">[`Users in this group`]</h5>
-            <p class="t-description t-empty-users-in-group {if !empty($group_users)}is-hidden{/if}">[`No users in this group.`]</p>
-            <ul class="menu-v t-users-list is-used-list {if empty($group_users)}is-hidden{/if}">
+            <h5 class="heading large">[`Users in this group`]</h5>
+            <p class="t-description t-empty-users-in-group custom-ml-16 {if !empty($group_users)}is-hidden{/if}">[`No users in this group.`]</p>
+            <ul class="list t-users-list is-used-list {if empty($group_users)}hidden{/if}">
                 {foreach $group_users as $_user}
-                    <li class="t-user-wrapper" data-user-id="{$_user.id}">
+                    <li class="item t-user-wrapper" data-user-id="{$_user.id}">
                         {user_block user=$_user}
                     </li>
                 {/foreach}
@@ -87,10 +111,10 @@
         {* OTHER USERS *}
         <div class="t-users-wrapper">
             <h5 class="heading">[`Others users`]</h5>
-            <p class="t-description t-empty-users-outside-group {if !empty($other_users)}is-hidden{/if}">[`All users in this group.`]</p>
-            <ul class="menu-v t-users-list is-unused-list {if empty($other_users)}is-hidden{/if}">
+            <p class="t-description t-empty-users-outside-group custom-ml-16 {if !empty($other_users)}is-hidden{/if}">[`All users in this group.`]</p>
+            <ul class="list t-users-list is-unused-list {if empty($other_users)}hidden{/if}">
                 {foreach $other_users as $_user}
-                    <li class="t-user-wrapper" data-user-id="{$_user.id}">
+                    <li class="item t-user-wrapper" data-user-id="{$_user.id}">
                         {user_block user=$_user}
                     </li>
                 {/foreach}

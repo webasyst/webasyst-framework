@@ -1,0 +1,19 @@
+{$container_id = uniqid('t-external-calendar-create')}
+
+<div class="block t-external-calendar-create" id="{$container_id}">
+    <h1>[`Connect external calendar`]</h1>
+    {if $plugins}
+        {include file='./CalendarExternalConnectForm.inc.html' container_id=$container_id}
+    {else}
+        <p>[`You need to install any calendar plugin before connecting external calendars.`]</p>
+        {if $wa->user()->isAdmin('team')}
+            <p>
+                {sprintf_wp(
+                    'Use <a class="js-edit-group inline-link" href="%s"><b><i>Plugins</i></b></a> section to install plugin you need.', 
+                    "`$wa_app_url`plugins/"
+                )}
+            </p>
+        {/if}
+    {/if}
+</div>
+

@@ -1,0 +1,193 @@
+{strip}
+<div class="t-dialog-wrapper is-full-screen t-invite-user-dialog">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <form method="post" id="t-invite-user-form">
+            <header class="t-dialog-header">
+                <h1>[`Invite new user`]</h1>
+            </header>
+
+            <div class="t-dialog-content">
+
+                <div class="fields form" style="float: none;">
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">[`Email`]</div>
+                            <div class="value">
+
+                                <div class="t-input-wrapper">
+                                    <input class="long bold large" type="text" name="email" placeholder="[`name@company.com`]">
+                                </div>
+                                <p class="hint">[`Please specify an email to send user invitation with further instructions.`]</p>
+
+                                {if !$is_waid_forced}
+                                    <div style="margin-top: 1em;">
+                                        <label>
+                                            <input type="checkbox" name="create_user" value="1" class="t-create-user-toggle"> [`I will enter password on behalf of this user so no invitation will be sent.`]
+                                        </label>
+                                    </div>
+                                {/if}
+
+                            </div>
+                        </div>
+                        <div class="t-create-user-credentials" style="display: none">
+                            <div class="field">
+                                <div class="name">[`Login`]</div>
+                                <div class="value">
+                                    <div class="t-input-wrapper">
+                                        <input type="text" name="login">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name">
+                                    [`Password`]
+                                </div>
+                                <div class="value">
+                                    <div class="t-input-wrapper">
+                                        <input type="password" name="password">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="name">
+                                    [`Confirm password`]
+                                </div>
+                                <div class="value">
+                                    <div class="t-input-wrapper">
+                                        <input type="password" name="password_confirm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="t-groups-wrapper">
+                        <div class="field-group">
+                            {if $groups}
+                                <div class="field">
+                                    <div class="name">[`Groups`]</div>
+                                    <div class="value">
+                                        <ul class="menu-v" style="margin-top: 0;">
+                                            {foreach $groups as $_g}
+                                                <li data-group-id="{$_g.id}">
+                                                    <label>
+                                                        <input type="checkbox" name="groups[{$_g.id}]">
+                                                        {*<i class="icon16 {if $_g.icon}{$_g.icon}{else}user{/if}"></i>*}
+                                                        &nbsp;{$_g.name|escape}
+                                                    </label>
+                                                </li>
+                                            {/foreach}
+                                        </ul>
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+
+                        <div class="field-group">
+                            {if $locations}
+                                <div class="field">
+                                    <div class="name">[`Locations`]</div>
+                                    <div class="value">
+                                        <ul class="menu-v" style="margin-top: 0;">
+                                            {foreach $locations as $_g}
+                                                <li data-group-id="{$_g.id}">
+                                                    <label>
+                                                        <input type="checkbox" name="groups[{$_g.id}]">
+                                                        {*<i class="icon16 {if $_g.icon}{$_g.icon}{else}user{/if}"></i>*}
+                                                        &nbsp;{$_g.name|escape}
+                                                    </label>
+                                                </li>
+                                            {/foreach}
+                                        </ul>
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <footer class="t-dialog-footer">
+                <div class="t-actions">
+                    <input type="submit" class="button green t-button js-submit-button" value="[`Send`]">
+                    <span style="margin: 0 4px;">[`or`]</span>
+                    <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                </div>
+            </footer>
+        </form>
+    </div>
+</div>
+{/strip}
+<script>( function($) { "use strict";
+
+    var locales = {
+        "add": {_w("Add")|json_encode},
+        "send": {_w("Send")|json_encode}
+    };
+
+    var $form = $('#t-invite-user-form'),
+        $button = $form.find(".js-submit-button");
+
+    $form.on('keyup change', '.error', function() {
+        $(this)
+            .removeClass('error')
+            .parent()
+                .find(".errormsg").remove();
+    });
+
+    var $create_user_toggle = $form.find('.t-create-user-toggle');
+    $create_user_toggle.change(function () {
+        var $el = $(this);
+        var $credentials = $form.find('.t-create-user-credentials');
+        if ($el.is(':checked')) {
+            $credentials.show().find(':input').attr('disabled', false);
+            $button.val(locales["add"]);
+        } else {
+            $credentials.hide().find(':input').attr('disabled', true);
+            $button.val(locales["send"]);
+        }
+    });
+
+    $form.submit(function(e) {
+        e.preventDefault();
+
+        $form.find('.errormsg').remove();
+        $form.find('.error').removeClass('error');
+
+        var action = "?module=users&action=invite";
+        if ($create_user_toggle.is(':checked')) {
+            action = "?module=users&action=create";
+        }
+
+        $.post(action, $form.serialize(), function(result) {
+            if (result.status == 'ok') {
+                // close dialog
+                $form.closest('.t-dialog-wrapper').trigger('close');
+                // reload sidebar
+                $.team.sidebar.reload();
+                // reload content
+                if (result.data.contact_url) {
+                    $.team.content.load(result.data.contact_url);
+                }
+            } else {
+                $.each(result.errors, function(key, value) {
+                    var $div = null;
+                    if ($.isArray(value)) {
+                        $div = $form.find('[name="' + value[1] + '"]').addClass('error').parent('.t-input-wrapper');
+                        value = value[0];
+                    } else {
+                        $div = $form.find('[name="email"]').addClass('error').parent('.t-input-wrapper');
+                    }
+                    $div.append(
+                        $('<em class="errormsg"></em>').text(value)
+                    );
+                });
+            }
+        }, 'json');
+
+    });
+
+})(jQuery);</script>

@@ -1,0 +1,65 @@
+{if !$has_settings}
+    <style>
+        .t-plugin-settings-list {
+            margin: 2em 0 0;
+        }
+        .t-plugin-settings-list li {
+            margin: 1em 0 0;
+        }
+        .t-plugin-settings-list li:first-child {
+            margin-top: 0;
+        }
+    </style>
+
+
+    <h1>{$plugin->getName()}</h1>
+	<p style="margin: 2em 0 0 0;">[`To connect an external calendar:`]<p>
+    <ol class="t-plugin-settings-list">
+        <li>[`Open your user profile.`]</li>
+        <li>[`Under the calendar, click <strong>“Personal calendar settings”</strong>.`]</li>
+        <li>[`Select <strong>“Add external calendar”</strong>.`]</li>
+        <li>{sprintf('[`Select <strong>“%s”</strong> and confirm your choice.`]', $plugin->getName())}</li>
+        <li>[`Complete settings fields using provided hints and save the changes.`]</li>
+    </ol>
+
+    <p style="margin: 2em 0 0;">
+        <input class="button green t-connect-calendar-external" type="button" value="{sprintf('[`Connect your %s now`]', $plugin->getName())}">
+    </p>
+
+    {$_need_show_review_widget = $need_show_review_widget|default:false}
+    {if $_need_show_review_widget}
+        <div>
+            {$wa->installer->reviewWidget("plugin/`$app_id`/`$plugin_id`", ['is_inline' => true])}
+        </div>
+    {/if}
+
+    <script>
+        $(function () {
+            $('#wa-plugins-content .t-connect-calendar-external').click(function () {
+                var storage = new $.store();
+                storage.set("team/plugins/refer", '{$plugin->getId()}');
+                window.location = "{$wa_app_url}calendar/external/";
+            });
+        });
+    </script>
+
+{else}
+    {include file=$orig_path inline}
+
+    <script>
+        $(function () {
+            $.plugins && ((function(plugins) {
+                var storage = new $.store();
+                $(plugins).one("success", function(e, data) {
+                    var plugin_id = (plugins.path && plugins.path.plugin) ||
+                            (window.location.hash || "").replace("#/plugins/", "").replace("/", "");
+                    storage.set("team/plugins/refer", plugin_id);
+                    storage.set("team/plugins/refer_has_settings", 1);
+                    window.location = "{$wa_app_url}calendar/external/";
+                });
+            })($.plugins));
+        });
+    </script>
+
+{/if}
+

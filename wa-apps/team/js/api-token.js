@@ -29,7 +29,7 @@ var SiteApiTokenPage = ( function($) {
         that.$wrapper.on('click', '.js-remove-api-token', function (e) {
             e.preventDefault();
             var $token_item = $(this).parents('.js-token-item'),
-                $icon = $token_item.find('.icon16'),
+                $icon = $token_item.find('svg'),
                 token_id = $token_item.data('token'),
                 contact_id = $token_item.data('contact-id'),
                 href = '?module=apiTokensRemove',
@@ -38,7 +38,7 @@ var SiteApiTokenPage = ( function($) {
             if (!is_locked && token_id && confirm(that.locale['remove_ask'])) {
                 is_locked = true;
 
-                $icon.removeClass('no').addClass('loading');
+                $icon.removeClass('fa-times').addClass('fa-spin fa-spinner');
 
                 $.post(href, data, function(res) {
                     if (res.status && res.status === 'ok') {
@@ -50,11 +50,11 @@ var SiteApiTokenPage = ( function($) {
                         }
                     } else {
                         is_locked = false;
-                        $icon.removeClass('loading').addClass('no');
+                        $icon.removeClass('fa-spin fa-spinner').addClass('fa-times');
                     }
                 }).always( function() {
                     is_locked = false;
-                    $icon.removeClass('loading').addClass('no');
+                    $icon.removeClass('fa-spin fa-spinner').addClass('fa-times');
                 });
             }
         });

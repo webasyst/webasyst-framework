@@ -7,7 +7,7 @@ class teamProfileStatsAction extends waViewAction
     public function execute()
     {
         // Get parameters from GET/POST
-        list($start_date, $end_date, $group_by) = self::getTimeframeParams();
+        list($start_date, $end_date, $group_by) = $this->getTimeframeParams();
 
         $contact_id = waRequest::request('id', null, waRequest::TYPE_INT);
 
@@ -28,7 +28,7 @@ class teamProfileStatsAction extends waViewAction
         ));
     }
 
-    protected static function getChartData($start_date, $end_date, $group_by, $contact_id = null)
+    public static function getChartData($start_date, $end_date, $group_by, $contact_id = null)
     {
         // Fetch stats for the chart
         $log_model = new teamWaLogModel();
