@@ -17,7 +17,6 @@
                     {/if}
                     <div class="value">
                         {if $key == 'default'}
-                            <h4>[s`Default`]</h4>
                             <input class="js-key" data-name="key" value="{$key|escape}" type="hidden">
                         {else}
                             <input class="js-key" data-name="key" value="{$key|escape}" type="text" autocomplete="off">
@@ -227,20 +226,32 @@
         </div>
 
         {* Editor for wa-config/mail.php *}
-        <div class="s-description">
-            [s`Select how email messages must be sent by default from your Webasyst.`]
+
+        <h4>[s`Default sending parameters`]</h4>
+
+        <div class="hint">{sprintf(_ws('The email sending parameters specified below are used by default for all outgoing email messages. If you need to use other parameters for all or certain sender addresses or domains then add extra rules using the “<strong>%s</strong>” button.'), _ws('Add email sending rule'))}</div>
+
+        <div class="s-email-settings-fields-block">
+            <div class="s-settings-items">
+                {_renderConfig key='default' config=$main_configs.default is_template=false}
+            </div>
         </div>
+
+
+        <h4>[s`Additional sending parameters`]</h4>
+        <a href="javascript:void(0);" class="inline-link s-add-item js-add-item">
+            <i class="icon10 add"></i>
+            <b><i>[s`Add email sending rule`]</i></b>
+        </a>
+
         <div class="s-email-settings-fields-block">
             <div class="s-settings-items js-settings-items">
                 {foreach $main_configs as $key => $config}
-                    {_renderConfig key=$key config=$config is_template=false}
+                    {if $key !== 'default'}
+                        {_renderConfig key=$key config=$config is_template=false}
+                    {/if}
                 {/foreach}
             </div>
-            <div class="s-description">[s`If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section.`]</div>
-            <a href="javascript:void(0);" class="inline-link s-add-item js-add-item">
-                <i class="icon10 add"></i>
-                <b><i>[s`Add email sending rule`]</i></b>
-            </a>
             <div class="s-form-buttons">
                 <div class="s-footer-actions js-footer-actions">
                     <input class="button green js-submit-button" type="submit" name="" value="[s`Save`]">

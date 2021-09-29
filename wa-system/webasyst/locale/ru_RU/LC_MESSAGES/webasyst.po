@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-09-22 09:47+0300\n"
+"PO-Revision-Date: 2021-09-28 13:19+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4321,8 +4321,8 @@ msgstr "Выберите, каким способом должны по умол
 msgid "Default"
 msgstr "По умолчанию"
 
-msgid "If you use different sender email addresses in your apps, then you can add extra rules to send messages from those addresses. Emails from other addresses will be sent via the transport selected in “Default” section."
-msgstr "Если вы используете разные адреса отправителей в отдельных приложениях, то для них можно настроить дополнительные правила отправки сообщений. Для всех остальных адресов будет использоваться способ отправки, выбранный в секции «По умолчанию»."
+msgid "The email sending parameters specified below are used by default for all outgoing email messages. If you need to use other parameters for all or certain sender addresses or domains then add extra rules using the “<strong>%s</strong>” button."
+msgstr "Указанные ниже параметры отправки используются по умолчанию для всех исходящих email-сообщений. Если вам нужно использовать другие параметры отправки для всех или выбранных адресов или отдельных доменов, добавьте дополнительные правила с помощью кнопки «<strong>%s</strong>»."
 
 msgid "Email transport"
 msgstr "Email транспорт"
@@ -6525,3 +6525,9 @@ msgstr "Выберите файл"
 
 msgid "Unable to delete certain files."
 msgstr "Не удалось удалить некоторые файлы."
+
+msgid "Default sending parameters"
+msgstr "Параметры отправки по умолчанию"
+
+msgid "Additional sending parameters"
+msgstr "Дополнительные параметры отправки"
