@@ -41,7 +41,9 @@ abstract class installerItemsAction extends waViewAction
         $this->store_path = $this->buildStorePath($params);
 
         // Set ui version from current app
-        waRequest::setParam('force_ui_version', wa()->whichUI($slug));
+        // For system plugins get UI from request param with 1.3 as default
+        $ui = (strpos($slug, 'wa-plugins/') === 0) ? waRequest::get('ui', '1.3', waRequest::TYPE_STRING_TRIM) : wa()->whichUI($slug);
+        waRequest::setParam('force_ui_version', $ui);
     }
 
     public function display($clear_assign = true)
