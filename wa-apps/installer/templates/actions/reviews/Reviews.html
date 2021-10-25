@@ -78,11 +78,17 @@
     {/capture}
 
     {capture assign="_product_review_dialog_template"}
-    <div class="wa-dialog i-product-review-dialog">
-        <div class="wa-dialog-background"></div>
-        <div class="wa-dialog-body">
-            <div class="wa-dialog-header"><h1 class="js-content-title">[`Your review`]</h1></div>
-            <div class="wa-dialog-content">
+    <div class="dialog i-product-review-dialog">
+        <div class="dialog-background"></div>
+        <div class="dialog-body">
+            <div class="dialog-header flexbox">
+                <h1 class="js-content-title wide">[`Your review`]</h1>
+
+                <span class="custom-ml-12 custom-mb-auto cursor-pointer js-close-dialog">
+                    <i class="fas fa-times fa-2x"></i>
+                </span>
+            </div>
+            <div class="dialog-content">
 
                 <div class="i-comment-section">
                     {strip}
@@ -100,7 +106,7 @@
                 </div>
 
                 <div class="i-comment-user js-comment-user assets" style="display: none;">
-                    <i class="userpic20 icon16"></i>
+                    <i class="userpic userpic20 icon16"></i>
                     <strong class="user"></strong>
                     <span class="hint">{wa_date('humandate')}</span>
                 </div>
@@ -109,7 +115,7 @@
 
             </div>
 
-            <div class="wa-dialog-footer">
+            <div class="dialog-footer">
 
                 <div class="hint js-dialog-signup-user-info" style="display: none;">
                     <p>
@@ -120,9 +126,6 @@
 
                 <button class="button2 large blue js-send-comment">[`Add a review`]</button>
             </div>
-            <span class="wa-close-icon js-close-dialog">
-                <i class="far fa-times-circle"></i>
-            </span>
         </div>
     </div>
     {/capture}

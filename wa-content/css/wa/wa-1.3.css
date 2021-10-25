@@ -657,9 +657,10 @@ table.light td.no-border { border: none; }
 /* PAGING: 1 2 3 ... 43 prev next
 -------------------------------------------- */
 .paging { }
-.paging a { padding: 4px 6px; text-decoration: none; }
-.paging a.selected { color: #000; background: #eee; }
-.paging a.selected:hover { color: #000 !important; }
+.paging li { display: inline-block; }
+.paging a, .paging li { padding: 4px 6px; text-decoration: none; }
+.paging a.selected, .paging li.selected { color: #000; background: #eee; }
+.paging a.selected:hover, .paging li.selected:hover { color: #000 !important; }
 .paging a.prevnext { margin-left: 15px; font-weight: bold; }
 
 /* DIALOGs

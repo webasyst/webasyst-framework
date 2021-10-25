@@ -104,6 +104,8 @@
                 that.options = (options["options"] || {});
                 that.position = (typeof options["position"] === "function" ? options["position"] : null);
                 that.lock_body_scroll = (typeof options["lock_body_scroll"] === "boolean" ? options["lock_body_scroll"] : true);
+                that.bodyDefaultPadding = document.body.style.getPropertyValue('padding-right');
+                that.bodyDefaultBoxSizing = document.body.style.getPropertyValue('box-sizing');
 
                 // DYNAMIC VARS
                 that.is_visible = false;
@@ -246,7 +248,7 @@
                 } else {
                     that.$background.height('');
                     that.$wrapper.css({
-                        'overflow-y': 'auto',
+                        'overflow-y': 'scroll',
                         'padding-bottom': 0,
                     });
                 }
@@ -281,10 +283,22 @@
             if (state) {
                 const scroll_width = Math.abs(window.innerWidth - document.documentElement.clientWidth);
                 that.$body.addClass(locked_class);
-                that.$body.css('padding-right', scroll_width + 'px');
+                document.body.style.paddingRight = scroll_width + 'px';
+                document.body.style.boxSizing = 'border-box';
             } else {
                 that.$body.removeClass(locked_class);
-                that.$body.css('padding-right', '');
+
+                if (that.bodyDefaultPadding) {
+                    document.body.style.paddingRight = that.bodyDefaultPadding;
+                } else {
+                    document.body.style.removeProperty('padding-right');
+                }
+
+                if (that.bodyDefaultBoxSizing) {
+                    document.body.style.boxSizing = that.bodyDefaultBoxSizing;
+                } else {
+                    document.body.style.removeProperty('box-sizing');
+                }
             }
         }
 

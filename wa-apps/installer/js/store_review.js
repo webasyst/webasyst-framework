@@ -255,7 +255,7 @@ var InstallerStoreReview = ( function($) {
                 img_class = 'class="size-limit"';
             }
 
-            $product_review_icon.empty().append('<img ' + img_class + ' src="' + icon_src + '" alt="">');
+            $product_review_icon.empty().append(`<img ${img_class} src="${icon_src}" alt="" loading="lazy">`);
         }
 
         if (data.id) {
@@ -282,8 +282,11 @@ var InstallerStoreReview = ( function($) {
                     .html('<a href="#">' + that.locale.button_edit_active + '</a>'),
                 $product_review_date = $('<span/>').addClass('review_date')
                     .text(review_date),
-                $product_reviewer_userpic = $('<i/>').addClass('userpic20 icon16')
-                    .css('background-image', 'url(' + userpic_url + ')'),
+                $product_reviewer_userpic = $('<i/>').addClass('userpic userpic20 icon16')
+                    .css({
+                        'background-image': 'url(' + userpic_url + ')',
+                        'margin-right': '5px'
+                    }),
                 $product_review = '',
                 $product_reviewer_info = '';
 
@@ -411,7 +414,7 @@ var InstallerStoreReview = ( function($) {
 
             var is_success = false,
                 dialog = $.waDialog({
-                    wrapper: $(that.templates["review_dialog"]),
+                    html: that.templates["review_dialog"],
                     onOpen: initRateDialogContent,
                     onClose: function() {
                         if (!is_success) {

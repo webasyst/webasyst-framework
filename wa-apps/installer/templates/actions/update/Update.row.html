@@ -43,7 +43,7 @@
         {/if}
     </td>
 
-    <td class="small{if empty($item.version) && empty($item.installed.version) && empty($item.changelog)}  installer-update__table-hidden{/if}">
+    <td class="small{if empty($item.version) && empty($item.installed.version) && empty($item.changelog)} installer-update__table-hidden{/if} js-changelog-container">
         {* UPDATE INFO & CHANGELOG *}
         {if !empty($item.version)}
             <strong class="i-new-version-info">
@@ -68,19 +68,25 @@
 
         {* changelog text *}
         {if !empty($item.changelog)}
-            <div class="js-changelog">
+            <div class="js-changelog hidden">
                 {foreach $item.changelog as $record}
-                    <h4 class="gray"{if $record@first} style="display:none;"{/if}>{$record.version|default:'no-version'}{if !empty($record.datetime)} <span class="hint">{$record.datetime|wa_date:'humandate'|escape}</span>{/if}</h4>
-                    {$record.content|nl2br}
-                    {if !$record@last}<br><br>{/if}
-                    {if $record@first && !$record@last}
-                        <a class="inline-link js-changelog-more" href="#"><b><i>[`more`]</i></b></a>
-                    {/if}
-                    {if !$record@first && $record@last}
-                        <span style="display: none;"></span>
-                    {/if}
+                    <div class="custom-mt-16">
+                        <strong class="i-new-version-info"{if $record@first} style="display: none;"{/if}>
+                            <span class="i-version">{$record.version|default:'no-version'}</span>
+                        </strong>
+
+                        {if !empty($record.datetime)}
+                        <p class="hint">{$record.datetime|wa_date:'humandate'|escape}</p>
+                        {/if}
+
+                        {$record.content|nl2br}
+                    </div>
                 {/foreach}
             </div>
+
+            {if $item.changelog|@count > 1}
+            <a class="inline-link js-changelog-more" href="#"><b><i>[`more`]</i></b></a>
+            {/if}
         {/if}
     </td>
 

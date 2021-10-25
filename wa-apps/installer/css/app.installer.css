@@ -106,34 +106,11 @@
     text-align: center;
   }
 }
-.i-assets-spinner {
-  animation: iAssetsSpinner 1.8s linear infinite;
-}
 .js-installer-assets-spinner {
   display: none;
 }
 .js-installer-assets-spinner.-active {
   display: inline-block;
-}
-@-moz-keyframes iAssetsSpinner {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@-webkit-keyframes iAssetsSpinner {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@-o-keyframes iAssetsSpinner {
-  to {
-    transform: rotate(360deg);
-  }
-}
-@keyframes iAssetsSpinner {
-  to {
-    transform: rotate(360deg);
-  }
 }
 .i-reviews {
   position: relative;

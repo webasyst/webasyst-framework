@@ -25,7 +25,11 @@ class webasystLoginController extends waViewController
 
         $cm = new waWebasystIDClientManager();
 
-        $webasyst_id_forced_auth = $cm->isBackendAuthForced() && !wa()->getRequest()->get('force_login_form');
+        try {
+            $webasyst_id_forced_auth = $cm->isBackendAuthForced() && !wa()->getRequest()->get('force_login_form');
+        } catch (waException $e) {
+            $webasyst_id_forced_auth = false;
+        }
 
         // Webasyst ID oauth not forced - standard backend auth login
         if (!$webasyst_id_forced_auth) {

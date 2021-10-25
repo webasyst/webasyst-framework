@@ -166,7 +166,7 @@
         $('.js-changelog-more').on('click', function (e) {
             e.preventDefault();
 
-            $(this).parents('.js-changelog').find(':hidden').show();
+            $(this).closest('.js-changelog-container').find('.js-changelog').removeClass('hidden');
             $(this).hide();
         });
 

@@ -77,7 +77,7 @@ var WaFrontendLogin = ( function($) {
     Self.prototype.isNeedConfirm = function () {
         return this.is_need_confirm;
     };
-    
+
     Self.prototype.initConfirmView = function () {
         var that = this,
             $wrapper = that.$wrapper,
@@ -357,6 +357,7 @@ var WaFrontendLogin = ( function($) {
             $edit_link = $wrapper.find('.wa-edit-login-link-wrapper'),
             $sent_link = $wrapper.find('.wa-send-again-confirmation-code-link-wrapper'),
             $confirm_block = $wrapper.find('.wa-signup-form-confirmation-block'),
+            $confirm_input = $wrapper.find('[name="confirmation_code"]'),
             $login = that.getFormInput('login');
 
         that.turnOnBlock($edit_link);
@@ -364,6 +365,10 @@ var WaFrontendLogin = ( function($) {
 
         // "Disable" LOGIN input
         $login.attr('readonly', 1);
+
+        if ($confirm_input) {
+            $confirm_input.focus();
+        }
 
         var data = response.data,
             errors = response.errors;

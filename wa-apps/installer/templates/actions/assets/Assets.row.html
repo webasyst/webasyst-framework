@@ -128,13 +128,17 @@
                 !empty($item.enabled)
             )
             }
-            <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" data-confirm="[`This will delete the product’s source code and data, without a recovery option. Are you sure?`]" title="[`Delete`]"><i class="fas fa-trash-alt" style="color: var(--red);"></i></a>
-                {if $item_type=='app'}{$field = 'app_id'}{else}{$field='extras_id'}{/if}
-                <form action="?module={$item_type}s&action=remove" method="post">
-                    {$wa->csrf()}
-                    <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
-                </form>
-                {/if}
+            <a href="{$wa_app_url}assets/" class="js-remove-item button light-gray circle" title="[`Delete`]">
+                <i class="fas fa-trash-alt text-red js-remove-item-icon"></i>
+                <i class="fas fa-spinner wa-animation-spin speed-1500 hidden js-remove-item-spinner"></i>
+            </a>
+
+            {if $item_type=='app'}{$field = 'app_id'}{else}{$field='extras_id'}{/if}
+            <form action="?module={$item_type}s&action=remove" method="post" class="js-remove-item-form">
+                {$wa->csrf()}
+                <input type="hidden" name="{$field}[{$item.slug}]" value="{$item.installed.vendor|default:'webasyst'|escape}"/>
+            </form>
+            {/if}
             {/if}
         </ul>
     </td>

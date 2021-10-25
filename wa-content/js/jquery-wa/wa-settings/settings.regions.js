@@ -131,7 +131,7 @@ var WASettingsRegions = ( function($) {
         // Icon to mark country as favorite
         $country_fav_icon.on('click', function () {
             var $svg_icon = $(this).find('svg'),
-                fav_sort = $svg_icon.attr('data-prefix') === 'fas' ? '1' : '',
+                fav_sort = $svg_icon.attr('data-prefix') === 'fas' ? '' : '1',
                 data = { fav: 1, country: that.country_iso3letter, fav_sort: fav_sort };
 
             // toggleAttr
