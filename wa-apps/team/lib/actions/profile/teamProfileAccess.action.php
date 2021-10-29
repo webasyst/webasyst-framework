@@ -197,9 +197,8 @@ class teamProfileAccessAction extends waViewAction
         }
 
         if (isset($log_item_params['reason'])) {
-            $text .= 
-                '<br><br>' . _w('Reason for blocking:') . 
-                '<br><br><em>' . nl2br(htmlspecialchars($log_item_params['reason'])) . '</em>';
+            $text .=
+                '<br><br>' . _w('Reason for blocking:') . ' <em>' . nl2br(htmlspecialchars($log_item_params['reason'])) . '</em>';
         }
 
         return $text;

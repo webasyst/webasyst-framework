@@ -65,10 +65,12 @@
                         const allowed_ids = $dialog.data('allowed-ids'),
                             $delete_button = $dialog.find('.js-delete-button')
 
+                        dialog.$document.trigger('wa_confirm_contact_delete_dialog')
+
                         if (allowed_ids) {
                             $delete_button.on('click', function() {
                                 let btn_text = $delete_button.text();
-                                $delete_button.attr('disabled', true).html(`${btn_text} <i class="fas fa-spin fa-spinner"></i>`);
+                                $delete_button.attr('disabled', true).html(`${btn_text} <i class="fas fa-spin fa-spinner wa-animation-spin speed-1000"></i>`);
 
                                 $.post('?module=users&action=delete', { id: allowed_ids }, function(){
                                     dialog.close();
@@ -100,6 +102,61 @@
                     .error( function () {
                         return false;
                     });
+            }
+        },
+
+        /**
+         * @description Popup alert notifications with any info
+         * @param options
+         */
+        notification(options) {
+
+            const $appendTo = options.appendTo || document.body,
+                isCloseable = options.isCloseable ?? true,
+                alertTimeout = options.alertTimeout || false;
+            let $alertWrapper = $appendTo.querySelector('#t-notifications');
+
+            // Create notification
+            const $alert = document.createElement('div');
+            $alert.classList.add('alert', options.alertClass || 'info');
+            $alert.innerHTML = options.alertContent || '';
+
+            if(isCloseable){
+                const closeClass = options.alertCloseClass || 'js-alert-error-close',
+                    $alertClose = document.createElement('a');
+
+                $alertClose.classList.add('alert-close', closeClass);
+                $alertClose.setAttribute('href', 'javascript:void(0)');
+                $alertClose.innerHTML = '<i class="fas fa-times"></i>';
+                $alert.insertAdjacentElement('afterbegin', $alertClose);
+                // Event listener for close notification
+                $alertClose.addEventListener('click', function() {
+                    this.closest('.alert').remove();
+                });
+            }
+
+            if(!$alertWrapper) {
+                // Create notification wrapper
+                $alertWrapper = document.createElement('div');
+                $alertWrapper.className = 'alert-fixed-box';
+                if (options.alertPlacement) {
+                    $alertWrapper.classList.add(options.alertPlacement);
+                }
+                if (options.alertSize) {
+                    $alertWrapper.classList.add(options.alertSize);
+                }
+                $alertWrapper.id = 't-notifications';
+                $appendTo.append($alertWrapper);
+            }
+
+            if (options.alertPlacement) {
+                $alertWrapper.prepend($alert);
+            }else{
+                $alertWrapper.append($alert);
+            }
+
+            if(alertTimeout) {
+                setTimeout(() => $alert.remove(), alertTimeout)
             }
         }
     };
@@ -504,107 +561,105 @@ var TeamDialog = ( function($) {
 // Helper used in many places. (group, profile)
 var TeamEditable = ( function($) {
 
-    TeamEditable = function(options) {
+    TeamEditable = function(wrapper, options) {
         var that = this;
 
         // DOM
-        that.$wrapper = options["$wrapper"];
+        that.$wrapper = wrapper;
 
-        // VARS
-        that.save = ( options["onSave"] || function() {} );
-        that.render = ( options["onRender"] || false );
-        that.on_toggle = ( options["onToggle"] || function() {} );
-
-        // DYNAMIC VARS
-        that.is_empty = that.$wrapper.hasClass("is-empty");
-        that.text = that.is_empty ? "" : that.$wrapper.text();
-        that.$field = false;
-        that.is_edit = false;
+        // OPTIONS
+        this.options = options;
 
         // INIT
         that.initClass();
     };
 
     TeamEditable.prototype.initClass = function() {
-        var that = this;
-        //
-        that.$field = that.renderField();
-        //
+        const that = this;
+
+        const defaultText = that.$wrapper.data('default-text') || '';
+        $.extend(that.options, {
+            defaultText
+        });
+
         that.bindEvents();
     };
 
     TeamEditable.prototype.bindEvents = function() {
-        var that = this;
+        const that = this;
 
-        that.$wrapper.on("click", function() {
-            that.toggle();
-        });
+        that.$wrapper.on('keypress', $.proxy(that.checkValue, that));
+        that.$wrapper.on('focus', $.proxy(that.enableEditor, that));
+        that.$wrapper.on('blur', $.proxy(that.disableEditor, that));
+    }
 
-        that.$field.on("blur", function() {
-            that.save(that);
-        });
+    TeamEditable.prototype.checkValue = function(event) {
+        const that = this;
 
-        that.$field.on("keyup", function(event) {
-            var is_enter = ( event.keyCode === 13 ),
-                is_escape = ( event.keyCode === 27 );
+        if (event.keyCode !== 13) {
+            return;
+        }
 
-            if (is_enter) {
-                that.save(that);
+        event.preventDefault();
+        that.$wrapper.blur();
+    }
 
-            } else if (is_escape) {
-                that.$field.val( that.text );
-                that.toggle("hide");
+    TeamEditable.prototype.cacheText = function() {
+        const that = this;
+
+        that.cachedText = that.$wrapper.text();
+    }
+
+    TeamEditable.prototype.enableEditor = function() {
+        const that = this;
+
+        that.cacheText();
+
+        that.$wrapper.addClass('editable-highlight');
+
+        if (that.$wrapper.text() === that.options.defaultText) {
+            that.$wrapper.text('');
+        }
+    }
+
+    TeamEditable.prototype.disableEditor = function() {
+        const that = this;
+
+        that.$wrapper.removeClass('editable-highlight');
+
+        if (that.$wrapper.text() === '') {
+            that.$wrapper.addClass('gray italic');
+            that.$wrapper.text(that.options.defaultText);
+        } else {
+            that.$wrapper.removeClass('gray italic');
+        }
+
+        if (that.$wrapper.text() === that.cachedText) {
+            return;
+        }
+
+        that.save();
+    }
+
+    TeamEditable.prototype.save = function() {
+        const that = this;
+
+        const data = {
+            "data[id]": that.options.groupId,
+            [that.options.target]: that.$wrapper.text()
+        };
+
+        const $loading = $('<span class="smaller text-gray custom-ml-4"><i class="fas fa-spin fa-spinner wa-animation-spin speed-1000"></i></span>');
+        that.$wrapper.append($loading);
+
+        $.post(that.options.api.save, data, function() {
+            $loading.remove();
+
+            if (that.options.reloadSidebar) {
+                $.team.sidebar.reload();
             }
         });
-    };
-
-    TeamEditable.prototype.renderField = function() {
-        var that = this,
-            text = that.$wrapper.text(),
-            $field = $('<input class="input-editable" type="text" name="" style="width: 100%; min-height: 34px;" />');
-
-        if (!that.is_empty) {
-            $field.val(text);
-        }
-
-        var parent_w = that.$wrapper.parent().width(),
-            wrapper_w = that.$wrapper.width(),
-            max_w = 600,
-            field_w;
-
-        field_w = ( parent_w > max_w ) ? max_w : parent_w - 50;
-        field_w = ( wrapper_w > field_w ) ? wrapper_w : field_w;
-
-        $field
-            .hide();
-
-        that.$wrapper.after($field);
-
-        if (that.render) {
-            that.render(that, $field);
-        }
-
-        return $field;
-    };
-
-    TeamEditable.prototype.toggle = function( show ) {
-        var that = this;
-
-        var id_edit = (show !== "hide");
-        if (id_edit) {
-            that.$wrapper.hide();
-            that.$field.show().focus();
-        } else {
-            that.$wrapper.show();
-            that.$field.hide();
-        }
-
-        that.is_edit = id_edit;
-
-        if (that.on_toggle) {
-            that.on_toggle(that);
-        }
-    };
+    }
 
     return TeamEditable;
 

@@ -15,10 +15,6 @@ var GroupPage = ( function($) {
         that.longitude = options["longitude"];
         that.can_manage = options["can_manage"];
 
-        // DYNAMIC VARS
-        that.map_is_render = false;
-        that.map_is_shown = false;
-
         // INIT
         that.initClass();
     };
@@ -36,6 +32,7 @@ var GroupPage = ( function($) {
         }
         //
         that.initInfoBlock();
+        that.initMap();
     };
 
     GroupPage.prototype.bindEvents = function() {
@@ -43,7 +40,7 @@ var GroupPage = ( function($) {
 
         if (that.map_adapter && that.latitude && that.longitude) {
             that.$wrapper.on("click", ".js-open-map-link", function() {
-                that.showMap();
+                that.toggleMap();
             });
         }
 
@@ -62,26 +59,11 @@ var GroupPage = ( function($) {
         });
     };
 
-    GroupPage.prototype.showMap = function() {
+    GroupPage.prototype.toggleMap = function() {
         var that = this,
             $wrapper = that.$wrapper.find(".t-map-wrapper");
 
-        if (that.map_is_shown) {
-            $wrapper.slideUp(200);
-        } else {
-            if (!that.map_is_render) {
-                // for height
-                $wrapper.show();
-                // init
-                that.initMap();
-                // save
-                that.map_is_render = true;
-            } else {
-                $wrapper.slideDown(200);
-            }
-        }
-
-        that.map_is_shown = !that.map_is_shown;
+        $wrapper.slideToggle(200);
     };
 
     GroupPage.prototype.initMap = function() {
@@ -94,93 +76,38 @@ var GroupPage = ( function($) {
     };
 
     GroupPage.prototype.initEditableName = function() {
-        var group = this,
-            $name = group.$wrapper.find(".js-name-editable").first(),
-            $sort_by = group.$wrapper.find(".js-sort-by");
+        const group = this;
+        const $name = group.$wrapper.find('.js-name-editable').first();
 
-        if ($name.length) {
-            new TeamEditable({
-                $wrapper: $name,
-                onSave: function( that ) {
-                    var text = that.$field.val(),
-                        do_save = ( text.length && that.text !== text );
-
-                    if (do_save) {
-                        var href = $.team.app_url + "?module=group&action=save",
-                            data = {
-                                "data[id]": group.group_id,
-                                "data[name]": text
-                            };
-
-                        that.$field.attr("disabled", true);
-                        var $loading = $('<span class="smaller text-gray custom-ml-4"><i class="fas fa-spin fa-spinner"></i></span>').insertAfter( that.$field );
-
-                        $.post(href, data, function() {
-                            that.$field.attr("disabled", false);
-                            $loading.remove();
-
-                            that.text = text;
-                            that.$wrapper.text( text );
-                            that.toggle("hide");
-
-                            $.team.sidebar.reload();
-                        });
-
-                    } else {
-                        if (!text.length) {
-                            that.$field.val( that.text );
-                        }
-                        that.toggle("hide");
-                    }
-                },
-                onToggle(that) {
-                    $sort_by.toggleClass('hidden', that.is_edit)
-                }
-            });
+        if (!$name) {
+            return;
         }
+
+        new TeamEditable($name, {
+            groupId: group.group_id,
+            reloadSidebar: true,
+            api: {
+                save: $.team.app_url + '?module=group&action=save'
+            },
+            target: 'data[name]'
+        });
     };
 
     GroupPage.prototype.initEditableDescription = function() {
-        var group = this,
-            $name = group.$wrapper.find(".js-desc-editable").first();
+        const group = this;
+        const $name = group.$wrapper.find('.js-desc-editable').first();
 
-        if ($name.length) {
-            new TeamEditable({
-                $wrapper: $name,
-                onSave: function( that ) {
-                    var text = that.$field.val(),
-                        is_empty = ( !text.length );
-
-                    if (that.text !== text) {
-                        var href = $.team.app_url + "?module=group&action=save",
-                            data = {
-                                "data[id]": group.group_id,
-                                "data[description]": text
-                            };
-
-                        that.$field.attr("disabled", true);
-                        var $loading = $('<span class="smaller text-gray custom-ml-4"><i class="fas fa-spin fa-spinner"></i></span>').insertAfter( that.$field );
-
-                        $.post(href, data, function() {
-                            that.$field.attr("disabled", false);
-                            $loading.remove();
-
-                            that.is_empty = is_empty;
-                            that.text = text;
-                            that.$wrapper.text( text );
-                            that.toggle("hide");
-
-                            if (is_empty) {
-                                $.team.content.reload();
-                            }
-                        });
-
-                    } else {
-                        that.toggle("hide");
-                    }
-                }
-            });
+        if (!$name) {
+            return;
         }
+
+        new TeamEditable($name, {
+            groupId: group.group_id,
+            api: {
+                save: $.team.app_url + '?module=group&action=save'
+            },
+            target: 'data[description]'
+        });
     };
 
     GroupPage.prototype.initInfoBlock = function () {
@@ -478,48 +405,21 @@ var GroupManage = ( function($) {
     };
 
     GroupManage.prototype.initEditableName = function() {
-        var group = this,
-            $name = group.$wrapper.find(".js-name-editable").first();
+        const group = this;
+        const $name = group.$wrapper.find(".js-name-editable").first();
 
-        if ($name.length) {
-            new TeamEditable({
-                $wrapper: $name,
-                onSave: function( that ) {
-                    var text = that.$field.val(),
-                        do_save = ( text.length && that.text !== text );
-
-                    if (do_save) {
-                        var href = $.team.app_url + "?module=group&action=save",
-                            data = {
-                                "data[id]": group.group_id,
-                                "data[name]": text
-                            };
-
-                        that.$field.attr("disabled", true);
-                        var $loading = $('<i class="icon16 loading"></i>')
-                            .css("margin", "0 0 0 4px")
-                            .insertAfter( that.$field );
-
-                        $.post(href, data, function() {
-                            that.$field.attr("disabled", false);
-                            $loading.remove();
-
-                            that.text = text;
-                            that.$wrapper.text( text );
-                            that.toggle("hide");
-
-                            $.team.sidebar.reload();
-                        });
-
-                    } else {
-                        if (!text.length) {
-                            that.$field.val( that.text );
-                        }
-                        that.toggle("hide");
-                    }
-                }
-            });
+        if (!$name) {
+            return;
         }
+
+        new TeamEditable($name, {
+            groupId: group.group_id,
+            reloadSidebar: true,
+            api: {
+                save: $.team.app_url + '?module=group&action=save'
+            },
+            target: 'data[name]'
+        });
     };
 
     return GroupManage;
@@ -541,6 +441,7 @@ var GroupEditDialog = ( function($) {
         that.$addressToggle = that.$block.find('.t-address-toggle');
         that.$mapToggle = that.$block.find('.t-map-toggle');
         that.$submitButton = that.$form.find("input[type=\"submit\"]");
+        that.$groupType = that.$form.find('[name="data[type]"]');
 
         // VARS
         that.selected_class = "selected";
@@ -586,8 +487,6 @@ var GroupEditDialog = ( function($) {
         that.$form.on("submit", function(event) {
             event.preventDefault();
             if (!that.is_locked) {
-                that.$form.find('.js-submit-loading').remove();
-                that.$submitButton.parent().append("<i class='fas fa-spin fa-spinner js-submit-loading'></i>");
                 that.save();
             }
         });
@@ -618,6 +517,7 @@ var GroupEditDialog = ( function($) {
         var that = this,
             is_group = $label.data("type") === "group";
 
+        that.$groupType.val($label.data("type"))
         that.$iconToggle.toggleClass(that.hidden_class, !is_group);
         that.$addressToggle.toggleClass(that.hidden_class, is_group);
         that.$mapToggle.toggleClass(that.hidden_class, is_group);
@@ -668,16 +568,24 @@ var GroupEditDialog = ( function($) {
                     return false;
                 }
 
+                that.$form.find('.js-submit-loading').remove();
+                that.$submitButton.parent().append("<i class='fas fa-spin fa-spinner js-submit-loading wa-animation-spin speed-1000'></i>");
+
                 var post = function () {
                     $.post(href, data, function(response) {
                         if (response.status == "ok") {
                             var content_uri = $.team.app_url + "group/" + response.data.id + "/manage/";
                             $.team.content.load( content_uri );
                             $.team.sidebar.reload();
+
+                            const itemToSelect = $.team.sidebar.$body.find(`[data-group-id="${response.data.id}"]`);
+                            $.team.sidebar.setItem(itemToSelect);
                             that.is_locked = false;
-                            that.dialog.close()
+                            that.dialog.close();
                         }
-                    });
+                    }).always(function () {
+                        that.$form.find('.js-submit-loading').remove();
+                    })
                 };
 
                 var address = data['data[location][address]'],

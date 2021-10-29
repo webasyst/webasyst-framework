@@ -31,23 +31,21 @@ class teamViewHelper
             $pages = ceil($total / $limit);
             if ($pages > 1) {
                 $page = intval($page);
-                $html = '<ul class="paging">';
+                $html = '<ul class="paging small custom-mt-16">';
                 if (is_numeric($count)) {
-                    $html .= '<li><span>'._w('Total:').' <em>'.number_format((float)$count, 0, '.', ' ').'</em></span></li>';
+                    $html .= '<li class="paging__desktop-only paging__total"><span>'._w('Total:').' <em>'.number_format((float)$count, 0, '.', ' ').'</em></span></li>';
                 }
                 if (!empty($count['folders'])) {
-                    $html .= '<li><span>'._w('Folders:').' <em>'.number_format((float)$count['folders'], 0, '.', ' ').'</em></span></li>';
+                    $html .= '<li class="paging__desktop-only paging__total"><span>'._w('Folders:').' <em>'.number_format((float)$count['folders'], 0, '.', ' ').'</em></span></li>';
                 }
                 if (!empty($count['files'])) {
-                    $html .= '<li><span>'._w('Files:').' <em>'.number_format((float)$count['files'], 0, '.', ' ').'</em></span></li>';
+                    $html .= '<li class="paging__desktop-only paging__total"><span>'._w('Files:').' <em>'.number_format((float)$count['files'], 0, '.', ' ').'</em></span></li>';
                 }
-
-                $html .= '<li><span>'._w('Page:').'</span></li>';
 
                 if ($page > 1) {
                     $title = _w('prev');
                     $url = self::$url . ($page - 1) . (strlen($url_params) > 0 ? '&' . $url_params : '');
-                    $html .= "<li><a href='{$url}' title='{$title}'><i class='fas fa-long-arrow-alt-left'></i> {$title}</a></li>";
+                    $html .= "<li class='paging__desktop-only'><a href='{$url}' title='{$title}'>&larr;</a></li>";
                 }
 
                 $html .= self::item(1, $page, $url_params);
@@ -57,7 +55,7 @@ class teamViewHelper
                         ($i - $page == $width && $i == $pages - 1)
                     ) {
                         $html .= self::item($i, $page, $url_params);
-                    } elseif (strpos(strrev($html), '...') != 5) { // 5 = strlen('</li>')
+                    } elseif (strpos(strrev($html), '...') != 12) { // 12 = strlen('</span></li>')
                         $html .= '<li><span>...</span></li>';
                     }
                 }
@@ -67,8 +65,9 @@ class teamViewHelper
                 if ($page < $pages) {
                     $title = _w('next');
                     $url = self::$url . ($page + 1) . (strlen($url_params) > 0 ? '&' . $url_params : '');
-                    $html .= "<li><a href='{$url}' title='{$title}'>{$title} <i class='fas fa-long-arrow-alt-right'></i></i></a></li>";
+                    $html .= "<li class='paging__desktop-only'><a href='{$url}' title='{$title}'>&rarr;</a></li>";
                 }
+                $html .= '</ul>';
             }
         }
         return $html;

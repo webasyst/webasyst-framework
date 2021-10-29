@@ -10,28 +10,28 @@
                         <span class="selected" data-type="email"><i class="fas fa-envelope"></i> [`By email`]</span>
                         <span data-type="link"><i class="fas fa-link"></i> [`By link`]</span>
                         {if !$is_waid_forced}
-                        <span data-type="login"><i class="fas fa-key"></i> [`Ввести логин и пароль`]</span>
+                        <span data-type="login"><i class="fas fa-key"></i> [`Enter login name & password`]</span>
                         {/if}
                     </div>
                 </div>
                 <div class="fields-group js-by-email">
-                    <p class="small by-login-hint hidden">[`Введите логин и пароль для этого пользователя, чтобы не отправлять ему приглашение.`]</p>
+                    <p class="small by-login-hint hidden">[`Enter a login name and a password for this user without sending an invitation.`]</p>
                     <div class="field">
-                        <div class="name">[`Email`]</div>
+                        <div class="name for-input">[`Email`]</div>
                         <div class="value">
                             <input class="long bold" type="text" name="email" placeholder="[`name@company.com`]">
-                            <p class="hint by-email-hint">[`Please specify an email to send user invitation with further instructions.`]</p>
+                            <p class="hint by-email-hint">[`Enter an email address to send the new user an invitation with sign-in instructions.`]</p>
                         </div>
                     </div>
                     <div class="t-create-user-credentials hidden">
                         <div class="field">
-                            <div class="name">[`Login`]</div>
+                            <div class="name for-input">[`Login`]</div>
                             <div class="value">
                                 <input type="text" name="login">
                             </div>
                         </div>
                         <div class="field">
-                            <div class="name">
+                            <div class="name for-input">
                                 [`Password`]
                             </div>
                             <div class="value">
@@ -39,7 +39,7 @@
                             </div>
                         </div>
                         <div class="field">
-                            <div class="name">
+                            <div class="name for-input">
                                 [`Confirm password`]
                             </div>
                             <div class="value">
@@ -49,16 +49,16 @@
                     </div>
                 </div>
 
-                <div class="fields-group js-by-link hidden">
+                <div class="fields-group custom-mt-24 js-by-link hidden">
                     <div class="field">
                         <div class="value">
-                            <input class="short bold" type="text" name="firstname" placeholder="[`Firstname`]">
-                            <input class="short bold" type="text" name="lastname" placeholder="[`Lastname`]">
+                            <input class="short bold custom-mr-8 custom-mt-8" type="text" name="firstname" placeholder="[`First name`]">
+                            <input class="short bold custom-mt-8" type="text" name="lastname" placeholder="[`Last name`]">
                         </div>
                     </div>
                     <div class="field">
                         <div class="value">
-                            <p class="hint">[`Если Имя и Фамилия не указаны, то будет использовано временное имя в виде даты приглашения.`]</p>
+                            <p class="hint">[`If neither first name nor last name are specified then the invitation date will be used as a temporary name.`]</p>
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     <div class="fields-group">
                         {if $groups}
                             <div class="field">
-                                <div class="name for-checkbox">[`Groups`]</div>
+                                <div class="name custom-pt-0">[`Groups`]</div>
                                 <div class="value">
                                     <ul class="small">
                                         {foreach $groups as $_g}
@@ -93,7 +93,7 @@
                     <div class="fields-group">
                         {if $locations}
                             <div class="field">
-                                <div class="name for-checkbox">[`Locations`]</div>
+                                <div class="name custom-pt-0">[`Locations`]</div>
                                 <div class="value">
                                     <ul class="small">
                                         {foreach $locations as $_g}
@@ -122,7 +122,7 @@
         <footer class="dialog-footer fields">
             {if $groups || $locations}
             <div class="field t-apps-list-wrapper custom-my-16 invisible">
-                <div class="name">[`Пользователю будут доступны`]</div>
+                <div class="name">[`The user will access`]</div>
                 <div class="value js-swiper-groups swiper-container">
                     {$apps = $groups[$groups|@key]['apps']}
                     <div class="t-user-groups-nav left blank ">
@@ -188,9 +188,9 @@
             {/if}
             <div class="action-buttons">
                 <div class="flexbox middle js-by-link hidden">
-                    <input type="text" class="wide js-invite-link text-gray hidden">
-                    <button type="button" class="button outlined js-get-link"><i class="fas fa-link"></i> [`Получить ссылку`]</button>
-                    <button type="button" class="button js-copy-link hidden"><i class="fas fa-copy"></i> [`Скопировать`]</button>
+                    <input type="text" class="wide short js-invite-link text-gray hidden">
+                    <button type="button" class="button outlined js-get-link"><i class="fas fa-link"></i> [`Create link`]</button>
+                    <button type="button" class="button js-copy-link hidden"><i class="fas fa-copy"></i> <span class="desktop-and-tablet-only">[`Copy`]</span></button>
                     <button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>
                 </div>
                 <input type="submit" class="button js-submit-button js-by-email" value="[`Send`]">
@@ -207,10 +207,10 @@
         const dialog = $('#t-invite-user-dialog').data('dialog'),
             $dialog = dialog.$wrapper,
             locales = {
-                "get_link": {_w("Получить ссылку")|json_encode},
-                "make_invite": {_w("Создаем приглашение")|json_encode},
-                "copy": {_w("Скопировать")|json_encode},
-                "copied": {_w("Скопировано")|json_encode},
+                "get_link": {_w("Create link")|json_encode},
+                "make_invite": {_w('Creating an<span class="desktop-and-tablet-only"> invitation</span>')|json_encode},
+                "copy": {_w("Copy")|json_encode},
+                "copied": {_w("Copied")|json_encode},
                 "add": {_w("Add")|json_encode},
                 "send": {_w("Send")|json_encode},
                 "done": '[`Done`]'
@@ -227,8 +227,8 @@
             slideClass: 't-access-app',
             height: 48,
             slidesPerView: 'auto',
-            slidesOffsetBefore: 48,
-            slidesOffsetAfter: 48,
+            slidesOffsetBefore: 28,
+            slidesOffsetAfter: 28,
             spaceBetween: 5,
             navigation: {
                 nextEl: ".t-user-groups-nav.right",
@@ -297,8 +297,8 @@
                         apps_group_slider.params.slidesOffsetBefore = 0;
                         apps_group_slider.params.slidesOffsetAfter = 0;
                     }else{
-                        apps_group_slider.params.slidesOffsetBefore = 48;
-                        apps_group_slider.params.slidesOffsetAfter = 48;
+                        apps_group_slider.params.slidesOffsetBefore = 28;
+                        apps_group_slider.params.slidesOffsetAfter = 28;
                     }
                     apps_group_slider.update();
                     apps_group_slider.slideTo(0);
@@ -368,7 +368,7 @@
         // Get Link
         $('.js-get-link').on('click', function () {
             const $get_link = $(this);
-            $get_link.html(`<i class="fas fa-link"></i> ${ locales.make_invite }... <i class="fas fa-spinner fa-spin"></i>`)
+            $get_link.html(`<i class="fas fa-link"></i> ${ locales.make_invite }... <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i>`)
 
             $.post($.team.app_url + '?module=users&action=createInvitation', $form.serialize(), function(response) {
                 if(response.status === 'ok') {
@@ -400,9 +400,9 @@
             $invite_link.setSelectionRange(0, 99999);
 
             document.execCommand("copy");
-            $btn.addClass('green').html(`<i class="fas fa-check"></i> ${ locales.copied }`)
+            $btn.addClass('green').html(`<i class="fas fa-check"></i> <span class="desktop-and-tablet-only">${ locales.copied }</span>`)
             setTimeout(()=>{
-                $btn.removeClass('green').html(`<i class="fas fa-copy"></i> ${ locales.copy }`)
+                $btn.removeClass('green').html(`<i class="fas fa-copy"></i> <span class="desktop-and-tablet-only">${ locales.copy }</span>`)
             }, 1500)
 
         })

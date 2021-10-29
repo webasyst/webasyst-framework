@@ -110,6 +110,28 @@ class teamProfileContentViewAction extends teamContentViewAction
 
     protected static function getUserEvent(waContact $user)
     {
+        $birh_day_event = self::getBirthDayEvent($user);
+        if (!empty($birh_day_event)) {
+            return $birh_day_event;
+        }
+
+        $cem = new waContactEventsModel();
+        return $cem->getEventByContact($user['id'], 1);
+    }
+
+    protected static function getAllUserEvents(waContact $user)
+    {
+        $birh_day_event = self::getBirthDayEvent($user);
+        if (!empty($birh_day_event)) {
+            $birh_day_event = [$birh_day_event];
+        }
+        $cem = new waContactEventsModel();
+        $events = $cem->getEventByContact($user['id']);
+        return array_merge($birh_day_event, $events);
+    }
+
+    protected static function getBirthDayEvent(waContact $user)
+    {
         if ($user->get('birth_day') == waDateTime::format('j') && $user->get('birth_month') == waDateTime::format('n')) {
             if (wa('team')->whichUI('team')  !== '1.3') {
                 return [
@@ -129,9 +151,7 @@ class teamProfileContentViewAction extends teamContentViewAction
                 'font_color'    => 'black',
             ];
         }
-
-        $cem = new waContactEventsModel();
-        return $cem->getEventByContact($user['id'], 1);
+        return [];
     }
 
     protected function pluginHook()

@@ -1,13 +1,30 @@
+$rem = 16
+
 .t-users-page
 .t-group-page
     .t-users-list
         display flex
         flex-wrap wrap
         gap 0.6em 1.2em
+
         @media screen and (max-width: 760px)
-            justify-content center
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 1.85em 0.6em
+
+        @media screen and (max-width: 320px)
+            .userpic144
+                min-width: auto;
+                width: 8rem;
+                height: @width;
+
         .t-user-wrapper
             text-align center
+
+            @media screen and (max-width: 760px)
+                width: auto;
+                margin: 0;
+
             .t-userpic-wrapper
                 .t-userpic
                     border-radius 50%
@@ -125,11 +142,10 @@
     .t-content-body
 
         .t-map-wrapper
-            display none
             position relative
             width 100%
-            height 400px
-            margin 1.5em 0
+            height 280px
+            margin-bottom 1.5em
 
             &.before-render
                 position absolute
@@ -301,5 +317,23 @@
     border 0 !important
     background var(--background-color-input-solid) !important
     padding 0 0.25em !important
-    font-weight bold !important
     line-height 1 !important
+
+.t-user-birthday-icon
+    right: 0;
+    bottom: 0;
+    font-size: .75rem;
+    padding: 5px;
+
+.t-users-avatar-highlight
+    box-shadow: 0 0.25rem 1.5rem -0.25rem var(--thumbs-highlighted-color);
+
+.editable-highlight
+    color: var(--text-color-strongest);
+    font-style: normal;
+    background-color: var(--background-color-blank);
+    border-radius: 0.25em;
+    outline: none;
+    outline: 0.125em solid var(--accent-color);
+    &:hover
+        background-color: inherit;

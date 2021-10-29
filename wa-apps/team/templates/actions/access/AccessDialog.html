@@ -4,7 +4,7 @@
 
 <div class="dialog t-access-dialog" id="t-access-dialog">
     <div class="dialog-background"></div>
-    <div class="dialog-body">
+    <div class="dialog-body" style="width: 800px;">
         <header class="dialog-header flexbox vertical middle">
             <div class="t-text flexbox middle wrap align-center custom-mb-16">
                 <h3 class="t-user custom-m-0 custom-mr-auto custom-ml-auto">
@@ -34,7 +34,7 @@
                 </h3>
             </div>
 
-            <div class="t-access-list toggle">
+            <div class="t-access-list toggle small">
                 {foreach $access_levels as $type}
                     {if !empty($type.is_active)}
                         {$_active_type = $type.id}
@@ -51,7 +51,7 @@
             </div>
         </header>
 
-        <div class="dialog-content">
+        <div class="dialog-content small">
 
             {* Limited access customization form *}
             {if empty($access_levels.limited.is_disabled)}
@@ -75,7 +75,7 @@
                 <a class="button light-gray js-close-dialog" href="javascript:void(0);">[`Cancel`]</a>
 
                 <span class="t-notice t-loading hidden">
-                    <i class="fas fa-spinner fa-spin loading"></i> [`Saving`]
+                    <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000 loading"></i> [`Saving`]
                 </span>
                 <span class="t-notice t-success hidden">
                     <i class="fas fa-check-circle text-green"></i> [`Saved`]
@@ -87,12 +87,15 @@
 {/strip}
 
 <script>(function($) { "use strict";
-
+    const $wrapper = $("#t-access-dialog");
     new AccessDialog({
-        $wrapper: $("#t-access-dialog"),
+        $wrapper,
         wa_app_url: {$wa_app_url|json_encode},
         app_id: {$app.id|json_encode},
         contact_id: {$contact_id|json_encode}
+    });
+    $wrapper.find('[data-wa-tooltip-content]').waTooltip({
+        maxWidth: 240
     });
 
 })(jQuery);</script>

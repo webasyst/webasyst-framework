@@ -48,7 +48,7 @@ class teamUser
         if ($set == 'minimal') {
             return 'id,name,firstname,lastname,middlename,login,is_user,photo_url_16,photo_url_32,photo_url_96,birth_day,birth_month';
         } else {
-            return 'id,name,firstname,lastname,middlename,company,is_company,is_user,login,locale,jobtitle,last_datetime'
+            return 'id,name,firstname,lastname,middlename,company,is_company,is_user,login,locale,jobtitle,create_datetime,last_datetime'
             .',photo_url_16,photo_url_32,photo_url_96,photo_url_144,_event,birth_day,birth_month,_online_status,email';
         }
     }

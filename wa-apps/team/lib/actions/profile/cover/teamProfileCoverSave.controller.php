@@ -93,7 +93,7 @@ class teamProfileCoverSaveController extends waJsonController
             return [
                 'name' => $file->name,
                 'error' => 'not_allowed_mime_type',
-                'description' => _w('Not allowed mime type. Supported only: gif, jpg (jpeg), png'),
+                'description' => _w('Not allowed MIME type. Supported types are gif, jpg (jpeg), png.'),
             ];
 
         }

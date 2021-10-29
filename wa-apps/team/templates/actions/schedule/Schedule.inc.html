@@ -118,11 +118,22 @@
 
                                                 {$_styles = []}
                                                 {if $_event.is_status}
-                                                    {$_styles[] = "background: `$_calendar.status_bg_color`;"}
+                                                    {if $_calendar.status_bg_color}
                                                     {$_styles[] = "color: `$_calendar.status_font_color`;"}
-                                                {else}
-                                                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                                                    {$_styles[] = "background: `$_calendar.status_bg_color`;"}
+                                                    {else}
                                                     {$_styles[] = "color: `$_calendar.font_color`;"}
+                                                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                                                    {/if}
+                                                {else}
+                                                    {if !empty($_calendar.status_bg_color)}
+                                                    {$_styles[] = "color: `$_calendar.font_color`;"}
+                                                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                                                    {else}
+                                                    {$_styles[] = "color: `$_calendar.bg_color`;"}
+                                                    {$_styles[] = "background: transparent;"}
+                                                    {$_styles[] = "box-shadow: inset 0 0 0 1px currentColor;"}
+                                                    {/if}
                                                 {/if}
 
                                                 {$_classes = []}
@@ -149,7 +160,7 @@
                                                             {$_user = $users[$_event.contact_id]}
                                                         {/if}
 
-                                                        <div class="t-event-block {$_classes|join:" "}" style="{$_styles|join:""}{if $_user}{if $_is_birthday} background-image: linear-gradient(90deg, #FA5959 0%, #E419AB 100%);{/if}{/if}">
+                                                        <div class="t-event-block {$_classes|join:" "}" style="{$_styles|join:""}{if $_user}{if $_is_birthday} color: var(--white); background-image: linear-gradient(90deg, #FA5959 0%, #E419AB 100%);{/if}{/if}">
                                                             {if !empty($_event.icon)}
                                                                 <i class="{$_event.icon|escape}"></i>
                                                             {elseif $_is_birthday && $_user}
@@ -203,8 +214,8 @@
                                 {$_full_count = count($_events_in_week["all"][$_day@index])}
                                 <td class="t-column">
                                     {if $_full_count > $_view_count}
-                                        <div class="t-action-wrapper">
-                                            <span class="t-action show-full-days-events" data-date="{$_day.date}" data-events-id="{$_events_in_week["all"][$_day@index]|join:","}">+ [`more`] {$_full_count - $_view_count}</span>
+                                        <div class="t-action-wrapper align-center">
+                                            <span class="t-action show-full-days-events" data-date="{$_day.date}" data-events-id="{$_events_in_week["all"][$_day@index]|join:","}"><span class="desktop-and-tablet-only">+</span> [`more`] <span class="desktop-and-tablet-only">{$_full_count - $_view_count}</span></span>
                                         </div>
                                     {/if}
                                 </td>

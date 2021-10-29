@@ -17,16 +17,16 @@
         </nav>
 
         {if teamHelper::hasRights('add_users')}
-            <div class="sidebar-header box custom-pt-16">
+            <div class="sidebar-header box custom-pt-20">
                 <a class="button full-width align-center js-no-highlight" href="javascript:void(0)" id="t-new-user-link">
-                    <i class="fas fa-plus-circle"></i>&nbsp;<span class="s-title small">[`Invite`]</span>
+                    <i class="fas fa-user-plus fa-w-20 custom-mr-4"></i>&nbsp;<span class="s-title small">[`Invite`]</span>
                 </a>
             </div>
         {/if}
     {/if}
     <div class="sidebar-body hide-scrollbar t-sidebar-block" id="t-sidebar">
         {* main nav *}
-        <ul class="menu custom-my-8">
+        <ul class="menu mobile-friendly custom-my-8">
             <li class="{if $module == 'users' && !$action}selected{/if}" id="all-users-sidebar-link">
                 <a href="{$wa_app_url}">
                     <span class="count js-count">{$all_count}</span>
@@ -65,13 +65,13 @@
                     [`Groups`]
                 </span>
                 {if teamHelper::hasRights('add_groups')}
-                    <a href="javascript:void(0);" class="count action js-add-user-group" title="[`Add groups`]">
+                    <a href="javascript:void(0);" class="count action js-add-user-group" title="[`Add group`]">
                         <i class="fas fa-plus-circle"></i>
                     </a>
                 {/if}
             </header>
             {if $groups}
-                <ul class="menu collapsible t-groups-list">
+                <ul class="menu mobile-friendly collapsible t-groups-list">
                     {foreach $groups as $_g}
                         {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_g.id`")}
                         {$icon = 'fas fa-user'}
@@ -106,13 +106,13 @@
                     [`Locations`]
                 </span>
                 {if teamHelper::hasRights('add_groups')}
-                    <a href="javascript:void(0);" class="count action js-add-user-location" title="[`Add locations`]">
+                    <a href="javascript:void(0);" class="count action js-add-user-location" title="[`Add location`]">
                         <i class="fas fa-plus-circle"></i>
                     </a>
                 {/if}
             </header>
             {if $locations}
-                <ul class="menu collapsible t-locations-list">
+                <ul class="menu mobile-friendly collapsible t-locations-list">
                     {foreach $locations as $_l}
                         {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_l.id`")}
 
@@ -132,7 +132,7 @@
         </div>
 
         {* user status *}
-        <ul class="menu">
+        <ul class="menu mobile-friendly">
             {if teamHelper::hasRights('add_users') && $invited_count}
                 <li data-invited-item>
                     <a href="{$wa_app_url}invited/">
@@ -196,10 +196,25 @@
     {* Initialization of the internal content of the sidebar *}
     <script>
         ( function($) {
-            $.team.sidebar = new Sidebar({
-                $wrapper: $("#t-sidebar-wrapper"),
+            $.team.sidebar = new Sidebar($("#t-sidebar-wrapper"), {
                 app_url: {$wa_app_url|json_encode},
-                can_sort: {if $_can_sort}true{else}false{/if}
+                updateTime: 1000 * 60 * 5,
+                can_sort: {if $_can_sort}true{else}false{/if},
+                api: {
+                    reload: '?module=sidebar',
+                    inviteDialog: '?module=users&action=inviteform',
+                    group: '?module=group&action=edit',
+                    sort: '?module=group&action=sortSave',
+                    moveUser: '?module=group&action=userAdd'
+                },
+                classes: {
+                    selected: 'selected',
+                    drop: 'js-drop-place',
+                    highlighted: 'highlighted',
+                    noHighlight: 'js-no-highlight',
+                    uiDraggable: 'ui-draggable',
+                    initGroupDialog: 'js-add-user-group'
+                }
             });
         })(jQuery);
     </script>

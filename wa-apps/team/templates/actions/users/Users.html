@@ -1,6 +1,6 @@
 {strip}
 
-<div class="t-users-page content article box" id="t-users-page">
+<div class="t-users-page content article break-word" id="t-users-page">
     <div class="t-content-body article-body">
         <header class="t-content-header flexbox middle wrap custom-mb-24">
             <h1 class="wide custom-pr-16">[`All users`]</h1>
@@ -9,14 +9,14 @@
             {if !empty($contacts)}
             <div class="dropdown custom-mt-8 custom-mb-16 small js-sort-by">
                 {$_sort_list = [
-                    'last_seen' => '[`Сначала онлайн`]',
-                    'name'      => '[`По алфавиту`]',
-                    'signed_up' => '[`По дате регистрации`]'
+                    'last_seen' => '[`Online`]',
+                    'name'      => '[`Alphabetically`]',
+                    'signed_up' => '[`By signup date`]'
                 ]}
                 <a class="dropdown-toggle button light-gray nowrap" href="{$wa_app_url}?sort={$sort|escape}" data-disable-routing>
                     {if isset($_sort_list[$sort])}{$_sort_list[$sort]|escape}{else}&mdash;{/if}
                 </a>
-                <div class="dropdown-body right">
+                <div class="dropdown-body{if !$wa->isMobile()} right{/if}">
                     <ul class="menu">
                         {foreach $_sort_list as $_id=>$_name}
                             <li class="t-menu-item {if $sort == $_id}selected{/if}">
@@ -42,38 +42,60 @@
             {if !empty($offline) && $sort === 'last_seen'}
                 <h3 class="t-header">[`Offline`]</h3>
 
-                <ul class="list t-offline-list">
+                <ul class="list t-offline-list js-users-list-offline">
                     {foreach $offline as $user}
                         {$user_data = waUser::getNameAndStatus($user, true)}
-                        {if !empty($user_data.user._event)}
-                            {$badge = "&nbsp;<span class=\"badge user small\" style=\"background-color:{$user_data.user._event.bg_color};color:{$user_data.user._event.font_color};\">{$user_data.user._event.summary|escape}</span>"}
-                        {/if}
-                        <li class="t-user-wrapper flexbox middle space-16 custom-py-12 wrap">
-                            <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" title="{$user_data.formatted_user_name|escape}">
-                                <span class="userpic userpic96 valign-middle" style="background-image: url('{$user.photo_url_96}');">
-                                    {if !empty($user.birth_day) && $user.birth_day == waDateTime::format('j') && $user.birth_month == waDateTime::format('n')}
-                                        <span class="userstatus birthday" title="{sprintf(_ws('%s\'s birthday — %s'), $user_data.formatted_user_name, $user_data.user_birthday_str)}">
+                        <li class="t-user-wrapper flexbox middle space-16 custom-py-12{if $user.is_user >= 1 && !$wa->isMobile()} js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
+                            <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="image custom-mb-auto" title="{$user_data.formatted_user_name|escape}">
+                                <span class="userpic icon size-72 valign-middle" style="background-image: url('{$user.photo_url_96}');">
+                                    {if !empty($user_data.user.birth_day) && $user_data.user.birth_day == waDateTime::format('j') && $user_data.user.birth_month == waDateTime::format('n')}
+                                        <span class="userstatus birthday t-user-birthday-icon" title="{sprintf(_ws('%s\'s birthday — %s'), $user_data.formatted_user_name, $user_data.user_birthday_str)}">
                                             <i class="fas fa-birthday-cake"></i>
                                         </span>
                                     {/if}
                                 </span>
                             </a>
-                            <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="details" title="{$user.name|escape}">
-                                <p class="t-name bold custom-my-0 small">{$user_data.formatted_user_name|escape}{$badge|default:""}</p>
-                                {if !empty($user.jobtitle)}
-                                    <p class="t-job small custom-my-0">{$user.jobtitle|escape}</p>
-                                {/if}
-                                <p class="t-login gray small custom-my-0">{$user.login|escape}</p>
-                                <p class="hint custom-my-0">
-                                    [`Last seen`]
-                                    &nbsp;
-                                    {if empty($user.last_datetime)}
-                                        —
+                            <div class="details">
+                                <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="t-name bold custom-my-0" title="{$user.name|escape}">
+                                    {$user_data.formatted_user_name|escape}&#32;
+
+                                    <span class="small semibold gray">@{$user.login|escape}</span>
+                                </a>
+
+                                <div>
+                                    {if !empty($user_data.user._event)}
+                                    {$_badge_status_styles = ''}
+                                    {if !empty($user_data.user._event.status_bg_color)}
+                                    {$_badge_status_styles = "color: `$user_data.user._event.status_font_color`; background: `$user_data.user._event.status_bg_color`;"}
                                     {else}
-                                        {$user.last_datetime_formatted}
+                                    {$_badge_status_styles = "color: `$user_data.user._event.font_color`; background: `$user_data.user._event.bg_color`;"}
                                     {/if}
-                                </p>
-                            </a>
+
+                                    <span class="badge user small custom-mr-4" style="{$_badge_status_styles}">
+                                        {if $user_data.user._event.icon}
+                                        <i class="{$user_data.user._event.icon|escape}"></i>
+                                        {else}
+                                        <i class="fas fa-calendar-alt"></i>
+                                        {/if}
+                                        {$user_data.user._event.summary|escape}
+                                    </span>
+                                    {/if}
+
+                                    {if !empty($user.jobtitle)}
+                                    <span class="t-job small custom-my-0">{$user.jobtitle|escape}</span>
+                                    {/if}
+
+                                    <p class="hint custom-my-0">
+                                        [`Last seen`]
+                                        &nbsp;
+                                        {if empty($user.last_datetime)}
+                                            [`never`]
+                                        {else}
+                                            {$user.last_datetime_formatted}
+                                        {/if}
+                                    </p>
+                                </div>
+                            </div>
                         </li>
                     {/foreach}
                 </ul>
@@ -87,6 +109,14 @@
         ( function($) {
             $.team.setTitle("[`Users`]");
             $.team.sidebar.updateCount("{$wa_app_url}", {count($contacts)});
+
+            new UserList({
+                $wrapper: $(".js-users-list")
+            });
+
+            new UserList({
+                $wrapper: $(".js-users-list-offline")
+            });
 
             {if !empty($contacts)}
                 $(".js-sort-by").waDropdown({

@@ -84,11 +84,13 @@
 
         <div class="t-profile-user-info article width-100 custom-pt-12 custom-px-0">
             <div class="article-body custom-pt-0">
-                <div class="t-profile-user-info-bar flexbox wrap">
+                <div class="t-profile-user-info-bar flexbox">
                     <div class="t-profile-userpic">
                         <span class="userpic userpic144 blank js-userpic">
                             <img src="{$user->getPhoto2x(144)}" alt="">
+                            {if !empty($user._online_status) && ($user._online_status === 'online' || $user._online_status === 'idle')}
                             <span class="userstatus"></span>
+                            {/if}
                             {if $can_edit}
                                 <span class="camera-overlay js-change-photo">
                                     <i class="fas fa-camera"></i>
@@ -100,122 +102,238 @@
                         </span>
                     </div>
 
-                    <div class="username">
+                    <div class="t-profile-user-data">
                         <!-- plugin hook: 'backend_profile.before_header' -->
                         {* @event backend_customer.%plugin_id%.before_header *}
                         {foreach $backend_profile as $_}{ifset($_.before_header)}{/foreach}
-                        <h2 class="js-username custom-mb-8">{$user_name_formatted|escape}</h2>
-                        {if $user_event}
-                            {if $user_event.calendar_id == 'birthday'}
-                                <span class="badge user birthday">
-                                <i class="fas fa-birthday-cake"></i>{$user_event.summary|escape}&nbsp;&mdash; {waDateTime::format('shortdate', date('Y')|cat:"-`$user.birth_month`-`$user.birth_day`")}
-                            </span>
-                            {else}
-                                <span class="badge user" style="{if !empty($user_event.bg_color)}background-color:{$user_event.bg_color|escape};{/if}{if !empty($user_event.font_color)}color:{$user_event.font_color|escape};{/if}">
-                                <i class="{if !empty($user_event.icon)}{$user_event.icon|escape}{else}fas fa-circle{/if}"></i>{$user_event.calendar_name|escape}
-                            </span>
+                        <h3 class="js-username custom-mb-8">
+                            {if !empty($fieldValues.title)}{$fieldValues.title}{/if}&#32;
+                            {$user_name_formatted|escape}
+
+                            {if !empty($user.login)}
+                            &#32;<span class="h5 text-gray break-all t-profile-username login custom-my-0">@{$user.login|escape}</span>
                             {/if}
+                        </h3>
+                        {if !empty($user_events)}
+                        {foreach $user_events as $event}
+                            {$_badge_status_styles = ''}
+                            {if !empty($event.status_bg_color)}
+                            {$_badge_status_styles = "color: `$event.status_font_color`; background: `$event.status_bg_color`;"}
+                            {else}
+                            {$_badge_status_styles = "color: `$event.font_color`; background: `$event.bg_color`;"}
+                            {/if}
+                            <span class="badge user small custom-mr-8{if $event.calendar_id === 'birthday'} birthday{/if}"{if $event.calendar_id !== 'birthday'} style="{$_badge_status_styles}"{/if}>
+                                {$_event_icon = ''}
+                                {if $event.calendar_id === 'birthday'}
+                                    {$_event_icon = "fas fa-birthday-cake"}
+                                {else}
+                                    {if !empty($event.icon)}
+                                    {$_event_icon = "`$event.icon|escape`"}
+                                    {else}
+                                    {$_event_icon = "fas fa-calendar-alt"}
+                                    {/if}
+                                {/if}
+                                <i class="{$_event_icon}"></i>
+                                {if $event.calendar_id === 'birthday'}
+                                {$event.summary|escape}
+                                {else}
+                                {$event.calendar_name|escape}
+                                {/if}
+                            </span>
+                        {/foreach}
                         {/if}
 
                         {if !$user.is_company}
                             {if !empty($user.jobtitle)}
-                                <div class="custom-mt-8">
-                                    {*<span class="custom-mr-0{if $can_edit} custom-p-0 editable js-jobtitle-editable{/if}">{$user.jobtitle|escape}</span>*}
-                                    <span class="custom-mr-0">{$user.jobtitle|escape}</span>
+                            {*<span class="custom-mr-0{if $can_edit} custom-p-0 editable js-jobtitle-editable{/if}">{$user.jobtitle|escape}</span>*}
+                            <span class="custom-mr-0 small">{$user.jobtitle|escape}</span>
 
-                                    {if !empty($user.company)}
-                                        <span class="at custom-mr-0"> [`@`] </span>
-                                        <span class="company custom-mr-0">{$user.company|escape}</span>
-                                    {/if}
-                                </div>
+                            {if !empty($user.company)}
+                                <span class="at custom-mr-0 small"> [`@`] </span>
+                                <span class="company custom-mr-0 small">{$user.company|escape}</span>
+                            {/if}
+                            {/if}
+                        {/if}
+
+                        {* Used for trigger event in ProfileAccess.html *}
+                        <span class="js-webasyst-id-unbind-auth hidden"></span>
+
+                        {if $user.is_user > 0}
+                            {if $groups}
+                            <div class="custom-mt-8 small">
+                                {foreach $groups as $group}
+                                <span>
+                                    <a href="{$wa_app_url}group/{$group@key}/"{if !$group@last} class="custom-mr-8"{/if}>{$group|escape}</a>{if !$group@last}<span class="t-profile-group-item-bullet custom-mr-8">&bull;</span>{/if}
+                                </span>
+                                {/foreach}
+                            </div>
+                            {else}
+                            <div class="small custom-my-8">
+                                <span class="text-gray custom-mr-8">[`This user does not belong to any group.`]</span>
+
+                                {if $wa->user()->isAdmin()}
+                                <a href="javascript:void(0)" class="semibold nowrap js-edit-groups"><i class="fas fa-pen"></i>&nbsp;[`Edit groups`]</a>
+                                {/if}
+                            </div>
                             {/if}
                         {/if}
 
                         {if $user.is_user < 0}
-                            <span class="grey">[`Access is switched off`]</span>
+                            <p class="grey custom-mt-4">[`Access is switched off`]</p>
                         {elseif $invite}
-                            <p class="italic custom-my-0">[`User invitation has been sent`]</p>
+                            <p class="italic small custom-my-0">[`User invitation was sent.`]</p>
                             {if teamHelper::hasRights('add_users')}
                                 {if !empty($user.email)}
-                                    <a href="javascript:void(0)" class="js-invite gray small" data-type="email" data-email="{$user.email[0].value|escape}">
-                                        <i class="fas fa-envelope"></i> [`Отправить еще раз`]
+                                    <a href="javascript:void(0)" class="js-invite small nowrap custom-mr-16" data-type="email" data-email="{$user.email[0].value|escape}">
+                                        <i class="fas fa-envelope"></i> [`Send again`]
+                                    </a>
+                                    <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
+                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
                                     </a>
                                 {else}
-                                    <a href="javascript:void(0)" class="js-invite gray small" data-type="link">
-                                        <i class="fas fa-link"></i> [`Ссылка на приглашение`]
+                                    <a href="javascript:void(0)" class="js-invite small nowrap" data-type="link">
+                                        <i class="fas fa-link text-gray"></i> [`Link to invitation`]
                                     </a>
                                 {/if}
                             {/if}
                         {/if}
                     </div>
 
-                    <div class="t-profile-actions-btn flexbox space-12">
+                    <div class="t-profile-actions-btn flexbox wrap-mobile custom-pl-16" style="justify-content: flex-end;">
                         {foreach $backend_profile as $_}{ifset($_.header_links_li)}{/foreach}
                         {if $can_edit}
-                        <button type="button" class="button gray circle edit-link" title="[`Edit user`]"><i class="fas fa-pen text-white"></i></button>
+                            <button type="button" class="button light-gray circle edit-link custom-mr-0 mobile-only" title="[`Edit user`]"><i class="fas fa-pen text-blue"></i></button>
+                            <button type="button" class="button light-gray rounded edit-link custom-mr-0 nowrap desktop-and-tablet-only" title="[`Contacts`]"><i class="fas fa-pen text-blue"></i> [`Contacts`]</button>
+
+                            <button type="button" class="button light-gray circle access-link custom-mr-0 custom-ml-8 mobile-only" title="[`Edit user`]" data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}" data-dialog-header="[`Access`]" data-dialog-width="1000px" data-section-id="access"><i class="fas fa-key text-green"></i></button>
+                            <button type="button" class="button light-gray rounded access-link custom-mr-0 custom-ml-8 nowrap desktop-and-tablet-only" title="[`Access`]" data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}" data-dialog-header="[`Access`]" data-dialog-width="1000px" data-section-id="access"><i class="fas fa-key text-green"></i> [`Access`]</button>
                         {/if}
                         {if teamUser::canDelete($user)}
-                        <button type="button" class="button red circle delete-link" title="[`Delete`]"><i class="fas fa-trash-alt text-white"></i></button>
+                        <button type="button" class="button light-gray circle custom-mr-0 custom-ml-8 delete-link" title="[`Delete`]"><i class="fas fa-trash-alt text-red"></i><i class="fas fa-spinner fa-spin wa-animation-spin speed-1000 hidden"></i></button>
                         {/if}
-                        <button type="button" class="button circle blue tablet-only mobile-only js-show-drawer"><i class="fas fa-list-ul text-white"></i></button>
+                        <button type="button" class="button circle blue custom-mr-0 custom-ml-8 mobile-only tablet-only js-show-drawer"><i class="fas fa-list-ul text-white"></i></button>
                     </div>
                 </div>
 
                 <div class="t-profile-blocks">
                     {if !empty($user.email)}
+                    {foreach $user.email as $email}
+                    <div class="t-profile-block">
+                        <a href="mailto:{$email.value}" class="t-profile-block__icon">
+                            <i class="fas fa-envelope text-blue"></i>
+                        </a>
+
+                        <div class="t-profile-block__value">
+                            <a href="mailto:{$email.value}" title="{$email.value}" class="t-profile-block__value-link">{$email.value|escape}</a>
+                        </div>
+
+                        <div class="t-profile-block__type">
+                            {if $email.ext}{$email.ext|escape} {/if}[`email`]
+                        </div>
+                    </div>
+                    {/foreach}
+                    {else}
                     <div class="t-profile-block">
                         <div class="t-profile-block__icon">
                             <i class="fas fa-envelope text-blue"></i>
                         </div>
 
                         <div class="t-profile-block__value">
-                            <a href="mailto:{$user.email[0].value}" title="{$user.email[0].value}" class="t-profile-block__value-link">{$user.email[0].value|escape}</a>
+                            [`no data`]
                         </div>
 
                         <div class="t-profile-block__type">
-                            {if $user.email[0].ext}{$user.email[0].ext|escape} {/if}[`email`]
+                            [`email`]
                         </div>
                     </div>
                     {/if}
+
                     {if !empty($user.phone)}
+                    {foreach $user.phone as $phone}
+                    <div class="t-profile-block">
+                        <a href="tel:{$phone.value}" class="t-profile-block__icon">
+                            <i class="fas fa-phone-alt text-green"></i>
+                        </a>
+
+                        <div class="t-profile-block__value">
+                            <a href="tel:{$phone.value}" title="{$phone.value}" class="t-profile-block__value-link">{$phone.value|escape}</a>
+                        </div>
+
+                        <div class="t-profile-block__type">
+                            {if $phone.ext}{$phone.ext|escape} {/if}[`phone`]
+                        </div>
+                    </div>
+                    {/foreach}
+                    {else}
                     <div class="t-profile-block">
                         <div class="t-profile-block__icon">
                             <i class="fas fa-phone-alt text-green"></i>
                         </div>
 
                         <div class="t-profile-block__value">
-                            <a href="tel:{$user.phone[0].value}" title="{$user.phone[0].value}" class="t-profile-block__value-link">{$user.phone[0].value|escape}</a>
+                            [`no data`]
                         </div>
 
                         <div class="t-profile-block__type">
-                            {if $user.phone[0].ext}{$user.phone[0].ext|escape} {/if}[`phone`]
+                            [`phone`]
                         </div>
                     </div>
                     {/if}
 
                     {if !empty($profile_editor.data.fieldValues.im)}
+                    {foreach $profile_editor.data.fieldValues.im as $im}
                     <div class="t-profile-block">
+                        {$_href = ''}
+                        {if $im.ext == 'whatsapp'}
+                        {$_href = "https://wa.me/{$im.data}"}
+                        {elseif $im.ext == 'telegram'}
+                        {$_href = "https://telegram.im/@{$im.data}"}
+                        {elseif $im.ext == 'skype'}
+                        {$_href = "skype:{$im.data}?chat"}
+                        {elseif $im.ext == 'viber'}
+                        {$_href = "viber://chat?number={$im.data}"}
+                        {/if}
+
+                        {if !empty($_href)}
+                        <a href="{$_href}" class="t-profile-block__icon">
+                            {$im.icon}
+                        </a>
+                        {else}
                         <div class="t-profile-block__icon">
-                            {*$profile_editor.data.fieldValues.im[0].icon*}
+                            {$im.icon}
                         </div>
+                        {/if}
 
                         <div class="t-profile-block__value">
-                            {$profile_editor.data.fieldValues.im[0].data|escape}
+                            {if !empty($_href)}
+                            <a href="{$_href}" title="{$im.data}" class="t-profile-block__value-link">{$im.data|escape}</a>
+                            {else}
+                            {$im.data|escape}
+                            {/if}
                         </div>
 
                         <div class="t-profile-block__type">
-                            {if $profile_editor.data.fieldValues.im[0].ext}{$profile_editor.data.fieldValues.im[0].ext|escape}{/if}
+                            {$im.ext|escape|default:"[`other`]"}
                         </div>
                     </div>
+                    {/foreach}
                     {/if}
 
-                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && $geocoding}
-                    <div class="t-profile-block">
-                        <div class="t-profile-block__map">
-                            <div id="map"></div>
+                    <!-- plugin hook: 'backend_profile.header' -->
+                    {* @event backend_customer.%plugin_id%.header *}
+                    {foreach $backend_profile as $_}{ifset($_.header)}{/foreach}
 
+                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && $geocoding}
+                    <div class="t-profile-block t-profile-block_map">
+                        <div class="t-profile-block__map">
+                            <style>
+                                .ymaps-2-1-79-gototaxi__container,
+                                .ymaps-2-1-79-gototech {
+                                    display: none !important;
+                                }
+                            </style>
+                            <div id="map"></div>
                             {if $geocoding.type == 'yandex'}
-                            <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey={$geocoding.key}" type="text/javascript"></script>
                             <script>
                                 ymaps.ready(init);
 
@@ -223,7 +341,7 @@
                                     const $map = document.querySelector('#map');
                                     const map = new TeamMap($map, 'yandex');
 
-                                    map.yandexGeocode('{$profile_editor.data.fieldValues.address[0].data.city}', renderMap);
+                                    map.yandexGeocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
 
                                     function renderMap(lat, lng) {
                                         map.render(lat, lng);
@@ -231,14 +349,13 @@
                                 }
                             </script>
                             {elseif $geocoding.type == 'google'}
-                            <script src="https://maps.googleapis.com/maps/api/js?key={$geocoding.key}&callback=initMap&v=weekly" async></script>
                             <script>
                                 document.addEventListener('DOMContentLoad', initMap);
                                 function initMap() {
                                     const $map = document.querySelector('#map');
                                     const map = new TeamMap($map, 'google');
 
-                                    map.googleGeocode('{$profile_editor.data.fieldValues.address[0].data.city}', renderMap);
+                                    map.googleGeocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
 
                                     function renderMap(lat, lng) {
                                         map.render(lat, lng);
@@ -247,87 +364,15 @@
                             </script>
                             {/if}
                         </div>
-
-                        <div class="t-profile-block__map t-profile-block__map_content">
-                            <div class="t-profile-block__icon">
-                                <i class="fas fa-map-marker-alt text-red"></i>
-                            </div>
-
-                            <div class="t-profile-block__value t-profile-block__value_map">
-                                {$profile_editor.data.fieldValues.address[0].data.city}
-                            </div>
-                        </div>
-
-                        <a href="//maps.google.com/maps?q={$profile_editor.data.fieldValues.address[0].for_map.with_street}&z=15" class="t-profile-block__city" target="_blank"></a>
                     </div>
                     {/if}
                 </div>
 
                 <div class="t-profile-user-info-block fields custom-mt-20 custom-pb-40" id="tc-contact">
-                    <ul class="t-profile-user-details">
-                        {if !empty($user.login)}
-                            <li class="details-item login">@{$user.login|escape}</li>
-                        {/if}
-                        <li class="details-item groups">
-                            {* Used for trigger event in ProfileAccess.html *}
-                            <span class="js-webasyst-id-unbind-auth hidden"></span>
+                    <div class="align-center">
+                        <a class="js-toggle-user-info bold" href="javascript:void(0);">[`More details`] <i class="fas fa-caret-down"></i></a>
+                    </div>
 
-                            {if $user.is_user > 0}
-                                {if $groups}
-
-                                    {foreach $groups as $_id=>$_name}
-                                    <span class="details-item-group small">
-                                        <a href="{$wa_app_url}group/{$_id}/">{$_name|escape}</a>
-                                    </span>
-                                    {/foreach}
-                                {else}
-                                    <span>[`This user does not belong to any group.`]</span>
-                                    {if $wa->user()->isAdmin()}
-                                        <a href="javascript:void(0)" class="small js-edit-groups"><i class="fas fa-pen"></i> [`Edit groups`]</a>
-                                    {/if}
-                                {/if}
-                            {/if}
-                        </li>
-                        {if !empty($user.email)}
-                            {foreach $user.email as $email}
-                                {if $email@key != '0'}
-                                <li class="details-item email">
-                                    <a href="mailto:{$email.value|escape}" class="small"><i class="fas fa-envelope text-blue"></i> {$email.value|escape}</a>
-                                    {if $email.ext}
-                                        &nbsp;<span class="hint">{$email.ext|escape}</span>
-                                    {/if}
-                                </li>
-                                {/if}
-                            {/foreach}
-                        {/if}
-                        {if !empty($user.phone)}
-                            {foreach $user.phone as $phone}
-                                {if $phone@key != '0'}
-                                <li class="details-item phone">
-                                    <a href="tel:{$phone.value|escape}" class="black small"><i class="fas fa-phone-alt text-green"></i> {$phone.value|escape}</a>
-                                    {if $phone.ext}
-                                        &nbsp;<span class="hint">{$phone.ext|escape}</span>
-                                    {/if}
-                                </li>
-                                {/if}
-                            {/foreach}
-                        {/if}
-                        {if !empty($profile_editor.data.fieldValues.im)}
-                            <li class="details-item im">
-                                {foreach $profile_editor.data.fieldValues.im as $im}
-                                    <span class="small">{$im.value}</span>
-                                    {if $im.ext}
-                                    <span class="hint custom-ml-4">{$im.ext|escape}</span>
-                                    {/if}
-                                    {if !$im@last}<span class="custom-mr-8">,</span>{/if}
-                                {/foreach}
-                            </li>
-                        {/if}
-                        <!-- plugin hook: 'backend_profile.header' -->
-                        {* @event backend_customer.%plugin_id%.header *}
-                        {foreach $backend_profile as $_}{ifset($_.header)}{/foreach}
-                    </ul>
-                    <a class="js-toggle-user-info bold" href="javascript:void(0);">[`Подробнее`] <i class="fas fa-caret-down"></i></a>
                     <div class="fields-group js-user-info custom-mt-16 hidden">
                         <div id="contact-info-block">
                             {* Contents generated by JS later *}
@@ -343,9 +388,8 @@
                 </div>
                 <div class="t-profile-user-info-activity bordered-top custom-pt-40">
                     <div class="activity-header flexbox wrap-mobile middle">
-                        <h4 class="custom-mb-0">[`Live Stream`]</h4>
                         {*<div class="toggle custom-ml-auto custom-mx-auto-mobile custom-mt-8-mobile" id="activity-toggle">
-                            <span class="selected">[`Все приложения`]</span>
+                            <span class="selected">[`All apps`]</span>
                             <span>[`CRM`]</span>
                         </div>*}
                     </div>
@@ -363,12 +407,12 @@
             <a href="javascript:void(0);" class="drawer-close js-close-drawer"><i class="fas fa-times"></i></a>
             <div class="drawer-block t-profile-drawer" style="background-color:var(--background-color)">
                 <div class="drawer-content">
-                    {include file="./sidebarWidgets/Access.html" assign=access_html}
+                    {include file="./sidebarWidgets/Access.html" inline}
                     {include file="./sidebarWidgets/Stats.html" is_drawer=true assign=stats_html}
                     {$wa->contactProfileSidebar($user.id, [
                         'is_profile_sidebar' => true,
+                        'is_profile_drawer' => true,
                         'html' => [
-                            'access' => $access_html,
                             'stats' => $stats_html
                         ]
                     ])}
@@ -444,7 +488,6 @@
             }
         });*}
 
-        $.team.profile.showSidebarDrawer(true);
 
         $('.js-change-slider-photo').on('click', function(e) {
             e.preventDefault();
@@ -475,7 +518,7 @@
             if(type === 'email'){
                 href = '?module=users&action=invite';
                 post_data = { email: this.dataset.email ?? '' };
-                $link.innerHTML = '<i class="fas fa-spinner fa-spin"></i> [`Отправляется`]';
+                $link.innerHTML = '<i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i> [`Sending`]';
             }else if(type === 'link') {
                 href = '?module=users&action=createInvitation';
                 post_data = { contact_id: $.team.profile.user.id ?? 0 };
@@ -485,7 +528,7 @@
                 if(response.status === 'ok') {
                     if(type === 'email'){
                         $link.classList.add('text-green')
-                        $link.innerHTML = '<i class="fas fa-check"></i> [`Отправлено`]';
+                        $link.innerHTML = '<i class="fas fa-check"></i> [`Sent`]';
                     }else if(type === 'link'){
                         $link.insertAdjacentHTML('afterend', `<input type="text" style="position:absolute;opacity:0" class="js-invite-link" value="${ response.data.invitation_link }">`);
                         let $invite_link = document.querySelector('.js-invite-link')
@@ -494,16 +537,16 @@
                         document.execCommand("copy");
                         $invite_link.remove();
                         $link.classList.add('text-green')
-                        $link.innerHTML = '<i class="fas fa-check"></i> [`Скопировано`]';
+                        $link.innerHTML = '<i class="fas fa-check"></i> [`Copied`]';
                     }
                 }
             }).always( function() {
                 setTimeout(()=>{
                     $link.classList.remove('text-green');
                     if(type === 'email'){
-                        $link.innerHTML = '<i class="fas fa-envelope"></i> [`Отправить еще раз`]';
+                        $link.innerHTML = '<i class="fas fa-envelope"></i> [`Send again`]';
                     }else if(type === 'link'){
-                        $link.innerHTML = '<i class="fas fa-link"></i> [`Ссылка на приглашение`]';
+                        $link.innerHTML = '<i class="fas fa-link"></i> [`Link to invitation`]';
                     }
                     $link.dataset.isLocked = '';
                 }, 1500);
@@ -514,7 +557,12 @@
             $('.t-profile-user-info-activity').append(response)
         });
 
-        $(".wa-tooltip").waTooltip();
+        const $tooltip_wrapper = document.querySelector('.t-profile');
+        $(".wa-tooltip").waTooltip({
+            appendTo: $tooltip_wrapper,
+            touch: 'hold',
+        });
+
     })(jQuery);
 
     {if !empty($contacts)}
@@ -524,6 +572,8 @@
         watchNav: true,
         params: {
             slidesOffsetBefore: 48,
+            slidesOffsetAfter: 48,
+            freeMode: true,
             roundLengths: true,
             centeredSlides: true,
             centeredSlidesBounds: true,
@@ -533,10 +583,20 @@
             navigation: {
                 nextEl: ".t-profile-users-nav.right",
                 prevEl: ".t-profile-users-nav.left",
+            },
+            breakpoints: {
+                // when window width is >= 320px
+                320: {
+                    slidesPerView: 6,
+                },
+                // when window width is >= 480px
+                480: {
+                    slidesPerView: 'auto',
+                },
             }
         },
         events: {
-            click(swiper, event) {
+            /*click(swiper, event) {
                 const is_next_click = event.target === swiper.navigation.nextEl,
                     is_prev_click = event.target === swiper.navigation.prevEl,
                     is_end = swiper.isEnd,
@@ -549,7 +609,7 @@
                 if (is_prev_click && is_beginning) {
                     setTimeout(() => swiper.slideTo(swiper.slides.length))
                 }
-            }
+            }*/
         }
     });
     {/if}
@@ -562,7 +622,7 @@
             roundLengths: true,
             slidesPerView: 1,
             slideClass: 't-profile-user-slide',
-            initialSlide: localStorage.getItem( 'team/profile_slider' ) || 0,
+            initialSlide: parseInt(localStorage.getItem( 'team/profile_slider' )) || 0,
             navigation: {
                 nextEl: ".nav-arrows.right",
                 prevEl: ".nav-arrows.left",
@@ -580,21 +640,7 @@
         },
         events: {
             slideChange(swiper) {
-                localStorage.setItem( 'team/profile_slider', swiper.activeIndex );
-            },
-            click(swiper, event) {
-                const is_next_click = event.target === swiper.navigation.nextEl,
-                    is_prev_click = event.target === swiper.navigation.prevEl,
-                    is_end = swiper.isEnd,
-                    is_beginning = swiper.isBeginning;
-
-                if (is_next_click && is_end) {
-                    setTimeout(() => swiper.slideTo(0))
-                }
-
-                if (is_prev_click && is_beginning) {
-                    setTimeout(() => swiper.slideTo(swiper.slides.length))
-                }
+                localStorage.setItem( 'team/profile_slider', swiper.realIndex );
             }
         }
     });

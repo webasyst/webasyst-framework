@@ -191,10 +191,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 }
 
                 var input = this.domElement.find('.val');
-                input.parents('.value').children('.state-error-hint').remove();
+                input.nextAll('.state-error-hint').remove();
 
                 if (errors !== null) {
-                    input.parents('.value').append($('<p class="state-error-hint custom-mt-8">'+errors+'</p>'));
+                    input.after($('<p class="state-error-hint custom-mt-8">'+errors+'</p>'));
                     input.addClass('state-error');
                 } else {
                     input.removeClass('state-error');
@@ -318,17 +318,17 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             var value = this.fieldValue;
             if (mode == 'edit') {
                 if (this.fieldData.input_height <= 1) {
-                    result = $('<span><input class="val small" type="text"><i class="fas fa-spinner fa-spin loading" style="display:none;"></i></span>');
+                    result = $('<span><input class="val small" type="text"><i class="fas fa-spinner fa-spin loading wa-animation-spin speed-1000" style="display:none;"></i></span>');
                 } else {
                     result = $('<span><textarea class="val small width-100" rows="'+this.fieldData.input_height+'"></textarea></span>');
                 }
                 result.find('.val').val(value);
             } else {
                 if (this.fieldData.input_height <= 1) {
-                    result = $('<span class="val small"></span><i class="fas fa-spinner fa-spin loading" style="display:none;">').text(value);
+                    result = $('<span class="val small"></span><i class="fas fa-spinner fa-spin loading wa-animation-spin speed-1000" style="display:none;">').text(value);
                 } else {
                     var text = $.wa.encodeHTML(value || '').replace(/\n/g, '<br>');
-                    result = $('<span class="val small"></span><i class="fas fa-spinner fa-spin loading" style="display:none;">').html(text);
+                    result = $('<span class="val small"></span><i class="fas fa-spinner fa-spin loading wa-animation-spin speed-1000" style="display:none;">').html(text);
                 }
             }
             return result;
@@ -1144,7 +1144,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             var result = $('<div class="value flexbox space-12 wrap-mobile"></div>').append(value);
             var rwe = result.find('.replace-with-ext');
             if (rwe.size() <= 0) {
-                result.append('<span class="wide flexbox space-12 wrap-mobile custom-mt-12-mobile"><span class="replace-with-ext"></span></span>');
+                result.append('<span class="flexbox wide space-12"><span class="replace-with-ext"></span></span>');
                 rwe = result.find('.replace-with-ext');
             }
 
@@ -1158,7 +1158,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     if (rwe.parents('.ext').size() > 0) {
                         rwe.before(contactEditor.htmlentities(ext));
                     } else {
-                        rwe.before($('<span class="hint" style="align-self: flex-end; margin-top: -.75rem;"></span>').text(' '+ext));
+                        rwe.before($('<span class="hint" style="align-self: flex-end;"></span>').text(' '+ext));
                     }
                 }
             }
@@ -1832,7 +1832,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 result = $('<span class="width-100-mobile custom-mr-0-mobile"><input class="val small width-100-mobile" type="text"></span>');
                 result.find('.val').val(this.fieldValue);
             } else {
-                result = $('<span class="val small"></span>').html(this.viewValue);
+                result = $('<span class="val small custom-mt-12-mobile"></span>').html(this.viewValue);
             }
             return result;
         }
@@ -1871,7 +1871,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 result = $('<span class="width-100-mobile custom-mr-0-mobile"><input class="val small width-100-mobile" type="text"></span>');
                 result.find('.val').val(this.fieldValue);
             } else {
-                result = $('<span class="val small"></span>').html(this.viewValue);
+                result = $('<span class="val small nowrap custom-mt-12-mobile"></span>').html(this.viewValue);
             }
             return result;
         }
@@ -2373,6 +2373,8 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                                 data: data_top
                             });
                         }
+
+                        $.team.content.reload();
                     }
 
                 }, 'json');
@@ -2459,7 +2461,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                 input = '<input type="text" class="shorter small empty ext width-100-mobile custom-mt-12-mobile">';
             }
 
-            var result = $('<div class="wa-select small width-100-mobile custom-mr-12 custom-mr-0-mobile"><select class="ext">'+optString+'</select></div><span class="width-100-mobile custom-mr-12 custom-mr-0-mobile">'+input+'</span>');
+            var result = $('<div class="wa-select small width-100-mobile custom-mr-12 custom-mt-12-mobile"><select class="ext">'+optString+'</select></div><span class="width-100-mobile custom-mr-12 custom-mr-0-mobile">'+input+'</span>');
             var select = result.children('select');
             input = result.find('input');
             input.val(defValue);
@@ -2561,7 +2563,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             buttons.children('.value')
                 .append(saveBtn)
                 .append(cancelBtn)
-                .append($('<i class="fas fa-spinner fa-spin loading custom-ml-16" style="display: none;"></i>'));
+                .append($('<i class="fas fa-spinner fa-spin loading custom-ml-16 wa-animation-spin speed-1000" style="display: none;"></i>'));
 
             return buttons;
         },
@@ -2588,7 +2590,10 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             var result = $('<div class="field'+cssClass+'"></div>');
 
             if ((typeof name != 'undefined') && name) {
-                result.append('<div class="name">' + $.wa.encodeHTML(name) +'</div>');
+                $(this).on('set_mode', function (e, data) {
+                    data.field.domElement.find('.name').toggleClass('for-input', (data.mode == 'edit'));
+                })
+                result.append(`<div class="name${($(this.el).closest('.dialog-content').length) ? ' for-input' : ''}">${$.wa.encodeHTML(name)}</div>`);
             }
 
             if (typeof value != 'object' || !(value instanceof jQuery) || value.find('div.value').size() <= 0) {

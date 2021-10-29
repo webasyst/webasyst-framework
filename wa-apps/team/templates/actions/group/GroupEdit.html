@@ -55,12 +55,12 @@
 
 <div class="dialog t-edit-group-dialog" id="t-edit-group">
     <div class="dialog-background"></div>
-    <form ction="" method="post" class="dialog-body">
+    <form action="" method="post" class="dialog-body">
         <h3 class="dialog-header">{if !empty($group.id)}[`Edit group`]{else}[`New group`]{/if}</h3>
         <div class="dialog-content fields">
             {* NAME *}
             <div class="field">
-                <div class="name">
+                <div class="name for-input">
                     [`Name`]
                 </div>
                 <div class="value">
@@ -69,7 +69,7 @@
             </div>
             {* DESCRIPTION *}
             <div class="field">
-                <div class="name">
+                <div class="name for-input">
                     [`Description`]
                 </div>
                 <div class="value">
@@ -78,7 +78,7 @@
             </div>
             {* TYPE *}
             <div class="field">
-                <div class="name">
+                <div class="name for-input">
                     [`Type`]
                 </div>
                 <div class="value">
@@ -90,7 +90,7 @@
             </div>
             {* ICONS *}
             <div class="field t-icon-toggle {if $group.type != teamWaGroupModel::WA_GROUP_TYPE_GROUP}hidden{/if}">
-                <div class="name">
+                <div class="name for-input">
                     [`Icon`]
                 </div>
                 <div class="value">
@@ -107,14 +107,15 @@
             {$is_location = $group.type == teamWaGroupModel::WA_GROUP_TYPE_LOCATION}
             {* ADDRESS AND MAP *}
             <div class="field t-address-toggle {if !$is_location}hidden{/if}">
-                <div class="name">
+                <div class="name for-input">
                     [`Address`]
                 </div>
                 <div class="value">
                     <input type="text" name="data[location][address]" value="{$group.location.address|escape}" placeholder="[`Address`]" class="f-location-edit-address-input full-width">
                     <input type="hidden" class="t-location-longitude-input" name="data[location][longitude]" value="{$group.location.longitude|escape}">
                     <input type="hidden" class="t-location-latitude-input" name="data[location][latitude]" value="{$group.location.latitude|escape}">
-                    <p class="t-map-hint hint" style="margin-top: .25em; {if !$group.location.address || !empty($group.location.longitude) && !empty($group.location.latitude)}display: none;{/if}">[`Specified address not found on map`]</p>
+                    <div class="hint">[`Office location. E.g., 100 5th Avenue, New York.`]</div>
+                    <p class="t-map-hint hint custom-mt-4 text-orange" style="{if !$group.location.address || !empty($group.location.longitude) && !empty($group.location.latitude)}display: none;{/if}">[`Specified address not found on map`]</p>
                 </div>
             </div>
             {* MAP *}

@@ -6,6 +6,7 @@ class teamScheduleDayAction extends teamCalendarAction
     {
         $date = waRequest::post('date', null, waRequest::TYPE_STRING_TRIM);
         $ids = waRequest::post('id', array(), waRequest::TYPE_ARRAY_TRIM);
+        $selected_user_id = waRequest::post('selected_user_id', null, waRequest::TYPE_INT);
 
         $cem = new waContactEventsModel();
 
@@ -29,6 +30,9 @@ class teamScheduleDayAction extends teamCalendarAction
             if ($u['birthday'] < $day || $u['birthday'] > $day) {
                 continue;
             } else {
+                if($selected_user_id && $selected_user_id != $id) {
+                    continue;
+                }
                 $events['birthday'.$id] = array(
                     'id'          => null,
                     'calendar_id' => 'birthday',

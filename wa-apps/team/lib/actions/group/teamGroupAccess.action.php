@@ -23,6 +23,7 @@ class teamGroupAccessAction extends teamContentViewAction
 
         $this->view->assign(array(
             'access_types' => teamHelper::getAccessTypes(),
+            'can_manage_group' => teamHelper::hasRights('manage_group.' . $group_id),
             'group' => $group,
             'apps' => $apps,
         ));

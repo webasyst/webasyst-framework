@@ -11,7 +11,7 @@
                 id="t-calendar-widget"
                 data-dialog-header="[`Calendar`]"
                 data-dialog-width="1000px"
-                data-section-id="calendar">
+                data-section-id="calendar">{$_day_event = []}
                 {foreach $days_data as $_day_data}
                     {$_day_date_formatted = waDateTime::date('Y-m-d', $_day_data.date)}
 
@@ -20,6 +20,7 @@
                     {$__events_in_week = ["all" => [[],[],[],[],[],[],[]]]}
 
                     {if $__event_groups}
+                        {$__event_groups = array_reverse($__event_groups)}
                         {foreach $__event_groups as $__event_group}
                             {foreach $__event_group as $__e}
                                 {if isset($__e.colspan)}
@@ -57,16 +58,23 @@
                                 {$__user = $calendar_widget.users[$__event.contact_id]}
                             {/if}
 
-                            {$_styles = []}
+                            {$_badge_styles = ''}
                             {if $__event.is_status}
-                                {$_styles[] = "background: `$_calendar.status_bg_color`;"}
-                                {$_styles[] = "color: `$_calendar.status_font_color`;"}
+                                {if $_calendar.status_bg_color}
+                                    {$_badge_styles = "color: `$_calendar.status_font_color`; background: `$_calendar.status_bg_color`;"}
+                                {else}
+                                    {$_badge_styles = "color: `$_calendar.font_color`; background: `$_calendar.bg_color`;"}
+                                {/if}
                             {else}
-                                {$_styles[] = "background: `$_calendar.bg_color`;"}
-                                {$_styles[] = "color: `$_calendar.font_color`;"}
+                                {if !empty($_calendar.status_bg_color)}
+                                    {$_badge_styles = "color: `$_calendar.font_color`; background: `$_calendar.bg_color`;"}
+                                {else}
+                                    {$_badge_styles = "color: `$_calendar.bg_color`; background: transparent; box-shadow: inset 0 0 0 1px currentColor;"}
+                                {/if}
                             {/if}
+
                             {if $__user && $_is_birthday}
-                                {$_styles[] = "background-image: linear-gradient(90deg, #FA5959 0%, #E419AB 100%);"}
+                                {$_badge_styles = "color: var(--white); background-image: linear-gradient(90deg, #FA5959 0%, #E419AB 100%);"}
                             {/if}
 
                             {$square_corner_side = ''}
@@ -88,7 +96,7 @@
                         <span class="t-week-row-widget-day">{_ws(waDateTime::date('D', $_day_data.date))}</span>
                         <span class="t-week-row-widget-number">{waDateTime::date('j', $_day_data.date)}</span>
                         {if $__event}
-                            <span class="t-week-row-widget-badge{$square_corner_side}"{if !$_is_birthday} data-wa-tooltip-content="{$__event.summary|escape}"{/if} style="{$_styles|join:""}">
+                            <span class="t-week-row-widget-badge{$square_corner_side}"{if !$_is_birthday} data-wa-tooltip-content="{$__event.summary|escape}"{/if} style="{$_badge_styles}">
                                 {if $_is_birthday && $__user}
                                     {$title = sprintf(_w("%s's birthday — %s"), $__user.name|escape, $__event.birthday_str)}
                                     <i class="fas fa-birthday-cake" title="{$title}"></i>

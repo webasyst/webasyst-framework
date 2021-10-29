@@ -124,7 +124,15 @@
 
             .t-profile-user-info-bar
                 display flex
+
+                @media (max-width: 1440px)
+                    display: grid;
+                    grid-template-columns: max-content 1fr;
+                    grid-template-areas: "avatar buttons" "info info";
+
                 .t-profile-userpic
+                    grid-area: avatar;
+
                     position relative
                     display flex
                     flex-wrap: wrap
@@ -132,6 +140,7 @@
                     margin-right 1em
                     column-gap: 1.25em;
                     z-index 1
+
                     .userpic
                         box-shadow: 0 0 0 0.25em var(--background-color-blank)
                         &:hover
@@ -154,16 +163,25 @@
                             top 0
                             transition opacity linear 300ms
 
-                    .username
-                        margin-top 1.25em;
-                        align-self: center
-                        h2
-                         margin-bottom .625rem
+
+                .t-profile-user-data
+                    grid-area: info;
+
+                    @media (max-width: 1440px)
+                        margin-top: 16px;
+
+                    h2
+                     margin-bottom .625rem
 
                 .t-profile-actions-btn
+                    grid-area: buttons;
                     margin-left auto
                     display: flex;
                     align-items: flex-start;
+                    font-size: 14px;
+
+                    @media (max-width: 768px)
+                        font-size: 16px;
 
             .t-profile-user-info-block
                 margin-top 1.25rem
@@ -172,21 +190,6 @@
                     padding 0
                     margin 0 0 1.3125rem 0
                     list-style none
-                    .details-item
-                        margin-bottom: 0.5rem
-                        .details-item-group
-                            position: relative;
-                            padding-right: 24px;
-                            &:not(:last-child)::after
-                                position: absolute;
-                                top: 50%;
-                                right: 10px;
-                                width: 4px;
-                                height: @width;
-                                background-color: #bbb;
-                                border-radius: 50%;
-                                transform: translateY(calc(-50% + 1px));
-                                content: '';
                         &.login
                             color var(--menu-glyph-color-hover)
                             font-weight: bold
@@ -256,11 +259,13 @@
                                     display flex
                                     flex-wrap wrap
                                     gap 1rem
+                                    margin-top: .5rem;
                                     .photo-item
                                         img
                                             border-radius 0.25rem
                     .t-month-wrapper
                         margin-bottom 1.5rem
+                        margin-left -.625rem;
 
 
 .waid-login
@@ -524,8 +529,7 @@
 
     .t-paging-wrapper
         margin 0
-        padding 1em
-        background #fff
+        padding 1em 2rem
         color #888
 
         .icon16
@@ -539,8 +543,7 @@
     min-width: 200px
     width: 65%
     height: 8.3em
-    background: #fafafa
-    border-color: #aaa #eee #eee #aaa
+    border-color: var(--border-color-soft);
     border-style: solid
     border-width: 1px
 
@@ -721,52 +724,47 @@ svg
 
 .t-profile-blocks
     display: flex;
-    margin: 0 -8px;
+    flex-wrap: wrap;
+    margin: 16px -8px 0;
+
+    @media (max-width: 768px)
+        margin: 16px 0 0;
 
 .t-profile-block
     box-sizing: border-box;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
     position: relative;
     overflow: hidden;
 
-    width: 100%;
-    height: 94px;
+    width: calc(50% - 16px);
+    min-height: 64px;
     background-color: var(--background-color-blockquote);
     border-radius: 4px;
-    padding: 10px;
+    padding: 10px 50px 10px 10px;
     margin: 16px 8px 0;
 
+    @media (max-width: 768px)
+        width: 100%;
+        margin: 16px 0 0;
+
+    &_map
+        flex-grow: 1;
+
     &__icon
-        position: relative;
+        display: flex;
+        justify-content: flex-end;
+
+        position: absolute;
+        top: 16px;
+        right: 15px;
+
         width: 26px;
         height: 26px;
         font-size: 1.3rem;
 
     &__value
-        overflow: hidden;
-
-        max-width: 100%;
-        font-size: .875rem;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        margin-top: 8px;
-
-        &_map
-            text-shadow: 0 0 5px var(--text-white);
-
         &-link
-            &::before
-                position: absolute;
-                top: 0;
-                left: 0;
-
-                width: 100%;
-                height: 100%;
-                content: '';
+            word-break: break-all;
 
     &__type
         color: var(--text-color-hint);
@@ -779,27 +777,25 @@ svg
         bottom: 0;
         left: 0;
 
-        &_content
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        #map
+            height: 100%;
 
-            padding: 10px;
+.t-profile-username
+    display: inline-block;
 
-    &__city
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
+.t-profile-group-item
+    &-bullet
+        display: inline-block;
+        color: #bbb;
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-select: none;
 
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+.t-profile-im-icon
+    display: inline-block;
 
-        padding: 10px;
+    width: 18px;
+    height: 18px;
 
-        a:hover&
-            color: currentColor;
-            text-decoration: none;
+    text-align: center;
+    margin-right: 6px;

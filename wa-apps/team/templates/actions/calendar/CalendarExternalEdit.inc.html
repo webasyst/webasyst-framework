@@ -73,30 +73,6 @@
                             <input name="inner_calendar" value="{$_selected_calendar.id}" type="hidden">
                         {/if}
                     </div>
-
-{*
-                    <ul class="menu-h dropdown t-calendar-toggle">
-                        <li>
-                            <a class="t-selected-item inline-link" href="javascript:void(0);">
-                                <i class="icon16 userpic20 {if !empty($_selected_calendar.icon_class)}{$_selected_calendar.icon_class}{/if}" style="{if !empty($_selected_calendar.bg_color)}background: {$_selected_calendar.bg_color};{/if}{if !empty($_selected_calendar.font_color)}color: {$_selected_calendar.font_color};{/if}"></i>
-                                <b><i>{$_selected_calendar.name|escape}</i></b>
-                            </a>
-                            {if !empty($_calendars)}
-                                <ul class="menu-v with-icons">
-                                    {foreach $_calendars as $_c}
-                                        <li class="{if $_c.id == $_selected_calendar.id}selected{/if}" data-calendar-id="{$_c.id}">
-                                            <a href="javascript:void(0);">
-                                                <i class="icon16 userpic20 {if !empty($_c.icon_class)}{$_c.icon_class}{/if}" style="{if !empty($_c.bg_color)}background: {$_c.bg_color};{/if}{if !empty($_c.font_color)}color: {$_c.font_color};{/if}"></i>
-                                                <b><i>{$_c.name|escape}</i></b>
-                                            </a>
-                                        </li>
-                                    {/foreach}
-                                </ul>
-                            {/if}
-                            <input name="inner_calendar" value="{$_selected_calendar.id}" type="hidden">
-                        </li>
-                    </ul>
-*}
                 </div>
             </div>
 
@@ -318,46 +294,29 @@
         $(".js-calendar-dropdown").waDropdown({
             items: ".menu > li > a",
             change: function(event, target, dropdown) {
+                const $li = target.closest('li'),
+                    active_class = dropdown.options.active_class,
+                    is_active = $li.classList.contains(active_class);
 
-            }
-        });
+                if (!is_active) {
+                    const bg_color = $li.dataset.bgColor,
+                        font_color = $li.dataset.fontColor,
+                        calendar_id = $li.dataset.id ;
 
-        var $calendarToggle = $(".t-calendar-toggle"),
-            $input = $calendarToggle.find("input[name=\"inner_calendar\"]"),
-            $hiddenMenu = $calendarToggle.find(".menu-v"),
-            active_class = "selected",
-            $selected = $hiddenMenu.find("li." + active_class);
+                    dropdown.$button
+                        .css({
+                            'background-color': bg_color,
+                            'color': font_color
+                        })
+                        .find('svg')
+                        .css('color', font_color)
 
-        $hiddenMenu.on("click", "a", function() {
-            setCalendar( $(this) );
-        });
-
-        function setCalendar( $link ) {
-            var $li = $link.closest("li"),
-                calendar_id = ( $li.data("calendar-id") || false ),
-                is_active = $li.hasClass(active_class);
-
-            if (calendar_id && !is_active) {
-                // Set menu
-                if ($selected.length) {
-                    $selected.removeClass(active_class);
+                    dropdown.$wrapper
+                        .find('input[name="inner_calendar"]')
+                        .val(calendar_id);
                 }
-                $li.addClass(active_class);
-                $selected = $li;
-
-                // Render
-                $calendarToggle.find(".t-selected-item").html( $link.html() );
-
-                // Set value
-                $input.val(calendar_id).trigger("change");
-
-                //
-                $hiddenMenu.hide();
-                setTimeout( function() {
-                    $hiddenMenu.removeAttr("style");
-                }, 500);
             }
-        }
+        });
 
     })(jQuery);
 </script>

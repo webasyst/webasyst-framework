@@ -2,6 +2,7 @@
 
 {$_timestamp = waRequest::request("timestamp")}
 {$months = waDateTime::getMonthNames()}
+{$_current_month_index = date('n', time())}
 
 <section class="t-activity-wrapper break-word" id="t-activity-wrapper">
     {if !empty($activity)}
@@ -12,7 +13,7 @@
         {/if}
         {$_max_id = null}
 
-        <ul class="t-activity custom-mt-24">
+        <ul class="t-activity">
             {foreach $activity as $_activity_item}
                 {if $_activity_item@last}
                     {$_max_id = $_activity_item.id}
@@ -28,23 +29,23 @@
                     {*<li class="t-space-wrapper"></li>*}
                 {*{/if}*}
 
-                {if $current_month_index != $before_month_index}
+                {if $current_month_index != $before_month_index || ($_activity_item@first && $current_month_index == $_current_month_index)}
                     <li class="t-month-wrapper">
-                        <h5 class="heading">{$months[date('n', $time)]} {date('Y', $time)}</h5>
+                        <h5>{$months[date('n', $time)]} {date('Y', $time)}</h5>
                     </li>
                 {/if}
 
-                <li class="t-activity-item{if !empty($_activity_item.is_empty)} is-empty{/if}{if $current_month_index != $before_month_index} is-first{/if}" data-id="{$_activity_item.id}" data-timestamp="{$_last_datetime}">
+                <li class="t-activity-item small{if !empty($_activity_item.is_empty)} is-empty{/if}{if $current_month_index != $before_month_index} is-first{/if}" data-id="{$_activity_item.id}" data-timestamp="{$_last_datetime}">
                     <p class="t-app-badge">
                         {if !( empty($_activity_item.app) || empty($_activity_item.app.name) )}
-                            <span class="badge small" style="background: {$_activity_item.app.sash_color|default: "#aaa"};">{$_activity_item.app.name}</span>
+                            <span class="badge" style="background: {$_activity_item.app.sash_color|default: "#aaa"};">{$_activity_item.app.name}</span>
                         {/if}
                         {if !empty($_activity_item.datetime)}
-                            <span class="small gray">{waDateTime::format('humandatetime', $_activity_item.datetime)}</span>
+                            <span class="gray">{waDateTime::format('humandatetime', $_activity_item.datetime)}</span>
                         {/if}
                     </p>
 
-                    <p class="small">
+                    <p>
                         {if !empty($_activity_item.action_name)}
                             <span class="gray custom-mr-4">{$_activity_item.action_name|escape}</span>
                         {/if}
@@ -59,7 +60,10 @@
         </ul>
 
         {if ($count == 50)}
-            <div class="t-paging-wrapper" data-max-id="{$_max_id}"><i class="fas fa-spin fa-spinner"></i>[`Loading...`]</div>
+            <div class="t-paging-wrapper flexbox middle" data-max-id="{$_max_id}">
+                <i class="fas fa-spinner custom-mr-8 wa-animation-spin speed-1000"></i>
+                [`Loading...`]
+            </div>
         {/if}
 
         <script>

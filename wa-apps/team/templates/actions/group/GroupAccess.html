@@ -2,18 +2,18 @@
     <div class="article-body">
     {* HEADER *}
     <header class="t-content-header flexbox middle">
-        <h1 class="flexbox wide space-16 custom-mb-0 custom-pr-16">
+        <h1 class="flexbox wide middle space-16 custom-mb-0 custom-pr-16">
             <a class="t-back-link gray" href="{$wa_app_url}group/{$group.id}/" title="[`Back`]"><i class="fas fa-arrow-circle-left"></i></a>
-            <span>{$group.name|escape}</span>
+            <span{if $can_manage_group} class="editable js-name-editable" contenteditable="true"{/if}>{$group.name|escape}</span>
         </h1>
 
         <div class="dropdown js-change-group custom-mt-8 small">
-            <button class="dropdown-toggle button light-gray" type="button"><i class="fas fa-cog text-blue"></i> [`Manage group`]</button>
+            <button class="dropdown-toggle button light-gray" type="button"><i class="fas fa-cog text-blue"></i> [`Change`]</button>
             <div class="dropdown-body dd-wide">
                 <ul class="menu">
                     <li>
                         <a href="{$wa_app_url}group/{$group.id}/manage/">
-                            <i class="fas fa-users text-orange"></i><span>[`Настроить участников`]</span>
+                            <i class="fas fa-users text-orange"></i><span>[`Set up members`]</span>
                         </a>
                     </li>
                     {if $wa->user()->isAdmin('webasyst')}

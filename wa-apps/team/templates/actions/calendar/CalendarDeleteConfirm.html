@@ -27,9 +27,11 @@
     </div>
     <script>
         ( function($) {
-            new CalendarDeleteDialog({
-                $wrapper: $("#t-calendar-delete"),
-                calendar_id: "{$calendar.id}"
+            new CalendarDeleteDialog($("#t-calendar-delete"), {
+                calendar_id: '{$calendar.id}',
+                api: {
+                    delete: '?module=calendar&action=delete'
+                }
             });
         })(jQuery);
     </script>

@@ -1,0 +1,18 @@
+.paging
+    @media (max-width: 768px)
+        flex-wrap: wrap;
+        border-left: 1px solid var(--border-color-soft);
+        border-radius: 5px 0 0 5px;
+
+    &__desktop-only
+        @media (max-width: 768px)
+            display: none;
+
+    &__prevnext
+        @media (max-width: 768px)
+            &:not(:last-child)
+                border-radius: 5px 0 0 5px;
+
+    li:nth-last-child(-n+2)
+        @media (max-width: 768px)
+            border-radius: 0 5px 5px 0;

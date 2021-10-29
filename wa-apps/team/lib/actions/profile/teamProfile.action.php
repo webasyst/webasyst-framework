@@ -51,11 +51,11 @@ class teamProfileAction extends teamProfileContentViewAction
         $this->view->assign([
             'backend_profile'                  => $this->pluginHook(),
             'user_event'                       => self::getUserEvent($this->profile_contact),
+            'user_events'                      => self::getAllUserEvents($this->profile_contact),
             'top'                              => $this->profile_contact->getTopFields(),
             'tab'                              => waRequest::param('tab', null, waRequest::TYPE_STRING_TRIM),
             'can_view_external_calendars_info' => $this->canViewExternalCalendarsInfo(),
             'can_edit'                         => $can_edit,
-            'user'                             => $this->profile_contact,
             'groups'                           => teamHelper::groupRights($ugm->getGroups($this->profile_contact->getId())),
             'user_name_formatted'              => $user_name_formatted,
             'invite'                           => $invite,
@@ -76,6 +76,8 @@ class teamProfileAction extends teamProfileContentViewAction
         $this->view->assign($this->getCreationInfo());
 
         $this->view->assign($this->getUI20Data());
+
+        $this->view->assign('user', $this->profile_contact);
 
     }
 
@@ -157,44 +159,58 @@ class teamProfileAction extends teamProfileContentViewAction
 
         if (isset($profile_data['fieldValues']['socialnetwork'])) {
             $socialnetwork_icons = [
-                'twitter' => '<i class="fab fa-twitter text-gray"></i>&nbsp;',
-                'vkontakte' => '<i class="fab fa-vk text-gray"></i>&nbsp;',
-                'facebook' => '<i class="fab fa-facebook-f text-gray"></i>&nbsp;',
-                'linkedin' => '<i class="fab fa-linkedin-in text-gray"></i>&nbsp;'
+                'instagram' => '<span class="t-profile-im-icon"><i class="fab fa-instagram" style="color: #FF2565;"></i></span>',
+                'twitter' => '<span class="t-profile-im-icon"><i class="fab fa-twitter" style="color: #29A6F3;"></i></span>',
+                'vkontakte' => '<span class="t-profile-im-icon"><i class="fab fa-vk" style="color: #2787F5;"></i></span>',
+                'facebook' => '<span class="t-profile-im-icon"><i class="fab fa-facebook-f" style="color: #1877F2;"></i></span>',
+                'linkedin' => '<span class="t-profile-im-icon"><i class="fab fa-linkedin-in" style="color: #0078B6;"></i></span>'
             ];
             foreach ($profile_data['fieldValues']['socialnetwork'] as $id => $socialnetwork) {
                 if(in_array($socialnetwork['ext'], array_keys($socialnetwork_icons))) {
                     $profile_data['fieldValues']['socialnetwork'][$id]['value'] = str_replace('<i class="icon16 '.$socialnetwork['ext'].'"></i>', $socialnetwork_icons[$socialnetwork['ext']], $socialnetwork['value']);
                     if($socialnetwork['ext'] === 'linkedin') {
-                       $profile_data['fieldValues']['socialnetwork'][$id]['value'] = $socialnetwork_icons[$socialnetwork['ext']].'<span>'.$socialnetwork['value'].'</span>';
+                       $profile_data['fieldValues']['socialnetwork'][$id]['value'] = $socialnetwork_icons[$socialnetwork['ext']].$socialnetwork['value'];
                     }
                 }else{
-                    $profile_data['fieldValues']['socialnetwork'][$id]['value'] = '<i class="fas fa-comments text-gray"></i>&nbsp;<span>'.$socialnetwork['value'].'</span>';
+                    $profile_data['fieldValues']['socialnetwork'][$id]['value'] = '<span class="t-profile-im-icon"><i class="fas fa-users" style="color: #5757D6;"></i></span>'.$socialnetwork['value'];
                 }
             }
         }
 
         if (isset($profile_data['fieldValues']['im'])) {
             $im_icons = [
-                'icq' => '<i class="fas fa-comments text-gray"></i>',
-                'skype' => '<i class="fab fa-skype text-gray"></i>',
-                'jabber' => '<i class="fas fa-comments text-gray"></i>',
-                'yahoo' => '<i class="fab fa-yahoo text-gray"></i>',
-                'aim' => '<i class="fas fa-comments text-gray"></i>',
-                'msn' => '<i class="fas fa-comments text-gray"></i>',
-                'telegram' => '<i class="fab fa-telegram-plane text-gray"></i>',
+                'whatsapp' => '<i class="fab fa-whatsapp" style="color: #29C54D;"></i>',
+                'telegram' => '<i class="fab fa-telegram-plane" style="color: #279FDA;"></i>',
+                'skype' => '<i class="fab fa-skype" style="color: #28A8EA;"></i>',
+                'viber' => '<i class="fab fa-viber" style="color: #7360F4;"></i>',
+                'discord' => '<i class="fab fa-discord" style="color: #404EED;"></i>',
+                'slack' => '<i class="fab fa-slack" style="color: #A436AB;"></i>',
+                'jabber' => '<i class="fas fa-comments" style="color: #d64c1e;"></i>',
+                'yahoo' => '<i class="fab fa-yahoo" style="color: #581cc7;"></i>',
+                'aim' => '<i class="fas fa-comments text-black"></i>',
+                'msn' => '<i class="fas fa-comments" style="color: #333;"></i>',
             ];
             foreach ($profile_data['fieldValues']['im'] as $id => $im) {
                 if(in_array($im['ext'], array_keys($im_icons))) {
                     $profile_data['fieldValues']['im'][$id]['value'] = $im_icons[$im['ext']].'&nbsp;<span>'.$im['value'].'</span>';
+                    $profile_data['fieldValues']['im'][$id]['icon'] = $im_icons[$im['ext']];
                 }else{
                     $profile_data['fieldValues']['im'][$id]['value'] = '<i class="fas fa-comments text-gray"></i>&nbsp;<span>'.$im['value'].'</span>';
+                    $profile_data['fieldValues']['im'][$id]['icon'] = '<i class="fas fa-comments text-purple"></i>';
                 }
             }
         }
 
+        $contacts = $this->getContacts();
+        if (isset($contacts[$this->profile_contact['id']])) {
+            $this->profile_contact['_online_status'] = ifset($contacts[$this->profile_contact['id']]['_online_status'], 'offline');
+        } else {
+            $this->profile_contact['_online_status'] = $this->getOnlineStatus();
+        }
+
         return [
-            'contacts' => $this->getContacts(),
+            'user_settings' => (new waContactSettingsModel())->get($this->profile_contact['id'], 'webasyst'),
+            'contacts' => $contacts,
             'context' => $this->getListContext(),
             'profile_editor' => [
                 'options' => $this->getEditorOptions(),
@@ -202,7 +218,7 @@ class teamProfileAction extends teamProfileContentViewAction
             ],
             'cover_thumbnails' => $this->getCoverThumbnails(),
             'calendar_widget' => teamCalendar::getHtml($this->profile_contact['id'], null, date('Y-m-d'), 7),
-            'stats_widget_data' => teamProfileStatsAction::getChartData(waDateTime::date('Y-m-d', strtotime("-14 day")), waDateTime::date('Y-m-d'), 'days', $this->profile_contact['id'])
+            'stats_widget_data' => teamProfileStatsAction::getChartData(waDateTime::date('Y-m-d', strtotime("-14 day")), waDateTime::date('Y-m-d'), 'days', $this->profile_contact['id'], true)
         ];
     }
 
@@ -286,4 +302,36 @@ class teamProfileAction extends teamProfileContentViewAction
         $this->view->assign('contact_categories', array_values($cm->getContactCategories($this->id)));
 
     }
+
+    protected function getOnlineStatus()
+    {
+        $online_status = 'offline';
+        $timeout = waUser::getOption('online_timeout');
+
+        // Ever logged in?
+        if (isset($this->profile_contact['last_datetime']) && $this->profile_contact['last_datetime'] && $this->profile_contact['last_datetime'] != '0000-00-00 00:00:00') {
+            // Were active in the last 5 minutes?
+            if (time() - strtotime($this->profile_contact['last_datetime']) < $timeout) {
+                // Make sure user didn't log out
+                if (!empty((new waLoginLogModel)->getByField([
+                        'contact_id' => $this->profile_contact['id'],
+                        'datetime_out' => null
+                    ]))
+                ) {
+                    $online_status = 'online';
+
+                    if (!empty((new waContactSettingsModel())->getByField([
+                            'contact_id' => $this->profile_contact['id'],
+                            'app_id' => 'webasyst',
+                            'name' => 'idle_since'
+                        ]))
+                    ) {
+                        $online_status = 'idle';
+                    }
+                }
+            }
+        }
+        return $online_status;
+    }
+
 }

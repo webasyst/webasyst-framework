@@ -19,9 +19,9 @@
         {if !empty($offline)}
             <h5 class="t-header heading large">[`Offline`]</h5>
 
-            <ul class="list t-offline-list">
+            <ul class="list t-offline-list js-users-list">
                 {foreach $offline as $user}
-                    <li class="item t-user-wrapper">
+                    <li class="item t-user-wrapper{if $user.is_user >= 1 && !$wa->isMobile()} js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
                         <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="image" title="{$user.name|escape}">
                             <i class="userpic userpic48" style="background-image: url('{$user.photo_url_32}')"></i>
                         </a>

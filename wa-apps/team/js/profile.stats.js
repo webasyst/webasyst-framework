@@ -124,12 +124,13 @@ var ProfileStatistic = ( function($) {
             var that = this,
                 x = that.x,
                 y = that.y,
-                svg = that.svg;
+                svg = that.svg,
+                ticks_count = that.area.outer_width > 600 ? 10 : 5;
 
             var xAxis = d3.svg.axis()
                 .scale(x)
                 .orient("bottom")
-                .ticks(10);
+                .ticks(ticks_count);
 
             var yAxis = d3.svg.axis()
                 .scale(y)
@@ -297,7 +298,7 @@ var ProfileStatistic = ( function($) {
                     point_width = Math.ceil( $point.attr("width") ),
                     point_height = Math.ceil( $point.attr("height") ),
                     point_border_w = 2,
-                    space = 10;
+                    space = 6;
 
                 var wrapperOffset = that.$wrapper.offset(),
                     pointOffset = $point.offset(),
@@ -502,6 +503,10 @@ var ProfileStatistic = ( function($) {
             event.preventDefault();
             that.changeCustomPeriod( $(this).closest("form") );
         })
+
+        that.$filters.on('click', '.js-datepicker-trigger', function () {
+            $(this).parent().find('input').trigger('focus')
+        });
     };
 
     ProfileStatistic.prototype.initGraph = function() {

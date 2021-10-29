@@ -90,30 +90,12 @@ var Profile = ( function($) {
                     $contact_info_block = $('#contact-info-block').detach()
                     $dialog.find('.dialog-content').append($contact_info_block)
                     dialog.resize()
-                    $($.wa.contactEditor).on('contact_saved', function(evt, data) {
-                        that.$wrapper.find('.js-username').text(data.name);
-                        that.$wrapper.find('.js-jobtitle-editable').text(data.jobtitle);
-                        let $details_item_email = that.$wrapper.find('.details-item.email'),
-                            $details_item_phone = that.$wrapper.find('.details-item.phone')
-
-                        data.email.forEach(function(email, i){
-                            $details_item_email.eq(i).html(`<a href="mailto:${ email.data }"><i class="fas fa-envelope"></i> ${ email.data }</a><span class="hint">${ email.ext }</span>`)
-                        })
-
-                        data.phone.forEach(function(phone, i){
-                            $details_item_phone.eq(i).html(`<a href="tel:${ phone.value }"><i class="fas fa-phone-alt"></i> ${ phone.value }</a><span class="hint">${ phone.ext }</span>`)
-                        })
-
-                        if (data && data.timezone === '') {
-                            // If user has just changed their timezone setting to 'Auto',
-                            // determine timezone via JS.
-                            $.wa.determineTimezone(that.wa_url);
-                        }
+                    $($.wa.contactEditor).on('contact_saved', function() {
                         dialog.close();
                     });
                 },
                 onClose(){
-                    $user_info.empty().append($contact_info_block )
+                    $user_info.empty().append($contact_info_block);
                     $.wa.contactEditor.switchMode('view', true);
                 }
             })
@@ -123,8 +105,6 @@ var Profile = ( function($) {
 
     Profile.prototype.initClass = function() {
         var that = this;
-        //
-        that.initEditableJobtitle();
         //
         that.bindEvents();
         //
@@ -140,6 +120,13 @@ var Profile = ( function($) {
             wa_version: that.wa_version,
             webasyst_id_auth_url: that.webasyst_id_auth_url
         });
+
+        $(document).on('wa_before_load', () => {
+            that.sidebar_drawer = null;
+            that.showSidebarDrawer(true);
+        });
+
+        that.showSidebarDrawer(true);
     };
 
     Profile.prototype.bindEvents = function() {
@@ -186,23 +173,63 @@ var Profile = ( function($) {
             })
         });
 
+        that.$profile_header_links.on('click', '.access-link', function() {
+            const href = "?module=profile&action=sidebarDialog";
+            let is_params_error = false;
+
+            const options = $(this)[0].dataset;
+            options.userId = that.user.id
+
+            if (!that.is_locked) {
+                that.is_locked = true;
+
+                const html = `
+                <div class="dialog t-sidebar-profile-dialog">
+                    <div class="dialog-background"></div>
+                    <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth?.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
+                        <h3 class="dialog-header">${options.dialogHeader?.replace(/(<([^>]+)>)/gi, '') || ''}</h3>
+                        <div class="dialog-content wide"></div>
+                        <div class="dialog-footer custom-mt-auto">
+                            <button type="button" class="button light-gray js-close-dialog">${is_params_error ? 'Ok' : $_('Close')}</button>
+                        </div>
+                    </div>
+                </div>
+                `;
+
+                $.waDialog({
+                    html,
+                    onOpen($dialog, dialog) {
+                        dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
+
+                        $.post(href, options, function (content) {
+                            dialog.$content.empty().html(content);
+                            that.$wrapper.trigger('dialog_opened', dialog);
+                        });
+
+                        that.is_locked = false;
+                    },
+                    onClose() {
+                        $.team.content.reload();
+                    }
+                });
+            }
+        });
+
         that.$profile_header_links.on('click', '.delete-link', function() {
+            const $link = $(this)
+            $(document).on('wa_confirm_contact_delete_dialog', function() {
+                $link.find('[data-icon="trash-alt"]').removeClass('hidden');
+                $link.find('[data-icon="spinner"]').addClass('hidden');
+            })
+            $link.find('svg').toggleClass('hidden')
             $.team.confirmContactDelete([that.user.id]);
         });
 
         $('.js-edit-groups').on('click', function(){
-            that.$wrapper.on('dialog_opened', function(e, dialog) {
-                    dialog.$content.find('.t-profile-section-iframe').on('section_content_loaded', function () {
-                        const $iframe = dialog.$content.find('.t-profile-section-iframe > iframe');
-                        if($iframe.length) {
-                            $iframe[0].contentWindow.$('#form-customize-groups', $iframe[0].contentWindow.body).show();
-                        }
-                    });
-                });
-            that.showSidebarDialog($('.js-sidebar-profile-dialog[data-section-id="access"]').data());
+            that.showSidebarDialog($('.access-link').data());
         });
 
-        that.$wrapper.find('.js-profile-user-slider').one('click', function() {
+        that.$wrapper.find('.js-profile-user-slider').one('click touchstart', function() {
             $(this).animate({
                 height: '375px'
             },function () {
@@ -222,14 +249,23 @@ var Profile = ( function($) {
 
         that.$profile_sidebar.on("click", '.js-sidebar-profile-dialog', function(event) {
             event.preventDefault();
+            let section_data = this.dataset
+            if (section_data.sectionId === undefined) {
+                section_data = this.closest('[data-section]').querySelector('.js-sidebar-profile-dialog').dataset;
+            }
             // send all data-* attributes to controller
-            that.showSidebarDialog(this.dataset);
+            that.showSidebarDialog(section_data);
         });
 
-        $(document).on("click", '.t-profile-drawer .js-sidebar-profile-dialog', function(event) {
+        // use ONE to avoid double dialog opening. because content reload when dialog closed
+        $(document).one("click", '.t-profile-drawer .js-sidebar-profile-dialog', function(event) {
             event.preventDefault();
+            let section_data = this.dataset
+            if (section_data.sectionId === undefined) {
+                section_data = this.closest('[data-section]').querySelector('.js-sidebar-profile-dialog').dataset;
+            }
             // send all data-* attributes to controller
-            that.showSidebarDialog(this.dataset);
+            that.showSidebarDialog(section_data);
         });
 
         that.$wrapper.find(".js-show-drawer").on("click", function (event) {
@@ -352,53 +388,6 @@ var Profile = ( function($) {
         }
     };
 
-    Profile.prototype.initEditableJobtitle = function() {
-        var profile = this,
-            $name = profile.$wrapper.find(".js-jobtitle-editable").first();
-
-        if ($name.length) {
-            new TeamEditable({
-                $wrapper: $name,
-                onSave: function( that ) {
-                    var text = that.$field.val(),
-                        is_empty = ( !text.length );
-
-                    if (that.text !== text) {
-                        var href = $.team.app_url + "?module=profile&action=save",
-                            data = {
-                                id: profile.user.id,
-                                data: JSON.stringify({
-                                    "jobtitle": text
-                                })
-                            };
-
-                        that.$field.attr("disabled", true);
-                        var $loading = $('<i class="icon16 loading"></i>')
-                            .css("margin", "0 0 0 4px")
-                            .insertAfter( that.$field );
-
-                        $.post(href, data, function() {
-                            that.$field.attr("disabled", false);
-                            $loading.remove();
-
-                            that.is_empty = is_empty;
-                            that.text = text;
-                            that.$wrapper.text( text );
-                            that.toggle("hide");
-
-                            if (is_empty) {
-                                that.$wrapper.parent().find(".at").hide();
-                            }
-                        });
-
-                    } else {
-                        that.toggle("hide");
-                    }
-                }
-            });
-        }
-    };
-
     Profile.prototype.showSidebarDialog = function (options) {
         const that = this,
             href = "?module=profile&action=sidebarDialog",
@@ -417,8 +406,8 @@ var Profile = ( function($) {
             const html = `
                 <div class="dialog t-sidebar-profile-dialog">
                     <div class="dialog-background"></div>
-                    <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
-                        <h3 class="dialog-header">${options.dialogHeader.replace(/(<([^>]+)>)/gi, '') || ''}</h3>
+                    <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth?.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
+                        <h3 class="dialog-header">${options.dialogHeader?.replace(/(<([^>]+)>)/gi, '') || ''}</h3>
                         <div class="dialog-content wide"></div>
                         <div class="dialog-footer custom-mt-auto">
                             <button type="button" class="button light-gray js-close-dialog">${is_params_error ? 'Ok' : $_('Close')}</button>
@@ -431,23 +420,26 @@ var Profile = ( function($) {
                 html,
                 onOpen($dialog, dialog) {
                     dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
-                    $.post(href, options, function (content) {
-                        if(options.sectionId === 'calendar'){
-                            if(!that.$calendar_wrapper) {
-                                that.$calendar_wrapper = $profile_sidebar_body.find('.js-calendar-html > .t-calendar-wrapper').detach();
-                            }
-                            dialog.$content.empty().append(that.$calendar_wrapper)
-                            dialog.resize();
-                        }else{
+                    if(options.sectionId === 'calendar'){
+                        if(!that.$calendar_wrapper) {
+                            that.$calendar_wrapper = $profile_sidebar_body.find('.js-calendar-html > .t-calendar-wrapper').detach();
+                        }
+                        dialog.$content.empty().append(that.$calendar_wrapper)
+                        dialog.resize();
+                    }else{
+                        $.post(href, options, function (content) {
                             dialog.$content.empty().html(content);
                             that.$wrapper.trigger('dialog_opened', dialog);
                             const $section_iframe = $dialog.find(`.t-profile-section-iframe`);
                             if($section_iframe.length) {
                                 $section_iframe.data('dialog', dialog);
                             }
-                        }
-                    });
+                        });
+                    }
                     that.is_locked = false;
+                },
+                onClose() {
+                    $.team.content.reload();
                 }
             });
         }

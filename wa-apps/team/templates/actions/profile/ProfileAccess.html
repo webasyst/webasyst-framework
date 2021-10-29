@@ -17,37 +17,60 @@
     .c-access-rights table .t-access-status {
         width: auto;
     }
+    .t-app-name-mobile {
+        display: none;
+    }
+    @media (max-width: 768px) {
+        .t-app-icon {
+            width: auto;
+            vertical-align: top;
+            text-align: center;
+        }
+        .t-app-icon img {
+            display: block;
+            width: 32px;
+            margin: 7px auto 10px;
+        }
+        .t-app-name {
+            display: none;
+        }
+        .t-app-name-mobile {
+            display: inline;
+        }
+    }
 </style>
 
 {capture assign="password_block"}
-    <div id="c-password-block" class="fields-group" style="display:none;">
+    <div id="c-password-block" class="fields-group custom-mt-24" style="display:none;">
         <form id="c-password-form" method="post" action="{$url_change_password}">
             <div class="c-one-tab">
                 <div class="field">
-                    <div class="name">[`Password`]</div>
+                    <div class="name custom-pt-0">[`Password`]</div>
                     <div class="value">
-                        <a href="javascript:void(0)" class="small c-tab-toggle">[`change password`]</a>
+                        <a href="javascript:void(0)" class="small c-tab-toggle semibold">
+                            <i class="fas fa-pen custom-mr-4"></i>[`Change password`]
+                        </a>
                         <p class="hint custom-mt-4">[`The same password is used to access personal account and backend.`]</p>
                     </div>
                 </div>
             </div>
             <div class="c-two-tab" style="display:none;">
-                <div class="field ">
+                <div class="field">
                     <div class="name">[`New password`]</div>
                     <div class="value">
-                        <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                        <input name="password" type="password" class="c-password-input small" autocomplete="off" />
                     </div>
                 </div>
                 <div class="field">
                     <div class="name">[`Confirm password`]</div>
                     <div class="value">
-                        <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" />
+                        <input name="confirm_password" type="password" class="c-confirm-password-input small" autocomplete="off" />
                     </div>
                 </div>
-                <div class="field">
+                <div class="field custom-mt-12">
                     <div class="value submit">
-                        <input type="submit" class="button" value="[`Save`]">
-                        <a class="cancel c-tab-toggle button light-gray" href="javascript:void(0)">[`Cancel`]</a>
+                        <input type="submit" class="button small" value="[`Save`]">
+                        <a class="cancel c-tab-toggle button light-gray small" href="javascript:void(0)">[`Cancel`]</a>
                         <i class="spinner loading custom-ml-8" style="display: none;"></i>
                     </div>
                 </div>
@@ -58,7 +81,7 @@
 
 {capture assign="waid_block"}
     {if $is_connected_to_webasyst_id && ($contact['is_user'] == '1' || $is_bound_with_webasyst_contact)}
-        <div class="c-waid fields-group">
+        <div class="c-waid fields-group custom-mt-12">
             <div class="field">
                 <div class="name">[`Sign-in with Webasyst ID`]</div>
                 <div class="value">
@@ -66,42 +89,92 @@
                     {if $is_bound_with_webasyst_contact}
 
                         {* own or other uses's profile is connected to webasyst ID *}
-
-                        <i class="fas fa-check-circle text-green"></i>
-
-                        {if $webasyst_id_email}
-                            {sprintf(_w('Webasyst ID account <span class="bold">%s</span> is connected.'), $webasyst_id_email)}
-                        {else}
-                            {sprintf(_w('%sSign-in with Webasyst ID%s is connected.'), '<span class="bold">', '</span>')}
-                        {/if}
+                        <span class="icon custom-mr-8">
+                            <svg width="97" height="96" viewBox="0 0 97 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <style>
+                                        .webasyst-magic-wand-handle { fill: black; }
+                                        [data-theme="dark"] .webasyst-magic-wand-handle { fill: #ffffff; }
+                                    </style>
+                                </defs>
+                                <path d="M20.7348 14.5035C18.57 12.1327 14.8662 12.0487 12.5963 14.3185C10.3239 16.5908 10.4084 20.3016 12.7813 22.468L28.8528 37.141C30.6852 38.8139 33.5082 38.75 35.263 36.9953C37.0199 35.2385 37.0843 32.4089 35.4088 30.5739L20.7348 14.5035Z" fill="#0088EE"/>
+                                <path d="M47.1515 0C43.9448 0 41.3794 2.67789 41.5255 5.89162L42.5137 27.6305C42.6266 30.1155 44.6731 32.0657 47.1515 32.0657C49.6299 32.0657 51.6763 30.1155 51.7893 27.6305L52.7775 5.89161C52.9236 2.67788 50.3582 0 47.1515 0Z" fill="#22CC22"/>
+                                <path d="M81.6725 14.3185C79.4026 12.0487 75.6988 12.1327 73.534 14.5035L58.86 30.5739C57.1845 32.4089 57.2489 35.2385 59.0058 36.9952C60.7606 38.75 63.5836 38.8139 65.416 37.141L81.4875 22.468C83.8604 20.3016 83.9449 16.5908 81.6725 14.3185Z" fill="#EE6622"/>
+                                <path d="M96.0089 48.8621C96.0089 45.6452 93.3248 43.0868 90.1215 43.2324L68.3812 44.2205C65.9052 44.3331 63.9492 46.3744 63.9492 48.8621C63.9492 51.3499 65.9052 53.3912 68.3812 53.5037L90.1215 54.4918C93.3248 54.6374 96.0089 52.079 96.0089 48.8621Z" fill="#FFCC00"/>
+                                <path d="M65.416 60.5964C63.5836 58.9235 60.7606 58.9874 59.0058 60.7421C57.2489 62.4989 57.1845 65.3285 58.86 67.1635L73.534 83.234C75.6988 85.6048 79.4026 85.6887 81.6725 83.419C83.9449 81.1467 83.8604 77.4359 81.4875 75.2694L65.416 60.5964Z" fill="#55DDDD"/>
+                                <path d="M51.2853 44.7066C49.5341 42.9555 46.7086 42.9175 44.911 44.6204L1.92878 85.3376C-0.595136 87.7285 -0.649357 91.7324 1.80924 94.1908C4.26542 96.6469 8.26241 96.593 10.6515 94.0713L51.3715 51.092C53.0769 49.292 53.0386 46.4598 51.2853 44.7066Z" class="webasyst-magic-wand-handle" />
+                            </svg>
+                        </span>
+                        <span class="small">
+                            {if $webasyst_id_email}
+                                {sprintf(_w('Webasyst ID account <span class="bold">%s</span> is connected.'), $webasyst_id_email)}
+                            {else}
+                                {sprintf(_w('%sSign-in with Webasyst ID%s is connected.'), '<span class="bold">', '</span>')}
+                            {/if}
+                        </span>
 
                         {* authorize into customer center - available only for own profile *}
                         {if $customer_center_auth_url}
-                            <a class="bold underline js-customer-center-auth" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[`Go to the Webasyst Customer Center`]</a>
+                            <a class="bold underline js-customer-center-auth small" href="{$customer_center_auth_url}"><i class="icon10" style="background-image: url('/wa-content/img/wa-settings/ws-waid-green.svg'); background-size: 14px 14px; background-position: 0 0;width: 14px;height: 14px; margin: 0 5px;"></i>[`Go to the Webasyst Customer Center`]</a>
                         {/if}
 
                         {if !$is_webasyst_id_forced}
-                            <a href="#" class="hint js-webasyst-id-unbind-auth">[`Disconnect`]</a>
+                            <a href="#" class="js-webasyst-id-unbind-auth text-gray custom-ml-8 small"><i class="fas fa-times-circle"></i> [`Disconnect`]</a>
                         {/if}
-
+                        <p class="hint custom-mt-4 custom-mb-0"><span class="custom-mr-8">[`Last sign-in`] {$contact.last_datetime|wa_date:"humandatetime"|lower}</span></p>
                     {elseif $is_own_profile}
 
                         {* own profile is not connected to webasyst ID *}
-
-                        <div>[`Connect your Webasyst ID account and sign into the backend securely with no extra passwords.`] <a href="javascript:void(0);" class="js-webasyst-id-help-link">[`How does it work?`]</a></div>
-                        <div class="waid-login">
-                            <a class="button webasyst-magic-wand js-webasyst-id-auth" href="javascript:void(0)"><i class="icon"></i>&nbsp;<span>{sprintf(_w('Enable sign-in with %s'), 'Webasyst ID')}</span></a>
-                            <a href="javascript:void(0);" class="bold hint js-webasyst-id-help-link">[`What is Webasyst ID?`]</a>
+                        <div class="waid-login custom-m-0 ">
+                            <div>
+                                <p class="custom-m-0 small">
+                                    <a class="button webasyst-magic-wand js-webasyst-id-auth" href="javascript:void(0)">
+                                        <svg class="icon" style="background-image: none;" width="97" height="96" viewBox="0 0 97 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <style>
+                                            .webasyst-magic-wand-handle { fill: black; }
+                                            [data-theme="dark"] .webasyst-magic-wand-handle { fill: #ffffff; }
+                                        </style>
+                                    </defs>
+                                    <path d="M20.7348 14.5035C18.57 12.1327 14.8662 12.0487 12.5963 14.3185C10.3239 16.5908 10.4084 20.3016 12.7813 22.468L28.8528 37.141C30.6852 38.8139 33.5082 38.75 35.263 36.9953C37.0199 35.2385 37.0843 32.4089 35.4088 30.5739L20.7348 14.5035Z" fill="#0088EE"/>
+                                    <path d="M47.1515 0C43.9448 0 41.3794 2.67789 41.5255 5.89162L42.5137 27.6305C42.6266 30.1155 44.6731 32.0657 47.1515 32.0657C49.6299 32.0657 51.6763 30.1155 51.7893 27.6305L52.7775 5.89161C52.9236 2.67788 50.3582 0 47.1515 0Z" fill="#22CC22"/>
+                                    <path d="M81.6725 14.3185C79.4026 12.0487 75.6988 12.1327 73.534 14.5035L58.86 30.5739C57.1845 32.4089 57.2489 35.2385 59.0058 36.9952C60.7606 38.75 63.5836 38.8139 65.416 37.141L81.4875 22.468C83.8604 20.3016 83.9449 16.5908 81.6725 14.3185Z" fill="#EE6622"/>
+                                    <path d="M96.0089 48.8621C96.0089 45.6452 93.3248 43.0868 90.1215 43.2324L68.3812 44.2205C65.9052 44.3331 63.9492 46.3744 63.9492 48.8621C63.9492 51.3499 65.9052 53.3912 68.3812 53.5037L90.1215 54.4918C93.3248 54.6374 96.0089 52.079 96.0089 48.8621Z" fill="#FFCC00"/>
+                                    <path d="M65.416 60.5964C63.5836 58.9235 60.7606 58.9874 59.0058 60.7421C57.2489 62.4989 57.1845 65.3285 58.86 67.1635L73.534 83.234C75.6988 85.6048 79.4026 85.6887 81.6725 83.419C83.9449 81.1467 83.8604 77.4359 81.4875 75.2694L65.416 60.5964Z" fill="#55DDDD"/>
+                                    <path d="M51.2853 44.7066C49.5341 42.9555 46.7086 42.9175 44.911 44.6204L1.92878 85.3376C-0.595136 87.7285 -0.649357 91.7324 1.80924 94.1908C4.26542 96.6469 8.26241 96.593 10.6515 94.0713L51.3715 51.092C53.0769 49.292 53.0386 46.4598 51.2853 44.7066Z" class="webasyst-magic-wand-handle" />
+                                </svg>
+                                        &nbsp;<span>[`Connect Webasyst ID`]</span>
+                                    </a>
+                                </p>
+                                <p class="hint custom-mt-8">[`Sign into your Webasyst backend with 2-factor authentication (2FA) and get convenient access to all Webasyst services and mobile apps.`] <a href="javascript:void(0);" class="js-webasyst-id-help-link">[`How does it work?`]</a></p>
+                            </div>
                         </div>
                     {else}
 
                         {* other user's profile (not own) is connected to webasyst ID *}
 
-                        <span><i class="fas fa-times-circle text-red"></i> {sprintf(_w('%sSign-in with Webasyst ID%s is not connected.'), '<span class="bold">', '</span>')}</span>
+                        <span class="custom-mb-4 small"><i class="fas fa-unlink text-light-gray"></i> <span class="text-gray bold custom-ml-4">[`Webasyst ID is not connected`]</span></span>
+                        <p class="hint custom-my-4">{sprintf('[`User %s has not connected Webasyst ID yet. Secure sign-in option with 2-factor authentication (2FA) for your Webasyst backend and access to all Webasyst services and mobile apps will become available only when Webasyst ID is connected.`]', $contact['login']|escape)}</p>
                     {/if}
                 </div>
             </div>
         </div>
+        <script>
+            ( function($) {
+                $('.js-webasyst-id-help-link').on('click', function (e) {
+                    e.preventDefault();
+                    $(this).attr('data-trigger', 'wa_waid_help_link')
+                });
+                $('.js-webasyst-id-unbind-auth').on('click', function (e) {
+                    e.preventDefault();
+                    $(this).attr('data-trigger', 'wa_waid_unbind_auth');
+
+                    $(this).attr('data-wa_waid_unbind_auth', JSON.stringify({
+                        id: {$contact['id']}
+                    }))
+                });
+            })(jQuery);
+        </script>
     {/if}
 {/capture}
 
@@ -126,17 +199,17 @@
 
 {elseif $is_superadmin}
 
-<div class="c-shown-on-enabled width-100"{if $contact.is_user === '-1'} style="display:none;"{/if} id="c-available-resourses">
+<div class="c-shown-on-enabled width-100 custom-mb-24"{if $contact.is_user === '-1'} style="display:none;"{/if} id="c-available-resourses">
     <div class="fields-group">
         <div class="field">
-            <div class="name">[`Backend`]</div>
-            <div class="value">
+            <div class="name for-input">[`Backend`]</div>
+            <div class="value{if $gFullAccess} custom-pt-8{/if}">
                 {if $gFullAccess}
-                    <strong class="large">[`Administrator`]</strong>
-                    <span style="margin-left:1em">[`This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.`]</span>
+                    <strong>[`Administrator`]</strong>
+                    <div class="hint">[`This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.`]</div>
                 {elseif $fullAccess && !empty($own_profile)}
-                    <strong class="large">[`Administrator`]</strong>
-                    <br><span class="hint">[`You cannot revoke administrative access level for yourself. Only another Administrator can do this.`]</span>
+                    <strong>[`Administrator`]</strong>
+                    <div class="hint">[`You cannot revoke administrative access level for yourself. Only another Administrator can do this.`]</div>
                 {else}
 
                     {$_has_credentials = $contact.login && $contact.password}
@@ -148,25 +221,26 @@
                     {$_selector_avaiable = !$is_webasyst_id_forced || $_has_credentials}
 
                     {if $_selector_avaiable}
-                        <div class="wa-select">
+                        <div class="wa-select small custom-mb-8">
                             <select id="c-access-rights-toggle">
                                 <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
                                 <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
                                 <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
                             </select>
                         </div>
+                        <div>
+                            <span id="access-rights-toggle-confirm" style="display:none;">
+                                <a href="javascript:void(0)" class="button small custom-mb-8">[`Confirm access change`]</a>
+                                <a href="javascript:void(0)" class="cancel button light-gray small">[`Cancel`]</a>
+                            </span>
 
-                        <span id="access-rights-toggle-confirm" style="display:none;">
-                            <a href="javascript:void(0)" class="button">[`Confirm access change`]</a>
-                            <a href="javascript:void(0)" class="cancel button light-gray">[`Cancel`]</a>
-                        </span>
+                            {if !$gNoAccess}
+                                <p id="c-access-rights-hint-warning" class="state-error-hint custom-mt-4 custom-mb-0" style="display:none;"><span>[`Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user.`]</span></p>
+                            {/if}
 
-                        {if !$gNoAccess}
-                            <span id="c-access-rights-hint-warning" class="c-access-not-allowed-hint" style="display:none;color:red"><span>[`Cannot set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, edit group settings or group membership for this user.`]</span></span>
-                        {/if}
-
-                        <i class="spinner loading custom-ml-8" style="display:none;"></i>
-                        <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="fas fa-check-circle text-green"></i> [`Saved`]</span>
+                            <i class="spinner loading custom-ml-8" style="display:none;"></i>
+                            <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="fas fa-check-circle text-green"></i> [`Saved`]</span>
+                        </div>
                     {else}
                         <span>[`No access`]</span>
                     {/if}
@@ -204,58 +278,61 @@
     </div>
 
     {if !$is_webasyst_id_forced}
-        <div id="c-credentials-block" class="fields-group" style="display:none;">
+        <div id="c-credentials-block" class="fields-group custom-mt-24" style="display:none;">
             <form id="c-credentials-form" method="post" action="{$wa_app_url}?module=accessSave&action=grant&id={$contact.id}">
                 <div class="field">
                     <div class="name">[`Login`]</div>
                     <div class="value">
-                        <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
+                        <input type="text" name="login" class="c-login-input small" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
                         <span class="hint">
                             [`Login name is required to access your account backend.`]<br>
                             [`E.g., john, agent07, etc.`]
                         </span>
                     </div>
                 </div>
-                <div class="field ">
+                <div class="field">
                     <div class="name">[`New password`]</div>
                     <div class="value">
-                        <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                        <input name="password" type="password" class="c-password-input small" autocomplete="off" />
                     </div>
                 </div>
                 <div class="field">
                     <div class="name">[`Confirm password`]</div>
                     <div class="value">
-                        <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" /><br>
+                        <input name="confirm_password" type="password" class="c-confirm-password-input small" autocomplete="off" /><br>
                         <span class="hint">[`The same password is used to access personal account and backend.`]</span>
                     </div>
                 </div>
                 <div class="field">
                     <div class="name"></div>
                     <div class="value">
-                        <input type="submit" class="button" value="[`Save`]">
-                        <a class="button light-gray cancel" href="javascirt:void(0);">[`Cancel`]</a>
+                        <input type="submit" class="button small" value="[`Save`]">
+                        <a class="button light-gray cancel small" href="javascirt:void(0);">[`Cancel`]</a>
                     </div>
                 </div>
             </form>
         </div>
 
-        <div id="c-login-block" class="fields-group" style="display:none;">
+        <div id="c-login-block" class="fields-group custom-mt-16" style="display:none;">
             <form id="c-login-form" method="post" action="{$wa_app_url}?module=accessSave&action=login&id={$contact.id}">
                 <div class="field">
-                    <div class="name">[`Login`]</div>
+                    <div class="name custom-pt-0">[`Login`]</div>
                     <div class="value">
                         <div class="c-one-tab">
                             <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
-                            <a href="javascript:void(0)" class="small c-tab-toggle" style="">[`change login`]</a>
+                            &nbsp;
+                            <a href="javascript:void(0)" class="small c-tab-toggle semibold nowrap">
+                                <i class="fas fa-pen custom-mr-4"></i>[`Change login name`]
+                            </a>
                         </div>
                         <div class="c-two-tab" style="display:none;">
-                            <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" />
-                            <p class="hint custom-mt-4">
+                            <input type="text" name="login" class="c-login-input small" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" />
+                            <p class="hint custom-mt-4 custom-mb-12">
                                 [`Login name is required to access your account backend.`]<br>
                                 [`E.g., john, agent07, etc.`]
                             </p>
-                            <input type="submit" class="button" value="[`Save`]">
-                            <a class="cancel button light-gray c-tab-toggle" href="javascript:void(0);">[`Cancel`]</a>
+                            <input type="submit" class="button small" value="[`Save`]">
+                            <a class="cancel button light-gray c-tab-toggle small" href="javascript:void(0);">[`Cancel`]</a>
                             <i class="spinner loading custom-ml-8" style="display: none;"></i>
                         </div>
                     </div>
@@ -268,74 +345,72 @@
 
     {$waid_block}
 
-    <div class="c-shown-on-access fields-group">
+    <div class="c-shown-on-access fields-group custom-mt-24">
         <div class="field">
-            <div class="name">[`Belongs to groups`]</div>
-            <div class="value">
+            <div class="name custom-pt-0">[`Belongs to groups`]</div>
+            <div class="value custom-pb-16">
                 {if $groups}
                     {foreach $groups as $id => $name}
-                        <a href="{$wa_app_url}group/{$id}/">{if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}</a>{if !$name@last},{/if}
+                        <a href="{$wa_app_url}group/{$id}/"{if $name@last} class="custom-mr-16"{/if}>{if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}</a>{if !$name@last},{/if}
                     {/foreach}
                 {else}
                     [`&lt;none&gt;`]
                 {/if}
                 {if $all_groups}
-                    <a href="javascript:void(0)" class="small custom-ml-24" id="open-customize-groups">[`customize groups`]</a>
+                    <a href="javascript:void(0)" class="small semibold nowrap" id="open-customize-groups">
+                        <i class="fas fa-pen custom-mr-4"></i>[`Customize groups`]
+                    </a>
                 {/if}
             </div>
         </div>
         {if $all_groups}
-            <form id="form-customize-groups" style="display:none;" method="post" action="{$wa_app_url}?module=accessSave&action=savegroups&id={$contact.id}">
-                <div class="field">
-                    <div class="value submit">
-                        <ul>
-                            <li>
-                                <div class="c-checkbox-menu-container">
-                                    <div>
-                                        <ul class="zebra c-checkbox-menu">
-                                            {foreach $all_groups as $id => $name}
-                                                <li>
-                                                    <label>
-                                                        <span class="wa-checkbox">
-                                                            <input type="checkbox" name="groups[]" value="{$id}"{if isset($groups[$id])} checked="checked"{/if} />
-                                                            <span>
-                                                                <span class="icon">
-                                                                    <i class="fas fa-check"></i>
-                                                                </span>
-                                                            </span>
+        <div class="field custom-mt-0">
+            <div class="value submit">
+                <form id="form-customize-groups" style="display:none;" method="post" action="{$wa_app_url}?module=accessSave&action=savegroups&id={$contact.id}">
+                    <ul class="unstyled">
+                        <li class="c-checkbox-menu-container width-100-mobile wide">
+                            <div>
+                                <ul class="zebra c-checkbox-menu small">
+                                    {foreach $all_groups as $id => $name}
+                                        <li>
+                                            <label>
+                                                <span class="wa-checkbox">
+                                                    <input type="checkbox" name="groups[]" value="{$id}"{if isset($groups[$id])} checked="checked"{/if} />
+                                                    <span>
+                                                        <span class="icon">
+                                                            <i class="fas fa-check"></i>
                                                         </span>
-                                                        {if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}
-                                                    </label>
-                                                </li>
-                                            {/foreach}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <input type="hidden" name="set" value="1">
-                                <input type="submit" class="button" value="[`Save`]">
-                                <a class="button light-gray" href="javascript:void(0)" id="cancel-customize-groups">[`Cancel`]</a>
-                                <i class="spinner loading custom-ml-8" style="display: none;"></i>
-                            </li>
-                        </ul>
-                    </div>
-
-
-
-                </div>
-            </form>
+                                                    </span>
+                                                </span>
+                                                {if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}
+                                            </label>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="custom-mt-12">
+                            <input type="hidden" name="set" value="1">
+                            <input type="submit" class="button small" value="[`Save`]">
+                            <a class="button light-gray small" href="javascript:void(0)" id="cancel-customize-groups">[`Cancel`]</a>
+                            <i class="spinner loading custom-ml-8" style="display: none;"></i>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+        </div>
         {/if}
         <div class="field c-access-rights" id="c-access-rights-by-app" style="display: none">
             <div class="name">[`Access rights`]</div>
-            <div class="value c-access-rights" id="c-access-rights-wrapper">
+            <div class="value c-access-rights small custom-pt-4" id="c-access-rights-wrapper">
                 [`Backend access rights are customized for every app separately and result from a combination of personal and group access rights.`]
                 <table>
                     <tbody>
                     {foreach $apps as $app_id => $app}
                         <tr>
                             <td class="t-app-icon">
-                                <img src="{$wa_url}{$app.img}">&nbsp;
+                                <img src="{$wa_url}{$app.img}">
+                                <span class="t-app-name-mobile">{$app.name|escape}</span>
                             </td>
                             <td class="t-app-name">
                                 {$app.name|escape}
@@ -370,7 +445,7 @@
 
 {/if}{* if $is_superadmin *}
 
-    <div class="fields-group basic-user-fields width-100">
+    <div class="fields-group basic-user-fields width-100 custom-mt-0">
         {* Access *}
         <div class="field">
             <div class="name">[`Access`]</div>
@@ -379,9 +454,9 @@
                     <li>
                         {* Toggle to ban user or contact. Can not ban self. *}
                         {if empty($own_profile)}{strip}
-                            <a href="javascript:void(0)"
+                            <a href="#"
                                id="c-access-link-block"
-                               class="c-shown-on-enabled"
+                               class="c-shown-on-enabled semibold"
                                     {if $contact.is_user == '-1'} style="display:none"{/if}
                                data-alert="[`Disable this contact?`]"
                             >
@@ -389,18 +464,18 @@
                             </a>
                             <a href="javascript:void(0)"
                                id="c-access-link-unblock"
-                               class="c-shown-on-disabled"
+                               class="c-shown-on-disabled semibold"
                                     {if $contact.is_user != '-1'} style="display:none"{/if}
                                data-alert="[`Enable this contact?`]"
                             >
                                 [`Unblock contact`]
                             </a>
-                            <i class="fas fa-spinner fa-spin loading" style="display:none;"></i>
+                            <i class="fas fa-spinner fa-spin loading wa-animation-spin speed-1000" style="display:none;"></i>
                             <form class="js-block-user-reason-form custom-mt-16" style="display: none">
-                                <textarea class="js-block-user-reason" placeholder="[`Optional comment about the reason for blocking`]"></textarea>
-                                <div class="custom-mt-8">
-                                    <input class="button red" type="submit" value="[`Block`]">
-                                    <a href="javascript:void(0)" class="js-block-user-cancel button light-gray">[`Cancel`]</a>
+                                <textarea class="js-block-user-reason small" placeholder="[`Optional comment about the reason for blocking`]"></textarea>
+                                <div class="custom-mt-8 custom-mb-16">
+                                    <input class="button red small" type="submit" value="[`Block`]">
+                                    <a href="javascript:void(0)" class="js-block-user-cancel button light-gray small">[`Cancel`]</a>
                                 </div>
                             </form>
 
@@ -430,7 +505,7 @@
                                     </span>
                                 {/if}
                         </div>
-                        <div id="tc-user-access-disabled" class="c-shown-on-disabled"{if $contact.is_user != '-1'} style="display:none;"{/if}>
+                        <div id="tc-user-access-disabled" class="small c-shown-on-disabled"{if $contact.is_user != '-1'} style="display:none;"{/if}>
                             {if $contact.is_user == '-1'}{$access_disable_msg}{/if}
                         </div>
                     </li>
@@ -496,7 +571,7 @@
 
         {* Customer portal *}
         <div class="field c-shown-on-enabled" id="tc-customer-portal-filed"{if $contact.is_user === '-1'} style="display:none;"{/if}>
-            <div class="name">[`Customer portal`]</div>
+            <div class="name custom-pt-0">[`Customer portal`]</div>
             <div class="value">
                 {if $personal_portal_available}
                     [`Available`]

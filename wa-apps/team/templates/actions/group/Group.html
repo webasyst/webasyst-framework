@@ -2,25 +2,25 @@
 
 {$_location_enabled = ( $group.type == teamWaGroupModel::WA_GROUP_TYPE_LOCATION && !empty($group.location.address) )}
 
-<div class="t-group-page content article box" id="t-group-page">
+<div class="t-group-page content article" id="t-group-page">
     {* CONTENT *}
     <div class="t-content-body article-body">
         {* HEADER *}
         <header class="t-content-header flexbox">
-            <h1 class="custom-my-0 wide">
-                <span class="{if $can_manage_group}editable js-name-editable{/if}"{if $can_manage_group} style="margin-left: -.25em;"{/if}>{$group.name|escape}</span>
+            <h1 class="custom-my-0 wide{if $can_manage_group} editable js-name-editable{/if}"{if $can_manage_group} contenteditable="true" style="margin: 0 -.25em"{/if}>
+                {$group.name|escape}
             </h1>
 
-            <div class="custom-mt-8 small flexbox middle wrap">
+            <div class="custom-mt-12 small flexbox middle wrap">
             {* MANAGE GROUP *}
             {if $can_manage_group}
-                <div class="dropdown js-change-group custom-mr-12">
-                    <button class="dropdown-toggle button light-gray" type="button"><i class="fas fa-cog text-blue"></i> [`Изменить`]</button>
+                <div class="dropdown js-change-group custom-mr-12 custom-mb-12">
+                    <button class="dropdown-toggle button light-gray" type="button"><i class="fas fa-cog text-blue"></i> [`Change`]</button>
                     <div class="dropdown-body dd-wide">
                         <ul class="menu">
                             <li>
                                 <a href="{$wa_app_url}group/{$group.id}/manage/">
-                                    <i class="fas fa-users text-orange"></i><span>[`Настроить участников`]</span>
+                                    <i class="fas fa-users text-orange"></i><span>[`Set up members`]</span>
                                 </a>
                             </li>
                             {if $wa->user()->isAdmin('webasyst')}
@@ -53,11 +53,11 @@
             {/if}
 
                 {* SORTING *}
-                <div class="dropdown js-sort-by">
+                <div class="dropdown js-sort-by custom-mb-12">
                     {$_sort_list = [
-                    'last_seen' => '[`Сначала онлайн`]',
-                    'name'      => '[`По алфавиту`]',
-                    'signed_up' => '[`По дате регистрации`]'
+                    'last_seen' => '[`Online`]',
+                    'name'      => '[`Alphabetically`]',
+                    'signed_up' => '[`By signup date`]'
                     ]}
                     <a class="dropdown-toggle button light-gray" href="{$wa_app_url}?sort={$sort|escape}" data-disable-routing>
                         {if isset($_sort_list[$sort])}{$_sort_list[$sort]|escape}{else}&mdash;{/if}
@@ -84,9 +84,13 @@
                         <p>
                             {if $wa->user()->isAdmin('team')}
                                 {sprintf_wp(
-                                'To add a user to %s, either use <a href="%s">Manage group</a> mode, or drag a user to this group in the sidebar.',
-                                $group.name|escape,
-                                "`$wa_app_url`group/`$group.id`/manage/"
+                                'To add a user to %s,%s either%s use <a href="%s">Manage group</a> mode%s, or drag a user to this group in the sidebar%s.',
+                                "<span class=\"bold\">`$group.name|escape`</span>",
+                                '<span class="desktop-only">',
+                                '</span>',
+                                "`$wa_app_url`group/`$group.id`/manage/",
+                                '<span class="desktop-only">',
+                                '</span>'
                                 )}
                             {else}
                                 {sprintf_wp(
@@ -104,36 +108,34 @@
             </div>
         {/if}
 
-        <p class="t-description custom-mb-8">
-            {if $can_manage_group || !empty($group.description)}
-                <span class="{if $can_manage_group}editable js-desc-editable{if !$group.description} is-empty{/if}{/if}"{if $can_manage_group} style="margin-left: -.25em;"{/if}>
-                    {if $group.description}
-                        {$group.description|escape|nl2br}
-                    {elseif $can_manage_group && !$group.description}
-                        <span class="gray italic">[`Add group description`]</span>
-                    {/if}
-                </span>
-            {/if}
-
-            {if $_location_enabled}
-                <div>
-                {if $group.location.longitude && $group.location.latitude}
-                    <a href="javascript:void(0)" class="t-map-link inline-link js-open-map-link">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span class="custom-ml-4 custom-mr-4">{$group.location.address|escape}</span>
-                        <i class="fas fa-caret-down custom-ml-4"></i>
-                    </a>
-                {else}
-                    <span class="t-map-link">
-                        {$group.location.address|escape}
-                    </span>
-                {/if}
-                </div>
-            {/if}
+        {if $group.description}
+        <p class="t-description small{if $group.description === '[`Add group description`]'} gray italic{/if} custom-my-8 break-word{if $can_manage_group} editable js-desc-editable{/if}"{if $can_manage_group} contenteditable="true" style="margin: 0 -.25em" data-default-text="[`Add group description`]"{/if}>
+            {$group.description|escape|nl2br}
         </p>
+        {/if}
+
+        {if !$group.description && $can_manage_group}
+        <p class="t-description small gray italic custom-my-8 break-word editable js-desc-editable" contenteditable="true" style="margin: 0 -.25em" data-default-text="[`Add group description`]">
+            [`Add group description`]
+        </p>
+        {/if}
+
+        {if $group.location.address && !$group.location.longitude && !$group.location.latitude}
+        <div>
+            <span class="t-map-link">
+                {$group.location.address|escape}
+            </span>
+        </div>
+        {/if}
 
         {if $_location_enabled && $group.location.longitude && $group.location.latitude}
-            <div class="t-map-wrapper">
+            <a href="javascript:void(0)" class="t-map-link small inline-link js-open-map-link">
+                <i class="fas fa-map-marker-alt"></i>
+                <span class="custom-ml-4 custom-mr-4">{$group.location.address|escape}</span>
+                <i class="fas fa-caret-down custom-ml-4"></i>
+            </a>
+
+            <div class="t-map-wrapper custom-mt-12">
                 <div class="t-location-map" id="t-location-map"></div>
             </div>
         {/if}
@@ -145,47 +147,72 @@
                 {include file="./../users/Users.inc.html" contacts=$contacts list_context="group/`$group.id`"}
             {else}
                 <p class="t-description">[`No users online.`]</p>
+                {$_is_admin = $wa->user()->isAdmin($wa->app())}
+                {$_has_rights = teamHelper::hasRights()}
+                {$_can_drag = ( $_is_admin || $_has_rights )}
             {/if}
 
             {if !empty($offline) && $sort === 'last_seen'}
                 <h3 class="t-header">[`Offline`]</h3>
 
-                <ul class="list t-offline-list">
+                <ul class="list t-offline-list js-users-list-offline">
                     {foreach $offline as $user}
                         {$user_data = waUser::getNameAndStatus($user, true)}
-                        {if !empty($user_data.user._event)}
-                            {$badge = "&nbsp;<span class=\"badge user small\" style=\"background-color:{$user_data.user._event.bg_color};color:{$user_data.user._event.font_color};\">{$user_data.user._event.summary|escape}</span>"}
-                        {/if}
-                        <li class="t-user-wrapper flexbox middle space-16 custom-py-12 wrap">
+                        <li class="t-user-wrapper flexbox middle space-16 custom-py-12{if $user.is_user >= 1 && !$wa->isMobile()} js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
 
                             {$_url_encoded = urlencode($user.login|escape)}
                             {$_user_link = "`$wa_app_url`u/`$_url_encoded`/?list=group/`$group.id`"}
 
-                            <a href="{$_user_link}" title="{$user_data.formatted_user_name|escape}">
-                                <span class="userpic userpic96 valign-middle" style="background-image: url('{$user.photo_url_96}');">
-                                    {if $user_data.user_birthday_str}
-                                        <span class="userstatus birthday" title="{$user_data.user_birthday_str}">
+                            <a href="{$_user_link}" title="{$user_data.formatted_user_name|escape}" class="image custom-mb-auto">
+                                <span class="userpic icon size-72 valign-middle" style="background-image: url('{$user.photo_url_96}');">
+                                    {if !empty($user_data.user.birth_day) && $user_data.user.birth_day == waDateTime::format('j') && $user_data.user.birth_month == waDateTime::format('n')}
+                                        <span class="userstatus birthday t-user-birthday-icon" title="{$user_data.user_birthday_str}">
                                             <i class="fas fa-birthday-cake"></i>
                                         </span>
                                     {/if}
                                 </span>
                             </a>
-                            <a href="{$_user_link}" class="details" title="{$user.name|escape}">
-                                <p class="t-name bold custom-my-0 small">{$user_data.formatted_user_name|escape}{$badge|default:""}</p>
-                                {if !empty($user.jobtitle)}
-                                    <p class="t-job small custom-my-0">{$user.jobtitle|escape}</p>
-                                {/if}
-                                <p class="t-login hint custom-my-0">{$user.login|escape}</p>
-                                <p class="hint custom-my-0">
-                                    [`Last seen`]
-                                    &nbsp;
-                                    {if empty($user.last_datetime)}
-                                        —
+                            <div class="details">
+                                <a href="{$_user_link}" class="t-name bold custom-my-0 small" title="{$user.name|escape}">
+                                    {$user_data.formatted_user_name|escape}&#32;
+
+                                    <span class="semibold gray">@{$user.login|escape}</span>
+                                </a>
+
+                                <div>
+                                    {if !empty($user_data.user._event)}
+                                    {$_badge_status_styles = ''}
+                                    {if !empty($user_data.user._event.status_bg_color)}
+                                    {$_badge_status_styles = "color: `$user_data.user._event.status_font_color`; background: `$user_data.user._event.status_bg_color`;"}
                                     {else}
-                                        {$user.last_datetime_formatted}
+                                    {$_badge_status_styles = "color: `$user_data.user._event.font_color`; background: `$user_data.user._event.bg_color`;"}
                                     {/if}
-                                </p>
-                            </a>
+
+                                    <span class="badge user small custom-mr-4" style="{$_badge_status_styles}">
+                                        {if $user_data.user._event.icon}
+                                        <i class="{$user_data.user._event.icon|escape}"></i>
+                                        {else}
+                                        <i class="fas fa-calendar-alt"></i>
+                                        {/if}
+                                        {$user_data.user._event.summary|escape}
+                                    </span>
+                                    {/if}
+
+                                    {if !empty($user.jobtitle)}
+                                    <span class="t-job small custom-my-0">{$user.jobtitle|escape}</span>
+                                    {/if}
+
+                                    <p class="hint custom-my-0">
+                                        [`Last seen`]
+                                        &nbsp;
+                                        {if empty($user.last_datetime)}
+                                            [`never`]
+                                        {else}
+                                            {$user.last_datetime_formatted}
+                                        {/if}
+                                    </p>
+                                </div>
+                            </div>
                         </li>
                     {/foreach}
                 </ul>
@@ -198,6 +225,14 @@
     <script>
         ( function($) {
             $.team.setTitle({json_encode($group.name)});
+
+            new UserList({
+                $wrapper: $(".js-users-list")
+            });
+
+            new UserList({
+                $wrapper: $(".js-users-list-offline")
+            });
 
             var options = {
                 $wrapper: $("#t-group-page"),

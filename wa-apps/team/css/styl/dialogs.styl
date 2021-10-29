@@ -1,3 +1,5 @@
+$pad = 0.625rem
+$rem = 16
 // Main
 .t-dialog-wrapper
     position absolute
@@ -132,20 +134,11 @@
             tr
                 &.c-access-subcontrol-header
                     font-weight bold
-                    .c-access-cb-all
-                        font-size initial
-                &.c-access-subcontrol-item
-                    td
-                        padding-left 2em
-                td
-                    &:not(:first-child)
+                    td:last-child
                         text-align right
-                    select
-                        width 40%
-                    .c-access-cb-all
-                        input
-                            vertical-align middle
-                            margin-right .2em
+                &.c-access-subcontrol-item
+                    td:first-child
+                        padding-left 1.5em
 
     .dialog-footer
 
@@ -236,7 +229,7 @@
     .t-style-wrapper
 
         .t-color-toggle
-            margin 1em 0 0
+            margin .5em 0 0
 
             .t-toggle
                 position relative
@@ -469,13 +462,14 @@
                 bottom 0
                 font-size 150%
                 z-index 2
-                display grid
-                place-items center
+                display flex
+                align-items center
+                justify-content center
                 cursor pointer
                 color var(--gray)
-                width: 48px;
+                width: 28px
                 &.left
-                    left 0
+                    left 0;
                 &.right
                     right 0
                 &.swiper-button-disabled
@@ -534,7 +528,6 @@
         display flex
         flex-direction column
         max-height 94%
-        min-height 300px
         .dialog-footer
             margin-top auto !important
             padding-top 1.5rem !important

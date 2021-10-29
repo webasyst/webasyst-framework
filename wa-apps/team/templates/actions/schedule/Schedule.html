@@ -33,8 +33,18 @@
         <div class="flexbox middle space-8 wrap small">
             <div class="dropdown js-calendar-dropdown custom-mx-auto-mobile custom-mx-auto-tablet custom-mb-16-mobile custom-mb-16-tablet">
                 {* CALENDAR LIST *}
-                <a class="t-selected-item dropdown-toggle button light-gray rounded" style="{if !empty($selected_calendar.bg_color)}background-color: {$selected_calendar.bg_color};{/if}{if !empty($selected_calendar.font_color)}color: {$selected_calendar.font_color};{/if}" href="{teamHelper::getUrl('calendar', $selected_calendar.id)}">
-                    <i class="{if !$selected_calendar.id}fas fa-check-double{elseif $selected_calendar.id === 'birthday'}fas fa-birthday-cake{else}{$selected_calendar.icon|escape}{/if}" style="{if !empty($selected_calendar.font_color)}color: {$selected_calendar.font_color};{/if}"></i>
+                {$_selected_calendar_styles = ''}
+                {if $selected_calendar.id === 'birthday'}
+                {$_selected_calendar_styles = "color: var(--white); background-image: linear-gradient(90deg, #FA5959 0%, #E419AB 100%);"}
+                {else}
+                    {if $selected_calendar.status_bg_color}
+                    {$_selected_calendar_styles = "color: `$selected_calendar.status_font_color`; background-color: `$selected_calendar.status_bg_color`;"}
+                    {else}
+                    {$_selected_calendar_styles = "color: `$selected_calendar.font_color`; background-color: `$selected_calendar.bg_color`;"}
+                    {/if}
+                {/if}
+                <a class="t-selected-item dropdown-toggle button light-gray rounded" style="{$_selected_calendar_styles}" href="{teamHelper::getUrl('calendar', $selected_calendar.id)}">
+                    <i class="{if !$selected_calendar.id}fas fa-check-double{elseif $selected_calendar.id === 'birthday'}fas fa-birthday-cake{else}{$selected_calendar.icon|escape}{/if}" style="color: {if !empty($selected_calendar.status_font_color)}{$selected_calendar.status_font_color}{else}{$selected_calendar.font_color}{/if};"></i>
                     &nbsp;{$selected_calendar.name|escape}
                 </a>
                 <div class="dropdown-body">
@@ -42,8 +52,17 @@
                         {foreach $calendars as $_c}
                             <li class="t-menu-item {if $selected_calendar.id == $_c.id}selected{/if}">
                                 <a href="{teamHelper::getUrl('calendar', $_c.id)}">
-                                    <i class="{if !$_c.id}fas fa-check-double{elseif $_c.id === 'birthday'}fas fa-birthday-cake{else}{$_c.icon|escape}{/if}"
-                                            {if !empty($_c.bg_color)} style="color:{$_c.bg_color};"{/if}></i>
+                                    {$_style_item = ''}
+                                    {if $_c.id === 'birthday'}
+                                        {$_style_item = "color: #E419AB;"}
+                                    {else}
+                                        {if !empty($_c.status_bg_color)}
+                                            {$_style_item = "color: `$_c.status_bg_color`;"}
+                                        {else}
+                                            {$_style_item = "color: `$_c.bg_color`;"}
+                                        {/if}
+                                    {/if}
+                                    <i class="{if !$_c.id}fas fa-check-double{elseif $_c.id === 'birthday'}fas fa-birthday-cake{elseif $_c.icon}{$_c.icon|escape}{else}fas fa-calendar-alt{/if}" style="{$_style_item}"></i>
                                     <span>{$_c.name|escape}</span>
                                 </a>
                             </li>

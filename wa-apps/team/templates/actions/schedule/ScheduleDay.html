@@ -2,9 +2,10 @@
 
 <div class="dialog" id="t-event-days">
     <div class="dialog-background" style="background: transparent;backdrop-filter: unset;"></div>
-    <div class="dialog-body" style="width: 20rem">
+    <div class="dialog-body" style="min-height:auto;width: 20rem">
+        <a href="#" class="dialog-close js-close-dialog custom-p-0 custom-mt-8 custom-mr-12"><i class="fas fa-times small"></i></a>
         <div class="dialog-content">
-            <h4>{waDateTime::date('j f Y', $day)}</h4>
+            <h4 class="custom-p-0">{waDateTime::date('j f Y', $day)}</h4>
 
             <ul class="t-events unstyled">
                 {foreach $events as $_event}
@@ -38,13 +39,19 @@
                     {$_is_birthday = ( $_event.calendar_id == "birthday" )}
                     {$_is_part_of_day = ( !$_event.is_allday && $_single_day )}
 
-                    {$_styles = []}
+                    {$_badge_styles = ''}
                     {if $_event.is_status}
-                        {$_styles[] = "background: `$_calendar.status_bg_color`;"}
-                        {$_styles[] = "color: `$_calendar.status_font_color`;"}
+                        {if $_calendar.status_bg_color}
+                            {$_badge_styles = "color: `$_calendar.status_font_color`; background: `$_calendar.status_bg_color`;"}
+                        {else}
+                            {$_badge_styles = "color: `$_calendar.font_color`; background: `$_calendar.bg_color`;"}
+                        {/if}
                     {else}
-                        {$_styles[] = "background: `$_calendar.bg_color`;"}
-                        {$_styles[] = "color: `$_calendar.font_color`;"}
+                        {if !empty($_calendar.status_bg_color)}
+                            {$_badge_styles = "color: `$_calendar.font_color`; background: `$_calendar.bg_color`;"}
+                        {else}
+                            {$_badge_styles = "color: `$_calendar.bg_color`; background: transparent; box-shadow: inset 0 0 0 1px currentColor;"}
+                        {/if}
                     {/if}
 
                     {$_classes = []}
@@ -67,7 +74,7 @@
 
                     <li class="t-event-wrapper{if !empty($_type)} type-{$_type}{/if}{if !$_event@last} custom-mb-4{/if}" {if !empty($_event.id)}data-id="{$_event.id}"{/if}>
 
-                        <div class="t-event-block {$_classes|join:" "}" style="{if $_is_birthday && $_user}background-image: linear-gradient(to left, #ce19bc, #f9595a);{else}{$_styles|join:""}{/if}">
+                        <div class="t-event-block {$_classes|join:" "}" style="{if $_is_birthday && $_user}background-image: linear-gradient(to left, #ce19bc, #f9595a);{else}{$_badge_styles}{/if}">
 
                             {if !empty($_event.icon)}
                                 <i class="{$_event.icon|escape}"></i>

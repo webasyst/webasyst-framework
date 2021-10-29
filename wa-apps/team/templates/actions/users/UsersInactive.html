@@ -9,7 +9,7 @@
 
         <div class="t-info-notice-wrapper alert custom-mb-32" style="display: none;">
             <div class="flexbox">
-                <div class="wide">[`This is a list of users who are no longer members of your team. You have disabled their access to your Webasyst backend.`]</div>
+                <div class="wide small">[`This is a list of users who are no longer members of your team. You have disabled their access to your Webasyst backend.`]</div>
                 <a href="#" class="t-info-notice-toggle alert-close" data-disable-routing><i class="fas fa-times"></i></a>
             </div>
         </div>
@@ -26,6 +26,10 @@
         ( function($) {
             $.team.setTitle('[`Inactive users`]');
             $.team.sidebar.updateCount('{$wa_app_url}inactive/', {count($contacts)});
+
+            new UserList({
+                $wrapper: $(".js-users-list")
+            });
 
             function initInfoBlock() {
                 var $info_block = $("#t-users-page .t-info-notice-wrapper"),

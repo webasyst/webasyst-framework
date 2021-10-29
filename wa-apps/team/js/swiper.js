@@ -35,8 +35,22 @@ class SwiperSlider {
         that.bindEvents();
 
         if (this.containerParent) {
-            const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
-            that.containerParent.style.setProperty('--scrollbar-width', scrollBarWidth + "px");
+            const setContainerWidth = () => {
+                const scrollbarWidth = window.innerWidth - document.documentElement.offsetWidth;
+                const bodyHasScroll = document.body.scrollHeight > window.innerHeight;
+                let containerMaxWidth;
+
+                if (bodyHasScroll) {
+                    containerMaxWidth = window.innerWidth - scrollbarWidth - this.containerParent.getBoundingClientRect().left;
+                } else {
+                    containerMaxWidth = window.innerWidth - this.containerParent.getBoundingClientRect().left;
+                }
+
+                that.containerParent.style.setProperty('max-width', containerMaxWidth + 'px');
+            }
+
+            setContainerWidth();
+            window.addEventListener('resize', setContainerWidth);
         }
 
         if (that.watch_nav ) {
@@ -50,7 +64,7 @@ class SwiperSlider {
 
     setContainerWidth(swiper) {
         const that = this;
-        swiper.on('beforeResize', () => {
+        swiper.onAny( () => {
             that.set_container_width.forEach(size => {
                 const body_width = document.body.clientWidth;
                 if(body_width <= size) {

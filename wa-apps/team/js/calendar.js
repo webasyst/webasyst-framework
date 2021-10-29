@@ -312,13 +312,17 @@ var TeamCalendar = ( function($) {
     };
 
     TeamCalendar.prototype.showFullDayEvents = function( $link ) {
-        var that = this,
+        const that = this,
             events_id = $link.data("events-id").split(","),
             date = $link.data("date"),
             data = {
                 date: date,
-                id: events_id
+                id: events_id,
             };
+
+        if(that.is_profile) {
+            data['selected_user_id'] = that.selected_user_id
+        }
 
         if (that.xhr) {
             that.xhr.abort();
@@ -1036,6 +1040,11 @@ var EventEditDialog = ( function($) {
                         .find(".state-error-hint").remove();
             }
         });
+
+        that.$form.on('click', '.js-datepicker-trigger, .js-timepicker-trigger', function () {
+            $(this).parent().find('input').trigger('focus')
+        });
+
     };
 
     EventEditDialog.prototype.initDatePicker = function() {
@@ -1061,12 +1070,14 @@ var EventEditDialog = ( function($) {
                     ui.dpDiv.on("click", function(event) {
                         event.stopPropagation();
                     });
+
+                    setTimeout(() => ui.dpDiv.css({"z-index": '1051'}));
+
                     $(input).on("click", function(event) {
                         var is_date_picker_opened = isDatePickerOpened();
                         if (is_date_picker_opened) {
                             event.stopPropagation();
                             closeDatePicker();
-                            $(this).blur();
                         }
                     });
                 }
@@ -1146,12 +1157,9 @@ var EventEditDialog = ( function($) {
 
     EventEditDialog.prototype.changeColors = function( ) {
         let that = this,
-            {bg_color, font_color, status_bg_color, status_font_color} = that.calendars[that.calendar_id];
+            colors = {bg_color, font_color, status_bg_color, status_font_color} = that.calendars[that.calendar_id];
 
-        that.$calendarToggle.find('.t-selected-item').css({
-            'background-color': that.is_status ? status_bg_color : bg_color,
-            'color': that.is_status ? status_font_color : font_color,
-        });
+        that.setCalendarSelectColors(colors);
     }
 
     EventEditDialog.prototype.changeStatus = function( $toggle ) {
@@ -1210,7 +1218,7 @@ var EventEditDialog = ( function($) {
 
         if (!is_active && !that.is_locked) {
             that.is_locked = true;
-            const {bg_color, font_color, status_bg_color, status_font_color} = that.calendars[calendar_id],
+            const colors = {bg_color, font_color, status_bg_color, status_font_color} = that.calendars[calendar_id],
                 name = $link.text(),
                 {prefix, icon} = $link.find('svg').data();
 
@@ -1218,13 +1226,11 @@ var EventEditDialog = ( function($) {
             that.calendar_id = calendar_id;
             // unset selected
             that.$calendarToggle.find("." + that.selected_class).removeClass(that.selected_class);
+
             // set selection
-            that.$calendarToggle.find(".t-selected-item")
-                .css({
-                    'background-color': that.is_status ? status_bg_color : bg_color,
-                    'color': that.is_status ? status_font_color : font_color
-                })
-                .html(`<i class="${prefix} fa-${icon}"></i><span class="custom-ml-8">${name}</span>`);
+            that.setCalendarSelectColors(colors);
+            that.$calendarToggle.find(".t-selected-item").html(`<i class="${prefix} fa-${icon}"></i><span class="custom-ml-8">${name}</span>`);
+
             // set data
             that.$form
                 .find('input[name="data[calendar_id]"]')
@@ -1243,6 +1249,40 @@ var EventEditDialog = ( function($) {
             that.generateStatusTypes();
         }
     };
+
+    EventEditDialog.prototype.setCalendarSelectColors = function(colors) {
+        const that = this;
+
+        console.log(`bg_color: ${colors.bg_color}, status_bg_color: ${colors.status_bg_color}, font_color: ${colors.font_color}, status_font_color: ${colors.status_font_color}`)
+
+        const bgColor = () => {
+            if (that.is_status) {
+                return colors.status_bg_color ? colors.status_bg_color : colors.bg_color
+            } else {
+                return colors.status_bg_color ? colors.bg_color : 'transparent'
+            }
+        };
+        const fontColor = () => {
+            if (that.is_status) {
+                return colors.status_font_color ? colors.status_font_color : colors.font_color
+            } else {
+                return !colors.status_font_color ? colors.bg_color : colors.font_color
+            }
+        };
+        const innerShadow = () => {
+            if (!that.is_status) {
+                return colors.status_bg_color ? 'none' : 'inset 0 0 0 1px currentColor'
+            } else {
+                return 'none'
+            }
+        }
+
+        that.$calendarToggle.find('.t-selected-item').css({
+            'color': fontColor,
+            'background-color': bgColor,
+            'box-shadow': innerShadow
+        });
+    }
 
     EventEditDialog.prototype.changeUser = function( $link ) {
         var that = this,
@@ -1412,15 +1452,22 @@ var EventEditDialog = ( function($) {
 
             function showErrors( errors ) {
                 // Remove old errors
-                that.$form.find(".state-error-hint").remove();
+                that.$form.find(".state-error-hint").parent().remove();
 
                 // Display new errors
                 $.each(errors, function(index, item) {
                     var $field = that.$form.find("[name='" + item.field + "']");
                     if ($field.length) {
-                        $field
-                            .addClass(that.has_error_class)
-                            .after('<span class="state-error-hint">' + that.locales[item.locale] + '</span>')
+                        if ($field.parent('.value').length) {
+                            $field
+                                .addClass(that.has_error_class)
+                                .after('<span class="state-error-hint">' + that.locales[item.locale] + '</span>')
+                        }else{
+                            $field
+                                .addClass(that.has_error_class)
+                                .parent()
+                                .after('<li><span class="state-error-hint custom-ml-24">' + that.locales[item.locale] + '</span></li>')
+                        }
                     }
                 });
             }
@@ -1536,7 +1583,7 @@ var EventEditDialog = ( function($) {
                     $input
                         .removeClass(that.has_error_class)
                         .closest(".value")
-                        .find(".state-error-hint").remove();
+                        .find(".state-error-hint").parent().remove();
                 }
             });
 

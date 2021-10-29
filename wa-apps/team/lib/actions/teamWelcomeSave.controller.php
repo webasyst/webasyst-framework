@@ -24,7 +24,7 @@ class teamWelcomeSaveController extends waJsonController
                 if ($contact_info['is_user']) {
                     $this->errors[] = array(
                         'name' => "data[$i][email]",
-                        'text' => !teamHelper::isBanned($contact_info) ? _w('Already in our team!') : _w('This contact was banned'),
+                        'text' => !teamHelper::isBanned($contact_info) ? _w('Already in our team!') : _w('This contact was banned.'),
                     );
                 } else {
                     $create[] = array(

@@ -94,7 +94,7 @@
                     {else if $user.is_user < 0}
                         <p class="grey">[`Access is switched off`]</p>
                     {else if $invite}
-                        <p><em>[`User invitation has been sent`]</em></p>
+                        <p><em>[`User invitation was sent.`]</em></p>
                     {/if}
 
                     {* Used for trigger event in ProfileAccess.html *}
@@ -110,12 +110,12 @@
                         {/foreach}
                     </ul>
 
-                    {if $user_event}
+                    {if $user_events}
                         <div class="line">
                             <div class="t-event-wrapper">
-                                <div class="t-event-block" style="background:{$user_event.bg_color};color:{$user_event.font_color};">
-                                    {$user_event.summary|escape}
-                                    {if $user_event.calendar_id == 'birthday'}
+                                <div class="t-event-block" style="background:{$user_events[0].bg_color};color:{$user_events[0].font_color};">
+                                    {$user_events[0].summary|escape}
+                                    {if $user_events[0].calendar_id == 'birthday'}
                                         &nbsp;&mdash; {waDateTime::format('shortdate', date('Y')|cat:"-`$user.birth_month`-`$user.birth_day`")}
                                     {/if}
                                 </div>

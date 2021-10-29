@@ -157,7 +157,7 @@ abstract class teamInviting
 
         if ($tokens) {
             $atm->exec(
-                "DELETE FROM {$atm->getTableName()} 
+                "DELETE FROM {$atm->getTableName()}
                     WHERE app_id = :app_id AND type = :type AND contact_id = :contact_id AND token NOT IN (:tokens)",
                 array_merge($condition, [
                     'tokens' => $tokens
@@ -184,11 +184,11 @@ abstract class teamInviting
     {
         switch ($error) {
             case 'token_not_created':
-                return _w("Invitation token can't created");
+                return _w("Invitation token cannot be created.");
             case 'user_in_team':
                 return _w('Already in our team!');
             case 'contact_banned':
-                return _w('This contact was banned');
+                return _w('This contact was banned.');
             case 'email_required':
                 return _w('This is a required field.');
             case 'email_invalid':

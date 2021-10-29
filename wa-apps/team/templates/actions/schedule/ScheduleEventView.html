@@ -6,18 +6,18 @@
     <div class="dialog-background"></div>
     <div class="dialog-body">
         <header class="dialog-header">
-            <ul class="tabs bordered-bottom large bold custom-p-0">
-                <li class="{if $event.is_status}selected is-active{else}is-inactive{/if}" data-status-id="1">
-                    <a href="javascript:void(0);" class="opacity-50" style="cursor: default">
-                        [`Status`]
-                    </a>
-                </li>
-                <li class="{if !$event.is_status}selected is-active{else}is-inactive{/if}" data-status-id="0">
-                    <a href="javascript:void(0);" class="opacity-50" style="cursor: default">
-                        [`Event`]
-                    </a>
-                </li>
-            </ul>
+            <div class="flexbox">
+                <div class="wide">
+                    <h2>
+                        {if $event.is_status}[`Status`]{/if}
+                        {if !$event.is_status}[`Event`]{/if}
+                    </h2>
+                </div>
+                <div class="toggle opacity-60" style="pointer-events: none;">
+                    <span data-status-id="1"{if $event.is_status} class="selected"{/if}>[`Status`]</span>
+                    <span data-status-id="0"{if !$event.is_status} class="selected"{/if}>[`Event`]</span>
+                </div>
+            </div>
         </header>
 
         <div class="dialog-content fields">
@@ -45,15 +45,19 @@
                     <div class="value">
                         {if $event.is_status}
                             {if !empty($_selected_calendar.status_bg_color)}
-                                {$style = "background: `$_selected_calendar.status_bg_color`;color: `$_selected_calendar.status_font_color`;"}
+                            {$style = "color: `$_selected_calendar.status_font_color`; background: `$_selected_calendar.status_bg_color`;"}
+                            {else}
+                            {$style = "color: `$_selected_calendar.font_color`; background: `$_selected_calendar.bg_color`;"}
                             {/if}
                         {else}
-                            {if !empty($_selected_calendar.bg_color)}
-                                {$style = "background: `$_selected_calendar.bg_color`;color: `$_selected_calendar.font_color`;"}
+                            {if !empty($_selected_calendar.status_bg_color)}
+                            {$style = "color: `$_selected_calendar.font_color`; background: `$_selected_calendar.bg_color`;"}
+                            {else}
+                            {$style = "color: `$_selected_calendar.bg_color`; background: transparent; box-shadow: inset 0 0 0 1px currentColor;"}
                             {/if}
                         {/if}
                         <span class="badge user" style="{$style|default:''}">
-                            <i class="{if !empty($_selected_calendar.icon)}{$_selected_calendar.icon|escape}{else}fas fa-circle{/if}"></i>
+                            <i class="{if !empty($_selected_calendar.icon)}{$_selected_calendar.icon|escape}{else}fas fa-calendar-alt{/if}"></i>
                             <span>{$_selected_calendar.name|escape}</span>
                         </span>
                     </div>

@@ -37,6 +37,7 @@ class teamGroupManageAction extends teamContentViewAction
             'group' => $group,
             'group_users' => $group_users,
             'other_users' => $other_users,
+            'can_manage_group' => teamHelper::hasRights('manage_group.' . $group_id),
         ));
     }
 }

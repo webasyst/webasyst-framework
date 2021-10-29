@@ -7,7 +7,7 @@
     <div class="dialog-body">
         <header class="dialog-header">
             <div class="flexbox wrap">
-                <h5 class="wide custom-mt-8{if !$wa->isMobile()} custom-mb-0{/if}">Загрузите или перетащите фото</h5>
+                <h5 class="wide custom-mt-8{if !$wa->isMobile()} custom-mb-0{/if}">[`Upload or drag & drop a photo`]</h5>
 
                 <div class="dropdown{if !$cover_thumbnails} hidden{/if}" id="cover-upload-dropdown">
                     <button class="dropdown-toggle button light-gray nowrap" type="button" style="height: 34px;">[`Actions`] <span class="upload-cover__badge js-upload-cover-counter"></span></button>
@@ -28,14 +28,14 @@
         </header>
         <div class="dialog-content">
             <div class="box uploadbox js-upload-cover-wrapper">
-                <div class="upload">
+                <div class="upload js-upload-content">
                     <label class="button purple outlined rounded">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <span>[`Choose file`]</span>
                         <input type="file" multiple autocomplete="off" accept=".png, .jpg, .jpeg, .gif">
                     </label>
 
-                    <div class="hint custom-mt-8 custom-mb-20">В обложке показывается не более 8 фотографий. Чтобы изменить последовательность фотографий, перемещайте их между собой.</div>
+                    <div class="hint custom-mt-8 custom-mb-20">[`The cover can show 8 photos at most. To change the order of photos drag them in the list.`]</div>
 
                     <div class="upload-cover__items js-upload-cover-dialog-sort">
                         {foreach $cover_thumbnails|array_reverse as $cover}
@@ -111,6 +111,7 @@
             this.$body = $('body');
             this.$dialog = $('#' + this.dialog_id).closest('.dialog');
             this.$wrapper = this.$dialog.find('.js-upload-cover-wrapper');
+            this.$uploadContent = this.$wrapper.find('.js-upload-content');
             this.$input = this.$wrapper.find('input:file');
             this.$dropdown = this.$dialog.find('#cover-upload-dropdown');
             this.$dropdownBadge = this.$dropdown.find('.js-upload-cover-counter');
@@ -160,6 +161,8 @@
           }
 
           highlight() {
+            // pointer-events hack for safari browser
+            this.$uploadContent.css('pointer-events', 'none');
             this.$wrapper.addClass('highlighted');
           }
 
@@ -168,6 +171,7 @@
               return;
             }
 
+            this.$uploadContent.css('pointer-events', 'auto');
             this.$wrapper.removeClass('highlighted');
           }
 
@@ -416,7 +420,7 @@
 
             if (!checkedItems.length) {
               $.waDialog.alert({
-                title: '[`No one item selected`]',
+                title: '[`Nothing selected`]',
                 button_title: '[`Close`]',
                 button_class: 'warning',
               });
@@ -517,10 +521,9 @@
 
               const translateX = oldItemInfo.x - newItemInfo.x;
               const translateY = oldItemInfo.y - newItemInfo.y;
-              {literal}
               newItemInfo.element.animate([
                 {
-                  transform: `translate3D(${translateX}px, ${translateY}px, 0)`,
+                  transform: 'translate3D('+translateX+'px, '+translateY+'px, 0)',
                 },
                 {
                   transform: 'none'
@@ -529,7 +532,6 @@
                 duration: 250,
                 easing: 'ease-out',
               });
-              {/literal}
             }
           }
 
@@ -545,12 +547,7 @@
           }
 
           updateParentContent() {
-            $.ajax({
-              url: location.href,
-              success: function(response) {
-                $("#t-content").html(response).hide().fadeIn();
-              }
-            });
+            $.team.content.reload();
           }
         }
       })(jQuery);

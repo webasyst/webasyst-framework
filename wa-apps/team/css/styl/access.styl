@@ -24,17 +24,6 @@ $border_c = #f0f0f0
     position relative
     user-select none
 
-    max-width calc(100vw - 32rem - var(--scrollbar-width))
-
-    @media (max-width: 761px)
-        max-width calc(100vw - 13rem - var(--scrollbar-width))
-
-    @media (min-width: 761px) and (max-width: 1024px)
-        max-width calc(100vw - 26rem - var(--scrollbar-width))
-
-    @media (min-width: 1441px)
-        max-width calc(100vw - 38rem - var(--scrollbar-width))
-
     .t-access-wrapper
     .t-header-apps
         overflow hidden
@@ -207,14 +196,14 @@ $border_c = #f0f0f0
             display inline
 
     &.type-limited
-        color: rgba(#000, .5);
-        background-color: rgba(161, 229, 161, .6);
+        color: rgba(#000, .5) !important;
+        background-color: rgba(161, 229, 161, .6) !important;
         .t-access-name.type-limited
             display inline
 
     &.type-full
-        color: rgba(#000, .75);
-        background-color: rgba(102, 204, 102, .85);
+        color: rgba(#000, .75) !important;
+        background-color: rgba(102, 204, 102, .85) !important;
         .t-access-name.type-full
             display inline
 

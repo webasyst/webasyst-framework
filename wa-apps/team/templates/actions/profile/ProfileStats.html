@@ -85,7 +85,7 @@
                 {* APP *}
                 <li class="t-app-filter custom-mb-8">
                     <div class="dropdown" id="app_id_select">
-                        <button class="dropdown-toggle button nobutton" type="button" style="top:0">{$_selected_app.name|escape}</button>
+                        <button class="dropdown-toggle button light-gray" type="button" style="top:0">{$_selected_app.name|escape}</button>
                         <div class="dropdown-body">
                             <ul class="menu">
                                 {foreach $_apps as $_app}
@@ -104,7 +104,7 @@
                 {* PERIOD *}
                 <li class="t-period-filter flexbox middle custom-mb-8">
                     <div class="dropdown" id="period_select">
-                        <button class="dropdown-toggle button nobutton" type="button" style="top:0">{$_selected_period.name|escape}</button>
+                        <button class="dropdown-toggle button light-gray" type="button" style="top:0">{$_selected_period.name|escape}</button>
                         <div class="dropdown-body">
                             <ul class="menu">
                                 {foreach $_periods as $_period}
@@ -121,12 +121,12 @@
                         </div>
                     </div>
                 </li>
-                <li class="custom-mb-16 small js-hidden-part{if $_selected_period.id !== "custom"} hidden{/if}">
+                <li class="js-hidden-part{if $_selected_period.id !== "custom"} hidden{/if}">
                     <form action="/">
                         <label class="custom-mr-8">[`from`]</label>
                         <div class="state-with-inner-icon right custom-mb-8">
                             <input class="t-date js-datepicker shorter" type="text" placeholder="[`Start`]" value="{teamHelper::date($start_date)}">
-                            <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                            <span class="icon cursor-pointer js-datepicker-trigger"><i class="fas fa-calendar-alt"></i></span>
                             <input type="hidden" name="from" value="{date('Y-m-d', strtotime($start_date))}">
                         </div>
 
@@ -134,7 +134,7 @@
                         <label class="custom-mx-8">[`to`]</label>
                         <div class="state-with-inner-icon right custom-mr-8 custom-mb-8">
                             <input class="t-date js-datepicker shorter" type="text" placeholder="[`End`]" value="{teamHelper::date($end_date)}">
-                            <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                            <span class="icon cursor-pointer js-datepicker-trigger"><i class="fas fa-calendar-alt"></i></span>
                             <input type="hidden" name="to" value="{date('Y-m-d', strtotime($end_date))}">
                         </div>
 
@@ -386,6 +386,10 @@
                         $('[name="app_id"]').val(target.dataset.id);
                     }
                 });
+
+                $('.js-datepicker, [name="groupby"]').on('change', () => {
+                    $('.js-set-custom-period').removeClass('gray').addClass('yellow')
+                })
             })(jQuery);
         </script>
     </section>

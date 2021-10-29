@@ -1065,8 +1065,7 @@
   min-width: 200px;
   width: 65%;
   height: 8.3em;
-  background: #fafafa;
-  border-color: #aaa #eee #eee #aaa;
+  border-color: var(--border-color-soft);
   border-style: solid;
   border-width: 1px;
 }

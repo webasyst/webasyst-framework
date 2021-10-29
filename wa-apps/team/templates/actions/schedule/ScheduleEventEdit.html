@@ -21,28 +21,28 @@
     <form class="dialog-body" action="" method="post">
         <div class="dialog-content fields">
 
-            <div class="flexbox middle custom-mb-16">
-                <h1 class="wide custom-m-0 t-status-field">[`Status`]</h1>
-                <h1 class="wide custom-m-0 t-event-field">[`Event`]</h1>
+            <div class="flexbox middle wrap custom-mb-8">
+                <h1 class="wide custom-mb-8 t-status-field">[`Status`]</h1>
+                <h1 class="wide custom-mt-0 custom-mb-8 t-event-field">[`Event`]</h1>
 
-                <div class="toggle t-status-toggle custom-mt-4">
+                <div class="toggle t-status-toggle custom-mt-4 custom-mb-8">
                     <span class="t-toggle-button{if $event.is_status} selected is-active{/if}" data-status-id="1">[`Status`]</span>
                     <span class="t-toggle-button{if !$event.is_status} selected is-active{/if}" data-status-id="0">[`Event`]</span>
                 </div>
             </div>
 
             <div class="small gray t-status-field custom-mb-24">
-                [`Статус будет виден рядом с именем пользователя в разных приложениях`].
+                [`Status will be displayed next to the user name in various apps.`]
             </div>
 
             <div class="small gray t-event-field custom-mb-24">
-                [`События видны только в календаре`].
+                [`Events are visible in calendars only.`]
             </div>
 
             {if $user || $_is_admin}
                 {* USER *}
                 <div class="field">
-                    <div class="name">
+                    <div class="name custom-pt-0">
                         [`User`]
                     </div>
                     <div class="value">
@@ -81,18 +81,45 @@
 
             {* CALENDAR *}
             <div class="field">
-                <div class="name">
+                <div class="name custom-pt-4">
                     [`Calendar`]
                 </div>
                 <div class="value">
 
                     <div class="dropdown small js-calendar-dropdown">
                         {* CALENDAR LIST *}
+                        {$_select_status_bg_color = ''}
+                        {$_select_event_bg_color = ''}
+                        {$_select_status_font_color = ''}
+                        {$_select_event_font_color = ''}
+
+                        {if $event.is_status}
+                            {if $_selected_calendar.status_font_color}
+                                {$_select_status_font_color = $_selected_calendar.status_font_color}
+                            {else}
+                                {$_select_status_font_color = $_selected_calendar.font_color}
+                            {/if}
+
+                            {if $_selected_calendar.status_bg_color}
+                                {$_select_status_bg_color = $_selected_calendar.status_bg_color}
+                            {else}
+                                {$_select_status_bg_color = $_selected_calendar.bg_color}
+                            {/if}
+                        {else}
+                            {if $_selected_calendar.status_bg_color}
+                                {$_select_event_font_color = $_selected_calendar.font_color}
+                                {$_select_event_bg_color = $_selected_calendar.bg_color}
+                            {else}
+                                {$_select_event_font_color = $_selected_calendar.bg_color}
+                                {$_select_event_bg_color = 'transparent'}
+                            {/if}
+                        {/if}
                         <a class="t-selected-item dropdown-toggle button rounded dark-gray"
-                           style="{if !empty($_selected_calendar.bg_color)}background-color: {if $event.is_status}{$_selected_calendar.status_bg_color}{else}{$_selected_calendar.bg_color}{/if};{/if}{if !empty($_selected_calendar.font_color)}color: {if $event.is_status}{$_selected_calendar.status_font_color}{else}{$_selected_calendar.font_color}{/if};{/if}"
+                           style="{if $event.is_status}color: {$_select_status_font_color}; background-color: {$_select_status_bg_color};{else}color: {$_select_event_font_color}; background-color: {$_select_event_bg_color}; box-shadow: inset 0 0 0 1px currentColor;{/if}"
                            href="javascript:void(0);">
-                            <i class="{if !empty($_selected_calendar.icon)}{$_selected_calendar.icon|escape}{else}fas fa-circle{/if}"></i>
-                            &nbsp;<span class="custom-ml-8">{$_selected_calendar.name|escape}</span>
+                            <i class="{if !empty($_selected_calendar.icon)}{$_selected_calendar.icon|escape}{else}fas fa-calendar-alt{/if}"></i>
+
+                            <span class="custom-ml-8">{$_selected_calendar.name|escape}</span>
                         </a>
                         {if !empty($available_calendars)}
                             <div class="dropdown-body">
@@ -102,9 +129,7 @@
                                             data-calendar-id="{$_c.id}"
                                             data-default-status="{$_c.default_status|default:''}">
                                             <a href="javascript:void(0);">
-                                                <i class="{if !empty($_c.icon)}{$_c.icon|escape}{else}fas fa-circle{/if}"
-                                                        {if !empty($_c.bg_color)} style="color:{$_c.bg_color};"{/if}
-                                                ></i>
+                                                <i class="{if !empty($_c.icon)}{$_c.icon|escape}{else}fas fa-calendar-alt{/if}" style="color: {if $_c.status_bg_color}{$_c.status_bg_color}{else}{$_c.bg_color}{/if};"></i>
                                                 <span>{$_c.name|escape}</span>
                                             </a>
                                         </li>
@@ -171,10 +196,16 @@
                         {$event_end = waDateTime::format('Y-m-d H:i:s', $event.end)}
                     {/if}
 
-                    <div class="t-layout t-date-wrapper {if !$event.is_allday}is-extended{/if}">
-                        <input class="t-date js-datepicker small shorter" name="data[start_alt]" type="text" placeholder="[`Event start`]" value="{teamHelper::date($event_start)}">
+                    <div class="t-layout t-date-wrapper{if !$event.is_allday} is-extended{/if}">
+                        <div class="state-with-inner-icon right">
+                            <input class="t-date js-datepicker small shorter" name="data[start_alt]" type="text" placeholder="[`Event start`]" value="{teamHelper::date($event_start)}">
+                            <span class="icon cursor-pointer js-datepicker-trigger"><i class="fas fa-calendar-alt"></i></span>
+                        </div>
                         <input type="hidden" name="data[start]" value="{date('Y-m-d', strtotime($event_start))}">
-                        <input class="t-date is-time js-timepicker small shorter" data-time-format="H:i" type="text" name="data[start_time]" placeholder="[`Event start`]" value="{date('H:i', strtotime($event_start))}">
+                        <div class="state-with-inner-icon right is-time custom-ml-8">
+                            <input class="t-date is-time js-timepicker small shorter" data-time-format="H:i" type="text" name="data[start_time]" placeholder="[`Event start`]" value="{date('H:i', strtotime($event_start))}">
+                            <span class="icon cursor-pointer js-timepicker-trigger"><i class="fas fa-clock"></i></span>
+                        </div>
                     </div>
 
                 </div>
@@ -188,9 +219,15 @@
                 <div class="value">
 
                     <div class="t-layout t-date-wrapper {if !$event.is_allday}is-extended{/if}">
-                        <input class="t-date js-datepicker small shorter" name="data[end_alt]" type="text" placeholder="[`Event end`]" value="{teamHelper::date($event_end)}">
+                        <div class="state-with-inner-icon right">
+                            <input class="t-date js-datepicker small shorter" name="data[end_alt]" type="text" placeholder="[`Event end`]" value="{teamHelper::date($event_end)}">
+                            <span class="icon cursor-pointer js-datepicker-trigger"><i class="fas fa-calendar-alt"></i></span>
+                        </div>
                         <input type="hidden" name="data[end]" value="{date('Y-m-d', strtotime($event_end))}">
-                        <input class="t-date is-time js-timepicker small shorter" data-time-format="H:i" type="text" name="data[end_time]" placeholder="[`Event end`]" value="{date('H:i', strtotime($event_end))}">
+                        <div class="state-with-inner-icon right is-time custom-ml-8">
+                            <input class="t-date is-time js-timepicker small shorter" data-time-format="H:i" type="text" name="data[end_time]" placeholder="[`Event end`]" value="{date('H:i', strtotime($event_end))}">
+                            <span class="icon cursor-pointer js-timepicker-trigger"><i class="fas fa-clock"></i></span>
+                        </div>
                     </div>
 
                 </div>
@@ -216,7 +253,7 @@
 
             {* FOR STATUS *}
             <div class="field t-status-field t-type-toggle">
-                <div class="name">[`Label`]</div>
+                <div class="name for-checkbox">[`Label`]</div>
                 <div class="value"></div>
                 <ul class="is-template" style="display: none;">
                     <li>
@@ -257,7 +294,10 @@
             <input type="submit" class="button" value="{if $event.id}[`Save`]{else}[`Create`]{/if}">
             <a class="button light-gray js-close-dialog" href="javascript:void(0);">[`Cancel`]</a>
             {if $event.id}
-                <a class="button orange custom-ml-auto js-delete-event" href="javascript:void(0);">[`Delete`]</a>
+                <a class="button orange outlined custom-ml-auto js-delete-event" href="javascript:void(0);">
+                    <span class="mobile-only"><i class="fas fa-trash-alt"></i></span>
+                    <span class="desktop-and-tablet-only">[`Delete`]</span>
+                </a>
             {/if}
         </footer>
     </form>
