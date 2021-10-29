@@ -55,12 +55,24 @@
 <script type="text/javascript">
     document.title = {$title|json_encode};
 
-    $('#i-assets-list a.js-remove-item').click(function () {
-        var $link = $(this);
-        if (confirm($link.data('confirm'))) {
-            $link.parent('li').find('form:first').submit();
-        }
-        return false;
+    $('.js-remove-item').on('click', function(e) {
+        e.preventDefault();
+
+        const $this = $(this);
+
+        $.waDialog.confirm({
+            title: '[`This will delete the product’s source code and data, without a recovery option. Are you sure?`]',
+            success_button_title: '[`Delete`]',
+            success_button_class: 'danger',
+            cancel_button_title: '[`Cancel`]',
+            cancel_button_class: 'light-gray',
+            onSuccess() {
+              $this.css('pointer-events', 'none');
+              $this.find('.js-remove-item-icon').addClass('hidden');
+              $this.find('.js-remove-item-spinner').removeClass('hidden');
+              $this.siblings('.js-remove-item-form').submit();
+            }
+        });
     });
     $('#i-assets-list a.js-switch-item').click(function () {
         var $link = $(this);

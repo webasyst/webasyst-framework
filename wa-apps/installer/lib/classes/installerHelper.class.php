@@ -394,4 +394,46 @@ class installerHelper
         }
         return self::$installer;
     }
+
+    /**
+     * @param string $slug
+     * @param bool $force_renew
+     * @return array
+     */
+    public static function checkLicense($slug, $force_renew = false)
+    {
+        $cache = new waVarExportCache('licenses', installerConfig::LICENSE_CACHE_TTL, 'installer');
+        $cache_data = $cache->get();
+
+        if ($force_renew
+            || !$cache->isCached()
+            || time() - ifempty($cache_data, 'timestamp', 0) >= installerConfig::LICENSE_CACHE_TTL
+        ) {
+            $cache->delete();
+            $config = installerStoreHelper::getInstallerConfig();
+
+            try {
+                $config->loadLicenses();
+            } catch (Exception $e) {
+            }
+            $cache = new waVarExportCache('licenses', installerConfig::LICENSE_CACHE_TTL, 'installer');
+
+            $cache_data = $cache->get();
+        }
+        $license = [
+            'status' => false,
+            'ts' => isset($cache_data['timestamp']) ? $cache_data['timestamp'] : time()
+        ];
+        if (isset($cache_data['data']['baza'][$slug])) {
+            $product = $cache_data['data']['baza'][$slug];
+            $license['status'] = !empty($product['license']);
+            if (isset($product['license_expire'])) {
+                $license['expire_date'] = $product['license_expire'];
+            }
+            if (isset($product['options'])) {
+                $license['options'] = $product['options'];
+            }
+        }
+        return $license;
+    }
 }

@@ -34,7 +34,8 @@
 
 
 <link href="{$wa_url}wa-apps/installer/css/app.installer{if $wa->whichUI() === '1.3'}-legacy{/if}.css?v={$wa->version()}" rel="stylesheet">
-{if $wa->whichUI() === '1.3' && $_is_modal}
+{*if $wa->whichUI() === '1.3' && $_is_modal*}
+{if $wa->whichUI() === '1.3'}
     {$dialog_prefix = 'wa-'}
     <link href="{$wa_url}wa-content/js/dialog/dialog.css" rel="stylesheet">
     <script src="{$wa_url}wa-content/js/dialog/dialog.js"></script>
@@ -73,8 +74,13 @@
 <div class="{$dialog_prefix}dialog i-product-review-dialog">
     <div class="{$dialog_prefix}dialog-background"></div>
     <div class="{$dialog_prefix}dialog-body">
-        <div class="{$dialog_prefix}dialog-header">
-            <h1 class="js-content-title">{_wd('installer', 'Your review')}</h1>
+        <div class="{$dialog_prefix}dialog-header{if $wa->whichUI() !== '1.3'} flexbox{/if}">
+            <h1 class="js-content-title{if $wa->whichUI() !== '1.3'} wide{/if}">{_wd('installer', 'Your review')}</h1>
+            {if $wa->whichUI() !== '1.3'}
+            <span class="custom-ml-12 custom-mb-auto cursor-pointer js-close-dialog">
+                <i class="fas fa-times fa-2x"></i>
+            </span>
+            {/if}
         </div>
         <div class="{$dialog_prefix}dialog-content">
             <div class="i-comment-section js-comment-section">
@@ -94,7 +100,7 @@
             </div>
 
             <div class="i-comment-user js-comment-user assets" style="display: none;">
-                <i class="userpic20 icon16"></i>
+                <i class="userpic userpic20 icon16"></i>
                 <strong class="user"></strong>
                 <span class="hint">{wa_date('humandate')}</span>
             </div>
@@ -114,9 +120,11 @@
 
             <button class="button2 large blue js-send-comment">{_wd('installer', 'Add a review')}</button>
         </div>
+        {if $wa->whichUI() === '1.3'}
         <span class="wa-close-icon js-close-dialog">
             <i class="fas fa-times"></i>
         </span>
+        {/if}
     </div>
 </div>
 {/capture}

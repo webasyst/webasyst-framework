@@ -69,7 +69,7 @@ var InstallerProductReviewWidget = ( function($) {
             that.processInitialWidgetErrors(that.errors);
             return;
         }
-        
+
         that.initByCoreJsData().done(function () {
             that.loadReviewWidgetIO().done(function (data) {
                 that.initProductWidgetBlock(data);
@@ -277,10 +277,19 @@ var InstallerProductReviewWidget = ( function($) {
         }
 
         function initReviewDialog(rate, widget) {
-            var dialog = $.waDialog({
+            let dialog;
+
+            if (that.ui === '1.3') {
+                dialog = $.waDialog({
                     wrapper: $(that.templates["review_dialog"]),
                     onOpen: initRateDialogContent
                 });
+            } else {
+                dialog = $.waDialog({
+                    html: that.templates["review_dialog"],
+                    onOpen: initRateDialogContent
+                });
+            }
 
             function initRateDialogContent($wrapper, dialog) {
                 // DOM
@@ -505,7 +514,7 @@ var InstallerProductReviewWidget = ( function($) {
             console.info('%c event "%s" thrown, feel free to listen it', 'color: blue;', event_name);
         }
     };
-    
+
     InstallerProductReviewWidget.prototype.processLoadingProductStoreInfoErrors = function(errors) {
         var that = this,
             event_name = that.events.load_product_fail;

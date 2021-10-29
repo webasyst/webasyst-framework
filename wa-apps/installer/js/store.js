@@ -420,14 +420,13 @@ var InstallerStore = (function ($) {
             });
 
             function handleResponse(res) {
-
                 if (res.status == 'ok') {
                     var is_success = true;
                     $.waDialog({
-                        wrapper: $wrapper
-                            .find('.js-rates-list')
-                            .append('<span class="gray"> &ndash; ' + data.rate_added_locale + '</span>')
-                            .prevObject,
+                        $wrapper: $wrapper
+                          .find('.js-rates-list')
+                          .append('<span class="gray"> &ndash; ' + data.rate_added_locale + '</span>')
+                          .prevObject,
                         onOpen: initDialogContent,
                         onClose: function() {
                             if (is_success) {
@@ -460,9 +459,8 @@ var InstallerStore = (function ($) {
             }
 
         }else{
-
             $.waDialog({
-                wrapper: $(that.options.templates["review_dialog"]),
+                html: $(that.options.templates["review_dialog"]),
                 onOpen: initDialogContent,
                 onClose: function() {
                     if (is_success) {
@@ -820,6 +818,7 @@ var InstallerStore = (function ($) {
 
         that.loading.animate(10000, 100, false);
 
+        that.loading.animate(10000, 100, false);
         that.$frame.on('load', function() {
             that.loading.done();
         });

@@ -1415,10 +1415,10 @@ msgid "mobile"
 msgstr "мобильный"
 
 msgid "Instant messenger"
-msgstr "Мгновенные сообщения"
+msgstr "Мессенджеры"
 
 msgid "Social network"
-msgstr "Социальная сеть"
+msgstr "Соцсети"
 
 msgid "Invalid login name or password."
 msgstr "Неправильное имя пользователя или пароль."

@@ -208,6 +208,8 @@ class WASettingsEmail {
         that.transport_class = ".js-transport";
         that.dkim_checkbox_class = ".js-dkim-checkbox";
 
+        that.locales = options.locales;
+
         // DYNAMIC VARS
         that.is_locked = false;
 
@@ -350,11 +352,18 @@ class WASettingsEmail {
         // Add item
         that.$item_add.on('click', function (e) {
             e.preventDefault();
-            let $item = that.$item_template.clone().removeClass('js-template').addClass('js-item');
-            $item.find('.js-key').val('');
+            const $item = that.$item_template.clone().removeClass('js-template').addClass('js-item');
+            const $itemNameInput = $item.find('.js-key');
+            $itemNameInput.val('');
             that.$items_wrapper.prepend($item);
             that.$form.trigger('input');
+
             $item.find(that.transport_class).trigger('change');
+
+            $itemNameInput.on('keyup', function() {
+                $(this).removeClass('state-error');
+                $(this).siblings('.js-error').remove();
+            });
         });
 
         // Remove item
@@ -374,7 +383,7 @@ class WASettingsEmail {
 
             // Set attribute name for all item fields
             // by data-name attribute
-            let $all_items = that.$items_wrapper.find('.js-item');
+            let $all_items = that.$form.find('.js-item');
             $.each($all_items, function (i, item) {
                 setNames($(item));
             });
@@ -416,6 +425,17 @@ class WASettingsEmail {
             function setNames($item) {
                 let item_key = $item.find(that.key_class).val(),
                     item_fields = $item.find('[data-name]');
+
+                if (!item_key.length) {
+                    // prevent form sending if have no value in input
+                    const $error = $(`<div class="state-error js-error">${that.locales.required}</div>`);
+                    $item.find(that.key_class).addClass('state-error').after($error);
+                    $item.find(that.key_class)[0].scrollIntoView({block: "center", behavior: "smooth"})
+                    that.is_locked = true;
+                    return;
+                }
+
+                that.is_locked = false;
 
                 if (typeof item_key !== 'string' || !item_key) {
                     return;

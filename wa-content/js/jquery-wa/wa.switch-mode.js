@@ -16,19 +16,16 @@ new class ThemeMode {
     }
 
     bindEvents() {
-        document.addEventListener('DOMContentLoaded', () => {
-            this.buttons = document.querySelectorAll('[data-wa-theme-mode]');
+        document.addEventListener('DOMContentLoaded', this.iterateButtons.bind(this));
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.setTheme.bind(this));
+        this.eventChange = new Event('wa-theme-change');
+    }
 
-            for (let button of this.buttons) {
-                button.addEventListener('click', (event) => {
-                    this.switchButtonClick(event);
-                });
-            }
-        });
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            this.setTheme();
-        });
+    iterateButtons() {
+        this.buttons = document.querySelectorAll('[data-wa-theme-mode]');
+        for (let button of this.buttons) {
+            button.addEventListener('click', this.switchButtonClick.bind(this));
+        }
     }
 
     switchButtonClick(event) {
@@ -63,16 +60,15 @@ new class ThemeMode {
         if (theme === 'auto') {
             const userTheme = this.getSystemTheme();
             document.documentElement.setAttribute('data-theme', userTheme);
-            this.changeThemeEvent();
+            this.dispatchChangeTheme();
             return;
         }
 
         document.documentElement.setAttribute('data-theme', theme);
-        this.changeThemeEvent();
+        this.dispatchChangeTheme();
     }
 
-    changeThemeEvent() {
-        const eventChange = new Event('wa-theme-change');
-        document.documentElement.dispatchEvent(eventChange);
+    dispatchChangeTheme() {
+        document.documentElement.dispatchEvent(this.eventChange);
     }
 }

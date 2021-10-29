@@ -10,8 +10,8 @@
                 var editor = ace.edit('wa-design-original');
                 ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 
-                let $them_mode = document.querySelector('#wa-dark-mode').getAttribute('media');
-                if ($them_mode === '(prefers-color-scheme: dark)') {
+                let $theme_mode = document.querySelector('#wa-dark-mode')?.getAttribute('media');
+                if ($theme_mode === '(prefers-color-scheme: dark)') {
                     editor.setTheme("ace/theme/eclipse");
                 }else{
                     editor.setTheme("ace/theme/monokai");
@@ -40,8 +40,10 @@
                     if (newHeight < 220) {
                         newHeight = 220;
                     }
-                    $('#wa-design-original').height(newHeight.toString() + "px");
+                    const $design_original = $('#wa-design-original');
+                    $design_original.height(newHeight.toString() + "px");
                     editor.resize();
+                    $design_original.closest('.dialog').data('dialog').resize()
                 }, 50);
             });
         </script>

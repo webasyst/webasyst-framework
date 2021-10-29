@@ -438,30 +438,265 @@ HTML;
 
     /**
      * @param array $rights
-     * @param null $inherited
+     * @param null  $inherited
      * @return string
+     * @throws \waException
      */
     private function getUI20HTML($rights = array(), $inherited=null)
     {
-        // TODO: implement for UI 2.0
-        // IMPORTANT: inside should call getItemHTML, NOT getUI20ItemHTML, so customization by inheritance could works
-        return '';
+        if ($inherited !== null) {
+            $html = '<div class="alert"><div class="flexbox space-8"><i class="fas fa-info-circle gray"></i><span>' .sprintf(_ws('Если пользователь унаследовал доступ от групп (%s), то вы можете только расширить его за счет установки персонального доступа (%s). Чтобы понизить уровень доступа измените или настройте группы, в которых состоит пользователь.'), '<i class="fas fa-users gray"></i>', '<i class="fas fa-user gray"></i>').'</span></div></div>';
+            $html .= '<table class="c-access-app">';
+        } else {
+            $html = '<table class="c-access-app c-access-app-group">';
+        }
+        $addScriptForCB = FALSE;
+        $addScriptForSelect = FALSE;
+
+        foreach ($this->items as $item) {
+            $html .= $this->getItemHTML($item['name'], $item['label'], $item['type'], $item['params'], $rights, $inherited);
+            if ($item['type'] == 'list' && isset($item['params']['hint1']) && $item['params']['hint1'] == 'all_checkbox') {
+                $addScriptForCB = TRUE;
+            }
+
+            if ($item['type'] == 'selectlist' && isset($item['params']['hint1']) && $item['params']['hint1'] == 'all_select') {
+                $addScriptForCB = TRUE;
+            }
+
+            if ($item['type'] == 'select' || $item['type'] == 'selectlist') {
+                $addScriptForSelect = TRUE;
+            }
+        }
+        $html .= '</table>';
+
+        $html .= '
+            <script>(function() {
+                // Make indicators change when user changes personal access
+                var updateIndicator = function() {
+                    var self = $(this),
+                        tr = self.parents("table.c-access-app tr"),
+                        changed = false;
+                    if (tr.find("input[type=\"checkbox\"]:checked").size() > 0) {
+                        changed = tr.find(".js-access-type-own").toggleClass("hidden", false).length > 0;
+                        tr.find(".js-access-type-group").toggleClass("hidden", true);
+                    } else {
+                        changed = tr.find(".js-access-type-own").toggleClass("hidden", true).length > 0;
+                        tr.find(".js-access-type-group").toggleClass("hidden", false);
+                    }
+                    if (changed) {
+                        self.parents("form").trigger("wa.change");
+                    }
+                };
+                $("table.c-access-app input[type=\"checkbox\"]:enabled").click(updateIndicator);';
+
+        if ($addScriptForSelect) {
+            $html .= '
+                // Change resulting column for selects
+                const updateIndicatorForSelect = function() {
+                    const $self = $(this),
+                        $tr = $self.closest("tr"),
+                        group_value = parseInt($tr.find("input.g-value").val(), 10),
+                        personal_value = parseInt($self.val(), 10);
+
+                        $tr.find(".js-access-type-own").toggleClass("hidden", !(group_value !== personal_value));
+                        $tr.find(".js-access-type-group").toggleClass("hidden", (group_value !== personal_value));
+                    
+                };
+                $("table.c-access-app select").change(updateIndicatorForSelect);';
+        }
+
+        if ($addScriptForCB) {
+            $html .= <<<HTML
+                // Logic for "all" checkboxes
+                /** if $(this) is checked, then check and disable all checkboxes starting with the same name (minus `.all`)
+                  * if not checked, then enable all those checkboxes. */
+                var handler = function() {
+                    var cb = $(this);
+                    cb.parents("table.c-access-app")
+                        .find("input[type=\"checkbox\"][name^=\""+cb.attr("name").replace(/\.all]/,"")+"\"]")
+                        .each(function(k,cb2) {
+                            cb2 = $(cb2);
+                            if (cb.is(":checked")) {
+                                cb2.attr("checked", true).prop("checked", true).attr("disabled", true);
+                                updateIndicator.call(cb2[0]);
+                            } else {
+                                cb2.attr("checked", false).prop("checked", false).attr("disabled", false);
+                                updateIndicator.call(cb2[0]);
+                            }
+                        });
+                    cb.attr("disabled", false);
+                    if (cb.val() !== "") {
+                    cb.parents("table.c-access-app")
+                        .find("select[name^=\""+cb.attr("name").replace(/\.all]/,"")+"\"]").each(function (k,cb2) {
+                            cb2 = $(cb2);
+                            cb2.val(cb.val());
+                            updateIndicatorForSelect.call(cb2[0]);
+                        });
+                    }
+                };
+                /* For each enabled "all" checkbox in a table.c-access-app:
+                   - Add an onclick handler
+                   - Call the handler initially, if `all` is checked. */
+                $("table.c-access-app .c-access-cb-all select").each(function(k,cb) {
+                    cb = $(cb).change(handler);
+                    //handler.call(cb[0]);
+                });
+                $("table.c-access-app .c-access-subcontrol-item select").change(function () {
+                    var el = $(this);
+                    var all = el.closest("table.c-access-app").find(".c-access-cb-all select");
+                    if (all.val() !== $(this).val()) {
+                        all.val('');
+                    }
+                });
+                $("table.c-access-app .c-access-cb-all input:enabled").each(function(k,cb) {
+                    cb = $(cb).click(handler);
+                    if (cb.is(":checked")) {
+                        handler.call(cb[0]);
+                    }
+                });
+HTML;
+        }
+
+        $html .= '
+            }).call({});</script>';
+
+        return $html;
     }
 
     /**
-     * @param $name
-     * @param $label
-     * @param $type
-     * @param $params
-     * @param $rights
+     * @param      $name
+     * @param      $label
+     * @param      $type
+     * @param      $params
+     * @param      $rights
      * @param null $inherited
      * @return string
+     * @throws \waException
      */
     private function getUI20ItemHTML($name, $label, $type, $params, $rights, $inherited=null)
     {
-        // TODO: implement for UI 2.0
-        // IMPORTANT: inside should call getItemHTML, NOT getUI20ItemHTML, so customization by inheritance could works
-        return '';
+        $own = isset($rights[$name]) ? $rights[$name] : false;
+        $group = $inherited && isset($inherited[$name]) ? $inherited[$name] : null;
+        if (!isset($params['cssclass'])) {
+            $params['cssclass'] = '';
+        }
+        switch ($type) {
+            case 'select':
+                if (!isset($params['options']) || !$params['options']) {
+                    return '';
+                }
+                $own = ifempty($own, 0);
+                $group = ifempty($group, 0);
+
+                $o = $params['options'];
+                $oHTML = array();
+                foreach($o as $val => $opt) {
+                    if($inherited !== null){
+                        $oHTML[] = '<option value="'.$val.'"'.(($group != 0 && $own < $group && $group==$val) || ($own > $group && $own==$val) ? ' selected' : '').($val < $group ? ' disabled' : '').'>'.htmlspecialchars($opt).'</option>';
+                    }else{
+                        $oHTML[] = '<option value="'.$val.'"'.($own==$val ? ' selected' : '').'>'.htmlspecialchars($opt).'</option>';
+                    }
+                }
+                $oHTML = implode('', $oHTML);
+
+                // corner case when option of this key (group) not exists
+                if (!isset($o[$group])) {
+                    $group = key($o);
+                }
+
+                return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
+                    '<td class="custom-py-8">'.$label.'</td>'.
+                    '<td class="custom-py-8 align-right"><input type="hidden" name="app['.$name.']" value="0">'.
+                    '<div class="wa-select custom-m-0"><select name="app['.$name.']">'.$oHTML.'</select></div>'.
+                    '</td>'.
+
+                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type-own'.($own > $group ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Доступ установлен персонально для этого пользователя.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type-group'.($own > $group ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Доступ унаследован от групп.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span><input type="hidden" class="g-value" value="'.$group.'"></td>' : '').
+                    '</tr>';
+            case 'checkbox':
+                return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
+                    '<td class="custom-py-8">'.$label.'</td>'.
+                    '<td class="custom-py-8 min-width align-right">'.($group ? '<label><span class="wa-checkbox"><input type="checkbox" checked disabled><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>' : '<input type="hidden" name="app['.$name.']" value="0"><label><span class="wa-checkbox"><input type="checkbox" name="app['.$name.']" value="'.(isset($params['value']) ? $params['value'] : 1).'"'.($own ? ' checked="checked"' : '').'><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>').'</td>'.
+                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type js-access-type-own'.($own ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Доступ установлен персонально для этого пользователя.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type js-access-type-group'.($own ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Доступ унаследован от групп.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span></td>' : '').
+                    '</tr>';
+            case 'always_enabled':
+                $html = '<td class="custom-py-8">'.$label.'</td>'.
+                    '<td class="custom-py-8 min-width align-right"><label><span class="wa-checkbox"><input type="checkbox" checked disabled><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label></td>'.
+                    ($inherited !== null ? '<td class="custom-py-8 min-width"></tdclass>' : '');
+                return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.$html.'</tr>';
+            case 'list':
+                if (isset($params['hint1']) && $params['hint1'] == 'all_checkbox') {
+                    $own = isset($rights[$name.'.all']) ? $rights[$name.'.all'] : '';
+                    $group = $inherited && isset($inherited[$name.'.all']) ? $inherited[$name.'.all'] : null;
+                    $params['hint1'] = '<input type="hidden" name="app['.$name.'.all]" value="0"><label class="c-access-cb-all">'.($inherited === null ? '<span class="gray custom-mr-16">'._ws('all').'</span>' : '').'<span class="wa-checkbox"><input type="checkbox" name="app['.$name.'.all]" value="1"'.($own ? ' checked="checked"' : '').'><span><span class="icon"><i class="fas fa-check"></i></span></span></span>'.($inherited !== null ? '<span class="gray custom-ml-16">'._ws('all').'</span>' : '').'</label>';
+                }
+                $html = '<tr class="c-access-subcontrol-header'.($params['cssclass'] ? ' '.$params['cssclass'] : '').'">'.
+                    '<td class="custom-py-8">'.$label.'</td>'.
+                    '<td'.($inherited !== null ? ' colspan="2"' : '').' class="custom-py-8">'.(isset($params['hint1']) ? $params['hint1'] : '').'</td>'.
+                    '</tr>';
+                $item_params = array('cssclass' => 'c-access-subcontrol-item');
+                if (isset($params['value'])) {
+                    $item_params['value'] = $params['value'];
+                }
+                foreach ($params['items'] as $id => $item_name) {
+                    if ($group) {
+                        $inherited[$name.'.'.$id] = 1;
+                    }
+                    $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'checkbox', $item_params, $rights, $inherited);
+                }
+                return $html;
+            case 'selectlist':
+                if (!isset($params['options']) || !$params['options']) {
+                    return '';
+                }
+                if (isset($params['hint1']) && $params['hint1'] == 'all_select') {
+                    $own = isset($rights[$name.'.all']) ? $rights[$name.'.all'] : '';
+                    if ($own === '') {
+                        reset($params['items']);
+                        $k = key($params['items']);
+                        $own = isset($rights[$name.'.'.$k]) ? $rights[$name.'.'.$k] : '';
+                        foreach ($params['items'] as $id => $item_name) {
+                            $item_v = isset($rights[$name.'.'.$id]) ? $rights[$name.'.'.$id] : key($params['options']);
+                            if ($item_v != $own) {
+                                $own = '';
+                                break;
+                            } else {
+                                $own = $item_v;
+                            }
+                        }
+                        $own = (string)$own;
+                    }
+                    $group = $inherited && isset($inherited[$name.'.all']) ? $inherited[$name.'.all'] : null;
+                    $params['hint1'] = '<div class="wa-select c-access-cb-all nm small"><select name="app['.$name.'.all]"><option value=""></option>';
+                    foreach ($params['options'] as $v => $n) {
+                        if($inherited !== null){
+                            $params['hint1'].= '<option '.($own === (string)$v ? 'selected':'').($v < $group ? ' disabled' : '').' value="'.$v.'">'.$n.'</option>';
+                        }else{
+                            $params['hint1'].= '<option '.($own === (string)$v ? 'selected':'').' value="'.$v.'">'.$n.'</option>';
+                        }
+                    }
+                    $params['hint1'].= '</select></div>';
+                }
+                $html = '<tr class="c-access-subcontrol-header'.($params['cssclass'] ? ' '.$params['cssclass'] : '').'">'.
+                    '<td class="custom-py-8">'.$label.'</td>'.
+                    '<td'.($inherited !== null ? ' colspan="2"' : '').' class="custom-py-8">'.(isset($params['hint1']) ? $params['hint1'] : '').'</td>'.
+                    '</tr>';
+                foreach ($params['items'] as $id => $item_name) {
+                    if (isset($params['hint1']) && !isset($rights[$name.'.'.$id]) && !empty($rights[$name.'.all'])) {
+                        $rights[$name.'.'.$id] = $rights[$name.'.all'];
+                    }
+                    $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'select', array('cssclass' => 'c-access-subcontrol-item', 'options' => $params['options']), $rights, $inherited);
+                }
+                return $html;
+            case 'header':
+                if(!isset($params['tag'])) {
+                    $params['tag'] = 'h2';
+                }
+                return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
+                    '<td colspan="'.($inherited !== null ? '3' : '2').'"><'.$params['tag'].'>'.$label.'</'.$params['tag'].'></td>'.
+                    '</tr>';
+            default:
+                throw new waException('Unknown control: '.$type);
+        }
     }
 }
 

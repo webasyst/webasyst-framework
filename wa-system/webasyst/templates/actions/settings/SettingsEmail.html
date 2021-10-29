@@ -279,7 +279,10 @@
 <script type="text/javascript">
     (function($) {
         new WASettingsEmail({
-            $wrapper: $("#s-email-settings-page")
+            $wrapper: $("#s-email-settings-page"),
+            locales: {
+                required: '[`This field is required`]'
+            }
         });
         $.wa.title.set({$_title|json_encode});
     })(jQuery);

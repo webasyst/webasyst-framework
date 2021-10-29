@@ -1,5 +1,4 @@
-<section class="article">
-    <div class="article-body">
+<section class="box contentbox">
 
         <h1>[`Updates`]</h1>
 
@@ -96,7 +95,7 @@
                 </tbody>
             </table>
         </form>
-    </div>
+
 </section>
 
 <script>
@@ -166,7 +165,7 @@
         $('.js-changelog-more').on('click', function (e) {
             e.preventDefault();
 
-            $(this).parents('.js-changelog').find(':hidden').show();
+            $(this).closest('.js-changelog-container').find('.js-changelog').removeClass('hidden');
             $(this).hide();
         });
 

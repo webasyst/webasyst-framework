@@ -84,7 +84,9 @@ var ProfileWebasystID = ( function($) {
                 uri: that.wa_url + 'wa-content/js/dialog/dialog.js?' + that.wa_version
             }];
 
-            sourceLoader(sources);
+            if(!$('html').hasClass('is-wa2')) {
+                sourceLoader(sources);
+            }
 
             $.get(url, { id: contact_id }, function(html) {
 
@@ -97,7 +99,7 @@ var ProfileWebasystID = ( function($) {
 
                         $unbind_link.on('click', function () {
 
-                            var $loading = $("<i class=\"icon16 loading\"></i>");
+                            var $loading = $("<i class=\"icon16 fas fa-spin fa-spinner loading\"></i>");
 
                             $loading.insertAfter($unbind_link);
 
@@ -236,7 +238,9 @@ var ProfileWebasystID = ( function($) {
         });
 
         // click on link in current document
-        $('.js-webasyst-id-unbind-auth').on('click', function () {
+        $('.js-webasyst-id-unbind-auth').on('click', function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
             onUnbind();
         });
     };
