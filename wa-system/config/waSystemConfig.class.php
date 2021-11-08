@@ -15,6 +15,10 @@
 
 class waSystemConfig
 {
+    /**
+     * @var string|null The identifier of current application
+     */
+    protected $application = null;
     protected $root_path = null;
     protected $environment = null;
     protected static $root_url = null;
@@ -27,7 +31,7 @@ class waSystemConfig
         'mod_rewrite' => true,
         'cache_versioning' => true,
     );
-
+    
     public static $time = null;
 
     protected $factories = array();
