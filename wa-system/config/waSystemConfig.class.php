@@ -31,7 +31,7 @@ class waSystemConfig
         'mod_rewrite' => true,
         'cache_versioning' => true,
     );
-    
+
     public static $time = null;
 
     protected $factories = array();
