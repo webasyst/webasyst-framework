@@ -15,7 +15,6 @@
 
 class waAppConfig extends SystemConfig
 {
-    protected $application = null;
     protected $info = array();
     protected $log_actions = null;
     protected $system_log_actions = null;
