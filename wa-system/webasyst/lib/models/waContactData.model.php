@@ -249,9 +249,13 @@ class waContactDataModel extends waModel
         return $this->getContactIdByFieldValue('phone', $phone);
     }
 
+    /**
+     * @param int $contact_id
+     * @return array[]
+     */
     public function getPhones($contact_id)
     {
-        $sql = "SELECT `values`, ext, status FROM ".$this->table." WHERE contact_id = i:id AND `field` = 'phone' ORDER BY sort";
+        $sql = "SELECT value, ext, status FROM ".$this->table." WHERE contact_id = i:id AND field = 'phone' ORDER BY sort";
         return $this->query($sql, array('id' => $contact_id))->fetchAll();
     }
 
