@@ -1,6 +1,5 @@
 <?php
 
-
 class webasystCompressCli extends waCliController
 {
     private $type;
@@ -26,6 +25,36 @@ class webasystCompressCli extends waCliController
      * @var array
      */
     private $config;
+
+    /**
+     * @var string[] The black list by default
+     */
+    private $blackList = array(
+        '@^lib/updates/dev/.+@'                               => 'developer stage updates',
+        '@^lib/config/exclude.php@'                           => 'exclude files list',
+        '@\.styl$@'                                           => 'CSS preprocessor files',
+        '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
+        '@(locale)\/.+\.(te?mp)(\.(po|mo))?$@'                => 'temp files in the locale directory',
+        '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
+        '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
+        '@(/|^)\.git.*@'                                      => 'GIT file',
+        '@(/|^)\.[^/]+/@'                                     => 'directory with leading dot',
+        '@(/|^)\.(project|idea|settings|buildpath)/@'         => 'IDE file',
+        '@(/|^)(nbproject|build)/@'                           => 'IDE directory',
+        '@\.(zip|rar|gz|tar|phar)$@'                          => 'archive',
+        '@\.log$@'                                            => 'log file',
+        '@\.md5$@'                                            => 'checksum file',
+        '@\.(exe|dll|sys)$@'                                  => 'executable file',
+        '@(/|^)[^\.]*todo$@i'                                 => 'TODO file',
+        '@(/|^)[^\.]+$@'                                      => 'unknown type file',
+        '@(/|^)[^0-9a-z_\-\.]+$@'                             => 'invalid filename characters',
+        '@\.fw_@'                                             => 'internal files',
+    );
+
+    /**
+     * @var string[] The white list by default
+     */
+    private $whiteList = array();
 
     protected function preExecute()
     {
@@ -1472,38 +1501,30 @@ HELP;
         return $count;
     }
 
+    /**
+     * @param string[] $files
+     * @param string[] $blacklist
+     * @param string[] $whitelist
+     * @return string[] skipped files
+     */
     private function filter(&$files, $blacklist = array(), $whitelist = array())
     {
-        $blacklist = array_merge(
-            $blacklist,
-            array(
-                '@^lib/updates/dev/.+@'                               => 'developer stage updates',
-                '@^lib/config/exclude.php@'                           => 'exclude files list',
-                '@\.styl$@'                                           => 'CSS preprocessor files',
-                '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
-                '@(locale)\/.+\.(te?mp)(\.(po|mo))?$@'                => 'temp files in the locale directory',
-                '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
-                '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
-                '@(/|^)\.git.*@'                                      => 'GIT file',
-                '@(/|^)\.[^/]+/@'                                     => 'directory with leading dot',
-                '@(/|^)\.(project|buildpath)@'                        => 'IDE file',
-                '@\.(zip|rar|gz)$@'                                   => 'archive',
-                '@\.log$@'                                            => 'log file',
-                '@\.md5$@'                                            => 'checksum file',
-                '@\.(exe|dll|sys)$@'                                  => 'executable file',
-                '@(/|^)[^\.]*todo$@i'                                 => 'TODO file',
-                '@(/|^)[^\.]+$@'                                      => 'unknown type file',
-                '@(/|^)[^0-9a-z_\-\.]+$@'                             => 'invalid filename characters',
-                '@\.fw_@'                                             => 'internal files',
-            )
-        );
+        $blacklist = array_unique(array_merge($blacklist, $this->blackList));
+        $whitelist = array_unique(array_merge($whitelist, $this->whiteList));
         $skipped = array();
         foreach ($files as $id => $file) {
             foreach ($blacklist as $pattern => $description) {
-                if (preg_match($pattern, $file)) {
+                if (preg_match($pattern, $file) === 1) {
                     $skipped[$file] = $description;
-                    //@TODO add whitelist check
-                    unset($files[$id]);
+                    foreach ($whitelist as $pattern2 => $description2) {
+                        if (preg_match($pattern2, $file) === 1) {
+                            unset($skipped[$file]);
+                            break;
+                        }
+                    }
+                    if (isset($skipped[$file])) {
+                        unset($files[$id]);
+                    }
                     break;
                 }
             }
