@@ -1509,8 +1509,8 @@ HELP;
      */
     private function filter(&$files, $blacklist = array(), $whitelist = array())
     {
-        $blacklist = array_unique(array_merge($blacklist, $this->blackList));
-        $whitelist = array_unique(array_merge($whitelist, $this->whiteList));
+        $blacklist += $this->blackList;
+        $whitelist += $this->whiteList;
         $skipped = array();
         foreach ($files as $id => $file) {
             foreach ($blacklist as $pattern => $description) {
