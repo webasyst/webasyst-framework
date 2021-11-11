@@ -555,17 +555,21 @@
                                 [s`Theme usage`]
                             </div>
                             {$_theme_usages = []}
-                            {foreach $theme_routes as $_r}
-                                <div class="value">
-                                    {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
-                                        {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
-                                    {/if}
-                                    <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
-                                        {$_r._domain_decoded}/{$_r.url}
-                                        <i class="fas fa-external-link-alt fa-xs"></i>
-                                    </a>
-                                </div>
-                            {/foreach}
+                            <div class="value">
+                                <ul>
+                                {foreach $theme_routes as $_r}
+                                    <li>
+                                        {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
+                                            {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
+                                        {/if}
+                                        <a rel="noopener" target="_blank" href="{$_r._url}" class="no-underline bold">
+                                            {$_r._domain_decoded}/{$_r.url}
+                                            <i class="fas fa-external-link-alt fa-xs"></i>
+                                        </a>
+                                    </li>
+                                {/foreach}
+                                </ul>
+                            </div>
                         </div>
                     {/if}
 

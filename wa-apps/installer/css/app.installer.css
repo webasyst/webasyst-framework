@@ -80,6 +80,9 @@
 .i-assets-col-icon {
   width: 48px;
 }
+.i-assets-col-icon img {
+  max-width: 100%;
+}
 .i-assets-color-blue {
   color: var(--blue);
 }

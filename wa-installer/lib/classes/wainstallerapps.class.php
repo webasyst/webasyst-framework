@@ -2397,6 +2397,15 @@ class waInstallerApps
         }
     }
 
+    public function getInstallerLicenseUrl()
+    {
+        try {
+            return $this->buildUpdatesUrl('3.0', self::VENDOR_SELF, 'installer/license');
+        } catch (Exception $e) {
+            throw new Exception('Unable to build URL to get license');
+        }
+    }
+
     public function getInstallationStaticIDUrl()
     {
         try {

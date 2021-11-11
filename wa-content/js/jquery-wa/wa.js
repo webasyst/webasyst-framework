@@ -82,8 +82,8 @@
             const that = this;
 
             that.$body = $('body');
-            that.$window = $(window);
-            that.$document = $(document);
+            that.$window = $(window.top);
+            that.$document = $(top.document);
 
             that.$wrapper = options["$wrapper"];
 
@@ -177,7 +177,7 @@
         Dialog.prototype.show = function() {
             const that = this;
 
-            const is_exist = $.contains(document, that.$wrapper);
+            const is_exist = $.contains(top.document, that.$wrapper);
 
             if (!is_exist) {
                 that.$body.append(that.$wrapper);
@@ -305,7 +305,7 @@
         Dialog.prototype.resizeDialog = function() {
             const that = this;
 
-            const is_exist = $.contains(document, that.$wrapper[0]);
+            const is_exist = $.contains(top.document, that.$wrapper[0]);
 
             if (is_exist) {
                 that.resize();
@@ -334,7 +334,7 @@
             // prevent all system keyboard events
             event.preventDefault();
 
-            const is_exist = $.contains(document, that.$wrapper[0]);
+            const is_exist = $.contains(top.document, that.$wrapper[0]);
 
             if (!is_exist) {
                 return;
@@ -367,6 +367,10 @@
 
             if (that.onClose) {
                 result = that.onClose(that);
+
+                if (result === false) {
+                    return;
+                }
             }
 
             dialogs.pop()
@@ -747,7 +751,7 @@
                 is_exist = $.contains(document, that.$wrapper[0]);
 
             if (!is_exist) {
-                that.$body.append(that.$wrapper);
+                that.$body.append(that.$wrapper.show());
             }
 
             if (!that.is_locked) {
@@ -2942,10 +2946,11 @@
             //that.direction = options.direction || 'down';
 
             // DYNAMIC VARS
+            that.is_mobile = $(that.$toggler).is(':visible');
 
             // INIT
             if (that.is_open) {
-                that.$sidebar_content.show();
+                that.$toggler.siblings().show();
             }
 
             that.toggleClick();
@@ -2961,20 +2966,29 @@
         };
 
         Sidebar.prototype.insideClick = function() {
-            let that = this;
-            that.$sidebar_content.each(function (i, el) {
-                if(that.$toggler.is(':visible')) {
-                    $(el).on('click', 'a', function (){
-                        that.toggleAction();
-                    });
+            const that = this,
+                resizeObserver = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        that.is_mobile = !!entry.contentRect.height;
+                    }
+                });
+            resizeObserver.observe(that.$toggler[0]);
+
+            $(document).on("wa_loaded", () => {
+                if(that.is_mobile){
+                    that.toggleAction(true)
                 }
-            })
+            });
         };
 
-        Sidebar.prototype.toggleAction = function() {
+        Sidebar.prototype.toggleAction = function(force_close = false) {
             let that = this;
-            that.$sidebar_content.each(function (i, el) {
+            window.scrollTo({top:0, behavior: 'smooth'})
+            that.$toggler.siblings().each(function (i, el) {
                 if (el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
+                    if(force_close && !$(el).is(':visible')) {
+                        return;
+                    }
                     $(el).slideToggle(400, function () {
                         let self = $(this);
                         if(self.is(':hidden')) {
@@ -3596,7 +3610,7 @@
                 footer: footer,
                 onClose: function () {
                     if (typeof options.onClose === "function") {
-                        options.onClose();
+                        options.onClose(this);
                     }
                     deferred.resolve();
                 }
@@ -3726,6 +3740,63 @@
 
                 if (callback) { callback(timezone); }
             }
+        },
+
+        setHash: function(hash){
+            if (!(hash instanceof String) && hash.toString) {
+                hash = hash.toString();
+            }
+            hash = hash.replace(/\/\//g, "/");
+            hash = hash.replace(/^.*#/, '');
+            if ($.browser && $.browser.safari) {
+                // Work around bug in safari 5.0.5 and down that broke UTF8 hashes
+                if (parent) {
+                    parent.window.location = parent.window.location.href.replace(/#.*/, '') + '#' + hash;
+                } else {
+                    window.location = location.href.replace(/#.*/, '') + '#' + hash;
+                }
+            } else if (parent && (!$.browser || !$.browser.msie)) {
+                parent.window.location.hash = hash;
+            } else {
+                location.hash = hash;
+            }
+            return true;
+        },
+        back: function (hash) {
+            if (history.length > 2) {
+                if (typeof(hash)=='number' && parseInt(hash) == hash) {
+                    history.go(-hash);
+                } else {
+                    history.go(-1);
+                }
+            } else if ($.browser.msie && history.length > 0) {
+                history.back();
+            } else if (hash) {
+                this.setHash(hash);
+            }
+            return false;
+        },
+        toggleHashParam: function(param){
+            var hash = location.hash;
+            if (hash.search(param) == -1){
+                this.addToHash(param);
+            } else {
+                this.removeFromHash(param);
+            }
+        },
+        addToHash: function(param){
+            var hash = location.hash;
+            if (hash.search(param) == -1){
+                hash+='/'+param+'/';
+            }
+            this.setHash(hash);
+        },
+        removeFromHash: function(param){
+            var hash = location.hash;
+            if (hash.search(param) > -1){
+                hash = hash.replace(param, "");
+            }
+            this.setHash(hash);
         },
 
         util: {

@@ -152,7 +152,12 @@ class waEvent
             return $result;
         }
 
-        wa($app_id);
+        try {
+            wa($app_id);
+        } catch (Exception $e) {
+            waLog::log('Event handling error. Unable to initialize app_id '.$app_id.': '.$e->getMessage());
+            return $result;
+        }
 
         //If you did not find the class, try to include the file and check the class again.
         if (!class_exists($class) && (!$this->includeAppsHandlerFile($app_id, $file) || !class_exists($class))) {
