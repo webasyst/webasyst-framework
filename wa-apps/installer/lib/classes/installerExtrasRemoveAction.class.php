@@ -174,7 +174,7 @@ abstract class installerExtrasRemoveAction extends waViewAction
             _w('Application widget %s has been deleted', 'Applications widgets %s have been deleted');
              */
             $message_singular = sprintf('Application %s %%s has been deleted', preg_replace('/s$/', '', $this->extras_type));
-            $message_plural = sprintf('Applications %a %%s have been deleted', $this->extras_type);
+            $message_plural = sprintf('Applications %s %%s have been deleted', $this->extras_type);
             $message = sprintf(_w($message_singular, $message_plural, count($deleted_extras), false), implode(', ', $deleted_extras));
             $msg = installerMessage::getInstance()->raiseMessage($message);
             $this->redirect('?msg='.$msg);

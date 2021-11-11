@@ -74,7 +74,7 @@ var UserList = ( function($) {
 
     UserList.prototype.initHightlight = function() {
         const that = this;
-        let updateDate = $.team.sidebar.link_count_update_date;
+        let updateDate = $.team.sidebar.options.link_count_update_date;
 
         if (!updateDate) {
             return;

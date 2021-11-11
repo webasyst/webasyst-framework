@@ -1,6 +1,6 @@
 {strip}
 
-<div class="t-users-page article" id="t-users-page">
+<div class="t-users-page article break-word" id="t-users-page">
     {* CONTENT *}
     <div class="t-content-body article-body">
         {* HEADER *}
@@ -19,6 +19,9 @@
     <script>
         ( function($) {
             $.team.setTitle({json_encode($search)});
+            new UserList({
+                $wrapper: $(".js-users-list")
+            });
         })(jQuery);
     </script>
 </div>

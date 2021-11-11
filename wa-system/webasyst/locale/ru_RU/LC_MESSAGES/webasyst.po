@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-09-28 13:19+0300\n"
+"PO-Revision-Date: 2021-11-11 13:47+0300\n"
 "Last-Translator: Webasyst\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1652,7 +1652,7 @@ msgid "Pages"
 msgstr "Страницы"
 
 msgid "When done editing, click “Save” to apply changes."
-msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»."
 
 msgid "Enable this URL"
 msgstr "Включить показ страницы по этому адресу"
@@ -6531,3 +6531,18 @@ msgstr "Параметры отправки по умолчанию"
 
 msgid "Additional sending parameters"
 msgstr "Дополнительные параметры отправки"
+
+msgid "Calendar"
+msgstr "Календарь"
+
+msgid "Error getting section contents."
+msgstr "Ошибка получения содержимого."
+
+msgid "Access rights inherited from groups (%s) can be expanded on an individual user level (%s). To reduce access inherited from a group, exclude the user from the group or shrink the group basis access rights setup."
+msgstr "Если пользователь унаследовал доступ от групп (%s), то вы можете только расширить его за счет установки персонального доступа (%s). Чтобы понизить уровень доступа измените или настройте группы, в которых состоит пользователь"
+
+msgid "Access granted for the user individually."
+msgstr "Доступ установлен персонально для этого пользователя."
+
+msgid "Access inherited from user groups."
+msgstr "Доступ унаследован от групп."

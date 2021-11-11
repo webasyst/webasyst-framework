@@ -259,58 +259,59 @@ var GroupManage = ( function($) {
             },
             href;
 
-        if (!that.is_locked) {
+        if (that.is_locked) {
+            return;
+        }
 
-            // Save
-            if (that.xhr) {
-                that.xhr.abort();
-                that.xhr = false;
+        // Save
+        if (that.xhr) {
+            that.xhr.abort();
+            that.xhr = false;
+        }
+
+        if (add) {
+            href = $.team.app_url + "?module=group&action=userAdd";
+        } else {
+            href = $.team.app_url + "?module=group&action=userRemove";
+        }
+
+        moveUser();
+
+        that.xhr = $.post(href, data, function(response) {
+            if (response.status !== "ok") {
+                console.error('Error while sending data on ' + href, response)
             }
+            that.is_locked = false;
+        });
 
+        function moveUser() {
             if (add) {
-                href = $.team.app_url + "?module=group&action=userAdd";
+                that.$groupUsersW.append( $user );
+                that.group_count++;
+                that.other_count--;
             } else {
-                href = $.team.app_url + "?module=group&action=userRemove";
+                that.$otherUsersW.prepend( $user );
+                that.group_count--;
+                that.other_count++;
             }
 
-            moveUser();
-
-            that.xhr = $.post(href, data, function(response) {
-                if (response.status !== "ok") {
-                    console.error('Error while sending data on ' + href, response)
-                }
-                that.is_locked = false;
-            });
-
-            function moveUser() {
-                if (add) {
-                    that.$groupUsersW.append( $user );
-                    that.group_count++;
-                    that.other_count--;
-                } else {
-                    that.$otherUsersW.prepend( $user );
-                    that.group_count--;
-                    that.other_count++;
-                }
-
-                if (that.group_count <= 0) {
-                    that.$groupUsersW.addClass(that.hidden_class);
-                    that.$groupUsersHint.removeClass(that.hidden_class);
-                } else {
-                    that.$groupUsersW.removeClass(that.hidden_class);
-                    that.$groupUsersHint.addClass(that.hidden_class);
-                }
-
-                if (that.other_count <= 0) {
-                    that.$otherUsersW.addClass(that.hidden_class);
-                    that.$otherUsersHint.removeClass(that.hidden_class);
-                } else {
-                    that.$otherUsersW.removeClass(that.hidden_class);
-                    that.$otherUsersHint.addClass(that.hidden_class);
-                }
-
-                that.setCount( that.group_count );
+            if (that.group_count <= 0) {
+                that.$groupUsersW.addClass(that.hidden_class);
+                that.$groupUsersHint.removeClass(that.hidden_class);
+            } else {
+                that.$groupUsersW.removeClass(that.hidden_class);
+                that.$groupUsersHint.addClass(that.hidden_class);
             }
+
+            if (that.other_count <= 0) {
+                that.$otherUsersW.addClass(that.hidden_class);
+                that.$otherUsersHint.removeClass(that.hidden_class);
+            } else {
+                that.$otherUsersW.removeClass(that.hidden_class);
+                that.$otherUsersHint.addClass(that.hidden_class);
+            }
+
+            that.setCount( that.group_count );
         }
 
     };
@@ -394,9 +395,9 @@ var GroupManage = ( function($) {
         }
 
         function addUser( user_id ) {
-            var $link = that.$otherUsersW.find(".t-user-wrapper[data-user-id=\"" + user_id + "\"]");
+            const $link = that.$otherUsersW.find(`.t-user-wrapper[data-user-id="${user_id}"]`);
             if ($link.length) {
-                $link.find(".js-move-user").click();
+                that.moveUser( $link, true );
                 addHint( that.locales["added"] );
             } else {
                 addHint( that.locales["in_group"] );

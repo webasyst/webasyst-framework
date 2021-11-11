@@ -13,7 +13,7 @@
         <div class="box custom-pb-4">
             <div class="toggle js-installer-toggle">
                 {foreach $store_sidebar_items as $_type => $_sidebar_item}
-                <a href="{$wa_app_url}store{$_sidebar_item.TOP.base_url|escape}" data-href="{$_sidebar_item.TOP.base_url|escape|substr:1}" data-type-link="{$_sidebar_item@key}" class="js-installer-toggle-link{if $store_sidebar_type == $_type} selected{/if}">{$_sidebar_item.name}</a>
+                <a href="{$wa_app_url}store{$_sidebar_item.TOP.base_url|escape}" data-href="{$_sidebar_item.TOP.base_url|escape|substr:1}" data-type-link="{$_sidebar_item@key}" class="semibold js-installer-toggle-link{if $store_sidebar_type == $_type} selected{/if}">{$_sidebar_item.name}</a>
                 {/foreach}
             </div>
         </div>
@@ -22,7 +22,7 @@
     <div class="sidebar-body hide-scrollbar">
         {* Top product-type links *}
         {foreach $store_sidebar_items as $_type => $_sidebar_item}
-            <ul class="menu js-installer-sidebar-menu js-installer-sidebar-nav" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
+            <ul class="menu js-installer-sidebar-menu js-installer-sidebar-nav custom-mb-24" data-type="{$_type|escape}"{if $store_sidebar_type !== $_type} style="display: none;"{/if}>
                 {foreach $_sidebar_item.TOP.list as $_item}
                     {$_store_url = "`$_sidebar_item.TOP.base_url``$_item.url`"}
                     {$_link = "`$wa_app_url`store`$_store_url`"}
@@ -30,7 +30,7 @@
                     <li{if $_store_url == "/`$store_path`"} class="selected"{/if}>
                         <a href="{$_link|escape}" data-href="{$_store_url|escape|substr:1}" class="flexbox middle js-installer-route{if $_item@index == 0} js-selected{/if}">
                             <span class="icon"><i class="{$_item.icon|escape}"></i></span>
-                            <span>{$_item.name|escape}</span>
+                            <span class="semibold">{$_item.name|escape}</span>
                         </a>
                     </li>
                 {/foreach}
@@ -132,7 +132,7 @@
         <li{if $module == 'update'} class="selected"{/if} id="i-apply-updates-sidebar-item">
             <a href="{$wa_app_url}updates/" class="flexbox middle js-router">
                 {if $update_counter > 0}
-                    <span class="count">{$update_counter}</span>
+                    <span class="count i-count">{$update_counter}</span>
                 {/if}
 
                 <i class="fas fa-sync"></i>

@@ -7,6 +7,17 @@ var Sidebar = ( function($) {
 
         // DOM
         that.$wrapper = wrapper;
+
+        // OPTIONS
+        that.options = options;
+
+        // INIT
+        that.initClass();
+    };
+
+    Sidebar.prototype.reset = function() {
+        const that = this;
+
         that.$body = that.$wrapper.find('.sidebar-body');
         that.$addUserLink = that.$wrapper.find('#t-new-user-link');
         that.$groupsWrapper = that.$wrapper.find('.t-groups-list');
@@ -17,15 +28,17 @@ var Sidebar = ( function($) {
         that.$addGroupLink = that.$wrapper.find('.js-add-user-group');
         that.$addOfficeLink = that.$wrapper.find('.js-add-user-location');
 
-        // OPTIONS
-        that.options = options;
+        that.setCounts();
+        if (that.options.can_sort) {
+            that.initSortable();
+        }
+        that.initDroppable();
+        if (!that.$activeMenuItem.length) {
+            that.selectLink();
+        }
 
-        // VARS
-        that.$activeMenuItem = (that.$wrapper.find(`li.${that.options.classes.selected}:first`) || false);
-
-        // INIT
-        that.initClass();
-    };
+        that.bindEvents();
+    }
 
     Sidebar.prototype.initClass = function() {
         const that = this;
@@ -35,20 +48,17 @@ var Sidebar = ( function($) {
             link_count_update_date: false,
             counters: {},
             storageCount: false,
-            is_locked: false,
             xhr: false,
             timer: 0
         }
 
         $.extend(that.options, options);
 
-        that.bindEvents();
-        that.setCounts();
+        that.$activeMenuItem = (that.$wrapper.find(`li.${that.options.classes.selected}:first`) || false);
+        that.groupDialog = {};
+
+        that.reset();
         that.initUpdater();
-        if (that.options.can_sort) {
-            that.initSortable();
-        }
-        that.initDroppable();
         if (!that.$activeMenuItem.length) {
             that.selectLink();
         }
@@ -148,25 +158,28 @@ var Sidebar = ( function($) {
             that.$wrapper.find('.sidebar-header').css('display', '');
             that.$wrapper.find('.sidebar-body').css('display', '');
             that.$wrapper.find('.sidebar-footer').css('display', '');
+
+            that.reset();
         });
     };
 
-    Sidebar.prototype.showInviteDialog = function() {
+    Sidebar.prototype.showInviteDialog = function(event) {
+        event.preventDefault();
+
         const that = this;
 
-        if (that.is_locked) {
+        if (that.inviteDialog) {
+            that.inviteDialog.show();
             return;
         }
 
         const href = $.team.app_url + that.options.api.inviteDialog;
         $.get(href, function(html) {
-            $.waDialog({
+            that.inviteDialog = $.waDialog({
                 html,
-                onOpen() {
-                    that.options.is_locked = true;
-                },
-                onClose() {
-                    that.options.is_locked = false;
+                onClose(dialog) {
+                    dialog.hide();
+                    return false;
                 }
             });
         });
@@ -176,22 +189,25 @@ var Sidebar = ( function($) {
         event.preventDefault();
 
         const that = this;
-        const href = $.team.app_url + that.options.api.group;
-        const data = {
-            type: $(event.target).hasClass(that.options.classes.initGroupDialog) ? 'group' : 'location'
-        };
 
-        if (that.options.is_locked) {
+        const groupType = $(event.target).hasClass(that.options.classes.initGroupDialog) ? 'group' : 'location';
+
+        if (that.groupDialog[groupType]) {
+            that.groupDialog[groupType].show();
             return;
         }
 
-        that.options.is_locked = true;
+        const href = $.team.app_url + that.options.api.group;
+        const data = {
+            type: groupType
+        };
 
         $.get(href, data, function(html) {
-            $.waDialog({
+            that.groupDialog[groupType] = $.waDialog({
                 html,
-                onClose(){
-                    that.options.is_locked = false;
+                onClose(dialog) {
+                    dialog.hide();
+                    return false;
                 }
             });
         });
@@ -226,7 +242,7 @@ var Sidebar = ( function($) {
             const is_good_href = (href.indexOf(that.options.app_url) >= 0);
             const $link = that.$wrapper.find(`a[href="${href}"]`);
 
-            if (!is_good_href || !$link) {
+            if (!is_good_href || !$link.length) {
                 return;
             }
 

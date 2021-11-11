@@ -481,6 +481,7 @@
   .t-group-access-page .t-content-body .t-users-wrapper .t-users-list .t-user-wrapper .t-user-block .t-layout > .t-column,
   .t-group-manage-page .t-content-body .t-users-wrapper .t-users-list .t-user-wrapper .t-user-block .t-layout > .t-column {
     vertical-align: top;
+    width: 100%;
   }
 }
 .t-group-access-page .t-content-body .t-users-wrapper .t-users-list .t-user-wrapper .t-user-block .t-layout > .t-column.left,
@@ -551,7 +552,7 @@
 }
 .t-group-access-page .c-access-rights-wrapper .t-access-app .t-app-name,
 .t-group-manage-page .c-access-rights-wrapper .t-access-app .t-app-name {
-  flex: 0;
+  flex-basis: 40%;
   padding: 0;
 }
 @media (max-width: 760px) {
@@ -639,6 +640,7 @@
   list-style: none;
   margin: 0;
   max-width: 100vw;
+  box-sizing: border-box;
 }
 .t-profile-page .t-profile .t-profile-users .t-profile-users-item {
   display: inline-flex;
@@ -660,6 +662,7 @@
   position: absolute;
   z-index: 2;
   color: var(--gray);
+  outline: none;
 }
 .t-profile-page .t-profile .t-profile-users .t-profile-users-nav.right {
   right: 0;

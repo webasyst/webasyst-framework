@@ -134,12 +134,10 @@ class waPlugin
                         $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
                     }
                 } catch (Exception $e) {
-                    if ($is_debug) {
-                        echo $e;
-                    }
-                    // log errors
-                    waLog::log($e->__toString());
-                    break;
+                    waLog::log("Error running update of plugin {$this->app_id}.{$this->id}: {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                    waConfig::get('disable_exception_log', false);
+                    waConfig::set('is_template', $is_from_template);
+                    throw new waException(sprintf(_ws('Error running update of plugin %s.%s: %s'), $this->app_id, $this->id, $file), 500, $e);
                 }
             }
             waConfig::get('disable_exception_log', false);

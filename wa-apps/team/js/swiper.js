@@ -3,6 +3,7 @@ class SwiperSlider {
         this.container = options['selector'] || '.swiper-container';
         this.containerParent = document.querySelector(this.container).closest('#t-access-page');
         this.params = options['params'] || { };
+        this.params.on = options['params']['on'] || { };
         this.events = options['events'] || { };
         this.calculate_group_size = options['calculateGroupSize'] || false;
         this.watch_nav = options['watchNav'] || false;
@@ -14,22 +15,18 @@ class SwiperSlider {
 
     init() {
         const that = this;
-        that.params.on = {
-            beforeInit(swiper) {
-                if (that.calculate_group_size) {
-                    swiper.params.slidesPerGroup = that.calculateGroupSize(swiper);
-                    swiper.params.slidesPerView = that.calculateGroupSize(swiper);
-                    //swiper.params.slidesPerView = 'auto';
-                }
+        that.params.on.beforeInit = function(swiper) {
+            if (that.calculate_group_size) {
+                swiper.params.slidesPerGroup = that.calculateGroupSize(swiper);
+                swiper.params.slidesPerView = that.calculateGroupSize(swiper);
+                //swiper.params.slidesPerView = 'auto';
+            }
 
-                if (that.set_container_width) {
-                    that.setContainerWidth(swiper);
-                }
-            },
-            init(swiper) {
-
+            if (that.set_container_width) {
+                that.setContainerWidth(swiper);
             }
         }
+
         that.swiper = new Swiper(that.container, that.params);
 
         that.bindEvents();

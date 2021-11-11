@@ -80,6 +80,9 @@ class teamAccessDialogAction extends waViewAction
             }
         }
 
+        // Get UI before switch to app
+        $ui = wa()->whichUI();
+
         // Respect app's custom rights config
         $class_name = wa($app['id'])->getConfig()->getPrefix()."RightConfig";
         if (!empty($app['rights']) && class_exists($class_name)) {
@@ -101,14 +104,16 @@ class teamAccessDialogAction extends waViewAction
             }
 
             // Prepare the result
-            $result['limited']['custom_html_form'] = $right_config->getHTML($rights, $group_rights);
+            $result['limited']['custom_html_form'] = ($ui == '2.0') ? 
+                $right_config->getUI20HTML($rights, $group_rights) : 
+                $right_config->getHTML($rights, $group_rights);
 
             // Return active app back
             wa('team', 1);
         } else {
             unset($result['limited']);
         }
-
+        
         return $result;
     }
 }

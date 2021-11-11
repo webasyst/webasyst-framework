@@ -367,6 +367,10 @@
 
             if (that.onClose) {
                 result = that.onClose(that);
+
+                if (result === false) {
+                    return;
+                }
             }
 
             dialogs.pop()
@@ -3606,7 +3610,7 @@
                 footer: footer,
                 onClose: function () {
                     if (typeof options.onClose === "function") {
-                        options.onClose();
+                        options.onClose(this);
                     }
                     deferred.resolve();
                 }

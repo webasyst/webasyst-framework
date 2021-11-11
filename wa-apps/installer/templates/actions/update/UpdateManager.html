@@ -53,14 +53,14 @@ $(document).ready( function() {
     </script>
 
     <div class="article">
-        <div class="article-body">
+        <div class="article-body i-app-update-screen">
             <div id="update-content">
                 <div id="template-placeholder">
                     {if $queue_apps}
-                    <h3>
+                    <h3 class="flexbox middle">
                         {_w('Installing the application','Installing applications',count($queue_apps))}
                         {foreach $queue_apps as $item}{$item.name|string_format:'[`"%s"`]'}{if !$item@last}, {/if}{/foreach}
-                        <i class="fas fa-spinner wa-animation-spin speed-1500 text-gray"></i>
+                        <div class="spinner custom-ml-8"></div>
                     </h3>
                     {/if}
                 </div>

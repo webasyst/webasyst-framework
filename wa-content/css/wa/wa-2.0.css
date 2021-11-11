@@ -1289,6 +1289,7 @@ button.webasyst-magic-wand .icon,
 
 .userpic > img { width: 100%; height: auto; border-radius: inherit; }
 .userpic > .userstatus { position: absolute; background-color: var(--green); color: #fff; border-radius: inherit; border: var(--border-width) solid var(--background-color-blank); display: flex; justify-content: center; align-items: center; }
+.userpic > .userstatus.idle { background-color: var(--yellow); }
 .userpic > .userstatus > svg { width: 1em; }
 
 /* Status with icon */
@@ -1846,7 +1847,7 @@ ul.breadcrumbs > li * > a { color: inherit; }
 
 .fields .fields-group:not(:first-child) { margin-top: 2rem; }
 .fields .field:not(:first-child) { margin-top: 1rem; }
-.fields .field > .name { line-height: 1.25rem; font-size: 0.875em; }
+.fields .field > .name { line-height: 1.25rem; font-size: 0.875em; color: var(--text-color-hint-strong); }
 .fields:not(.vertical) .field > .name { width: 9rem; padding-right: 1rem; padding-top: 0.1875rem; }
 .fields .field > .name.for-input { padding-top: 0.5625em; }
 .fields .field > .name.for-button { padding-top: 0.5em; }
@@ -2600,7 +2601,7 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
     .mobile-only { display: none !important; }
     .desktop-and-tablet-only { }
     .desktop-only { display: none !important; }
-    .tablet-only { display: initial !important; }
+    .tablet-only { display: block !important; }
 }
 
 @media screen and (max-width: 760px) { /* mobile */
@@ -2608,7 +2609,7 @@ progress.color-dark-gray::-moz-progress-bar { background-color: var(--dark-gray)
     .desktop-and-tablet-only { display: none !important; }
     .tablet-only { display: none !important; }
     .desktop-only { display: none !important; }
-    .mobile-only { display: initial !important; }
+    .mobile-only { display: block !important; }
 
 }
 

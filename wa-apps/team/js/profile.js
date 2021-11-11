@@ -29,6 +29,7 @@ var Profile = ( function($) {
         that.dialogs = [];
         that.$calendar_wrapper = null;
         that.sidebar_drawer = null;
+        that.sidebarDialog = {};
 
         // INIT
         that.initClass();
@@ -82,21 +83,27 @@ var Profile = ( function($) {
         that.$profile_header_links.on('click', '.edit-link', function() {
             const $user_info = $('.js-user-info')
             let $contact_info_block;
-            $.waDialog({
+
+            if (that.contactsDialog) {
+                that.contactsDialog.show();
+                return;
+            }
+
+            that.contactsDialog = $.waDialog({
                 html: dialog_template,
                 onOpen($dialog, dialog){
                     $.wa.contactEditor.dialogInstance(dialog);
                     $.wa.contactEditor.switchMode('edit');
-                    $contact_info_block = $('#contact-info-block').detach()
-                    $dialog.find('.dialog-content').append($contact_info_block)
-                    dialog.resize()
+                    $contact_info_block = $('#contact-info-block');
+                    dialog.$content.append($contact_info_block);
+                    dialog.resize();
                     $($.wa.contactEditor).on('contact_saved', function() {
-                        dialog.close();
+                        dialog.hide();
                     });
                 },
-                onClose(){
-                    $user_info.empty().append($contact_info_block);
-                    $.wa.contactEditor.switchMode('view', true);
+                onClose(dialog){
+                    dialog.hide();
+                    return false;
                 }
             })
         });
@@ -180,10 +187,12 @@ var Profile = ( function($) {
             const options = $(this)[0].dataset;
             options.userId = that.user.id
 
-            if (!that.is_locked) {
-                that.is_locked = true;
+            if (that.accessDialog) {
+                that.accessDialog.show();
+                return;
+            }
 
-                const html = `
+            const html = `
                 <div class="dialog t-sidebar-profile-dialog">
                     <div class="dialog-background"></div>
                     <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth?.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
@@ -194,25 +203,24 @@ var Profile = ( function($) {
                         </div>
                     </div>
                 </div>
-                `;
+            `;
 
-                $.waDialog({
-                    html,
-                    onOpen($dialog, dialog) {
-                        dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
+            that.accessDialog = $.waDialog({
+                html,
+                onOpen($dialog, dialog) {
+                    dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
 
-                        $.post(href, options, function (content) {
-                            dialog.$content.empty().html(content);
-                            that.$wrapper.trigger('dialog_opened', dialog);
-                        });
-
-                        that.is_locked = false;
-                    },
-                    onClose() {
-                        $.team.content.reload();
-                    }
-                });
-            }
+                    $.post(href, options, function (content) {
+                        dialog.$content.empty().html(content);
+                        that.$wrapper.trigger('dialog_opened', dialog);
+                    });
+                },
+                onClose(dialog) {
+                    dialog.hide();
+                    $.team.content.reload();
+                    return false;
+                }
+            });
         });
 
         that.$profile_header_links.on('click', '.delete-link', function() {
@@ -394,55 +402,61 @@ var Profile = ( function($) {
             $profile_sidebar_body = $('.js-profile-sidebar-body');
         let is_params_error = false;
 
-        options.userId = that.user.id
+        options.userId = that.user.id;
 
-        if (!that.is_locked) {
-            that.is_locked = true;
+        if (that.sidebarDialog[options.sectionId]) {
+            that.sidebarDialog[options.sectionId].show();
+            return;
+        }
 
-            if(!options.sectionId || !options.userId) {
-                is_params_error = true;
-            }
+        if(!options.sectionId || !options.userId) {
+            is_params_error = true;
+        }
 
-            const html = `
-                <div class="dialog t-sidebar-profile-dialog">
-                    <div class="dialog-background"></div>
-                    <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth?.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
-                        <h3 class="dialog-header">${options.dialogHeader?.replace(/(<([^>]+)>)/gi, '') || ''}</h3>
-                        <div class="dialog-content wide"></div>
-                        <div class="dialog-footer custom-mt-auto">
-                            <button type="button" class="button light-gray js-close-dialog">${is_params_error ? 'Ok' : $_('Close')}</button>
-                        </div>
+        const html = `
+            <div class="dialog t-sidebar-profile-dialog">
+                <div class="dialog-background"></div>
+                <div class="dialog-body flexbox vertical" ${options.dialogWidth ? ' style="width:' + options.dialogWidth?.replace(/(<([^>]+)>)/gi, "")  +'"': "" }>
+                    <h3 class="dialog-header">${options.dialogHeader?.replace(/(<([^>]+)>)/gi, '') || ''}</h3>
+                    <div class="dialog-content wide"></div>
+                    <div class="dialog-footer custom-mt-auto">
+                        <button type="button" class="button light-gray js-close-dialog">${is_params_error ? 'Ok' : $_('Close')}</button>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
 
-            $.waDialog({
-                html,
-                onOpen($dialog, dialog) {
-                    dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
-                    if(options.sectionId === 'calendar'){
-                        if(!that.$calendar_wrapper) {
-                            that.$calendar_wrapper = $profile_sidebar_body.find('.js-calendar-html > .t-calendar-wrapper').detach();
-                        }
-                        dialog.$content.empty().append(that.$calendar_wrapper)
-                        dialog.resize();
-                    }else{
-                        $.post(href, options, function (content) {
-                            dialog.$content.empty().html(content);
-                            that.$wrapper.trigger('dialog_opened', dialog);
-                            const $section_iframe = $dialog.find(`.t-profile-section-iframe`);
-                            if($section_iframe.length) {
-                                $section_iframe.data('dialog', dialog);
-                            }
-                        });
+        that.sidebarDialog[options.sectionId] = $.waDialog({
+            html,
+            onOpen($dialog, dialog) {
+                dialog.$content.empty().append('<div class="align-center"><span class="spinner custom-p-16"></span></div>');
+
+                if (options.sectionId === 'calendar') {
+                    if(!that.$calendar_wrapper) {
+                        that.$calendar_wrapper = $profile_sidebar_body.find('.js-calendar-html > .t-calendar-wrapper').detach();
                     }
-                    that.is_locked = false;
-                },
-                onClose() {
+                    dialog.$content.empty().append(that.$calendar_wrapper)
+                    dialog.resize();
+                    return;
+                }
+
+                $.post(href, options, function(content) {
+                    dialog.$content.empty().html(content);
+                    that.$wrapper.trigger('dialog_opened', dialog);
+                    const $section_iframe = $dialog.find(`.t-profile-section-iframe`);
+                    if($section_iframe.length) {
+                        $section_iframe.data('dialog', dialog);
+                    }
+                });
+            },
+            onClose(dialog) {
+                dialog.hide();
+                if (options.sectionId === 'calendar') {
                     $.team.content.reload();
                 }
-            });
-        }
+                return false;
+            }
+        });
     };
 
     Profile.prototype.showSidebarDrawer = function (is_init = false) {

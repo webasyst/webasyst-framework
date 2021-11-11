@@ -261,13 +261,28 @@ class teamAccessSaveActions extends waJsonActions
             }
         }
 
+        // Rights inherited from groups
+        $group_rights = [];
+        if ($this->id > 0) {
+            // Groups of a user
+            $user_groups_model = new waUserGroupsModel();
+            $group_ids = $user_groups_model->getGroupIds($this->id);
+            $group_ids = array_map(wa_lambda('$a', 'return -$a;'), $group_ids);
+            if (!empty($group_ids)) {
+                $group_rights = $right_model->get($group_ids, $app_id, null, false);
+            }
+        }
+
         // Update $app_id access records
         foreach ($values as $name => $value) {
             if ($right_config && $right_config->setRights($this->id, $name, $value)) {
                 // If we've got response from custom rights config, then no need to update main rights table
                 continue;
             }
-
+            if ($value === ifset($group_rights[$name])) {
+                // If right level equals inherited from groups, then no need to save it
+                $value = 0;
+            }
             $right_model->save($this->id, $app_id, $name, $value);
         }
 

@@ -182,6 +182,7 @@ class teamProfileAction extends teamProfileContentViewAction
                 'whatsapp' => '<i class="fab fa-whatsapp" style="color: #29C54D;"></i>',
                 'telegram' => '<i class="fab fa-telegram-plane" style="color: #279FDA;"></i>',
                 'skype' => '<i class="fab fa-skype" style="color: #28A8EA;"></i>',
+                'facebook' => '<i class="fab fa-facebook-messenger" style="color: #0084FF;"></i>',
                 'viber' => '<i class="fab fa-viber" style="color: #7360F4;"></i>',
                 'discord' => '<i class="fab fa-discord" style="color: #404EED;"></i>',
                 'slack' => '<i class="fab fa-slack" style="color: #A436AB;"></i>',

@@ -342,12 +342,10 @@ class waAppConfig extends SystemConfig
                     waFiles::delete($cache_database_dir, true);
                     $app_settings_model->set($this->application, 'update_time', $t);
                 } catch (Exception $e) {
-                    if (self::isDebug()) {
-                        echo $e;
-                    }
-                    // log errors
                     waLog::log("Error running update of ".$this->application.": {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
-                    break;
+                    waConfig::get('disable_exception_log', false);
+                    waConfig::set('is_template', $is_from_template);
+                    throw new waException(sprintf(_ws('Error running update of application %s: %s'), $this->application, $file), 500, $e);
                 }
             }
             waConfig::get('disable_exception_log', false);
@@ -857,7 +855,7 @@ class waAppConfig extends SystemConfig
                     $this->plugins = array();
                     return $this->plugins;
                 }
-                
+
                 $all_plugins = include($path);
                 $all_plugins = is_array($all_plugins) ? $all_plugins : [];
 

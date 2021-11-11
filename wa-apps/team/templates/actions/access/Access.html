@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <div class="t-users-wrapper">
+        <div class="t-users-wrapper break-word">
             {foreach $users as $_user}
                 {$_icon_class = "fas fa-user-friends"}
                 {if !empty($_user.type) && $_user.type == "location"}

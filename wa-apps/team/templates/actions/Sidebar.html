@@ -7,23 +7,24 @@
     {$_can_sort = ( $_is_admin || $_has_rights)}
 
     {if !$is_reload}
-        <nav class="sidebar-mobile-toggle">
-            <div class="box align-center">
-                <a href="javascript:void(0);">
-                    <i class="fas fa-bars"></i>&nbsp;
-                    [`Show navigation`]
-                </a>
-            </div>
-        </nav>
+    <nav class="sidebar-mobile-toggle">
+        <div class="box align-center">
+            <a href="javascript:void(0);">
+                <i class="fas fa-bars"></i>&nbsp;
+                [`Show navigation`]
+            </a>
+        </div>
+    </nav>
 
-        {if teamHelper::hasRights('add_users')}
-            <div class="sidebar-header box custom-pt-20">
-                <a class="button full-width align-center js-no-highlight" href="javascript:void(0)" id="t-new-user-link">
-                    <i class="fas fa-user-plus fa-w-20 custom-mr-4"></i>&nbsp;<span class="s-title small">[`Invite`]</span>
-                </a>
-            </div>
-        {/if}
+    {if teamHelper::hasRights('add_users')}
+        <div class="sidebar-header box custom-pt-20">
+            <button href="#" class="button full-width align-center" id="t-new-user-link">
+                <i class="fas fa-user-plus fa-w-20 custom-mr-4"></i>&nbsp;<span class="s-title small">[`Invite`]</span>
+            </button>
+        </div>
     {/if}
+    {/if}
+
     <div class="sidebar-body hide-scrollbar t-sidebar-block" id="t-sidebar">
         {* main nav *}
         <ul class="menu mobile-friendly custom-my-8">
@@ -159,47 +160,47 @@
     </div>
 
     {if teamHelper::hasRights() && !$is_reload}
-        <div class="sidebar-footer shadowed">
-            <ul class="menu">
-                {if $wa->user()->isAdmin('webasyst')}
-                    <li>
-                        <a href="{$wa_app_url}access/">
-                            <i class="fas fa-key"></i>
-                            <span>[`Access`]</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{$wa_app_url}api-tokens/">
-                            <i class="fas fa-tags"></i>
-                            <span>[`API tokens`]</span>
-                        </a>
-                    </li>
-                {/if}
-                {* <li>
-                    <a href="javascript:void(0);"><i class="icon16 reports"></i>[`Reports`]</a>
-                </li> *}
-                <li{if $module=='plugins'} class="selected"{/if}>
-                    <a href="{$wa_app_url}plugins/#/">
-                        <i class="fas fa-plug"></i>
-                        <span>[`Plugins`]</span>
+    <div class="sidebar-footer shadowed">
+        <ul class="menu">
+            {if $wa->user()->isAdmin('webasyst')}
+                <li>
+                    <a href="{$wa_app_url}access/">
+                        <i class="fas fa-key"></i>
+                        <span>[`Access`]</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{$wa_app_url}settings/">
-                        <i class="fas fa-cog"></i>
-                        <span>[`Settings`]</span>
+                    <a href="{$wa_app_url}api-tokens/">
+                        <i class="fas fa-tags"></i>
+                        <span>[`API tokens`]</span>
                     </a>
                 </li>
-            </ul>
-        </div>
-    {/if}
+            {/if}
+            {* <li>
+                <a href="javascript:void(0);"><i class="icon16 reports"></i>[`Reports`]</a>
+            </li> *}
+            <li{if $module=='plugins'} class="selected"{/if}>
+                <a href="{$wa_app_url}plugins/#/">
+                    <i class="fas fa-plug"></i>
+                    <span>[`Plugins`]</span>
+                </a>
+            </li>
+            <li>
+                <a href="{$wa_app_url}settings/">
+                    <i class="fas fa-cog"></i>
+                    <span>[`Settings`]</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
     {* Initialization of the internal content of the sidebar *}
     <script>
         ( function($) {
             $.team.sidebar = new Sidebar($("#t-sidebar-wrapper"), {
                 app_url: {$wa_app_url|json_encode},
                 updateTime: 1000 * 60 * 5,
-                can_sort: {if $_can_sort}true{else}false{/if},
+                can_sort: {if $_can_sort && !$wa->isMobile()}true{else}false{/if},
                 api: {
                     reload: '?module=sidebar',
                     inviteDialog: '?module=users&action=inviteform',
@@ -218,4 +219,5 @@
             });
         })(jQuery);
     </script>
+    {/if}
 {/strip}

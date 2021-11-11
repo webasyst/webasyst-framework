@@ -266,11 +266,15 @@ var ContentRouter = ( function($) {
         });
     };
 
-    ContentRouter.prototype.reload = function() {
-        var that = this,
-            content_uri = (that.api_enabled && history.state && history.state.content_uri) ? history.state.content_uri : false;
+    ContentRouter.prototype.reload = function(force) {
+        const that = this;
+        let content_uri = (that.api_enabled && history.state && history.state?.content_uri) ? history.state.content_uri : false;
 
-        if (content_uri) {
+        if (force) {
+            content_uri = location.href;
+        }
+
+        if (content_uri || force) {
             that.load(content_uri, true);
         }
     };

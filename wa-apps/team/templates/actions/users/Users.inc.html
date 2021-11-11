@@ -156,7 +156,7 @@
                     </span>
                     {/if}
                     {if !empty($user._online_status) && ($user._online_status === 'online' || $user._online_status === 'idle')}
-                        <span class="userstatus"></span>
+                        <span class="userstatus{if $user._online_status === 'idle'} idle{/if}"></span>
                     {/if}
                 </a>
                 <div class="details">

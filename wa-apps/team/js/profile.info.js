@@ -2160,8 +2160,6 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             // Remove all buttons
             el.find('.buttons').remove();
 
-
-
             // Update DOM for all fields
             var fieldsToUpdate = [];
             for (var i = 0; i < this.fieldsOrder.length; i += 1) {
@@ -2207,11 +2205,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                         return false;
                     }
 
-                    that.switchMode('view');
-                    return false;
-                }, function() {
-                    that.dialog.close();
-                    that.switchMode('view');
+                    that.dialog.hide();
                 });
 
                 if (that.contact_id === null) {
@@ -2374,7 +2368,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                             });
                         }
 
-                        $.team.content.reload();
+                        $.team.content.reload(true);
                     }
 
                 }, 'json');
@@ -2519,7 +2513,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
           * @param fieldIds array of field ids
           * @param saveCallback function save handler. One boolean parameter: true if success, false if validation errors occured
           * @param cancelCallback function cancel button handler. If not specified, then saveCallback() is called with no parameter. */
-        inplaceEditorButtons: function(fieldIds, saveCallback, cancelCallback) {
+        inplaceEditorButtons: function(fieldIds, saveCallback) {
             var buttons = $('<div class="field buttons"><div class="value"><p class="state-error-hint custom-mt-8" id="validation-notice"></p></div></div>');
             //
             // Save button and save on enter in input fields
@@ -2548,17 +2542,13 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
             // Cancel link
             //
             var that = this;
-            var cancelBtn = $('<a href="javascript:void(0)" class="cancel button light-gray js-close-dialog">'+$_('Cancel')+'</a>').click(function(e) {
+            var cancelBtn = $('<a href="javascript:void(0)" class="cancel button light-gray js-close-dialog">'+$_('Cancel')+'</a>');
+            cancelBtn.on('click', function(event) {
+                event.preventDefault();
                 $('.buttons .loading').hide();
-                if (typeof cancelCallback != 'function') {
-                    saveCallback();
-                } else {
-                    cancelCallback();
-                }
+
                 // remove topmost validation errors
                 that.fieldEditors.name.showValidationErrors(null);
-                //scrollTo(0);
-                return false;
             });
             buttons.children('.value')
                 .append(saveBtn)

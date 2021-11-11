@@ -255,7 +255,7 @@
                 <div class="value submit">
                     <p class="custom-m-0">
                         <strong>[`Invitation sent`]</strong>
-                        <span class="hint">[`expires`] {$_token.expire_datetime|wa_date:humandatetime}</span>
+                        <span class="hint">[`Expires in`] {$_token.expires_in}</span>
                     </p>
                     {if $_token.data}
                         {$a = json_decode($_token.data, true)}
@@ -538,7 +538,7 @@
                                     <td class="tc-column-client-id">{$_token.client_id|escape}</td>
                                     <td class="tc-column-scope">
                                         {foreach $_token.installed_apps as $_app}
-                                            <img src="/{$_app.img}" title="{$_app.name|escape}" style="width: 16px; height: 16px;" />
+                                            <img src="{$wa_url}{$_app.img}" title="{$_app.name|escape}" style="width: 16px; height: 16px;" />
                                         {/foreach}
                                         {foreach $_token.not_installed_apps as $_app}
                                             <span class="text-light-gray">{$_app|escape}{if !$_app@last},{/if}</span>

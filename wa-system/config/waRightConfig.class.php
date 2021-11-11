@@ -149,6 +149,9 @@ abstract class waRightConfig
     /**
      * Return HTML to include into page to customize user access for application.
      *
+     * UI 1.3 branch only
+     * For UI 2.0 see getUI20HTML
+     *
      * @param array $rights access_key => value for both system-managed and app-managed rights
      * @param array $inherited access_key => value for rights inherited from groups member is in. Default is null: do not show group UI at all (e.g. when  managing group access)
      * @return string - generated HTML
@@ -156,11 +159,6 @@ abstract class waRightConfig
      */
     public function getHTML($rights = array(), $inherited=null)
     {
-        // UI 2.0 branch
-        if (wa()->whichUI($this->app) == '2.0') {
-            return $this->getUI20HTML($rights, $inherited);
-        }
-
         if ($inherited !== null) {
             $html = '<table class="zebra c-access-app"><tr><th></th>'.
                 '<th width="1%">'._ws('Effective<br/>rights').'</th>'.
@@ -284,6 +282,9 @@ HTML;
      * Used by the default implementation of getHTML() to build a form.
      * See addItem() for details
      *
+     * UI 1.3 branch only
+     * For UI 2.0 see getUI20ItemHTML
+     *
      * @param string $name access_key to store in DB
      * @param string $label human readable name for a field
      * @param string $type control type; currently checkbox|list
@@ -293,13 +294,8 @@ HTML;
      * @return string HTML
      * @throws waException
      */
-    protected function getItemHTML($name, $label, $type, $params, $rights, $inherited=null) {
-
-        // UI 2.0 branch
-        if (wa()->whichUI($this->app) == '2.0') {
-            return $this->getUI20ItemHTML($name, $label, $type, $params, $rights, $inherited);
-        }
-
+    protected function getItemHTML($name, $label, $type, $params, $rights, $inherited=null)
+    {
         $own = isset($rights[$name]) ? $rights[$name] : '';
         $group = $inherited && isset($inherited[$name]) ? $inherited[$name] : null;
         if (!isset($params['cssclass'])) {
@@ -442,10 +438,10 @@ HTML;
      * @return string
      * @throws \waException
      */
-    private function getUI20HTML($rights = array(), $inherited=null)
+    public function getUI20HTML($rights = array(), $inherited=null)
     {
         if ($inherited !== null) {
-            $html = '<div class="alert"><div class="flexbox space-8"><i class="fas fa-info-circle gray"></i><span>' .sprintf(_ws('Если пользователь унаследовал доступ от групп (%s), то вы можете только расширить его за счет установки персонального доступа (%s). Чтобы понизить уровень доступа измените или настройте группы, в которых состоит пользователь.'), '<i class="fas fa-users gray"></i>', '<i class="fas fa-user gray"></i>').'</span></div></div>';
+            $html = '<div class="alert"><div class="flexbox space-8"><i class="fas fa-info-circle gray"></i><span>' .sprintf(_ws('Access rights inherited from groups (%s) can be expanded on an individual user level (%s). To reduce access inherited from a group, exclude the user from the group or shrink the group basis access rights setup.'), '<i class="fas fa-users gray"></i>', '<i class="fas fa-user gray"></i>').'</span></div></div>';
             $html .= '<table class="c-access-app">';
         } else {
             $html = '<table class="c-access-app c-access-app-group">';
@@ -454,7 +450,7 @@ HTML;
         $addScriptForSelect = FALSE;
 
         foreach ($this->items as $item) {
-            $html .= $this->getItemHTML($item['name'], $item['label'], $item['type'], $item['params'], $rights, $inherited);
+            $html .= $this->getUI20ItemHTML($item['name'], $item['label'], $item['type'], $item['params'], $rights, $inherited);
             if ($item['type'] == 'list' && isset($item['params']['hint1']) && $item['params']['hint1'] == 'all_checkbox') {
                 $addScriptForCB = TRUE;
             }
@@ -500,7 +496,7 @@ HTML;
 
                         $tr.find(".js-access-type-own").toggleClass("hidden", !(group_value !== personal_value));
                         $tr.find(".js-access-type-group").toggleClass("hidden", (group_value !== personal_value));
-                    
+
                 };
                 $("table.c-access-app select").change(updateIndicatorForSelect);';
         }
@@ -610,13 +606,13 @@ HTML;
                     '<div class="wa-select custom-m-0"><select name="app['.$name.']">'.$oHTML.'</select></div>'.
                     '</td>'.
 
-                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type-own'.($own > $group ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Доступ установлен персонально для этого пользователя.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type-group'.($own > $group ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Доступ унаследован от групп.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span><input type="hidden" class="g-value" value="'.$group.'"></td>' : '').
+                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type-own'.($own > $group ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Access granted for the user individually.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type-group'.($own > $group ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Access inherited from user groups.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span><input type="hidden" class="g-value" value="'.$group.'"></td>' : '').
                     '</tr>';
             case 'checkbox':
                 return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
                     '<td class="custom-py-8">'.$label.'</td>'.
                     '<td class="custom-py-8 min-width align-right">'.($group ? '<label><span class="wa-checkbox"><input type="checkbox" checked disabled><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>' : '<input type="hidden" name="app['.$name.']" value="0"><label><span class="wa-checkbox"><input type="checkbox" name="app['.$name.']" value="'.(isset($params['value']) ? $params['value'] : 1).'"'.($own ? ' checked="checked"' : '').'><span><span class="icon"><i class="fas fa-check"></i></span></span></span></label>').'</td>'.
-                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type js-access-type-own'.($own ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Доступ установлен персонально для этого пользователя.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type js-access-type-group'.($own ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Доступ унаследован от групп.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span></td>' : '').
+                    ($inherited !== null ? '<td class="custom-py-8 min-width align-center"><span class="js-access-type js-access-type-own'.($own ? '' : ' hidden').'" data-wa-tooltip-content="'._ws('Access granted for the user individually.').'"><i class="fas fa-user text-gray"></i></span><span class="js-access-type js-access-type-group'.($own ? ' hidden' : '').'" data-wa-tooltip-content="'._ws('Access inherited from user groups.').'"><i class="fas fa-users" style="color: var(--menu-glyph-color)"></i></span></td>' : '').
                     '</tr>';
             case 'always_enabled':
                 $html = '<td class="custom-py-8">'.$label.'</td>'.
@@ -641,7 +637,7 @@ HTML;
                     if ($group) {
                         $inherited[$name.'.'.$id] = 1;
                     }
-                    $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'checkbox', $item_params, $rights, $inherited);
+                    $html .= $this->getUI20ItemHTML($name.'.'.$id, htmlspecialchars($item_name), 'checkbox', $item_params, $rights, $inherited);
                 }
                 return $html;
             case 'selectlist':
@@ -684,7 +680,7 @@ HTML;
                     if (isset($params['hint1']) && !isset($rights[$name.'.'.$id]) && !empty($rights[$name.'.all'])) {
                         $rights[$name.'.'.$id] = $rights[$name.'.all'];
                     }
-                    $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'select', array('cssclass' => 'c-access-subcontrol-item', 'options' => $params['options']), $rights, $inherited);
+                    $html .= $this->getUI20ItemHTML($name.'.'.$id, htmlspecialchars($item_name), 'select', array('cssclass' => 'c-access-subcontrol-item', 'options' => $params['options']), $rights, $inherited);
                 }
                 return $html;
             case 'header':

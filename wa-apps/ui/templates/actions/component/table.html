@@ -52,36 +52,67 @@
 
 {function name="_render_sl"}
 <table class="zebra single-lined">
-    <tr>
-        <th class="min-width"></th>
-        <th><span class="nowrap">Title <i class="fas fa-caret-down"></i></span></th>
-        <th>Description</th>
-        <th class="align-right">Amount</th>
-    </tr>
+    <thead>
+        <tr>
+            <th class="min-width"></th>
+            <th><span class="nowrap">Title <i class="fas fa-caret-down"></i></span></th>
+            <th>Description</th>
+            <th class="align-right">Amount</th>
+        </tr>
+    </thead>
+
+    <tbody>
 {foreach $_menu as $_item}
-    <tr{if !empty($_item.selected)} class="selected"{/if}>
-        <td class="min-width valign-top"><input type="checkbox"{if !empty($_item.selected)} checked="checked"{/if}></td>
-        <td>
-            <div>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                <i class="shortener"></i>
-            </div>
-        </td>
-        <td class="max-width">
-            <div>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                <i class="shortener"></i>
-            </div>
-        </td>
-        <td>
-            <div>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                <i class="shortener"></i>
-            </div>
-        </td>
-    </tr>
+        <tr{if !empty($_item.selected)} class="selected"{/if}>
+            <td class="min-width valign-top"><input type="checkbox"{if !empty($_item.selected)} checked="checked"{/if}></td>
+            <td>
+                <div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    <i class="shortener"></i>
+                </div>
+            </td>
+            <td class="max-width">
+                <div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    <i class="shortener"></i>
+                </div>
+            </td>
+            <td>
+                <div>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    <i class="shortener"></i>
+                </div>
+            </td>
+        </tr>
 {/foreach}
+    </tbody>
 </table>
+{/function}
+
+{function name="_render_adaptive"}
+<div class="table-scrollable-x">
+    <table class="zebra">
+        <thead>
+            <tr>
+                <th></th>
+                <th><span class="nowrap">Title <i class="fas fa-caret-down"></i></span></th>
+            </tr>
+        </thead>
+
+        <tbody>
+{foreach $_menu as $_item}
+            <tr{if !empty($_item.selected)} class="selected"{/if}>
+                <td class="valign-top"><input type="checkbox"{if !empty($_item.selected)} checked="checked"{/if}></td>
+                <td>
+                    <div class="nowrap">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    </div>
+                </td>
+            </tr>
+{/foreach}
+        </tbody>
+    </table>
+</div>
 {/function}
 
 <div class="u-component-page">
@@ -147,6 +178,16 @@
     </div>
     <div class="line">
         <pre class="prettyprint">{_render_sl|escape}</pre>
+    </div>
+
+    <h3>Адаптивные таблицы</h3>
+    <p>Для использования адаптивных таблиц оберните таблицу элементом с классом <code>.table-scrollable-x</code>.<br>Таким образом у таблицы получится горизонтальный скролл</p>
+
+    <div class="line">
+        {_render_adaptive}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render_adaptive|escape}</pre>
     </div>
 
 

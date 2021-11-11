@@ -29,6 +29,36 @@
 </label>
 {/function}
 
+{function name="_render1d"}
+<div>
+    <label>
+        <span class="wa-checkbox">
+            <input type="checkbox" name="1" id="checkbox" disabled>
+            <span>
+                <span class="icon">
+                    <i class="fas fa-check"></i>
+                </span>
+            </span>
+        </span>
+        Disabled <code>.wa-checkbox</code> styling
+    </label>
+</div>
+
+<div>
+    <label>
+        <span class="wa-checkbox">
+            <input type="checkbox" name="1" id="checkbox" checked disabled>
+            <span>
+                <span class="icon">
+                    <i class="fas fa-check"></i>
+                </span>
+            </span>
+        </span>
+        Disabled checked <code>.wa-checkbox</code> styling
+    </label>
+</div>
+{/function}
+
 {function name="_render2"}
     <label>
         <span class="wa-radio">
@@ -76,6 +106,52 @@
         Option 3
     </label>
 </div>
+{/function}
+{function name="_render2d"}
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1" disabled>
+        <span></span>
+    </span>
+    Option 1 disabled
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 2
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 3
+</label>
+{/function}
+{function name="_render2dc"}
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1" checked disabled>
+        <span></span>
+    </span>
+    Option 1 checked disabled
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 2
+</label>
+<label>
+    <span class="wa-radio">
+        <input type="radio" name="name-1">
+        <span></span>
+    </span>
+    Option 3
+</label>
 {/function}
 
 {function name="_render3"}
@@ -142,6 +218,13 @@
     <div class="line">
         <pre class="prettyprint">{_render1l|escape}</pre>
     </div>
+    <p>Вариант с отключением (атрибут <code>disabled</code>)</p>
+    <div class="line">
+        {_render1d}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render1d|escape}</pre>
+    </div>
 
     <h4>.wa-radio</h4>
     <div class="line">
@@ -155,6 +238,18 @@
     </div>
     <div class="line">
         <pre class="prettyprint">{_render2s|escape}</pre>
+    </div>
+    <div class="line">
+        {_render2d}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render2d|escape}</pre>
+    </div>
+    <div class="line">
+        {_render2dc}
+    </div>
+    <div class="line">
+        <pre class="prettyprint">{_render2dc|escape}</pre>
     </div>
 
     <h4>.wa-select</h4>

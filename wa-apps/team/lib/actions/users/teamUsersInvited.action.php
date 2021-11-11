@@ -17,7 +17,7 @@ class teamUsersInvitedAction extends teamContentViewAction
             ));
             foreach ($contacts as &$c) {
                 $c['update_datetime'] = $invited[$c['id']]['create_datetime'];
-                $c['expires_in'] = $this->timeLeft($invited[$c['id']]['expire_datetime']);
+                $c['expires_in'] = self::timeLeft($invited[$c['id']]['expire_datetime']);
             }
             unset($c);
             teamUser::convertFieldToUtc($contacts);
@@ -39,7 +39,7 @@ class teamUsersInvitedAction extends teamContentViewAction
         return $atm->query($sql)->fetchAll('contact_id', true);
     }
 
-    protected function timeLeft($date) {
+    public static function timeLeft($date) {
         $expire_time = strtotime($date) - time();
         if($expire_time <= 0){
             return '';

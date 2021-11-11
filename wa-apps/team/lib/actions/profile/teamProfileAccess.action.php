@@ -67,6 +67,11 @@ class teamProfileAccessAction extends waViewAction
             'contact_id' => $user['id'],
         ), true);
 
+        foreach ($invite_tokens as &$invite_token) {
+            $invite_token['expires_in'] = teamUsersInvitedAction::timeLeft($invite_token['expire_datetime']);
+        }
+        unset($invite_token);
+
         $group_model = new waGroupModel();
         $this->view->assign(array(
             'contact'                   => $user,

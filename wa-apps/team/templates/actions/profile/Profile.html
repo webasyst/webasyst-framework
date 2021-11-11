@@ -16,7 +16,7 @@
     <div class="t-profile flexbox vertical{if !$wa->isMobile()} bordered-right bordered-left{/if}">
 
         {if !empty($contacts)}
-            <div class="t-profile-users{if $wa->isMobile()} bordered-top{/if}">
+            <div class="t-profile-users{if $wa->isMobile()} bordered-top{/if} custom-px-48">
                 <div class="t-profile-users-nav left">
                     <i class="fas fa-angle-left"></i>
                 </div>
@@ -89,7 +89,7 @@
                         <span class="userpic userpic144 blank js-userpic">
                             <img src="{$user->getPhoto2x(144)}" alt="">
                             {if !empty($user._online_status) && ($user._online_status === 'online' || $user._online_status === 'idle')}
-                            <span class="userstatus"></span>
+                            <span class="userstatus{if $user._online_status === 'idle'} idle{/if}"></span>
                             {/if}
                             {if $can_edit}
                                 <span class="camera-overlay js-change-photo">
@@ -102,7 +102,7 @@
                         </span>
                     </div>
 
-                    <div class="t-profile-user-data">
+                    <div class="t-profile-user-data break-word">
                         <!-- plugin hook: 'backend_profile.before_header' -->
                         {* @event backend_customer.%plugin_id%.before_header *}
                         {foreach $backend_profile as $_}{ifset($_.before_header)}{/foreach}
@@ -134,25 +134,21 @@
                                     {/if}
                                 {/if}
                                 <i class="{$_event_icon}"></i>
-                                {if $event.calendar_id === 'birthday'}
                                 {$event.summary|escape}
-                                {else}
-                                {$event.calendar_name|escape}
-                                {/if}
                             </span>
                         {/foreach}
                         {/if}
 
-                        {if !$user.is_company}
-                            {if !empty($user.jobtitle)}
-                            {*<span class="custom-mr-0{if $can_edit} custom-p-0 editable js-jobtitle-editable{/if}">{$user.jobtitle|escape}</span>*}
-                            <span class="custom-mr-0 small">{$user.jobtitle|escape}</span>
+                        {if !$user.is_company && !empty($user.jobtitle)}
+                            <p class="custom-mt-8 custom-mb-0">
+                                {*<span class="custom-mr-0{if $can_edit} custom-p-0 editable js-jobtitle-editable{/if}">{$user.jobtitle|escape}</span>*}
+                                <span class="custom-mr-0 small">{$user.jobtitle|escape}</span>
 
-                            {if !empty($user.company)}
-                                <span class="at custom-mr-0 small"> [`@`] </span>
-                                <span class="company custom-mr-0 small">{$user.company|escape}</span>
-                            {/if}
-                            {/if}
+                                {if !empty($user.company)}
+                                    <span class="at custom-mr-0 small"> [`@`] </span>
+                                    <span class="company custom-mr-0 small">{$user.company|escape}</span>
+                                {/if}
+                            </p>
                         {/if}
 
                         {* Used for trigger event in ProfileAccess.html *}
@@ -285,13 +281,15 @@
                     <div class="t-profile-block">
                         {$_href = ''}
                         {if $im.ext == 'whatsapp'}
-                        {$_href = "https://wa.me/{$im.data}"}
+                        {$_href = "https://wa.me/`$im.data`"}
                         {elseif $im.ext == 'telegram'}
-                        {$_href = "https://telegram.im/@{$im.data}"}
+                        {$_href = "https://telegram.im/@`$im.data`"}
                         {elseif $im.ext == 'skype'}
-                        {$_href = "skype:{$im.data}?chat"}
+                        {$_href = "skype:`$im.data`?chat"}
                         {elseif $im.ext == 'viber'}
-                        {$_href = "viber://chat?number={$im.data}"}
+                        {$_href = "viber://chat?number=`$im.data`"}
+                        {elseif $im.ext == 'facebook'}
+                        {$_href = "https://m.me/`$im.data`"}
                         {/if}
 
                         {if !empty($_href)}
@@ -568,11 +566,10 @@
     {if !empty($contacts)}
     new SwiperSlider({
         selector: '.t-profile-users',
-        calculateGroupSize: true,
+        calculateGroupSize: false,
         watchNav: true,
         params: {
-            slidesOffsetBefore: 48,
-            slidesOffsetAfter: 48,
+            slidesPerView: 'auto',
             freeMode: true,
             roundLengths: true,
             centeredSlides: true,
@@ -584,32 +581,41 @@
                 nextEl: ".t-profile-users-nav.right",
                 prevEl: ".t-profile-users-nav.left",
             },
-            breakpoints: {
-                // when window width is >= 320px
-                320: {
-                    slidesPerView: 6,
-                },
-                // when window width is >= 480px
-                480: {
-                    slidesPerView: 'auto',
-                },
+            on: {
+                afterInit(swiper) {
+                    if (swiper.virtualSize === swiper.width) {
+                        swiper.navigation.nextEl.style.display = 'none';
+                        swiper.navigation.prevEl.style.display = 'none';
+                        swiper.enabled = false;
+                    }
+                }
             }
         },
         events: {
-            /*click(swiper, event) {
+            click(swiper, event) {
                 const is_next_click = event.target === swiper.navigation.nextEl,
                     is_prev_click = event.target === swiper.navigation.prevEl,
-                    is_end = swiper.isEnd,
-                    is_beginning = swiper.isBeginning;
+                    slide_width = swiper.wrapperEl.querySelector(`.${ swiper.params.slideClass }`).clientWidth;
 
-                if (is_next_click && is_end) {
-                    setTimeout(() => swiper.slideTo(0))
+                if (is_next_click) {
+                    swiper.slideTo((Math.round(swiper.width / slide_width) - 2) + (swiper.activeIndex + 1))
                 }
 
-                if (is_prev_click && is_beginning) {
-                    setTimeout(() => swiper.slideTo(swiper.slides.length))
+                if (is_prev_click) {
+                    swiper.slideTo((swiper.activeIndex + 1) - (Math.round(swiper.width / slide_width) - 2))
                 }
-            }*/
+            },
+            resize(swiper) {
+                if (swiper.virtualSize === swiper.width) {
+                    swiper.navigation.nextEl.style.display = 'none';
+                    swiper.navigation.prevEl.style.display = 'none';
+                    swiper.enabled = false;
+                }else{
+                    swiper.navigation.nextEl.style.display = 'grid';
+                    swiper.navigation.prevEl.style.display = 'grid';
+                    swiper.enabled = true;
+                }
+            }
         }
     });
     {/if}

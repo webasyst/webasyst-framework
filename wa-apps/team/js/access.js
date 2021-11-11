@@ -397,6 +397,7 @@ window.AccessDialog = ( function($) {
         that.$dialogWrapper = options["$wrapper"];
         that.$wrapper = that.$dialogWrapper.find(".dialog-body");
         that.$limitedContent = that.$wrapper.find(".t-limited-access-form");
+        that.$submit_btn = that.$wrapper.find('[type="submit"]');
 
         //
         that.active_class = "selected";
@@ -428,10 +429,6 @@ window.AccessDialog = ( function($) {
         var that = this,
         $access_list = that.$wrapper.find('.t-access-list');
 
-        // Do stuff when user clicks on no access/limited/full access buttons
-        that.$wrapper.on("click", ".t-access-item", function() {
-
-        });
 
         $access_list.waToggle({
             use_animation: false,
@@ -439,6 +436,7 @@ window.AccessDialog = ( function($) {
                 const $item = $(target),
                     is_disabled = $item.hasClass(that.disabled_class);
 
+                that.$submit_btn.toggleClass('yellow', (toggle.$active.data('access-id') != that.active_access_id));
                 if ( !is_disabled ) {
                     that.changeTab( $item );
                     if (that.teamDialog) {
@@ -448,8 +446,9 @@ window.AccessDialog = ( function($) {
                     $.waDialog.alert({
                         text: $item.data('reason-disabled'),
                         button_title: 'Ok',
-                        onClose() {
+                        onClose(alert) {
                             toggle.$before.trigger('click')
+                            alert.$wrapper.remove();
                         }
                     });
                 }
@@ -460,6 +459,19 @@ window.AccessDialog = ( function($) {
             event.stopPropagation();
             that.save();
         });
+
+        that.$wrapper.on('change', 'input[type!="hidden"], select', function () {
+            const $tr = $(this).closest('tr'),
+                is_changed = $tr.find('.js-access-type-own:not(.hidden)').length;
+
+            $tr[0].toggleAttribute('data-state-changed', is_changed);
+
+            if (that.$limitedContent.find('tr[data-state-changed]').length) {
+                that.$submit_btn.addClass('yellow');
+            }else{
+                that.$submit_btn.removeClass('yellow');
+            }
+        })
     };
 
     AccessDialog.prototype.changeTab = function( $link ) {
