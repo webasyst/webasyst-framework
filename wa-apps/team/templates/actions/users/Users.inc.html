@@ -3,53 +3,202 @@
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
 {$_has_rights = teamHelper::hasRights()}
 {$_can_drag = ( $_is_admin || $_has_rights )}
+{$_user_id = $wa->user()->getId()}
 
-{if !empty($contacts)}
-    <ul class="thumbs li150px t-users-list" id="t-users-list">
+{if !empty($sort) && $sort === 'last_seen'}
+    <h3>[`Online`]</h3>
+{/if}
+
+{if !empty($list_context) && $list_context === 'invited'}
+    <ul class="unstyled t-invited-list">
         {foreach $contacts as $user}
-            {$_title = waUser::getNameAndStatus($user)}
+            {$user_data = waUser::getNameAndStatus($user, true)}
+            {$_title = $user_data.formatted_user_name|escape}
             {$_user_uri = "`$wa_app_url`id/`$user.id`/"}
             {if !empty($user.login) && $user.login != $_title}
                 {$_l = urlencode($user.login)|escape}
                 {$_user_uri = "`$wa_app_url`u/`$_l`/"}
             {/if}
 
-            <li class="t-user-wrapper {if $user.is_user >= 1}js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
-                <div class="t-user-block">
-                    <div class="t-userpic-wrapper">
-                        <a href="{$_user_uri}">
-                            <img class="t-userpic" src="{$user.photo_url_144}">
-                        </a>
+            {if !empty($list_context)}
+                {$_user_uri = "`$_user_uri`?list=`$list_context`"}
+            {/if}
+
+            <li class="t-user-wrapper flexbox custom-py-12 text-gray{if !$user@last} bordered-bottom{/if}" data-contact-id="{$user.id}">
+                <a href="{$_user_uri}" class="userpic userpic32 custom-mr-12 custom-mt-4" style="background-image: url('{$user.photo_url_32}');"></a>
+                <div class="user-info wide flexbox wrap">
+                    <div class="user-info--details custom-mr-auto width-100-mobile custom-mb-8">
+                        <a href="{$_user_uri}" class="bold" title="{$_title}">{$_title}</a>
+                        <p class="smaller custom-m-0">[`Expires in`] {$user.expires_in}</p>
                     </div>
-                    <h5 class="t-name">
-                        <a href="{$_user_uri}">{$_title}</a>
-                    </h5>
+                    <div class="user-info--actions small width-100-mobile flexbox wrap">
+                        {if !empty($user.email)}
+                            <a href="javascript:void(0)" class="js-invite custom-mr-16 custom-mb-4" data-type="email" data-email="{$user.email[0]|escape}">
+                                <i class="fas fa-envelope"></i> [`Send again`]
+                            </a>
+                            <a href="javascript:void(0)" class="js-invite" data-type="link">
+                                <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                            </a>
+                        {else}
+                            <a href="javascript:void(0)" class="js-invite" data-type="link">
+                                <i class="fas fa-link text-gray"></i> [`Link to invitation`]
+                            </a>
+                        {/if}
+
+                    </div>
+                </div>
+                {if teamUser::canDelete($_user_id)}
+                    <a href="javascript:void(0)" class="user-delete js-delete-user custom-ml-24 small gray">
+                        <i class="fas fa-trash-alt text-red"></i>
+                        <i class="fas fa-spinner fa-spin hidden wa-animation-spin speed-1000"></i>
+                    </a>
+                {/if}
+            </li>
+        {/foreach}
+    </ul>
+    <script>
+        (function ($) {
+            $('.js-invite').on('click', function(e) {
+                e.preventDefault();
+
+                if(!!this.dataset.isLocked) {
+                    return;
+                }
+
+                this.dataset.isLocked = 'true';
+
+                const $link = this,
+                    $parent = $link.closest('[data-contact-id]'),
+                    type = $link.dataset.type;
+                let href, post_data;
+
+                if(type === 'email'){
+                    href = '?module=users&action=invite';
+                    post_data = { email: this.dataset.email ?? '' };
+                    $link.innerHTML = '<i class="fas fa-spinner fa-spin wa-animation-spin speed-1000"></i> [`Sending`]';
+                }else if(type === 'link') {
+                    href = '?module=users&action=createInvitation';
+                    post_data = { contact_id: $parent.dataset.contactId ?? 0 };
+                }
+
+                $.post(href, post_data, function(response) {
+                    if(response.status === 'ok') {
+                        if(type === 'email'){
+                            $link.classList.add('text-green');
+                            $link.innerHTML = '<i class="fas fa-check"></i> [`Sent`]';
+                        }else if(type === 'link'){
+                            $link.insertAdjacentHTML('afterend', `<input type="text" style="position:absolute;opacity:0" class="js-invite-link" value="${ response.data.invitation_link ?? '' }">`);
+                            let $invite_link = document.querySelector('.js-invite-link');
+                            $invite_link.select();
+                            $invite_link.setSelectionRange(0, 99999);
+                            document.execCommand("copy");
+                            $invite_link.remove();
+                            $link.classList.add('text-green');
+                            $link.innerHTML = '<i class="fas fa-check"></i> [`Copied`]';
+                        }
+                    }
+                }).always( function() {
+                    setTimeout(()=>{
+                        $link.classList.remove('text-green');
+                        if(type === 'email'){
+                            $link.innerHTML = '<i class="fas fa-envelope"></i> [`Send again`]';
+                        }else if(type === 'link'){
+                            $link.innerHTML = '<i class="fas fa-link"></i> [`Link to invitation`]';
+                        }
+                        $link.dataset.isLocked = '';
+                    }, 1500);
+                });
+            });
+
+            {if teamUser::canDelete($_user_id)}
+                $('.js-delete-user').on('click', function(e) {
+                    e.preventDefault();
+                    const $delete_btn = $(this);
+
+                    $delete_btn.find('.fa-trash-alt').addClass('hidden');
+                    $delete_btn.find('.fa-spinner').removeClass('hidden');
+                    new MutationObserver(mutations => {
+                        for(const mutation of mutations) {
+                            if(mutation.addedNodes.length) {
+                                for(let value of mutation.addedNodes.values()) {
+                                    if(value.classList.contains('t-confirm-deletion-dialog'))
+                                        $delete_btn.find('.fa-spinner').addClass('hidden');
+                                        $delete_btn.find('.fa-trash-alt').removeClass('hidden');
+                                }
+                            }
+                        }
+                    }).observe(document.body, { childList: true});
+
+                    $.team.confirmContactDelete([this.closest('[data-contact-id]').dataset.contactId ?? 0]);
+                });
+            {/if}
+        })(jQuery);
+    </script>
+{else}
+    <ul class="thumbs li150px t-users-list custom-mt-32 js-users-list" id="t-users-list">
+        {foreach $contacts as $user}
+            {$user_data = waUser::getNameAndStatus($user, true)}
+            {$_title = $user_data.formatted_user_name|escape}
+            {$_user_uri = "`$wa_app_url`id/`$user.id`/"}
+            {if !empty($user.login) && $user.login != $_title}
+                {$_l = urlencode($user.login)|escape}
+                {$_user_uri = "`$wa_app_url`u/`$_l`/"}
+            {/if}
+
+            {if !empty($list_context)}
+                {$_user_uri = "`$_user_uri`?list=`$list_context`"}
+            {/if}
+            <li class="t-user-wrapper {if $user.is_user >= 1 && !$wa->isMobile()}js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
+                <a class="userpic userpic144" href="{$_user_uri}" title="{$user.name|escape}" style="background-image: url('{$user.photo_url_144}');">
+                    {if !empty($user.birth_day) && $user.birth_day == waDateTime::format('j') && $user.birth_month == waDateTime::format('n')}
+                        <span class="userstatus birthday" title="{sprintf(_ws('%s\'s birthday — %s'), $user_data.formatted_user_name, $user_data.user_birthday_str)}">
+                        <i class="fas fa-birthday-cake"></i>
+                    </span>
+                    {/if}
+                    {if !empty($user._online_status) && ($user._online_status === 'online' || $user._online_status === 'idle')}
+                        <span class="userstatus{if $user._online_status === 'idle'} idle{/if}"></span>
+                    {/if}
+                </a>
+                <div class="details">
+                    <h6 class="t-name custom-my-4">
+                        <a class="text-blue" href="{$_user_uri}">{$_title}</a>
+                        {if !empty($user._event)}
+                            <div class="align-center">
+                                {$_badge_status_styles = ''}
+                                {if !empty($user._event.status_bg_color)}
+                                {$_badge_status_styles = "color: `$user._event.status_font_color`; background: `$user._event.status_bg_color`;"}
+                                {else}
+                                {$_badge_status_styles = "color: `$user._event.font_color`; background: `$user._event.bg_color`;"}
+                                {/if}
+
+                                <span class="badge user small custom-mt-8" style="{$_badge_status_styles}">
+                                    <i class="{if !empty($user._event.icon)}{$user._event.icon|escape}{else}fas fa-calendar-alt{/if}"></i>
+                                    {$user._event.summary|escape}
+                                </span>
+                            </div>
+                        {/if}
+                    </h6>
                     {if !empty($user.jobtitle)}
-                        <div class="t-job">{$user.jobtitle|escape}</div>
+                        <div class="t-job small">{$user.jobtitle|escape}</div>
                     {/if}
 
-                    <div class="t-login">
+                    <div class="t-login hint">
                         {if !empty($user.login) && $user.login != waUser::formatName($user)}
-                            {$user.login|escape}
-                        {else if !empty($user.name) && $user.name != waUser::formatName($user)}
-                            {$user.name|escape}
+                            @{$user.login|escape}
+                        {elseif !empty($user.name) && $user.name != waUser::formatName($user)}
+                            @{$user.name|escape}
                         {/if}
                     </div>
+
+                    {if !empty($sort) && $sort === 'signed_up' && $user.create_datetime}
+                    <em class="hint">
+                        {$user.create_datetime|wa_date:'humandate'}
+                    </em>
+                    {/if}
                 </div>
             </li>
         {/foreach}
     </ul>
-
-    {if $_can_drag}
-        <script>
-            ( function($) {
-                var $list = $("#t-users-list").removeAttr("id");
-                new UserList({
-                    $wrapper: $list
-                });
-            })(jQuery);
-        </script>
-    {/if}
 {/if}
 
 {/strip}

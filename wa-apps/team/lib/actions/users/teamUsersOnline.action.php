@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated
+ */
+
 class teamUsersOnlineAction extends teamContentViewAction
 {
     public function execute()
@@ -11,7 +15,7 @@ class teamUsersOnlineAction extends teamContentViewAction
 
         $online = $offline = array();
         foreach ($contacts as $c) {
-            if ($c['_online_status'] == 'online') {
+            if ($c['_online_status'] == 'online' || $c['_online_status'] == 'idle') {
                 $online[$c['id']] = $c;
             } else {
                 if (!empty($c['last_datetime'])) {

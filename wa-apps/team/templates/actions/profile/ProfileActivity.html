@@ -2,10 +2,9 @@
 
 {$_timestamp = waRequest::request("timestamp")}
 {$months = waDateTime::getMonthNames()}
+{$_current_month_index = date('n', time())}
 
-<link rel="stylesheet" href="{$wa_app_static_url}css/team.css?{$wa->version()}">
-
-<section class="t-activity-wrapper" id="t-activity-wrapper">
+<section class="t-activity-wrapper break-word" id="t-activity-wrapper">
     {if !empty($activity)}
         {$_period = 60 * 60 * 24 * 30}
         {$_last_datetime = time()}
@@ -14,7 +13,7 @@
         {/if}
         {$_max_id = null}
 
-        <ul class="t-activity-list">
+        <ul class="t-activity">
             {foreach $activity as $_activity_item}
                 {if $_activity_item@last}
                     {$_max_id = $_activity_item.id}
@@ -30,38 +29,43 @@
                     {*<li class="t-space-wrapper"></li>*}
                 {*{/if}*}
 
-                {if $current_month_index != $before_month_index}
+                {if $current_month_index != $before_month_index || ($_activity_item@first && $current_month_index == $_current_month_index)}
                     <li class="t-month-wrapper">
-                        <h5 class="heading">{$months[date('n', $time)]} {date('Y', $time)}</h5>
+                        <h5>{$months[date('n', $time)]} {date('Y', $time)}</h5>
                     </li>
                 {/if}
 
-                <li class="t-activity-item {if !empty($_activity_item.is_empty)}is-empty{/if} {if $current_month_index != $before_month_index}is-first{/if}" data-id="{$_activity_item.id}" data-timestamp="{$_last_datetime}">
-                    <span class="t-activity-point" style="background: {$_activity_item.app.sash_color|default: "#aaa"};"></span>
-                    <div class="t-activity-block">
-                        <div class="inline-content">
-                            {if !( empty($_activity_item.app) || empty($_activity_item.app.name) )}
-                                <span class="t-app" style="background: {$_activity_item.app.sash_color|default: "#aaa"};">{$_activity_item.app.name}</span>
-                            {/if}
-                            {if !empty($_activity_item.action_name)}<span class="t-action gray">{$_activity_item.action_name|escape}</span>{/if}
-                            {if !empty($_activity_item.params_html)}
-                                {$_activity_item.params_html}
-                            {/if}
-                        </div>
-                        {if !empty($_activity_item.datetime)}
-                            <div class="t-datetime hint">{waDateTime::format('humandatetime', $_activity_item.datetime)}</div>
+                <li class="t-activity-item small{if !empty($_activity_item.is_empty)} is-empty{/if}{if $current_month_index != $before_month_index} is-first{/if}" data-id="{$_activity_item.id}" data-timestamp="{$_last_datetime}">
+                    <p class="t-app-badge">
+                        {if !( empty($_activity_item.app) || empty($_activity_item.app.name) )}
+                            <span class="badge" style="background: {$_activity_item.app.sash_color|default: "#aaa"};">{$_activity_item.app.name}</span>
                         {/if}
-                    </div>
+                        {if !empty($_activity_item.datetime)}
+                            <span class="gray">{waDateTime::format('humandatetime', $_activity_item.datetime)}</span>
+                        {/if}
+                    </p>
+
+                    <p>
+                        {if !empty($_activity_item.action_name)}
+                            <span class="gray custom-mr-4">{$_activity_item.action_name|escape}</span>
+                        {/if}
+                        {if !empty($_activity_item.params_html)}
+                        <span>{$_activity_item.params_html}</span>
+                        {/if}
+                    </p>
+
+                    <span class="t-activity-point" style="background: {$_activity_item.app.sash_color|default: "#aaa"};"></span>
                 </li>
             {/foreach}
         </ul>
 
         {if ($count == 50)}
-            <div class="t-paging-wrapper" data-max-id="{$_max_id}"><i class="icon16 loading"></i>[`Loading...`]</div>
+            <div class="t-paging-wrapper flexbox middle" data-max-id="{$_max_id}">
+                <i class="fas fa-spinner custom-mr-8 wa-animation-spin speed-1000"></i>
+                [`Loading...`]
+            </div>
         {/if}
 
-        <script src="{$wa_app_static_url}js/team.js?{$wa->version()}"></script>
-        <script src="{$wa_app_static_url}js/profile.js?{$wa->version()}"></script>
         <script>
             ( function($) {
                 $.team.app_url = {$wa_app_url|json_encode};
@@ -73,7 +77,7 @@
                 new ActivityLazyLoading({
                     $wrapper: $wrapper,
                     names: {
-                        list: ".t-activity-list",
+                        list: ".t-activity",
                         items: " > li",
                         paging: ".t-paging-wrapper"
                     },
@@ -98,7 +102,7 @@
         </script>
 
     {else}
-        <div class="t-no-activity">[`No events for this user yet.`]</div>
+        <p class="custom-mt-8">[`No events for this user yet.`]</p>
     {/if}
 </section>
 

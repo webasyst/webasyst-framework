@@ -24,11 +24,12 @@ var ProfileStatistic = ( function($) {
             that.locales = options["locales"];
 
             // VARS
+            that.is_widget = that.$wrapper.hasClass('js-is-stats-widget');
             that.margin = {
-                top: 14,
-                right: 10,
-                bottom: 28,
-                left: 34
+                top: that.is_widget ? 0 : 14,
+                right: that.is_widget ? 0 : 10,
+                bottom: that.is_widget ? 0 : 28,
+                left: that.is_widget ? 0 : 34
             };
             that.area = getArea(that.node, that.margin);
             that.column_indent = 4;
@@ -52,6 +53,8 @@ var ProfileStatistic = ( function($) {
 
             that.initGraphCore();
 
+            that.$wrapper.find(".t-graph").empty();
+
             that.svg = that.d3node
                 .append("svg")
                 .attr("width", graphArea.outer_width)
@@ -59,11 +62,15 @@ var ProfileStatistic = ( function($) {
 
             // that.defs = that.svg.append("defs");
             //
-            that.renderBackground();
+            if(!that.is_widget){
+                that.renderBackground();
+            }
             // Render Graphs
             that.renderCharts();
             //
-            that.renderAxis();
+            if(!that.is_widget){
+                that.renderAxis();
+            }
         };
 
         Graph.prototype.initGraphCore = function() {
@@ -117,12 +124,13 @@ var ProfileStatistic = ( function($) {
             var that = this,
                 x = that.x,
                 y = that.y,
-                svg = that.svg;
+                svg = that.svg,
+                ticks_count = that.area.outer_width > 600 ? 10 : 5;
 
             var xAxis = d3.svg.axis()
                 .scale(x)
                 .orient("bottom")
-                .ticks(10);
+                .ticks(ticks_count);
 
             var yAxis = d3.svg.axis()
                 .scale(y)
@@ -290,7 +298,7 @@ var ProfileStatistic = ( function($) {
                     point_width = Math.ceil( $point.attr("width") ),
                     point_height = Math.ceil( $point.attr("height") ),
                     point_border_w = 2,
-                    space = 10;
+                    space = 6;
 
                 var wrapperOffset = that.$wrapper.offset(),
                     pointOffset = $point.offset(),
@@ -480,17 +488,12 @@ var ProfileStatistic = ( function($) {
     ProfileStatistic.prototype.bindEvents = function() {
         var that = this;
 
-        that.$filters.on("click", ".dropdown .menu-v a", function(event) {
-            event.preventDefault();
-            that.setFilter( $(this) );
-        });
-
-        that.$filters.on("click", ".t-period-filter .menu-v a", function(event) {
+        that.$filters.on("click", ".t-period-filter .menu a", function(event) {
             event.preventDefault();
             that.changePeriod( $(this) );
         });
 
-        that.$filters.on("click", ".t-app-filter .menu-v a", function(event) {
+        that.$filters.on("click", ".t-app-filter .menu a", function(event) {
             event.preventDefault();
             var app_id = $(this).data("app-id");
             that.changeApp( (app_id) ? app_id : false );
@@ -500,6 +503,10 @@ var ProfileStatistic = ( function($) {
             event.preventDefault();
             that.changeCustomPeriod( $(this).closest("form") );
         })
+
+        that.$filters.on('click', '.js-datepicker-trigger', function () {
+            $(this).parent().find('input').trigger('focus')
+        });
     };
 
     ProfileStatistic.prototype.initGraph = function() {
@@ -582,37 +589,16 @@ var ProfileStatistic = ( function($) {
         that.graph.update( that.app_id );
     };
 
-    ProfileStatistic.prototype.setFilter = function( $link ) {
-        var that = this,
-            $li = $link.closest("li"),
-            $menu = $li.closest(".menu-v"),
-            $dropdown = $menu.closest(".dropdown"),
-            $selected = $dropdown.find(".t-selected-item"),
-            selected_class = "selected";
-
-        $menu.find("." + selected_class).removeClass(selected_class);
-        $li.addClass(selected_class);
-
-        $link.trigger("set");
-
-        $menu.hide();
-        setTimeout( function () {
-            $menu.removeAttr("style");
-        }, 500);
-
-        $selected.html( $link.html() );
-    };
-
     ProfileStatistic.prototype.changePeriod = function( $link ) {
         var that = this,
-            $hidden = $link.closest(".t-period-filter").find(".t-hidden-part"),
+            $hidden = that.$wrapper.find(".js-hidden-part"),
             active_class = "js-show-period-form",
             is_period = !$link.hasClass(active_class),
-            shown_class = "is-shown",
+            hidden_class = "hidden",
             loading_class = that.loading_class;
 
         if (is_period) {
-            $hidden.removeClass(shown_class);
+            $hidden.addClass(hidden_class);
 
             var href = that.app_url + "?module=profile&action=stats", // &is_graph_data=true
                 data = {
@@ -640,7 +626,7 @@ var ProfileStatistic = ( function($) {
                 that.$wrapper.replaceWith( html );
             });
         } else {
-            $hidden.addClass(shown_class);
+            $hidden.removeClass(hidden_class);
         }
     };
 

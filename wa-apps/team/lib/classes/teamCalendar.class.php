@@ -45,6 +45,7 @@ class teamCalendar
             self::$calendars = $ccm->get();
         }
         if ($all) {
+            $ui = wa('team')->whichUI('team');
             $calendars = array(
                     'all' => array(
                         'id'         => null,
@@ -61,6 +62,14 @@ class teamCalendar
                 'font_color' => null,
                 'icon_class' => 'cake'
             );
+            if ($ui !== '1.3') {
+                $calendars['all']['status_bg_color'] = null;
+                $calendars['all']['status_font_color'] = null;
+                $calendars['all']['icon'] = 'fas fa-calendar-alt';
+                $calendars['birthday']['bg_color'] = '#e43a89';
+                $calendars['birthday']['font_color'] = '#ffffff';
+                $calendars['birthday']['icon'] = 'fas fa-birthday-cake';
+            }
             return $calendars;
         } else {
             return self::$calendars;
@@ -96,9 +105,13 @@ class teamCalendar
                 $period_end = date('Y-m-d', $ts);
             }
         } else {
+            $days = teamConfig::CALENDAR_DAYS;
+            if (is_int($period)) {
+                $days = $period;
+            }
             $period_end = date(
                 'Y-m-d',
-                strtotime('+'.teamConfig::CALENDAR_DAYS.' days', strtotime($period_start))
+                strtotime('+'.$days.' days', strtotime($period_start))
             );
         }
         return array($period_start, $period_end);

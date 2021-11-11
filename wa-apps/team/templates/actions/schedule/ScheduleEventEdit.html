@@ -3,6 +3,8 @@
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
 {$_is_my_event = ( $user.id == $wa->user("id") )}
 {$_can_edit = ($_is_admin || $_is_my_event)}
+{$_calendars = []}
+{$_users = []}
 
 {$_selected_calendar = reset($available_calendars)}
 {if !empty($event.calendar_id) && !empty($available_calendars[$event.calendar_id])}
@@ -14,236 +16,291 @@
 {else}
     {$_selected_user = reset($available_users)}
 {/if}
+<div class="dialog t-edit-event-dialog{if $event.is_status} is-status{else} is-event{/if}" id="t-event-edit">
+    <div class="dialog-background"></div>
+    <form class="dialog-body" action="" method="post">
+        <div class="dialog-content fields">
 
-<div class="t-dialog-wrapper is-full-screen t-edit-event-popup {if $event.is_status}is-status{else}is-event{/if}" id="t-event-edit">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <form action="" method="post">
-            <header class="t-dialog-header">
-                <div class="t-status-toggle">
-                    <span class="t-toggle-button {if !$event.is_status}is-active{/if}" data-status-id="0">
-                        <span class="t-name">[`Event`]</span>
-                    </span>
-                    <span class="t-toggle-button {if $event.is_status}is-active{/if}" data-status-id="1">
-                        <span class="t-name">[`Status`]</span>
-                    </span>
-                </div>
-            </header>
+            <div class="flexbox middle wrap custom-mb-8">
+                <h1 class="wide custom-mb-8 t-status-field">[`Status`]</h1>
+                <h1 class="wide custom-mt-0 custom-mb-8 t-event-field">[`Event`]</h1>
 
-            <div class="t-dialog-content">
-                <div class="t-event-form fields form" style="float: none;">
-
-                    {* CALENDAR *}
-                    <div class="field">
-                        <div class="name">
-                            [`Calendar`]
-                        </div>
-                        <div class="value">
-
-                            <ul class="menu-h dropdown t-calendar-toggle">
-                                <li>
-                                    <a class="t-selected-item inline-link" href="javascript:void(0);">
-                                        <i class="icon16 userpic20 {if !empty($_selected_calendar.icon_class)}{$_selected_calendar.icon_class}{/if}" style="{if !empty($_selected_calendar.bg_color)}background: {$_selected_calendar.bg_color};{/if}{if !empty($_selected_calendar.font_color)}color: {$_selected_calendar.font_color};{/if}"></i>
-                                        <b><i>{$_selected_calendar.name|escape}</i></b>
-                                    </a>
-                                    {if !empty($available_calendars)}
-                                        <ul class="menu-v with-icons">
-                                            {foreach $available_calendars as $_c}
-                                                <li class="t-menu-item {if $_c.id == $_selected_calendar.id}selected{/if}" data-calendar-id="{$_c.id}" data-default-status="{$_c.default_status|default:''}">
-                                                    <a href="javascript:void(0);">
-                                                        <i class="icon16 userpic20 {if !empty($_c.icon_class)}{$_c.icon_class}{/if}" style="{if !empty($_c.bg_color)}background: {$_c.bg_color};{/if}{if !empty($_c.font_color)}color: {$_c.font_color};{/if}"></i>
-                                                        <b><i>{$_c.name|escape}</i></b>
-                                                    </a>
-                                                </li>
-                                            {/foreach}
-                                        </ul>
-                                    {/if}
-                                </li>
-                            </ul>
-
-                        </div>
-                    </div>
-
-                    {if $user || $_is_admin}
-                        {* USER *}
-                        <div class="field">
-                            <div class="name">
-                                [`User`]
-                            </div>
-                            <div class="value">
-
-                                <ul class="menu-h dropdown t-user-toggle">
-                                    <li>
-                                        <a class="t-selected-item inline-link" href="javascript:void(0);">
-                                            <i class="icon16 userpic20" style="background-image: url({$_selected_user.photo_url_32});"></i>
-                                            <b><i>{$_selected_user.name|escape}</i></b>
-                                        </a>
-                                        {if !empty($available_users)}
-                                            <ul class="menu-v with-icons">
-                                                {foreach $available_users as $_user}
-                                                    <li class="t-menu-item {if $_user.id == $_selected_user.id}selected{/if}" data-user-id="{$_user.id}">
-                                                        <a href="javascript:void(0);">
-                                                            <i class="icon16 userpic20" style="background-image: url({$_user.photo_url_32});"></i>
-                                                            <b><i>{$_user.name|escape}</i></b>
-                                                        </a>
-                                                    </li>
-                                                {/foreach}
-                                            </ul>
-                                        {/if}
-                                    </li>
-                                </ul>
-
-                            </div>
-                        </div>
-                    {/if}
-
-                    {* NAME *}
-                    <div class="field t-event-field">
-                        <div class="name">
-                            [`Event`]
-                        </div>
-                        <div class="value">
-                            <input type="text" name="data[summary]" placeholder="[`Event name`]" value="{$event.summary|escape}">
-                        </div>
-                    </div>
-
-                    {* DESCRIPTION *}
-                    <div class="field t-event-field">
-                        <div class="name">
-                            [`Description`]
-                        </div>
-                        <div class="value">
-                            <textarea name="data[description]" placeholder="[`Type description here`]">{$event.description|escape}</textarea>
-                        </div>
-                    </div>
-
-                    {* LOCATION *}
-                    <div class="field t-event-field">
-                        <div class="name">
-                            [`Location`]
-                        </div>
-                        <div class="value">
-                            <input type="text" name="data[location]" placeholder="[`Event location`]" value="{$event.location|escape}">
-                        </div>
-                    </div>
-
-                    {* START *}
-                    <div class="field">
-                        <div class="name">
-                            [`Start`]
-                        </div>
-                        <div class="value">
-
-                            {$event_end = $event.end}
-                            {$event_start = $event.start}
-                            {if !$event.is_allday}
-                                {* Convert event time to local contact timezone *}
-                                {$event_start = waDateTime::format('Y-m-d H:i:s', $event_start)}
-                                {$event_end = waDateTime::format('Y-m-d H:i:s', $event.end)}
-                            {/if}
-
-                            <div class="t-layout t-date-wrapper {if !$event.is_allday}is-extended{/if}">
-                                <div class="t-column left">
-                                    <input class="t-date js-datepicker" name="data[start_alt]" type="text" placeholder="[`Event start`]" value="{teamHelper::date($event_start)}">
-                                    <input type="hidden" name="data[start]" value="{date('Y-m-d', strtotime($event_start))}">
-                                </div>
-                                <div class="t-column right">
-                                    <input class="t-date js-timepicker" data-time-format="H:i" type="text" name="data[start_time]" placeholder="[`Event start`]" value="{date('H:i', strtotime($event_start))}">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    {* END *}
-                    <div class="field">
-                        <div class="name">
-                            [`End`]
-                        </div>
-                        <div class="value">
-
-                            <div class="t-layout t-date-wrapper {if !$event.is_allday}is-extended{/if}">
-                                <div class="t-column left">
-                                    <input class="t-date js-datepicker" name="data[end_alt]" type="text" placeholder="[`Event end`]" value="{teamHelper::date($event_end)}">
-                                    <input type="hidden" name="data[end]" value="{date('Y-m-d', strtotime($event_end))}">
-                                </div>
-                                <div class="t-column right">
-                                    <input class="t-date js-timepicker" data-time-format="H:i" type="text" name="data[end_time]" placeholder="[`Event end`]" value="{date('H:i', strtotime($event_end))}">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="field t-event-field date-toggle">
-                        <div class="name">
-                            [`All day`]
-                        </div>
-                        <div class="value">
-
-                            <label>
-                                <input class="js-extended-date" name="data[is_allday]" type="checkbox" {if $event.is_allday}checked{/if}>
-                            </label>
-
-                        </div>
-                    </div>
-
-                    {* FOR STATUS *}
-                    <div class="field t-status-field t-type-toggle">
-                        <div class="name">[`Label`]</div>
-                        <div class="value no-shift"></div>
-                        <ul class="menu-v is-template" style="display: none;">
-                            <li>
-                                <label>
-                                    <input type="radio" name="data[summary_type]"> <span class="t-type"></span>
-                                </label>
-                            </li>
-                            <li>
-                                <input type="radio" name="data[summary_type]"> <input class="t-type-field" type="text" name="data[status_summary]" placeholder="[`Your label`]" style="width: 50%;">
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="field t-status-field">
-                        <div class="name">[`Description`]</div>
-                        <div class="value">
-                            <textarea name="data[status_description]" cols="1" rows="1" placeholder="[`Description`]" style="height: 40px;">{$event.description|escape}</textarea>
-                        </div>
-                     </div>
-
-                    <div class="t-preview-wrapper t-status-field">
-                        <h3 class="heading">[`Preview`]</h3>
-                        <p class="hint">[`This is how it will look like all around Webasyst`]</p>
-                        <div class="t-preview-block"></div>
-                    </div>
-
-                    <input type="hidden" name="data[id]" value="{$event.id}">
-                    <input type="hidden" name="data[calendar_id]" value="{$_selected_calendar.id}">
-                    <input type="hidden" name="data[contact_id]" value="{$_selected_user.id}">
-                    <input type="hidden" name="data[is_status]" value="{$event.is_status}">
+                <div class="toggle t-status-toggle custom-mt-4 custom-mb-8">
+                    <span class="t-toggle-button{if $event.is_status} selected is-active{/if}" data-status-id="1">[`Status`]</span>
+                    <span class="t-toggle-button{if !$event.is_status} selected is-active{/if}" data-status-id="0">[`Event`]</span>
                 </div>
             </div>
 
-            <footer class="t-dialog-footer">
-                <div class="t-actions">
+            <div class="small gray t-status-field custom-mb-24">
+                [`Status will be displayed next to the user name in various apps.`]
+            </div>
 
-                    <div class="t-layout">
-                        <div class="t-column left">
-                            <input type="submit" class="button green t-button" value="{if $event.id}[`Save`]{else}[`Create`]{/if}">
-                            <span style="margin: 0 4px;">[`or`]</span>
-                            <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+            <div class="small gray t-event-field custom-mb-24">
+                [`Events are visible in calendars only.`]
+            </div>
+
+            {if $user || $_is_admin}
+                {* USER *}
+                <div class="field">
+                    <div class="name custom-pt-0">
+                        [`User`]
+                    </div>
+                    <div class="value">
+
+                        <div class="dropdown js-user-dropdown t-user-toggle">
+                            {* USER LIST *}
+                            <a class="t-selected-item dropdown-toggle bold black flexbox middle" href="javascript:void(0);">
+                                <img src="{$_selected_user.photo_url_16}" class="userpic userpic20">
+                                <span class="custom-ml-8">{$_selected_user.name|escape}</span>
+                            </a>
+                            {if !empty($available_users)}
+                                <div class="dropdown-body">
+                                    <ul class="menu">
+                                        {foreach $available_users as $_u}
+                                            <li class="t-menu-item {if $_selected_user.id == $_u.id}selected{/if}"
+                                                data-user-id="{$_u.id}"
+                                            >
+                                                <a href="javascript:void(0);" data-user-photo-url = "{$_u.photo_url_16}">
+                                                    <i class="{if $_u.id}icon userpic{else}fas fa-user{/if}"{if !empty($_u.photo_url_16) && $_u.id} style="background-image: url({$_u.photo_url_16});"{/if}></i>
+                                                    <span>{$_u.name|escape}</span>
+                                                </a>
+                                            </li>
+                                            {$_users[$_u.id] = [
+                                            'id' => $_u.id,
+                                            '$icon' => "<i class=\"{if $_u.id}icon userpic{else}fas fa-user{/if}\"{if !empty($_u.photo_url_16) && $_u.id} style=\"background-image: url({$_u.photo_url_16});\"{/if}></i>",
+                                            'name' => $_u.name|escape|trim
+                                            ]}
+                                        {/foreach}
+                                    </ul>
+                                </div>
+                            {/if}
                         </div>
-                        {if $event.id}
-                            <div class="t-column right">
-                                <a class="js-delete-event" href="javascript:void(0);"><i class="icon16 delete"></i>[`Delete`]</a>
+                    </div>
+                </div>
+            {/if}
+
+            {* CALENDAR *}
+            <div class="field">
+                <div class="name custom-pt-4">
+                    [`Calendar`]
+                </div>
+                <div class="value">
+
+                    <div class="dropdown small js-calendar-dropdown">
+                        {* CALENDAR LIST *}
+                        {$_select_status_bg_color = ''}
+                        {$_select_event_bg_color = ''}
+                        {$_select_status_font_color = ''}
+                        {$_select_event_font_color = ''}
+
+                        {if $event.is_status}
+                            {if $_selected_calendar.status_font_color}
+                                {$_select_status_font_color = $_selected_calendar.status_font_color}
+                            {else}
+                                {$_select_status_font_color = $_selected_calendar.font_color}
+                            {/if}
+
+                            {if $_selected_calendar.status_bg_color}
+                                {$_select_status_bg_color = $_selected_calendar.status_bg_color}
+                            {else}
+                                {$_select_status_bg_color = $_selected_calendar.bg_color}
+                            {/if}
+                        {else}
+                            {if $_selected_calendar.status_bg_color}
+                                {$_select_event_font_color = $_selected_calendar.font_color}
+                                {$_select_event_bg_color = $_selected_calendar.bg_color}
+                            {else}
+                                {$_select_event_font_color = $_selected_calendar.bg_color}
+                                {$_select_event_bg_color = 'transparent'}
+                            {/if}
+                        {/if}
+                        <a class="t-selected-item dropdown-toggle button rounded dark-gray"
+                           style="{if $event.is_status}color: {$_select_status_font_color}; background-color: {$_select_status_bg_color};{else}color: {$_select_event_font_color}; background-color: {$_select_event_bg_color}; box-shadow: inset 0 0 0 1px currentColor;{/if}"
+                           href="javascript:void(0);">
+                            <i class="{if !empty($_selected_calendar.icon)}{$_selected_calendar.icon|escape}{else}fas fa-calendar-alt{/if}"></i>
+
+                            <span class="custom-ml-8">{$_selected_calendar.name|escape}</span>
+                        </a>
+                        {if !empty($available_calendars)}
+                            <div class="dropdown-body">
+                                <ul class="menu">
+                                    {foreach $available_calendars as $_c}
+                                        <li class="t-menu-item{if $_selected_calendar.id == $_c.id} selected{/if}"
+                                            data-calendar-id="{$_c.id}"
+                                            data-default-status="{$_c.default_status|default:''}">
+                                            <a href="javascript:void(0);">
+                                                <i class="{if !empty($_c.icon)}{$_c.icon|escape}{else}fas fa-calendar-alt{/if}" style="color: {if $_c.status_bg_color}{$_c.status_bg_color}{else}{$_c.bg_color}{/if};"></i>
+                                                <span>{$_c.name|escape}</span>
+                                            </a>
+                                        </li>
+
+                                        {$_calendars[$_c.id] = [
+                                            'id' => $_c.id,
+                                            'default_status' => $_c.default_status|default:'',
+                                            'name' => $_c.name|escape|trim|lower,
+                                            'font_color' => $_c.font_color,
+                                            'bg_color' => $_c.bg_color,
+                                            'status_font_color' => $_c.status_font_color,
+                                            'status_bg_color' => $_c.status_bg_color
+                                        ]}
+                                    {/foreach}
+                                </ul>
                             </div>
                         {/if}
                     </div>
+                </div>
+            </div>
+
+            {* NAME *}
+            <div class="field t-event-field">
+                <div class="name for-input">
+                    [`Event`]
+                </div>
+                <div class="value">
+                    <input class="small full-width" type="text" name="data[summary]" placeholder="[`Event name`]" value="{$event.summary|escape}">
+                </div>
+            </div>
+
+            {* DESCRIPTION *}
+            <div class="field t-event-field">
+                <div class="name for-input">
+                    [`Description`]
+                </div>
+                <div class="value">
+                    <textarea class="small full-width" name="data[description]" placeholder="[`Type description here`]">{$event.description|escape}</textarea>
+                </div>
+            </div>
+
+            {* LOCATION *}
+            <div class="field t-event-field">
+                <div class="name for-input">
+                    [`Location`]
+                </div>
+                <div class="value">
+                    <input class="small full-width" type="text" name="data[location]" placeholder="[`Event location`]" value="{$event.location|escape}">
+                </div>
+            </div>
+
+            {* START *}
+            <div class="field">
+                <div class="name for-input">
+                    [`Start`]
+                </div>
+                <div class="value">
+
+                    {$event_end = $event.end}
+                    {$event_start = $event.start}
+                    {if !$event.is_allday}
+                        {* Convert event time to local contact timezone *}
+                        {$event_start = waDateTime::format('Y-m-d H:i:s', $event_start)}
+                        {$event_end = waDateTime::format('Y-m-d H:i:s', $event.end)}
+                    {/if}
+
+                    <div class="t-layout t-date-wrapper{if !$event.is_allday} is-extended{/if}">
+                        <div class="state-with-inner-icon right">
+                            <input class="t-date js-datepicker small shorter" name="data[start_alt]" type="text" placeholder="[`Event start`]" value="{teamHelper::date($event_start)}">
+                            <span class="icon cursor-pointer js-datepicker-trigger"><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                        <input type="hidden" name="data[start]" value="{date('Y-m-d', strtotime($event_start))}">
+                        <div class="state-with-inner-icon right is-time custom-ml-8">
+                            <input class="t-date is-time js-timepicker small shorter" data-time-format="H:i" type="text" name="data[start_time]" placeholder="[`Event start`]" value="{date('H:i', strtotime($event_start))}">
+                            <span class="icon cursor-pointer js-timepicker-trigger"><i class="fas fa-clock"></i></span>
+                        </div>
+                    </div>
 
                 </div>
-            </footer>
-        </form>
-    </div>
+            </div>
+
+            {* END *}
+            <div class="field">
+                <div class="name for-input">
+                    [`End`]
+                </div>
+                <div class="value">
+
+                    <div class="t-layout t-date-wrapper {if !$event.is_allday}is-extended{/if}">
+                        <div class="state-with-inner-icon right">
+                            <input class="t-date js-datepicker small shorter" name="data[end_alt]" type="text" placeholder="[`Event end`]" value="{teamHelper::date($event_end)}">
+                            <span class="icon cursor-pointer js-datepicker-trigger"><i class="fas fa-calendar-alt"></i></span>
+                        </div>
+                        <input type="hidden" name="data[end]" value="{date('Y-m-d', strtotime($event_end))}">
+                        <div class="state-with-inner-icon right is-time custom-ml-8">
+                            <input class="t-date is-time js-timepicker small shorter" data-time-format="H:i" type="text" name="data[end_time]" placeholder="[`Event end`]" value="{date('H:i', strtotime($event_end))}">
+                            <span class="icon cursor-pointer js-timepicker-trigger"><i class="fas fa-clock"></i></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="field t-event-field date-toggle">
+                <div class="name for-checkbox">
+                    [`All day`]
+                </div>
+                <div class="value">
+                    <label>
+                        <span class="wa-checkbox">
+                            <input class="js-extended-date" name="data[is_allday]" type="checkbox" {if $event.is_allday}checked{/if}>
+                            <span>
+                                <span class="icon">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            {* FOR STATUS *}
+            <div class="field t-status-field t-type-toggle">
+                <div class="name for-checkbox">[`Label`]</div>
+                <div class="value"></div>
+                <ul class="is-template" style="display: none;">
+                    <li>
+                        <label>
+                            <span class="wa-radio custom-mr-8">
+                                <input type="radio" name="data[summary_type]">
+                                <span></span>
+                            </span>
+                            <span class="t-type"></span>
+                        </label>
+                    </li>
+                    <li class="flexbox middle full-width">
+                        <label>
+                            <span class="wa-radio custom-mr-8">
+                                <input type="radio" name="data[summary_type]">
+                                <span></span>
+                            </span>
+                        </label>
+                        <input class="t-type-field small wide custom-mx-0" type="text" name="data[status_summary]" placeholder="[`Your label`]">
+                    </li>
+                </ul>
+            </div>
+
+            <div class="field t-status-field">
+                <div class="name for-input">[`Description`]</div>
+                <div class="value">
+                    <textarea class="small full-width" name="data[status_description]" cols="1" rows="1" placeholder="[`Description`]">{$event.description|escape}</textarea>
+                </div>
+             </div>
+
+            <input type="hidden" name="data[id]" value="{$event.id}">
+            <input type="hidden" name="data[calendar_id]" value="{$_selected_calendar.id}">
+            <input type="hidden" name="data[contact_id]" value="{$_selected_user.id}">
+            <input type="hidden" name="data[is_status]" value="{$event.is_status}">
+        </div>
+
+        <footer class="dialog-footer flexbox middle space-8">
+            <input type="submit" class="button" value="{if $event.id}[`Save`]{else}[`Create`]{/if}">
+            <a class="button light-gray js-close-dialog" href="javascript:void(0);">[`Cancel`]</a>
+            {if $event.id}
+                <a class="button orange outlined custom-ml-auto js-delete-event" href="javascript:void(0);">
+                    <span class="mobile-only"><i class="fas fa-trash-alt"></i></span>
+                    <span class="desktop-and-tablet-only">[`Delete`]</span>
+                </a>
+            {/if}
+        </footer>
+    </form>
     <script>
         ( function($) {
             new EventEditDialog({
@@ -253,7 +310,7 @@
                 calendar_id: "{$_selected_calendar.id}",
                 summary: {if !empty($event.summary)}{$event.summary|escape|json_encode}{else}false{/if},
                 summary_type: {if !empty($event.summary_type)}{$event.summary_type|escape|json_encode}{else}false{/if},
-                is_status: {if $event.is_status == 1}true{else}false{/if},
+                is_status: true,
                 locales: {
                     empty: "[`Field is empty`]",
                     date: "[`Incorrect date`]",
@@ -265,8 +322,12 @@
                         months: {waDateTime::getMonthNames(2, 'lower')|json_encode},
                         format: "{waDateTime::getFormatJS('humandate')}"
                     }
-                }
+                },
+                calendars: {$_calendars|json_encode},
+                users: {$_users|json_encode}
             });
+
+            $(".js-calendar-dropdown, .js-user-dropdown").waDropdown();
         })(jQuery);
     </script>
 </div>

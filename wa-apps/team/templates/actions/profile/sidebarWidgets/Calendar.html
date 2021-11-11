@@ -1,0 +1,128 @@
+{strip}
+
+    {$calendar_widget_data = $calendar_widget.data[0]|default:[]}
+    {$week_data = $calendar_widget_data.events|default:[]}
+    {$days_data = $calendar_widget_data.days_data|default:[]}
+
+    <div class="t-calendar-wrapper">
+        {if !empty($calendar_widget_data)}
+            {$_now = waDateTime::date('Y-m-d')}
+            <ul class="t-profile-sidebar-calendar-widget js-sidebar-profile-dialog cursor-pointer"
+                id="t-calendar-widget"
+                data-dialog-header="[`Calendar`]"
+                data-dialog-width="1000px"
+                data-section-id="calendar">{$_day_event = []}
+                {foreach $days_data as $_day_data}
+                    {$_day_date_formatted = waDateTime::date('Y-m-d', $_day_data.date)}
+
+                    {$__event_groups = ifempty($week_data, [])}
+                    {$__event = []}
+                    {$__events_in_week = ["all" => [[],[],[],[],[],[],[]]]}
+
+                    {if $__event_groups}
+                        {$__event_groups = array_reverse($__event_groups)}
+                        {foreach $__event_groups as $__event_group}
+                            {foreach $__event_group as $__e}
+                                {if isset($__e.colspan)}
+                                    {$__events_in_week["all"][$__e@index][] = $__e.id}
+                                {/if}
+                                {if isset($__e.day_count)}
+                                    {$_day_event[$__e.day_count][$__e.date] = $__e}
+                                {/if}
+                            {/foreach}
+                        {/foreach}
+
+                        {$_max_day_count = max(array_keys($_day_event))}
+
+                        {if isset($_day_event[$_max_day_count][$_day_date_formatted])}
+                            {$__event = $_day_event[$_max_day_count][$_day_date_formatted]}
+                        {elseif isset($_day_event[1][$_day_date_formatted])}
+                            {$__event = $_day_event[1][$_day_date_formatted]}
+                        {/if}
+
+                        {if $__event}
+                            {$_calendar = [
+                                "id" => null,
+                                "bg_color" => "#f00",
+                                "font_color" => "#fff"
+                            ]}
+
+                            {if !empty($__event.calendar_id) && !empty($calendar_widget.calendars[$__event.calendar_id])}
+                                {$_calendar = $calendar_widget.calendars[$__event.calendar_id]}
+                            {/if}
+
+                            {$_is_birthday = ( $__event.calendar_id == "birthday" )}
+
+                            {$__user = null}
+                            {if !empty($calendar_widget.users[$__event.contact_id])}
+                                {$__user = $calendar_widget.users[$__event.contact_id]}
+                            {/if}
+
+                            {$_badge_styles = ''}
+                            {if $__event.is_status}
+                                {if $_calendar.status_bg_color}
+                                    {$_badge_styles = "color: `$_calendar.status_font_color`; background: `$_calendar.status_bg_color`;"}
+                                {else}
+                                    {$_badge_styles = "color: `$_calendar.font_color`; background: `$_calendar.bg_color`;"}
+                                {/if}
+                            {else}
+                                {if !empty($_calendar.status_bg_color)}
+                                    {$_badge_styles = "color: `$_calendar.font_color`; background: `$_calendar.bg_color`;"}
+                                {else}
+                                    {$_badge_styles = "color: `$_calendar.bg_color`; background: transparent; box-shadow: inset 0 0 0 1px currentColor;"}
+                                {/if}
+                            {/if}
+
+                            {if $__user && $_is_birthday}
+                                {$_badge_styles = "color: var(--white); background-image: linear-gradient(90deg, #FA5959 0%, #E419AB 100%);"}
+                            {/if}
+
+                            {$square_corner_side = ''}
+                            {if $__event.day_count > 1}
+                                {$square_corner_side = ' square-corner'}
+                                {if waDateTime::date('Y-m-d', $__event.start) == $__event.date}
+                                    {$square_corner_side = "`$square_corner_side`-right"}
+                                {/if}
+                                {if waDateTime::date('Y-m-d', $__event.end) == $__event.date}
+                                    {$square_corner_side = "`$square_corner_side`-left"}
+                                {/if}
+                            {/if}
+
+                            {$_full_count = count($__events_in_week["all"][$_day_data@index])}
+                        {/if}
+                    {/if}
+
+                    <li class="t-week-row-widget{if $_now === $_day_date_formatted} is-active{/if}">
+                        <span class="t-week-row-widget-day">{_ws(waDateTime::date('D', $_day_data.date))}</span>
+                        <span class="t-week-row-widget-number">{waDateTime::date('j', $_day_data.date)}</span>
+                        {if $__event}
+                            <span class="t-week-row-widget-badge{$square_corner_side}"{if !$_is_birthday} data-wa-tooltip-content="{$__event.summary|escape}"{/if} style="{$_badge_styles}">
+                                {if $_is_birthday && $__user}
+                                    {$title = sprintf(_w("%s's birthday — %s"), $__user.name|escape, $__event.birthday_str)}
+                                    <i class="fas fa-birthday-cake" title="{$title}"></i>
+                                {/if}
+
+                                {if !$_is_birthday}
+                                    {$__event.summary|escape}
+                                {/if}
+                            </span>
+
+                            {if $_full_count > 1}
+                                <span class="badge small gray custom-ml-8">+ {$_full_count - 1}</span>
+                            {/if}
+                        {/if}
+                    </li>
+                {/foreach}
+            </ul>
+            <script>
+                ( function($) {
+                    $("#t-calendar-widget").find('[data-wa-tooltip-content]').waTooltip({
+                        placement: 'left'
+                    });
+                })(jQuery);
+            </script>
+        {else}
+            <p>[`Data is broken`]</p>
+        {/if}
+    </div>
+{/strip}

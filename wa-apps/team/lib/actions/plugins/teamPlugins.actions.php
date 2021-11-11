@@ -46,7 +46,11 @@ class teamPluginsActions extends waPluginsActions
                     'has_settings' => $has_settings,
                     'plugin' => $plugin
                 ));
-                $path = $this->getConfig()->getAppPath('templates/actions/plugins/Settings.html');
+                if(wa()->whichUI() === '1.3') {
+                    $path = $this->getConfig()->getAppPath('templates/actions-legacy/plugins/Settings.html');
+                }else{
+                    $path = $this->getConfig()->getAppPath('templates/actions/plugins/Settings.html');
+                }
             }
 
         }

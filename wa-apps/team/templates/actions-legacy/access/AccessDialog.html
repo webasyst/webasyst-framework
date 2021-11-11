@@ -1,0 +1,101 @@
+{strip}
+
+{$_active_type = ""}
+
+<div class="t-dialog-wrapper is-full-screen t-access-dialog" id="t-access-dialog">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <header class="t-dialog-header">
+            <div class="t-text">
+                <span class="t-user">
+                    {if $user}
+                        {$_userpic = $user->getPhoto(16)}
+                        {if !empty($_userpic)}
+                            <i class="icon16 kill-wa-style t-userpic" style="background-image: url('{$_userpic}')"></i>
+                        {/if}
+                        {$user.name|escape}
+                    {else}
+                        {if !empty($group.icon)}
+                            <i class="icon16 t-group-icon {$group.icon}"></i>
+                        {/if}
+                        {$group.name|escape}
+                    {/if}
+                </span>
+
+                {if !empty($app)}
+                    <span class="t-app">
+                        {if !empty($app.icon) && !empty($app.icon["16"])}
+                            <i class="icon16 kill-wa-style t-icon" style="background-image: url('{$wa_url}{$app.icon["16"]}')"></i>
+                        {/if}
+                        {$app.name}
+                    </span>
+                {/if}
+            </div>
+        </header>
+
+        <div class="t-dialog-content">
+
+            {* Three buttons to switch access levels *}
+            <div class="t-access-list">
+                {foreach $access_levels as $type}
+                    {if !empty($type.is_active)}
+                        {$_active_type = $type.id}
+                    {/if}
+
+                    <div class="t-access-item type-{$type.id} {if !empty($type.is_active)}is-active{/if} {if !empty($type.is_disabled)}is-disabled{/if}"
+                        data-access-id="{$type.id}"
+                        {if !empty($type.is_disabled)}data-reason-disabled="{$type.is_disabled|escape}"{/if}
+                    >
+                        <div class="t-access-name">
+                            {$type.name|escape}
+                        </div>
+                    </div>
+
+                {/foreach}
+            </div>
+
+            {* Limited access customization form *}
+            {if empty($access_levels.limited.is_disabled)}
+                <div class="t-limited-access-form"{if empty($access_levels.limited.is_active)} style="display:none;"{/if}>
+                    <form action="{$wa_app_url}?module=accessSave&action=rights&id={$contact_id}">
+                        <div class="c-access-app-limited">
+                            <input type="hidden" name="app_id" value="{$app.id}">
+                            {$access_levels.limited.custom_html_form}
+                        </div>
+                    </form>
+                </div>
+            {/if}
+
+            <p class="align-center italic t-hint js-access-no" style="{if $_active_type != "no"}display: none;{/if}">[`The app icon will not be shown in the app menu.`]</p>
+            <p class="align-center italic t-hint js-access-full" style="{if $_active_type != "full"}display: none;{/if}">[`Full admin access to the app and its data.`]</p>
+        </div>
+
+        <footer class="t-dialog-footer">
+            <div class="t-actions">
+                <input type="submit" class="button green t-button" value="[`Save`]">
+                <span style="margin: 0 4px;">[`or`]</span>
+                <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+
+                <span class="t-notice t-loading">
+                    <i class="icon16 loading"></i> [`Saving`]
+                </span>
+                <span class="t-notice t-success">
+                    <i class="icon16 yes"></i> [`Saved`]
+                </span>
+            </div>
+        </footer>
+    </div>
+</div>
+
+{/strip}
+
+<script>(function($) { "use strict";
+
+    new AccessDialog({
+        $wrapper: $("#t-access-dialog"),
+        wa_app_url: {$wa_app_url|json_encode},
+        app_id: {$app.id|json_encode},
+        contact_id: {$contact_id|json_encode}
+    });
+
+})(jQuery);</script>

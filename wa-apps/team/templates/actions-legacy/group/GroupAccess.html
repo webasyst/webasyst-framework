@@ -1,0 +1,61 @@
+<div class="t-group-access-page">
+    {* HEADER *}
+    <header class="t-content-header">
+        <h1>
+            <a class="t-back-link" href="{$wa_app_url}group/{$group.id}/">← [`Back`]</a>
+            {$group.name|escape}
+        </h1>
+    </header>
+
+    {* CONTENT *}
+    <div class="t-content-body">
+        <p class="hint">[`Access level selected for this group will be applied to all its members.`]<br>[`To extend access rights of individual users within the group, edit their personal access settings.`]</p>
+        <div class="c-access-rights-wrapper" id="c-access-rights-wrapper">
+            <table>
+                <tbody>
+                    {foreach $apps as $app_id => $app}
+                        <tr>
+                            <td class="t-app-icon">
+                                <img src="{$wa_url}{$app.img}">&nbsp;
+                            </td>
+                            <td class="t-app-name">
+                                {$app.name|escape}
+                            </td>
+                            <td class="t-app-access">
+                                {if $app.access > 1}
+                                    {$_access = $access_types.full}
+                                {elseif $app.access}
+                                    {$_access = $access_types.limited}
+                                {else}
+                                    {$_access = $access_types.no}
+                                {/if}
+                                <div class="t-access-status type-{$_access.id}"
+                                    data-app-id="{$app_id}"
+                                    title="[`Edit access`]"
+                                >
+                                    {* Output all possible names to be able to change them via JS *}
+                                    {foreach $access_types as $at}
+                                        <span class="t-access-name type-{$at.id}">{$at.name|default:""|escape}</span>
+                                    {/foreach}
+                                </div>
+                            </td>
+                        </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {* JS *}
+    <script>
+        ( function($) {
+            $(function() { "use strict";
+                new UserAccessTable({
+                    $wrapper: $('#c-access-rights-wrapper'),
+                    contact_id: -{$group.id}
+                });
+            });
+        })(jQuery);
+    </script>
+</div>
+

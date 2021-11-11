@@ -1,0 +1,89 @@
+{strip}
+
+<div class="block shadowed t-settings-page" id="t-settings-page">
+    {* HEADER *}
+    <header class="t-content-header">
+        <h1>[`Settings`]</h1>
+    </header>
+
+    {* CONTENT *}
+    <div class="t-content-body">
+        <div class="field">
+            <div class="name">[`Calendars`]</div>
+            <div class="value">
+
+                <div class="t-calendar-settings" id="t-calendar-settings">
+                    <ul class="menu-v with-icons t-calendar-list">
+                        {foreach $calendars as $_calendar}
+                            <li class="t-calendar-item" data-id="{$_calendar.id}">
+                                <span class="t-toggle">
+                                    <i class="icon16 sort"></i>
+                                </span>
+                                <a class="t-name js-edit-calendar" href="javascript:void(0);">
+                                    <i class="t-userpic icon16 {if !empty($_calendar.icon_class)}{$_calendar.icon_class}{elseif !empty($_calendar.bg_color)}userpic20{/if}" style="{if !empty($_calendar.bg_color) && empty($_calendar.icon_class)}background: {$_calendar.bg_color};{/if}"></i>
+                                    {$_calendar.name|escape}
+                                </a>
+                                {if $_calendar.is_limited == 1}
+                                    <i class="t-lock icon16 lock"></i>
+                                {/if}
+                            </li>
+                        {/foreach}
+                    </ul>
+
+                    <div class="t-actions">
+                        <a class="t-add-calendar-link js-add-calendar" href="javascript:void(0);">
+                            <i class="icon16 add"></i>
+                            [`Add calendar`]
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <form method="post">
+            <div class="t-form-wrapper">
+                <div class="field">
+                    <div class="name">[`User name format`]</div>
+                    <div class="value">
+
+                        <ul class="menu-v compact t-names-toggle" id="t-names-toggle">
+                            {foreach $user_name_formats as $format}
+                                <li class="t-item-wrapper">
+                                    <label>
+                                        <input class="t-input" type="radio" name="data[user_name_format]" value="{$format.format}"
+                                               {if $format.selected}checked="checked"{/if} {if $format.disabled}disabled="disabled"{/if}>
+                                        <span class="t-name {if $format.disabled}gray{/if}">{$format.name|escape}</span>
+                                    </label>
+                                </li>
+                            {/foreach}
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="field buttons">
+                <div class="value">
+                    <input class="button green" type="submit" value="[`Save`]">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {* JS *}
+    <script>
+        ( function($) {
+            new SettingsPage({
+                $wrapper: $("#t-settings-page"),
+                locales: {
+                    saving: "[`Saving`]",
+                    saved: "[`Saved`]"
+                }
+            });
+            $.team.setTitle("[`Settings`]");
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

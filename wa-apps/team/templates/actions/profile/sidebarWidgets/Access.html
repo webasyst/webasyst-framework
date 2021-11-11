@@ -1,0 +1,139 @@
+{$user.waid_invite_datetime = $user_settings.waid_invite_datetime|default:''}
+
+{strip}
+    <section class="t-profile-sidebar-section custom-mb-16">
+    {if $is_connected_to_webasyst_id}
+        {*if waid is enabled*}
+
+        {if $is_bound_with_webasyst_contact}
+            <p class="custom-mb-4">
+                <span class="icon custom-mr-4"><svg width="97" height="96" viewBox="0 0 97 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <style>
+                            .webasyst-magic-wand-handle { fill: black; }
+                            [data-theme="dark"] .webasyst-magic-wand-handle { fill: #ffffff; }
+                        </style>
+                    </defs>
+                    <path d="M20.7348 14.5035C18.57 12.1327 14.8662 12.0487 12.5963 14.3185C10.3239 16.5908 10.4084 20.3016 12.7813 22.468L28.8528 37.141C30.6852 38.8139 33.5082 38.75 35.263 36.9953C37.0199 35.2385 37.0843 32.4089 35.4088 30.5739L20.7348 14.5035Z" fill="#0088EE"/>
+                    <path d="M47.1515 0C43.9448 0 41.3794 2.67789 41.5255 5.89162L42.5137 27.6305C42.6266 30.1155 44.6731 32.0657 47.1515 32.0657C49.6299 32.0657 51.6763 30.1155 51.7893 27.6305L52.7775 5.89161C52.9236 2.67788 50.3582 0 47.1515 0Z" fill="#22CC22"/>
+                    <path d="M81.6725 14.3185C79.4026 12.0487 75.6988 12.1327 73.534 14.5035L58.86 30.5739C57.1845 32.4089 57.2489 35.2385 59.0058 36.9952C60.7606 38.75 63.5836 38.8139 65.416 37.141L81.4875 22.468C83.8604 20.3016 83.9449 16.5908 81.6725 14.3185Z" fill="#EE6622"/>
+                    <path d="M96.0089 48.8621C96.0089 45.6452 93.3248 43.0868 90.1215 43.2324L68.3812 44.2205C65.9052 44.3331 63.9492 46.3744 63.9492 48.8621C63.9492 51.3499 65.9052 53.3912 68.3812 53.5037L90.1215 54.4918C93.3248 54.6374 96.0089 52.079 96.0089 48.8621Z" fill="#FFCC00"/>
+                    <path d="M65.416 60.5964C63.5836 58.9235 60.7606 58.9874 59.0058 60.7421C57.2489 62.4989 57.1845 65.3285 58.86 67.1635L73.534 83.234C75.6988 85.6048 79.4026 85.6887 81.6725 83.419C83.9449 81.1467 83.8604 77.4359 81.4875 75.2694L65.416 60.5964Z" fill="#55DDDD"/>
+                    <path d="M51.2853 44.7066C49.5341 42.9555 46.7086 42.9175 44.911 44.6204L1.92878 85.3376C-0.595136 87.7285 -0.649357 91.7324 1.80924 94.1908C4.26542 96.6469 8.26241 96.593 10.6515 94.0713L51.3715 51.092C53.0769 49.292 53.0386 46.4598 51.2853 44.7066Z" class="webasyst-magic-wand-handle" />
+                </svg></span> <span class="small bold">[`Webasyst ID is connected`]</span>
+
+
+            </p>
+            <p class="custom-my-4 hint small">
+                <span class="custom-mr-8">[`Last sign-in`] {$user.last_datetime|wa_date:"humandatetime"|lower}</span>
+                {* if !$is_webasyst_id_forced}
+                    <a href="javascript:void(0);" class="js-webasyst-id-unbind-auth">[`Disconnect`]</a>
+                {/if *}
+            </p>
+
+            {*if $webasyst_id_email}
+                {sprintf(_w('Webasyst ID account <span class="bold">%s</span> is connected.'), $webasyst_id_email)}
+            {else}
+                {sprintf(_w('%sSign-in with Webasyst ID%s is connected.'), '<span class="bold">', '</span>')}
+            {/if*}
+
+
+        {else}
+            {if $is_own_profile}
+                 {*if own account not connected to waid*}
+                <a class="full-width js-webasyst-id-auth bold" href="javascript:void(0)">
+                    <span class="icon custom-mr-4"><svg width="97" height="96" viewBox="0 0 97 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <style>
+                            .webasyst-magic-wand-handle { fill: black; }
+                            [data-theme="dark"] .webasyst-magic-wand-handle { fill: #ffffff; }
+                        </style>
+                    </defs>
+                    <path d="M20.7348 14.5035C18.57 12.1327 14.8662 12.0487 12.5963 14.3185C10.3239 16.5908 10.4084 20.3016 12.7813 22.468L28.8528 37.141C30.6852 38.8139 33.5082 38.75 35.263 36.9953C37.0199 35.2385 37.0843 32.4089 35.4088 30.5739L20.7348 14.5035Z" fill="#0088EE"/>
+                    <path d="M47.1515 0C43.9448 0 41.3794 2.67789 41.5255 5.89162L42.5137 27.6305C42.6266 30.1155 44.6731 32.0657 47.1515 32.0657C49.6299 32.0657 51.6763 30.1155 51.7893 27.6305L52.7775 5.89161C52.9236 2.67788 50.3582 0 47.1515 0Z" fill="#22CC22"/>
+                    <path d="M81.6725 14.3185C79.4026 12.0487 75.6988 12.1327 73.534 14.5035L58.86 30.5739C57.1845 32.4089 57.2489 35.2385 59.0058 36.9952C60.7606 38.75 63.5836 38.8139 65.416 37.141L81.4875 22.468C83.8604 20.3016 83.9449 16.5908 81.6725 14.3185Z" fill="#EE6622"/>
+                    <path d="M96.0089 48.8621C96.0089 45.6452 93.3248 43.0868 90.1215 43.2324L68.3812 44.2205C65.9052 44.3331 63.9492 46.3744 63.9492 48.8621C63.9492 51.3499 65.9052 53.3912 68.3812 53.5037L90.1215 54.4918C93.3248 54.6374 96.0089 52.079 96.0089 48.8621Z" fill="#FFCC00"/>
+                    <path d="M65.416 60.5964C63.5836 58.9235 60.7606 58.9874 59.0058 60.7421C57.2489 62.4989 57.1845 65.3285 58.86 67.1635L73.534 83.234C75.6988 85.6048 79.4026 85.6887 81.6725 83.419C83.9449 81.1467 83.8604 77.4359 81.4875 75.2694L65.416 60.5964Z" fill="#55DDDD"/>
+                    <path d="M51.2853 44.7066C49.5341 42.9555 46.7086 42.9175 44.911 44.6204L1.92878 85.3376C-0.595136 87.7285 -0.649357 91.7324 1.80924 94.1908C4.26542 96.6469 8.26241 96.593 10.6515 94.0713L51.3715 51.092C53.0769 49.292 53.0386 46.4598 51.2853 44.7066Z" class="webasyst-magic-wand-handle" />
+                </svg></span>&nbsp;<span>[`Connect Webasyst ID`]</span>
+                </a>
+                <p class="smaller custom-my-4">
+                    [`Sign into your Webasyst backend with 2-factor authentication (2FA) and get convenient access to all Webasyst services and mobile apps.`]
+                </p>
+            {else}
+                <p class="custom-mb-4"><i class="fas fa-unlink text-red"></i> <span class="text-orange bold custom-ml-4">[`Webasyst ID is not connected`]</span></p>
+                <p class="smaller custom-my-4">{sprintf('[`User %s has not connected Webasyst ID yet. Secure sign-in option with 2-factor authentication (2FA) for your Webasyst backend and access to all Webasyst services and mobile apps will become available only when Webasyst ID is connected.`]', $user.login|escape)}</p>
+                {if !empty($user.email) && $contact['is_user'] == '1'}
+                    {if !$user.waid_invite_datetime}
+                        {$_link_text = '[`Email instructions`]'}
+                    {else}
+                        {$_link_text = '[`Email again`]'}
+                    {/if}
+                    <p class="smaller custom-my-0 js-waid">
+                        <a href="javascript:void(0)" class="js-send-email-invitation">
+                            <i class="fas fa-envelope custom-mr-4"></i><span class="js-text">{$_link_text}</span> <i class="text-gray fas fa-spinner fa-spin wa-animation-spin speed-1000 js-loading custom-ml-4" style="display: none"></i>
+                            <span class="js-last-send-datetime custom-ml-4 text-gray">{if $user.waid_invite_datetime}{$user.waid_invite_datetime|wa_date:'humandatetime'|lower}{/if}</span>
+                        </a>
+                        <span class="js-sent-email-ok hidden"><i class="fas fa-envelope custom-mr-4"></i>[s`An invitation has been sent`]<i class="fas fa-check-circle custom-ml-4"></i></span>
+                    {/if}
+                </p>
+                <script>
+                    (function ($) {
+                        const is_loading = { },
+                            $waid = $('.js-waid'),
+                            $sent_email_ok = $waid.find('.js-sent-email-ok');
+
+                        $waid.on('click', '.js-send-email-invitation', function (e) {
+                            e.preventDefault();
+
+                            const $link = $(this),
+                                id = '{$user.id}',
+                                $loading = $waid.find('.js-loading');
+
+                            if (is_loading[id]) {
+                                return;
+                            }
+
+                            $loading.show();
+                            is_loading[id] = true;
+
+                            $.post("{$wa_backend_url}?module=settings&action=waIDInviteUser", { id }).done(function ({ errors, data }) {
+                                if(errors) {
+                                    $.waDialog.alert({
+                                        title: '[`Error`]',
+                                        text: errors,
+                                        button_title: '[`OK`]',
+                                    });
+                                    return;
+                                }
+                                if (data) {
+                                    $link.addClass('hidden').find('.js-text').text('[`Email again`]').end()
+                                        .find('.js-last-send-datetime').text(data.sent);
+                                    $sent_email_ok.removeClass('hidden');
+
+                                    setTimeout(() => {
+                                        $link.removeClass('hidden');
+                                        $sent_email_ok.addClass('hidden');
+                                    }, 1500);
+                                }
+                            })
+                            .always(function () {
+                                is_loading[id] = false;
+                                $loading.hide();
+                            });
+                        });
+                    })(jQuery);
+                </script>
+            {/if}
+        {/if}
+    {else}
+        {if $contact['is_user'] == '1'}
+            <p class="custom-mb-4 text-red"><i class="fas fa-exclamation-triangle text-red"></i> <span class="bold custom-ml-4">[`Webasyst ID is not connected`]</span></p>
+            <p class="small custom-my-4 semibold">
+                {sprintf('[`%sEnable sign-in with Webasyst ID%s so that your teammates can use all Webasyst services and mobile apps and can enable secure sign-in with 2-factor authentication (2FA).`]', "<a href=\"`$wa_backend_url`webasyst/settings/waid/\">", '</a>')}
+            </p>
+            <p class="button small light-gray custom-my-4"><a class="js-webasyst-id-help-link bold" href="javascript:void(0)">[`What is Webasyst ID?`]</a></p>
+        {/if}
+    {/if}
+    </section>
+{/strip}

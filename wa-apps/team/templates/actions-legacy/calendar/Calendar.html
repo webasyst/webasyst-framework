@@ -1,0 +1,232 @@
+{strip}
+
+{$_styles = [
+    [
+        "bg_color" => "#d8e3f0",
+        "font_color" => "#222"
+    ],
+    [
+        "bg_color" => "#dff0d8",
+        "font_color" => "#222"
+    ],
+    [
+        "bg_color" => "#f2dede",
+        "font_color" => "#222"
+    ],
+    [
+        "bg_color" => "#fcf8e3",
+        "font_color" => "#222"
+    ],
+    [
+        "bg_color" => "#5b88b7",
+        "font_color" => "#fff"
+    ],
+    [
+        "bg_color" => "#5bb75b",
+        "font_color" => "#fff"
+    ],
+    [
+        "bg_color" => "#da4f49",
+        "font_color" => "#fff"
+    ],
+    [
+        "bg_color" => "#faa732",
+        "font_color" => "#fff"
+    ]
+]}
+
+{if empty($calendar.bg_color)}
+    {$calendar.bg_color = $_styles[0]["bg_color"]}
+{/if}
+{if empty($calendar.font_color)}
+    {$calendar.font_color = $_styles[0]["font_color"]}
+{/if}
+
+<div class="t-dialog-wrapper is-full-screen t-edit-calendar-dialog" id="t-calendar-edit">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <header class="t-dialog-header">
+            <h1>{if !empty($calendar.id)}[`Edit calendar`]{else}[`New calendar`]{/if}</h1>
+        </header>
+
+        <form action="" method="post">
+            <div class="t-dialog-content">
+                <div class="t-calendar-form">
+
+                    {* NAME *}
+                    <div class="field">
+                        <div class="name">
+                            [`Name`]
+                        </div>
+                        <div class="value">
+                            <input class="bold" type="text" name="data[name]" placeholder="[`Calendar name`]" value="{$calendar.name|escape}">
+                        </div>
+                    </div>
+
+                    {* Style *}
+                    <div class="field">
+                        <div class="name">
+                            [`Style`]
+                        </div>
+                        <div class="value">
+
+                            <div class="t-style-wrapper">
+
+                                <ul class="t-style-list">
+                                    {foreach $_styles as $_style}
+                                        {$_is_selected = ($_style.bg_color == $calendar.bg_color && $_style.font_color == $calendar.font_color )}
+
+                                        <li class="t-style-item {if $_is_selected}is-selected{/if}" style="background: {$_style.bg_color}; color: {$_style.font_color};">
+                                            {if !empty($calendar.name)}
+                                                {$calendar.name|escape}
+                                            {else}
+                                                [`Calendar`]
+                                            {/if}
+                                        </li>
+                                    {/foreach}
+                                </ul>
+
+                                <div class="t-color-toggle">
+                                    <div class="t-toggle">
+                                        <label class="t-label" for="data[bg_color]">[`Background color`]</label>
+                                        <input class="t-color-field" name="data[bg_color]" id="data[bg_color]" type="text" value="{$calendar.bg_color}">
+                                        <i class="icon16 color js-show-color-picker" style="background: {$calendar.bg_color};"></i>
+                                        <div class="t-color-picker is-hidden"></div>
+                                    </div>
+                                    <div class="t-toggle">
+                                        <label class="t-label" for="data[font_color]">[`Font color`]</label>
+                                        <input class="t-color-field" name="data[font_color]" id="data[font_color]" type="text" value="{$calendar.font_color}">
+                                        <i class="icon16 color js-show-color-picker" style="background: {$calendar.font_color};"></i>
+                                        <div class="t-color-picker is-hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {* SOME FIELD *}
+                    <div class="field">
+                        <div class="name">
+                            [`Access`]
+                        </div>
+                        <div class="value">
+
+                            <div class="t-limited-toggle">
+                                <ul class="menu-v compact" style="margin-top: 3px;">
+                                    <li>
+                                        <label>
+                                            <input type="radio" name="data[is_limited]" value="" {if empty($calendar.is_limited)}checked{/if}> [`All users`]
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="radio" name="data[is_limited]" value="on" {if !empty($calendar.is_limited)}checked{/if}> [`Selected user groups only`] <i class="icon10 lock"></i>
+                                        </label>
+                                    </li>
+                                </ul>
+                                <div class="t-hidden-content" style="{if empty($calendar.is_limited)}display: none;{/if}">
+                                    {if $groups || $locations}
+                                        <p class="hint">[`Select user groups which you want to be able to control events in this calendar:`]</p>
+                                        {if !empty($groups)}
+                                            <ul class="menu-v">
+                                                {foreach $groups as $_g}
+                                                    <li class="{if $_g.rights < 0}is-inactive{/if}">
+                                                        <label><input type="checkbox" name="data[groups][{$_g.id}]"{if $_g.rights > 0} checked{/if}{if $_g.rights > 1 || $_g.rights < 0} disabled{/if}> {$_g.name|escape}</label>
+                                                        {if $_g.rights < 0}
+                                                            &nbsp;<span class="hint">
+                                                                [`This group does not have access to Team app.`]
+                                                                {if $wa->user()->isAdmin()}
+                                                                    {sprintf_wp(
+                                                                        'Customize group access rights using the <a class="js-edit-group inline-link" href="%s"><b><i>Manage group</i></b></a> mode.',
+                                                                        "`$wa_app_url`group/`$_g.id`/access/"
+                                                                    )}
+                                                                {/if}
+                                                            </span>
+                                                        {/if}
+                                                    </li>
+                                                {/foreach}
+                                            </ul>
+                                        {/if}
+                                        {if !empty($locations)}
+                                            <ul class="menu-v">
+                                                {foreach $locations as $_g}
+                                                    <li class="{if $_g.rights < 0}is-inactive{/if}">
+                                                        <label><input type="checkbox" name="data[groups][{$_g.id}]"{if $_g.rights > 0} checked{/if}{if $_g.rights > 1 || $_g.rights < 0} disabled{/if}> {$_g.name|escape}</label>
+                                                        {if $_g.rights < 0}
+                                                            &nbsp;<span class="hint">
+                                                                [`This group does not have access to Team app.`]
+                                                                {if $wa->user()->isAdmin()}
+                                                                    {sprintf_wp(
+                                                                        'Customize group access rights using the <a class="js-edit-group inline-link" href="%s"><b><i>Manage group</i></b></a> mode.',
+                                                                        "`$wa_app_url`group/`$_g.id`/access/"
+                                                                    )}
+                                                                {/if}
+                                                            </span>
+                                                        {/if}
+                                                    </li>
+                                                {/foreach}
+                                            </ul>
+                                        {/if}
+                                    {else}
+                                        <p class="hint">[`There are no user groups in your Webasyst installation.`] [`Add groups to be able to manage access to calendars.`]</p>
+                                    {/if}
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">
+                            [`Default status`]
+                        </div>
+                        <div class="value">
+                            <div>
+                                <input type="text" name="data[default_status]" value="{$calendar.default_status|escape}" title="">
+                                <p class="hint" style="margin-top: .25em;">[`Default label for adding a user status in this calendar`]</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <footer class="t-dialog-footer">
+                <div class="t-actions">
+
+                    <div class="t-layout">
+                        <div class="t-column left">
+                            <input type="submit" class="button green t-button" value="{if $calendar.id}[`Save`]{else}[`Create`]{/if}">
+                            <span style="margin: 0 4px;">[`or`]</span>
+                            <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                        </div>
+                        {if $calendar.id}
+                            <div class="t-column right">
+                                <a class="js-delete-calendar" href="javascript:void(0);"><i class="icon16 delete"></i>[`Delete`]</a>
+                            </div>
+                        {/if}
+                    </div>
+
+                </div>
+            </footer>
+
+            <input name="data[id]" type="hidden" value="{$calendar.id}">
+        </form>
+    </div>
+
+    <script>
+        ( function($) {
+            new CalendarEditDialog({
+                $wrapper: $("#t-calendar-edit"),
+                calendar_id: "{$calendar.id}",
+                locales: {
+                    empty: "[`Field is empty`]",
+                    date: "[`Incorrect date`]",
+                    period: "[`Incorrect period`]",
+                    preview: "[`Calendar`]"
+                }
+            });
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

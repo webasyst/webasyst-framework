@@ -1,0 +1,73 @@
+.t-profile-sidebar,
+.t-profile-drawer
+    .sidebar-body,
+    .drawer-content
+        .t-profile-sidebar-section
+            .t-profile-sidebar-title
+                display flex
+                margin-bottom 1rem
+                align-items center
+                flex-wrap wrap
+                svg
+                    color var(--menu-glyph-color)
+                    &:hover
+                        color var(--menu-glyph-color-hover);
+
+                .count
+                    font-weight: bold
+                    color var(--menu-glyph-color)
+                    margin-left .5rem
+
+            &[data-section="calendar"]
+                .t-profile-sidebar-calendar-widget
+                    background var(--background-color-blank)
+                    border-radius .3125em
+                    border 1px solid var(--alert-border-color)
+                    margin-top 1em
+                    padding 0
+                    list-style none
+                    .t-week-row-widget
+                        padding .3125em
+                        font-size .8125em
+                        display flex
+                        align-items center
+                        &:not(:first-child)
+                            border-top 1px solid var(--alert-border-color)
+                        &.is-active
+                            background: var(--background-color-editable)
+                            box-shadow: inset 0 0 0 2px var(--thumbs-highlighted-color);
+                        &:first-child
+                            border-radius .3125em .3125em 0 0
+                        &:last-child
+                            border-radius 0 0 .3125em .3125em
+                        .t-week-row-widget-day
+                            flex-shrink: 0;
+                            width: 14px;
+                            color var(--bricks-glyph-color-hover)
+                            margin 0 .3125em
+                        .t-week-row-widget-number
+                            flex-shrink: 0;
+                            width: 14px;
+                            color var(--bricks-glyph-color)
+                            margin-right .625em
+                        .t-week-row-widget-badge
+                            border-radius 1em
+                            padding 0 0.75em
+                            text-align center
+                            flex 1
+                            text-overflow ellipsis
+                            overflow hidden
+                            white-space nowrap
+                            & + .badge
+                                padding: .4em;
+                            &.square-corner
+                                border-radius 0
+                            &.square-corner-right
+                                border-top-right-radius 0
+                                border-bottom-right-radius 0
+                            &.square-corner-left
+                                border-top-left-radius 0
+                                border-bottom-left-radius 0
+
+    .align-items-baseline
+        align-items baseline

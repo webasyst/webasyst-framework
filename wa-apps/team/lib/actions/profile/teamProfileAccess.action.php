@@ -67,6 +67,11 @@ class teamProfileAccessAction extends waViewAction
             'contact_id' => $user['id'],
         ), true);
 
+        foreach ($invite_tokens as &$invite_token) {
+            $invite_token['expires_in'] = teamUsersInvitedAction::timeLeft($invite_token['expire_datetime']);
+        }
+        unset($invite_token);
+
         $group_model = new waGroupModel();
         $this->view->assign(array(
             'contact'                   => $user,
@@ -197,9 +202,8 @@ class teamProfileAccessAction extends waViewAction
         }
 
         if (isset($log_item_params['reason'])) {
-            $text .= 
-                '<br><br>' . _w('Reason for blocking:') . 
-                '<br><br><em>' . nl2br(htmlspecialchars($log_item_params['reason'])) . '</em>';
+            $text .=
+                '<br><br>' . _w('Reason for blocking:') . ' <em>' . nl2br(htmlspecialchars($log_item_params['reason'])) . '</em>';
         }
 
         return $text;

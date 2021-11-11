@@ -1,47 +1,105 @@
 {strip}
 
-<div class="t-users-page" id="t-users-page">
-    <header class="t-content-header">
-        <div class="t-layout">
-            <div class="t-column left">
+<div class="t-users-page content article break-word" id="t-users-page">
+    <div class="t-content-body article-body">
+        <header class="t-content-header flexbox middle wrap custom-mb-24">
+            <h1 class="wide custom-pr-16">[`All users`]</h1>
 
-                <h1>[`All users`]</h1>
-
+            {* SORTING *}
+            {if !empty($contacts)}
+            <div class="dropdown custom-mt-8 custom-mb-16 small js-sort-by">
+                {$_sort_list = [
+                    'last_seen' => '[`Online`]',
+                    'name'      => '[`Alphabetically`]',
+                    'signed_up' => '[`By signup date`]'
+                ]}
+                <a class="dropdown-toggle button light-gray nowrap" href="{$wa_app_url}?sort={$sort|escape}" data-disable-routing>
+                    {if isset($_sort_list[$sort])}{$_sort_list[$sort]|escape}{else}&mdash;{/if}
+                </a>
+                <div class="dropdown-body{if !$wa->isMobile()} right{/if}">
+                    <ul class="menu">
+                        {foreach $_sort_list as $_id=>$_name}
+                            <li class="t-menu-item {if $sort == $_id}selected{/if}">
+                                <a href="{teamHelper::getUrl('sort', $_id)}">
+                                    {$_name|escape}
+                                </a>
+                            </li>
+                        {/foreach}
+                    </ul>
+                </div>
             </div>
-            <div class="t-column right">
-
-                {* SORTING *}
-                <ul class="menu-h dropdown right">
-                    {$_sort_list = [
-                        'last_seen' => '[`Last seen`]',
-                        'name'      => '[`Name `]',
-                        'signed_up' => '[`Signed up`]'
-                    ]}
-                    <li>
-                        <span style="margin: 0 4px 0 0;">[`Sort by`]:</span>
-                        <a class="t-selected-item inline-link" href="{$wa_app_url}?sort={$sort|escape}" style="display: inline-block;">
-                            <b><i>{if isset($_sort_list[$sort])}{$_sort_list[$sort]|escape}{else}&mdash;{/if}</i></b>
-                            &nbsp;<i class="icon10 darr"></i>
-                        </a>
-                        <ul class="menu-v with-icons">
-                            {foreach $_sort_list as $_id=>$_name}
-                                <li class="t-menu-item {if $sort == $_id}selected{/if}">
-                                    <a href="{teamHelper::getUrl('sort', $_id)}">
-                                        {$_name|escape}
-                                    </a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                    </li>
-                </ul>
-
-            </div>
-        </div>
-    </header>
-
-    <div class="t-content-body">
+            {/if}
+        </header>
         {if !empty($contacts)}
-            {include file="./Users.inc.html" contacts=$contacts}
+            {if !empty($online) && $sort === 'last_seen'}
+                {include file="./Users.inc.html" contacts=$online}
+            {elseif $sort !== 'last_seen'}
+                {include file="./Users.inc.html" contacts=$contacts}
+            {else}
+                <p class="t-description">[`No users online.`]</p>
+            {/if}
+
+            {if !empty($offline) && $sort === 'last_seen'}
+                <h3 class="t-header">[`Offline`]</h3>
+
+                <ul class="list t-offline-list js-users-list-offline">
+                    {foreach $offline as $user}
+                        {$user_data = waUser::getNameAndStatus($user, true)}
+                        <li class="t-user-wrapper flexbox middle space-16 custom-py-12{if $user.is_user >= 1 && !$wa->isMobile()} js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
+                            <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="image custom-mb-auto" title="{$user_data.formatted_user_name|escape}">
+                                <span class="userpic icon size-72 valign-middle" style="background-image: url('{$user.photo_url_96}');">
+                                    {if !empty($user_data.user.birth_day) && $user_data.user.birth_day == waDateTime::format('j') && $user_data.user.birth_month == waDateTime::format('n')}
+                                        <span class="userstatus birthday t-user-birthday-icon" title="{sprintf(_ws('%s\'s birthday — %s'), $user_data.formatted_user_name, $user_data.user_birthday_str)}">
+                                            <i class="fas fa-birthday-cake"></i>
+                                        </span>
+                                    {/if}
+                                </span>
+                            </a>
+                            <div class="details">
+                                <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="t-name bold custom-my-0" title="{$user.name|escape}">
+                                    {$user_data.formatted_user_name|escape}&#32;
+
+                                    <span class="small semibold gray">@{$user.login|escape}</span>
+                                </a>
+
+                                <div>
+                                    {if !empty($user_data.user._event)}
+                                    {$_badge_status_styles = ''}
+                                    {if !empty($user_data.user._event.status_bg_color)}
+                                    {$_badge_status_styles = "color: `$user_data.user._event.status_font_color`; background: `$user_data.user._event.status_bg_color`;"}
+                                    {else}
+                                    {$_badge_status_styles = "color: `$user_data.user._event.font_color`; background: `$user_data.user._event.bg_color`;"}
+                                    {/if}
+
+                                    <span class="badge user small custom-mr-4" style="{$_badge_status_styles}">
+                                        {if $user_data.user._event.icon}
+                                        <i class="{$user_data.user._event.icon|escape}"></i>
+                                        {else}
+                                        <i class="fas fa-calendar-alt"></i>
+                                        {/if}
+                                        {$user_data.user._event.summary|escape}
+                                    </span>
+                                    {/if}
+
+                                    {if !empty($user.jobtitle)}
+                                    <span class="t-job small custom-my-0">{$user.jobtitle|escape}</span>
+                                    {/if}
+
+                                    <p class="hint custom-my-0">
+                                        [`Last seen`]
+                                        &nbsp;
+                                        {if empty($user.last_datetime)}
+                                            [`never`]
+                                        {else}
+                                            {$user.last_datetime_formatted}
+                                        {/if}
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                    {/foreach}
+                </ul>
+            {/if}
         {else}
             <p class="t-description">[`No users.`]</p>
         {/if}
@@ -51,8 +109,23 @@
         ( function($) {
             $.team.setTitle("[`Users`]");
             $.team.sidebar.updateCount("{$wa_app_url}", {count($contacts)});
+
+            new UserList({
+                $wrapper: $(".js-users-list")
+            });
+
+            new UserList({
+                $wrapper: $(".js-users-list-offline")
+            });
+
+            {if !empty($contacts)}
+                $(".js-sort-by").waDropdown({
+                    items: ".menu > li > a"
+                });
+            {/if}
         })(jQuery);
     </script>
+
 </div>
 
 {/strip}

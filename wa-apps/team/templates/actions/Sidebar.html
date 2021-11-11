@@ -1,111 +1,155 @@
 {strip}
 
-{$module = waRequest::param('module')}
-{$action = waRequest::param('action')}
-{$_is_admin = $wa->user()->isAdmin($wa->app())}
-{$_has_rights = teamHelper::hasRights()}
-{$_can_sort = ( $_is_admin || $_has_rights)}
+    {$module = waRequest::param('module')}
+    {$action = waRequest::param('action')}
+    {$_is_admin = $wa->user()->isAdmin($wa->app())}
+    {$_has_rights = teamHelper::hasRights()}
+    {$_can_sort = ( $_is_admin || $_has_rights)}
 
-<div class="t-sidebar-block" id="t-sidebar">
+    {if !$is_reload}
+    <nav class="sidebar-mobile-toggle">
+        <div class="box align-center">
+            <a href="javascript:void(0);">
+                <i class="fas fa-bars"></i>&nbsp;
+                [`Show navigation`]
+            </a>
+        </div>
+    </nav>
 
-    {* main nav *}
-    <div class="block">
-        <ul class="menu-v with-icons">
-            {if teamHelper::hasRights('add_users')}
-                <li class="bottom-padded top-padded">
-                    <a class="bold js-no-highlight" href="javascript:void(0)" id="t-new-user-link"><i class="icon16 add"></i>[`New user`]</a>
-                </li>
-            {/if}
+    {if teamHelper::hasRights('add_users')}
+        <div class="sidebar-header box custom-pt-20">
+            <button href="#" class="button full-width align-center" id="t-new-user-link">
+                <i class="fas fa-user-plus fa-w-20 custom-mr-4"></i>&nbsp;<span class="s-title small">[`Invite`]</span>
+            </button>
+        </div>
+    {/if}
+    {/if}
+
+    <div class="sidebar-body hide-scrollbar t-sidebar-block" id="t-sidebar">
+        {* main nav *}
+        <ul class="menu mobile-friendly custom-my-8">
             <li class="{if $module == 'users' && !$action}selected{/if}" id="all-users-sidebar-link">
-                <span class="count js-count">{$all_count}</span>
-                <a href="{$wa_app_url}"><i class="icon16 contact"></i>[`All users`]</a>
-            </li>
-            <li class="{if $module == 'users' && $action == 'online'}selected{/if}">
-                <span class="count">{$online_count}</span>
-                <a href="{$wa_app_url}online/"><i class="icon16 status-green"></i>[`Online`]</a>
+                <a href="{$wa_app_url}">
+                    <span class="count js-count">{$all_count}</span>
+                    <i class="fas fa-users"></i>
+                    <span>[`All users`]</span>
+                </a>
             </li>
             <li class="{if $module == "calendar"}selected{/if}">
-                <a href="{$wa_app_url}calendar/"><i class="icon16 calendar"></i>[`Calendar`]</a>
+                <a href="{$wa_app_url}calendar/">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>[`Calendar`]</span>
+                </a>
             </li>
 
             <!-- plugin hook: 'backend_sidebar.top_li' -->
             {* @event backend_sidebar.%plugin_id%.top_li *}
             {foreach $backend_sidebar as $_}{ifset($_.top_li)}{/foreach}
         </ul>
-    </div>
 
-    {* search *}
-    <div class="block">
-        <form class="t-search-form">
-            <input class="t-search-field" type="text" placeholder="[`Search users`]">
-            <input class="t-search-submit" type="submit" value="">
-        </form>
-    </div>
+        {* search *}
+        <div class="box">
+            <form class="t-search-form state-with-inner-icon left width-100">
+                <input class="t-search-field small full-width custom-mr-0" type="search" placeholder="[`Search users`]">
+                <button class="icon t-search-submit" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
 
-    <!-- plugin hook: 'backend_sidebar.section' -->
-    {* @event backend_sidebar.%plugin_id%.section *}
-    {if !empty($backend_sidebar)}{foreach $backend_sidebar as $_}{ifset($_.section)}{/foreach}{/if}
+        <!-- plugin hook: 'backend_sidebar.section' -->
+        {* @event backend_sidebar.%plugin_id%.section *}
+        {if !empty($backend_sidebar)}{foreach $backend_sidebar as $_}{ifset($_.section)}{/foreach}{/if}
 
-    {* groups *}
-    <div class="block js-drop-block">
-        {if teamHelper::hasRights('add_groups')}<a href="javascript:void(0);" class="count js-add-user-group"><i class="icon16 add"></i></a>{/if}
-        <h5 class="heading top-padded"><b>[`Groups`]</b></h5>
-        {if $groups}
-            <ul class="menu-v with-icons collapsible t-groups-list">
-                {foreach $groups as $_g}
-                    {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_g.id`")}
+        {* groups *}
+        <div class="js-drop-block">
+            <header class="heading custom-mt-16">
+                <span>
+                    [`Groups`]
+                </span>
+                {if teamHelper::hasRights('add_groups')}
+                    <a href="javascript:void(0);" class="count action js-add-user-group" title="[`Add group`]">
+                        <i class="fas fa-plus-circle"></i>
+                    </a>
+                {/if}
+            </header>
+            {if $groups}
+                <ul class="menu mobile-friendly collapsible t-groups-list">
+                    {foreach $groups as $_g}
+                        {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_g.id`")}
+                        {$icon = 'fas fa-user'}
+                        {if $_g.icon}
+                            {if strpos($_g.icon, 'fa-') !== false}
+                                {$icon = $_g.icon}
+                            {else}
+                                {$icon = 'fas fa-user-friends'}
+                            {/if}
+                        {/if}
 
-                    <li class="{if $_can_add}js-drop-place{/if}" data-group-id="{$_g.id}">
-                        <span class="count js-count">{$_g.cnt}</span>
-                        <a href="{$wa_app_url}group/{$_g.id}/">
-                            <i class="icon16 {if $_g.icon}{$_g.icon}{else}user{/if}"></i>
-                            {$_g.name|escape}
-                        </a>
-                    </li>
-                {/foreach}
-            </ul>
-        {else}
-            <p class="hint align-center" style="margin: .5em 0 0;">[`No groups here`]</p>
-        {/if}
-    </div>
+                        <li class="{if $_can_add}js-drop-place{/if}" data-group-id="{$_g.id}">
+                            <a href="{$wa_app_url}group/{$_g.id}/">
+                                <span class="count js-count">{$_g.cnt}</span>
+                                <i class="{$icon|escape}"></i>
+                                <span>{$_g.name|escape}</span>
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+            {else}
+                <div class="box custom-m-16">
+                    <p class="hint align-center">[`No groups here`]</p>
+                </div>
+            {/if}
+        </div>
 
-    {* locations *}
-    <div class="block js-drop-block">
-        {if teamHelper::hasRights('add_groups')}<a href="javascript:void(0);" class="count js-add-user-location"><i class="icon16 add"></i></a>{/if}
-        <h5 class="heading top-padded"><b>[`Locations`]</b></h5>
-        {if $locations}
-            <ul class="menu-v collapsible t-locations-list">
-                {foreach $locations as $_l}
-                    {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_l.id`")}
+        {* locations *}
+        <div class="js-drop-block">
+            <header class="heading">
+                <span>
+                    [`Locations`]
+                </span>
+                {if teamHelper::hasRights('add_groups')}
+                    <a href="javascript:void(0);" class="count action js-add-user-location" title="[`Add location`]">
+                        <i class="fas fa-plus-circle"></i>
+                    </a>
+                {/if}
+            </header>
+            {if $locations}
+                <ul class="menu mobile-friendly collapsible t-locations-list">
+                    {foreach $locations as $_l}
+                        {$_can_add = teamHelper::hasRights("edit_users_in_group.`$_l.id`")}
 
-                    <li class="{if $_can_add}js-drop-place{/if}" data-group-id="{$_l.id}">
-                        <span class="count js-count">{$_l.cnt}</span>
-                        <a href="{$wa_app_url}group/{$_l.id}/">{$_l.name|escape}</a>
-                    </li>
-                {/foreach}
-            </ul>
-        {else}
-            <p class="hint align-center" style="margin: .5em 0 0;">[`No locations here`]</p>
-        {/if}
-    </div>
+                        <li class="{if $_can_add}js-drop-place{/if}" data-group-id="{$_l.id}">
+                            <a href="{$wa_app_url}group/{$_l.id}/">
+                                <span class="count js-count">{$_l.cnt}</span>
+                                <span>{$_l.name|escape}</span>
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+            {else}
+                <div class="box custom-m-16">
+                    <p class="hint align-center">[`No locations here`]</p>
+                </div>
+            {/if}
+        </div>
 
-    {* user status *}
-    <div class="block">
-        <ul class="menu-v with-icons">
-            {* <li>
-                <span class="count js-count">≈25300</span>
-                <a href="javascript:void(0);"><i class="icon16 contact"></i>[`All contacts`]</a>
-            </li> *}
-            {if $invited_count}
-                <li>
-                    <span class="count js-count">{$invited_count}</span>
-                    <a href="{$wa_app_url}invited/"><i class="icon16 status-yellow-tiny"></i>[`Invitations`]</a>
+        {* user status *}
+        <ul class="menu mobile-friendly">
+            {if teamHelper::hasRights('add_users') && $invited_count}
+                <li data-invited-item>
+                    <a href="{$wa_app_url}invited/">
+                        <span class="count js-count">{$invited_count}</span>
+                        <i class="fas fa-clock text-orange"></i>
+                        <span>[`Invitations`]</span>
+                    </a>
                 </li>
             {/if}
-            {if $inactive_count}
-                <li>
-                    <span class="count js-count">{$inactive_count}</span>
-                    <a href="{$wa_app_url}inactive/"><i class="icon16 status-gray-tiny"></i>[`Inactive users`]</a>
+            {if teamHelper::hasRights() && $inactive_count}
+                <li data-inactive-item>
+                    <a href="{$wa_app_url}inactive/">
+                        <span class="count js-count">{$inactive_count}</span>
+                        <i class="fas fa-ban"></i>
+                        <span>[`Inactive users`]</span>
+                    </a>
                 </li>
             {/if}
 
@@ -115,42 +159,65 @@
         </ul>
     </div>
 
-    {if teamHelper::hasRights()}
-        <div class="hr"></div>
-        <div class="block">
-            <ul class="menu-v with-icons">
-                {if $wa->user()->isAdmin('webasyst')}
-                    <li>
-                        <a href="{$wa_app_url}access/"><i class="icon16 access"></i>[`Access`]</a>
-                    </li>
-                    <li>
-                        <a href="{$wa_app_url}api-tokens/"><i class="icon16 tags"></i>[`API tokens`]</a>
-                    </li>
-                {/if}
-                {* <li>
-                    <a href="javascript:void(0);"><i class="icon16 reports"></i>[`Reports`]</a>
-                </li> *}
-                <li{if $module=='plugins'} class="selected"{/if}>
-                    <a href="{$wa_app_url}plugins/#/"><i class="icon16 plugins"></i>[`Plugins`]</a>
+    {if teamHelper::hasRights() && !$is_reload}
+    <div class="sidebar-footer shadowed">
+        <ul class="menu">
+            {if $wa->user()->isAdmin('webasyst')}
+                <li>
+                    <a href="{$wa_app_url}access/">
+                        <i class="fas fa-key"></i>
+                        <span>[`Access`]</span>
+                    </a>
                 </li>
                 <li>
-                    <a href="{$wa_app_url}settings/"><i class="icon16 settings"></i>[`Settings`]</a>
+                    <a href="{$wa_app_url}api-tokens/">
+                        <i class="fas fa-tags"></i>
+                        <span>[`API tokens`]</span>
+                    </a>
                 </li>
-            </ul>
-        </div>
-    {/if}
+            {/if}
+            {* <li>
+                <a href="javascript:void(0);"><i class="icon16 reports"></i>[`Reports`]</a>
+            </li> *}
+            <li{if $module=='plugins'} class="selected"{/if}>
+                <a href="{$wa_app_url}plugins/#/">
+                    <i class="fas fa-plug"></i>
+                    <span>[`Plugins`]</span>
+                </a>
+            </li>
+            <li>
+                <a href="{$wa_app_url}settings/">
+                    <i class="fas fa-cog"></i>
+                    <span>[`Settings`]</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 
     {* Initialization of the internal content of the sidebar *}
     <script>
         ( function($) {
-            $.team.sidebar = new Sidebar({
-                $wrapper: $("#t-sidebar"),
+            $.team.sidebar = new Sidebar($("#t-sidebar-wrapper"), {
                 app_url: {$wa_app_url|json_encode},
-                can_sort: {if $_can_sort}true{else}false{/if}
+                updateTime: 1000 * 60 * 5,
+                can_sort: {if $_can_sort && !$wa->isMobile()}true{else}false{/if},
+                api: {
+                    reload: '?module=sidebar',
+                    inviteDialog: '?module=users&action=inviteform',
+                    group: '?module=group&action=edit',
+                    sort: '?module=group&action=sortSave',
+                    moveUser: '?module=group&action=userAdd'
+                },
+                classes: {
+                    selected: 'selected',
+                    drop: 'js-drop-place',
+                    highlighted: 'highlighted',
+                    noHighlight: 'js-no-highlight',
+                    uiDraggable: 'ui-draggable',
+                    initGroupDialog: 'js-add-user-group'
+                }
             });
         })(jQuery);
     </script>
-
-</div>
-
+    {/if}
 {/strip}

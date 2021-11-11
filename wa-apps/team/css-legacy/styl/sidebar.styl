@@ -1,0 +1,74 @@
+.t-sidebar-block
+    position relative
+
+    &.fixed-to-top
+        position fixed
+        left 0
+        top 0
+
+    &.fixed-to-bottom
+        position fixed
+        left 0
+        bottom 0
+
+    .t-indicator
+        margin-left: 4px;
+
+        &.is-green
+            &:before
+                content "+"
+
+        &.is-red
+            color red
+
+    ul > li.is-hovered
+        background: rgba(0,0,0,0.1);
+
+    .t-drop-here
+        position relative
+
+        &:before
+            content ""
+            position absolute
+            top 0
+            left 0
+            width 100%
+            height 100%
+            background #ffffe0
+            border 1px dashed rgba(0,0,0,.1)
+            z-index -1
+
+    .t-search-form
+        $_icon_w = 24px
+        position: relative
+        overflow visible
+
+        .t-search-field
+            display: inline-block
+            vertical-align: top
+            margin: 0
+            box-sizing: border-box
+            outline: none
+            width: 100%
+            padding-left: $_icon_w
+
+        .t-search-submit
+            display: inline-block
+            vertical-align: top
+            margin: 0
+            padding: 0
+            border: 0
+            background: transparent url("../img/icons/search-icon.png") 50% no-repeat
+            font-size: 1rem
+            line-height: 1.25em
+            box-sizing: border-box
+            outline: none
+
+            position: absolute
+            top: 0
+            left: 1px
+
+            cursor: pointer
+            width: $_icon_w
+            height: 100%
+            opacity: 0.4

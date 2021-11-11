@@ -1,0 +1,107 @@
+{strip}
+
+<div class="t-dialog-wrapper t-event-days-popup" id="t-event-days">
+
+    <div class="t-dialog-header">
+        <h4>{waDateTime::date('j f Y', $day)}</h4>
+    </div>
+
+    <div class="t-dialog-content">
+        <ul class="t-events">
+            {foreach $events as $_event}
+
+                {$_type = null}
+                {$_single_day = false}
+                {$_current = date("Y-m-d", strtotime($day))}
+                {$_start = date("Y-m-d", strtotime($_event.start))}
+                {$_end = date("Y-m-d", strtotime($_event.end))}
+
+                {if $_current == $_start && $_start == $_end}
+                    {$_type = 2}
+                    {$_single_day = true}
+                {elseif $_current == $_start && $_start != $_end}
+                    {$_type = 1}
+                {elseif $_current != $_start && $_current == $_end}
+                    {$_type = 3}
+                {elseif $_current != $_start && $_start != $_end}
+                    {$_type = 0}
+                {/if}
+
+                {$_calendar = [
+                    "id" => null,
+                    "bg_color" => "#f00",
+                    "font_color" => "#fff"
+                ]}
+                {if !empty($_event.calendar_id) && !empty($calendars[$_event.calendar_id])}
+                    {$_calendar = $calendars[$_event.calendar_id]}
+                {/if}
+
+                {$_is_birthday = ( $_event.calendar_id == "birthday" )}
+                {$_is_part_of_day = ( !$_event.is_allday && $_single_day )}
+
+                {$_styles = []}
+                {if $_event.is_status}
+                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                    {$_styles[] = "color: `$_calendar.font_color`;"}
+                {else}
+                    {$_styles[] = "color: `$_calendar.bg_color`;"}
+                {/if}
+
+                {$_classes = []}
+                {if !empty($_event.id) && !empty($_calendar.id)}
+                    {$_classes[] = "js-view-event"}
+                {/if}
+                {if $_single_day}
+                    {$_classes[] = "is-single"}
+                {/if}
+                {if $_event.is_status}
+                    {$_classes[] = "is-status"}
+                {else}
+                    {$_classes[] = "is-event"}
+                {/if}
+
+                <li class="t-event-wrapper {if !empty($_type)}type-{$_type}{/if}" {if !empty($_event.id)}data-id="{$_event.id}"{/if}>
+
+                    <div class="t-event-block {$_classes|join:" "}" style="{$_styles|join:""}">
+                        {if !empty($_event.icon_class)}
+                            <i class="icon16 {if !empty($_event.icon_image)}kill-wa-style{/if} {$_event.icon_class}" style="{if !empty($_event.icon_image)}background-image: url({$_event.icon_image});{/if}"></i>
+                        {elseif $_is_birthday}
+                            <i class="icon16 cake"></i>
+                        {/if}
+
+                        {if !empty($users[$_event.contact_id])}
+                            {$_user = $users[$_event.contact_id]}
+                            {if $_is_birthday}
+                                <span class="t-login">{$_user.name|escape}</span>
+                            {elseif !empty($_user.photo_url_16)}
+                                <i class="icon16 userpic20" style="background-image: url({$_user.photo_url_16})"></i>
+                            {/if}
+                        {/if}
+
+                        {if !$_is_birthday && $_is_part_of_day && $_event.start}
+                            {$_styles2 = []}
+                            {*{$_styles2[] = "background: `$_calendar.bg_color`;"}*}
+                            {*{$_styles2[] = "color: `$_calendar.font_color`;"}*}
+                            <span class="t-start" style="{$_styles2|join:""}">{wa_date("H:i", strtotime($_event.start))}</span>
+                        {/if}
+
+                        {if !$_is_birthday}
+                            {$_event.summary|escape}
+                        {/if}
+                    </div>
+
+                </li>
+            {/foreach}
+        </ul>
+    </div>
+
+    <script>
+        ( function($) {
+            new DayEventsDialog({
+                $wrapper: $("#t-event-days")
+            });
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

@@ -2,22 +2,40 @@
 
 {$_selected_calendar = $all_calendars[$event.calendar_id]}
 
-<div class="t-dialog-wrapper is-full-screen t-event-popup" id="t-event-view">
-    <div class="t-dialog-background"></div>
-    <div class="t-dialog-block">
-        <header class="t-dialog-header">
-            <div class="t-status-toggle">
-                <span class="t-toggle-button {if !$event.is_status}is-active{else}is-inactive{/if}" data-status-id="0">
-                    <span class="t-name">[`Event`]</span>
-                </span>
-                <span class="t-toggle-button {if $event.is_status}is-active{else}is-inactive{/if}" data-status-id="1">
-                    <span class="t-name">[`Status`]</span>
-                </span>
+<div class="dialog" id="t-event-view">
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header">
+            <div class="flexbox">
+                <div class="wide">
+                    <h2>
+                        {if $event.is_status}[`Status`]{/if}
+                        {if !$event.is_status}[`Event`]{/if}
+                    </h2>
+                </div>
+                <div class="toggle opacity-60" style="pointer-events: none;">
+                    <span data-status-id="1"{if $event.is_status} class="selected"{/if}>[`Status`]</span>
+                    <span data-status-id="0"{if !$event.is_status} class="selected"{/if}>[`Event`]</span>
+                </div>
             </div>
         </header>
 
-        <div class="t-dialog-content">
-            <div class="t-event-form">
+        <div class="dialog-content fields">
+
+            {if $user}
+                {* USER *}
+                <div class="field">
+                    <div class="name">
+                        [`User`]
+                    </div>
+                    <div class="value middle">
+                        <div class="flexbox middle space-8">
+                            <i class="userpic userpic20" style="background-image: url({$user.photo_url_16});"></i>
+                            <span>{$user.name|escape}</span>
+                        </div>
+                    </div>
+                </div>
+            {/if}
 
                 {* CALENDAR *}
                 <div class="field">
@@ -25,41 +43,33 @@
                         [`Calendar`]
                     </div>
                     <div class="value">
-
-                        <div class="t-calendar-name">
-                            <i class="icon16 userpic20" style="{if !empty($_selected_calendar.bg_color)}background: {$_selected_calendar.bg_color};{/if}"></i>
-                            <span class="t-name">{$_selected_calendar.name|escape}</span>
-                        </div>
-
+                        {if $event.is_status}
+                            {if !empty($_selected_calendar.status_bg_color)}
+                            {$style = "color: `$_selected_calendar.status_font_color`; background: `$_selected_calendar.status_bg_color`;"}
+                            {else}
+                            {$style = "color: `$_selected_calendar.font_color`; background: `$_selected_calendar.bg_color`;"}
+                            {/if}
+                        {else}
+                            {if !empty($_selected_calendar.status_bg_color)}
+                            {$style = "color: `$_selected_calendar.font_color`; background: `$_selected_calendar.bg_color`;"}
+                            {else}
+                            {$style = "color: `$_selected_calendar.bg_color`; background: transparent; box-shadow: inset 0 0 0 1px currentColor;"}
+                            {/if}
+                        {/if}
+                        <span class="badge user" style="{$style|default:''}">
+                            <i class="{if !empty($_selected_calendar.icon)}{$_selected_calendar.icon|escape}{else}fas fa-calendar-alt{/if}"></i>
+                            <span>{$_selected_calendar.name|escape}</span>
+                        </span>
                     </div>
                 </div>
-
-                {if $user}
-                    {* USER *}
-                    <div class="field">
-                        <div class="name">
-                            [`User`]
-                        </div>
-                        <div class="value">
-
-                            <div class="t-user-name">
-                                <i class="icon16 userpic20" style="background-image: url({$user.photo_url_16});"></i>
-                                <span class="t-name">{$user.name|escape}</span>
-                            </div>
-
-                        </div>
-                    </div>
-                {/if}
 
                 {* NAME *}
                 <div class="field">
                     <div class="name">
                         [`Event`]
                     </div>
-                    <div class="value">
-
-                        <div class="t-event-name">{$event.summary|escape}</div>
-
+                    <div class="value middle">
+                        {$event.summary|escape}
                     </div>
                 </div>
 
@@ -69,10 +79,8 @@
                         <div class="name">
                             [`Description`]
                         </div>
-                        <div class="value">
-
-                            <div class="t-description">{$event.description|escape|nl2br}</div>
-
+                        <div class="value middle">
+                            {$event.description|escape|nl2br}
                         </div>
                     </div>
                 {/if}
@@ -83,10 +91,8 @@
                         <div class="name">
                             [`Location`]
                         </div>
-                        <div class="value">
-
-                            <div class="t-location">{$event.location|escape}</div>
-
+                        <div class="value middle">
+                            {$event.location|escape}
                         </div>
                     </div>
                 {/if}
@@ -108,10 +114,8 @@
                             [`When`]
                         {/if}
                     </div>
-                    <div class="value">
-                        <div class="t-date">
-                            {$event_start}
-                        </div>
+                    <div class="value middle">
+                        {$event_start}
                     </div>
                 </div>
 
@@ -121,10 +125,8 @@
                         <div class="name">
                             [`End`]
                         </div>
-                        <div class="value">
-                            <div class="t-date">
-                                {$event_end}
-                            </div>
+                        <div class="value middle">
+                            {$event_end}
                         </div>
                     </div>
                 {/if}
@@ -134,7 +136,7 @@
                         <div class="name">
                             [`Source`]
                         </div>
-                        <div class="value">
+                        <div class="value middle">
                             <div class="t-source-wrapper">
                                 <div class="line">
                                     {if !empty($event.external_calendar_info.plugin.icon)}
@@ -149,23 +151,13 @@
                         </div>
                     </div>
                 {/if}
-            </div>
         </div>
 
-        <footer class="t-dialog-footer">
-            <div class="t-actions">
-
-                <div class="t-layout">
-                    <div class="t-column left">
-                        {if $can_edit}
-                            <input class="button gray js-edit-event" type="button" value="[`Edit`]">
-                            <span style="margin: 0 4px;">[`or`]</span>
-                        {/if}
-                        <a class="js-close-dialog" href="javascript:void(0);">[`close`]</a>
-                    </div>
-                </div>
-
-            </div>
+        <footer class="dialog-footer">
+            {if $can_edit}
+                <input class="button gray js-edit-event" type="button" value="[`Edit`]">
+            {/if}
+            <input class="button light-gray js-close-dialog" type="button" value="[`Close`]">
         </footer>
     </div>
 

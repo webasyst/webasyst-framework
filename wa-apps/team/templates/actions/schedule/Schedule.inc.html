@@ -118,10 +118,22 @@
 
                                                 {$_styles = []}
                                                 {if $_event.is_status}
-                                                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                                                    {if $_calendar.status_bg_color}
+                                                    {$_styles[] = "color: `$_calendar.status_font_color`;"}
+                                                    {$_styles[] = "background: `$_calendar.status_bg_color`;"}
+                                                    {else}
                                                     {$_styles[] = "color: `$_calendar.font_color`;"}
+                                                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                                                    {/if}
                                                 {else}
+                                                    {if !empty($_calendar.status_bg_color)}
+                                                    {$_styles[] = "color: `$_calendar.font_color`;"}
+                                                    {$_styles[] = "background: `$_calendar.bg_color`;"}
+                                                    {else}
                                                     {$_styles[] = "color: `$_calendar.bg_color`;"}
+                                                    {$_styles[] = "background: transparent;"}
+                                                    {$_styles[] = "box-shadow: inset 0 0 0 1px currentColor;"}
+                                                    {/if}
                                                 {/if}
 
                                                 {$_classes = []}
@@ -138,7 +150,7 @@
                                                 {/if}
 
                                                 <td class="t-column" colspan="{$_event.colspan}">
-                                                    <div class="t-event-wrapper {if $_can_edit && !$_is_birthday}js-move-event{/if}"
+                                                    <div class="t-event-wrapper{if $_can_edit && !$_is_birthday} js-move-event{/if}{if $_event.day_count > $_event.colspan} square-corner{/if}"
                                                         {if !empty($_event.id)}data-id="{$_event.id}"{/if}
                                                         {if $_can_edit && !$_is_birthday && !empty($_event.day_count) && $_event.day_count > 1}data-day-count="{$_event.day_count}"
                                                         data-move-hint="{_w('%d day', '%d days', $_event.day_count)}"{/if}>
@@ -148,19 +160,19 @@
                                                             {$_user = $users[$_event.contact_id]}
                                                         {/if}
 
-                                                        <div class="t-event-block {$_classes|join:" "}" style="{$_styles|join:""}">
-                                                            {if !empty($_event.icon_class)}
-                                                                <i class="icon16 {if !empty($_event.icon_image)}kill-wa-style{/if} {$_event.icon_class}" style="{if !empty($_event.icon_image)}background-image: url({$_event.icon_image});{/if}"></i>
+                                                        <div class="t-event-block {$_classes|join:" "}" style="{$_styles|join:""}{if $_user}{if $_is_birthday} color: var(--white); background-image: linear-gradient(90deg, #FA5959 0%, #E419AB 100%);{/if}{/if}">
+                                                            {if !empty($_event.icon)}
+                                                                <i class="{$_event.icon|escape}"></i>
                                                             {elseif $_is_birthday && $_user}
                                                                 {$title = sprintf(_w("%s's birthday — %s"), $_user.name|escape, $_event.birthday_str)}
-                                                                <i class="icon16 cake" title="{$title}"></i>
+                                                                <i class="fas fa-birthday-cake" title="{$title}"></i>
                                                             {/if}
 
                                                             {if $_user}
                                                                 {if $_is_birthday}
-                                                                    <span class="t-login">{$_user.name|escape}</span>
+                                                                    <span class="t-login custom-ml-4{if $_event.colspan == '1'} desktop-and-tablet-only{/if}">{$_user.name|escape}</span>
                                                                 {elseif !empty($_user.photo_url_16)}
-                                                                    <i class="icon16 userpic20" style="background-image: url({$_user.photo_url_16})" title="{$_user.name|escape}"></i>
+                                                                    <i class="userpic userpic20" style="background-image: url({$_user.photo_url_16})" title="{$_user.name|escape}"></i>
                                                                 {/if}
                                                             {/if}
 
@@ -172,7 +184,7 @@
                                                             {/if}
 
                                                             {if !$_is_birthday}
-                                                                {$_event.summary|escape}
+                                                            <span class="nowrap custom-ml-4{if $_event.colspan == '1'} desktop-and-tablet-only{/if}">{$_event.summary|escape}</span>
                                                             {/if}
                                                         </div>
 
@@ -202,8 +214,8 @@
                                 {$_full_count = count($_events_in_week["all"][$_day@index])}
                                 <td class="t-column">
                                     {if $_full_count > $_view_count}
-                                        <div class="t-action-wrapper">
-                                            <span class="t-action show-full-days-events" data-date="{$_day.date}" data-events-id="{$_events_in_week["all"][$_day@index]|join:","}">+ [`more`] {$_full_count - $_view_count}</span>
+                                        <div class="t-action-wrapper align-center">
+                                            <span class="t-action show-full-days-events" data-date="{$_day.date}" data-events-id="{$_events_in_week["all"][$_day@index]|join:","}"><span class="desktop-and-tablet-only">+</span> [`more`] <span class="desktop-and-tablet-only">{$_full_count - $_view_count}</span></span>
                                         </div>
                                     {/if}
                                 </td>

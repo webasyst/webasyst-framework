@@ -7,7 +7,7 @@ class teamProfileStatsAction extends waViewAction
     public function execute()
     {
         // Get parameters from GET/POST
-        list($start_date, $end_date, $group_by) = self::getTimeframeParams();
+        list($start_date, $end_date, $group_by) = $this->getTimeframeParams();
 
         $contact_id = waRequest::request('id', null, waRequest::TYPE_INT);
 
@@ -28,7 +28,7 @@ class teamProfileStatsAction extends waViewAction
         ));
     }
 
-    protected static function getChartData($start_date, $end_date, $group_by, $contact_id = null)
+    public static function getChartData($start_date, $end_date, $group_by, $contact_id = null, $count_events = false)
     {
         // Fetch stats for the chart
         $log_model = new teamWaLogModel();
@@ -53,6 +53,9 @@ class teamProfileStatsAction extends waViewAction
                 'is_visible' => $app_id_requested === null || $app_id_requested == $app_id,
                 'data' => array(),
             );
+            if($count_events) {
+                $chart_data[$app_id]['events_counter'] = 0;
+            }
         }
 
         // Loop over all dates of the period and gather $chart_data[*]['data']
@@ -73,11 +76,22 @@ class teamProfileStatsAction extends waViewAction
                     'date' => $date,
                     'value' => ifset($apps[$app_id], 0),
                 );
+                if($count_events) {
+                    $data['events_counter'] += ifset($apps[$app_id], 0);
+                }
             }
         }
 
+        $total_events_count = 0;
         foreach ($chart_data as $app_id => &$data) {
             $data['data'] = array_values($data['data']);
+            if($count_events) {
+                $total_events_count += $data['events_counter'];
+            }
+        }
+
+        if($count_events) {
+            return ['total_events_count' => $total_events_count, 'chart_data' => array_values($chart_data)];
         }
 
         return array_values($chart_data);

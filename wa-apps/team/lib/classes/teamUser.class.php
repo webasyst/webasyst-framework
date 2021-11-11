@@ -48,8 +48,8 @@ class teamUser
         if ($set == 'minimal') {
             return 'id,name,firstname,lastname,middlename,login,is_user,photo_url_16,photo_url_32,photo_url_96,birth_day,birth_month';
         } else {
-            return 'id,name,firstname,lastname,middlename,company,is_company,is_user,login,locale,jobtitle,last_datetime'
-            .',photo_url_16,photo_url_32,photo_url_96,photo_url_144,_event,birth_day,birth_month,_online_status';
+            return 'id,name,firstname,lastname,middlename,company,is_company,is_user,login,locale,jobtitle,create_datetime,last_datetime'
+            .',photo_url_16,photo_url_32,photo_url_96,photo_url_144,_event,birth_day,birth_month,_online_status,email';
         }
     }
 
@@ -124,7 +124,7 @@ class teamUser
                 $order_by = 'name ASC';
                 break;
         }
-        
+
         $order_by = explode(' ', $order_by);
         $order_by[1] = strtoupper(ifset($order_by[1], 'ASC'));
 
@@ -206,11 +206,18 @@ class teamUser
         return self::createContactToken($c->getId(), $data);
     }
 
+    /**
+     * @param $contact_id
+     * @param null $data
+     * @return array|null
+     * @throws waException
+     */
     public static function createContactToken($contact_id, $data = null)
     {
         if (waConfig::get('is_template')) {
             return null;
         }
+
         $app_tokens_model = new waAppTokensModel();
         return $app_tokens_model->add(array(
             'app_id'            => 'team',
@@ -221,6 +228,39 @@ class teamUser
             'create_datetime'   => date('Y-m-d H:i:s'),
             'data'              => json_encode($data),
         ));
+    }
+
+    /**
+     * @param int|int[] $contact_id
+     * @return array|null
+     * @throws waException
+     */
+    public static function getInviteTokens($contact_id)
+    {
+        if (waConfig::get('is_template')) {
+            return null;
+        }
+
+        $contact_ids = waUtils::toIntArray($contact_id);
+        $contact_ids = waUtils::dropNotPositive($contact_ids);
+
+        $tokens = [];
+
+        if ($contact_ids) {
+            $app_tokens_model = new waAppTokensModel();
+            $app_tokens_model->purge();     // delete expired tokens
+            $tokens = $app_tokens_model->getByField([
+                'contact_id' => $contact_ids,
+                'app_id' => 'team',
+                'type' => 'user_invite',
+            ], 'contact_id');
+        }
+
+        if (is_scalar($contact_id)) {
+            return $tokens && isset($tokens[$contact_id]) ? $tokens[$contact_id] : null;
+        }
+
+        return $tokens;
     }
 
     public static function canEdit($contact_id, $user = null)

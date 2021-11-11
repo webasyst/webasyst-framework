@@ -46,7 +46,7 @@ class teamUsersNewUserController extends waJsonController
     {
         $error = null;
         if ($contact_info && $contact_info['is_user']) {
-            $error = !teamHelper::isBanned($contact_info) ? _w('Already in our team!') : _w('This contact was banned');
+            $error = !teamHelper::isBanned($contact_info) ? _w('Already in our team!') : _w('This contact was banned.');
         }
         return $error;
     }

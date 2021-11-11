@@ -2,14 +2,14 @@
 
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
 
-<div class="t-users-page is-online-page" id="t-users-page">
+<div class="t-users-page is-online-page article break-word" id="t-users-page">
     {* HEADER *}
-    <header class="t-content-header">
+    <header class="t-content-header article-header">
         <h1>[`Online users`]</h1>
     </header>
 
     {* CONTENT *}
-    <div class="t-content-body">
+    <div class="t-content-body article-body">
         {if !empty($online)}
             {include file="./Users.inc.html" contacts=$online}
         {else}
@@ -17,35 +17,26 @@
         {/if}
 
         {if !empty($offline)}
-            <h5 class="t-header heading">[`Offline`]</h5>
+            <h5 class="t-header heading large">[`Offline`]</h5>
 
-            <ul class="menu-v t-offline-list">
+            <ul class="list t-offline-list js-users-list">
                 {foreach $offline as $user}
-                    <li class="t-user-wrapper">
-
-                        <div class="t-user-block">
-                            <div class="t-layout">
-                                <div class="t-column left">
-                                    <span class="t-userpic-wrapper">
-                                        <img class="userpic t-userpic" src="{$user.photo_url_32}">
-                                    </span>
-                                </div>
-                                <div class="t-column center">
-                                    <h5 class="t-name">{waUser::getNameAndStatus($user)}</h5>
-                                    <span class="t-online-date">
-                                        [`Last seen`]
-                                        &nbsp;
-                                        {if empty($user.last_datetime)}
-                                            —
-                                        {else}
-                                            {$user.last_datetime_formatted}
-                                        {/if}
-                                    </span>
-                                </div>
-                            </div>
-                            <a class="t-link" href="{$wa_app_url}u/{urlencode($user.login|escape)}/" title="{$user.name|escape}"></a>
-                        </div>
-
+                    <li class="item t-user-wrapper{if $user.is_user >= 1 && !$wa->isMobile()} js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
+                        <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="image" title="{$user.name|escape}">
+                            <i class="userpic userpic48" style="background-image: url('{$user.photo_url_32}')"></i>
+                        </a>
+                        <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="details" title="{$user.name|escape}">
+                            <strong>{waUser::getNameAndStatus($user)}</strong>
+                            <p class="hint">
+                                [`Last seen`]
+                                &nbsp;
+                                {if empty($user.last_datetime)}
+                                    —
+                                {else}
+                                    {$user.last_datetime_formatted}
+                                {/if}
+                            </p>
+                        </a>
                     </li>
                 {/foreach}
             </ul>

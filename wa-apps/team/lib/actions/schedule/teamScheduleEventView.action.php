@@ -92,7 +92,8 @@ class teamScheduleEventViewAction extends waViewAction
             'contact_id'  => !empty($post['contact_id']) ? $post['contact_id'] : wa()->getUser()->getId(),
             'calendar_id' => ifset($post['calendar_id']),
             'start'       => $post['start'],
-            'end'         => $post['end']
+            'end'         => $post['end'],
+            'is_status'   => '1'
         ));
         return $this->event;
 

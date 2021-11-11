@@ -51,6 +51,6 @@ class teamWaLogModel extends waLogModel
 
     public function getMinDate()
     {
-        return $this->select('DATE(MIN(datetime))')->where("datetime != '0000-00-00'")->fetchField();
+        return $this->select('DATE(MIN(datetime))')->where("datetime > '1970-01-01'")->fetchField();
     }
 }

@@ -8,18 +8,23 @@
 // Create calendars
 $cm = new waContactCalendarsModel();
 if ($cm->countAll() <= 0) {
-    $calendar_name = array('Vacation', 'Business', 'Illness', 'Meeting', 'Other');
-    $calendar_bg = array('#5bb75b', '#99ccff', '#da4f49', '#fad54a', '#d4d4d4');
-    $calendar_fc = array('#ffffff', '#000000', '#ffffff', '#000000', '#000000');
-    $calendar_default_status = array('on vacation', 'in a business trip', 'sick', 'at the meeting', null);
+    $calendar_name = array('Vacation', 'Business', 'Illness', 'Meeting', 'Remote', 'Other');
+    $calendar_bg = array('#b8f2ff', '#d4dcfc', '#fcc197', '#ffeab8', '#e9ccff', '#cccccc');
+    $calendar_fc = array('#00819e', '#0a2eae', '#773404', '#9e6f00', '#6500b3', '#404040');
+    $calendar_status_bg = array('#00c2ed', '#718ef7', '#f98836', '#eba400', '#bb64ff', '#999999');
+    $calendar_status_fc = array('#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff');
+    $calendar_default_status = array('on vacation', 'in a business trip', 'sick', 'at the meeting', null, null);
     $calendars = array();
     for ($i = 0; $i < count($calendar_bg); $i++) {
         $calendars[] = array(
-            'name'           => _w($calendar_name[$i]),
-            'bg_color'       => $calendar_bg[$i],
-            'font_color'     => $calendar_fc[$i],
-            'sort'           => $i,
-            'default_status' => _w($calendar_default_status[$i]),
+            'name'              => _w($calendar_name[$i]),
+            'bg_color'          => $calendar_bg[$i],
+            'status_bg_color'   => $calendar_status_bg[$i],
+            'font_color'        => $calendar_fc[$i],
+            'status_font_color' => $calendar_status_fc[$i],
+            'icon'              => 'fas fa-circle',
+            'sort'              => $i,
+            'default_status'    => _w($calendar_default_status[$i]),
         );
     }
     $cm->multipleInsert($calendars);

@@ -206,11 +206,9 @@ var AccessPage = ( function($) {
 
             var set_fixed = ( scroll_top > that.wrapper_offset.top );
             if (set_fixed) {
-
                 that.$header
                     .addClass(that.fixed_class)
                     .css({
-                        top: 0,
                         left: that.wrapper_offset.left,
                         width: that.header_w
                     });
@@ -339,7 +337,7 @@ var AccessPage = ( function($) {
         var that = this,
             $activeUser = false,
             $activeApp = false,
-            hover_class = "highlighted";
+            hover_class = "access-highlighted";
 
         that.$wrapper.on("mouseenter", ".t-access-status", function() {
             render( $(this) );
@@ -397,18 +395,19 @@ window.AccessDialog = ( function($) {
 
         // DOM
         that.$dialogWrapper = options["$wrapper"];
-        that.$wrapper = that.$dialogWrapper.find(".t-dialog-block");
+        that.$wrapper = that.$dialogWrapper.find(".dialog-body");
         that.$limitedContent = that.$wrapper.find(".t-limited-access-form");
+        that.$submit_btn = that.$wrapper.find('[type="submit"]');
 
         //
-        that.active_class = "is-active";
-        that.disabled_class = "is-disabled";
+        that.active_class = "selected";
+        that.disabled_class = "disabled";
 
         // VARS
         that.wa_app_url = options["wa_app_url"];
         that.app_id = options["app_id"];
         that.contact_id = options["contact_id"];
-        that.teamDialog = ( that.$dialogWrapper.data("teamDialog") || false );
+        that.teamDialog = ( that.$dialogWrapper.data("dialog") || false );
         that.noticeToggle = getNoticeToggle( that.$wrapper );
 
         // DYNAMIC VARS
@@ -427,62 +426,68 @@ window.AccessDialog = ( function($) {
     };
 
     AccessDialog.prototype.bindEvents = function() {
-        var that = this;
+        var that = this,
+        $access_list = that.$wrapper.find('.t-access-list');
 
-        // Do stuff when user clicks on no access/limited/full access buttons
-        that.$wrapper.on("click", ".t-access-item", function() {
-            var $item = $(this),
-                is_active = $item.hasClass(that.active_class),
-                is_disabled = $item.hasClass(that.disabled_class);
 
-            if ( !(that.is_locked || is_active || is_disabled) ) {
-                that.changeTab( $item );
+        $access_list.waToggle({
+            use_animation: false,
+            change: function(event, target, toggle) {
+                const $item = $(target),
+                    is_disabled = $item.hasClass(that.disabled_class);
 
-                if (that.teamDialog) {
-                    that.teamDialog.resize();
+                that.$submit_btn.toggleClass('yellow', (toggle.$active.data('access-id') != that.active_access_id));
+                if ( !is_disabled ) {
+                    that.changeTab( $item );
+                    if (that.teamDialog) {
+                        that.teamDialog.resize();
+                    }
+                } else if (is_disabled) {
+                    $.waDialog.alert({
+                        text: $item.data('reason-disabled'),
+                        button_title: 'Ok',
+                        onClose(alert) {
+                            toggle.$before.trigger('click')
+                            alert.$wrapper.remove();
+                        }
+                    });
                 }
-            } else if (is_disabled) {
-                alert($item.data('reason-disabled'));
             }
         });
-
         // Submit
         that.$wrapper.on("click","input[type=\"submit\"]", function(event) {
             event.stopPropagation();
             that.save();
         });
+
+        that.$wrapper.on('change', 'input[type!="hidden"], select', function () {
+            const $tr = $(this).closest('tr'),
+                is_changed = $tr.find('.js-access-type-own:not(.hidden)').length;
+
+            $tr[0].toggleAttribute('data-state-changed', is_changed);
+
+            if (that.$limitedContent.find('tr[data-state-changed]').length) {
+                that.$submit_btn.addClass('yellow');
+            }else{
+                that.$submit_btn.removeClass('yellow');
+            }
+        })
     };
 
     AccessDialog.prototype.changeTab = function( $link ) {
         var that = this,
             access_id = $link.data("access-id"),
-            $limitedContent = that.$limitedContent;
+            $limitedContent = that.$limitedContent,
+            $access_hint = that.$wrapper.find(".js-access");
 
-        // unmark old selected item
-        if (that.$activeTab.length) {
-            that.$activeTab.removeClass(that.active_class);
-        }
-
-        // mark this link
-        $link.addClass(that.active_class);
         that.$activeTab = $link;
 
-        that.$wrapper.find(".t-hint").hide();
-        if (access_id == "no") {
-            that.$wrapper.find(".t-hint.js-access-no").show();
-
-        } else if (access_id == "full") {
-            that.$wrapper.find(".t-hint.js-access-full").show();
-        }
+        $access_hint.addClass('hidden').filter(`.${access_id}`).removeClass('hidden');
 
         // limited
         if (that.$limitedContent.length) {
-            if (access_id == 'limited') {
-                // "Limited" status is not saved right away. User can either press "Save" or "cancel"
-                $limitedContent.show();
-            } else {
-                $limitedContent.hide();
-            }
+            // "Limited" status is not saved right away. User can either press "Save" or "cancel"
+            $limitedContent.toggleClass('hidden', !(access_id === 'limited'));
         }
     };
 
@@ -621,21 +626,21 @@ window.ProfileAccessTab = function(o) { "use strict";
     function initWebasystIDHelpLink() {
         $('.js-webasyst-id-help-link').on('click', function (e) {
             e.preventDefault();
-            window.top.$('body').trigger('wa_waid_help_link');
+            $('body').trigger('wa_waid_help_link');
         });
     }
 
     function initWebasystIDAuth() {
         $('.js-webasyst-id-auth').on('click', function (e) {
             e.preventDefault();
-            window.top.$('body').trigger('wa_webasyst_id_auth');
+            $('body').trigger('wa_webasyst_id_auth');
         });
     }
-    
+
     function initWebasystIDUnbindAuth() {
         $('.js-webasyst-id-unbind-auth').on('click', function (e) {
             e.preventDefault();
-            window.top.$('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth', {id: contact_id});
+            $('.js-webasyst-id-unbind-auth').trigger('wa_waid_unbind_auth', {id: contact_id});
         });
     }
 
@@ -682,62 +687,63 @@ window.ProfileAccessTab = function(o) { "use strict";
             return;
         }
 
-        initCheckboxList($('#form-customize-groups .c-checkbox-menu'));
-        $('#open-customize-groups').click(function() {
+        $('#open-customize-groups').click(function(e) {
+            e.preventDefault();
             $('#form-customize-groups').toggle();
         });
-        $('#cancel-customize-groups').click(function() {
+        $('#cancel-customize-groups').click(function(e) {
+            e.preventDefault();
             var form = $('#form-customize-groups').hide();
             form.find('.loading').hide();
-            form.find('.errormsg').remove();
+            form.find('.state-error-hint').remove();
             return false;
         });
         $form.submit(function() {
             var form = $(this);
-            form.find('.errormsg').remove();
+            form.find('.state-error-hint').remove();
             form.find('.loading').show();
             $.post(form.attr('action'), form.serialize(), function(response) {
                 if (response.status == 'ok') {
                     try {
-                        window.parent.$.team.sidebar.reload();
+                        $.team.sidebar.reload();
+                        $.team.content.reload();
+                        form.find('.loading').hide();
+                        form.hide();
+
+                        const href = $.team.profile.$profile_header_links.find('[data-section-id="access"]:first').attr('data-url'),
+                            dialog = form.closest('.dialog').data('dialog');
+
+                        dialog.$content.css({
+                            position: 'relative',
+                            overflow: 'hidden'
+                        }).append('<div class="js-reload-spinner" style="position:absolute;top:0;bottom:0;left:0;right:0;display:grid;place-items:center;background:var(--background-color-blank);"><span class="spinner custom-p-16"></span></div>');
+                        $.post(href, {userId: $.team.profile.user.id}, function (content) {
+                            dialog.$content.css('overflow', 'auto').empty().html(content);
+                        }).always(function () {
+                            dialog.$content.css('overflow', 'auto').find('.js-reload-spinner').remove();
+                        });
                     } catch (e) {
                     }
                     if (window.hasOwnProperty("profileTab")) {
                         window.profileTab.reload();
                     }
                 } else if (response.status == 'fail') {
-                    form.find('.c-checkbox-menu-container').after($('<em class="errormsg">'+response.errors.join('<br />')+'</em>'));
+                    form.find('.c-checkbox-menu-container').after($('<span class="state-error-hint">'+response.errors.join('<br />')+'</span>'));
                 }
             }, 'json');
             return false;
         });
-
-        function initCheckboxList($ul) {
-            $ul.find('input[type="checkbox"]')
-                .click(updateStatus)
-                .each(updateStatus);
-            return $ul;
-
-            function updateStatus(i, cb) {
-                var self = $(cb || this);
-                if (self.prop('checked')) {
-                    self.parent().addClass('highlighted');
-                } else {
-                    self.parent().removeClass('highlighted');
-                }
-            }
-        }
     }//}}}
 
     function initFormCreateUser() {//{{{
         $("#c-credentials-form").submit(function () {
             var form = $(this);
-            form.find('input.error').removeClass('error');
-            form.find('.errormsg').remove();
+            form.find('input.state-error').removeClass('error');
+            form.find('.state-error-hint').remove();
             var login_input = form.find('.c-login-input');
             var new_login = $.trim(login_input.val());
             if (!new_login) {
-                login_input.addClass('error').after('<em class="errormsg">'+loc["Login is required"]+'</em>');
+                login_input.addClass('error').after('<p class="state-error-hint custom-mt-4">'+loc["Login is required"]+'</p>');
                 return false;
             }
 
@@ -772,7 +778,7 @@ window.ProfileAccessTab = function(o) { "use strict";
                         .find('.c-login-input').val(login).end()
                         .find('.c-login').text(login);
                     try {
-                        window.parent.$.team.sidebar.reload();
+                        $.team.sidebar.reload();
                     } catch (e) {
                     }
                     try {
@@ -780,11 +786,12 @@ window.ProfileAccessTab = function(o) { "use strict";
                     } catch (e) {
                     }
                 } else if (r.status === 'fail') {
-                    form.find('input[type="submit"]').parent().prepend($('<em class="errormsg" style="margin-bottom:10px">'+r.errors.join('<br>')+'</em>'));
+                    form.find('input[type="submit"]').parent().prepend($('<p class="state-error-hint custom-mt-4 custom-mb-8">'+r.errors.join('<br>')+'</p>'));
                 }
             }, 'json');
             return false;
-        }).find('.cancel').click(function() {
+        }).find('.cancel').click(function(e) {
+            e.preventDefault();
             $('#c-credentials-block').hide();
             return false;
         });
@@ -796,14 +803,14 @@ window.ProfileAccessTab = function(o) { "use strict";
         var $login_input = $form.find('.c-login-input');
 
         $form.submit(function () {
-            $form.find('input.error').removeClass('error');
-            $form.find('.errormsg').remove();
+            $form.find('input.state-error').removeClass('error');
+            $form.find('.state-error-hint').remove();
             var new_login = $.trim($login_input.val());
             if (login === new_login) {
                 return false;
             }
             if (!new_login) {
-                $login_input.addClass('error').after('<em class="errormsg">'+loc["Login is required."]+'</em>');
+                $login_input.addClass('error').after('<p class="state-error-hint custom-mt-4">'+loc["Login is required."]+'</p>');
                 return false;
             }
 
@@ -824,13 +831,15 @@ window.ProfileAccessTab = function(o) { "use strict";
                     }
                     login = new_login;
                 } else if (r.status === 'fail') {
-                    $form.find('input[type="submit"]').parent().prepend($('<em class="errormsg" style="margin-bottom:10px">'+r.errors.join("\n<br>\n")+'</em>'));
+                    $form.find('input[type="submit"]').parent().prepend($('<p class="state-error-hint custom-mt-4 custom-mb-8">'+r.errors.join("\n<br>\n")+'</p>'));
                 }
             }, 'json');
             return false;
         });
 
-        $form.find('.c-tab-toggle').click(function() {
+        $form.find('.c-tab-toggle').click(function(e) {
+            e.preventDefault();
+
             $form.find('.c-one-tab,.c-two-tab').toggle();
             if ($login_input.is(':visible')) {
                 $login_input.focus();
@@ -846,13 +855,13 @@ window.ProfileAccessTab = function(o) { "use strict";
         var $confirm_password_input = $form.find('.c-confirm-password-input');
 
         $form.submit(function() {
-            $form.find('input.error').removeClass('error');
-            $form.find('.errormsg').remove();
+            $form.find('input.state-error').removeClass('error');
+            $form.find('.state-error-hint').remove();
 
             // do passwords match?
             if ($password_input.val() !== $confirm_password_input.val()) {
                 $password_input.addClass('error');
-                $confirm_password_input.after().after('<em class="errormsg">'+loc["Passwords do not match."]+'</em>');
+                $confirm_password_input.after().after('<p class="state-error-hint custom-mt-4">'+loc["Passwords do not match."]+'</p>');
                 return false;
             }
 
@@ -867,7 +876,7 @@ window.ProfileAccessTab = function(o) { "use strict";
                     $form.find('.c-two-tab').hide();
                     $('#c-password-block').show();
                 } else if (response.status === 'fail') {
-                     $confirm_password_input.after('<em class="errormsg">'+response.errors.join('<br />')+'</em>');
+                     $confirm_password_input.after('<p class="state-error-hint custom-mt-4">'+response.errors.join('<br />')+'</p>');
                 }
             }, 'json');
 
@@ -876,7 +885,8 @@ window.ProfileAccessTab = function(o) { "use strict";
 
         // Show inputs when user clicks 'change password' link
         // and hide inputs when user clicks cancel.
-        $form.find('.c-tab-toggle').click(function() {
+        $form.find('.c-tab-toggle').click(function(e) {
+            e.preventDefault();
             $form.find('.c-one-tab,.c-two-tab').toggle();
             var $input = $form.find('.c-password-input');
             if ($input.is(':visible')) {
@@ -910,49 +920,73 @@ window.ProfileAccessTab = function(o) { "use strict";
         $block_form.on('submit', function (e) {
             e.preventDefault();
 
-            if (!confirm($link_block.data('alert'))) {
-                return;
-            }
+            $.waDialog.confirm({
+                title: `<i class="fas fa-exclamation-triangle smaller state-error"></i> ${$link_block.data('alert')}`,
+                success_button_title: 'Ok',
+                success_button_class: 'danger',
+                cancel_button_title: loc["cancel"],
+                cancel_button_class: 'light-gray',
+                onOpen($dialog, dialog){
+                    console.log($dialog, dialog)
+                },
+                onSuccess(){
+                    var $textarea = $block_form.find('.js-block-user-reason'),
+                        text = $.trim($textarea.val());
 
-            var $textarea = $block_form.find('.js-block-user-reason'),
-                text = $.trim($textarea.val());
-
-            $('.c-shown-on-enabled').hide();
-            var $loading = $link_unblock.parent().find('.loading').show();
-            $.post(wa_app_url+'?module=accessSave&action=ban&id='+contact_id, {
-                magic_word: 'please',
-                text: text
-            }, function(r) {
-                $loading.hide();
-                $block_form.hide();
-                if (r.status === 'ok') {
-                    $fields.addClass('gray');
-                    $('.c-shown-on-disabled').show();
-                    $('#tc-user-access-disabled').show().html(r.data.access_disable_msg);
+                    $('.c-shown-on-enabled').hide();
+                    var $loading = $link_unblock.parent().find('.loading').show();
+                    $.post(wa_app_url+'?module=accessSave&action=ban&id='+contact_id, {
+                        magic_word: 'please',
+                        text: text
+                    }, function(r) {
+                        $loading.hide();
+                        $block_form.hide();
+                        if (r.status === 'ok') {
+                            $fields.addClass('gray');
+                            $('.c-shown-on-disabled').show();
+                            $('#tc-user-access-disabled').show().html(r.data.access_disable_msg);
+                            $.team.sidebar.reload();
+                        }
+                    }, 'json');
                 }
-            }, 'json');
+            });
         });
 
         // Link to block contact
-        var $link_block = $('#c-access-link-block').click(function() {
+        var $link_block = $('#c-access-link-block');
+        $link_block.on('click', function(e) {
+            e.preventDefault();
             $block_form.show();
         });
 
         // Link to unblock contact
-        var $link_unblock = $('#c-access-link-unblock').click(function() {
-            if (!confirm($link_unblock.data('alert'))) {
-                return false;
-            }
+        var $link_unblock = $('#c-access-link-unblock').on('click', function(e) {
+            e.preventDefault();
 
-            $('.c-shown-on-disabled').hide();
-            var $loading = $link_unblock.parent().find('.loading').show();
-            $.post(wa_app_url+'?module=accessSave&action=unban&id='+contact_id, {
-                magic_word: 'please'
-            }, function() {
-                $loading.hide();
-                $fields.removeClass('gray');
-                $('.c-shown-on-enabled').show();
-                $('#tc-user-access-disabled').hide().html('');
+            $.waDialog.confirm({
+                title: `<i class="fas fa-exclamation-triangle smaller state-error"></i> ${$link_unblock.data('alert')}`,
+                success_button_title: 'Ok',
+                success_button_class: 'danger',
+                cancel_button_title: loc["cancel"],
+                cancel_button_class: 'light-gray',
+                onOpen($dialog, dialog){
+                    console.log($dialog, dialog)
+                },
+                onSuccess(){
+                    $('.c-shown-on-disabled').hide();
+                    var $loading = $link_unblock.parent().find('.loading').show();
+                    $.post(wa_app_url+'?module=accessSave&action=unban&id='+contact_id, {
+                        magic_word: 'please'
+                    }, function() {
+                        $loading.hide();
+                        $fields.removeClass('gray');
+                        $('.c-shown-on-enabled').show();
+                        $('#tc-user-access-disabled').hide().html('');
+                        const accessDialog = $('.t-sidebar-profile-dialog').data('dialog');
+                        accessDialog.resize();
+                        $.team.sidebar.reload();
+                    });
+                }
             });
         });
 
@@ -1214,7 +1248,7 @@ window.showAccessDialog = function($access, app_id, contact_id, is_attach, is_fr
             }
         }
 
-        new TeamDialog(options);
+        $.waDialog(options);
     });
 
 };//}}}

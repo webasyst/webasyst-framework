@@ -1,0 +1,35 @@
+{$_is_drawer = $is_drawer|default:false}
+{$total_events_count = $stats_widget_data.total_events_count|default:0}
+{if $total_events_count > 0}
+    {strip}
+    <div class="t-stats-wrapper js-sidebar-profile-dialog cursor-pointer">
+        <div class="js-stats-wrapper{if $_is_drawer}-drawer{/if}">
+            <div class="t-graph-wrapper js-is-stats-widget" id="t-graph-wrapper">
+                <div class="t-graph custom-p-0 bordered-bottom" style="height:100px">
+                    <div class="spinner custom-p-16" style="position:absolute;top:calc(50% - 2rem);left:calc(50% - 2rem);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/strip}
+    <script src="{$wa_url}wa-content/js/d3/d3.min.js?{$wa->version(true)}"></script>
+    {*<script src="{$wa_url}wa-content/js/d3/7.0.1/d3{if !waSystemConfig::isDebug()}.min{/if}.js"></script>*}
+    <script src="{$wa_app_static_url}js/profile.stats.js?{$wa->version()}"></script>
+    <script>
+        (function($) {
+            new ProfileStatistic({
+                $wrapper: $(".js-stats-wrapper{if $_is_drawer}-drawer{/if}"),
+                graphData: {$stats_widget_data.chart_data|json_encode},
+                app_url: "{$wa_app_url}",
+                app_id: false,
+                group_by: false,
+                timeframe: 'custom',
+                start_date: "{waDateTime::date('Y-m-d', strtotime("-14 day"))}",
+                end_date: "{waDateTime::date('Y-m-d')}",
+                contact_id: {$user.id|json_encode},
+                locales: { },
+                is_widget: true,
+            });
+        })(jQuery);
+    </script>
+{/if}

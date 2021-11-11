@@ -1,3 +1,5 @@
+$pad = 0.625rem
+$rem = 16
 // Main
 .t-dialog-wrapper
     position absolute
@@ -87,177 +89,65 @@
                 .icon16
                     position relative
                     top 3px
-                    vertical-align baseline
+                    vertical-align baseline;
 
 // Access
 .t-access-dialog
-    .t-dialog-block
-        width 600px
+    .dialog-header
+        position relative
+        .t-text
+            gap: .5em
+        .t-app
+            font-weight bold
+            .t-app-icon
+                height: 30px;
+                margin-bottom: -4px;
+        .t-user
+            .t-userpic
+            .t-group-icon
+                color var(--menu-glyph-color);
 
-        .t-dialog-header
-            position relative
-            padding $pad
-            background #defbce
+            .t-userpic
+                margin-bottom: -2px;
 
-            .t-text
-                line-height 16px
+        .t-access-list
+            text-align center
+            .t-access-item
+                cursor pointer
+                padding .78125em .75em
+                background: var(--background-color-blank)
+                &.selected
+                    &.type-no
+                        color: #aaa;
+                        background-color: rgba(229, 229, 229, .5);
 
-            .t-app
-                font-weight bold
+                    &.type-limited
+                        color: rgba(#000, .5);
+                        background-color: rgba(161, 229, 161, .6);
 
-                .t-icon
-                    margin 0 4px 0 0
-                    background-position 50%
-                    background-size 16px 16px
+                    &.type-full
+                        color: rgba(#000, .75);
+                        background-color: rgba(102, 204, 102, .85);
 
-            .t-user
-                margin 0 4px 0 0
-                font-weight bold
+    .dialog-content
+        table
+            tr
+                &.c-access-subcontrol-header
+                    font-weight bold
+                    td:last-child
+                        text-align right
+                &.c-access-subcontrol-item
+                    td:first-child
+                        padding-left 1.5em
 
-                &:after
-                    content "→"
-                    padding 0 0 0 4px
-                    color #888
+    .dialog-footer
 
-                .t-userpic
-                    vertical-align top
-                    border-radius 50%
-                    margin 0 4px 0 0
-                    background-position 50%
-                    background-size 16px 16px
+        .t-notice
+            display none
+            margin 0 0 0 4px
 
-                .t-group-icon
-                    vertical-align top
-                    margin 0 4px 0 0
-                    background-position 50%
-                    background-size 16px 16px
-
-
-        .t-dialog-content
-            padding $pad
-            min-height 100px
-
-            .t-access-list
-                text-align center
-
-                .t-access-item
-                    display inline-block
-                    vertical-align top
-                    padding $pad
-                    text-align center
-                    min-width 100px
-                    border solid rgba(0,0,0,.05)
-                    border-width 1px 0 1px 1px
-                    box-sizing border-box
-                    cursor pointer
-
-                    &:first-child
-                        border-radius 2px 0 0 2px
-
-                    &:last-child
-                        border-width 1px
-                        border-radius 0 2px 2px 0
-
-                    &.is-active
-                        border-width 1px
-
-                        & + .t-access-item
-                            border-left 0
-
-                        &.type-no
-                            background #f0f0f0
-                            color #888
-
-                        &.type-limited
-                            background #e6fcda
-                            color #888
-
-                        &.type-full
-                            background #cbf9b1
-                            color #666
-
-            .t-limited-access-form
-                margin $pad 0 0
-
-                form
-                    overflow: auto;
-                    max-height: 500px;
-                    font-size: 12px;
-
-                select
-                    max-width 120px
-
-            .c-access-app-limited
-                table.zebra
-                    td
-                        padding: .5em;
-                        text-align: center;
-                        border-bottom: solid 1px #eee;
-                        background:#fff !important
-
-                        &:first-child
-                            text-align left
-                            vertical-align middle
-
-                            div
-                                max-width 300px;
-                                padding 3px 0
-                                line-height (14/12)em
-                                box-sizing border-box
-                                overflow: hidden;
-
-                        div
-                            position: relative;
-
-                            b
-                                font-weight: normal;
-                                color: #333;
-
-                    th
-                        padding: .5em;
-                        text-align: center;
-
-                        span.float-right
-                            margin:  0 0 -1.05em 0
-
-                    .c-access-cb-all
-                        margin-left 18px
-
-                        input
-                            margin: 0 4px 0 0;
-                            vertical-align: middle;
-
-                    .c-access-cb-all.nm
-                        margin-left 0
-
-                    .c-access-subcontrol-header
-                        td
-                            background: #fff !important
-
-                            &:first-child
-                                div
-                                    font-weight bold
-
-                    .c-access-subcontrol-item
-                        td
-                            &:first-child
-                                div
-                                    padding-left: 20px;
-                                    color: #333;
-
-            .t-hint
-                margin 1em 0 0
-                font-size .9em
-
-        .t-dialog-footer
-            margin 0
-
-            .t-notice
-                display none
-                margin 0 0 0 4px
-
-                &.is-visible
-                    display inline-block
+            &.is-visible
+                display inline-block
 
 // Calendar :: Day
 .t-event-days-popup
@@ -283,594 +173,170 @@
             display block
             margin 0
 
-// Calendar :: Event
-.t-edit-event-popup
-.t-event-popup
-    .t-dialog-block
-        width 500px
-
-        .t-dialog-header
-            padding 0
-
-            .t-status-toggle
-                text-align center
-                background #f0f0f0
-                padding 0
-
-                .t-toggle-button
-                    position relative
-                    display inline-block
-                    vertical-align top
-                    padding ( $pad * 1.5 ) $pad
-                    width 50%
-                    box-sizing border-box
-                    cursor pointer
-
-                    .t-name
-                        color $link_c
-                        border-bottom: 1px dotted $link_c
-
-                    &.is-inactive
-                        cursor default
-
-                        .t-name
-                            color: inherit
-                            border-color transparent
-
-
-                    &.is-active
-                        color #000
-                        font-weight bold
-                        cursor default
-
-                        &:after
-                            content ""
-                            position absolute
-                            bottom 0
-                            left 50%
-                            margin 0 0 0 -10px
-                            border 10px solid transparent
-                            border-bottom-color #fff
-
-                        .t-name
-                            color: inherit
-                            border-color transparent
-
-        .t-dialog-content
-            padding-top 1em
-            max-height: 500px
-            //overflow hidden
-            overflow-y auto
-
-            .t-user-toggle
-            .t-calendar-toggle
-                & > li
-                    margin 0
-                    padding 0
-                    line-height 1.25em
-                    display block
-
-                    &:hover
-                        background transparent
-
-                .t-selected-item
-                    display inline-block
-                    position relative
-                    padding 0 28px 0 0
-                    margin 0
-                    max-width: 100%;
-                    box-sizing border-box
-                    white-space nowrap
-                    text-overflow ellipsis
-                    overflow: hidden
-                    color $link_c
-
-                    &:hover
-                        color $link_c !important
-
-                    .is-bold
-                        font-weight bold
-
-                    .icon16
-                        position relative
-                        top 3px
-                        margin-right 5px
-                        vertical-align baseline
-
-                    &:after
-                        $_icon_w = 8px
-                        $_icon_h = 6px
-
-                        content: "";
-                        position: absolute;
-                        top: 50%;
-                        right: 15px;
-                        width: 0;
-                        height: 0;
-                        margin (-($_icon_h/4)) (-($_icon_w/2)) 0 0
-                        border solid transparent
-                        border-width $_icon_h ($_icon_w/2)
-                        border-top-color #7c878c
-
-                .menu-v
-                    width: 200px
-                    max-height 200px
-                    overflow auto
-
-                    li
-                        a
-                            padding: 6px 8px 6px 24px;
-                            margin: -6px -8px -6px -24px;
-
-                            b
-                                font-weight normal
-
-                            i
-                                font-style normal
-
-            .t-event-form
-                .field
-                    display table
-                    width 100%
-                    margin .5em 0 0
-                    padding 0
-                    table-layout fixed
-
-                    &.is-hidden
-                        display none
-
-                    &:first-child
-                        margin-top 0
-
-                    .name
-                    .value
-                        float: none
-                        margin: 0
-                        padding 0
-                        display table-cell
-                        vertical-align top
-
-                    .name
-                        width 100px
-                        padding: 0.45em 1em 0 0;
-
-                    .value
-                        width auto
-
-                        &.no-shift
-                            & > :first-child
-                                margin-top -2px
-
-                        select
-                            max-width 100%
-
-                        input[type="text"]
-                            min-width 0
-                            width 100%
-                            box-sizing border-box
-
-                        textarea
-                            min-width auto
-                            width 100%
-                            box-sizing border-box
-                            resize vertical
-
-                    &.date-toggle
-                        .value
-                            vertical-align middle
-
-            .t-date-wrapper
-                width 100%
-                table-layout fixed
-
-                &.is-extended
-                    .right
-                        visibility visible
-
-                .left
-                    padding-right .5em
-
-                .right
-                    visibility hidden
-                    padding-left .5em
-
-                .t-date
-                    min-width auto
-                    width 100%
-
-            .t-calendar-name
-            .t-user-name
-            .t-event-name
-            .t-description
-            .t-location
-            div.t-date
-                line-height 22px
-
-            .t-calendar-name
-            .t-user-name
-                .icon16
-                    position relative
-                    top 3px
-                    margin 0 6px 0 0
-                    vertical-align baseline
-
-
-            .t-source-wrapper
-                .line
-                    line-height 20px
-                    max-width 100%
-                    overflow hidden
-                    text-overflow ellipsis
-                    white-space nowrap
-
-                .t-plugin-icon
-                    position relative
-                    top 3px
-                    margin 0 4px 0 0
-                    vertical-align baseline
-
-        .t-dialog-footer
-            .t-actions
-                padding 0 1em 0 0
-
-                .t-layout
-                    //table-layout fixed
-
-                    .t-column
-                        vertical-align middle
-
-                .t-button
-                    display inline-block
-                    vertical-align middle
-                    margin 0 0 0 1em
-                    cursor pointer
-
-                    &:first-child
-                        margin-left 0
-
-                    .icon16
-                        position relative
-                        top 3px
-                        vertical-align baseline
-
-                a.t-button
-                    padding 3px 18px 4px
-                    height auto
-
 // Calendar :: Edit Event Dialog
-.t-edit-event-popup
+.t-edit-event-dialog
+    .dialog-content
+        .t-date-wrapper
+            &.is-extended
+                .is-time
+                    visibility visible
+            .is-time
+                visibility hidden
+                transition none
     &.is-event
-        .t-dialog-block
-            .t-dialog-content
-                .t-event-form
-                    .t-status-field
-                        display none
+        .dialog-content
+            .t-status-field
+                display none
 
     &.is-status
-        .t-dialog-block
-            .t-dialog-content
-                .t-event-form
-                    .t-event-field
-                        display none
-
-    .t-dialog-block
-        width 500px
-
-        .t-dialog-content
-            min-height 370px;
-
-        .t-dialog-footer
-            margin-top 0;
-
-        .t-preview-wrapper
-            margin .5em (-($pad)) 0
-            border-top 1px solid rgba(0,0,0,0.05)
-            padding .5em $pad
-            text-align center
-            background #ffc
-
-            p
-                margin .5em 0
-
-                &:first-child
-                    margin-top 0
-
-            .t-preview-block
-                line-height 22px
-
-                .icon16
-                    position relative
-                    top 3px
-                    vertical-align baseline
-
-                .t-name
-                .t-type
-                    margin 0 0 0 4px
-                    vertical-align top
-
-                .t-type
-                    display inline-block
-                    padding 0 4px;
-                    height: 22px;
-                    max-width 300px
-                    box-sizing: border-box;
-                    border-radius: 2px;
-                    border: 1px solid rgba(0,0,0,0.02);
-                    background: #f8f8f8;
-                    font-size: .9285714285714286em;
-                    line-height: 22px;
-                    white-space: nowrap;
-                    overflow hidden
-                    text-overflow ellipsis
-                    text-align: center;
-                    cursor: default;
+        .dialog-content
+            .t-event-field
+                display none
 
 
 // Group :: edit group
 .t-edit-group-dialog
-    .t-dialog-block
-        width 500px
-
-        .t-dialog-content
-            .t-event-form
-                .field
-                    display table
-                    width 100%
-                    margin .5em 0 0
-                    padding 0
-                    table-layout fixed
-
-                    &.is-hidden
-                        display none
-
-                    &:first-child
-                        margin-top 0
-
-                    .name
-                    .value
-                        float: none
-                        margin: 0
-                        padding 0
-                        display table-cell
-                        vertical-align top
-
-                    .name
-                        width 100px
-                        padding: 0.45em 1em 0 0;
-
-                    .value
-                        width auto
-
-                        select
-                            max-width 100%
-
-                        input[type="text"]
-                            min-width auto
-                            width 100%
-                            box-sizing border-box
-
-                        textarea
-                            min-width auto
-                            width 100%
-                            box-sizing border-box
-                            resize vertical
-
-                    &.date-toggle
-                        .value
-                            vertical-align middle
-
-
-
-            .t-type-toggle
-                .t-toggle-item
-                    display inline-block
-                    vertical-align top
-                    margin 0 0 0 1em
-                    padding .5em
-                    width 40%
-                    box-sizing border-box
-                    cursor pointer
-
-                    &:first-child
-                        margin-left 0
-
-                    &.is-selected
-                        background #f0f0f0
-                        border-radius 2px
-
-                    input
-                    .t-name
-                    .icon16
-                        display inline-block
-                        vertical-align top
-                        margin 0 0 0 4px
-
-                        &:first-child
-                            margin-left 0
-
-                    input
-                        position relative
-                        top 1px
-
-                    .icon16
-                        position relative
-                        top -1px
-
-                    .t-description
-                        display block
-                        margin 4px 0 0
-                        color #aaa
-                        font-size (12/$rem)em
-
-            .t-icon-toggle
-                .t-icon-list
-                    margin 0
-                    padding 0
-
-                    .t-icon-item
-                        display inline-block
-                        margin 0 4px 4px 0
-                        padding 6px
-                        list-style none
-                        cursor pointer
-                        line-height 0
-
-                        .icon16
-                            display inline-block
-                            vertical-align baseline
-                            margin 0
-                            padding 0
-
-                        &.is-selected
-                            background #f0f0f0
-                            border-radius 2px
+    .dialog-content
+        .t-icon-toggle
+            .t-icon-list
+                display flex
+                flex-wrap wrap
+                gap .45em
+                .t-icon-item
+                    border-radius: 50%
+                    width: 2.25em
+                    height: 2.25em
+                    display: inline-grid
+                    place-items: center
+                    color: var(--menu-glyph-color)
+                    margin 0 !important
+                    &.selected
+                    &:hover
+                        background-color: var(--menu-selected-background-color);
+                        color: var(--black);
+                        cursor: pointer;
 
 // Settings :: edit calendar
-.t-edit-calendar-dialog
-    .t-dialog-block
-        width 500px
+.dialog-content
 
-        .t-dialog-content
-            overflow auto
-            max-height 500px
+    .t-badge-preview
+        display: inline-flex
+        align-items: center
+        gap: .5em
+        &:first-child
+            margin: 0 1em .5em 0
 
-            .t-calendar-form
-                .field
-                    display table
-                    width 100%
-                    margin .5em 0 0
-                    padding 0
-                    table-layout fixed
+    .t-style-wrapper
+
+        .t-color-toggle
+            margin .5em 0 0
+
+            .t-toggle
+                position relative
+                display inline-flex
+                flex-direction column
+                justify-content: center
+                margin 0 0 0 1em
+
+                &:first-child
+                    margin-left 0
+
+                .t-label
+                    flex 1 0 100%
+                    margin 0 0 4px 0
+                    font-size (12/$rem)em
+                    color #aaa
+
+                .t-color-field
+                    min-width auto
+                    width 5.625em
+
+                .t-color-picker
+                    position absolute
+                    top 100%
+                    left 0
+                    padding $pad
+                    background #fff
+                    box-shadow 0 0 15px rgba(0,0,0,.2)
+                    z-index 1
 
                     &.is-hidden
                         display none
 
+        .t-style-list
+            display: flex
+            gap: .5em
+            flex-wrap: wrap
+
+            .t-style-item
+                border-radius: 50%
+                width: 2em
+                height: 2em
+                box-shadow: inset 0 0 0 0.125em rgba(0,0,0,.2)
+                cursor pointer
+                position relative
+                display flex
+                justify-content center
+                align-items center
+                svg
+                    display none
+
+                &:hover
+                &.is-selected
+                    opacity 1
+
+                &.is-selected
+                    svg
+                        display inline-block
+                        z-index 1
+                    &::before
+                        content ''
+                        width 1.4em
+                        height 1.4em
+                        border-radius 50%
+                        background-color rgba(0,0,0,.2)
+                        position absolute
+                        z-index 0
+
+
+        .t-limited-toggle
+
+            .menu-v
+                a
+                    display inline
+
+            .t-hidden-content
+                p
+                    margin .5em 0 0
+
                     &:first-child
                         margin-top 0
 
-                    .name
-                    .value
-                        float: none
-                        margin: 0
-                        padding 0
-                        display table-cell
-                        vertical-align top
+                .menu-v
+                    margin 1em 0 0
 
-                    .name
-                        width 100px
-                        padding: 0.45em 1em 0 0;
+                    &:first-child
+                        margin-top 0
 
-                    .value
-                        width auto
+                    .is-inactive
+                        color #aaa
 
-                        select
-                            max-width 100%
-
-                        input[type="text"]
-                            min-width auto
-                            width 100%
-                            box-sizing border-box
-
-                        textarea
-                            min-width auto
-                            width 100%
-                            box-sizing border-box
-                            resize vertical
-
-                    &.date-toggle
-                        .value
-                            vertical-align middle
-
-                .t-style-wrapper
-
-                    .t-color-toggle
-                        margin 1em 0 0
-
-                        .t-toggle
-                            position relative
-                            display inline-block
-                            margin 0 0 0 1em
-
-                            &:first-child
-                                margin-left 0
-
-                            .t-label
-                                display block
-                                margin 0 0 4px 0
-                                font-size (12/$rem)em
-                                color #aaa
-
-                            .t-color-field
-                                min-width auto
-                                width 70px
-
-                            .icon16.color
-                                margin 0 0 0 4px
-                                cursor pointer
-
-                            .t-color-picker
-                                position absolute
-                                top 100%
-                                left 0
-                                padding $pad
-                                background #fff
-                                box-shadow 0 0 15px rgba(0,0,0,.2)
-                                z-index 1
-
-                                &.is-hidden
-                                    display none
-
-                    .t-style-list
-                        margin 0
-                        padding 0
-
-                        .t-style-item
-                            display inline-block
-                            margin 0 4px 4px 0
-                            padding 4px
-                            list-style none
-
-                            max-width 90px;
-                            overflow hidden
-                            white-space nowrap
-                            text-overflow ellipsis
-
-                            border 1px solid transparent
-                            border-radius 2px
-
-                            opacity .8
-                            transition opacity 200ms linear
-                            cursor pointer
-
-                            &:hover
-                            &.is-selected
-                                opacity 1
-
-                            &.is-selected
-                                border-color rgba(0,0,0,.5)
-
-
-                .t-limited-toggle
-
-                    .menu-v
-                        a
-                            display inline
-
-                    .t-hidden-content
-                        p
-                            margin .5em 0 0
-
-                            &:first-child
-                                margin-top 0
-
-                        .menu-v
-                            margin 1em 0 0
-
-                            &:first-child
-                                margin-top 0
-
-                            .is-inactive
-                                color #aaa
+    .t-calendar-icons
+        display: flex
+        gap: .5em
+        flex-wrap: wrap
+        .t-calendar-icons--item
+            border-radius: 50%
+            width: 2.25em
+            height: 2.25em
+            display: inline-grid
+            place-items: center
+            color var(--menu-glyph-color);
+            &:hover
+            &.is-selected
+                background-color: var(--menu-selected-background-color)
+                color var(--black)
+                cursor: pointer
 
 // Delete dialogs :: general styles
 .t-delete-group-popup
@@ -979,8 +445,89 @@
 
 // Sidebar :: add user
 .t-invite-user-dialog
-    .t-dialog-block
-        .t-groups-wrapper
-            max-height: 200px
-            overflow auto
-            overflow-x hidden
+    .dialog-body
+        .is-by-login
+            .by-login-hint
+                display inline-block !important
+            .by-email-hint
+                visibility hidden
+        .t-apps-list-wrapper
+            position: relative;
+            &.invisible
+                visibility: hidden;
+                position: absolute;
+            .t-user-groups-nav
+                position absolute
+                top 0
+                bottom 0
+                font-size 150%
+                z-index 2
+                display flex
+                align-items center
+                justify-content center
+                cursor pointer
+                color var(--gray)
+                width: 28px
+                &.left
+                    left 0;
+                &.right
+                    right 0
+                &.swiper-button-disabled
+                    svg
+                        opacity .5;
+            .t-access-app
+                width: 48px
+                height: 100%
+                position: relative
+                img
+                    max-width 48px;
+
+// Profile :: edit user
+.t-edit-profile
+    .dialog-content
+        .multifield-subfields
+            & > .value
+                position: relative
+                margin-bottom: 16px;
+
+                .sort-handler
+                    display: none;
+                    cursor: move;
+
+                .delete-subfield
+                    display: none;
+
+                &:not(:only-child)
+                    @media (max-width: 760px)
+                        border-bottom: 1px solid var(--border-color-soft);
+                        padding: 10px 26px;
+                        margin-bottom: 0;
+
+                    .sort-handler
+                    .delete-subfield
+                        display: inline;
+
+                        @media (max-width: 760px)
+                            position: absolute;
+                            top: 16px;
+
+                    .sort-handler
+                        @media (max-width: 760px)
+                            left: 0;
+
+                    .delete-subfield
+                        @media (max-width: 760px)
+                            right: 0;
+
+                &:last-child
+                    @media (max-width: 760px)
+                        margin-bottom: 16px;
+
+@media screen and (min-width: 760px)
+    .dialog-body
+        display flex
+        flex-direction column
+        max-height 94%
+        .dialog-footer
+            margin-top auto !important
+            padding-top 1.5rem !important

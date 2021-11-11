@@ -1,0 +1,60 @@
+{strip}
+
+    <div class="t-dialog-wrapper is-full-screen t-delete-calendar-external-popup" id="t-calendar-external-delete">
+        <div class="t-dialog-background"></div>
+        <div class="t-dialog-block">
+            <header class="t-dialog-header">
+                <h1>[`Confirm calendar unlinking`]</h1>
+            </header>
+            <div class="t-dialog-content">
+                <form>
+                    <input type="hidden" name="id" value="{$calendar.id}">
+                    {if $calendar.is_connected}
+                        <p>{sprintf(_w('Are you sure to unlink "%s"?'), $calendar.name|escape)}</p>
+                    {else}
+                        <p>{sprintf(_w('Are you sure to delete "%s"?'), $calendar.name|escape)}</p>
+                    {/if}
+                    {if $events_count > 0}
+                        <p><label>
+                            <input type="checkbox" name="with_events" value="1" style="margin: 0;">
+                            <span style="margin: 0 0 0 4px;">
+                                [`Also delete all events imported from this calendar `]
+                                ({sprintf(_w('%d event', '%d events', $events_count))})
+                            </span>
+                        </label></p>
+                    {/if}
+                </form>
+            </div>
+            <footer class="t-dialog-footer">
+                <div class="t-actions">
+                    <input class="button red t-button js-delete-event" type="button" value="[`Delete`]">
+                    <span style="margin: 0 4px;">[`or`]</span>
+                    <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                </div>
+            </footer>
+        </div>
+        <script>
+            ( function($) {
+                var $dialog = $('#t-calendar-external-delete'),
+                    $form = $dialog.find('form');
+
+                $dialog.find('.js-delete-event').click( function(event) {
+                    event.preventDefault();
+
+                    var $link = $(this),
+                        $loading = $("<i class=\"icon16 loading\"></i>");
+
+                    $loading.insertAfter($link);
+
+                    $.post('?module=calendarExternal&action=delete', $form.serialize(), function(r) {
+                        if (r.status === 'ok') {
+                            $loading.remove();
+                            $dialog.trigger('afterDelete');
+                        }
+                    });
+                });
+            })(jQuery);
+        </script>
+    </div>
+
+{/strip}

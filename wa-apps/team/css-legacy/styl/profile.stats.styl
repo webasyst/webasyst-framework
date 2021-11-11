@@ -1,0 +1,271 @@
+$_bg_color = #fff
+
+.t-stats-wrapper
+    position relative
+
+    &:after
+        content ""
+        position absolute
+        top 0
+        left 0
+        width 100%
+        height 100%
+        opacity 0
+        visibility hidden
+        background #fff
+        transition opacity 200ms linear
+
+    &.is-loading
+        &:after
+            visibility visible
+            opacity .8
+
+    .t-header-wrapper
+        padding $pad
+
+        .t-filters
+            margin 0
+            padding 0
+            $_filters_lh = 24px
+
+            .t-filter
+                display inline-block
+                padding 0
+                margin 0 0 0 1em
+                list-style none
+
+                &:first-child
+                    margin-left 0
+
+                .dropdown
+                    & > li
+                        margin 0 0 0 .5em
+                        padding 0
+                        vertical-align top
+                        height $_filters_lh
+                        line-height $_filters_lh
+
+                        &:hover
+                            background transparent
+
+                        &:first-child
+                            margin-left 0
+
+                    .t-selected-item
+                        display inline-block
+                        position relative
+                        padding 0 28px 0 4px
+                        margin 0
+                        max-width: 170px;
+                        line-height $_filters_lh
+                        white-space nowrap
+                        text-overflow ellipsis
+                        overflow: hidden
+                        color $link_c
+
+                        &:hover
+                            color $link_c !important
+
+                        .is-bold
+                            font-weight bold
+
+                        .icon16
+                            position relative
+                            top 3px
+                            margin-right 5px
+                            vertical-align baseline
+
+                        &:after
+                            $_icon_w = 10px
+                            $_icon_h = 6px
+
+                            content: "";
+                            position: absolute;
+                            top: 50%;
+                            right: 15px;
+                            width: 0;
+                            height: 0;
+                            margin (-($_icon_h/4)) (-($_icon_w/2)) 0 0
+                            border solid transparent
+                            border-width $_icon_h ($_icon_w/2)
+                            border-top-color #7c878c
+
+                    .menu-v
+                        width: 200px
+                        max-height 235px
+                        overflow auto
+                        word-break: break-word;
+
+                        li
+                            padding 6px 8px
+                            a
+                                padding: 6px 8px;
+                                margin: -6px -8px;
+
+                                b
+                                i
+                                    font-weight normal
+                                    font-style normal
+
+            .t-period-filter
+                padding 0
+
+                input[type="text"]
+                    width 80px
+
+                input
+                select
+                    margin 0 4px
+
+                .t-hidden-part
+                    visibility hidden
+
+                    &.is-shown
+                        visibility visible
+
+    .t-graph-wrapper
+        position relative
+        background $_bg_color
+
+        .t-graph
+            position relative
+            width 100%
+            height 0
+            padding 0 0 ( (9/16) * 100 / 2 )%
+            overflow hidden
+
+            svg
+                display: block;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+
+                path
+                    fill: #f0f0f0;
+                    stroke-width 0
+                    shape-rendering: auto
+
+                rect
+                    stroke-width 1px
+                    stroke $_bg_color
+                    fill: #aaa
+                    shape-rendering: auto
+
+                .axis
+                    path
+                    line
+                        fill: none;
+                        stroke: #999;
+                        shape-rendering: crispEdges;
+
+                    text
+                        font-family: sans-serif;
+                        font-size: 11px;
+                        fill: #999;
+
+                    .x
+                        .domain
+                            stroke-width: 1px;
+                            stroke: #999;
+
+                        line
+                            display none
+
+                    .y
+                        .domain
+                            display none;
+
+                        line
+                            stroke: #999;
+
+                        text
+                            fill: #999;
+
+                .background
+                    opacity 0.05
+
+                    line
+                        stroke: #318bbd;
+                        shape-rendering: crispEdges;
+
+                        &:first-child
+                            shape-rendering: auto;
+
+                    rect
+                        fill: #fcfeff
+
+        .t-hint-wrapper
+            display block
+            visibility hidden
+            position absolute
+            top 0
+            left 0
+            padding $pad
+            border-radius 2px
+            max-width 500px
+            background #fff
+            box-shadow 0 0 15px rgba(0,0,0,.1)
+            transition opacity 200ms linear
+            opacity 0
+
+            // delete after
+            //width 200px
+            //min-height 100px
+
+            &.is-shown
+                visibility visible
+                opacity 1
+
+            .t-line
+                margin 4px 0 0
+
+                &:first-child
+                    margin-top 0
+
+                .t-date
+                    font-size (12/$rem)em
+                    color #aaa
+
+                .t-value
+                    font-weight bold
+
+    .t-status-wrapper
+        padding 1em
+
+        .t-status-list
+            margin 0
+            padding 0
+
+            .t-status-item
+                margin .5em 0 0
+                padding 0
+                list-style none
+
+                &:first-child
+                    margin-top 0
+
+                .t-name
+                .t-divider
+                .t-count
+                    display inline-block
+                    vertical-align top
+                    line-height $event_h
+
+                .t-divider
+                    margin 0 4px
+
+                .t-name
+                    height: $event_h;
+                    padding: 0 4px;
+                    box-sizing: border-box;
+
+                    border-radius: 2px;
+                    border: 1px solid rgba(0,0,0,0.02);
+                    background: #f8f8f8;
+                    font-size: .9285714285714286em;
+                    line-height: $event_h;
+
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    cursor: default;

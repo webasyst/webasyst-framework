@@ -51,4 +51,37 @@ class teamUsersCollection extends waContactsCollection
             return parent::orderBy($field, $order);
         }
     }
+
+    protected function groupPrepare($id)
+    {
+        if (wa_is_int($id)) {
+            parent::groupPrepare($id);
+            return;
+        }
+
+        $ids = explode(',', $id);
+        $ids = waUtils::toIntArray($ids);
+        $ids = waUtils::dropNotPositive($ids);
+        if (!$ids) {
+            return;
+        }
+
+        $ids = array_unique($ids);
+
+        $group_model = new waGroupModel();
+        $groups = $group_model->getById($ids);
+        $names = waUtils::getFieldValues($groups, 'name');
+        sort($names, SORT_STRING);
+
+        if ($names) {
+            $this->title = join(',', $names);
+        }
+
+        $this->where[] = sprintf("cg.group_id IN(%s)", join(',', $ids));
+        $this->where[] = "c.is_user > 0";
+        $this->joins[] = array(
+            'table' => 'wa_user_groups',
+            'alias' => 'cg',
+        );
+    }
 }

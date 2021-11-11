@@ -1,0 +1,83 @@
+.t-invite-page
+    min-height 100%
+    background-size: cover;
+    min-width 600px
+
+    .t-invite-block
+        position relative
+        top 50%
+        margin 0 auto
+        width 500px
+        padding 1.5em
+        background #fff
+        box-shadow 0 7px 30px rgba(0,0,0,0.7)
+        border-radius: 4px;
+        box-sizing border-box
+
+        h1
+            text-align: center;
+            margin 0
+            font-size: 2.4em;
+            line-height: 1.1em;
+            font-weight: normal;
+
+        p
+            color #888
+            margin 1em 0
+
+            &:first-child
+                margin-top 0
+
+            &:last-child
+                margin-bottom 0
+
+        .field
+            display table
+            width 100%
+            margin 1em 0 0
+            padding 0
+            table-layout fixed
+
+            &:first-child
+                margin-top 0
+
+            .name
+            .value
+                float: none
+                margin: 0
+                padding 0
+                display table-cell
+                vertical-align top
+
+            .name
+                width 130px
+                padding-right 1em
+                font-size 1em
+                line-height (22/14)em
+                vertical-align middle
+
+            .value
+                width auto
+
+                select
+                    height 22px
+                    max-width 100%
+
+                input
+                    min-width auto
+                    max-width 100%
+                    width: 300px;
+                    font-size: 2em;
+                    font-weight: bold;
+                    box-sizing border-box
+
+                textarea
+                    min-width auto
+                    width 100%
+                    box-sizing border-box
+                    resize vertical
+
+        .t-actions
+            margin 2em 0 0
+
+    @import "./waid.styl";

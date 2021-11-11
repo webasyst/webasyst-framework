@@ -5,6 +5,7 @@
         content: false,
         sidebar: false,
         calendar: false,
+        profile: false,
         /* Need for title generation */
         title_pattern: "Team — %s",
 
@@ -56,28 +57,31 @@
         },
 
         /* Open dialog to confirm contact deletion */
-        confirmContactDelete: function(contact_ids, o) {
+        confirmContactDelete: function(contact_ids) {
             $.post('?module=users&action=prepareDelete', { id: contact_ids }, function(html) {
-                var dialog = new TeamDialog({
-                    html: html
-                });
+                $.waDialog({
+                    html,
+                    onOpen($dialog, dialog){
+                        const allowed_ids = $dialog.data('allowed-ids'),
+                            $delete_button = $dialog.find('.js-delete-button')
 
-                if (o && o.onInit) {
-                    o.onInit();
-                }
-                if (o && o.onCancel) {
-                    dialog.$wrapper.on('close', o.onCancel);
-                }
-                if (o.onCancel || o.onDelete) {
-                    dialog.$wrapper.on('contacts_deleted', function(e, contact_ids) {
-                        if (o && o.onCancel) {
-                            dialog.$wrapper.off('close', o.onCancel);
+                        dialog.$document.trigger('wa_confirm_contact_delete_dialog')
+
+                        if (allowed_ids) {
+                            $delete_button.on('click', function() {
+                                let btn_text = $delete_button.text();
+                                $delete_button.attr('disabled', true).html(`${btn_text} <i class="fas fa-spin fa-spinner wa-animation-spin speed-1000"></i>`);
+
+                                $.post('?module=users&action=delete', { id: allowed_ids }, function(){
+                                    dialog.close();
+                                    $.team.content.load($.team.app_url);
+                                }).always(function () {
+                                    $delete_button.attr('disabled', false).html(btn_text);
+                                });
+                            });
                         }
-                        if (o && o.onDelete) {
-                            o.onDelete(contact_ids);
-                        }
-                    });
-                }
+                    }
+                });
             });
         },
 
@@ -90,7 +94,6 @@
             setTimeout(run, $.team.is_debug ? 100 : delay / 2);
 
             function run() {
-                console.log('send sync request');
                 $.post($.team.app_url + "?module=calendarExternal&action=sync")
                     .always(function () {
                         xhr = null;
@@ -99,6 +102,61 @@
                     .error( function () {
                         return false;
                     });
+            }
+        },
+
+        /**
+         * @description Popup alert notifications with any info
+         * @param options
+         */
+        notification(options) {
+
+            const $appendTo = options.appendTo || document.body,
+                isCloseable = options.isCloseable ?? true,
+                alertTimeout = options.alertTimeout || false;
+            let $alertWrapper = $appendTo.querySelector('#t-notifications');
+
+            // Create notification
+            const $alert = document.createElement('div');
+            $alert.classList.add('alert', options.alertClass || 'info');
+            $alert.innerHTML = options.alertContent || '';
+
+            if(isCloseable){
+                const closeClass = options.alertCloseClass || 'js-alert-error-close',
+                    $alertClose = document.createElement('a');
+
+                $alertClose.classList.add('alert-close', closeClass);
+                $alertClose.setAttribute('href', 'javascript:void(0)');
+                $alertClose.innerHTML = '<i class="fas fa-times"></i>';
+                $alert.insertAdjacentElement('afterbegin', $alertClose);
+                // Event listener for close notification
+                $alertClose.addEventListener('click', function() {
+                    this.closest('.alert').remove();
+                });
+            }
+
+            if(!$alertWrapper) {
+                // Create notification wrapper
+                $alertWrapper = document.createElement('div');
+                $alertWrapper.className = 'alert-fixed-box';
+                if (options.alertPlacement) {
+                    $alertWrapper.classList.add(options.alertPlacement);
+                }
+                if (options.alertSize) {
+                    $alertWrapper.classList.add(options.alertSize);
+                }
+                $alertWrapper.id = 't-notifications';
+                $appendTo.append($alertWrapper);
+            }
+
+            if (options.alertPlacement) {
+                $alertWrapper.prepend($alert);
+            }else{
+                $alertWrapper.append($alert);
+            }
+
+            if(alertTimeout) {
+                setTimeout(() => $alert.remove(), alertTimeout)
             }
         }
     };
@@ -114,6 +172,7 @@ var ContentRouter = ( function($) {
         // DOM
         that.$window = $(window);
         that.$content = options["$content"];
+        that.$app = $('#wa-app');
 
         // VARS
         that.api_enabled = ( window.history && window.history.pushState );
@@ -121,6 +180,9 @@ var ContentRouter = ( function($) {
         // DYNAMIC VARS
         that.xhr = false;
         that.is_enabled = true;
+
+        // LOADER
+        that.waLoading = $.waLoading();
 
         // INIT
         that.initClass();
@@ -138,7 +200,11 @@ var ContentRouter = ( function($) {
         // When user clicks a link that leads to team app backend,
         // load content via XHR instead.
         var full_app_url = window.location.origin + $.team.app_url;
-        $(document).on('click', 'a', function(event) {
+        that.$app.on('click', 'a', function(event) {
+            if ($(this)[0].hasAttribute('data-disable-routing')) {
+                return;
+            }
+
             var use_content_router = ( that.is_enabled && ( this.href.substr(0, full_app_url.length) == full_app_url ) );
 
             if (event.ctrlKey || event.shiftKey || event.metaKey) {
@@ -171,8 +237,6 @@ var ContentRouter = ( function($) {
             return false;
         }
 
-        that.animate( true );
-
         if (that.xhr) {
             that.xhr.abort();
         }
@@ -182,6 +246,8 @@ var ContentRouter = ( function($) {
             content_uri: content_uri
         });
 
+        that.animate(true);
+
         that.xhr = $.get(content_uri, function(html) {
             if (!is_reload && that.api_enabled) {
                 history.pushState({
@@ -190,20 +256,25 @@ var ContentRouter = ( function($) {
                     // content: html,              // ajax html, string
                 }, "", content_uri);
             }
+
             that.setContent( html );
 
-            that.animate( false );
+            that.animate(false);
 
             that.xhr = false;
             $(document).trigger("wa_loaded");
         });
     };
 
-    ContentRouter.prototype.reload = function() {
-        var that = this,
-            content_uri = (that.api_enabled && history.state && history.state.content_uri) ? history.state.content_uri : false;
+    ContentRouter.prototype.reload = function(force) {
+        const that = this;
+        let content_uri = (that.api_enabled && history.state && history.state?.content_uri) ? history.state.content_uri : false;
 
-        if (content_uri) {
+        if (force) {
+            content_uri = location.href;
+        }
+
+        if (content_uri || force) {
             that.load(content_uri, true);
         }
     };
@@ -251,20 +322,15 @@ var ContentRouter = ( function($) {
         }
     };
 
-    ContentRouter.prototype.animate = function( show ) {
-        var that = this,
-            $content = that.$content;
-
-        $(".router-loading-indicator").remove();
+    ContentRouter.prototype.animate = function(show, ) {
+        const that = this;
 
         if (show) {
-            var $header = $content.find(".t-content-header h1"),
-                loading = '<i class="icon16 loading router-loading-indicator"></i>';
-
-            if ($header.length) {
-                $header.append(loading);
-            }
+            that.waLoading.animate(3000, 96, false);
+            return;
         }
+
+        that.waLoading.done();
     };
 
     return ContentRouter;
@@ -499,103 +565,105 @@ var TeamDialog = ( function($) {
 // Helper used in many places. (group, profile)
 var TeamEditable = ( function($) {
 
-    TeamEditable = function(options) {
+    TeamEditable = function(wrapper, options) {
         var that = this;
 
         // DOM
-        that.$wrapper = options["$wrapper"];
+        that.$wrapper = wrapper;
 
-        // VARS
-        that.save = ( options["onSave"] || function() {} );
-        that.render = ( options["onRender"] || false );
-
-        // DYNAMIC VARS
-        that.is_empty = that.$wrapper.hasClass("is-empty");
-        that.text = that.is_empty ? "" : that.$wrapper.text();
-        that.$field = false;
-        that.is_edit = false;
+        // OPTIONS
+        this.options = options;
 
         // INIT
         that.initClass();
     };
 
     TeamEditable.prototype.initClass = function() {
-        var that = this;
-        //
-        that.$field = that.renderField();
-        //
+        const that = this;
+
+        const defaultText = that.$wrapper.data('default-text') || '';
+        $.extend(that.options, {
+            defaultText
+        });
+
         that.bindEvents();
     };
 
     TeamEditable.prototype.bindEvents = function() {
-        var that = this;
+        const that = this;
 
-        that.$wrapper.on("click", function() {
-            that.toggle();
-        });
+        that.$wrapper.on('keypress', $.proxy(that.checkValue, that));
+        that.$wrapper.on('focus', $.proxy(that.enableEditor, that));
+        that.$wrapper.on('blur', $.proxy(that.disableEditor, that));
+    }
 
-        that.$field.on("blur", function() {
-            that.save(that);
-        });
+    TeamEditable.prototype.checkValue = function(event) {
+        const that = this;
 
-        that.$field.on("keyup", function(event) {
-            var is_enter = ( event.keyCode === 13 ),
-                is_escape = ( event.keyCode === 27 );
+        if (event.keyCode !== 13) {
+            return;
+        }
 
-            if (is_enter) {
-                that.save(that);
+        event.preventDefault();
+        that.$wrapper.blur();
+    }
 
-            } else if (is_escape) {
-                that.$field.val( that.text );
-                that.toggle("hide");
+    TeamEditable.prototype.cacheText = function() {
+        const that = this;
+
+        that.cachedText = that.$wrapper.text();
+    }
+
+    TeamEditable.prototype.enableEditor = function() {
+        const that = this;
+
+        that.cacheText();
+
+        that.$wrapper.addClass('editable-highlight');
+
+        if (that.$wrapper.text() === that.options.defaultText) {
+            that.$wrapper.text('');
+        }
+    }
+
+    TeamEditable.prototype.disableEditor = function() {
+        const that = this;
+
+        that.$wrapper.removeClass('editable-highlight');
+
+        if (that.$wrapper.text() === '') {
+            that.$wrapper.addClass('gray italic');
+            that.$wrapper.text(that.options.defaultText);
+        } else {
+            that.$wrapper.removeClass('gray italic');
+        }
+
+        if (that.$wrapper.text() === that.cachedText) {
+            return;
+        }
+
+        that.save();
+    }
+
+    TeamEditable.prototype.save = function() {
+        const that = this;
+
+        const data = {
+            "data[id]": that.options.groupId,
+            [that.options.target]: that.$wrapper.text()
+        };
+
+        const $loading = $('<span class="smaller text-gray custom-ml-4"><i class="fas fa-spin fa-spinner wa-animation-spin speed-1000"></i></span>');
+        that.$wrapper.append($loading);
+
+        $.post(that.options.api.save, data, function() {
+            $loading.remove();
+
+            if (that.options.reloadSidebar) {
+                $.team.sidebar.reload();
             }
         });
-    };
-
-    TeamEditable.prototype.renderField = function() {
-        var that = this,
-            text = that.$wrapper.text(),
-            $field = $('<input class="bold" type="text" name="" />');
-
-        if (!that.is_empty) {
-            $field.val(text);
-        }
-
-        var parent_w = that.$wrapper.parent().width(),
-            wrapper_w = that.$wrapper.width(),
-            max_w = 600,
-            field_w;
-
-        field_w = ( parent_w > max_w ) ? max_w : parent_w - 50;
-        field_w = ( wrapper_w > field_w ) ? wrapper_w : field_w;
-
-        $field
-            .width(field_w)
-            .hide();
-
-        that.$wrapper.after($field);
-
-        if (that.render) {
-            that.render(that, $field);
-        }
-
-        return $field;
-    };
-
-    TeamEditable.prototype.toggle = function( show ) {
-        var that = this;
-
-        var id_edit = (show !== "hide");
-        if (id_edit) {
-            that.$wrapper.hide();
-            that.$field.show().focus();
-        } else {
-            that.$wrapper.show();
-            that.$field.hide();
-        }
-
-        that.is_edit = id_edit;
-    };
+    }
 
     return TeamEditable;
 
