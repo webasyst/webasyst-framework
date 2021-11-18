@@ -847,3 +847,7 @@
     align-self: center;
   }
 }
+.update-result-apps-list {
+  list-style: none;
+  padding: 0;
+}

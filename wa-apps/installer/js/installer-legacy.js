@@ -520,49 +520,59 @@ String.prototype.translate = function () {
         animateOnInstall: function () {
             var $app_menu = $('#wa-applist ul');
             $('#update-result-apps li').each(function () {
-                const $this = $(this);
+                var $this = $(this);
                 $this.parent().show();
+                var position = $this.offset();
 
-                const $existingApp = $app_menu.find(`[data-app="${$this.data('app')}"]`);
-
-                // if app already installed do nothing
-                if ($existingApp.length) {
-                    return;
+                var target = null;
+                var insert_last = true;
+                var $item_edition = $app_menu.find('> li[id^=' + $this.attr('id') + ']');
+                if ($item_edition.length) {
+                    target = $item_edition.offset();
+                } else {
+                    if (insert_last) {
+                        target = $app_menu.find('#wa-moreapps').offset();
+                        if (!target.left) {
+                            target = $app_menu.find('> li[id^=wa-app-]:last').offset();
+                            target.left = target.left + 75;
+                        }
+                    } else {
+                        target = $app_menu.find('> li[id^=wa-app-]:first').offset();
+                    }
                 }
-
-                // animate function here
-                const $itemClone = $this.clone();
-                $app_menu.prepend($itemClone);
-                $itemClone.find('img').removeClass('userpic userpic-48 custom-mr-8');
-                $itemClone.addClass('-added');
-
-                const targetPosition = $itemClone.offset();
-                const startPosition = $this.offset();
-
-                const target_params = {
-                    top: targetPosition.top,
-                    left: targetPosition.left
+                var animate_params = {
+                    left: target.left,
+                    top: target.top
+                };
+                var css_params = {
+                    top: position.top,
+                    left: position.left,
+                    position: 'absolute',
+                    display: 'inline-block'
+                };
+                var css_params_complete = {
+                    top: 0,
+                    left: 0,
+                    position: 'relative',
+                    display: 'inline-block'
                 };
 
-                const start_params = {
-                    'position': 'absolute',
-                    'top': startPosition.top,
-                    'left': startPosition.left
-                }
+                $this.css(css_params);
+                var $element = $this;
+                $this.animate(animate_params, 700, function () {
 
-                $this.clone().appendTo('body').css(start_params).animate(target_params, 500, function() {
-                    $itemClone.removeClass('-added')
+                    $element.css(css_params_complete);
+                    if ($item_edition.length) {
+                        $item_edition.replaceWith($element);
+                    } else {
+                        if (insert_last) {
+                            $element.appendTo($app_menu);
+                        } else {
+                            $element.prependTo($app_menu);
+                        }
+                    }
+                    $(window).resize();
                 });
-
-                // save new app sort
-                const data = [];
-                const appArray = $app_menu.find('li');
-                $.each(appArray, (index, item) => {
-                    data.push($(item).data('app'));
-                });
-                if (typeof WaHeader !== 'undefined') {
-                    WaHeader.setHeaderSort(data);
-                }
             });
         },
 

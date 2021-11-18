@@ -16,6 +16,8 @@ class WaHeader {
         this.header_apps_tooltips = $('.js-applist-header a[data-wa-tooltip-content]') || null;
         /// params
 
+        that.is_idle = true
+
         // Fns Init
         this.sortableApps()
         this.setRetina()
@@ -28,10 +30,19 @@ class WaHeader {
         this.appsTooltip()
 
         // update counts immediately if there are no cached counts; otherwise, update later
+
+        $(document).on("mousemove keyup scroll", function() {
+            that.is_idle = false;
+        });
+
+        document.addEventListener("touchmove", function () {
+            that.is_idle = false;
+        }, false);
+
         if (!this.$applist.is('.counts-cached')) {
             this.updateCount()
         } else {
-            setInterval(this.updateCount, 60000);
+            setInterval(this.updateCount.bind(this), 60000);
         }
     }
 
@@ -119,6 +130,15 @@ class WaHeader {
             let $place_after = document.querySelector('#wa-header').querySelector(place_after);
             $place_after.insertAdjacentHTML("afterEnd", `<span class="h2 wa-pagename">${title_text}</span>`);
         }
+    }
+
+    /**
+     * @description Change header app sort
+     * @param {Array} options
+    */
+    static setHeaderSort(data) {
+        const url = backend_url + "?module=settings&action=save";
+        $.post(url, {name: 'apps', value: data});
     }
 
     /**
@@ -248,18 +268,10 @@ class WaHeader {
                 },
                 onEnd(event) {
                     $(event.item).css('pointer-events', '');
-                    let data = this.toArray(),
-                        apps = [];
-
-                    for (let i = 0; i < data.length; i++) {
-                        let id = $.trim(data[i]);
-                        if (id) {
-                            apps.push(id);
-                        }
-                    }
+                    let data = this.toArray();
 
                     let url = backend_url + "?module=settings&action=save";
-                    $.post(url, {name: 'apps', value: apps});
+                    $.post(url, {name: 'apps', value: data});
                 }
             }
             $app_list.sortable(options)
@@ -333,25 +345,17 @@ class WaHeader {
      * @description Update Apps action counter value
      */
     updateCount() {
-        let is_idle = true,
+        let that = this,
             $wa_header = $('#wa-header');
-
-        $(document).on("mousemove keyup scroll", function() {
-            is_idle = false;
-        });
-
-        document.addEventListener("touchmove", function () {
-            is_idle = false;
-        }, false);
 
         const data = {
             background_process: 1
         };
 
-        if (is_idle) {
+        if (that.is_idle) {
             data.idle = "true";
         } else {
-            is_idle = true;
+            that.is_idle = true;
         }
 
         $.ajax({

@@ -143,8 +143,12 @@
                 {include file="../dashboard/DashboardAnnouncement.html" notifications=$notifications inline}
             </div>
 
-            {** wa2ui showcase box **}
-            {if !$wa->debug()}
+            {** wa2ui showcase box in case the wa1 legacy ui is supported by the app **}
+            {if !$wa->debug() && ifset($app_info, 'ui', '1.3') === '1.3,2.0'
+
+                    && $app_info.id != 'webasyst'
+
+                }
                 <div class="dropdown" id="wa2ui-dropdown">
                     <span class="dropdown-toggle without-arrow js-wa2ui" title="[s`New Webasyst 2 UI`]" style="color: var(--text-color-link); cursor: pointer;"><span class="badge blue">2.0</span></span>
                     <div class="alert-fixed-box large hidden d-notification-wrapper js-notification-wrapper" id="d-notification-wrapper">
