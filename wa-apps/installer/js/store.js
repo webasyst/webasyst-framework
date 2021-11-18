@@ -818,6 +818,7 @@ var InstallerStore = (function ($) {
 
         that.loading.animate(10000, 100, false);
 
+        that.loading.animate(10000, 100, false);
         that.$frame.on('load', function() {
             that.loading.done();
         });

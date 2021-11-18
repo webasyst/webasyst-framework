@@ -85,7 +85,7 @@
             {if !empty($oldImage)}
             <button type="button" class="red outlined js-delete-button custom-ml-auto">
                 <span class="icon"><i class="fas fa-trash-alt"></i></span>
-                [`Delete photo`]
+                <span class="desktop-and-tablet-only">[`Delete photo`]</span>
             </button>
             {/if}
         </div>
@@ -240,9 +240,10 @@
                         success(data) {
                             if (that.contact_id === $('#wa-userprofile').data('user-id')) {
                                 $('#wa-userprofile .wa-userpic').attr('src', data.data.url);
-                                $('.js-userpic img').attr('src', data.data.url);
-                                $('.js-userpic-team-head').css('background-image', 'url(' + data.data.url + ')');
                             }
+
+                            $('.js-userpic img').attr('src', data.data.url);
+                            $('.js-userpic-team-head').css('background-image', 'url(' + data.data.url + ')');
 
                             that.$dialog.trigger('photo_updated', data.data);
                             that.dialog.close();

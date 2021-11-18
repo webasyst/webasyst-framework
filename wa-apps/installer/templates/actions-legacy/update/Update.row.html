@@ -1,9 +1,9 @@
 <tr>
 
     <td class="i-update-icon">
-    
+
         {* ICON *}
-        
+
         {if $item_type eq 'app' &&  !empty($item.icons.48)}
 
             <img src="{$item.icons.48|default:$item.icons.16}" alt="">
@@ -13,19 +13,19 @@
     </td>
 
     <td class="i-update-name">
-    
+
         {* PRODUCT NAME *}
-        
+
         {if $item_type eq 'plugin' ||  $item_type eq 'theme' || $item_type eq 'widget' }
 
             {* theme or plugin *}
-            
+
             {if !empty($item.icons) && false}
                 <img src="{$item.icons.16}" alt="">
             {else}
                 <i class="icon16 {if $item_type eq 'plugin'}plugins{elseif $item_type eq 'widget'}widgets{else}design{/if}"></i>
-            {/if}            
-            
+            {/if}
+
             {if $item_type eq 'plugin'}
                 {sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}
             {elseif $item_type eq 'theme' }
@@ -38,7 +38,7 @@
         {else}
 
             {* apps and system plugins *}
-            
+
             {if $item_type eq 'systemplugin'}
                 <strong>{sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}</strong>
             {else}
@@ -53,7 +53,7 @@
     </td>
 
     <td class="i-update-data">
-    
+
         {* UPDATE INFO & CHANGELOG *}
 
         {if !empty($item.version)}
@@ -94,7 +94,7 @@
     </td>
 
     <td class="i-update-button">
-    
+
         {* UPDATE BUTTON *}
 
         {if !empty($item.applicable) && in_array($item.action, [

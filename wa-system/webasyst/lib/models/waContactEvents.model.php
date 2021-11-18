@@ -55,7 +55,8 @@ class waContactEventsModel extends waModel
         $now = waDateTime::format('Y-m-d H:i:s');
         $ccm = new waContactCalendarsModel();
         $_limit = $limit ? ('LIMIT '.intval($limit)) : '';
-        $sql = "SELECT e.*, c.name calendar_name, c.bg_color, c.font_color FROM {$this->getTableName()} e
+        $sql = "SELECT e.*, c.name calendar_name, c.status_bg_color, c.status_font_color, c.bg_color, c.font_color, c.icon 
+			FROM {$this->getTableName()} e
             INNER JOIN {$ccm->getTableName()} c ON c.id=e.calendar_id
             WHERE $contact_condition AND  is_status=1 AND
             ((is_allday = 0 AND e.start <= '$now' AND e.end >= '$now')

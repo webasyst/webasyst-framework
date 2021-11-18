@@ -51,7 +51,7 @@ return array(
     'wa_app_settings' => array(
         'app_id' => array('varchar', 64, 'null' => 0),
         'name' => array('varchar', 64, 'null' => 0),
-        'value' => array('text', 'null' => 0),
+        'value' => array('mediumtext', 'null' => 0),
         ':keys' => array(
             'PRIMARY' => array('app_id', 'name'),
         ),

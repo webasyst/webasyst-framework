@@ -15,6 +15,7 @@
 class installerConfig extends waAppConfig
 {
     const ANNOUNCE_CACHE_TTL = 3600; // sec
+    const LICENSE_CACHE_TTL = 3600; // 1 hour
 
     const INIT_DATA_CACHE_TTL = 10800; // 3 hours
     const INIT_DATA_CACHE_TTL_DEBUG = 900; // 15 mins
@@ -62,6 +63,7 @@ class installerConfig extends waAppConfig
             );
         }
         $this->loadAnnouncements();
+        //$this->loadLicenses();
 
         try {
             $this->getTokenData();
@@ -298,6 +300,7 @@ class installerConfig extends waAppConfig
         if (!$res || !array_key_exists('data', $res)) {
             return;
         }
+        $cache->get();
 
         $cache->set($res);
 
@@ -337,6 +340,41 @@ class installerConfig extends waAppConfig
             $wcsm = new waContactSettingsModel();
             $wcsm->exec("DELETE FROM {$wcsm->getTableName()} WHERE app_id = 'installer' AND name IN('"
                 .join("','", $wcsm->escape($del))."')");
+        }
+    }
+
+    public function loadLicenses()
+    {
+        $cache = new waVarExportCache('licenses', self::LICENSE_CACHE_TTL, $this->getApplication());
+        $cache_data = $cache->get();
+        if (!$cache->isCached() || time() - ifempty($cache_data, 'timestamp', 0) >= self::LICENSE_CACHE_TTL) {
+            $net_options = array(
+                'timeout' => 7,
+                'format' => waNet::FORMAT_JSON,
+            );
+            $net = new waNet($net_options);
+            $wa_installer = installerHelper::getInstaller();
+
+            $init_url_params = array(
+                'hash' => $wa_installer->getHash(),
+                'domain' => waRequest::server('HTTP_HOST'),
+            );
+            if ($previous_hash = $wa_installer->getGenericConfig('previous_hash')) {
+                $init_url_params['previous_hash'] = $previous_hash;
+            }
+
+            $init_url = $wa_installer->getInstallerLicenseUrl();
+            $init_url .= '?' . http_build_query($init_url_params);
+            $res = $net->query($init_url);
+
+            if (!empty($res['data'])) {
+                $cache->set([
+                    'data' => $res['data'],
+                    'timestamp' => time()
+                ]);
+            }
+
+            return $res;
         }
     }
 

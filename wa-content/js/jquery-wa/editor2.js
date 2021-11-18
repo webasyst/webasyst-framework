@@ -350,29 +350,17 @@ jQuery.fn.waEditor2 = function () {
         editor.commands.removeCommand('find');
         ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 
-        let $wa_dark_mode = document.querySelector('#wa-dark-mode');
-        if($wa_dark_mode) {
-            let $them_mode = $wa_dark_mode.getAttribute('media');
-            if ($them_mode === '(prefers-color-scheme: dark)') {
-                editor.setTheme("ace/theme/eclipse");
+        setEditorTheme();
+        document.documentElement.addEventListener('wa-theme-change', setEditorTheme);
+
+        function setEditorTheme() {
+            const theme = document.documentElement.dataset.theme;
+
+            if (theme === 'dark') {
+                editor.setTheme("ace/theme/monokai");
             } else {
-                editor.setTheme("ace/theme/monokai");
-            }
-            document.addEventListener('wa_theme_mode_dark', function () {
-                editor.setTheme("ace/theme/monokai");
-            })
-            document.addEventListener('wa_theme_mode_light', function () {
                 editor.setTheme("ace/theme/eclipse");
-            })
-            document.addEventListener('wa_theme_mode_auto', function () {
-                if ($them_mode === '(prefers-color-scheme: dark)') {
-                    editor.setTheme("ace/theme/eclipse");
-                } else {
-                    editor.setTheme("ace/theme/monokai");
-                }
-            })
-        }else{
-            editor.setTheme("ace/theme/eclipse");
+            }
         }
         var session = editor.getSession();
         session.setMode("ace/mode/css");

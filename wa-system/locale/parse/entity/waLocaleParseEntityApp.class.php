@@ -60,7 +60,6 @@ class waLocaleParseEntityApp extends waLocaleParseEntity
     {
         $result = [
             $this->generatePath('templates'),
-            $this->generatePath('js'),
             $this->generatePath('lib'),
         ];
 

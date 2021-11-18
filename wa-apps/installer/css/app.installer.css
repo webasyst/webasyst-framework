@@ -80,6 +80,9 @@
 .i-assets-col-icon {
   width: 48px;
 }
+.i-assets-col-icon img {
+  max-width: 100%;
+}
 .i-assets-color-blue {
   color: var(--blue);
 }
@@ -843,4 +846,8 @@
   .installer-update__table td.i-update-name {
     align-self: center;
   }
+}
+.update-result-apps-list {
+  list-style: none;
+  padding: 0;
 }

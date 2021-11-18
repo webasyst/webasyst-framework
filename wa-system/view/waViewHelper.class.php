@@ -1401,22 +1401,56 @@ HTML;
             $selected_section = key($sections);
         }
 
+        $is_profile_sidebar = ifset($options['is_profile_sidebar']);
+        $is_profile_drawer = ifset($options['is_profile_drawer']);
+
+        $active_section = ifset($options['active_section']);
+        if ($active_section && !$is_profile_sidebar && isset($sections[$active_section])) {
+            $sections = [$active_section => $sections[$active_section]];
+        }
+
+        if ($is_profile_sidebar) {
+            unset($sections['activity'],$sections['info']);
+
+            // Clean up html from section
+            foreach ($sections as $section_id => $section) {
+                $sections[$section_id]['html'] = '';
+            }
+
+            $html = ifset($options['html']);
+            if($html) {
+                foreach ($html as $section_id => $content) {
+                    if(isset($sections[$section_id])) {
+                        $sections[$section_id]['html'] = $content;
+                    }
+                }
+            }
+        }
+
+        $legacy_suffix = '';
+        if ($this->whichUI() == '1.3') {
+            $legacy_suffix = '-legacy';
+        }
+
         $wa = wa();
         $view = $wa->getView();
         $view->assign([
-            'profile_content_layout_template' => $wa->getAppPath('templates/actions/profile/ProfileContent.html', 'webasyst'),
+            'profile_content_layout_template' => $wa->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileContent.html', 'webasyst'),
             'uniqid'                          => str_replace('.', '-', uniqid('s', true)),
             'selected_section'                => $selected_section,
             'contact_id'                      => $id,
             'sections'                        => $sections,
+            'is_profile_sidebar'              => $is_profile_sidebar,
+            'is_profile_drawer'               => $is_profile_drawer,
+            'app_path'                        => $wa->getAppPath(),
         ]);
 
         $template_file = $this->getConfig()->getConfigPath('ProfileSidebar.html', true, 'webasyst');
         if (file_exists($template_file)) {
             return $view->fetch('file:' . $template_file);
+        } else {
+            return $view->fetch(wa()->getAppPath('templates/actions'.$legacy_suffix.'/profile/ProfileSidebar.html', 'webasyst'));
         }
-
-        return $view->fetch($wa->getAppPath('templates/actions/profile/ProfileSidebar.html', 'webasyst'));
     }
 
     public function getContactTabs($id)

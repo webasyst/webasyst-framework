@@ -22,10 +22,6 @@
                                 $dialog_wrapper.load($(this).attr('href') + '&theme_id={$theme_id}&file={$file.id|escape:'url'}', function () {
                                     $.waDialog({
                                         $wrapper: $dialog_wrapper,
-                                        position(dialog_width){
-                                            let window_w = $(window).width()
-                                            return { left: `${ (window_w - dialog_width.width) / 2 }px` }
-                                        },
                                         onOpen($dialog, dialog) {
                                             let $submit_btn = $dialog.find('.js-submit');
                                             $submit_btn.on('click', function () {
@@ -67,7 +63,7 @@
                                 e.preventDefault();
                                 if (confirm('[s`File will be deleted without the ability to recover. Are you sure?`]')) {
                                     $.post($(this).attr('href'), { theme_id:"{$theme_id}", file: "{$file.id}"}, function () {
-                                        let li = $("ul.wa-theme li.selected"),
+                                        let li = $("ul.wa-theme-templates li.selected"),
                                             hash;
                                         if (li.prev().length > 0) {
                                             hash = li.prev().addClass('selected').find('a').attr('href');
@@ -205,6 +201,7 @@
 {/if}
 <script>
     $(document).ready(function () {
+        let is_error = false;
         $(".wa-theme-templates").on('click', 'a', function () {
             if (!waDesignConfirm()) return false;
             $(".js-tab-content li.selected").removeClass('selected');
@@ -251,10 +248,15 @@
 
         waEditorAceInit(options);
 
-        $("#wa-design-form").on('submit', function () {
+        $("#wa-design-form").on('submit', function (e) {
             const $form = $(this),
                 $status = $("#wa-editor-status"),
                 $submit_btn = $(".js-bb-submit");
+
+            if(is_error) {
+                e.preventDefault()
+                return;
+            }
 
             $("#wa-design-content").val(wa_editor.getValue());
 
@@ -307,8 +309,29 @@
                     } else {
                         e = response.errors;
                     }
-                    $status.show().html(`<span class="state-error">${ e ? e : $_('An error occurred while saving') }</span>`);
+
+                    $form.append(`<div class="alert-fixed-box">
+                                    <div class="alert danger">
+                                        <span class="cursor-pointer alert-close js-alert-error-close">
+                                            <i class="fas fa-times"></i>
+                                        </span>
+                                        ${ e ? e : $_('An error occurred while saving') }
+                                    </div>
+                                </div>`);
+
+                    is_error = true;
+
+                    $form.find('.js-alert-error-close').on('click', function () {
+                        $(this).closest('.alert-fixed-box').remove();
+                        is_error = false;
+                    })
+
                     $submit_btn.removeClass('yellow green').addClass('red');
+
+                    setTimeout(() => {
+                        $status.empty();
+                        $submit_btn.removeClass('red').addClass('green');
+                    }, 500)
                 }
             }, "json");
             return false;

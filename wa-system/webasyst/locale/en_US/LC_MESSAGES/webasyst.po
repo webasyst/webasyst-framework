@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-09-27 12:26+0300\n"
+"PO-Revision-Date: 2021-11-16 12:51+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: en\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -3927,4 +3927,52 @@ msgid "Publish"
 msgstr ""
 
 msgid "Menu"
+msgstr ""
+
+msgid "Calendar"
+msgstr ""
+
+msgid "Error getting section contents."
+msgstr ""
+
+msgid "Access rights inherited from groups (%s) can be expanded on an individual user level (%s). To reduce access inherited from a group, exclude the user from the group or shrink the group basis access rights setup."
+msgstr ""
+
+msgid "Access granted for the user individually."
+msgstr ""
+
+msgid "Access inherited from user groups."
+msgstr ""
+
+msgid "It is your personal account in <a %s>Webasyst Customer Center</a>, via which you can quickly access Webasyst apps either in the Cloud or on your own server."
+msgstr ""
+
+msgid "Default sending parameters"
+msgstr ""
+
+msgid "Additional sending parameters"
+msgstr ""
+
+msgid "The email sending parameters specified below are used by default for all outgoing email messages. If you need to use other parameters for all or certain sender addresses or domains then add extra rules using the “<strong>%s</strong>” button."
+msgstr ""
+
+msgid "Try again"
+msgstr ""
+
+msgid "Or <a class=\"link\" href=\"%s\">sign into your backend in the usual way</a>."
+msgstr ""
+
+msgid "Drag & drop a file here or upload it manually (JPG, GIF or PNG)"
+msgstr ""
+
+msgid "Choose file"
+msgstr ""
+
+msgid "The time for authorization has expired. Please go back using the button below and try again."
+msgstr ""
+
+msgid "Access granted for the user individually"
+msgstr ""
+
+msgid "Access inherited from user groups"
 msgstr ""

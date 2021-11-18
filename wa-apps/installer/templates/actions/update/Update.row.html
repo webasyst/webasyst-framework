@@ -1,16 +1,16 @@
 <tr{if $item_type != 'systemplugin' && $item_type != 'plugin' && $item_type != 'theme' && $item_type != 'widget'} class="installer-update__table-tr"{/if}>
-    <td{if $item_type != 'app' && empty($item.icons.48)} class="installer-update__table-hidden"{/if}>
+    <td class="min-width valign-top{if $item_type != 'app' && empty($item.icons.48)} installer-update__table-hidden{/if}">
         {* ICON *}
         {if $item_type eq 'app' &&  !empty($item.icons.48)}
         <div class="i-assets-col-icon">
-            <img src="{$wa_url}{$item.icons.48|default:$item.icons.16|ltrim:'/'}" alt="">
+            <img src="{$wa_url}{$item.icons.48|default:$item.icons.16}" alt="{$item.name|default:$item_id|escape}">
         </div>
         {else}
             &nbsp;
         {/if}
     </td>
 
-    <td class="small i-update-name">
+    <td class="small i-update-name valign-top">
         {* PRODUCT NAME *}
         {if $item_type eq 'plugin' ||  $item_type eq 'theme' || $item_type eq 'widget' }
             {* theme or plugin *}
@@ -34,7 +34,7 @@
             {if $item_type eq 'systemplugin'}
                 <strong>{sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}</strong>
             {else}
-                <strong class="large">{$item.name|default:$item_id|escape}</strong>
+                <h5 class="custom-mt-16">{$item.name|default:$item_id|escape}</h5>
             {/if}
         {/if}
 
@@ -46,7 +46,7 @@
     <td class="small{if empty($item.version) && empty($item.installed.version) && empty($item.changelog)} installer-update__table-hidden{/if} js-changelog-container">
         {* UPDATE INFO & CHANGELOG *}
         {if !empty($item.version)}
-            <strong class="i-new-version-info">
+            <h6 class="i-new-version-info">
                 <span class="i-version">{$item.version}</span>
                 {if $item.beta_test|default:false}
                     <span class="js-update-tooltip">([`beta version`]) <i class="fas fa-info-circle"></i></span>
@@ -55,37 +55,45 @@
                         [`Beta test notice`]
                     </div>
                 {/if}
-            </strong>
-        {/if}
 
-        {if !empty($item.installed.version)}
-            {$_version = $item.installed.version}
-            {if $_version|substr:-2 === '.p'}
-                {$_version = $_version|substr:0:-2}
-            {/if}
-            <p class="hint">{$_version|string_format:'[`Your current version is %s.`]'}</p>
+                {if !empty($item.installed.version)}
+                    {$_version = $item.installed.version}
+                    {if $_version|substr:-2 === '.p'}
+                        {$_version = $_version|substr:0:-2}
+                    {/if}
+                    <br>
+                    <span class="hint">{$_version|string_format:'[`Your current version is %s.`]'}</span>
+                {/if}
+            </h6>
         {/if}
 
         {* changelog text *}
         {if !empty($item.changelog)}
-            <div class="js-changelog hidden">
+
                 {foreach $item.changelog as $record}
-                    <div class="custom-mt-16">
-                        <strong class="i-new-version-info"{if $record@first} style="display: none;"{/if}>
-                            <span class="i-version">{$record.version|default:'no-version'}</span>
-                        </strong>
+                    <div class="js-changelog{if !$record@first} hidden{/if}">
+                        <div class="custom-my-16">
+                            <h6 class="i-new-version-info"{if $record@first} style="display: none;"{/if}>
+                                <span class="i-version">{$record.version|default:'no-version'}</span>
+                                {if !empty($record.datetime)}
+                                <span class="hint">{$record.datetime|wa_date:'humandate'|escape}</span>
+                                {/if}
+                            </h6>
 
-                        {if !empty($record.datetime)}
-                        <p class="hint">{$record.datetime|wa_date:'humandate'|escape}</p>
-                        {/if}
+                            {if $record.content|strstr:'</'}
+                                {* looks like html markup *}
+                                {$record.content}
+                            {else}
+                                {$record.content|nl2br}
+                            {/if}
 
-                        {$record.content|nl2br}
+                        </div>
                     </div>
                 {/foreach}
-            </div>
+
 
             {if $item.changelog|@count > 1}
-            <a class="inline-link js-changelog-more" href="#"><b><i>[`more`]</i></b></a>
+            <a class="js-changelog-more" href="#">[`more`]</a>
             {/if}
         {/if}
     </td>
@@ -103,7 +111,7 @@
         ], true) }
             {if !empty($item.commercial) && empty($item.purchased)}
                 {* not allowed to install the app, i.e. expired *}
-                <p class="small state-error">[`License is either expired or not valid for this installation`]</p>
+                <p class="small state-error custom-mb-8">[`License is either expired or not valid for this installation`]</p>
                 {if $item_type eq 'app'}
                     {$link="app/`$item.id`"}
                 {elseif $item_type eq 'theme'}
@@ -120,7 +128,7 @@
                     {/if}
                 {/if}
 
-                <a href="{$wa_app_url}store/{$link}/" class="button rounded">[`Get license`]</a>
+                <a href="{$wa_app_url}store/{$link}/" class="button rounded nowrap">[`Get license`]</a>
 
             {elseif !empty($item.inbuilt)}
 

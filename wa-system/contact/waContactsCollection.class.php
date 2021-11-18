@@ -336,7 +336,10 @@ class waContactsCollection
                                                 if (isset($contact_ids_map[$v['id']])) {
                                                     $v['_online_status'] = 'online';
 
-                                                    if (isset($contacts_idle[$v['id']])) {
+                                                    // Mark as idle if idle_since record exists & is older than 60 sec
+                                                    if (isset($contacts_idle[$v['id']]) && 
+                                                        time() - strtotime($contacts_idle[$v['id']]['value']) > 60
+                                                    ) {
                                                         $v['_online_status'] = 'idle';
                                                     }
 
