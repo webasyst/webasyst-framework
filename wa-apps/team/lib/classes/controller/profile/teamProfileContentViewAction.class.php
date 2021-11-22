@@ -132,7 +132,7 @@ class teamProfileContentViewAction extends teamContentViewAction
 
     protected static function getBirthDayEvent(waContact $user)
     {
-        if ($user->get('birth_day') == waDateTime::format('j') && $user->get('birth_month') == waDateTime::format('n')) {
+        if ($user->get('birth_day') == waDateTime::format('j', null, waDateTime::getDefaultTimezone()) && $user->get('birth_month') == waDateTime::format('n', null, waDateTime::getDefaultTimezone())) {
             if (wa('team')->whichUI('team')  !== '1.3') {
                 return [
                     'id'          => 0,

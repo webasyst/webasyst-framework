@@ -176,6 +176,7 @@ var ContentRouter = ( function($) {
 
         // VARS
         that.api_enabled = ( window.history && window.history.pushState );
+        that.scrollTop = options.scrollTop || true;
 
         // DYNAMIC VARS
         that.xhr = false;
@@ -283,6 +284,10 @@ var ContentRouter = ( function($) {
         var that = this;
 
         that.$content.html( html );
+
+        if (that.scrollTop) {
+            window.scrollTo(0, 0)
+        }
     };
 
     ContentRouter.prototype.onPopState = function(event) {

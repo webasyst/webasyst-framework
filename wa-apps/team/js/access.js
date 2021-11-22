@@ -461,16 +461,7 @@ window.AccessDialog = ( function($) {
         });
 
         that.$wrapper.on('change', 'input[type!="hidden"], select', function () {
-            const $tr = $(this).closest('tr'),
-                is_changed = $tr.find('.js-access-type-own:not(.hidden)').length;
-
-            $tr[0].toggleAttribute('data-state-changed', is_changed);
-
-            if (that.$limitedContent.find('tr[data-state-changed]').length) {
-                that.$submit_btn.addClass('yellow');
-            }else{
-                that.$submit_btn.removeClass('yellow');
-            }
+            that.$submit_btn.toggleClass('yellow', !!(that.$limitedContent.find('tr[data-state-changed]').length));
         })
     };
 

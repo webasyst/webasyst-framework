@@ -72,6 +72,18 @@ class teamAccessDialogAction extends waViewAction
             $result['limited']['is_active'] = true;
         }
 
+        // Which access level is inherited from group?
+        foreach ($result as $res) {
+            $result[$res['id']]['is_group_inherited'] = false;
+        }
+        if (empty($group_rights['backend'])) {
+            $result['no']['is_group_inherited'] = true;
+        } elseif ($group_rights['backend'] > 1) {
+            $result['full']['is_group_inherited'] = true;
+        } else {
+            $result['limited']['is_group_inherited'] = true;
+        }
+
         // Some access levels can be disabled if inherited from groups
         if (!empty($group_rights['backend'])) {
             $result['no']['is_disabled'] = _w('This access level is inherited from groups. To change it, please adjust group settings or edit group membership for this user.');
@@ -113,7 +125,7 @@ class teamAccessDialogAction extends waViewAction
         } else {
             unset($result['limited']);
         }
-        
+
         return $result;
     }
 }

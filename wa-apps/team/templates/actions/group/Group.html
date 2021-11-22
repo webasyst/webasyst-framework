@@ -84,14 +84,13 @@
                         <p>
                             {if $wa->user()->isAdmin('team')}
                                 {sprintf_wp(
-                                'To add a user to %s,%s either%s use <a href="%s">Manage group</a> mode%s, or drag a user to this group in the sidebar%s.',
-                                "<span class=\"bold\">`$group.name|escape`</span>",
-                                '<span class="desktop-only">',
-                                '</span>',
-                                "`$wa_app_url`group/`$group.id`/manage/",
-                                '<span class="desktop-only">',
-                                '</span>'
+                                'To add a user to <span class="bold">%s</span> use <a href="%s">Manage group</a> mode.',
+                                $group.name|escape,
+                                "`$wa_app_url`group/`$group.id`/manage/"
                                 )}
+                                <span class="desktop-only custom-ml-4">
+                                    [`You can also drag a user to this group in the sidebar.`]
+                                </span>
                             {else}
                                 {sprintf_wp(
                                 'To add a user to %s, use <a href="%s">Manage group</a> mode.',

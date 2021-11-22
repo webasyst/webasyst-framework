@@ -92,7 +92,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     if (input.length > 0) {
                         result = '';
                         if (!input.hasClass('empty')) { // default values use css class .empty to grey out value
-                            if (input.attr('type') != 'checkbox' || input.attr('checked')) {
+                            if (input.attr('type') != 'checkbox' || input.prop('checked')) {
                                 result = input.val();
                             }
                         }
@@ -174,7 +174,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     result = $('<span class="width-100-mobile custom-mr-0-mobile"><input class="val small width-100-mobile" type="text"></span>');
                     result.find('.val').val(value);
                 } else {
-                    result = $('<span class="val"></span>');
+                    result = $('<span class="val small"></span>');
                     result.text(value);
                 }
                 return result;
@@ -1742,20 +1742,22 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             if (mode == 'edit') {
 
                 var that = this;
-                var $input_text = result.find('input:text').removeClass('val');
+                var $input_text = result.addClass('state-with-inner-icon right').find('input:text').addClass('js-datepicker').removeClass('val');
                 var $input_hidden = $('<input type="hidden" class="val">').insertAfter($input_text);
+                $('<span class="icon cursor-pointer js-datepicker-trigger"><i class="fas fa-calendar-alt"></i></span>').insertAfter($input_text);
 
                 (function(init) { "use strict";
                     if ($input_text.datepicker) {
                         init();
                     } else {
                         $.wa.loadFiles([
-                            $.wa.contactEditor.wa_backend_url + '../wa-content/js/jquery-ui/jquery.ui.core.min.js',
-                            $.wa.contactEditor.wa_backend_url + '../wa-content/js/jquery-ui/jquery.ui.datepicker.min.js'
+                            $.wa.contactEditor.wa_backend_url + 'wa-content/js/jquery-ui/jquery.ui.core.min.js',
+                            $.wa.contactEditor.wa_backend_url + 'wa-content/js/jquery-ui/jquery.ui.datepicker.min.js'
                             //$.wa.contactEditor.wa_backend_url + '../wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-'+locale+'.js'
                         ]).then(init);
                     }
-                }(function() { "use strict";
+                }
+                (function() { "use strict";
                     $input_text.datepicker({
                         altField: $input_hidden,
                         altFormat: "yy-mm-dd",
@@ -1766,7 +1768,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                         showOtherMonths: true,
                         selectOtherMonths: true,
                         stepMonths: 2,
-                        numberOfMonths: 2
+                        numberOfMonths: 2,
+                        beforeShow: function(input, ui) {
+                            setTimeout(() => ui.dpDiv.css({"z-index": '1051'}));
+                        }
                     });
 
                     if (that.fieldValue) {
@@ -1793,6 +1798,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
 
 
                 }));
+
+                result.on('click', '.js-datepicker-trigger', function () {
+                    $input_text.trigger('focus')
+                });
             }
 
             return result;
@@ -1962,7 +1971,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                     result.find('.val').removeAttr('checked');
                 }
             } else {
-                result = $('<span class="val"></span>').text(this.fieldValue ? 'Yes' : 'No');
+                result = $('<span class="val small"></span>').text(this.fieldValue ? 'Yes' : 'No');
             }
             return result;
         }
@@ -2581,7 +2590,11 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
 
             if ((typeof name != 'undefined') && name) {
                 $(this).on('set_mode', function (e, data) {
-                    data.field.domElement.find('.name').toggleClass('for-input', (data.mode == 'edit'));
+                    if (data.field.fieldData.type === 'Checkbox') {
+                        data.field.domElement.find('.name').toggleClass('for-checkbox', (data.mode == 'edit'));
+                    }else {
+                        data.field.domElement.find('.name').toggleClass('for-input', (data.mode == 'edit'));
+                    }
                 })
                 result.append(`<div class="name${($(this.el).closest('.dialog-content').length) ? ' for-input' : ''}">${$.wa.encodeHTML(name)}</div>`);
             }

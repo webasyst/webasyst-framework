@@ -49,6 +49,7 @@ class teamWelcomeSaveController extends waJsonController
                 $token = teamUser::createContactByEmail($c['email'], array('full_access' => $c['access']));
             }
             if ($token) {
+                $app_info = wa()->getAppInfo();
                 try {
                     $hours = ceil((strtotime($token['expire_datetime']) - time()) / 3600);
                     teamHelper::sendEmailSimpleTemplate(
@@ -63,6 +64,8 @@ class teamWelcomeSaveController extends waJsonController
                             '{HOURS_LEFT}'   => _w('%d hour', '%d hours', $hours),
                             '{DOMAIN}'       => waRequest::server('HTTP_HOST'),
                             '{EXPIRE_DATE}'  => waDateTime::format('date', strtotime('-1 day', $token['expire_datetime'])),
+                            '{WA_URL}'       => wa()->getRootUrl(true),
+                            '{WA_APP_NAME}'  => htmlentities($app_info['name'],ENT_QUOTES,'utf-8'),
                         ) // , wa()->getUser()->get('email', 'default')
                     );
                 } catch (waException $e) {
