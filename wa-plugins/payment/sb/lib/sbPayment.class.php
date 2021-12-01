@@ -82,10 +82,6 @@ class sbPayment extends waPayment implements waIPaymentCapture, waIPaymentCancel
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         try {
-            if ($auto_submit && $this->TESTMODE) {
-                $auto_submit = false;
-            }
-
             $order_data = waOrder::factory($order_data);
 
             $transactions = $this->getAvailableTransactions($order_data->id);
