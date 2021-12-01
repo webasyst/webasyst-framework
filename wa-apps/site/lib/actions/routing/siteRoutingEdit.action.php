@@ -80,7 +80,7 @@ class siteRoutingEditAction extends waViewAction
                                 $route_name = $title;
                             } else {
                                 $app_settings_model = new waAppSettingsModel();
-                                $route_name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                                $route_name = $app_settings_model->get('webasyst', 'name', _ws('My company, LLC'));
                             }
                         } else {
                             $route_name = $app['name'];
