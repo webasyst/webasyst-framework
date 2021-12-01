@@ -12,25 +12,21 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.2\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: /wa-widgets/news//templates/Default.html:14
 msgid "Please set up news source in widget settings."
 msgstr "Выберите источник новостей в настройках виджета."
 
-#: /wa-widgets/news//lib/config/widget.php:4
 msgid "News"
 msgstr "Новости"
 
-#: /wa-widgets/news//lib/config/settings.php:6
 msgid "News feed"
 msgstr "Источник"
 
 msgid "Show all news"
-msgstr "Показать все новости"
+msgstr "Все новости"
 
-msgid "Unable to load news feed"
-msgstr "Ошибка загрузки ленты новостей"
-
+msgid "Unable to load news feed."
+msgstr "Ошибка загрузки ленты новостей."
