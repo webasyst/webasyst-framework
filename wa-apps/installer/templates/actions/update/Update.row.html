@@ -3,7 +3,7 @@
         {* ICON *}
         {if $item_type eq 'app' &&  !empty($item.icons.48)}
         <div class="i-assets-col-icon">
-            <img src="{$item.icons.48|default:$item.icons.16}" alt="{$item.name|default:$item_id|escape}">
+            <img src="{$wa_url}{$item.icons.48|default:$item.icons.16}" alt="{$item.name|default:$item_id|escape}">
         </div>
         {else}
             &nbsp;

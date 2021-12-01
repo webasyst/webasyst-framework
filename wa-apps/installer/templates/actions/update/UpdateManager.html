@@ -82,13 +82,13 @@ $(document).ready( function() {
                         </strong></em>
                     </p>
                     <div id="update-result-apps">
-                        <ul class="separated" style="display:none;">
+                        <ul class="separated update-result-apps-list" style="display:none;">
                             {{each sources}}
                             {{if ($value) && (!$value.skipped) && (!$value.update) && ($value.subject == 'app')}}
-                            <li id="wa-app-${$value.slug}">
+                            <li id="wa-app-${$value.slug}" data-app="${$value.slug}" style="list-style: none;">
                                 <a href="{/literal}{wa_backend_url()}{literal}${$value.slug}/">
-                                    {{if $value.icon}}<img alt="" src="${$value.icon}" style="width: 48px; height: 48px;">{{/if}}
-                                    ${$value.name}
+                                    {{if $value.icon}}<img alt="${$value.name}" src="{{html String($value.icon).replace(/^\/\//, 'https://')}}" style="width: 3rem; height: 3rem; vertical-align: middle;">{{/if}}
+                                    <span class="wa-app-name">${$value.name}</span>
                                 </a>
                             </li>
                             {{/if}}

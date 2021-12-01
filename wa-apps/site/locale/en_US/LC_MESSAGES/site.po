@@ -360,8 +360,8 @@ msgstr ""
 msgid "Custom parameters"
 msgstr ""
 
-msgid "Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals(\"key\")&#125;</em>. Each key=value pair should be on a separate line."
-msgstr "Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->globals(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
+msgid "Optional set of custom <em>key=value</em> parameters, which can be used in design templates and pages of this settlement as <em>&#123;$wa->param(\"key\")&#125;</em>. Each key=value pair must be specified on a separate line."
+msgstr ""
 
 msgid "http://www.webasyst.com/framework/docs/site/design/"
 msgstr "http://www.webasyst.com/developers/docs/design/"

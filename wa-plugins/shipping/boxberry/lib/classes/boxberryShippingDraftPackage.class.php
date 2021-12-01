@@ -187,12 +187,15 @@ class boxberryShippingDraftPackage
 
         foreach ($items as $item) {
             $bxb_item = [
-                'id'       => $item['id'],
                 'name'     => $item['name'],
                 'price'    => round($item['price'] - $item['discount'], 2),
                 'quantity' => $item['quantity'],
                 'UnitName' => 'шт.'
             ];
+
+            if (!empty($item['sku'])) {
+                $bxb_item['id'] = $item['sku'];
+            }
 
             if (is_numeric($item['tax_rate'])) {
                 $bxb_item['nds'] = (float) $item['tax_rate'];
@@ -203,27 +206,34 @@ class boxberryShippingDraftPackage
         return $result;
     }
 
+    /**
+     * get package sizes
+     *
+     * @return array
+     */
     protected function getParcelVolume()
     {
-        $item = current(ref($this->order->items));
-        // On boxberry side:
-        // X becomes HEIGHT
-        // Y becomes WIDTH
-        // Z becomes LENGTH
-        $dimensions = array('x' => 'height', 'y' => 'width', 'z' => 'length');
-        foreach ($dimensions as $key => $dimension) {
-            if (
-                isset($item[$dimension])
-                && !empty($item[$dimension])
-                && $item['dimensions_unit']
-                && $item[$dimension] <= floatval($this->bxb->getSettings('max_' . $dimension))
-            ) {
-                $dimensions[$key] = ceil(shopDimension::getInstance()->convert($item[$dimension], 'length', 'cm', $item['dimensions_unit']));
-            } else {
-                return array();
-            }
+        $plugin_sizes = $this->bxb->getTotalSize();
+        $result = [];
+
+        $height = ifset($plugin_sizes, 'height', 0);
+        $width = ifset($plugin_sizes, 'width', 0);
+        $length = ifset($plugin_sizes, 'length', 0);
+
+        // If some size is not valid, then we take the standard sizes
+        if (empty($length) || empty($width) || empty($height)) {
+            $height = $this->bxb->default_height;
+            $width = $this->bxb->default_width;
+            $length = $this->bxb->default_length;
         }
-        return $dimensions;
+
+        // convert to cm
+        // Centimeters are the requirements of boxberry
+        $result['x'] = ceil((float)$height * 100);
+        $result['y'] = ceil((float)$width * 100);
+        $result['z'] = ceil((float)$length * 100);
+
+        return $result;
     }
 
     /**

@@ -2,7 +2,7 @@
 {if $ui == '2.0'}
     <style>
     .wa-news-widget { padding: 16px; height: 100%; overflow-y: scroll; }
-    .wa-news-widget .snw-entry { margin-bottom: 10px; line-height: 120%; font-size: 14px; font-weight: 600; font-family: 'SF Pro Text', Arial, sans-serif; }
+    .wa-news-widget .snw-entry { margin-bottom: 10px; line-height: 120%; font-size: 14px; font-weight: 500; }
     .wa-news-widget .snw-entry a { text-decoration: none; }
     .wa-news-widget .entry-datetime { font-size: 12px; font-weight: 500; }
 
@@ -18,7 +18,7 @@
 
     .widget-block:hover .wa-news-widget .wa-link-to-all-news { opacity: 1; transform: translateY(0)}
 
-    .widget-2x1 .wa-news-widget .snw-entry { line-height: 120%; font-size: 13px; font-weight: 700; }
+    .widget-2x1 .wa-news-widget .snw-entry { line-height: 120%; font-size: 13px; font-weight: 500; }
     .widget-2x1 .wa-news-widget .entry-datetime { font-size: 12px; font-weight: 500; }
     .widget-2x1 .wa-news-widget .wa-link-to-all-news { font-size: 12px; font-weight: 500; }
 
@@ -32,7 +32,7 @@
         </div>
     {elseif empty($channel.name)}
         <div class="block">
-            <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed`].</h5>
+            <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed.`]</h5>
         </div>
     {else}
         <div class="block wa-news-widget hide-scrollbar" id="{$uniqid}">
@@ -45,7 +45,7 @@
 
             {if !empty($channel.link)}
             <div class="wa-link-to-all-news">
-                    <a class="button nobutton" href="{$channel.link}" target="_blank" rel="noopener">[`Show all news`] <i class="custom-ml-8 fas fa-external-link-alt"></i></a>
+                    <a class="button nobutton" href="{$channel.link}" target="_blank" rel="noopener">[`Show all news`] <i class="custom-ml-4 fas fa-external-link-alt"></i></a>
             </div>
             {/if}
         </div>
@@ -105,7 +105,7 @@
         </div>
     {elseif empty($channel.name)}
         <div class="block">
-            <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed`].</h5>
+            <h5 class="align-center hint wa-empty-feed">[`Unable to load news feed.`]</h5>
         </div>
     {else}
         <div class="block wa-news-widget" id="{$uniqid}">

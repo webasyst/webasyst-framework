@@ -635,7 +635,8 @@ textarea.largest { font-size: 150%; height: 11em; }
 .wa-checkbox input:checked + span { background: var(--accent-color); }
 .wa-checkbox input:checked + span.default:before { background: var(--text-color-input); }
 .wa-checkbox input:checked + span .icon { visibility: visible; }
-.wa-checkbox input:disabled + span { opacity: .8; }
+.wa-checkbox input:disabled:checked + span { opacity: .5; }
+.wa-checkbox input:disabled:not(:checked) + span { opacity: .8; }
 .wa-checkbox input:disabled:not(:checked) + span::before,
 .wa-checkbox input:disabled:not(:checked) + span::after { content: ''; position: absolute; top: 50%; left: 50%; width: 10px; height: 1.5px; background-color: var(--background-color-checkbox-border); border-radius: 2px; }
 .wa-checkbox input:disabled:not(:checked) + span::before { transform: translate(-50%, -50%) rotate(-45deg); }
@@ -647,7 +648,8 @@ textarea.largest { font-size: 150%; height: 11em; }
 .wa-radio input + span:before { content: ""; position: absolute; top: 50%; left: 50%; width: 50%; height: 50%; border-radius: 50%; box-sizing: border-box; transform: translate(-50%, -50%); }
 .wa-radio input:checked + span { background: var(--accent-color); }
 .wa-radio input:checked + span:before { background: var(--white); }
-.wa-radio input:disabled + span { opacity: .8; }
+.wa-radio input:disabled:checked + span { opacity: .5; }
+.wa-radio input:disabled:not(:checked) + span { opacity: .8; }
 .wa-radio input:disabled:not(:checked) + span::before,
 .wa-radio input:disabled:not(:checked) + span::after { content: ''; position: absolute; top: 50%; left: 50%; width: 10px; height: 1.5px; background-color: var(--background-color-checkbox-border); border-radius: 2px; }
 .wa-radio input:disabled:not(:checked) + span::before { transform: translate(-50%, -50%) rotate(-45deg); }
@@ -738,6 +740,7 @@ input.state-caution, textarea.state-caution, select.state-caution, .wa-select.st
 #wa-nav #wa-header #wa-header-content-area #wa-applist::-webkit-scrollbar { display: none; }
 #wa-nav #wa-header #wa-header-content-area #wa-applist { -ms-overflow-style: none; scrollbar-width: none; }
 #wa-nav #wa-header #wa-header-content-area #wa-applist > ul > li { flex: 0 0 auto; width: 4rem; }
+#wa-nav #wa-header #wa-header-content-area #wa-applist > ul > li.-added { opacity: 0; transition: opacity var(--timing-fast); }
 #wa-nav #wa-header #wa-header-content-area #wa-applist > ul > li a .wa-app-name { display: none; }
 #wa-nav #wa-header #wa-header-content-area #wa-applist.wa-applist-with-custom-main-content { display: none; }
 

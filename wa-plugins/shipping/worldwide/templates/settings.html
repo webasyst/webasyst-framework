@@ -390,7 +390,7 @@
         select.val('');
     });
 
-    block.on('click', '.{$plid}-calculation-type', function() {
+    block.on('change', '.{$plid}-calculation-type', function() {
         var el = $(this);
         if (el.val() === 'individually') {
             for (var i = 0; i < items.length; i += 1) {
