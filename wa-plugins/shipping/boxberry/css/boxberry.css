@@ -1,2 +1,10 @@
 .s-js-boxberry-parcel-city {padding-top: 0.45em;}
 .s-js-boxberry-targetstart-autocomplete {margin-top: 10px; display: none}
+.flex-row {display: flex;}
+.flex-input {display: flex; flex-flow: column; width: 90px;}
+.flex-input > * {margin-bottom: 2px !important;}
+.flex-input input {text-align: right; width: 80px !important; min-width: 80px !important;}
+.flex-row > span {padding: 4px 3px;}
+.field-group .field .name {width: 171px;}
+.dimension-error {font-size: 0.8em; color: red; margin-bottom: 4px;}
+.error-dimension-input {border: 2px solid red; border-radius: 3px;}

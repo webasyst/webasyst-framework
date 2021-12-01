@@ -53,44 +53,79 @@
         </div>
     </div>
 
-    {* Default attributes *}
     <div class="field">
-        <div class="name">{$obj->_w('Default weight')}</div>
+        <div class="name">{$obj->_w('Maximum dimensions')}
+            <span class="shop-tooltip"><i class="icon10 info"></i><span>{$obj->_w('Maximum package dimensions for which this shipping method should be available. Cannot exceed the maximum dimensions set by Boxberry — length 1.2 m, width 0.8 m, height 0.5 m, all dimensions sum 2.5 m.')}</span></span>
+        </div>
         <div class="value">
-            <input max="{$settings.max_weight|default:'30000'|escape}" min="5" name="{$namespace}[default_weight]" step="any" type="number"
-                   value="{$settings.default_weight|default:''|escape}">
-            {$obj->_w('g')}
+            <div class="flex-row">
+                <div class="flex-input">
+                    <input name="{$namespace}[max_length]" value="{$settings.max_length|default:'0.001'|escape}" type="text" data-max="1.2" data-dimension="length">
+                    <span class="align-center hint">{$obj->_w('Length')}</span>
+                </div>
+                <span>{$obj->_w('m')} +</span>
+                <div class="flex-input">
+                    <input name="{$namespace}[max_width]" value="{$settings.max_width|default:'0.001'|escape}" type="text" data-max="0.8" data-dimension="width">
+                    <span class="align-center hint">{$obj->_w('Width')}</span>
+                </div>
+                <span>{$obj->_w('m')} +</span>
+                <div class="flex-input">
+                    <input name="{$namespace}[max_height]" value="{$settings.max_height|default:'0.001'|escape}" type="text" data-max="0.5" data-dimension="height">
+                    <span class="align-center hint">{$obj->_w('Height')}</span>
+                </div>
+                <span>{$obj->_w('m')} = <span class="max_sum_dimensions">{$settings.max_length|default:'0.001' + $settings.max_width|default:'0.001' + $settings.max_height|default:'0.001'}</span> {$obj->_w('m')}</span>
+            </div>
+            <div class="js-error-max-length dimension-error" style="display: none">{$obj->_w('Maximum length must be greater than 0 and must not exceed 1.2 m.')}</div>
+            <div class="js-error-max-width dimension-error" style="display: none">{$obj->_w('Maximum width must be greater than 0 and must not exceed 0.8 m.')}</div>
+            <div class="js-error-max-height dimension-error" style="display: none">{$obj->_w('Maximum height must be greater than 0 and must not exceed 0.5 m.')}</div>
         </div>
     </div>
     <div class="field">
-        <div class="name">{$obj->_w('Default length')}</div>
-        <div class="value">
-            <input max="{$settings.max_length|default:'1.2'|escape}" min="0.0001" name="{$namespace}[default_length]" required step="0.0001" type="number"
-                   value="{$settings.default_length|default:''|escape}">
-            {$obj->_w('m')}
+        <div class="name">{$obj->_w('Default dimensions')}
+            <span class="shop-tooltip"><i class="icon10 info"></i><span>{$obj->_w('Used in cases when package dimensions are not provided by a dedicated plugin. If these values are empty then, if no values are provided by a decicated plugin, shipping terms and rates for this shipping method will not be calculated.')}</span></span>
         </div>
-    </div>
-    <div class="field">
-        <div class="name">{$obj->_w('Default width')}</div>
         <div class="value">
-            <input max="{$settings.max_width|default:'0.8'|escape}" min="0.0001" name="{$namespace}[default_width]" required step="0.0001" type="number"
-                   value="{$settings.default_width|default:''|escape}">
-            {$obj->_w('m')}
-        </div>
-    </div>
-    <div class="field">
-        <div class="name">{$obj->_w('Default height')}</div>
-        <div class="value">
-            <input max="{$settings.max_height|default:'0.5'|escape}" min="0.0001" name="{$namespace}[default_height]" required step="0.0001" type="number"
-                   value="{$settings.default_height|default:''|escape}">
-            {$obj->_w('m')}
+            <div class="flex-row">
+                <div class="flex-input">
+                    <input name="{$namespace}[default_length]" type="text" value="{$settings.default_length|default:''|escape}" data-dimension="length">
+                    <span class="align-center hint">{$obj->_w('Length')}</span>
+                </div>
+                <span>{$obj->_w('m')} +</span>
+                <div class="flex-input">
+                    <input name="{$namespace}[default_width]" type="text" value="{$settings.default_width|default:''|escape}" data-dimension="width">
+                    <span class="align-center hint">{$obj->_w('Width')}</span>
+                </div>
+                <span>{$obj->_w('m')} +</span>
+                <div class="flex-input">
+                    <input name="{$namespace}[default_height]" type="text" value="{$settings.default_height|default:''|escape}" data-dimension="height">
+                    <span class="align-center hint">{$obj->_w('Height')}</span>
+                </div>
+                <span>{$obj->_w('m')} = <span class="default_sum_dimensions">{$settings.default_length|default:'0.001' + $settings.default_width|default:'0.001' + $settings.default_height|default:'0.001'}</span> {$obj->_w('m')}</span>
+            </div>
+            <div class="js-error-default-length dimension-error" style="display: none">{$obj->_w('Default length must be greater than 0 and must not exceed the maximum dimensions length.')}</div>
+            <div class="js-error-default-width dimension-error" style="display: none">{$obj->_w('Default width must be greater than 0 and must not exceed the maximum dimensions width.')}</div>
+            <div class="js-error-default-height dimension-error" style="display: none">{$obj->_w('Default height must be greater than 0 and must not exceed the maximum dimensions height.')}</div>
             <p class="hint">{$obj->_w('Used only if order dimensions have not been calculated by a special plugin. If no value is specified, shipping rate and terms will not be calulated.')}</p>
         </div>
     </div>
-    
     <div class="field">
+        <div class="name">{$obj->_w('Max weight')}
+            <span class="shop-tooltip"><i class="icon10 info"></i><span>{$obj->_w('Maximum weight for which this shipping method will be available. Cannot exceed Boxberry’s weight limitation of 30 kg.')}</span></span>
+        </div>
         <div class="value">
-            <p class="hint bold">{$obj->_w('The sum of length, width, and height values must not exceed 2.5 m.')}</p>
+            <input name="{$namespace}[max_weight]" type="text" value="{$settings.max_weight|default:''|escape}" data-max="30000" data-dimension="weight">
+            <span>{$obj->_w('g')}</span>
+            <div class="js-error-max-weight dimension-error" style="display: none">{$obj->_w('Must be above 4 g and must not exceed 30 kg.')}</div>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$obj->_w('Default weight')}
+            <span class="shop-tooltip"><i class="icon10 info"></i><span>{$obj->_w('Used in cases when no weight data are available. If this value is empty then, with no information about the shipping weight available, the shipping terms and rates will not be calculated.')}</span></span>
+        </div>
+        <div class="value">
+            <input name="{$namespace}[default_weight]" type="text" value="{$settings.default_weight|default:''|escape}" data-dimension="weight">
+            <span>{$obj->_w('g')}</span>
+            <div class="js-error-default-weight dimension-error" style="display: none">{$obj->_w('Must be greater than 4 g and must not exceed the maximum weight value.')}</div>
         </div>
     </div>
 </div>

@@ -3,7 +3,7 @@
 <div class="field-group" id="{$wrapper_id|escape}">
     <div class="field">
         <div class="name"></div>
-        <div class="value"><h3>{$obj->_w('Availability settings')}</h3></div>
+        <div class="value"><h3>{$obj->_w('Territorial availability')}</h3></div>
     </div>
 
     {*ADDRESS*}
@@ -40,44 +40,6 @@
         <div class="value">
             <input name="{$namespace}[cities]" value="{$settings.cities|default:''|escape}" type="text">
             <p class="hint">{$obj->_w('Separate locality names with a comma.')}</p>
-        </div>
-    </div>
-
-    {*MAX SIZE AND WEIGHT*}
-    <div class="field">
-        <div class="name">{$obj->_w('Max weight')}</div>
-        <div class="value">
-            <input name="{$namespace}[max_weight]" value="{$settings.max_weight|default:''|escape}" type="number" min="5" max="30000" step="any">
-            {$obj->_w('g')}
-        </div>
-    </div>
-    <div class="field">
-        <div class="name">{$obj->_w('Max length')}</div>
-        <div class="value">
-            <input name="{$namespace}[max_length]" value="{$settings.max_length|default:''|escape}" type="number" min="0" step="0.001" max="1.2">
-            {$obj->_w('m')}
-        </div>
-    </div>
-    <div class="field">
-        <div class="name">{$obj->_w('Max width')}</div>
-        <div class="value">
-            <input name="{$namespace}[max_width]" value="{$settings.max_width|default:''|escape}" type="number" min="0" step="0.0001" max="0.8">
-            {$obj->_w('m')}
-        </div>
-    </div>
-    <div class="field">
-        <div class="name">{$obj->_w('Max height')}</div>
-        <div class="value">
-            <input name="{$namespace}[max_height]" value="{$settings.max_height|default:''|escape}" type="number" min="0" step="0.0001" max="0.5">
-            {$obj->_w('m')}
-        </div>
-    </div>
-
-    <div class="field">
-        <div class="name">{$obj->_w('Max dimensions')}</div>
-        <div class="value">
-            <input name="{$namespace}[max_dimensions]" value="{$settings.max_dimensions|default:''|escape}" type="number" min="0" step="0.0001" max="2.5">
-            {$obj->_w('m')}
         </div>
     </div>
 
