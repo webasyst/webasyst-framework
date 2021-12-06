@@ -694,7 +694,7 @@ var GroupEditDialog = ( function($) {
             } else {
                 $longtitude.val("");
                 $latitude.val("");
-                $map.hide();
+                $map.hide(400, () => that.dialog.resize());
             }
         });
 
@@ -709,7 +709,7 @@ var GroupEditDialog = ( function($) {
             } else {
                 $longtitude.val("");
                 $latitude.val("");
-                $map.hide();
+                $map.hide(400, () => that.dialog.resize());
             }
         });
 
@@ -741,13 +741,11 @@ var GroupEditDialog = ( function($) {
             function openMap(lat, lng) {
                 if ($map.is(':hidden')) {
                     $map.show();
-                    // correct top of dialog
-                    $block.data('top', $block.offset().top);
-                    $block.css('top', $block.data('top') - $map.height() / 2)
                 }
                 teamMap.render(lat, lng);
                 $latitude.val(lat);
                 $longtitude.val(lng);
+                that.dialog.resize()
             }
         }
 

@@ -576,7 +576,15 @@ var ProfileStatistic = ( function($) {
 
             $input.datepicker({
                 altField: $altField,
-                altFormat: "yy-mm-dd"
+                altFormat: "yy-mm-dd",
+                beforeShow: function(input, ui) {
+                    ui.dpDiv.on("click", function(event) {
+                        event.stopPropagation();
+                    });
+
+                    setTimeout(() => ui.dpDiv.css({"z-index": '1051'}));
+
+                }
             });
         });
     };

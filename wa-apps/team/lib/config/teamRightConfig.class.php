@@ -90,4 +90,27 @@ class teamRightConfig extends waRightConfig
                 ORDER BY g.type, g.sort, g.name";
         return self::$model->query($sql)->fetchAll('id', true);
     }
+
+    public function getUI20HTML($rights = array(), $inherited = null)
+    {
+
+        $user_id = waRequest::request('user_id');
+        $user_groups_model = new waUserGroupsModel();
+        $groups = $user_groups_model->getGroups($user_id);
+
+        $html = parent::getUI20HTML($rights, $inherited);
+
+        $js = '<script>(function ($) {';
+        $js .= '$access_app = $(".c-access-app select");';
+        $js .= '$access_app.find("option[value=0]").filter(":not([disabled])").prev().removeAttr("disabled");';
+
+        if(!$groups ) {
+            $js .= "$('.c-access-app').find('.js-access-type-own').removeClass('hidden');";
+            $js .= "$('.c-access-app').find('.js-access-type-group').addClass('hidden');";
+        }
+
+        $js .= '})(jQuery);</script>';
+
+        return $js.$html;
+    }
 }

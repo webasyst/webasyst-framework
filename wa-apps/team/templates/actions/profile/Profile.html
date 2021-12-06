@@ -2,6 +2,7 @@
 
 {$_user_id = $wa->user("id")}
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
+{$_is_system_admin = $wa->user()->isAdmin()}
 {$_is_my_profile = ( !empty($user.id) && $user.id == $_user_id )}
 {$_group_id = (preg_match('!^group\/\d+$!i', $context)) ? substr($context, 6) : '' }
 {$_context_type = (!empty($_group_id)) ? 'group' : ((substr($context, 0, 7) === 'search/') ? 'search' : $context)}
@@ -198,16 +199,50 @@
                     <div class="t-profile-actions-btn flexbox wrap-mobile custom-pl-16" style="justify-content: flex-end;">
                         {foreach $backend_profile as $_}{ifset($_.header_links_li)}{/foreach}
                         {if $can_edit}
-                            <button type="button" class="button light-gray circle edit-link custom-mr-0 mobile-only" title="[`Edit user`]"><i class="fas fa-pen text-blue"></i></button>
-                            <button type="button" class="button light-gray rounded edit-link custom-mr-0 nowrap desktop-and-tablet-only" title="[`Contacts`]"><i class="fas fa-pen text-blue"></i> [`Contacts`]</button>
+                            <button type="button"
+                                    class="button light-gray circle edit-link custom-mr-0 mobile-only"
+                                    title="[`Edit user`]">
+                                <i class="fas fa-pen text-blue"></i>
+                            </button>
+                            <button type="button"
+                                    class="button light-gray rounded edit-link custom-mr-0 nowrap desktop-and-tablet-only"
+                                    title="[`Contacts`]">
+                                <i class="fas fa-pen text-blue"></i> [`Contacts`]
+                            </button>
+                            {if $_is_my_profile || $_is_system_admin}
+                                <button type="button"
+                                        class="button light-gray circle access-link custom-mr-0 custom-ml-8 mobile-only"
+                                        title="[`Edit user`]"
+                                        data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}"
+                                        data-dialog-header="[`Access`]"
+                                        data-dialog-width="1000px"
+                                        data-section-id="access">
+                                    <i class="fas fa-key text-green"></i>
+                                </button>
+                                <button type="button"
+                                        class="button light-gray rounded access-link custom-mr-0 custom-ml-8 nowrap desktop-and-tablet-only"
+                                        title="[`Access`]"
+                                        data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}"
+                                        data-dialog-header="[`Access`]"
+                                        data-dialog-width="1000px"
+                                        data-section-id="access">
+                                    <i class="fas fa-key text-green"></i> [`Access`]
+                                </button>
+                            {/if}
+                        {/if}
 
-                            <button type="button" class="button light-gray circle access-link custom-mr-0 custom-ml-8 mobile-only" title="[`Edit user`]" data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}" data-dialog-header="[`Access`]" data-dialog-width="1000px" data-section-id="access"><i class="fas fa-key text-green"></i></button>
-                            <button type="button" class="button light-gray rounded access-link custom-mr-0 custom-ml-8 nowrap desktop-and-tablet-only" title="[`Access`]" data-url="{$wa_app_url}?module=profile&action=access&id={$user.id}" data-dialog-header="[`Access`]" data-dialog-width="1000px" data-section-id="access"><i class="fas fa-key text-green"></i> [`Access`]</button>
-                        {/if}
                         {if teamUser::canDelete($user)}
-                        <button type="button" class="button light-gray circle custom-mr-0 custom-ml-8 delete-link" title="[`Delete`]"><i class="fas fa-trash-alt text-red"></i><i class="fas fa-spinner fa-spin wa-animation-spin speed-1000 hidden"></i></button>
+                            <button type="button"
+                                    class="button light-gray circle custom-mr-0 custom-ml-8 delete-link"
+                                    title="[`Delete`]">
+                                <i class="fas fa-trash-alt text-red"></i>
+                                <i class="fas fa-spinner fa-spin wa-animation-spin speed-1000 hidden"></i>
+                            </button>
                         {/if}
-                        <button type="button" class="button circle blue custom-mr-0 custom-ml-8 mobile-only tablet-only js-show-drawer"><i class="fas fa-list-ul text-white"></i></button>
+                        <button type="button"
+                                class="button circle blue custom-mr-0 custom-ml-8 mobile-only tablet-only js-show-drawer">
+                            <i class="fas fa-list-ul text-white"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -283,7 +318,7 @@
                         {if $im.ext == 'whatsapp'}
                         {$_href = "https://wa.me/`$im.data`"}
                         {elseif $im.ext == 'telegram'}
-                        {$_href = "https://telegram.im/@`$im.data`"}
+                        {$_href = "https://telegram.im/@`$im.data|replace:'@':''`"}
                         {elseif $im.ext == 'skype'}
                         {$_href = "skype:`$im.data`?chat"}
                         {elseif $im.ext == 'viber'}
