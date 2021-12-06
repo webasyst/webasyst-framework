@@ -1,0 +1,56 @@
+{
+  "name": "apiexplorer-spa",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build && npm run copycss && npm run copyjs && npm run copymanifest",
+    "lint": "vue-cli-service lint",
+    "copycss": "copyfiles dist/css/*.css ../css --flat",
+    "copyjs": "copyfiles dist/js/*.js ../js --flat",
+    "copymanifest": "copyfiles dist/manifest.json ../js --flat"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.0",
+    "axios": "^0.21.4",
+    "core-js": "^3.19.0",
+    "marked": "^3.0.8",
+    "mitt": "^3.0.0",
+    "pretty-print-json": "^1.1.1",
+    "swagger-client": "^3.17.0",
+    "v-calendar": "^3.0.0-alpha.6",
+    "vue": "^3.2.20",
+    "vue-router": "^4.0.12",
+    "vuex": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.5.14",
+    "@vue/cli-plugin-eslint": "^4.5.14",
+    "@vue/cli-plugin-router": "^4.5.14",
+    "@vue/cli-plugin-vuex": "^4.5.14",
+    "@vue/cli-service": "^4.5.14",
+    "@vue/compiler-sfc": "^3.2.20",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^7.20.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
