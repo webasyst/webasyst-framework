@@ -323,7 +323,7 @@ export default {
             return marked(this.response_info.description);
         },
         methodUrl() {
-            return document.location.protocol + '//' + document.location.host + '/api.php/' + this.name;
+            return document.location.protocol + '//' + document.location.host  + window.appState.rootUrl + 'api.php/' + this.name;
         }
     },
     async mounted() {

@@ -8,7 +8,7 @@
         Select App
       </div>
       <div v-else class="flexbox middle" @click="selectApp(selected_app)">
-        <img :src="'/' + apps[selected_app].icon['48']" class="icon" :title="apps[selected_app].name"/>
+        <img :src="rootUrl + apps[selected_app].icon['48']" class="icon" :title="apps[selected_app].name"/>
         <div class="app-wrapper">
           <span class="app-name">{{ apps[selected_app].name }}</span>
           <span v-if="$store.state.counts[selected_app]" class="count">{{ $store.state.counts[selected_app] }} APIs</span>
@@ -22,7 +22,7 @@
                 <a href="javascript:void(0);" @click="selectApp(app.id)">
                   <span v-if="app.id in $store.state.counts" class="count">{{ $store.state.counts[app.id] }}</span>
                   <span v-else class="count">-</span>
-                  <i class="icon16 app-icon" :title="app.name" :style='{ "background-image": "url(/" + app.icon["16"] + ")" }'></i>
+                  <i class="icon16 app-icon" :title="app.name" :style='{ "background-image": "url(" + rootUrl + app.icon["16"] + ")" }'></i>
                   <span class="nowrap">{{ app.name }}</span>
                 </a>
             </li>
@@ -59,6 +59,9 @@ export default {
       },
       ready() {
         return !this.state.loading && this.layout_loaded;
+      },
+      rootUrl() {
+        return window.appState.rootUrl;
       }
     },
     async mounted() {

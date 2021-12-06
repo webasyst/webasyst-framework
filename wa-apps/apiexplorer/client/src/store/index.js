@@ -48,6 +48,11 @@ export default createStore({
       helpers.method_to_group(state, payload.app_id, payload.method_name, payload.method);
     },
     load_swagger(state, payload) {
+      payload.swagger.spec.servers.forEach( (el, idx) => {
+        if (el.url === '/api.php') {
+          payload.swagger.spec.servers[idx].url = window.appState.rootUrl + 'api.php';
+        }
+      });
       state.swagger[payload.app_id] = payload.swagger;
     },
     load_finish(state) {
