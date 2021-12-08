@@ -485,6 +485,49 @@ $rem = 16
 // Profile :: edit user
 .t-edit-profile
     .dialog-content
+        &.fields:not(.vertical)
+            .field
+                & > .multifield-subfields
+                    display: block
+                    vertical-align: unset
+                    .field-composite-subfields-block
+                        position: relative
+                        .sort
+                            position: absolute
+                            cursor: move
+                            margin-top: 0.5rem !important
+                        & > .field
+                            margin-left: 1.625rem
+                            display: flex
+                            align-items: center
+                            flex-wrap: wrap
+                            .name
+                                padding-top: 0
+                            .value
+                                margin-bottom: 0 !important
+                                display: flex
+                                align-items: center
+                                .wa-select
+                                    margin-top: 0 !important
+                                    margin-right: 0 !important
+                                input
+                                    margin-top: 0 !important;
+                                    margin-left: 0.5rem;
+                                    max-width: calc(100% - 0.5rem)
+                                .delete-subfield
+                                    margin-left 0.5rem
+                        .composite
+                            display flex
+                            flex-direction column
+                            align-items: flex-start
+                            .field
+                                .name
+                                    &.for-input
+                                        padding-top: 0.5625rem
+                                .value
+                                    display table-cell
+                    & + .field
+                        display: block
         .multifield-subfields
             & > .value
                 position: relative

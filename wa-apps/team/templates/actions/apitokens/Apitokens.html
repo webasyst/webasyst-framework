@@ -45,7 +45,7 @@
                             <td class="tc-column-scope">
                                 <div>
                                     {foreach $_token.installed_apps as $_app}
-                                    <img src="/{$_app.img}" title="{$_app.name|escape}" class="icon size-20 custom-mr-4" alt="{$_app.name|escape}"/>
+                                    <img src="{$wa_url}{$_app.img}" title="{$_app.name|escape}" class="icon size-20 custom-mr-4" alt="{$_app.name|escape}"/>
                                     {/foreach}
                                     <div class="flexbox wrap">
                                         {foreach $_token.not_installed_apps as $_app}

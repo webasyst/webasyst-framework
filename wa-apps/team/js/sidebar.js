@@ -67,11 +67,23 @@ var Sidebar = ( function($) {
     Sidebar.prototype.bindEvents = function() {
         var that = this;
 
+        that.unBindEvents();
+
         that.$wrapper.on('click', 'li > a', $.proxy(that.onLinkClick, that));
         that.$addGroupLink.on('click', $.proxy(that.showGroupDialog, that));
         that.$addOfficeLink.on('click', $.proxy(that.showGroupDialog, that));
         that.$searchForm.on('submit', $.proxy(that.showSearch, that));
         that.$addUserLink.on('click', $.proxy(that.showInviteDialog, that));
+    };
+
+    Sidebar.prototype.unBindEvents = function() {
+        const that = this;
+
+        that.$wrapper.off('click', 'li > a');
+        that.$addGroupLink.off('click');
+        that.$addOfficeLink.off('click');
+        that.$searchForm.off('submit');
+        that.$addUserLink.off('click');
     };
 
     Sidebar.prototype.onLinkClick = function(event) {
@@ -247,13 +259,19 @@ var Sidebar = ( function($) {
             }
 
             const delta_count = new_count - old_count;
-            const $counter = $(`<strong class="badge yellow small" style="height: 14px;">+ ${delta_count}</strong>`);
-
             if (delta_count < 0) {
                 return;
             }
 
-            $link.append($counter);
+            const $counter = $(`<strong class="highlighted small js-sidebar-counter" style="height: fit-content;">+ ${delta_count}</strong>`),
+                $existed_counter = $link.find('.js-sidebar-counter');
+
+            if ($existed_counter.length) {
+                $existed_counter.text(`+ ${delta_count}`);
+            }else{
+                $link.append($counter);
+            }
+
             $link.one('click', function(event) {
                 event.preventDefault();
                 $counter.remove();

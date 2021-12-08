@@ -149,7 +149,7 @@
                 {$_user_uri = "`$_user_uri`?list=`$list_context`"}
             {/if}
             <li class="t-user-wrapper {if $user.is_user >= 1 && !$wa->isMobile()}js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
-                <a class="userpic userpic144" href="{$_user_uri}" title="{$user.name|escape}" style="background-image: url('{$user.photo_url_144}');">
+                <a class="userpic userpic144" href="{$_user_uri}" title="{$user.name|escape}" style="background-image: url('{$user.photo_url_144}'); background-size: cover;">
                     {if !empty($user.birth_day) && $user.birth_day == waDateTime::format('j') && $user.birth_month == waDateTime::format('n')}
                         <span class="userstatus birthday" title="{sprintf(_ws('%s\'s birthday — %s'), $user_data.formatted_user_name, $user_data.user_birthday_str)}">
                         <i class="fas fa-birthday-cake"></i>

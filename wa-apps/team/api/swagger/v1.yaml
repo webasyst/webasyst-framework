@@ -1,0 +1,300 @@
+openapi: 3.0.0
+info:
+  title: 'Team API'
+  version: 1.0.0
+servers:
+  - url: /api.php
+    description: Current host server
+
+paths:
+  /team.groups.getList:
+    get:
+      security:
+        - BearerAuth: [ ]
+      summary: Get list of groups
+      parameters:
+        - in: query
+          name: filter[type]
+          description: |
+            Group type:
+            + group - functional group
+            + location - office, territorial group
+          schema:
+            type: string
+            enum:
+              - group
+              - location
+            nullable: true
+            example: location
+      responses:
+        200:
+          description: Returns group list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/group'
+        403:
+          description: A police officer is waiting for you at the entrance. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        400:
+          description: Invalid request. Learn the materiel!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Call the proctolog, please
+  /team.users.getList:
+    get:
+      security:
+        - BearerAuth: [ ]
+      summary: Get list of users
+      parameters:
+        - in: query
+          name: filter[group_id]
+          description: Group ids
+          schema:
+            type: array
+            items:
+              type: integer
+              minimum: 1
+            nullable: true
+        - in: query
+          name: filter[access][]
+          description: App ids where user can access
+          schema:
+            type: array
+            items:
+              type: string
+            nullable: true
+      responses:
+        200:
+          description: Returns user list.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+        403:
+          description: A police officer is waiting for you at the entrance. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        400:
+          description: Invalid request. Learn the materiel!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Call the proctolog, please
+  /team.users.invite:
+    post:
+      security:
+        - BearerAuth: [ ]
+      summary: Create new user invitation
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: New user email
+                  required: true
+                send:
+                  type: boolean
+                  description: Send invitation to email if true. In false case return URL for invitation confirmation.
+      responses:
+        200:
+          description: Returns result.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact_id:
+                    type: integer
+                    description: Invited user contact ID
+                  invitation_link:
+                    type: string
+                    format: uri
+                    description: URL for invitation confirmation
+        403:
+          description: A police officer is waiting for you at the entrance. 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        400:
+          description: Invalid request. Learn the materiel!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponse'
+        500:
+          description: Call the proctolog, please
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: query
+      name: access_token
+    BearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    group:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Group identifier
+        name:
+          type: string
+          description: The group name
+        cnt:
+          type: integer
+          description: The number of users in the group 
+        type:
+          type: string
+          enum:
+            - "group"
+            - "location"
+          description: Group type
+        description:
+          type: string
+          description: Group description
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User contact ID
+        name:
+          type: string
+          description: Full contact name
+        firstname:
+          type: string
+          description: Contact first name
+        lastname:
+          type: string
+          description: Contact last name
+        middlename:
+          type: string
+          description: Contact middle name
+        company:
+          type: string
+          description: Contact company name
+        jobtitle:
+          type: string
+          description: Contact job title
+        login:
+          type: string
+          description: Contact login name
+        email:
+          description: List of user emails
+          type: array
+          items:
+            type: string
+            format: email
+        phone:
+          description: List of user phones
+          type: array
+          items:
+            type: object
+            properties:
+              value:
+                type: string
+                description: Phone number
+              ext:
+                type: string
+                description: Phone type classification 
+                nullable: true
+              status:
+                type: string
+                description: Phone status - confirmed or not
+                enum:
+                  - confirmed
+                  - unconfirmed
+                nullable: true
+        locale:
+          type: string
+          description: Contact locale
+        create_datetime:
+          type: string
+          format: date-time
+          description: The time user was created
+        last_datetime:
+          type: string
+          format: date-time
+          description: The last user activity time
+        birth_day:
+          type: integer
+          description: The users day of birth
+        birth_month:
+          type: integer
+          description: The users month of birth
+        userpic:
+          type: string
+          format: uri
+          description: URL to user profile photo
+        userpic_original_crop:
+          type: string
+          format: uri
+          description: URL to user profile photo original uploaded size
+        userpic_uploaded:
+          type: boolean
+          description: Wether user uploaded photo to profile
+        userpic_thumbs:
+          type: object
+          description: URLs to user profile photo thimbs
+          properties:
+            '16':
+              type: string
+              format: uri
+              description: URL to user profile photo thumb 16*16
+            '32':
+              type: string
+              format: uri
+              description: URL to user profile photo thumb 32*32
+            '96':
+              type: string
+              format: uri
+              description: URL to user profile photo thumb 96*96
+            '144':
+              type: string
+              format: uri
+              description: URL to user profile photo thumb 144*144
+        group_id:
+          type: array
+          description: List of user group ids
+          items:
+            type: integer
+        _event:
+          type: string
+          description: User current status
+        _online_status:
+          type: string
+          description: User current online status
+    errorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code
+        error_description:
+          type: string
+          description: Error description
+

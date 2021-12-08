@@ -488,7 +488,7 @@ msgid "The app icon will not be shown in the app menu."
 msgstr "Не показывать иконку приложения в главном меню."
 
 msgid "Full admin access to the app and its data."
-msgstr "Полный доступ к о всем функциям и данным приложения."
+msgstr "Полный доступ ко всем функциям и данным приложения."
 
 msgid "Saving"
 msgstr "Сохранение"

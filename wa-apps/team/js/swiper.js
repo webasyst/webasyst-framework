@@ -31,25 +31,6 @@ class SwiperSlider {
 
         that.bindEvents();
 
-        if (this.containerParent) {
-            const setContainerWidth = () => {
-                const scrollbarWidth = window.innerWidth - document.documentElement.offsetWidth;
-                const bodyHasScroll = document.body.scrollHeight > window.innerHeight;
-                let containerMaxWidth;
-
-                if (bodyHasScroll) {
-                    containerMaxWidth = window.innerWidth - scrollbarWidth - this.containerParent.getBoundingClientRect().left;
-                } else {
-                    containerMaxWidth = window.innerWidth - this.containerParent.getBoundingClientRect().left;
-                }
-
-                that.containerParent.style.setProperty('max-width', containerMaxWidth + 'px');
-            }
-
-            setContainerWidth();
-            window.addEventListener('resize', setContainerWidth);
-        }
-
         if (that.watch_nav ) {
             that.showNavigation();
         }

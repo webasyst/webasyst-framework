@@ -27,7 +27,7 @@ class teamDefaultLayout extends waLayout
         $tasm = new teamWaAppSettingsModel();
         $this->view->assign(array(
             'is_debug' => (int) waSystemConfig::isDebug(),
-            'map_info' => $tasm->getMapInfo()
+            'map_info' => $tasm->getGeocodingOptions()
         ));
     }
 }

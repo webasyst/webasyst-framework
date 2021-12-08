@@ -38,6 +38,9 @@ var AccessPage = ( function($) {
             //
             that.showArrows();
 
+            that.setWrapMaxWidth();
+            $(window).on("resize", $.proxy(that.setWrapMaxWidth, that));
+
             $(window).on("resize", onResize);
 
             that.$wrapper.on("click", ".t-action", function () {
@@ -59,6 +62,23 @@ var AccessPage = ( function($) {
                 }
             }
         };
+
+        Slider.prototype.setWrapMaxWidth = function() {
+            const that = this;
+
+            const scrollbarWidth = window.innerWidth - document.documentElement.offsetWidth;
+            const hasVerticalScroll = document.body.scrollHeight > window.innerHeight;
+            let containerMaxWidth;
+
+            if (hasVerticalScroll) {
+                containerMaxWidth = window.innerWidth - scrollbarWidth - that.$wrapper.offset().left;
+            } else {
+                containerMaxWidth = window.innerWidth - that.$wrapper.offset().left;
+            }
+
+            that.$wrapper[0].style.setProperty('max-width', containerMaxWidth + 'px');
+            $('body')[0].style.setProperty('overflow-x', 'hidden');
+        }
 
         Slider.prototype.detectSliderWidth = function() {
             var that = this;
@@ -461,16 +481,7 @@ window.AccessDialog = ( function($) {
         });
 
         that.$wrapper.on('change', 'input[type!="hidden"], select', function () {
-            const $tr = $(this).closest('tr'),
-                is_changed = $tr.find('.js-access-type-own:not(.hidden)').length;
-
-            $tr[0].toggleAttribute('data-state-changed', is_changed);
-
-            if (that.$limitedContent.find('tr[data-state-changed]').length) {
-                that.$submit_btn.addClass('yellow');
-            }else{
-                that.$submit_btn.removeClass('yellow');
-            }
+            that.$submit_btn.toggleClass('yellow', !!(that.$limitedContent.find('tr[data-state-changed]').length));
         })
     };
 

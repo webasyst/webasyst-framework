@@ -1,6 +1,8 @@
 {strip}
 
 {$_active_type = ""}
+{$_inherited_group_text = '[`Access inherited from user groups`] <i class="fas fa-users"></i>'}
+{$_not_inherited_group_text = '[`Access granted for the user individually`] <i class="fas fa-user"></i>'}
 
 <div class="dialog t-access-dialog" id="t-access-dialog">
     <div class="dialog-background"></div>
@@ -65,8 +67,22 @@
                 </div>
             {/if}
 
-            <p class="align-center italic custom-m-0 js-access no{if $_active_type != "no"} hidden{/if}">[`The app icon will not be shown in the app menu.`]</p>
-            <p class="align-center italic custom-m-0 js-access full{if $_active_type != "full"} hidden{/if}">[`Full admin access to the app and its data.`]</p>
+            <p class="align-center italic custom-m-0 js-access no{if $_active_type != "no"} hidden{/if}">
+                [`The app icon will not be shown in the app menu.`]
+            </p>
+            <p class="align-center italic custom-m-0 js-access full{if $_active_type != "full"} hidden{/if}">
+                [`Full admin access to the app and its data.`]
+                {if $user}
+                    <span class="gray custom-mt-8" style="display: block; font-style: normal">
+                        {if $access_levels['full']['is_group_inherited']}
+                            {$_inherited_group_text}
+                        {else}
+                            {$_not_inherited_group_text}
+                        {/if}
+                    </span>
+                {/if}
+            </p>
+
         </div>
 
         <footer class="dialog-footer">

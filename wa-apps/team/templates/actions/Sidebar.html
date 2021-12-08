@@ -18,7 +18,7 @@
 
     {if teamHelper::hasRights('add_users')}
         <div class="sidebar-header box custom-pt-20">
-            <button href="#" class="button full-width align-center" id="t-new-user-link">
+            <button class="button full-width align-center" id="t-new-user-link">
                 <i class="fas fa-user-plus fa-w-20 custom-mr-4"></i>&nbsp;<span class="s-title small">[`Invite`]</span>
             </button>
         </div>
@@ -193,6 +193,7 @@
             </li>
         </ul>
     </div>
+    {/if}
 
     {* Initialization of the internal content of the sidebar *}
     <script>
@@ -219,5 +220,5 @@
             });
         })(jQuery);
     </script>
-    {/if}
+
 {/strip}

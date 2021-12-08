@@ -4,42 +4,17 @@ trait teamProfileEditorInfoTrait
 {
     protected function getEditorOptions()
     {
+        $tasm = new teamWaAppSettingsModel();
+        
         return [
             'saveUrl' => $this->getSaveUrl($this->canEdit()),
             'contact_id' => $this->profile_contact->getId(),
             'current_user_id' => $this->getUserId(),
             'justCreated' => false,
-            'geocoding' => $this->getGeocodingOptions(),
+            'geocoding' => $tasm->getGeocodingOptions(),
             'wa_app_url' => $this->isOwnProfile() ? wa()->getConfig()->getBackendUrl(true) : wa()->getAppUrl(null, true),
             'contactType' => $this->profile_contact['is_company'] ? 'company' : 'person'
         ];
-    }
-
-    protected function getGeocodingOptions()
-    {
-        $map_options = array(
-            'type' => '',
-            'key' => ''
-        );
-
-        try {
-            $map = wa()->getMap();
-            if ($map->getId() === 'google') {
-                $map_options = array(
-                    'type' => $map->getId(),
-                    'key' => $map->getSettings('key')
-                );
-            } elseif ($map->getId() === 'yandex') {
-                $map_options = array(
-                    'type' => $map->getId(),
-                    'key' => $map->getSettings('apikey')
-                );
-            }
-        } catch (waException $e) {
-
-        }
-
-        return $map_options;
     }
 
     protected function getSaveUrl($can_edit)

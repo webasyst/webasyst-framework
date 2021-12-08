@@ -52,7 +52,6 @@
 {if empty($group.icon)}
     {$group.icon = reset($_icons)}
 {/if}
-
 <div class="dialog t-edit-group-dialog" id="t-edit-group">
     <div class="dialog-background"></div>
     <form action="" method="post" class="dialog-body">
@@ -119,7 +118,7 @@
                 </div>
             </div>
             {* MAP *}
-            <div class="field t-map-toggle {if !$is_location}hidden{/if}">
+            <div class="field t-map-toggle {if empty($geocoding.key)}hidden{/if}">
                 <div class="name"></div>
                 <div class="value">
                     <div class="t-location-edit-map" style="display: none;"></div>
@@ -137,7 +136,8 @@
         ( function($) {
             new GroupEditDialog({
                 $wrapper: $("#t-edit-group"),
-                map_type: '{$map_adapter}',
+                map_type: '{$geocoding.type}',
+                map_key: '{$geocoding.key}',
                 group_id: {if !empty($group.id)}{$group.id}{else}false{/if},
                 locales: {
                     empty: "[`Group name is mandatory.`]",

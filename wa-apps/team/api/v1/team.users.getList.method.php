@@ -7,9 +7,16 @@ class teamUsersGetListMethod extends waAPIMethod
 
     public function execute()
     {
-        $this->response = $this->getList([
+        $userList = $this->getList([
             'filter' => $this->getFilter()
         ]);
+
+        // Convert "id => user" map to pure user array
+        $result = [];
+        foreach ($userList as $contact) {
+            $result[] = $contact;
+        }
+        $this->response = $result;
     }
 
     /**
@@ -71,7 +78,9 @@ class teamUsersGetListMethod extends waAPIMethod
         // case of filter[access]=crm or filter[access][]=crm
         if (!is_array($filter['access']) || $this->isList($filter['access'])) {
             foreach (waUtils::toStrArray($filter['access']) as $app) {
-                $access[$app] = self::ACCESS_LEVEL_LIMITED;
+                if ($app !== '') {
+                    $access[$app] = self::ACCESS_LEVEL_LIMITED;
+                }
             }
             return $access;
         }
@@ -95,6 +104,8 @@ class teamUsersGetListMethod extends waAPIMethod
             'middlename',
             'company',
             'login',
+            'email',
+            'phone',
             'locale',
             'jobtitle',
             'last_datetime',

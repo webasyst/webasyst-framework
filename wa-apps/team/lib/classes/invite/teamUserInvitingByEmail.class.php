@@ -42,6 +42,7 @@ class teamUserInvitingByEmail extends teamInviting
         $email = $this->email;
         $token = $result['details']['token'];
         $contact_info = $result['details']['contact_info'];
+        $app_info = wa()->getAppInfo();
 
         try {
             $hours = ceil((strtotime($token['expire_datetime']) - $this->getTime()) / 3600);
@@ -53,6 +54,8 @@ class teamUserInvitingByEmail extends teamInviting
                 '{COMPANY}'      => htmlentities(wa()->accountName(),ENT_QUOTES,'utf-8'),
                 '{LINK}'         => waAppTokensModel::getLink($token),
                 '{HOURS_LEFT}'   => _w('%d hour', '%d hours', $hours),
+                '{WA_URL}'       => wa()->getRootUrl(true),
+                '{WA_APP_NAME}'  => htmlentities($app_info['name'],ENT_QUOTES,'utf-8'),
             ]);
         } catch (waException $e) {
             return $this->fail('email_send_fail', [

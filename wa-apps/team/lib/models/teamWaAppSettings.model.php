@@ -87,6 +87,33 @@ class teamWaAppSettingsModel extends waAppSettingsModel
         return $this->get('webasyst', 'user_name_display', 'name');
     }
 
+    public function getGeocodingOptions()
+    {
+        $map_options = array(
+            'type' => '',
+            'key' => ''
+        );
+
+        try {
+            $map = wa()->getMap();
+            if ($map->getId() === 'google') {
+                $map_options = array(
+                    'type' => $map->getId(),
+                    'key' => $map->getSettings('key')
+                );
+            } elseif ($map->getId() === 'yandex') {
+                $map_options = array(
+                    'type' => $map->getId(),
+                    'key' => $map->getSettings('apikey')
+                );
+            }
+        } catch (waException $e) {
+
+        }
+
+        return $map_options;
+    }
+
     private function typecastMapAdapter($map_adapter)
     {
         if (!in_array($map_adapter, $this->map_adapters)) {
