@@ -457,8 +457,9 @@ var GroupEditDialog = ( function($) {
         that.save_timeout = 0;
         // for map
         that.is_map_loading = false;
-        that.map_type = options["map_type"]  || "google"
-        that.teamMap = null
+        that.map_type = options["map_type"] || "google";
+        that.map_key = options["map_key"] || null;
+        that.teamMap = null;
         // INIT
         that.bindEvents();
     };
@@ -468,14 +469,14 @@ var GroupEditDialog = ( function($) {
 
         that.$block.find(".js-type-toggle").waToggle({
             ready(toggle){
-                if(toggle.$active.data('type') === 'location' && !that.teamMap) {
-                    setTimeout(() => that.teamMap = that.initMap(that.map_type))
+                if(toggle.$active.data('type') === 'location' && !that.teamMap && that.map_key) {
+                    setTimeout(() => that.teamMap = that.initMap(that.map_type, that.map_key))
                 }
             },
             change(event, target) {
                 that.setType( $(target) );
-                if(target.dataset.type === 'location' && !that.teamMap) {
-                    that.teamMap = that.initMap(that.map_type);
+                if(target.dataset.type === 'location' && !that.teamMap && that.map_key) {
+                    that.teamMap = that.initMap(that.map_type, that.map_key);
                 }
             }
         });

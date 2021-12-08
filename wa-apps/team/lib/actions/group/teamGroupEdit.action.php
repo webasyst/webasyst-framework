@@ -28,7 +28,8 @@ class teamGroupEditAction extends waViewAction
         $tasm = new teamWaAppSettingsModel();
         $this->view->assign(array(
             'group' => $group,
-            'map_adapter' => $tasm->getMapAdapter()
+            'map_adapter' => $tasm->getMapAdapter(),
+            'geocoding' => $tasm->getGeocodingOptions(),
         ));
     }
 

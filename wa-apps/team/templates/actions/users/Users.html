@@ -47,7 +47,7 @@
                         {$user_data = waUser::getNameAndStatus($user, true)}
                         <li class="t-user-wrapper flexbox middle space-16 custom-py-12{if $user.is_user >= 1 && !$wa->isMobile()} js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">
                             <a href="{$wa_app_url}u/{urlencode($user.login|escape)}/" class="image custom-mb-auto" title="{$user_data.formatted_user_name|escape}">
-                                <span class="userpic icon size-72 valign-middle" style="background-image: url('{$user.photo_url_96}');">
+                                <span class="userpic icon size-72 valign-middle" style="background-image: url('{$user.photo_url_96}'); background-size: cover;">
                                     {if !empty($user_data.user.birth_day) && $user_data.user.birth_day == waDateTime::format('j') && $user_data.user.birth_month == waDateTime::format('n')}
                                         <span class="userstatus birthday t-user-birthday-icon" title="{sprintf(_ws('%s\'s birthday — %s'), $user_data.formatted_user_name, $user_data.user_birthday_str)}">
                                             <i class="fas fa-birthday-cake"></i>

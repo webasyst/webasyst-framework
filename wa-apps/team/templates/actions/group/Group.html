@@ -127,16 +127,16 @@
         </div>
         {/if}
 
-        {if $_location_enabled && $group.location.longitude && $group.location.latitude}
-            <a href="javascript:void(0)" class="t-map-link small inline-link js-open-map-link">
-                <i class="fas fa-map-marker-alt"></i>
-                <span class="custom-ml-4 custom-mr-4">{$group.location.address|escape}</span>
-                <i class="fas fa-caret-down custom-ml-4"></i>
-            </a>
+        {if $_location_enabled && !empty($geocoding.key)}
+        <a href="javascript:void(0)" class="t-map-link small inline-link js-open-map-link">
+            <i class="fas fa-map-marker-alt"></i>
+            <span class="custom-ml-4 custom-mr-4">{$group.location.address|escape}</span>
+            <i class="fas fa-caret-down custom-ml-4"></i>
+        </a>
 
-            <div class="t-map-wrapper custom-mt-12">
-                <div class="t-location-map" id="t-location-map"></div>
-            </div>
+        <div class="t-map-wrapper custom-mt-12">
+            <div class="t-location-map" id="t-location-map"></div>
+        </div>
         {/if}
 
         {if !empty($contacts)}
@@ -163,7 +163,7 @@
                             {$_user_link = "`$wa_app_url`u/`$_url_encoded`/?list=group/`$group.id`"}
 
                             <a href="{$_user_link}" title="{$user_data.formatted_user_name|escape}" class="image custom-mb-auto">
-                                <span class="userpic icon size-72 valign-middle" style="background-image: url('{$user.photo_url_96}');">
+                                <span class="userpic icon size-72 valign-middle" style="background-image: url('{$user.photo_url_96}'); background-size: cover;">
                                     {if !empty($user_data.user.birth_day) && $user_data.user.birth_day == waDateTime::format('j') && $user_data.user.birth_month == waDateTime::format('n')}
                                         <span class="userstatus birthday t-user-birthday-icon" title="{$user_data.user_birthday_str}">
                                             <i class="fas fa-birthday-cake"></i>
@@ -240,7 +240,7 @@
             };
 
             {if $_location_enabled && $group.location.longitude && $group.location.latitude}
-                options.map_adapter = "{$map_adapter}";
+                options.map_adapter = "{$geocoding.type}";
                 options.latitude = "{$group.location.latitude}";
                 options.longitude = "{$group.location.longitude}";
             {/if}

@@ -38,6 +38,9 @@ var AccessPage = ( function($) {
             //
             that.showArrows();
 
+            that.setWrapMaxWidth();
+            $(window).on("resize", $.proxy(that.setWrapMaxWidth, that));
+
             $(window).on("resize", onResize);
 
             that.$wrapper.on("click", ".t-action", function () {
@@ -59,6 +62,23 @@ var AccessPage = ( function($) {
                 }
             }
         };
+
+        Slider.prototype.setWrapMaxWidth = function() {
+            const that = this;
+
+            const scrollbarWidth = window.innerWidth - document.documentElement.offsetWidth;
+            const hasVerticalScroll = document.body.scrollHeight > window.innerHeight;
+            let containerMaxWidth;
+
+            if (hasVerticalScroll) {
+                containerMaxWidth = window.innerWidth - scrollbarWidth - that.$wrapper.offset().left;
+            } else {
+                containerMaxWidth = window.innerWidth - that.$wrapper.offset().left;
+            }
+
+            that.$wrapper[0].style.setProperty('max-width', containerMaxWidth + 'px');
+            $('body')[0].style.setProperty('overflow-x', 'hidden');
+        }
 
         Slider.prototype.detectSliderWidth = function() {
             var that = this;

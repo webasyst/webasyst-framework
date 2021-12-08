@@ -62,7 +62,7 @@ class teamProfileAction extends teamProfileContentViewAction
             'is_own_profile'                   => $this->isOwnProfile(),
             'is_super_admin'                   => $this->getUser()->isAdmin('webasyst'),
             'save_url'                         => $this->getSaveUrl($can_edit),
-            'geocoding'                        => $this->getGeocodingOptions(),
+            'geocoding'                        => $twasm->getGeocodingOptions(),
             // webasyst ID related vars
             'is_connected_to_webasyst_id'      => $this->isConnectedToWebasystID(),
             'is_webasyst_id_forced'            => $this->isWebasystIDForced(),

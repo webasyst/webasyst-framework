@@ -44,6 +44,7 @@ class teamGroupAction extends teamUsersAction
                 'can_manage_group' => teamHelper::hasRights('manage_group.' . $group_id),
                 'sort'             => $sort,
                 'map_adapter'     => $map_adapter,
+                'geocoding' => $tasm->getGeocodingOptions(),
                 'online' => $users_state['online'],
                 'offline' => $users_state['offline'],
             ));

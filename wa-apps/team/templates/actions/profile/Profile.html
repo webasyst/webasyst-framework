@@ -1,5 +1,3 @@
-{strip}
-
 {$_user_id = $wa->user("id")}
 {$_is_admin = $wa->user()->isAdmin($wa->app())}
 {$_is_system_admin = $wa->user()->isAdmin()}
@@ -356,7 +354,7 @@
                     {* @event backend_customer.%plugin_id%.header *}
                     {foreach $backend_profile as $_}{ifset($_.header)}{/foreach}
 
-                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && $geocoding}
+                    {if !empty($profile_editor.data.fieldValues.address[0].data.city) && !empty($geocoding.key)}
                     <div class="t-profile-block t-profile-block_map">
                         <div class="t-profile-block__map">
                             <style>
@@ -365,41 +363,29 @@
                                     display: none !important;
                                 }
                             </style>
-                            <div id="map"></div>
-                            {if $geocoding.type == 'yandex'}
+
+                            <div id="user-profile-map"></div>
+
                             <script>
-                                ymaps.ready(init);
+                                const $map = document.querySelector('#user-profile-map');
+                                const map = new TeamMap($map, '{$geocoding.type}');
 
-                                function init() {
-                                    const $map = document.querySelector('#map');
-                                    const map = new TeamMap($map, 'yandex');
+                                map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
 
-                                    map.yandexGeocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
-
-                                    function renderMap(lat, lng) {
-                                        map.render(lat, lng);
-                                    }
+                                function renderMap(lat, lng) {
+                                    map.render(lat, lng);
                                 }
                             </script>
-                            {elseif $geocoding.type == 'google'}
-                            <script>
-                                document.addEventListener('DOMContentLoad', initMap);
-                                function initMap() {
-                                    const $map = document.querySelector('#map');
-                                    const map = new TeamMap($map, 'google');
-
-                                    map.googleGeocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
-
-                                    function renderMap(lat, lng) {
-                                        map.render(lat, lng);
-                                    }
-                                }
-                            </script>
-                            {/if}
                         </div>
                     </div>
                     {/if}
                 </div>
+
+                {if empty($geocoding.key)}
+                <div class="hint custom-mt-12">
+                    {sprintf('[`Для отображения карты укажите api ключ в <a href="%s" class="link">системных настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
+                </div>
+                {/if}
 
                 <div class="t-profile-user-info-block fields custom-mt-20 custom-pb-40" id="tc-contact">
                     <div class="align-center">
@@ -454,7 +440,6 @@
         </div>
     </div>
 {/if}
-{/strip}
 
 <script>
 
@@ -691,12 +676,11 @@
 
 {if $_context_type}
 <script>
-  (function ($) {
-    $.team.sidebar.setSelected({
-      type: '{$_context_type}',
-      groupId: {$_group_id|default:'null'},
-  });
-  })(jQuery);
+    (function ($) {
+        $.team.sidebar.setSelected({
+            type: '{$_context_type}',
+            groupId: {$_group_id|default:'null'},
+        });
+    })(jQuery);
 </script>
 {/if}
-{* JS INIT *}
