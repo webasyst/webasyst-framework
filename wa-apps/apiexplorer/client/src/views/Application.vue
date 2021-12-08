@@ -1,7 +1,7 @@
 <template>
   <div class="desktop-only">
     <div class="box align-center" style="margin-top: 10vh;">
-      <span style="opacity: 0.15; font-size: 18rem;" class="text-gray"><i class="fas fa-robot"></i></span>
+      <span style="opacity: 0.15; font-size: 18rem;" class="text-gray"><i class="fas fa-compass"></i></span>
     </div>
   </div>
   <div class="tablet-only">

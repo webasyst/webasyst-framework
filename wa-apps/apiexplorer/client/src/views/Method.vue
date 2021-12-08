@@ -23,13 +23,19 @@
         <p v-else class="gray"><em>&lt;No method description&gt;</em></p>
         <hr />
 
-        <h3>Execute API call</h3>
-
         <div class="fields custom-mb-32">
             <div class="fields-group">
                 <div class="field">
                     <div class="name">
-                        Token:
+                        URL
+                    </div>
+                    <div class="value bold">
+                        {{ methodUrl }}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">
+                        Token
                     </div>
                     <div class="value">
                         <span v-if="!user" class="gray">
@@ -43,14 +49,6 @@
                         </span>
                     </div>
                 </div>
-                <div class="field">
-                    <div class="name">
-                        URL:
-                    </div>
-                    <div class="value">
-                        {{ methodUrl }}
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -59,7 +57,8 @@
                 <div v-for="param in method.get.parameters" :key="param.name" class="field">
                     <div class="name for-input">
                         <label :for="param.name">
-                            {{ param.name }}:
+                            {{ param.name }}
+                            <span v-if="param.required" class="state-caution">*</span>
                         </label>
                     </div>
                     <div class="value">
@@ -69,6 +68,7 @@
                             :required="param.required"
                             :description="param.description"
                             v-model="api_params[param.name]"
+                            @updated="checkRequestDataPresence"
                         />
                     </div>
                 </div>
@@ -77,7 +77,8 @@
                 <div v-for="[param, schema] of Object.entries(post_data_schema.properties)" :key="param" class="field">
                     <div class="name for-input">
                         <label :for="param">
-                            {{ param }}:
+                            {{ param }}
+                            <span v-if="post_data_schema.required && post_data_schema.required.includes(param)" class="state-caution">*</span>
                         </label>
                     </div>
                     <div class="value">
@@ -87,13 +88,26 @@
                             :description="schema.description"
                             :required="post_data_schema.required && post_data_schema.required.includes(param)"
                             v-model="api_request_body[param]"
+                            @updated="checkRequestDataPresence"
                         />
                     </div>
                 </div>
             </div>
         </div>
         <div v-else>
-            <input type="text" v-model="api_query_string" style="width: 100%" class="custom-mb-4" placeholder="Request query string" />
+            
+            <div class="fields">
+                <div class="fields-group">
+                    <div class="field">
+                        <div class="name">
+                            URL params
+                        </div>
+                        <div class="value">
+                            <input type="text" v-model="api_query_string" style="width: 100%" class="custom-mb-4" @input="checkRequestDataPresence" placeholder="key1=value1&amp;key2=value2" />
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div v-if="type !== 'GET'">
                 <ul class="tabs bordered-bottom">
@@ -117,10 +131,10 @@
                         </tr>
                         <tr v-for="(param, index) in api_post_params" :key="index">
                             <td>
-                                <input type="text" v-model="api_post_params[index][0]" class="short" />
+                                <input type="text" v-model="api_post_params[index][0]" @input="checkRequestDataPresence" class="short" />
                             </td>
                             <td class="max-width">
-                                <input type="text" v-model="api_post_params[index][1]" style="width: 100%" />
+                                <input type="text" v-model="api_post_params[index][1]" @input="checkRequestDataPresence" style="width: 100%" />
                             </td>
                             <td class="min-width">
                                 <button class="circle outlined light-gray small" @click="api_post_params.splice(index, 1)"><i class="fas fa-times"></i></button>
@@ -130,28 +144,30 @@
                     <button class="outlined light-gray small" @click="api_post_params.push(['', ''])"><i class="fas fa-plus"></i> Add param</button>
                 </div>
                 <div v-if="post_body_tab === 'raw'" class="custom-mt-16">
-                    <textarea v-model="api_post_data" style="width: 100%; height: 160px;" placeholder="Raw request body"></textarea>
+                    <textarea v-model="api_post_data" style="width: 100%; height: 160px;" @input="checkRequestDataPresence" placeholder="Raw request body"></textarea>
                 </div>
             </div>
         </div>
 
-        <div class="flexbox middle space-12 custom-mt-12">
-            <button class="button light-gray" @click="reset()">
+        <div class="flexbox middle space-12 full-width custom-mt-12">
+            <div class="flexbox middle space-12">
+                <button 
+                    :class="['button', 'a-' + type.toLowerCase()]" 
+                    @click="call()" 
+                    :disabled="!api_token || state.calling" 
+                >
+                    <span v-if="!api_token">No token selected</span>
+                    <span v-else>
+                        <i class="fas fa-play"></i>
+                        <span class="custom-pl-8">Run API</span>
+                    </span>
+                </button>
+                <div class="spinner" v-if="state.calling"></div>
+            </div>
+            <button v-if="is_request_data" class="button light-gray" @click="reset()">
                 <i class="fas fa-eraser"></i>
                 <span class="custom-pl-8">Clear</span>
             </button>
-            <button 
-                :class="['button', 'a-' + type.toLowerCase()]" 
-                @click="call()" 
-                :disabled="!api_token || state.calling" 
-            >
-                <span v-if="!api_token">No token selected</span>
-                <span v-else>
-                    <i class="fas fa-robot"></i>
-                    <span class="custom-pl-8">Call API method</span>
-                </span>
-            </button>
-            <div class="spinner" v-if="state.calling"></div>
         </div>
 
         <div v-if="api_response" class="custom-pt-32">
@@ -236,11 +252,29 @@ export default {
             api_error: null,
             api_params: {},
             api_request_body: {},
+            is_request_data: false,
             response_tab: 'data',
             post_body_tab: 'params',
             show_token: false,
         };
     },
+/*    watch: {
+        api_params: function() {
+            this.checkRequestDataPresence();
+        },
+        api_request_body: function() {
+            this.checkRequestDataPresence();
+        },
+        api_query_string: function() {
+            this.checkRequestDataPresence();
+        },
+        api_post_data: function() {
+            this.checkRequestDataPresence();
+        },
+        api_post_params: function() {
+            this.checkRequestDataPresence();
+        },
+    },*/
     computed: {
         api_token() {
             return this.$store.getters.current_token;
@@ -265,6 +299,9 @@ export default {
                 return '';
             }
             if ('type' in this.method) {
+                if (Array.isArray(this.method.type)) {
+                    return this.method.type[0];
+                }
                 return this.method.type;
             }
             if ('post' in this.method) {
@@ -324,7 +361,7 @@ export default {
         },
         methodUrl() {
             return document.location.protocol + '//' + document.location.host  + window.appState.rootUrl + 'api.php/' + this.name;
-        }
+        },
     },
     async mounted() {
         this.name = this.$route.params.name;
@@ -354,6 +391,7 @@ export default {
             this.api_post_data = ('api_post_data' in storedData) ? storedData.api_post_data : "";
             this.parseRawBody();
         }
+        this.checkRequestDataPresence();
         const response_tab = localStorage.getItem('response_tab');
         if (response_tab) {
             this.response_tab = response_tab;
@@ -411,6 +449,7 @@ export default {
             this.api_query_string = "";
             this.api_post_data = "";
             this.parseRawBody();
+            this.checkRequestDataPresence();
             localStorage.removeItem('method:' + this.name);
             this.emitter.emit('reset');
         },
@@ -462,13 +501,45 @@ export default {
             this.response_tab = tab;
             localStorage.setItem('response_tab', tab);
         },
+        isObjectEmpty(obj) {
+            if (typeof obj === 'undefined' || obj === null || obj === '' || obj === false) {
+                return true;
+            }
+            if (typeof obj !== 'object') {
+                return false;
+            }
+            if (Array.isArray(obj)) {
+                if (obj.length === 0) {
+                    return true;
+                }
+                for (const el of obj) {
+                    if (!this.isObjectEmpty(el)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            for (const el of Object.values(obj)) {
+                if (!this.isObjectEmpty(el)) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        checkRequestDataPresence() {
+            this.is_request_data = !this.isObjectEmpty(this.api_params) 
+                || !this.isObjectEmpty(this.api_request_body) 
+                || this.api_query_string 
+                || this.api_post_data
+                || !this.isObjectEmpty(this.api_post_params);
+        },
     }
 }
 </script>
 
 <style>
 .json-key           { color: var(--dark-gray); }
-.json-string        { color: var(--purple); }
+.json-string        { color: var(--purple); word-break: break-word; white-space: pre-wrap; }
 .json-number        { color: var(--orange); }
 .json-boolean       { color: var(--pink); }
 .json-null          { color: var(--light-gray); }

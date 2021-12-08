@@ -61,7 +61,8 @@
         <div v-for="[param, param_schema] of Object.entries(schema.properties)" :key="param" class="field">
             <div class="name for-input">
                 <label :for="param">
-                    {{ param }}:
+                    {{ param }}
+                    <span v-if="schema.required && schema.required.includes(param)" class="state-caution">*</span>
                 </label>
             </div>
             <div class="value">
@@ -96,7 +97,6 @@
     
     <p v-else>Херовый тип поля - <strong>{{ schema.type }}</strong>. Я такой еще не умею.</p>
     <div>
-        <span class="small custom-pr-4" v-if="required">Обязательное поле</span>
         <span class="hint" v-if="schema.type === 'integer'">Целое число</span>
         <span class="hint" v-else-if="schema.type === 'number'">Число</span>
         <span v-else-if="schema.type === 'string'">
@@ -114,7 +114,7 @@ import marked from 'marked';
 import { /*Calendar,*/ DatePicker } from 'v-calendar';
 export default {
     name: "SchemaInput",
-    emits: ["update:modelValue"],
+    emits: ["update:modelValue", "updated"],
     inheritAttrs: false,
     props: {
         name: String,
@@ -162,20 +162,24 @@ export default {
     methods: {
       updateValue: function (val) {
         this.$emit('update:modelValue', val);
+        this.$emit('updated');
       },
       updateArrValue: function (val, index) {
         this.l_value[index] = val;
         this.$emit('update:modelValue', Object.values(this.l_value));
+        this.$emit('updated');
         //this.$emit('input', event)
       },
       updateFieldValue: function (val, param) {
         this.l_value[param] = val;
         this.$emit('update:modelValue', this.l_value);
+        this.$emit('updated');
         //this.$emit('input', event)
       },
       removeArrayItem: function (index) {
         this.l_value.splice(index, 1);
         this.$emit('update:modelValue', Object.values(this.l_value));
+        this.$emit('updated');
         //this.$emit('input', event)
       },
       addRow: function() {

@@ -21,7 +21,7 @@
             <li v-for="app in apps" :key="app.app_id" :class="[ app.id === selected_app && 'selected']">
                 <a href="javascript:void(0);" @click="selectApp(app.id)">
                   <span v-if="app.id in $store.state.counts" class="count">{{ $store.state.counts[app.id] }}</span>
-                  <span v-else class="count">-</span>
+                  <span v-else class="count">0</span>
                   <i class="icon16 app-icon" :title="app.name" :style='{ "background-image": "url(" + rootUrl + app.icon["16"] + ")" }'></i>
                   <span class="nowrap">{{ app.name }}</span>
                 </a>
@@ -177,6 +177,7 @@ export default {
   max-height: 1.25rem;
   width: 1.25rem;
   height: 1.25rem;
+  margin-right: 0.25rem;
 }
 .bricks {
   width: 100%;
