@@ -179,36 +179,61 @@
                 </span>
             </h4>
             <div v-if="response_info.description" v-html="descriptionMarkdown"></div>
-            <div v-if="response_info.schema && Object.keys(response_info.schema).length > 0">
+            <div>
                 <ul class="tabs bordered-bottom">
-                    <li :class="response_tab==='data' ? ['selected'] : []">
+                    <li v-if="response_info.schema && Object.keys(response_info.schema).length > 0" :class="response_tab_smart==='data' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="switchResponseTab('data')">
-                            Response data
+                            Data
                         </a>
                     </li>
-                    <li :class="response_tab==='raw' ? ['selected'] : []">
+                    <li :class="response_tab_smart==='raw' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="switchResponseTab('raw')">
-                            Response raw
+                            Body
                         </a>
                     </li>
-                    <li :class="response_tab==='schema' ? ['selected'] : []">
+                    <li :class="response_tab_smart==='headers' ? ['selected'] : []">
+                        <a href="javascript:void(0);" @click="response_tab='headers'">
+                            Headers
+                        </a>
+                    </li>
+                    <li v-if="response_info.schema && Object.keys(response_info.schema).length > 0" :class="response_tab_smart==='schema' ? ['selected'] : []">
                         <a href="javascript:void(0);" @click="response_tab='schema'">
-                            Response schema
+                            Schema
+                        </a>
+                    </li>
+                    <li v-if="type !== 'GET'" :class="response_tab_smart==='request' ? ['selected'] : []">
+                        <a href="javascript:void(0);" @click="response_tab='request'">
+                            Request
                         </a>
                     </li>
                 </ul>
-                <div v-if="response_tab === 'data'" class="fields custom-mt-16">
+                <div v-if="response_tab_smart === 'data'" class="fields custom-mt-16">
                     <schema-data 
+                        v-if="response_info.schema && Object.keys(response_info.schema).length > 0"
                         :schema="response_info.schema"
                         :value="api_response.body"
                         :deep="0"
                         :iden="'root'"
                     />
                 </div>
-                <pre v-else-if="response_tab === 'schema'" class="small highlighted custom-p-8" v-html="prettifyJson(response_info.schema)"></pre>
+                <div v-else-if="response_tab_smart === 'headers'" class="fields custom-mt-16">
+                    <div v-for="[name, value] of Object.entries(api_response.headers)" :key="name" class="field">
+                        <div class="name">{{ name }}</div>
+                        <div v-if="typeof value === 'object' && Array.isArray(value)" class="value">
+                            {{ value.join(', ') }}
+                        </div>
+                        <div v-else class="value">{{ value }}</div>
+                    </div>
+                </div>
+                <div v-else-if="response_tab_smart === 'request'" class="custom-pt-16">
+                    <pre v-if="api_request_body_called" class="small highlighted custom-p-8" v-html="api_request_body_called"></pre>
+                    <div v-else class="small highlighted custom-p-8">
+                        <em class="gray">&lt;empty&gt;</em>
+                    </div>
+                </div>
+                <pre v-else-if="response_tab_smart === 'schema'" class="small highlighted custom-p-8" v-html="prettifyJson(response_info.schema)"></pre>
                 <pre v-else :class="[ 'small', api_response.status >= 400 && 'orange', 'highlighted', 'custom-p-8']" v-html="prettifyJson(api_response.body || api_response.data)"></pre>
             </div>
-            <pre v-else :class="[ 'small', api_response.status >= 400 && 'orange', 'highlighted', 'custom-p-8']" v-html="prettifyJson(api_response.body || api_response.data)"></pre>
         </div>
         <p v-else-if="api_error" class="state-error">Ошибке: {{ api_error }}</p>
     </div>
@@ -252,6 +277,7 @@ export default {
             api_error: null,
             api_params: {},
             api_request_body: {},
+            api_request_body_called: null,
             is_request_data: false,
             response_tab: 'data',
             post_body_tab: 'params',
@@ -356,6 +382,12 @@ export default {
             }
             return { schema: schema, description: response.description };
         },
+        response_tab_smart() {
+            if (this.response_tab === 'data' && (!this.response_info.schema || Object.keys(this.response_info.schema).length == 0)) {
+                return 'raw';
+            }
+            return this.response_tab;
+        },
         descriptionMarkdown() {
             return marked(this.response_info.description);
         },
@@ -419,6 +451,7 @@ export default {
                         this.api_response = err.response;
                     }
                 }
+                this.api_request_body_called = this.prettifyJson(this.api_request_body);
                 localStorage.setItem('method:' + this.name, JSON.stringify({ api_params: this.api_params, api_request_body: this.api_request_body }));
             } else {
                 const method_type = Array.isArray(this.method.type) ? this.method.type[0] : this.method.type;
@@ -439,6 +472,7 @@ export default {
                 } catch (err) {
                     this.api_response = err.response;
                 }
+                this.api_request_body_called = this.api_post_data;
                 localStorage.setItem('method:' + this.name, JSON.stringify({ api_query_string: this.api_query_string, api_post_data: this.api_post_data }));
             }
             this.state.calling = false;
@@ -499,7 +533,9 @@ export default {
         },
         switchResponseTab(tab) {
             this.response_tab = tab;
-            localStorage.setItem('response_tab', tab);
+            if (this.response_info.schema && Object.keys(this.response_info.schema).length > 0) {
+                localStorage.setItem('response_tab', tab);
+            }
         },
         isObjectEmpty(obj) {
             if (typeof obj === 'undefined' || obj === null || obj === '' || obj === false) {
@@ -534,12 +570,13 @@ export default {
                 || !this.isObjectEmpty(this.api_post_params);
         },
     }
-}
+};
 </script>
 
 <style>
+pre { word-break: break-word; white-space: pre-wrap; }
 .json-key           { color: var(--dark-gray); }
-.json-string        { color: var(--purple); word-break: break-word; white-space: pre-wrap; }
+.json-string        { color: var(--purple); }
 .json-number        { color: var(--orange); }
 .json-boolean       { color: var(--pink); }
 .json-null          { color: var(--light-gray); }
