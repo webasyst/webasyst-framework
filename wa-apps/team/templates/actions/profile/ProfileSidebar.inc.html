@@ -4,11 +4,16 @@
         {include file="./sidebarWidgets/Access.html" inline}
         {if $user}
             {include file="./sidebarWidgets/Stats.html" assign=stats_html}
+
             {$wa->contactProfileSidebar($user.id, [
                 'is_profile_sidebar' => true,
                 'html' => [
                     'stats' => $stats_html
                 ]
+            ])}
+
+            {$wa->contactProfileTabs($user.id, [
+                'is_profile_sidebar' => true
             ])}
         {/if}
     </div>

@@ -59,11 +59,11 @@
             <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
         {/if}
 
-        {if $map_info.type === 'google'}
-            {$_key = $map_info.key|default:''}
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&key={$_key}&lang={$wa->locale()}"></script>
-        {elseif $map_info.type === 'yandex'}
-            {$_apikey = $map_info.settings.apikey|default:''}
+        {if $geocoding.type === 'google'}
+            {$_key = $geocoding.key|default:''}
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$_key}&lang={$wa->locale()}"></script>
+        {elseif $geocoding.type === 'yandex'}
+            {$_apikey = $geocoding.key|default:''}
             <script src="https://api-maps.yandex.ru/2.1/?lang={$wa->locale()}&apikey={$_apikey}" type="text/javascript"></script>
         {/if}
 

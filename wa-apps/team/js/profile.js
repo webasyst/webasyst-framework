@@ -440,6 +440,14 @@ var Profile = ( function($) {
                     return;
                 }
 
+                if (options.url === '') {
+                    const content = $('.js-tab-content-' + options.sectionId).html();
+                    dialog.$content.empty().html(content);
+                    dialog.resize();
+                    that.$wrapper.trigger('dialog_opened', dialog);
+                    return;
+                }
+
                 $.post(href, options, function(content) {
                     dialog.$content.empty().html(content);
                     that.$wrapper.trigger('dialog_opened', dialog);
