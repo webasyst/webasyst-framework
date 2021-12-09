@@ -364,17 +364,25 @@
                                 }
                             </style>
 
-                            <div id="user-profile-map"></div>
+                            <div id="map"></div>
 
                             <script>
-                                const $map = document.querySelector('#user-profile-map');
-                                const map = new TeamMap($map, '{$geocoding.type}');
+                                {if $geocoding.type == 'yandex'}
+                                ymaps.ready(init);
 
-                                map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
+                                function init() {
+                                {/if}
+                                    const $map = document.querySelector('#map');
+                                    const map = new TeamMap($map, '{$geocoding.type}');
 
-                                function renderMap(lat, lng) {
-                                    map.render(lat, lng);
+                                    map.geocode('{$profile_editor.data.fieldValues.address[0].data.city}{if $profile_editor.data.fieldValues.address[0].data.street}, {$profile_editor.data.fieldValues.address[0].data.street}{/if}', renderMap);
+
+                                    function renderMap(lat, lng) {
+                                        map.render(lat, lng);
+                                    }
+                                {if $geocoding.type == 'yandex'}
                                 }
+                                {/if}
                             </script>
                         </div>
                     </div>
@@ -434,6 +442,10 @@
                         'html' => [
                             'stats' => $stats_html
                         ]
+                    ])}
+
+                    {$wa->contactProfileTabs($user.id, [
+                        'is_profile_sidebar' => true
                     ])}
                 </div>
             </div>
