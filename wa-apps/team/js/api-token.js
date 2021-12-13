@@ -28,7 +28,8 @@ var SiteApiTokenPage = ( function($) {
 
         that.$wrapper.on('click', '.js-remove-api-token', function (e) {
             e.preventDefault();
-            var $token_item = $(this).parents('.js-token-item'),
+            e.stopImmediatePropagation();
+            var $token_item = $(this).closest('.js-token-item'),
                 $icon = $token_item.find('svg'),
                 token_id = $token_item.data('token'),
                 contact_id = $token_item.data('contact-id'),

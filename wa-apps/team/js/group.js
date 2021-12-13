@@ -13,6 +13,7 @@ var GroupPage = ( function($) {
         that.map_adapter = options["map_adapter"];
         that.latitude = options["latitude"];
         that.longitude = options["longitude"];
+        that.address = options["address"];
         that.can_manage = options["can_manage"];
 
         // INIT
@@ -38,11 +39,9 @@ var GroupPage = ( function($) {
     GroupPage.prototype.bindEvents = function() {
         var that = this;
 
-        if (that.map_adapter && that.latitude && that.longitude) {
-            that.$wrapper.on("click", ".js-open-map-link", function() {
-                that.toggleMap();
-            });
-        }
+        that.$wrapper.on("click", ".js-open-map-link", function() {
+            that.toggleMap();
+        });
 
         that.$wrapper.on("click", ".js-edit-group", function(event) {
             event.preventDefault();
@@ -67,12 +66,28 @@ var GroupPage = ( function($) {
     };
 
     GroupPage.prototype.initMap = function() {
-        var that = this;
+        const that = this;
 
-        var $map = that.$wrapper.find("#t-location-map"),
-            map = new TeamMap($map, that.map_adapter);
+        if (that.map_adapter === 'yandex') {
+            ymaps.ready(init);
+        } else {
+            init();
+        }
 
-        map.render(that.latitude, that.longitude);
+        function init() {
+            const $map = that.$wrapper.find("#t-location-map");
+            const map = new TeamMap($map, that.map_adapter);
+
+            if (that.latitude !== '' && that.longitude !== '') {
+                map.render(that.latitude, that.longitude);
+            } else {
+                map.geocode(that.address, renderMap);
+
+                function renderMap(lat, lng) {
+                    map.render(lat, lng);
+                }
+            }
+        }
     };
 
     GroupPage.prototype.initEditableName = function() {

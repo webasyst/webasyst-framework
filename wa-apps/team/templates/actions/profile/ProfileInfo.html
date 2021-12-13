@@ -69,8 +69,13 @@
         {/foreach}
 
         files["{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?{$wa->version(true)}"] = typeof $.store !== 'function';
-        files["{$wa_app_static_url}js/profile.info.js?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
-        files["{$wa_app_static_url}css/profile_info.css?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+        if($('html').hasClass('is-wa2')) {
+            files["{$wa_app_static_url}js/profile.info.js?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+            files["{$wa_app_static_url}css/profile_info.css?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+        }else{
+            files["{$wa_app_static_url}js-legacy/profile.info.js?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+            files["{$wa_app_static_url}css-legacy/profile_info.css?{$wa->version()}"] = typeof window.ProfileInfoTab !== 'function';
+        }
 
         var onAllLoad = function () {
             $.storage = new $.store();

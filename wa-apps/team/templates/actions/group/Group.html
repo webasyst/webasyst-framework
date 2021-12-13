@@ -1,5 +1,3 @@
-{strip}
-
 {$_location_enabled = ( $group.type == teamWaGroupModel::WA_GROUP_TYPE_LOCATION && !empty($group.location.address) )}
 
 <div class="t-group-page content article break-word" id="t-group-page">
@@ -119,11 +117,25 @@
         </p>
         {/if}
 
-        {if $group.location.address && !$group.location.longitude && !$group.location.latitude}
+        {if $_location_enabled && empty($geocoding.type)}
         <div>
-            <span class="t-map-link">
+            <span class="t-map-link small">
+                <i class="fas fa-map-marker-alt custom-mr-4"></i>
                 {$group.location.address|escape}
             </span>
+        </div>
+        {/if}
+
+        {if $_location_enabled && !empty($geocoding.type) && empty($geocoding.key)}
+        <div>
+            <span class="t-map-link small">
+                <i class="fas fa-map-marker-alt custom-mr-4"></i>
+                {$group.location.address|escape}
+            </span>
+
+            <div class="hint">
+                {sprintf('[`Чтобы показать карту укажите API-ключ в <a href="%s" class="link">настройках</a>.`]', "`$wa_backend_url`webasyst/settings/")}
+            </div>
         </div>
         {/if}
 
@@ -236,14 +248,14 @@
             var options = {
                 $wrapper: $("#t-group-page"),
                 group_id: {if !empty($group.id)}{$group.id}{else}false{/if},
-                can_manage: {if $can_manage_group}true{else}false{/if}
+                can_manage: {if $can_manage_group}true{else}false{/if},
+{if $_location_enabled && !empty($geocoding.key)}
+                map_adapter: "{$geocoding.type}",
+                latitude: "{$group.location.latitude}",
+                longitude: "{$group.location.longitude}",
+                address: "{$group.location.address}"
+{/if}
             };
-
-            {if $_location_enabled && $group.location.longitude && $group.location.latitude}
-                options.map_adapter = "{$geocoding.type}";
-                options.latitude = "{$group.location.latitude}";
-                options.longitude = "{$group.location.longitude}";
-            {/if}
 
             new GroupPage(options);
 
@@ -253,5 +265,3 @@
         })(jQuery);
     </script>
 </div>
-
-{/strip}
